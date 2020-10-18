@@ -1,111 +1,111 @@
-import React from "react";
-import PropTypes from "prop-types";
-import { PureComponent } from "@/utils/component";
-import { alertClass } from "@/styles";
-import { capitalize } from "@/utils/strings";
-import icons from "../icons";
-import { getProps, defaultProps } from "@/utils/proptypes";
+import React from "react"
+import PropTypes from "prop-types"
+import { PureComponent } from "@/utils/component"
+import { alertClass } from "@/styles"
+import { capitalize } from "@/utils/strings"
+import icons from "../icons"
+import { getProps, defaultProps } from "@/utils/proptypes"
 
 class Alert extends PureComponent {
   constructor(props) {
-    super(props);
+    super(props)
 
     /* 0:normal 1:running closed 2:running closed over */
     this.state = {
       dismiss: 0,
-    };
+    }
 
-    this.bindRef = this.bindRef.bind(this);
-    this.dismiss = this.dismiss.bind(this);
-    this.handleClose = this.handleClose.bind(this);
-    this.renderClose = this.renderClose.bind(this);
+    this.bindRef = this.bindRef.bind(this)
+    this.dismiss = this.dismiss.bind(this)
+    this.handleClose = this.handleClose.bind(this)
+    this.renderClose = this.renderClose.bind(this)
   }
 
   componentDidUpdate(prevProps) {
     if (this.props.dismiss !== prevProps.dismiss && this.props.dismiss) {
-      this.handleClose();
+      this.handleClose()
     }
   }
 
   bindRef(el) {
-    this.element = el;
+    this.element = el
   }
 
   dismiss() {
-    const { onClose } = this.props;
-    this.setState({ dismiss: 2 });
+    const { onClose } = this.props
+    this.setState({ dismiss: 2 })
     if (typeof onClose === "function") {
-      onClose();
+      onClose()
     }
   }
 
   handleClose() {
-    if (this.state.dismiss > 0) return;
-    const { duration, outAnimation, onClose } = this.props;
+    if (this.state.dismiss > 0) return
+    const { duration, outAnimation, onClose } = this.props
 
     // outer animation
     // 参数传回去 本组件不处理动画 由上容器设置动画效果
     if (outAnimation) {
       if (typeof onClose === "function") {
-        onClose(duration, this.element.offsetHeight);
+        onClose(duration, this.element.offsetHeight)
       }
-      return;
+      return
     }
 
     if (duration > 0) {
       this.setState({ dismiss: 1 }, () => {
-        setTimeout(this.dismiss, duration);
-      });
+        setTimeout(this.dismiss, duration)
+      })
     } else {
-      this.dismiss();
+      this.dismiss()
     }
   }
 
   renderIcon() {
-    let { icon } = this.props;
-    const { type, iconSize } = this.props;
+    let { icon } = this.props
+    const { type, iconSize } = this.props
     if (typeof icon === "boolean" && icon) {
-      icon = icons[capitalize(type)];
+      icon = icons[capitalize(type)]
     }
 
-    if (!icon) return null;
+    if (!icon) return null
     const style = {
       width: iconSize,
       height: iconSize,
       marginRight: iconSize / 2,
-    };
+    }
 
     return (
       <div className={alertClass("icon")} style={style}>
         {icon}
       </div>
-    );
+    )
   }
 
   /* React.cloneElement
     https://www.jianshu.com/p/9a42566e4b67
   */
   renderClose() {
-    const { closeItem } = this.props;
+    const { closeItem } = this.props
     if (React.isValidElement(closeItem))
-      return React.cloneElement(closeItem, { onClick: this.handleClose });
+      return React.cloneElement(closeItem, { onClick: this.handleClose })
     return (
       <a className={alertClass("close")} onClick={this.handleClose}>
         {closeItem || icons.Close}
       </a>
-    );
+    )
   }
 
   render() {
-    const { dismiss } = this.state;
+    const { dismiss } = this.state
     /* distrory by this */
     /* beacuse we have not effets like setTimerout.we can destory by returning null */
-    if (dismiss === 2) return null;
+    if (dismiss === 2) return null
 
-    const { children, className, type, onClose, outAnimation } = this.props;
-    const icon = this.renderIcon();
+    const { children, className, type, onClose, outAnimation } = this.props
+    const icon = this.renderIcon()
 
-    const { style } = this.props;
+    const { style } = this.props
     let wrapClassName = alertClass(
       "_",
       type,
@@ -113,10 +113,10 @@ class Alert extends PureComponent {
       !outAnimation && dismiss === 1 && "dismissed",
       onClose && "with-close",
       icon && "with-icon"
-    );
+    )
 
     //由样式加载顺序决定 class的覆盖
-    if (className) wrapClassName = `${wrapClassName} ${className}`;
+    if (className) wrapClassName = `${wrapClassName} ${className}`
 
     return (
       <div ref={this.bindRef} className={wrapClassName} style={style}>
@@ -124,7 +124,7 @@ class Alert extends PureComponent {
         {icon}
         <div className={alertClass("content")}>{children}</div>
       </div>
-    );
+    )
   }
 }
 
@@ -136,15 +136,15 @@ Alert.propTypes = {
   icon: PropTypes.oneOfType([PropTypes.bool, PropTypes.element]),
   iconSize: PropTypes.number,
   onClose: PropTypes.oneOfType([PropTypes.func, PropTypes.bool]),
-};
+}
 
 Alert.defaultProps = {
   ...defaultProps,
   duration: 200,
   iconSize: 16,
   type: "warning",
-};
+}
 
-Alert.displayName = "EthanAlert";
+Alert.displayName = "EthanAlert"
 
-export default Alert;
+export default Alert

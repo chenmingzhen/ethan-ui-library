@@ -1,4 +1,4 @@
-import { destroy, getComponent, closeWithAnimation } from "./messager";
+import { destroy, getComponent, closeWithAnimation } from "./messager"
 
 // 构造函数
 const create = (type) => (content, duration = 3, options = {}) => {
@@ -8,7 +8,7 @@ const create = (type) => (content, duration = 3, options = {}) => {
     title,
     className = "",
     top = "auto",
-  } = options;
+  } = options
 
   const find = [
     "top",
@@ -17,12 +17,12 @@ const create = (type) => (content, duration = 3, options = {}) => {
     "top-right",
     "bottom-left",
     "bottom-right",
-  ].indexOf(position);
+  ].indexOf(position)
 
   if (find < 0) {
     console.warn(
       "Ethan message component need a right position ! please select one from top,middle,top-left,top-right,bottom-left,bottom-right"
-    );
+    )
   }
   getComponent(position).then((messager) => {
     messager.addMessage({
@@ -34,9 +34,9 @@ const create = (type) => (content, duration = 3, options = {}) => {
       className,
       top,
       position,
-    });
-  });
-};
+    })
+  })
+}
 
 // 导入此依赖就会执行  create (type)=>这个函数  返回闭包
 export default {
@@ -48,7 +48,7 @@ export default {
   danger: create("danger"),
   error: create("danger"),
   close: (position) => {
-    if (position) destroy(position);
+    if (position) destroy(position)
     else {
       [
         "top",
@@ -58,11 +58,11 @@ export default {
         "bottom-left",
         "bottom-right",
       ].forEach((c) => {
-        destroy(c);
-      });
+        destroy(c)
+      })
     }
   },
   closeAll: (position) => {
-    closeWithAnimation(position);
+    closeWithAnimation(position)
   },
-};
+}

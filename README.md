@@ -1,7 +1,5 @@
 <p align="center">
-  <a href="https://ant.design">
     <img width="200" src="https://i2.tiimg.com/726475/3d389de27aefae72.png">
-  </a>
 </p>
 
 <h1 align="center">🎨🎨Ethan ui library</h1>

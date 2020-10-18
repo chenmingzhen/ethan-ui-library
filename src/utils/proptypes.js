@@ -2,7 +2,7 @@ export function getProps(PropTypes, ...args) {
   const props = {
     className: PropTypes.string,
     style: PropTypes.object,
-  };
+  }
 
   const propSets = {
     disabled: PropTypes.bool,
@@ -29,14 +29,14 @@ export function getProps(PropTypes, ...args) {
       "danger",
       "link",
     ]),
-  };
+  }
 
   args.forEach((name) => {
-    const prop = propSets[name];
-    if (prop) props[name] = prop;
-  });
+    const prop = propSets[name]
+    if (prop) props[name] = prop
+  })
 
-  return props;
+  return props
 }
 
 export const defaultProps = {
@@ -44,4 +44,4 @@ export const defaultProps = {
   size: "default",
   style: {},
   type: "default",
-};
+}
