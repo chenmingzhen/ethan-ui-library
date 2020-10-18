@@ -26,14 +26,7 @@ function simpleRender(classname, i, { color, itemStyle }) {
 }
 
 export function DoubleBounce(props) {
-  return (
-    <Spin
-      {...props}
-      count={2}
-      spinClass={doubleBounceClass}
-      render={simpleRender}
-    />
-  )
+  return <Spin {...props} count={2} spinClass={doubleBounceClass} render={simpleRender} />
 }
 
 export function Wave(prop) {
@@ -60,14 +53,7 @@ export function Wave(prop) {
 }
 
 export function CubeGrid(props) {
-  return (
-    <Spin
-      {...props}
-      count={9}
-      spinClass={cubeGridClass}
-      render={simpleRender}
-    />
-  )
+  return <Spin {...props} count={9} spinClass={cubeGridClass} render={simpleRender} />
 }
 
 export function ChasingRing(prop) {
@@ -78,15 +64,7 @@ export function ChasingRing(prop) {
     borderTopColor: prop.color,
     backgroundColor: 'transparent',
   }
-  return (
-    <Spin
-      {...prop}
-      count={4}
-      itemStyle={style}
-      spinClass={chasingRingClass}
-      render={simpleRender}
-    />
-  )
+  return <Spin {...prop} count={4} itemStyle={style} spinClass={chasingRingClass} render={simpleRender} />
 }
 
 // =============================================================================
@@ -160,23 +138,9 @@ export function ThreeBounce(prop) {
 }
 
 export function ChasingDots(props) {
-  return (
-    <Spin
-      {...props}
-      count={2}
-      spinClass={chasingDotsClass}
-      render={multRenderSvg}
-    />
-  )
+  return <Spin {...props} count={2} spinClass={chasingDotsClass} render={multRenderSvg} />
 }
 
 export function FourDots(props) {
-  return (
-    <Spin
-      {...props}
-      count={4}
-      spinClass={fourDotsClass}
-      render={multRenderSvg}
-    />
-  )
+  return <Spin {...props} count={4} spinClass={fourDotsClass} render={multRenderSvg} />
 }

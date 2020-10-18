@@ -4,9 +4,7 @@ import classnames from 'classnames'
 import { range } from '@/utils/numbers'
 
 function Spin(props) {
-  const {
-    size, margin, spinClass, count, render,
-  } = props
+  const { size, margin, spinClass, count, render } = props
 
   const className = classnames(spinClass('_'), props.className)
   const style = Object.assign(
@@ -15,7 +13,7 @@ function Spin(props) {
       height: size,
       margin,
     },
-    props.style,
+    props.style
   )
 
   // 简单Spin  simple.js使用
