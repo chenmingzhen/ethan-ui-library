@@ -1,5 +1,5 @@
-import React from "react"
-//import {action} from "mobx";
+import React from 'react'
+// import {action} from "mobx";
 
 function create(name) {
   const Base = React[name]
@@ -17,7 +17,7 @@ function create(name) {
     }
 
     // FIXME
-    //@action.bound
+    // @action.bound
     forceUpdate() {
       if (this.$isMounted) super.forceUpdate()
       if (this.$isMounted === undefined) {
@@ -28,5 +28,5 @@ function create(name) {
   }
 }
 
-export const Component = create("Component")
-export const PureComponent = create("PureComponent")
+export const Component = create('Component')
+export const PureComponent = create('PureComponent')

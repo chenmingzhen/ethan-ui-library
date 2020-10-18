@@ -1,19 +1,21 @@
-import React, { memo } from "react"
-import PropTypes from "prop-types"
-import classnames from "classnames"
-import { range } from "@/utils/numbers"
+import React, { memo } from 'react'
+import PropTypes from 'prop-types'
+import classnames from 'classnames'
+import { range } from '@/utils/numbers'
 
-const Spin = function (props) {
-  const { size, margin, spinClass, count, render } = props
+function Spin(props) {
+  const {
+    size, margin, spinClass, count, render,
+  } = props
 
-  const className = classnames(spinClass("_"), props.className)
+  const className = classnames(spinClass('_'), props.className)
   const style = Object.assign(
     {
       width: size,
       height: size,
       margin,
     },
-    props.style
+    props.style,
   )
 
   // 简单Spin  simple.js使用

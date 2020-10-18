@@ -1,4 +1,5 @@
 {
+  "extends": "airbnb",
   "parser": "babel-eslint",
   "parserOptions": {
     "sourceType": "module",
@@ -55,6 +56,15 @@
     "jsx-a11y/no-static-element-interactions": 0,
     "jsx-a11y/click-events-have-key-events": 0,
     "react/destructuring-assignment": 0,
-    "linebreak-style": [0, "error", "windows"]
+    "linebreak-style": [0, "error", "windows"],
+    //
+    // const { loading, children } = props
+    "react/prop-types": 0,
+    // 遇到jsx语法 必须.jsx结尾  关闭该规则
+    //https://github.com/yannickcr/eslint-plugin-react/blob/master/docs/rules/jsx-filename-extension.md
+    "react/jsx-filename-extension": [1, { "extensions": [".js", ".jsx"] }],
+    "react/jsx-props-no-spreading": 0,
+    // Object asign 错误
+    "prefer-object-spread": 0
   }
 }

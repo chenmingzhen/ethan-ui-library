@@ -17,17 +17,17 @@ export function getProps(PropTypes, ...args) {
       PropTypes.element,
       PropTypes.func,
     ]),
-    size: PropTypes.oneOf(["small", "default", "large"]),
+    size: PropTypes.oneOf(['small', 'default', 'large']),
     type: PropTypes.oneOf([
-      "primary",
-      "default",
-      "secondary",
-      "success",
-      "info",
-      "warning",
-      "error",
-      "danger",
-      "link",
+      'primary',
+      'default',
+      'secondary',
+      'success',
+      'info',
+      'warning',
+      'error',
+      'danger',
+      'link',
     ]),
   }
 
@@ -40,8 +40,8 @@ export function getProps(PropTypes, ...args) {
 }
 
 export const defaultProps = {
-  className: "",
-  size: "default",
+  className: '',
+  size: 'default',
   style: {},
-  type: "default",
+  type: 'default',
 }

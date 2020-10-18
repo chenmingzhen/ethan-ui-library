@@ -1,12 +1,12 @@
-import React from "react"
-import Spin from "./Spin.js"
-import { ringClass, planeClass, pulseClass } from "@/styles/spin.js"
+import React from 'react'
+import { ringClass, planeClass, pulseClass } from '@/styles/spin'
+import Spin from './Spin'
 
 function formatSize(size) {
   const ss = /^(\d+)([%|\w]*)$/.exec(size)
   return {
     value: parseFloat(ss[1]),
-    unit: ss[2] || "px",
+    unit: ss[2] || 'px',
   }
 }
 

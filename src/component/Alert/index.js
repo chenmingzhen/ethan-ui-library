@@ -1,10 +1,10 @@
-import React from "react"
-import PropTypes from "prop-types"
-import { PureComponent } from "@/utils/component"
-import { alertClass } from "@/styles"
-import { capitalize } from "@/utils/strings"
-import icons from "../icons"
-import { getProps, defaultProps } from "@/utils/proptypes"
+import React from 'react'
+import PropTypes from 'prop-types'
+import { PureComponent } from '@/utils/component'
+import { alertClass } from '@/styles'
+import { capitalize } from '@/utils/strings'
+import { getProps, defaultProps } from '@/utils/proptypes'
+import icons from '../icons'
 
 class Alert extends PureComponent {
   constructor(props) {
@@ -34,7 +34,7 @@ class Alert extends PureComponent {
   dismiss() {
     const { onClose } = this.props
     this.setState({ dismiss: 2 })
-    if (typeof onClose === "function") {
+    if (typeof onClose === 'function') {
       onClose()
     }
   }
@@ -46,7 +46,7 @@ class Alert extends PureComponent {
     // outer animation
     // 参数传回去 本组件不处理动画 由上容器设置动画效果
     if (outAnimation) {
-      if (typeof onClose === "function") {
+      if (typeof onClose === 'function') {
         onClose(duration, this.element.offsetHeight)
       }
       return
@@ -64,7 +64,7 @@ class Alert extends PureComponent {
   renderIcon() {
     let { icon } = this.props
     const { type, iconSize } = this.props
-    if (typeof icon === "boolean" && icon) {
+    if (typeof icon === 'boolean' && icon) {
       icon = icons[capitalize(type)]
     }
 
@@ -76,7 +76,7 @@ class Alert extends PureComponent {
     }
 
     return (
-      <div className={alertClass("icon")} style={style}>
+      <div className={alertClass('icon')} style={style}>
         {icon}
       </div>
     )
@@ -87,10 +87,9 @@ class Alert extends PureComponent {
   */
   renderClose() {
     const { closeItem } = this.props
-    if (React.isValidElement(closeItem))
-      return React.cloneElement(closeItem, { onClick: this.handleClose })
+    if (React.isValidElement(closeItem)) return React.cloneElement(closeItem, { onClick: this.handleClose })
     return (
-      <a className={alertClass("close")} onClick={this.handleClose}>
+      <a className={alertClass('close')} onClick={this.handleClose}>
         {closeItem || icons.Close}
       </a>
     )
@@ -102,34 +101,36 @@ class Alert extends PureComponent {
     /* beacuse we have not effets like setTimerout.we can destory by returning null */
     if (dismiss === 2) return null
 
-    const { children, className, type, onClose, outAnimation } = this.props
+    const {
+      children, className, type, onClose, outAnimation,
+    } = this.props
     const icon = this.renderIcon()
 
     const { style } = this.props
     let wrapClassName = alertClass(
-      "_",
+      '_',
       type,
       /* shrink animation control by this (dismissed) */
-      !outAnimation && dismiss === 1 && "dismissed",
-      onClose && "with-close",
-      icon && "with-icon"
+      !outAnimation && dismiss === 1 && 'dismissed',
+      onClose && 'with-close',
+      icon && 'with-icon',
     )
 
-    //由样式加载顺序决定 class的覆盖
+    // 由样式加载顺序决定 class的覆盖
     if (className) wrapClassName = `${wrapClassName} ${className}`
 
     return (
       <div ref={this.bindRef} className={wrapClassName} style={style}>
         {onClose && this.renderClose()}
         {icon}
-        <div className={alertClass("content")}>{children}</div>
+        <div className={alertClass('content')}>{children}</div>
       </div>
     )
   }
 }
 
 Alert.propTypes = {
-  ...getProps(PropTypes, "type"),
+  ...getProps(PropTypes, 'type'),
   children: PropTypes.any,
   dismiss: PropTypes.bool,
   duration: PropTypes.number,
@@ -142,9 +143,9 @@ Alert.defaultProps = {
   ...defaultProps,
   duration: 200,
   iconSize: 16,
-  type: "warning",
+  type: 'warning',
 }
 
-Alert.displayName = "EthanAlert"
+Alert.displayName = 'EthanAlert'
 
 export default Alert

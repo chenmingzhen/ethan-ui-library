@@ -1,5 +1,4 @@
-import React from "react"
-import Spin from "./Spin"
+import React from 'react'
 import {
   defaultClass,
   chasingDotsClass,
@@ -10,19 +9,20 @@ import {
   scaleCircleClass,
   threeBounceClass,
   fourDotsClass,
-} from "@/styles/spin.js"
+} from '@/styles/spin'
+import Spin from './Spin'
 
 function formatSize(size) {
   const ss = /^(\d+)([%|\w]*)$/.exec(size)
   return {
     value: parseFloat(ss[1]),
-    unit: ss[2] || "px",
+    unit: ss[2] || 'px',
   }
 }
 
 function simpleRender(classname, i, { color, itemStyle }) {
   const style = Object.assign({ backgroundColor: color }, itemStyle)
-  return <div key={i} style={style} className={classname("item")} />
+  return <div key={i} style={style} className={classname('item')} />
 }
 
 export function DoubleBounce(props) {
@@ -41,11 +41,11 @@ export function Wave(prop) {
   let width = value / 7
   let margin = value / 20
 
-  if (unit === "px") {
+  if (unit === 'px') {
     width = Math.floor(width)
     margin = Math.ceil(margin) + unit
   } else {
-    margin = "2px"
+    margin = '2px'
   }
 
   return (
@@ -76,7 +76,7 @@ export function ChasingRing(prop) {
   const style = {
     borderWidth,
     borderTopColor: prop.color,
-    backgroundColor: "transparent",
+    backgroundColor: 'transparent',
   }
   return (
     <Spin
@@ -94,7 +94,7 @@ export function ChasingRing(prop) {
 function multRenderDiv(className, i, { color, itemStyle, itemClass }) {
   const style = Object.assign({ backgroundColor: color }, itemStyle)
   return (
-    <div key={i} className={className("item", itemClass)}>
+    <div key={i} className={className('item', itemClass)}>
       <div style={style} />
     </div>
   )
@@ -118,7 +118,7 @@ export function Default(prop) {
 
 function multRenderSvg(className, i, { color, itemSize, itemClass }) {
   return (
-    <div key={i} className={className("item", itemClass)}>
+    <div key={i} className={className('item', itemClass)}>
       <svg width={itemSize} height={itemSize} viewBox="0 0 100 100">
         <circle fill={color} cx={50} cy={50} r={50} />
       </svg>
@@ -142,8 +142,8 @@ function twelveCircle(prop, type) {
   )
 }
 
-export const ScaleCircle = (opt) => twelveCircle(opt, "scale")
-export const FadingCircle = (opt) => twelveCircle(opt, "fade")
+export const ScaleCircle = (opt) => twelveCircle(opt, 'scale')
+export const FadingCircle = (opt) => twelveCircle(opt, 'fade')
 
 export function ThreeBounce(prop) {
   const { value, unit } = formatSize(prop.size)
@@ -151,7 +151,7 @@ export function ThreeBounce(prop) {
     <Spin
       {...prop}
       count={3}
-      style={{ width: value * 2 + unit, height: "auto" }}
+      style={{ width: value * 2 + unit, height: 'auto' }}
       itemSize={value / 2 + unit}
       spinClass={threeBounceClass}
       render={multRenderSvg}

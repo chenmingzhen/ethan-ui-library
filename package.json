@@ -151,6 +151,9 @@
     ]
   },
   "devDependencies": {
-    "@babel/plugin-proposal-decorators": "^7.10.5"
+    "@babel/plugin-proposal-decorators": "^7.10.5",
+    "eslint-config-airbnb": "^18.2.0",
+    "eslint-config-prettier": "^6.13.0",
+    "eslint-import-resolver-webpack": "^0.13.0"
   }
 }

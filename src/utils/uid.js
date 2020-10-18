@@ -5,10 +5,9 @@ export function getUid() {
   return uid
 }
 
-/* 
+/*
     return only id
 */
 export function getUidStr() {
   return getUid().toString(36)
 }
-

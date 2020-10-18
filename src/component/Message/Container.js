@@ -1,10 +1,10 @@
-import React from "react"
-import PropTypes from "prop-types"
-import immer from "immer"
-import { PureComponent } from "@/utils/component"
-import { messageClass } from "@/styles"
-import { getUidStr } from "@/utils/uid"
-import Alert from "../Alert"
+import React from 'react'
+import PropTypes from 'prop-types'
+import immer from 'immer'
+import { PureComponent } from '@/utils/component'
+import { messageClass } from '@/styles'
+import { getUidStr } from '@/utils/uid'
+import Alert from '../Alert'
 
 class Container extends PureComponent {
   constructor(props) {
@@ -18,11 +18,10 @@ class Container extends PureComponent {
 
     // 0 false  1 2 true
     // 退场动画
-    this.handleClassName = (position = "top", dismiss) =>
-      messageClass(
-        "item",
-        `item-${dismiss ? "dismissed" : "show"}-${position}`
-      )
+    this.handleClassName = (position = 'top', dismiss) => messageClass(
+      'item',
+      `item-${dismiss ? 'dismissed' : 'show'}-${position}`,
+    )
 
     // 退场动画的高度等问题
     this.handleStyle = (dismiss, h, position) => {
@@ -33,8 +32,8 @@ class Container extends PureComponent {
       // 退场动画
       switch (position) {
         // 底部的message 退场直接向左或向右 不需要计算高度
-        case "bottom-right":
-        case "bottom-left":
+        case 'bottom-right':
+        case 'bottom-left':
           break
         default:
           styles = {
@@ -53,20 +52,20 @@ class Container extends PureComponent {
     const id = getUidStr()
 
     // FIXME 点击过快时 无法响应往上
-    // 大于5个的时候自动dismiss第一个 
+    // 大于5个的时候自动dismiss第一个
     if (this.state.messages.length > 5) {
       this.setState(
         immer((state) => {
           state.messages[0].dismiss = true
           console.log(state.messages[0])
-        })
+        }),
       )
     }
 
     this.setState(
       immer((state) => {
         state.messages.push(Object.assign({ id }, msg))
-      })
+      }),
     )
 
     // message退场时间
@@ -81,7 +80,7 @@ class Container extends PureComponent {
                 m.dismiss = true
               }
             })
-          })
+          }),
         )
       }, msg.duration * 1000)
     }
@@ -108,7 +107,7 @@ class Container extends PureComponent {
     if (callback) callback()
   }
 
-  //根据alert的动画处理回调函数 手动处理动画
+  // 根据alert的动画处理回调函数 手动处理动画
   closeMessageForAnimation(...args) {
     const [id, duration, msgHeight] = args
     if (!duration) {
@@ -125,9 +124,9 @@ class Container extends PureComponent {
             m.h = msgHeight + 20 // messageHeight + messageMargin  固定 非ant的不断往上风格
           }
         })
-      })
+      }),
     )
-    //动画执行完毕 移除message
+    // 动画执行完毕 移除message
     setTimeout(() => {
       this.removeMessage(id)
     }, duration)
@@ -148,7 +147,7 @@ class Container extends PureComponent {
         state.messages.forEach((c) => {
           c.dismiss = true
         })
-      })
+      }),
     )
   }
 
@@ -156,19 +155,21 @@ class Container extends PureComponent {
     const { messages } = this.state
     return [
       messages.map(
-        ({ id, type, content, dismiss, h, title, className, position }) => (
+        ({
+          id, type, content, dismiss, h, title, className, position,
+        }) => (
           <div
             key={id}
             className={`${this.handleClassName(
               position,
-              dismiss
+              dismiss,
             )} ${className}`}
             style={this.handleStyle(dismiss, h, position)}
           >
             <Alert
               /* 自行处理动画效果 */
               outAnimation
-              className={messageClass("msg")}
+              className={messageClass('msg')}
               dismiss={dismiss}
               /* 自行处理动画效果 */
               onClose={this.closeMessageForAnimation.bind(this, id)}
@@ -180,7 +181,7 @@ class Container extends PureComponent {
               {content}
             </Alert>
           </div>
-        )
+        ),
       ),
     ]
   }
@@ -190,6 +191,6 @@ Container.propTypes = {
   onDestroy: PropTypes.func.isRequired,
 }
 
-Container.displayName = "EthanMessage"
+Container.displayName = 'EthanMessage'
 
 export default Container
