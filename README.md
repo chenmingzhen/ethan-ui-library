@@ -24,6 +24,7 @@
 - [x] Alert
 - [x] Message
 - [x] icons
+- [x] Spin
 
 # 📦 运行
 
