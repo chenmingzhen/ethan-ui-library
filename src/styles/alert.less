@@ -128,4 +128,21 @@
       fill: @colors-danger;
     }
   }
+
+  // 从spin引入的组件 特殊模块化
+  &-loading {
+    display: inline-flex;
+    margin: 0 auto 20px;
+    border-color: var(--message-border-color, var(--gray-200, #e9ecef));
+    background: #fff;
+    box-shadow: var(--message-box-shadow, 0 6px 12px rgba(0, 0, 0, 0.175));
+    color: var(--message-text-color, #333);
+    font-weight: var(--message-font-weight, 400);
+    align-items: center;
+    .@{alert-prefix}-loading-icon {
+      display: block;
+      margin-top: 1px;
+      margin-right: 10px;
+    }
+  }
 }

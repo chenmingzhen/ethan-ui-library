@@ -56,7 +56,7 @@ export function getComponent(type) {
           }}
           onDestroy={destroy.bind(null, type)}
         />,
-        getElement(type),
+        getElement(type)
       )
     }
   })

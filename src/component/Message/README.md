@@ -57,4 +57,4 @@ Container.js state中存放着同一类型position的message  通过修改dismis
 
 # 4.TODO
 
-- [ ]  Loading类型message
+- [x]  Loading类型message

@@ -4,6 +4,7 @@ import { PureComponent } from '@/utils/component'
 import { alertClass } from '@/styles'
 import { capitalize } from '@/utils/strings'
 import { getProps, defaultProps } from '@/utils/proptypes'
+import Spin from '@/component/Spin'
 import icons from '../icons'
 
 class Alert extends PureComponent {
@@ -101,9 +102,7 @@ class Alert extends PureComponent {
     /* beacuse we have not effets like setTimerout.we can destory by returning null */
     if (dismiss === 2) return null
 
-    const {
-      children, className, type, onClose, outAnimation,
-    } = this.props
+    const { children, className, type, onClose, outAnimation } = this.props
     const icon = this.renderIcon()
 
     const { style } = this.props
@@ -113,7 +112,7 @@ class Alert extends PureComponent {
       /* shrink animation control by this (dismissed) */
       !outAnimation && dismiss === 1 && 'dismissed',
       onClose && 'with-close',
-      icon && 'with-icon',
+      icon && 'with-icon'
     )
 
     // 由样式加载顺序决定 class的覆盖
@@ -122,7 +121,11 @@ class Alert extends PureComponent {
     return (
       <div ref={this.bindRef} className={wrapClassName} style={style}>
         {onClose && this.renderClose()}
-        {icon}
+        {type !== 'loading' ? (
+          icon
+        ) : (
+          <Spin name="ring" size={18} className={alertClass('loading-icon')} color="#17a2b8" />
+        )}
         <div className={alertClass('content')}>{children}</div>
       </div>
     )

@@ -6,17 +6,9 @@ export function getProps(PropTypes, ...args) {
 
   const propSets = {
     disabled: PropTypes.bool,
-    keygen: PropTypes.oneOfType([
-      PropTypes.string,
-      PropTypes.func,
-      PropTypes.bool,
-    ]).isRequired,
+    keygen: PropTypes.oneOfType([PropTypes.string, PropTypes.func, PropTypes.bool]).isRequired,
     grid: PropTypes.oneOfType([PropTypes.number, PropTypes.object]),
-    placeholder: PropTypes.oneOfType([
-      PropTypes.string,
-      PropTypes.element,
-      PropTypes.func,
-    ]),
+    placeholder: PropTypes.oneOfType([PropTypes.string, PropTypes.element, PropTypes.func]),
     size: PropTypes.oneOf(['small', 'default', 'large']),
     type: PropTypes.oneOf([
       'primary',
@@ -28,6 +20,7 @@ export function getProps(PropTypes, ...args) {
       'error',
       'danger',
       'link',
+      'loading',
     ]),
   }
 

@@ -18,10 +18,8 @@ class Container extends PureComponent {
 
     // 0 false  1 2 true
     // 退场动画
-    this.handleClassName = (position = 'top', dismiss) => messageClass(
-      'item',
-      `item-${dismiss ? 'dismissed' : 'show'}-${position}`,
-    )
+    this.handleClassName = (position = 'top', dismiss) =>
+      messageClass('item', `item-${dismiss ? 'dismissed' : 'show'}-${position}`)
 
     // 退场动画的高度等问题
     this.handleStyle = (dismiss, h, position) => {
@@ -50,6 +48,8 @@ class Container extends PureComponent {
 
   addMessage(msg) {
     const id = getUidStr()
+    // 为loading做特殊处理
+    const { type } = this.props
 
     // FIXME 点击过快时 无法响应往上
     // 大于5个的时候自动dismiss第一个
@@ -58,32 +58,46 @@ class Container extends PureComponent {
         immer((state) => {
           state.messages[0].dismiss = true
           console.log(state.messages[0])
-        }),
+        })
       )
     }
 
     this.setState(
       immer((state) => {
         state.messages.push(Object.assign({ id }, msg))
-      }),
+      })
     )
 
     // message退场时间
-    if (msg.duration > 0) {
+    if (msg.duration > 0 && type !== 'loading') {
       setTimeout(() => {
         this.setState(
           immer((state) => {
             state.messages.forEach((m) => {
               if (m.id === id) {
-                // 修改dismiss 触发Alert中的componentDidUpdate的handleClose方法
                 // 执行callbackcloseMessageForAnimation
                 m.dismiss = true
               }
             })
-          }),
+          })
         )
       }, msg.duration * 1000)
     }
+
+    // loading 特殊处理 返回
+    return { entity: this, id }
+  }
+
+  removeLoadingMsg(id) {
+    this.setState(
+      immer((state) => {
+        state.messages.filter((m) => {
+          if (m.id !== id) return true
+          m.dismiss = true
+          return false
+        })
+      })
+    )
   }
 
   removeMessage(id) {
@@ -124,7 +138,7 @@ class Container extends PureComponent {
             m.h = msgHeight + 20 // messageHeight + messageMargin  固定 非ant的不断往上风格
           }
         })
-      }),
+      })
     )
     // 动画执行完毕 移除message
     setTimeout(() => {
@@ -147,42 +161,35 @@ class Container extends PureComponent {
         state.messages.forEach((c) => {
           c.dismiss = true
         })
-      }),
+      })
     )
   }
 
   render() {
     const { messages } = this.state
     return [
-      messages.map(
-        ({
-          id, type, content, dismiss, h, title, className, position,
-        }) => (
-          <div
-            key={id}
-            className={`${this.handleClassName(
-              position,
-              dismiss,
-            )} ${className}`}
-            style={this.handleStyle(dismiss, h, position)}
+      messages.map(({ id, type, content, dismiss, h, title, className, position }) => (
+        <div
+          key={id}
+          className={`${this.handleClassName(position, dismiss)} ${className}`}
+          style={this.handleStyle(dismiss, h, position)}
+        >
+          <Alert
+            /* 自行处理动画效果 */
+            outAnimation
+            className={messageClass('msg')}
+            dismiss={dismiss}
+            /* 自行处理动画效果 */
+            onClose={this.closeMessageForAnimation.bind(this, id)}
+            icon
+            iconSize={title ? 20 : 14}
+            type={type}
           >
-            <Alert
-              /* 自行处理动画效果 */
-              outAnimation
-              className={messageClass('msg')}
-              dismiss={dismiss}
-              /* 自行处理动画效果 */
-              onClose={this.closeMessageForAnimation.bind(this, id)}
-              icon
-              iconSize={title ? 20 : 14}
-              type={type}
-            >
-              {title && <h3>{title}</h3>}
-              {content}
-            </Alert>
-          </div>
-        ),
-      ),
+            {title && <h3>{title}</h3>}
+            {content}
+          </Alert>
+        </div>
+      )),
     ]
   }
 }
