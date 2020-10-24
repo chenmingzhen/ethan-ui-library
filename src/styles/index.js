@@ -6,9 +6,11 @@ import buttonLess from './button.less'
 import messageLess from './message.less'
 import spinLess from './spin.less'
 import iconLess from './icon.less'
+import imageLess from './image.less'
 
 export const buttonClass = genaration(buttonLess, 'button')
 export const messageClass = genaration(messageLess, 'message')
 export const alertClass = genaration(alertLess, 'alert')
 export const spinClass = genaration(spinLess, 'spin')
 export const iconClass = genaration(iconLess, 'icon')
+export const imageClass = genaration(imageLess, 'image')
