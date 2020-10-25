@@ -1,5 +1,5 @@
 import React from 'react'
-import Magnify from './Magnify'
+import Magnify from '../Magnify'
 
 const Example = () => {
   return (

@@ -1,12 +1,10 @@
 import React from 'react'
-import IconExample from '@/component/Icon/example'
-import ButtonExapmle from '@/component/Button/example'
-import MagnifyExample from '@/component/Image/magnifyExample'
+import ImageExample from '@/component/Image/example/imageExample'
 
 function App() {
   return (
     <>
-      <MagnifyExample />
+      <ImageExample />
     </>
   )
 }
