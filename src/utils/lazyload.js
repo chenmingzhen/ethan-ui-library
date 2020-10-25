@@ -85,6 +85,7 @@ export function addStack(obj) {
     observer.observe(obj.element)
     return id
   }
+  // 不存在IntersectionObserver 兼容性写法
   scrollEl.addEventListener('scroll', handleScroll, eventPassive)
   const rect = obj.element.getBoundingClientRect()
   const containerRect = getRect(obj.container)
