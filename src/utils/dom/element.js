@@ -19,3 +19,24 @@ export function wrapSpan(children) {
     return item
   })
 }
+
+export function getParent(el, target) {
+  if (!target) {
+    return null
+  }
+
+  let temp = el
+  while (temp) {
+    if (typeof target === 'string') {
+      if (temp.matches && temp.matches(target)) {
+        return temp
+      }
+    } else if (temp === target) {
+      return temp
+    }
+
+    temp = temp.parentElement
+  }
+
+  return null
+}
