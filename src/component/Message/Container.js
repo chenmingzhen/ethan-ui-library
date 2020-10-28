@@ -57,7 +57,6 @@ class Container extends PureComponent {
       this.setState(
         immer((state) => {
           state.messages[0].dismiss = true
-          console.log(state.messages[0])
         })
       )
     }
