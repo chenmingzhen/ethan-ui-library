@@ -1,0 +1,16 @@
+@import './variables';
+@import './themes/@{so-theme}';
+
+@list-prefix: ~'@{so-prefix}-list';
+
+.@{list-prefix} {
+  display: block;
+
+  &-absolute-wrapper {
+    position: absolute;
+    right: 0;
+    top: 0;
+    left: 0;
+  }
+}
+
