@@ -2,7 +2,7 @@ import React from 'react'
 import classnames from 'classnames'
 import createReactContext from 'create-react-context'
 import PropTypes from 'prop-types'
-import { Component, PureComponent } from '@/utils/component'
+import { PureComponent } from '@/utils/component'
 import { getUidStr } from '@/utils/uid'
 import { hidableClass } from '@/styles'
 
@@ -18,13 +18,14 @@ export const consumer = (Origin) => (props) => (
  * @param duration
  * @param display
  */
-export default function (component, { type = ['fade'], duration = 360, display = 'block' }) {
+export default function (Component, { type = ['fade'], duration = 360, display = 'block' }) {
   const hasCollapse = type.indexOf('collapse') >= 0
   const needTransform = type.indexOf('scale-y') >= 0
 
   class Hidable extends PureComponent {
     constructor(props) {
       super(props)
+
       this.state = {
         show: props.show,
       }
@@ -39,6 +40,7 @@ export default function (component, { type = ['fade'], duration = 360, display =
 
       if (this.props.show) return
       if (hasCollapse) this.height = el.offsetHeight
+
       el.style.display = 'none'
       if (hasCollapse) {
         el.style.overflow = 'hidden'

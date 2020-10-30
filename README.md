@@ -1,12 +1,10 @@
-<p align="center">
-    <img width="200" src="https://i2.tiimg.com/726475/3d389de27aefae72.png">
-</p>
-
 <h1 align="center">🎨🎨Ethan ui library</h1>
 
 <div align="center">
 
 <h2>Make Component Easy</h2>
+
+<h3>A Practice React Component Project</h3>
 
 ![Stars](https://img.shields.io/github/stars/chenmingzhen/ethan-ui-library.svg?style=social)
 ![Forks](https://img.shields.io/github/forks/chenmingzhen/ethan-ui-library.svg?style=social)
