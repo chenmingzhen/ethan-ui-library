@@ -2,6 +2,10 @@ import { capitalize } from './strings'
 import { entries } from './objects'
 import cssInject from './vars-inject'
 
+// 这里统一将vars-inject中的conf记录到accessors中
+// 通过给浏览器添加dom之后 将style赋值上去 再Promise删除dom
+// 方便获取样式
+
 function setOptions(options, setter) {
   if (!options) return
   for (const [key, value] of entries(options)) {
@@ -13,6 +17,7 @@ function setOptions(options, setter) {
 function getDOMStyle(dom) {
   document.body.appendChild(dom)
   const style = window.getComputedStyle(dom)
+  // 异步 会压入栈中执行
   Promise.resolve().then(() => {
     dom.parentElement.removeChild(dom)
   })
@@ -25,6 +30,8 @@ function getStyleAttr(className, key = 'color') {
   return getDOMStyle(div)[key]
 }
 
+// obj {setButton:()=>setOptions.call(value, options, "setButton"}
+// data injects["button"]
 function genAccessors(obj, data) {
   data.conf.forEach((item) => {
     const { name, className, attr, parser = (v) => v } = item
@@ -75,5 +82,7 @@ for (const [key, value] of entries(accessors)) {
   value[setterName] = (options) => setOptions.call(value, options, setterName)
   genAccessors(value, cssInject[key])
 }
+
+console.log(accessors)
 
 export default accessors

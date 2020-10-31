@@ -25,7 +25,7 @@ export default function (Component, { type = ['fade'], duration = 360, display =
   class Hidable extends PureComponent {
     constructor(props) {
       super(props)
-
+      // 控制动画
       this.state = {
         show: props.show,
       }
@@ -35,13 +35,20 @@ export default function (Component, { type = ['fade'], duration = 360, display =
 
     componentDidMount() {
       super.componentDidMount()
+      // 获取当前元素的dom
       const el = this.getElement()
       if (!el) return
 
+      // 已经是显示状态 不执行
       if (this.props.show) return
+
+      // 获取当前容器的高度
       if (hasCollapse) this.height = el.offsetHeight
 
+      // 隐藏
       el.style.display = 'none'
+
+      // Dropdown 没有使用
       if (hasCollapse) {
         el.style.overflow = 'hidden'
         el.style.height = 0
@@ -49,6 +56,7 @@ export default function (Component, { type = ['fade'], duration = 360, display =
     }
 
     componentDidUpdate(prevProps) {
+      // 根据show的变化 显示容器或者隐藏容器
       if (this.props.show === prevProps.show) return
 
       if (this.props.show) this.show()
@@ -106,11 +114,14 @@ export default function (Component, { type = ['fade'], duration = 360, display =
         animation = `fade-${animation}`
       }
       const className = classnames(
+        // 控制动画
         hidableClass('_', ...type, animation, this.state.show && 'show'),
         this.props.className,
         this.id
       )
       const provider = { visible: this.state.show }
+
+      // List 中没有使用value
       return (
         <context.Provider value={provider}>
           <Component {...this.props} className={className} />

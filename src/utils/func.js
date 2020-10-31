@@ -7,6 +7,7 @@ export function curry(f, ...args) {
   return (...next) => curry(f.bind(f, ...args), ...next)
 }
 
+// 整合context  左边层次最高 funcs从左边一直包裹到右边
 export function compose(...funcs) {
   if (funcs.length === 0) {
     return (arg) => arg

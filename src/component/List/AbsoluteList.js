@@ -25,12 +25,14 @@ export default function (List) {
   class AbsoluteList extends Component {
     // eslint-disable-next-line react/state-in-constructor
     state = {
+      // 用于自动适应屏幕位置
       overdoc: false,
     }
 
     constructor(props) {
       super(props)
       this.handleRef = this.handleRef.bind(this)
+      // absolute false 普通的List
       if (!props.absolute) return
       this.lastStyle = {}
 
