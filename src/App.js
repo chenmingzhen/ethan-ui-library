@@ -1,12 +1,10 @@
 import React from 'react'
-import DropdownExample from '@/component/Dropdown/example'
-
-console.log(React.isValidElement(<DropdownExample />))
+import CarouselExample from '@/component/Carousel/example'
 
 function App() {
   return (
     <>
-      <DropdownExample />
+      <CarouselExample />
     </>
   )
 }
