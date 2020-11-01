@@ -19,7 +19,7 @@ function indicatorSwitch(current, moveTo) {
       {items.map((item, index) => {
         const isActive = current === index
         const itemClassname = classnames('indicator-item', isActive && 'active')
-        const animationStyle = isActive ? { animation: `indicator-rise ${duration / 5000}s linear` } : {}
+        const animationStyle = isActive ? { animation: `indicator-rise ${duration / 1000}s linear` } : {}
         return (
           <div key={item} onClick={() => moveTo(index)} className={itemClassname}>
             <span>{item}</span>
