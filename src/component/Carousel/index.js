@@ -25,11 +25,15 @@ class Carousel extends PureComponent {
 
   componentDidMount() {
     // 由于继承于自定义PureComponent 需要super.componentDidMount() $isMounted才不会是undefined 才可以setState
-    super.componentDidMount()
+    // super.componentDidMount()
     this.setNext(1)
   }
 
   setNext(next) {
+    if (this.mouseInView) {
+      return
+    }
+
     const { interval } = this.props
     if (interval > 0 && this.count > 1) {
       if (this.$timeout) clearTimeout(this.$timeout)
@@ -55,6 +59,9 @@ class Carousel extends PureComponent {
 
   handleMouseIn() {
     this.mouseInView = true
+    if (this.$timeout) {
+      clearTimeout(this.$timeout)
+    }
   }
 
   handleMouseOut() {
@@ -67,7 +74,15 @@ class Carousel extends PureComponent {
     // 通过 current 与 pre实现动画 实则就是两个Item有zIndex 其他Item没有zIndex
     return Children.toArray(this.props.children).map((child, i) => (
       <Item key={i} current={i === current} pre={i === pre && pre !== current}>
-        {child}
+        {React.cloneElement(
+          child,
+          this.props.mouseEffect
+            ? {
+                onMouseEnter: this.handleMouseIn,
+                onMouseLeave: this.handleMouseOut,
+              }
+            : {}
+        )}
       </Item>
     ))
   }
@@ -76,7 +91,7 @@ class Carousel extends PureComponent {
     const { indicatorType, indicatorPosition } = this.props
     const { current } = this.state
     const className = carouselClass('indicator', `indicator-${indicatorPosition}`)
-    return <div className={className}>{indicatorType(current, this.moveTo)}</div>
+    return <div className={className}>{indicatorType(current, this.moveTo, this.mouseInView)}</div>
   }
 
   renderIndicator() {
@@ -118,6 +133,7 @@ Carousel.propTypes = {
   indicatorPosition: PropTypes.oneOf(['left', 'center', 'right']),
   indicatorType: PropTypes.oneOfType([PropTypes.func, PropTypes.oneOf(['number', 'circle', 'line'])]),
   interval: PropTypes.number,
+  mouseEffect: PropTypes.bool,
 }
 
 Carousel.defaultProps = {
@@ -126,6 +142,7 @@ Carousel.defaultProps = {
   indicatorPosition: 'center',
   indicatorType: 'circle',
   interval: 0,
+  mouseEffect: false,
 }
 
 Carousel.displayName = 'EthanCarousel'

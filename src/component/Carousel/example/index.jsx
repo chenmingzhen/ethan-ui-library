@@ -3,7 +3,7 @@ import Carousel from '@/component/Carousel'
 import classnames from 'classnames'
 import './custom.less'
 
-const duration = 5000
+/* const duration = 5000
 const containerStyle = {
   fontSize: 40,
   color: '#fff',
@@ -62,4 +62,54 @@ export default function (props) {
       </Carousel>
     </div>
   )
+} */
+
+const containerStyle = {
+  fontSize: 40,
+  color: '#fff',
+  display: 'flex',
+  margin: 'auto',
+}
+
+export default class extends React.Component {
+  constructor(props) {
+    super(props)
+    this.state = {
+      interval: 5000,
+      animation: 'slide',
+      indicatorType: 'circle',
+      indicatorPosition: 'center',
+    }
+  }
+
+  propChange(key, value) {
+    this.setState({ [key]: value })
+  }
+
+  render() {
+    const { interval, animation, indicatorPosition, indicatorType } = this.state
+
+    return (
+      <div>
+        <Carousel
+          style={{ width: 500, height: 300 }}
+          interval={2000}
+          animation={animation}
+          indicatorPosition={indicatorPosition}
+          indicatorType={indicatorType}
+          mouseEffect
+        >
+          <div style={{ background: '#666', display: 'flex' }}>
+            <div style={containerStyle}>Page 1</div>
+          </div>
+          <div style={{ background: '#fa8c16', display: 'flex' }}>
+            <div style={containerStyle}>Page 2</div>
+          </div>
+          <div style={{ background: '#eb2f96', display: 'flex' }}>
+            <div style={containerStyle}>Page 3</div>
+          </div>
+        </Carousel>
+      </div>
+    )
+  }
 }
