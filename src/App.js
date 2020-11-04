@@ -1,10 +1,10 @@
 import React from 'react'
-import CarouselExample from '@/component/Carousel/example'
+import CardExample from '@/component/Card/example'
 
 function App() {
   return (
     <>
-      <CarouselExample />
+      <CardExample />
     </>
   )
 }

@@ -17,12 +17,20 @@
 
 - 🍇 immer 
 
+- 📖 deep-eql
+
+- 🎓 create-react-context
+
 # 🎉完成
 
 - [x] Alert
 - [x] Message
 - [x] icons
 - [x] Spin
+- [x] Carousel
+- [x] Dropdown
+- [x] List
+- [x] Card
 
 # 📦 运行
 
