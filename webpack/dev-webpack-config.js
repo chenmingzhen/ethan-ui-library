@@ -15,32 +15,14 @@ module.exports = {
     module: {
         rules: [
             {
-                test: /\.js$/,
-                exclude: /node_modules/, //这个文件夹除外
-                loader: "babel-loader",
-                options: {
-                    presets: [
-                        [
-                            "@babel/preset-env",
-                            {
-                                "targets": {
-                                    "node": "current"
-                                }
-                            }
-                        ],
-                        "@babel/preset-react"
-                    ]
-                }
-            },
-            // 不知道为什么 上面的 jsx无法识别 单独设置一个来识别
-            {
-                test: /\.jsx/,
-                exclude: /node_modules/, //这个文件夹除外
+                test: /\.jsx?$/,
+                exclude: /node_modules/,
                 loader: "babel-loader",
             },
             {
                 test: /\.tsx?$/,
                 loader: 'ts-loader',
+                exclude: /node_modules/,
                 options: {
                     transpileOnly: true,
                     compilerOptions: {
@@ -65,6 +47,6 @@ module.exports = {
     },
     resolve: {
         extensions: ['.ts', '.tsx', '.js', '.jsx'],
-        alias: {"@": path.resolve(__dirname, "./src")}
+        alias: {"@": path.resolve(__dirname, "../src")}
     }
 };

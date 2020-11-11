@@ -10,7 +10,7 @@
     "prop-types": "^15.7.2"
   },
   "scripts": {
-    "dev": "webpack-dev-server --config dev-webpack-config.js",
+    "dev": "webpack-dev-server --config webpack/dev-webpack-config.js",
     "lint": "npx eslint --fix src/**/**.js"
   },
   "eslintConfig": {
