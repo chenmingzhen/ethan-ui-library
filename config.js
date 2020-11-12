@@ -24,7 +24,7 @@ module.exports = {
       `/docsearch.js@${versions['docsearch.js']}/dist/cdn/docsearch.css`,
     ],
   },
-  themes: ['default', 'antd', 'antd2', 'shineout'],
+  themes: ['default', 'antd', 'antd2', 'ethan'],
   webpack: {
     entry: {
       app: './site/index.js',
@@ -35,7 +35,7 @@ module.exports = {
     },
     // for site/
     alias: {
-      shineout: path.resolve(__dirname, 'src'),
+      ethan: path.resolve(__dirname, 'src'),
       docs: path.resolve(__dirname, 'site/Components'),
       doc: path.resolve(__dirname, 'site'),
     },
