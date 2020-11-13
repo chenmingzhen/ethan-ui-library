@@ -48,34 +48,34 @@
     -webkit-animation-fill-mode: @fill-mode;
     animation-fill-mode: @fill-mode;
   }
-  
+
   // Backface visibility
   // Prevent browsers from flickering when using CSS 3D transforms.
   // Default value is `visible`, but can be changed to `hidden`
-  
+
   .backface-visibility(@visibility) {
     -webkit-backface-visibility: @visibility;
     -moz-backface-visibility: @visibility;
     backface-visibility: @visibility;
   }
-  
+
   // Drop shadows
   //
   // Note: Deprecated `.box-shadow()` as of v3.1.0 since all of Bootstrap's
   // supported browsers that have box shadow capabilities now support it.
-  
+
   .box-shadow(@shadow) {
     -webkit-box-shadow: @shadow; // iOS <4.3 & Android <4.1
     box-shadow: @shadow;
   }
-  
+
   // Box sizing
   .box-sizing(@boxmodel) {
     -webkit-box-sizing: @boxmodel;
     -moz-box-sizing: @boxmodel;
     box-sizing: @boxmodel;
   }
-  
+
   // CSS3 Content Columns
   .content-columns(@column-count; @column-gap: @grid-gutter-width) {
     -webkit-column-count: @column-count;
@@ -85,7 +85,7 @@
     -moz-column-gap: @column-gap;
     column-gap: @column-gap;
   }
-  
+
   // Optional hyphenation
   .hyphens(@mode: auto) {
     -webkit-hyphens: @mode;
@@ -95,7 +95,7 @@
     hyphens: @mode;
     word-wrap: break-word;
   }
-  
+
   // Placeholder text
   .placeholder(@color: @input-color-placeholder) {
     // Firefox
@@ -103,7 +103,7 @@
       color: @color;
       opacity: 1; // Override Firefox's unusual default opacity; see https://github.com/twbs/bootstrap/pull/11526
     }
-  
+
     &:-ms-input-placeholder {
       color: @color;
     } // Internet Explorer 10+
@@ -111,7 +111,7 @@
       color: @color;
     } // Safari and Chrome
   }
-  
+
   // Transformations
   .scale(@ratio) {
     -webkit-transform: scale(@ratio);
@@ -187,9 +187,9 @@
     -ms-transform-origin: @origin; // IE9 only
     transform-origin: @origin;
   }
-  
+
   // Transitions
-  
+
   .transition(@transition) {
     -webkit-transition: @transition;
     -o-transition: @transition;
@@ -217,14 +217,13 @@
     -o-transition: -o-transform @transition;
     transition: transform @transition;
   }
-  
+
   // User select
-  // For selecting text on the page
-  
+  // For selecting text on the pages
+
   .user-select(@select) {
     -webkit-user-select: @select;
     -moz-user-select: @select;
     -ms-user-select: @select; // IE10+
     user-select: @select;
   }
-  

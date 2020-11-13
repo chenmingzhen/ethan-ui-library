@@ -44,7 +44,7 @@ state 中的 dismiss 有三个值 0:正常显示 1:进行关闭动画中 2:完�
 ```jsx
 import React from "react";
 import PropTypes from "prop-types";
-import { PureComponent } from "../component";
+import { PureComponent } from "../components";
 import { capitalize } from "../utils/strings";
 import { getProps, defaultProps } from "../utils/proptypes";
 import { alertClass } from "../styles";

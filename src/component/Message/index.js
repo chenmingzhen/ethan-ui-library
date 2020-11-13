@@ -8,7 +8,7 @@ const create = (type) => async (content, duration = 3, options = {}) => {
 
   if (find < 0) {
     console.warn(
-      'Ethan message component need a right position ! please select one from top,middle,top-left,top-right,bottom-left,bottom-right,loading'
+      'Ethan message components need a right position ! please select one from top,middle,top-left,top-right,bottom-left,bottom-right,loading'
     )
   }
 

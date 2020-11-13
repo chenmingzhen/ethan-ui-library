@@ -1,14 +1,57 @@
 {
-  "presets": [
-    [
-      "@babel/preset-env",
-      {
-        "targets": {
-          "node": "current"
-        }
-      }
-    ],
-    "@babel/preset-react"
-  ],
-  "plugins": ["@babel/plugin-proposal-class-properties"]
+  "env": {
+    "development": {
+      "presets": [
+        [
+          "@babel/preset-env",
+          {
+            "targets": {
+              "node": "current"
+            }
+          }
+        ],
+        "@babel/preset-react"
+      ],
+      "plugins": [
+        "@babel/plugin-proposal-class-properties"
+      ]
+    },
+    "production": {
+      "presets": [
+        "react-app"
+      ]
+    },
+    "publish": {
+      "plugins": [
+        "@babel/plugin-proposal-class-properties",
+        [
+          "@babel/plugin-proposal-object-rest-spread",
+          {
+            "useBuiltIns": true
+          }
+        ]
+      ],
+      "presets": [
+        [
+          "@babel/preset-env",
+          {
+            "targets": {
+              "browsers": [
+                "last 2 versions",
+                "ie >= 9"
+              ]
+            },
+            "loose": true
+          }
+        ],
+        "@babel/preset-react"
+      ]
+    },
+    "test": {
+      "presets": [
+        "react-app"
+      ]
+    }
+  }
 }
+
