@@ -1,17 +1,16 @@
 const webpack = require('webpack')
 // 注意 webpack-merge版本
 const merge = require('webpack-merge')
-const path = require('path')
 const config = require('../config')
 const common = require('./config.common')
 const cssConf = require('./utils/theme.css')
 
 function getEntry(entry) {
   const newEntry = {}
-  Object.keys(entry).forEach((key) => {
+  Object.keys(entry).forEach(key => {
     newEntry[key] = [
       'react-hot-loader/patch',
-      // `webpack-dev-server/client?http://localhost:${config.dev.webpackPort}`,
+      `webpack-dev-server/client?http://localhost:${config.dev.webpackPort}`,
       'webpack/hot/only-dev-server',
       entry[key],
     ]
@@ -24,7 +23,8 @@ function getPublishPath() {
   return `http://localhost:${config.dev.publishPort}/`
 }
 
-const cssConfig = config.themes.map((name) =>
+// css文件统一打包到__css_hot_loader.js中
+const cssConfig = config.themes.map(name =>
   cssConf({
     mode: 'development',
     hot: true,
@@ -47,6 +47,7 @@ const cssConfig = config.themes.map((name) =>
   })
 )
 
+// js文件打包位置
 const jsConfig = merge(common({ ...config.webpack, DEV: true }), {
   devtool: config.webpack.devtool,
   entry: getEntry(config.webpack.entry),
@@ -57,12 +58,6 @@ const jsConfig = merge(common({ ...config.webpack, DEV: true }), {
   },
   mode: 'development',
   plugins: [new webpack.HotModuleReplacementPlugin()],
-  // add
-  resolve: {
-    alias: {
-      '@': path.resolve(__dirname, '../src'),
-    },
-  },
 })
 
 module.exports = [jsConfig, ...cssConfig]

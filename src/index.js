@@ -1,5 +1,3 @@
-import React from 'react'
-import ReactDom from 'react-dom'
-import App from './App'
+import './styles/normalize.less'
 
-ReactDom.render(<App />, document.getElementById('root'))
+export { setLocale } from './locale'
