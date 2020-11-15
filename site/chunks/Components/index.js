@@ -6,7 +6,13 @@ import Page from 'doc/pages/Page'
 
 const pages = [
                     'General',
-                    'Form',
+                {
+        name: 'Icon',
+        cn: '图标',
+        level: 2,
+        component: lazy(() => import(/* webpackChunkName: "Icon" */ './Icon')),
+        },
+                'Form',
                     'Data',
                 {
         name: 'Carousel',

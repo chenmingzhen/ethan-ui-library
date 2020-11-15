@@ -32,7 +32,7 @@ const lessLoader = (name, hot) => {
   return loaders
 }
 
-module.exports = function ({
+module.exports = function({
   name,
   hot,
   entry,

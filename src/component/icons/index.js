@@ -1,6 +1,6 @@
 import React from 'react'
 
-const icon = (path) => (
+const icon = path => (
   <svg viewBox="0 0 1024 1024">
     {path.map((p, i) => (
       <path key={i} d={p} />

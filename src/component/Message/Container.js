@@ -55,14 +55,14 @@ class Container extends PureComponent {
     // 大于5个的时候自动dismiss第一个
     if (this.state.messages.length > 5) {
       this.setState(
-        immer((state) => {
+        immer(state => {
           state.messages[0].dismiss = true
         })
       )
     }
 
     this.setState(
-      immer((state) => {
+      immer(state => {
         state.messages.push(Object.assign({ id }, msg))
       })
     )
@@ -71,8 +71,8 @@ class Container extends PureComponent {
     if (msg.duration > 0 && type !== 'loading') {
       setTimeout(() => {
         this.setState(
-          immer((state) => {
-            state.messages.forEach((m) => {
+          immer(state => {
+            state.messages.forEach(m => {
               if (m.id === id) {
                 // 执行callbackcloseMessageForAnimation
                 m.dismiss = true
@@ -89,8 +89,8 @@ class Container extends PureComponent {
 
   removeLoadingMsg(id) {
     this.setState(
-      immer((state) => {
-        state.messages.filter((m) => {
+      immer(state => {
+        state.messages.filter(m => {
           if (m.id !== id) return true
           m.dismiss = true
           return false
@@ -102,7 +102,7 @@ class Container extends PureComponent {
   removeMessage(id) {
     // 存储message的onClose callback
     let callback
-    const messages = this.state.messages.filter((m) => {
+    const messages = this.state.messages.filter(m => {
       if (m.id !== id) return true
       if (m.onClose) {
         callback = m.onClose
@@ -130,8 +130,8 @@ class Container extends PureComponent {
 
     // duration animation duration time
     this.setState(
-      immer((state) => {
-        state.messages.forEach((m) => {
+      immer(state => {
+        state.messages.forEach(m => {
           if (m.id === id) {
             m.dismiss = true
             m.h = msgHeight + 20 // messageHeight + messageMargin  固定 非ant的不断往上风格
@@ -156,8 +156,8 @@ class Container extends PureComponent {
 
   removeAllMessage() {
     this.setState(
-      immer((state) => {
-        state.messages.forEach((c) => {
+      immer(state => {
+        state.messages.forEach(c => {
           c.dismiss = true
         })
       })

@@ -102,7 +102,7 @@ class Carousel extends PureComponent {
     const { current } = this.state
     const className = carouselClass('indicator', `indicator-${indicatorPosition}`, `indicator-${indicatorType}`)
 
-    const inds = range(this.count).map((i) => (
+    const inds = range(this.count).map(i => (
       <a key={i} onClick={this.moveTo.bind(this, i)} className={carouselClass(current === i && 'indicator-active')}>
         {indicatorType === 'number' ? i + 1 : ''}
       </a>

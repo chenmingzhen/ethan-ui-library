@@ -5,9 +5,9 @@ const context = createReactContext()
 
 export const { Provider } = context
 
-const consumer = (Origin) => (props) => (
+const consumer = Origin => props => (
   <context.Consumer>
-    {(value) => {
+    {value => {
       // eslint-disable-next-line react/prop-types
       const mp = Object.assign({}, props, value && props.absolute && props.zIndex === undefined && { zIndex: 1051 })
       return <Origin {...mp} />

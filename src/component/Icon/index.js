@@ -4,7 +4,7 @@ import Icon from './Icon'
 const links = {}
 const scripts = {}
 
-export default function (url = '', fontFamily = 'iconfont', prefix = 'icon') {
+export default function(url = '', fontFamily = 'iconfont', prefix = 'icon') {
   const ext = url.substr(url.lastIndexOf('.') + 1)
   // 向浏览器添加css脚本或js脚本
   if (ext === 'css' && !links[url]) {
@@ -22,7 +22,7 @@ export default function (url = '', fontFamily = 'iconfont', prefix = 'icon') {
     document.body.appendChild(script)
   }
 
-  const wrapperIcon = (props) => <Icon ext={ext} fontFamily={fontFamily} prefix={prefix} {...props} />
+  const wrapperIcon = props => <Icon ext={ext} fontFamily={fontFamily} prefix={prefix} {...props} />
   wrapperIcon.isEthanIcon = true
   return wrapperIcon
 }

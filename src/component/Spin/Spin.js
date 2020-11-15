@@ -24,7 +24,7 @@ function Spin(props) {
   // 复杂Spin multiple.js使用
   return (
     <div style={style} className={className}>
-      {range(count + 1, 1).map((i) => render(spinClass, i, props))}
+      {range(count + 1, 1).map(i => render(spinClass, i, props))}
     </div>
   )
 }

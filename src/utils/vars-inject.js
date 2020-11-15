@@ -25,7 +25,9 @@ import {
 const computedCache = {}
 function getProperty(name = '--btn-hover-darken', cache = true) {
   if (cache && computedCache[name]) return computedCache[name]
-  computedCache[name] = getComputedStyle(document.body).getPropertyValue(name).trim()
+  computedCache[name] = getComputedStyle(document.body)
+    .getPropertyValue(name)
+    .trim()
   return computedCache[name]
 }
 
@@ -888,7 +890,7 @@ const injects = {
         attr: 'boxShadow',
         type: 'number',
         max: 20,
-        parser: (v) => parseInt(v.split(' ').pop(), 10),
+        parser: v => parseInt(v.split(' ').pop(), 10),
         desc: '聚焦发散光宽度',
       },
       {

@@ -7,8 +7,8 @@ import { getUidStr } from '@/utils/uid'
 import { hidableClass } from '@/styles'
 
 const context = createReactContext()
-export const consumer = (Origin) => (props) => (
-  <context.Consumer>{(value) => <Origin {...value} {...props} />}</context.Consumer>
+export const consumer = Origin => props => (
+  <context.Consumer>{value => <Origin {...value} {...props} />}</context.Consumer>
 )
 
 /**
@@ -18,7 +18,7 @@ export const consumer = (Origin) => (props) => (
  * @param duration
  * @param display
  */
-export default function (Component, { type = ['fade'], duration = 360, display = 'block' }) {
+export default function(Component, { type = ['fade'], duration = 360, display = 'block' }) {
   const hasCollapse = type.indexOf('collapse') >= 0
   const needTransform = type.indexOf('scale-y') >= 0
 

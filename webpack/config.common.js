@@ -5,9 +5,11 @@ const webpack = require('webpack')
 
 module.exports = function getCommon(config) {
   const lessLoader = [
-    {
-      loader: MiniCssExtractPlugin.loader,
-    },
+    // 压缩有问题 是样式失效
+    // {
+    //   loader: MiniCssExtractPlugin.loader,
+    // },
+    'style-loader',
     {
       loader: 'css-loader',
     },
@@ -89,7 +91,7 @@ module.exports = function getCommon(config) {
 
         {
           test: /\.less$/,
-          use: config.DEV ? 'ignore-loader' : lessLoader,
+          use: lessLoader, // config.DEV ? 'ignore-loader' : lessLoader, // 注意这里使样式失效了
         },
 
         {

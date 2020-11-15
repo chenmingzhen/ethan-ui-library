@@ -23,7 +23,7 @@ function getOption(options, key) {
  * @param options skip 跳过比较的值 deep 需要深度比较的值
  * @returns {boolean}
  */
-export default function (objA, objB, options = {}) {
+export default function(objA, objB, options = {}) {
   if (is(objA, objB)) {
     return true
   }

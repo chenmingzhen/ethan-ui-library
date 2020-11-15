@@ -36,7 +36,7 @@ function convertHexToDecimal(h) {
 }
 
 // string to rgba {}
-const parse = (color) => {
+const parse = color => {
   color = color.toLowerCase()
   let match
   if ((match = MATCH.rgb.exec(color))) {
@@ -78,14 +78,14 @@ const parse = (color) => {
   return false
 }
 
-const toRGB = (input) => {
+const toRGB = input => {
   if (!input || typeof input !== 'string') return ''
   const color = parse(input)
   if (!color) return ''
   return color.a ? `rgba(${color.r},${color.g},${color.b},${color.a})` : `rgb(${color.r},${color.g},${color.b})`
 }
 
-const isString = (string) => {
+const isString = string => {
   if (!string) {
     console.error(new Error('the color is empty'))
   }
@@ -96,7 +96,7 @@ const isString = (string) => {
   return true
 }
 
-const dealPointZero = (string) => {
+const dealPointZero = string => {
   const num = string.toFixed(1)
   const reg = /\.0*$/
   if (reg.test(num)) return floor(num)
@@ -107,7 +107,7 @@ const dealPointZero = (string) => {
  * parse Hex to int
  * @param {*} value Hex number
  */
-const parseHex = (value) => parseInt(value, 16)
+const parseHex = value => parseInt(value, 16)
 
 /**
  * format the hex array
@@ -192,7 +192,7 @@ const translateHsl = (matchs, a) => {
   return a ? `rgba(${r}, ${g}, ${b}, ${a})` : `rgb(${r}, ${g}, ${b})`
 }
 
-const isDarkRgb = (color) => {
+const isDarkRgb = color => {
   const matchs = MATCH.rgb.exec(color) || MATCH.rgba.exec(color)
   if (matchs) {
     const [, r, g, b] = matchs
@@ -264,7 +264,7 @@ const toHsl = (rgb, _, a) => {
   return a ? `hsla(${h}, ${s}, ${l}, ${a})` : `hsl(${h}, ${s}, ${l})`
 }
 
-const rgbTranlate = (target) => (rgb, noAlpha) => {
+const rgbTranlate = target => (rgb, noAlpha) => {
   if (!isString(rgb)) return ''
   let matchs
 

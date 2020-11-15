@@ -42,7 +42,7 @@ class Gallery extends PureComponent {
   handleClick(direction) {
     const { length } = this.props.images
     this.setState(
-      immer((draft) => {
+      immer(draft => {
         draft.current += direction
         if (draft.current < 0) draft.current = 0
         else if (draft.current >= length) draft.current = length - 1

@@ -86,6 +86,7 @@ router.get(config.dev.scriptPath, async (ctx, next) => {
       url: `http://localhost:${config.dev.webpackPort}/${url}`,
       method: 'GET',
     }
+    ctx.set('Access-Control-Allow-Origin', '*')
     console.log(ctx.url, options)
     ctx.body = request(options)
   }
@@ -112,7 +113,7 @@ router.get('/*', async ctx => {
   const scripts = [
     ...(config.dev.scripts || []),
     ...Object.keys(config.webpack.entry).map(s => prepath.replace('*.*', `${s}.js`)),
-    '__css_hot_loader.js',
+    '/__css_hot_loader.js',
   ]
   const styles = config.dev.styles || []
   ctx.type = 'text/html; charest=utf-8'
@@ -134,5 +135,3 @@ app.listen(config.dev.publishPort, () => {
   const ps = config.dev.publishPort === 80 ? '' : `:${config.dev.publishPort}`
   console.log(`server running on http://localhost${ps}`)
 })
-
-

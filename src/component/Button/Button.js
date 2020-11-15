@@ -11,11 +11,11 @@ class Button extends PureComponent {
   getChildren() {
     const { children, loading } = this.props
     if (!children) return children
-    const parsed = React.Children.map(wrapSpan(children), (item) => {
+    const parsed = React.Children.map(wrapSpan(children), item => {
       // 对 loading情况做处理 如果是loading 去除Icon
       if (loading && isValidElement(item) && item?.type?.isEthanIcon) return null
       return item
-    }).filter((v) => v !== null)
+    }).filter(v => v !== null)
     return parsed
   }
 

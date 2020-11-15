@@ -65,7 +65,7 @@ export default curry(
       }
 
       handleMouseMove(e) {
-        this.setState((prev) => {
+        this.setState(prev => {
           let x = prev.x + e.movementX
           let y = prev.y + e.movementY
           if (this.handlerPos.right + x < DIS_LIMIT || this.handlerPos.left + x > docSize.width - DIS_LIMIT) {

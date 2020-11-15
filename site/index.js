@@ -1,13 +1,8 @@
-import React, { useCallback, useState } from 'react'
+import React from 'react'
 import ReactDOM from 'react-dom'
+import '../src/styles/normalize.less'
+import './styles/index.less'
 
-const Demo = () => {
-  const [time, setTime] = useState(new Date().getTime())
+import App from './App'
 
-  const click = useCallback(() => {
-    setTime(new Date().getTime())
-  }, [time])
-  return <div onClick={click}>{time}</div>
-}
-
-ReactDOM.render(<Demo />, document.getElementById('root'))
+ReactDOM.render(<App />, document.getElementById('root'))

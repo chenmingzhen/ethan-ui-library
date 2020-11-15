@@ -7,7 +7,7 @@ import { getUidStr } from '@/utils/uid'
 import { curry } from '@/utils/func'
 
 export default curry(
-  (Origin) =>
+  Origin =>
     class Resizable extends React.PureComponent {
       // eslint-disable-next-line react/static-property-placement
       static propTypes = {
@@ -64,7 +64,7 @@ export default curry(
         let y = e.movementY
         if (!this.active) return
         this.setState(
-          immer((draft) => {
+          immer(draft => {
             x += draft.x
             y += draft.y
             if (this.active.indexOf('e') >= 0) draft.x = x
@@ -95,7 +95,7 @@ export default curry(
         this.handlers = new Map()
         // ❗❗❗ different github version
         // 这里添加;的原因是 因为上面Map() 这里是数组 上面又没有 怕压缩出错 加一个分号
-        ;['e', 's', 'se'].forEach((dir) => {
+        ;['e', 's', 'se'].forEach(dir => {
           const handler = document.createElement('div')
           const action = this.handleMouseDown.bind(this, dir)
           handler.className = resizableClass('handler', `handler-${dir}`)

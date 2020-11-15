@@ -15,7 +15,7 @@ class ButtonGroup extends PureComponent {
 
     return (
       <div className={className}>
-        {Children.toArray(children).map((child) => {
+        {Children.toArray(children).map(child => {
           // 如果传入非Button 提示警告 不渲染非Button的元素
           if (child?.type?.displayName !== 'EthanButton') {
             console.warn('please put the Button under ButtonGroup without others dom')

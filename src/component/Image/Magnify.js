@@ -71,7 +71,7 @@ class Magnify extends PureComponent {
     const { clientX, clientY } = e
 
     this.setState(
-      immer((state) => {
+      immer(state => {
         state.status = status
         state.style = status === 0 ? { maxHeight, maxWidth } : undefined
       }),
@@ -101,7 +101,7 @@ class Magnify extends PureComponent {
       <div
         onClick={this.handleResize}
         onMouseMove={onMouseMove}
-        ref={(el) => {
+        ref={el => {
           this.element = el
         }}
         style={style}

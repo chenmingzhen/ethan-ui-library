@@ -1,7 +1,7 @@
 import { destroy, getComponent, closeWithAnimation } from './messager'
 
 // 构造函数
-const create = (type) => async (content, duration = 3, options = {}) => {
+const create = type => async (content, duration = 3, options = {}) => {
   const { onClose, position = 'top', title, className = '', top = 'auto' } = options
 
   const find = ['top', 'middle', 'top-left', 'top-right', 'bottom-left', 'bottom-right', 'loading'].indexOf(position)
@@ -16,7 +16,7 @@ const create = (type) => async (content, duration = 3, options = {}) => {
   let e
   let i
 
-  await getComponent(position).then((messager) => {
+  await getComponent(position).then(messager => {
     const { entity, id } = messager.addMessage({
       content,
       duration,
@@ -47,15 +47,15 @@ export default {
   danger: create('danger'),
   error: create('danger'),
   loading: create('loading'),
-  close: (position) => {
+  close: position => {
     if (position) destroy(position)
     else {
-      ;['top', 'middle', 'top-left', 'top-right', 'bottom-left', 'bottom-right'].forEach((c) => {
+      ;['top', 'middle', 'top-left', 'top-right', 'bottom-left', 'bottom-right'].forEach(c => {
         destroy(c)
       })
     }
   },
-  closeAll: (position) => {
+  closeAll: position => {
     closeWithAnimation(position)
   },
 }

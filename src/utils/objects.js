@@ -11,15 +11,15 @@ const PATH_MODE = {
 }
 
 // obj以js entries 的风格转  [key, value]
-export const entries = (obj) => {
+export const entries = obj => {
   if (!obj) return []
   const keys = Object.keys(obj)
-  return keys.map((key) => [key, obj[key]])
+  return keys.map(key => [key, obj[key]])
 }
 
-export const objectValues = (obj) => {
+export const objectValues = obj => {
   if (!obj) return []
-  return Object.keys(obj).map((k) => obj[k])
+  return Object.keys(obj).map(k => obj[k])
 }
 
 export function pathGenerator(raw) {
@@ -58,13 +58,13 @@ export const deepMerge = (target = {}, source, { clone, removeUndefined, skipUnd
 
   const dest = {}
   if (isMergeable(target)) {
-    Object.keys(target).forEach((k) => {
+    Object.keys(target).forEach(k => {
       dest[k] = clone ? deepMerge({}, target[k], clone) : target[k]
       if (removeUndefined && dest[k] === undefined) delete dest[k]
     })
   }
 
-  Object.keys(source).forEach((k) => {
+  Object.keys(source).forEach(k => {
     if (isMergeable(source[k]) && isMergeable(target[k])) {
       dest[k] = deepMerge(target[k], source[k], clone)
     } else {

@@ -21,7 +21,7 @@ const listPosition = ['drop-down', 'drop-up']
 const pickerPosition = ['left-bottom', 'left-top', 'right-bottom', 'right-top']
 const dropdownPosition = ['bottom-left', 'bottom-right', 'top-left', 'top-right']
 
-export default function (List) {
+export default function(List) {
   class AbsoluteList extends Component {
     // eslint-disable-next-line react/state-in-constructor
     state = {
@@ -66,7 +66,10 @@ export default function (List) {
         style[widthKey] = rect.width
       }
       if (dropdownPosition.includes(position)) {
-        position = position.split('-').reverse().join('-')
+        position = position
+          .split('-')
+          .reverse()
+          .join('-')
       }
       if (listPosition.includes(position)) {
         style.left = rect.left + docScroll.left

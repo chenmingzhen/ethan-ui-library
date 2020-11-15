@@ -14,11 +14,11 @@ export default (style, module, prefix = config.prefix) => (...args) => {
   const ns = `${prefix}${module ? `-${module}` : '-'}`
 
   // _ means default(ns)
-  let list = className.split(' ').map((item) => (item === '_' ? ns : `${ns}-${item}`))
+  let list = className.split(' ').map(item => (item === '_' ? ns : `${ns}-${item}`))
 
   // If you turn on modularity
   if (config.cssModule) {
-    list = list.map((item) => style[item] || item)
+    list = list.map(item => style[item] || item)
   }
   return list.join(' ')
 }

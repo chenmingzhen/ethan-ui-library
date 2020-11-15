@@ -1,4 +1,4 @@
-module.exports = function (content) {
+module.exports = function(content) {
   let parsed = ''
   let matched
   // eslint-disable-next-line no-cond-assign
@@ -10,7 +10,12 @@ module.exports = function (content) {
     let origin = line.replace(varStr, defaultValue)
     // special: box-shadow: ... var(--name, #fff), ....;
     if (origin.startsWith('box-shadow:') && origin.indexOf('(') > 0 && !/\(.+\)/.test(origin)) {
-      origin = `${origin.split(')').join('').split(';')[0]});`
+      origin = `${
+        origin
+          .split(')')
+          .join('')
+          .split(';')[0]
+      });`
     }
     const replaced = `${origin}\n${line}`
     parsed += replaced

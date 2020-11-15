@@ -3,7 +3,7 @@ const LINE_HEIGHT = 40
 const PAGE_HEIGHT = 800
 const DELTA_LENGTH = 120
 
-export default function (event) {
+export default function(event) {
   let sX = 0
   let sY = 0
   let pX = 0

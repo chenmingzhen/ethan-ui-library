@@ -10,7 +10,7 @@ export function curry(f, ...args) {
 // 整合context  左边层次最高 funcs从左边一直包裹到右边
 export function compose(...funcs) {
   if (funcs.length === 0) {
-    return (arg) => arg
+    return arg => arg
   }
   const last = funcs[funcs.length - 1]
   const rest = funcs.slice(0, -1)

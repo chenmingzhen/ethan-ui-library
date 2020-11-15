@@ -40,7 +40,7 @@ export function closeWithAnimation(type) {
 }
 
 export function getComponent(type) {
-  return new Promise((resolve) => {
+  return new Promise(resolve => {
     const component = components[type]
     // 判断有无这个type(position)的容器  每个type对应一个所有组件容器
     if (component) {
@@ -50,7 +50,7 @@ export function getComponent(type) {
       ReactDOM.render(
         <Container
           /* resolve这个实例回去 并记录在组件容器中 */
-          ref={(comp) => {
+          ref={comp => {
             components[type] = comp
             resolve(comp)
           }}

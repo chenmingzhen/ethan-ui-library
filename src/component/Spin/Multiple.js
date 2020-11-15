@@ -120,8 +120,8 @@ function twelveCircle(prop, type) {
   )
 }
 
-export const ScaleCircle = (opt) => twelveCircle(opt, 'scale')
-export const FadingCircle = (opt) => twelveCircle(opt, 'fade')
+export const ScaleCircle = opt => twelveCircle(opt, 'scale')
+export const FadingCircle = opt => twelveCircle(opt, 'fade')
 
 export function ThreeBounce(prop) {
   const { value, unit } = formatSize(prop.size)

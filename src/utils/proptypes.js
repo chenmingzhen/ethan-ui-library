@@ -24,7 +24,7 @@ export function getProps(PropTypes, ...args) {
     ]),
   }
 
-  args.forEach((name) => {
+  args.forEach(name => {
     const prop = propSets[name]
     if (prop) props[name] = prop
   })
