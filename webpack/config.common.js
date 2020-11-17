@@ -5,7 +5,7 @@ const webpack = require('webpack')
 
 module.exports = function getCommon(config) {
   const lessLoader = [
-    // 压缩有问题 是样式失效
+    // dev 环境 忽然了 less-loader
     // {
     //   loader: MiniCssExtractPlugin.loader,
     // },
@@ -57,9 +57,10 @@ module.exports = function getCommon(config) {
   return {
     optimization: {
       minimizer: [
+        // UglifyJS Webpack Plugin插件用来缩小（压缩优化）js文件
         new UglifyWebpackPlugin({
-          cache: true,
-          parallel: true,
+          cache: true, // 是否启用文件缓存 ，默认缓存在node_modules/.cache/uglifyjs-webpack-plugin.目录
+          parallel: true, // 使用多进程并行运行来提高构建速度
           uglifyOptions: {
             output: {
               comments: false,
@@ -77,6 +78,7 @@ module.exports = function getCommon(config) {
       extensions: ['.js', '.json', '.jsx'],
     },
 
+    // 外部loader和自定义loader位置 ignore-loader例子
     resolveLoader: {
       modules: ['node_modules', 'webpack/loaders'],
     },

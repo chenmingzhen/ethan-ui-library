@@ -1,4 +1,5 @@
-const request = require('request')
+// const request = require('request')
+const got = require('got')
 const Koa = require('koa')
 const send = require('koa-send')
 const Router = require('koa-router')
@@ -21,12 +22,13 @@ require('./scripts/dev-site')
 new WebpackDevServer(webpack(webpackConfig), {
   hot: true,
   quiet: false,
-  // noInfo: true,
+  host: '0.0.0.0',
+  port: '3001',
+  public: '0.0.0.0:3001',
   stats: {
     colors: true,
-    // children: false,
   },
-}).listen(config.dev.webpackPort, 'localhost', err => {
+}).listen(config.dev.webpackPort, '0.0.0.0', err => {
   if (err) {
     console.log(err)
   }
@@ -88,7 +90,8 @@ router.get(config.dev.scriptPath, async (ctx, next) => {
     }
     ctx.set('Access-Control-Allow-Origin', '*')
     console.log(ctx.url, options)
-    ctx.body = request(options)
+    // ctx.body = request(options)
+    ctx.body = await got(options.url).then(data => data.body)
   }
 })
 
@@ -99,7 +102,8 @@ router.get('/*.hot-update.js(on)?', async ctx => {
     method: 'GET',
   }
   ctx.set('Access-Control-Allow-Origin', '*')
-  ctx.body = request(options)
+  // ctx.body = request(options)
+  ctx.body = await got(options.url).then(data => data.body)
 })
 
 router.get('/*', async ctx => {
@@ -116,7 +120,7 @@ router.get('/*', async ctx => {
     '/__css_hot_loader.js',
   ]
   const styles = config.dev.styles || []
-  ctx.type = 'text/html; charest=utf-8'
+  ctx.type = 'text/html; charset=utf-8'
   // 页面真正的渲染处理 通过ejs渲染处理 将参数传给模板
   ctx.body = await ejs.renderFile(`./site/index.html`, {
     scripts,

@@ -41,8 +41,6 @@ import moveableLess from './moveable.less'
 import resizableLess from './resizable.less'
 import lazyloadLess from './lazyload.less'
 
-console.log(alertLess)
-
 export const alertClass = genaration(alertLess, 'alert')
 export const buttonClass = genaration(buttonLess, 'button')
 export const dropdownClass = genaration(dropdownLess, 'dropdown')

@@ -83,6 +83,4 @@ for (const [key, value] of entries(accessors)) {
   genAccessors(value, cssInject[key])
 }
 
-console.log(accessors)
-
 export default accessors

@@ -2,7 +2,7 @@ const path = require('path')
 const fs = require('fs')
 
 const versions = {}
-;['react', 'react-dom', 'prop-types', 'jszip', 'docsearch.js'].forEach((lib) => {
+;['react', 'react-dom', 'prop-types', 'jszip', 'docsearch.js'].forEach(lib => {
   const pkg = JSON.parse(fs.readFileSync(path.resolve(__dirname, 'node_modules/', lib, 'package.json')))
   versions[lib] = pkg.version
 })
@@ -20,8 +20,7 @@ module.exports = {
       `/jszip@${versions.jszip}/dist/jszip.min.js`,
     ],
     styles: [
-      // '/prism/1.15.0/themes/prism.min.css',
-      `/docsearch.js@${versions['docsearch.js']}/dist/cdn/docsearch.css`,
+      /* `/docsearch.js@${versions['docsearch.js']}/dist/cdn/docsearch.css` */
     ],
   },
   themes: ['default'], // themes: ['default', 'antd', 'antd2', 'ethan'],
@@ -41,6 +40,7 @@ module.exports = {
       '@': path.resolve(__dirname, 'src'),
     },
     devtool: 'cheap-module-source-map',
+    // 不打包的模块
     externals: {
       react: {
         root: 'React',
