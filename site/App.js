@@ -48,7 +48,6 @@ const App = () => {
     <Router history={history}>
       <div>
         <Header versions={versions} />
-
         <div className={mainClass('body')}>
           <Suspense fallback={<Loading />}>
             <Switch />
