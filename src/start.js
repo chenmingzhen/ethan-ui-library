@@ -1,10 +1,10 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
-import { Button } from '@/index'
+import Demo from '@/component/Tooltip/example'
 
 ReactDOM.render(
   <div>
-    <Button>点我</Button>
+    <Demo />
   </div>,
   document.getElementById('root')
 )
