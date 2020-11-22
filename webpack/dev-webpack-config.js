@@ -13,6 +13,7 @@ module.exports = {
     open: true,
     port: 8080,
   },
+  devtool: 'cheap-module-source-map',
   module: {
     rules: [
       {
