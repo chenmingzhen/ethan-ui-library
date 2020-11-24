@@ -1,6 +1,6 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
-import Demo from '@/component/Tooltip/example'
+import Demo from '@/component/Popover/example'
 
 ReactDOM.render(
   <div>
