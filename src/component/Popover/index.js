@@ -1,15 +1,9 @@
-import React from 'react'
-import Container from '../Tooltip/Container'
-import * as events from './event'
-import Panel from './Panel'
-
-const Component = Container(events)
-
-function Popover(props) {
-  if (props.content) return <Component {...props} />
-  return <Panel {...props} />
-}
+import Confirm from './Confirm'
+import Popover from './Popover'
 
 Popover.displayName = 'EthanPopover'
+
+Popover.Confirm = Confirm
+Popover.Confirm.displayName = 'EthanPopoverConfirm'
 
 export default Popover

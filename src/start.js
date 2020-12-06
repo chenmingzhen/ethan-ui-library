@@ -1,10 +1,10 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
-import Demo from '@/component/Popover/example'
+import { ConfirmDemo } from '@/component/Popover/example'
 
 ReactDOM.render(
   <div>
-    <Demo />
+    <ConfirmDemo />
   </div>,
   document.getElementById('root')
 )

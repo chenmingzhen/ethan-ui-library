@@ -26,7 +26,7 @@ export function hide(delay = 500) {
     div.style.display = 'none'
     div.className = ''
     currentId = undefined
-  }, 500)
+  }, delay)
 }
 
 const hide0 = hide.bind(null, 0)

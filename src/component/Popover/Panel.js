@@ -71,6 +71,7 @@ class Panel extends Component {
   getPositionStr() {
     let { position } = this.props
     const { priorityDirection } = this.props
+
     if (position) return position
 
     const rect = this.parentElement.getBoundingClientRect()
@@ -107,11 +108,15 @@ class Panel extends Component {
 
   getContainer() {
     const { getPopupContainer } = this.props
+
     let container
+
     if (getPopupContainer) container = getPopupContainer()
     if (container && isDOMElement(container)) {
       const child = document.createElement('div')
+
       child.setAttribute('style', ' position: absolute; top: 0px; left: 0px; width: 100% ')
+
       return container.appendChild(child)
     }
     return document.body
@@ -120,6 +125,7 @@ class Panel extends Component {
   // eslint-disable-next-line react/sort-comp
   bindEvents() {
     const { trigger } = this.props
+
     if (trigger === 'hover') {
       this.parentElement.addEventListener('mouseenter', this.handleShow)
       this.parentElement.addEventListener('mouseleave', this.handleHide)
@@ -143,6 +149,7 @@ class Panel extends Component {
     if (this.parentElement.contains(e.target)) return
     if (this.element.contains(e.target)) return
     if (getParent(e.target, `.${popoverClass('_')}`)) return
+
     this.handleHide(0)
   }
 
@@ -154,6 +161,10 @@ class Panel extends Component {
     })
   }
 
+  /**
+   * 是否滚动关闭Popover
+   * @param {}} show
+   */
   bindScrollDismiss(show) {
     const { scrollDismiss } = this.props
     if (!scrollDismiss) return
@@ -165,14 +176,22 @@ class Panel extends Component {
     method.call(target, 'scroll', this.handleHide)
   }
 
+  /**
+   * 设置显示
+   * @param {*} show
+   */
   setShow(show) {
     const { onVisibleChange, mouseEnterDelay, mouseLeaveDelay, trigger, onChildStateChange } = this.props
     const delay = show ? mouseEnterDelay : mouseLeaveDelay
+
     if (onChildStateChange) onChildStateChange(show)
+
     this.delayTimeout = setTimeout(
       () => {
         if (onVisibleChange) onVisibleChange(show)
+
         this.setState({ show })
+
         if (show && this.props.onOpen) this.props.onOpen()
         if (!show && this.props.onClose) this.props.onClose()
       },
@@ -180,27 +199,51 @@ class Panel extends Component {
     )
   }
 
+  /**
+   * 子元素显示状态改变
+   * @param {*} state
+   */
   childStateChange(state) {
     this.childStatus = state
   }
 
+  /**
+   * 处理显示对应事件 最终调用setShow
+   */
   handleShow() {
     if (this.delayTimeout) clearTimeout(this.delayTimeout)
     if (this.state.show) return
+
     this.bindScrollDismiss(true)
+
     document.addEventListener('mousedown', this.clickAway)
+
     this.setShow(true)
   }
 
   handleHide(e) {
     const { parentClose } = this.props
+
     if (this.childStatus) return
+
+    // relatedTarget 事件属性返回与事件的目标节点相关的节点。
+    //
+    // 对于 mouseover 事件来说，该属性是鼠标指针移到目标节点上时所离开的那个节点。
+    //
+    // 对于 mouseout 事件来说，该属性是离开目标时，鼠标指针进入的节点。
+    //
+    // 对于其他类型的事件来说，这个属性没有用。
+
+    // 如果离开时的Dom还是在popover中 不处理
     if (e && getParent(e.relatedTarget, `.${popoverClass('inner')}`)) return
     if (this.delayTimeout) clearTimeout(this.delayTimeout)
 
     document.removeEventListener('mousedown', this.clickAway)
+
     this.bindScrollDismiss(false)
+
     this.setShow(false)
+
     if (parentClose) parentClose()
   }
 
@@ -209,7 +252,7 @@ class Panel extends Component {
     const show = typeof visible === 'boolean' ? visible : this.state.show
 
     if ((!this.isRendered && !show) || !this.parentElement || !children) {
-      return <noscript ref={this.placeholderRef} />
+      return <noscript ref={this.placeholderRef}>Panel未被执行</noscript>
     }
 
     this.isRendered = true
@@ -222,6 +265,7 @@ class Panel extends Component {
 
     this.updatePosition(position)
 
+    // 控制容器的显示
     style.display = show ? 'block' : 'none'
 
     if (background) style.background = background
@@ -229,6 +273,7 @@ class Panel extends Component {
 
     this.element.className = classnames(popoverClass('_', position, type, parentClose && 'inner'), this.props.className)
 
+    // children confirm中的渲染的close就是由children(this.handleHide)提供
     let childrened = isFunc(children) ? children(this.handleHide) : children
 
     if (typeof childrened === 'string') childrened = <span className={popoverClass('text')}>{childrened}</span>
