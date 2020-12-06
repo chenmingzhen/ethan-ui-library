@@ -1,10 +1,10 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
-import { ConfirmDemo } from '@/component/Popover/example'
+import Progress from '@/component/Progress/example'
 
 ReactDOM.render(
   <div>
-    <ConfirmDemo />
+    <Progress />
   </div>,
   document.getElementById('root')
 )
