@@ -1,11 +1,6 @@
 {
-  "extends": [
-    "airbnb",
-    "prettier"
-  ],
-  "plugins": [
-    "prettier"
-  ],
+  "extends": ["airbnb", "prettier"],
+  "plugins": ["prettier"],
   "parser": "babel-eslint",
   "parserOptions": {
     "sourceType": "module",
@@ -38,10 +33,7 @@
     "react/jsx-indent": 0,
     "react/no-find-dom-node": 0,
     "react/require-default-props": 0,
-    "semi": [
-      2,
-      "never"
-    ],
+    "semi": [2, "never"],
     "global-require": 0,
     "import/no-duplicates": 0,
     "import/no-extraneous-dependencies": 0,
@@ -66,11 +58,7 @@
     "jsx-a11y/no-static-element-interactions": 0,
     "jsx-a11y/click-events-have-key-events": 0,
     "react/destructuring-assignment": 0,
-    "linebreak-style": [
-      0,
-      "error",
-      "windows"
-    ],
+    "linebreak-style": [0, "error", "windows"],
     //
     // const { loading, children } = props
     "react/prop-types": 0,
@@ -79,10 +67,7 @@
     "react/jsx-filename-extension": [
       1,
       {
-        "extensions": [
-          ".js",
-          ".jsx"
-        ]
+        "extensions": [".js", ".jsx"]
       }
     ],
     "react/jsx-props-no-spreading": 0,
