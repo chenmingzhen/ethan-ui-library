@@ -99,3 +99,25 @@ export const deepGet = (target, path, options = {}) => {
 
   return current
 }
+
+export const filterProps = (obj, props = []) => {
+  if (!isObject(obj)) return obj
+
+  if (typeof props === 'function') {
+    const prediction = props
+
+    props = []
+
+    Object.keys(obj).forEach(k => {
+      if (prediction(obj[k])) props.push(k)
+    })
+  }
+
+  const newObj = {}
+
+  props.forEach(k => {
+    newObj[k] = obj[k]
+  })
+
+  return newObj
+}
