@@ -25,7 +25,7 @@ export const formProvider = Origin => {
       // this.groupValidate = this.groupValidate.bind(this)
     }
 
-    getRuleFromString(str) {
+    getRulesFromString(str) {
       const { rule } = this.props
 
       if (!isRule(rule)) {
