@@ -24,21 +24,37 @@
 # 🎉完成
 
 - [x] Alert
-- [x] Message
-- [x] icons
-- [x] Spin
+- [x] Button
+- [x] Card
 - [x] Carousel
 - [x] Dropdown
+- [x] icons
+- [x] Image
 - [x] List
-- [x] Card
+- [x] Message
+- [x] Popover
+- [x] Spin
+- [x] Tooltip
+
+
+
 
 # 📦 运行
 
 ```bash
 npm install
+
+or
+
+yarn install
 ```
 
+# 💻 Open web site
 ```bash
 npm run start
+
+or 
+
+yarn start
 ```
 
