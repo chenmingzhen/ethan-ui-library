@@ -5,6 +5,7 @@ export default function(value) {
       value
         // 修改部分
         .replace(/\\["\\\bfnrtu]/g, '@')
+        // eslint-disable-next-line no-useless-escape
         .replace(/"[^"\\\n\r]*"|true|false|null|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?/g, ']')
         .replace(/(?:^|:|,)(?:\s*\[)+/g, '')
     )

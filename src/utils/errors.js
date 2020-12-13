@@ -9,13 +9,11 @@ export class FormError extends Error {
 
 export const wrapFormError = error => {
   if (error instanceof Error) {
-    throw new FormError(error.message)
+    return new FormError(error.message)
   }
-
   if (Array.isArray(error)) {
     return error.map(wrapFormError)
   }
-
   return error
 }
 
@@ -24,11 +22,8 @@ export const promiseAll = (ops, isForm = true) =>
     Promise.all(ops)
       .then(res => {
         const error = res.find(r => r !== true)
-
         if (error) reject(error)
-        else {
-          resolve(true)
-        }
+        else resolve(true)
       })
       .catch(e => {
         reject(isForm ? wrapFormError(e) : e)
@@ -40,6 +35,5 @@ export const isSameError = (a, b) => {
   if (a instanceof Error && b instanceof Error) {
     return a.message === b.message
   }
-
   return a === b
 }

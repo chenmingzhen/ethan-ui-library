@@ -40,7 +40,7 @@ function getRule(rules, props = {}) {
   throw err
 }
 
-const validate = (value, formdata, rules, props) =>
+const validate = (value, formData, rules, props) =>
   new Promise((resolve, reject) => {
     const $rules = flattenArray(rules)
     const rule = $rules.shift()
@@ -49,7 +49,7 @@ const validate = (value, formdata, rules, props) =>
       return
     }
     if (!rule) {
-      validate(value, formdata, $rules, props).then(resolve, reject)
+      validate(value, formData, $rules, props).then(resolve, reject)
       return
     }
 
@@ -59,7 +59,7 @@ const validate = (value, formdata, rules, props) =>
         return
       }
 
-      validate(value, formdata, $rules, props).then(resolve, reject)
+      validate(value, formData, $rules, props).then(resolve, reject)
     }
 
     const fn = getRule(rule, props)
@@ -67,7 +67,7 @@ const validate = (value, formdata, rules, props) =>
     if (fn === rule && (value instanceof Datum.List || value instanceof Datum.Form)) {
       val = value.getValue()
     }
-    const cb = fn(val, formdata, callback)
+    const cb = fn(val, formData, callback)
     if (cb && cb.then) {
       cb.then(callback.bind(null, true)).catch(e => {
         reject(wrapFormError(e))
