@@ -30,6 +30,7 @@
 - [x] Dropdown
 - [x] icons
 - [x] Image
+- [x] Input
 - [x] List
 - [x] Message
 - [x] Popover

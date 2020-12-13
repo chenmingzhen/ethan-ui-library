@@ -1,10 +1,10 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
-import Progress from '@/component/Progress/example'
+import Input from '@/component/Input/example'
 
 ReactDOM.render(
   <div>
-    <Progress />
+    <Input />
   </div>,
   document.getElementById('root')
 )
