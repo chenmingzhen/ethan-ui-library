@@ -74,6 +74,8 @@
     // Object asign 错误
     "prefer-object-spread": 0,
     "no-unused-vars": 1,
-    "no-use-before-define": 0
+    "no-use-before-define": 0,
+    // 顺序排序方法 关闭
+    "react/sort-comp": 0
   }
 }
