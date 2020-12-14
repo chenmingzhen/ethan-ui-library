@@ -171,7 +171,7 @@ export const fieldSetConsumer = Origin => props => (
       <Origin
         {...props}
         // eslint-disable-next-line
-                name={extendName(path, props.name)}
+        name={extendName(path, props.name)}
         innerFormNamePath={path}
         fieldSetValidate={val}
       />

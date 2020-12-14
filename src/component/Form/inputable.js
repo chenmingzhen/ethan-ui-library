@@ -16,6 +16,13 @@ import { loopConsumer } from './Loop'
 import { fieldSetConsumer } from './FieldSet'
 
 const types = ['formDatum', 'disabled', 'combineRules']
+
+// formConsumer(types) 先返回一个未执行的方法  compose进行洋葱操作,返回的是一个方法,下面将类传进consumer作为参数
+// 从fieldSetConsumer开始 把类放进去，返回一个HocConsumer包裹的组件，再传递给loopConsumer，itemConsumer，
+// 最后经过fieldSetConsumer，loopConsumer，itemConsumer包装的组件 传递给formConsumer(types)
+// formConsumer(types)得到的是一个柯里化的函数，第一个keys参数已经是types，包装三层包装传递进来的组件是第二个参数Origin 第三个参数是外界传进来的props
+// 最终导出一个 inputable的高阶组件
+// types 走到formConsumer的keys
 const consumer = compose(formConsumer(types), itemConsumer, loopConsumer, fieldSetConsumer)
 
 const tryValue = (val, def) => (val === undefined ? def : val)
@@ -26,6 +33,8 @@ const beforeValueChange = curry((fn, value, datum) => {
   return newValue === undefined ? value : newValue
 })
 
+// Origin先通过fieldSetConsumer,loopConsumer,itemConsumer,经过formConsumer(types)最终生成一个只差props的函数
+// 外界将props传进来 就是一个完整的HOC
 export default curry(Origin =>
   consumer(
     class extends Component {

@@ -14,5 +14,6 @@ export function compose(...funcs) {
   }
   const last = funcs[funcs.length - 1]
   const rest = funcs.slice(0, -1)
+  // last(...args) 起始值
   return (...args) => rest.reduceRight((composed, f) => f(composed), last(...args))
 }

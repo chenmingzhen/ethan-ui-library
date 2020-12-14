@@ -91,6 +91,8 @@ export const formProvider = Origin => {
   return FormProvider
 }
 
+// 柯里化 变为方法,给compose中使用  ...args
+// 使用curry后 (...next) => curry(f.bind(f, ...args), ...next)
 export const formConsumer = curry((keys, Origin, props) => {
   const filterProps = value => {
     const cps = {}
