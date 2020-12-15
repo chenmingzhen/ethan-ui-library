@@ -20,21 +20,36 @@ class Input extends PureComponent {
     this.ref = el
   }
 
+  /**
+   * 检验是否为数字或输入多余的小数位
+   * @param value
+   * @returns {boolean}
+   */
   invalidNumber(value) {
     const { digits, type } = this.props
     if (type !== 'number') return false
 
+    // 在字符串中, \要多一个\进行转义
+
     let reg = '^-?\\d*'
     if (digits === undefined) {
       reg += '\\.?\\d*'
+      // 最终结果 ^-?\d*\.?\d*$
     } else if (digits > 0) {
       reg += `\\.?\\d{0,${digits}}`
+      // 最终结果 ^-?\d*\.?\d{0,digits}$
     }
     reg += '$'
+    console.log(reg)
     reg = new RegExp(reg)
     return !reg.test(value)
   }
 
+  /**
+   * input值改变
+   * @param e
+   * @param clearClick  clear清除组件的回调值
+   */
   handleChange(e, clearClick) {
     const { type, clearable } = this.props
     if (clearClick) {
@@ -49,7 +64,9 @@ class Input extends PureComponent {
 
   handleKeyUp(e) {
     const { onKeyUp, onEnterPress } = this.props
+    // enterLock false 证明是中文等输入情况
     if (e.keyCode === 13 && onEnterPress && !this.enterLock) {
+      console.log(1)
       onEnterPress(e.target.value, e)
     }
     if (onKeyUp) onKeyUp(e)
@@ -81,6 +98,10 @@ class Input extends PureComponent {
     return new Error(text)
   }
 
+  /**
+   * popover的提示info  info为数字则显示字数限制 方法则回调
+   * @returns {JSX.Element|null}
+   */
   renderInfo() {
     const { info } = this.props
     const notNumber = typeof info !== 'number'
@@ -95,6 +116,7 @@ class Input extends PureComponent {
 
     const isError = res instanceof Error
     const text = isError ? res.message : res
+    // 根据是否为超过字数限制 渲染不同的颜色
     return (
       <div key="info" style={{ minWidth: 'auto' }} className={inputClass('bottom-right', isError ? 'error' : 'tip')}>
         {text}
@@ -116,6 +138,10 @@ class Input extends PureComponent {
     } = this.props
     const value = this.props.value == null ? '' : this.props.value
 
+    // https://blog.csdn.net/u013096088/article/details/52873562
+    // 利用onCompositionStart,onCompositionEnd处理中文流的问题
+    // 中文模式 有输入法 点击回车后内容才会填充到输入框，但是点击回车会触发onKeyUp code=13的情况
+    // 需要onCompositionStart进行上锁
     return [
       <input
         {...cleanProps(other)}

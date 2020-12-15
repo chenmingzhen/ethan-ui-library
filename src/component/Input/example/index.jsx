@@ -16,9 +16,9 @@ const thirdStyle = { width: 300, marginBottom: 12 }
 export default function() {
   return (
     <>
-      <Input placeholder="input something" />
+      <Input placeholder="input something" info={value => `当前值为${value}`} />
 
-      <Input clearable placeholder="input something" />
+      <Input clearable placeholder="input something" info={11} />
 
       <div>
         <Input size="small" style={firstStyle} placeholder="small size" />

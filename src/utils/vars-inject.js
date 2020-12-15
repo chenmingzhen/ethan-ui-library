@@ -4,7 +4,7 @@ import { set as configSet } from '../config'
 import { entries } from './objects'
 import {
   paginationClass,
-  checkinputClass,
+  checkInputClass,
   tagClass,
   buttonClass,
   tooltipClass,
@@ -697,7 +697,7 @@ const injects = {
     conf: [
       {
         name: 'marginRight',
-        className: checkinputClass('_'),
+        className: checkInputClass('_'),
         attr: 'marginRight',
         type: 'number',
         parser: parseInt,
@@ -713,7 +713,7 @@ const injects = {
       },
       {
         name: 'color',
-        className: checkinputClass('_'),
+        className: checkInputClass('_'),
         attr: 'color',
         type: 'color',
         desc: '文字颜色',
@@ -807,7 +807,7 @@ const injects = {
       },
       {
         name: 'color',
-        className: checkinputClass('checkinput-radio-wrap'),
+        className: checkInputClass('checkinput-radio-wrap'),
         attr: 'color',
         type: 'color',
         desc: '文字颜色',
@@ -3599,7 +3599,7 @@ const injects = {
     conf: [
       {
         name: 'uncheckBg',
-        className: checkinputClass('switch'),
+        className: checkInputClass('switch'),
         attr: 'backgroundColor',
         type: 'color',
         desc: '关闭状态背景色',

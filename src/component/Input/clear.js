@@ -2,6 +2,9 @@ import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import { inputClass } from '@/styles'
 
+/**
+ * 清除按钮
+ */
 class Clear extends Component {
   constructor(props) {
     super(props)
