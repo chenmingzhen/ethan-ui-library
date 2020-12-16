@@ -13,7 +13,11 @@ const names = [
   'fieldSetValidate',
   'combineRules',
   'popoverProps',
+  'info',
 ]
+
+// Warning: Invalid value for prop `info` on <input>
+// react规定 在原始标签中，添加自定义属性不能是方法  info={()=>{}} 错误
 
 /**
  * delete some props if needed, will not modify the pass argument
