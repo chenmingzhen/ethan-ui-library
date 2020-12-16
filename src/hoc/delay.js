@@ -35,6 +35,7 @@ export default curry(
         return defaultDelay
       }
 
+      // onChange函数是用户的输入回调
       handleChange(value, ...args) {
         const delay = this.getDelay()
         if (delay === 0) {

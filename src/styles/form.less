@@ -161,7 +161,7 @@
   font-size: @font-size-base;
   line-height: @line-height-base;
   transition: border-color ease-in-out 0.15s, box-shadow ease-in-out 0.15s;
-  
+
   &-clear-wrapper {
     width: 16px;
 
@@ -298,7 +298,7 @@
     background: transparent;
     border-radius: 0;
     box-shadow: none;
-    
+
     &-disabled {
       .input-disabled()
     }
@@ -308,6 +308,9 @@
   @tip-fade-center: ~'@{input-prefix}-fade-center';
   @duration: 0.16s;
 
+  /**
+    popover蹦出效果
+   */
   @keyframes @tip-fade-center {
     0% {
       transform: scale(0.6) translateX(-50%);

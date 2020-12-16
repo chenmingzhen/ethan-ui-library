@@ -13,7 +13,7 @@ import paginationLess from './pagination.less'
 import breadcrumbLess from './breadcrumb.less'
 import iconLess from './icon.less'
 import menuLess from './menu.less'
-import checkinputLess from './checkinput.less'
+import checkInputLess from './checkinput.less'
 import formLess from './form.less'
 import inputLess from './form.less'
 import selectLess from './select.less'
@@ -53,7 +53,7 @@ export const paginationClass = genaration(paginationLess, 'pagination')
 export const breadcrumbClass = genaration(breadcrumbLess, 'breadcrumb')
 export const iconClass = genaration(iconLess, 'icon')
 export const menuClass = genaration(menuLess, 'menu')
-export const checkInputClass = genaration(checkinputLess, 'checkinput')
+export const checkInputClass = genaration(checkInputLess, 'checkinput')
 export const formClass = genaration(formLess, 'form')
 export const inputClass = genaration(inputLess, 'input')
 export const selectClass = genaration(selectLess, 'select')

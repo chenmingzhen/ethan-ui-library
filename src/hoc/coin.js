@@ -1,6 +1,7 @@
 import React, { PureComponent } from 'react'
 import PropTypes from 'prop-types'
 
+// coinType Number 以千位分隔符展示
 export default coinType => Origin =>
   class extends PureComponent {
     static propTypes = {
@@ -34,6 +35,7 @@ export default coinType => Origin =>
       const { showCoin } = this.state
       const { value } = this.props
       if (showCoin && (value || value === 0)) {
+        // reolace方法，第一个参数匹配的规则，第二个参数是匹配出来的结果，第二个回调的return 会传到第三个参数的值，以此类推
         return `${value}`.replace(/\d+/, n => n.replace(/(\d)(?=(\d{3})+$)/g, $1 => `${$1},`))
       }
       if (value === 0) return 0
@@ -73,6 +75,7 @@ export default coinType => Origin =>
     render() {
       const { coin, value, onFocus, onBlur, ...others } = this.props
 
+      // input组件 无form 执行第一个if
       if (!coin) return <Origin {...this.props} coin={undefined} />
       if (coinType === 'input' && this.props.type !== 'number') return <Origin {...this.props} coin={undefined} />
       return (

@@ -59,6 +59,7 @@ class Input extends PureComponent {
     let { value } = e.target
     if (type === 'number' && typeof value !== 'number') value = String(value).replace(/。/g, '.')
     if (this.invalidNumber(value)) return
+    // delay的中onChange
     this.props.onChange(value)
   }
 
@@ -95,11 +96,13 @@ class Input extends PureComponent {
     const { info } = this.props
     const text = `${value.length} / ${info}`
     if (value.length <= info) return text
+
+    // 超过字数限制 返回错误 后面捕获
     return new Error(text)
   }
 
   /**
-   * popover的提示info  info为数字则显示字数限制 方法则回调
+   * popover样式的提示info  info为数字则显示字数限制 方法则回调
    * @returns {JSX.Element|null}
    */
   renderInfo() {

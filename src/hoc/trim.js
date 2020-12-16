@@ -23,6 +23,10 @@ export default Origin =>
       return false
     }
 
+    /**
+     * 失焦 自动删除空白字符。
+     * @param e
+     */
     handleBlur(e) {
       const { value, onBlur, onChange } = this.props
       const trim = this.getTrim()
