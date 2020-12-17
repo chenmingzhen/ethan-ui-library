@@ -6,6 +6,9 @@ import { curry } from '@/utils/func'
 import Popover from '@/component/Popover'
 import { buttonClass, inputClass, popoverClass } from '../styles'
 
+/**
+ * inputBorder HOC 负责 input 的样式 tip信息
+ */
 export default curry(
   (options, Origin) =>
     class extends Component {
@@ -59,6 +62,11 @@ export default curry(
         if (onFocus) onFocus(event)
       }
 
+      /**
+       * 渲染错误信息或帮助等 由inputable检验传过来
+       * @param focus
+       * @returns {JSX.Element|null}
+       */
       renderHelp(focus) {
         const { error, tip, popover, popoverProps } = this.props
         const classList = ['input-tip']

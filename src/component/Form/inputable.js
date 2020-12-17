@@ -217,15 +217,17 @@ export default curry(Origin =>
 
         let { rules } = this.props
         names.forEach((n, i) => {
+          // 如果为非表单 则names为[undefined]
           if (formDatum && combineRules) {
             rules = combineRules(n, rules)
           }
 
+          // Input rule 验证
           if (isArray(rules) && rules.length > 0) {
+            // TODO 分析规则校验
             validates.push(validate(value[i], data, rules, validateProps))
           }
         })
-
         return promiseAll(validates)
           .then(res => {
             this.handleError(res === true ? undefined : res)

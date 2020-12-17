@@ -2,7 +2,7 @@ import React from 'react'
 import Input from '@/component/Input'
 import Button from '@/component/Button'
 import Icon from '@/component/Icon'
-import Rule from '@/utils/Rule'
+import Rule from '@/component/Rule'
 
 const url = 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css'
 const FontAwesome = Icon(url, 'FontAwesome', 'fa')

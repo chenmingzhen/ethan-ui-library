@@ -4,8 +4,8 @@ import createReactContext from 'create-react-context'
 import { curry } from '@/utils/func'
 import { deepGet } from '@/utils/objects'
 import { isObject, isArray } from '@/utils/is'
-import convert from '@/utils/Rule/convert'
-import { RULE_TYPE } from '@/utils/Rule'
+import convert from '@/component/Rule/convert'
+import { RULE_TYPE } from '@/component/Rule'
 
 const context = createReactContext()
 
