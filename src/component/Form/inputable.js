@@ -154,6 +154,7 @@ export default curry(Origin =>
           return tryValue(formDatum.get(name), defaultValue)
         }
         const hasValue = 'value' in this.props || 'checked' in this.props
+        // 非表单控制
         return !hasValue && !formDatum ? this.state.value : value
       }
 

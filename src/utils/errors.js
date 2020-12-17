@@ -17,6 +17,13 @@ export const wrapFormError = error => {
   return error
 }
 
+/**
+ * Promise.All可以接收一个空数组
+ * Promise.all([]).then(data=>{console.log(data)}) output:[]
+ * @param ops
+ * @param isForm
+ * @returns {Promise<unknown>}
+ */
 export const promiseAll = (ops, isForm = true) =>
   new Promise((resolve, reject) => {
     Promise.all(ops)
