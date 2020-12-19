@@ -189,6 +189,13 @@ export default curry(Origin =>
         this.customValidate = customValidate
       }
 
+      /**
+       * 检验
+       * @param value
+       * @param data
+       * @param type
+       * @returns {Promise<*>|Promise<boolean>}
+       */
       validate(value, data, type) {
         const { name, formDatum, combineRules, bind } = this.props
         const names = Array.isArray(name) ? name : [name]
@@ -224,7 +231,6 @@ export default curry(Origin =>
 
           // Input rule 验证
           if (isArray(rules) && rules.length > 0) {
-            // TODO 分析规则校验
             validates.push(validate(value[i], data, rules, validateProps))
           }
         })

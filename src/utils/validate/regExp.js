@@ -1,5 +1,11 @@
 import nullable from './nullable'
 
+/**
+ *
+ * @param regExp 检验的正则表达式
+ * @param options props
+ * @returns {function(*=, *=, *=): (undefined)}
+ */
 export default (regExp, options) =>
   nullable((value, formData, callback) => {
     const { message } = options

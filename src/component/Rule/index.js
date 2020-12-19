@@ -8,6 +8,12 @@ import regExp from './regExp'
 export const RULE_TYPE = 'RULE_OBJECT'
 const innerType = ['email', 'integer', 'number', 'url', 'json', 'hex', 'rgb', 'ipv4']
 
+/**
+ * 合并自定义的检验规则
+ * @param opts
+ * @param args
+ * @returns {{}}
+ */
 const mergeOptions = (opts = {}, ...args) => {
   if (!isObject(opts)) {
     console.error(new Error(`rules expect an object, got ${typeof options}`))
@@ -25,7 +31,7 @@ const mergeOptions = (opts = {}, ...args) => {
 export default function(...opts) {
   const options = mergeOptions({}, ...opts)
   const rules = {
-    required: required(options.required),
+    required: required(options.required), // 执行required方法 返回闭包方法 util/validate/index中执行
     max: length('max', options.max),
     min: length('min', options.min),
     regExp: regExp(options.regExp),

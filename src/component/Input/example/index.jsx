@@ -94,6 +94,20 @@ export default function() {
       </div>
 
       <Input.Password placeholder="input password" />
+
+      <Input
+        style={thirdStyle}
+        placeholder="disabled input"
+        rule={[
+          new Rule({
+            isOne: {
+              func: (value, formData, callback, props) => {
+                console.log(value)
+              },
+            },
+          }),
+        ]}
+      />
     </>
   )
 }
