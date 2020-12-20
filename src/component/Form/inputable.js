@@ -234,6 +234,8 @@ export default curry(Origin =>
             validates.push(validate(value[i], data, rules, validateProps))
           }
         })
+
+        // 根据每条检验规则的返回值 进行返回
         return promiseAll(validates)
           .then(res => {
             this.handleError(res === true ? undefined : res)

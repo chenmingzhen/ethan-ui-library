@@ -9,6 +9,36 @@ const FontAwesome = Icon(url, 'FontAwesome', 'fa')
 
 const rules = new Rule()
 
+const isOne = {
+  isOne: {
+    func: (value, formData, callback, props) => {
+      callback(Number(value) === 1 ? true : new Error('NeedOne'))
+    },
+    message: 'NeedOneWrong',
+  },
+}
+
+const isTwo = {
+  isTwo: {
+    func: (value, formData, callback, props) =>
+      new Promise((resolve, reject) => {
+        // eslint-disable-next-line no-unused-expressions
+        Number(value) === 2 ? resolve(true) : reject(new Error('NeedTwo'))
+      }),
+    message: 'NeedTwoWrong',
+  },
+}
+
+const isThree = {
+  isThree: (value, formData, callback) => {
+    callback(Number(value) === 3 ? true : new Error('NeedThree'))
+  },
+}
+
+const ruleOne = new Rule(isOne)
+const ruleTwo = new Rule(isTwo)
+const ruleThree = new Rule(isThree)
+
 const firstStyle = { width: 120, marginRight: 12 }
 const secondStyle = { marginBottom: 12 }
 const thirdStyle = { width: 300, marginBottom: 12 }
@@ -95,19 +125,10 @@ export default function() {
 
       <Input.Password placeholder="input password" />
 
-      <Input
-        style={thirdStyle}
-        placeholder="disabled input"
-        rule={[
-          new Rule({
-            isOne: {
-              func: (value, formData, callback, props) => {
-                console.log(value)
-              },
-            },
-          }),
-        ]}
-      />
+      <Input style={thirdStyle} rules={[ruleOne.isOne]} popover="top" />
+      <Input style={thirdStyle} rules={[ruleTwo.isTwo]} popover="top" />
+      <Input style={thirdStyle} rules={[ruleThree.isThree]} popover="top" />
+      <Input style={thirdStyle} rules={[{ type: 'email', message: 'Please enter a valid email.' }]} popover="top" />
     </>
   )
 }
