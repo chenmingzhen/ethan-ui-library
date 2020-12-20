@@ -8,11 +8,13 @@ export const isDate = val => val instanceof Date
 export const isFunc = f => typeof f === 'function'
 // eslint-disable-next-line no-self-compare
 export const isNan = a => a !== a
+export const isString = s => typeof s === 'string'
 export const isError = val => val instanceof Error
 export const isRegexp = val => val instanceof RegExp
 export const isMap = nameIs('Map')
 export const isSet = nameIs('Set')
 export const isSymbol = nameIs('Symbol')
+export const isPromise = p => p && (nameIs('Promise', p) || isFunc(p.then))
 
 export const isBuffer = val => {
   if (val.constructor && typeof val.constructor.isBuffer === 'function') {

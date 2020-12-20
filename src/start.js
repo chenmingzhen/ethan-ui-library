@@ -1,10 +1,10 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
-import Input from '@/component/Input/example'
+import Tag from '@/component/Tag/example'
 
 ReactDOM.render(
   <div>
-    <Input />
+    <Tag />
   </div>,
   document.getElementById('root')
 )

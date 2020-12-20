@@ -123,7 +123,12 @@ export default function() {
         <Input disabled style={thirdStyle} placeholder="disabled input" />
       </div>
 
-      <Input.Password placeholder="input password" />
+      <Input.Password
+        placeholder="input password"
+        onChange={value => {
+          console.log(value)
+        }}
+      />
 
       <Input style={thirdStyle} rules={[ruleOne.isOne]} popover="top" />
       <Input style={thirdStyle} rules={[ruleTwo.isTwo]} popover="top" />

@@ -1,3 +1,8 @@
-import React from 'react'
-import PropTypes from 'prop-types'
-import { PureComponent } from '@/utils/component'
+import Tag from './Tag'
+import Input from './Input'
+
+Tag.Input = Input
+
+Tag.displayName = 'EthanTag'
+
+export default Tag
