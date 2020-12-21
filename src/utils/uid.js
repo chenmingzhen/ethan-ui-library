@@ -11,3 +11,5 @@ export function getUid() {
 export function getUidStr() {
   return getUid().toString(36)
 }
+
+export const defer = typeof Promise === 'function' ? Promise.resolve().then.bind(Promise.resolve()) : setTimeout
