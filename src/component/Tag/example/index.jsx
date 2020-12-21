@@ -23,7 +23,7 @@ class Dynamic extends React.Component {
     if (value && tags.indexOf(value) === -1) {
       newTags = [...tags, value]
     }
-    console.log(newTags)
+
     this.setState({
       tags: newTags,
       inputVisible: false,

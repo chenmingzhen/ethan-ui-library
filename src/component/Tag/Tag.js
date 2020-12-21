@@ -20,7 +20,9 @@ class Tag extends PureComponent {
     this.state = {
       // 0 未关闭 1 关闭中 2 已关闭
       dismiss: 0,
-      inputVisible: hideInput, // tag input status
+      // tag input status
+      inputVisible: hideInput,
+      // Input的值
       value: null,
     }
 
@@ -36,6 +38,7 @@ class Tag extends PureComponent {
 
   componentDidMount() {
     const { children, onCompleted } = this.props
+    // 如果onCompleted不为空，可编辑，且children是string 将children设为value
     if (onCompleted && isString(children) && !isEmpty(children)) {
       this.setState({ value: children })
     }
@@ -81,6 +84,7 @@ class Tag extends PureComponent {
    */
   inputBlur(value) {
     const { onCompleted } = this.props
+    // 执行onCompleted回调
     if (isFunc(onCompleted)) onCompleted(value)
     this.setState({ inputVisible: hideInput })
   }
@@ -96,6 +100,7 @@ class Tag extends PureComponent {
     const { inputVisible, value } = this.state
     const { onCompleted } = this.props
 
+    // 如果onCompleted不为空且value不为空
     if (onCompleted && !isEmpty(value))
       this.setState({ inputVisible: inputVisible === hideInput ? showInput : hideInput })
   }
@@ -143,6 +148,7 @@ class Tag extends PureComponent {
 
     const { children, className, type, backgroundColor, onClose, disabled, onCompleted } = this.props
 
+    // onCompleted不为空且状态为showInput时 显示Input
     if (onCompleted && inputVisible === showInput)
       return <Input value={value} onBlur={this.inputBlur} onChange={this.inputChange} />
 
@@ -185,7 +191,7 @@ Tag.propTypes = {
   onClick: PropTypes.func,
   onClose: PropTypes.oneOfType([PropTypes.func, PropTypes.bool]),
   backgroundColor: PropTypes.string,
-  onCompleted: PropTypes.func,
+  onCompleted: PropTypes.func, // onCompleted 不为空时，可编辑
 }
 
 Tag.defaultProps = {
