@@ -28,6 +28,10 @@ class TagInput extends PureComponent {
     if (onChange) onChange(value)
   }
 
+  /**
+   * 处理键盘抬上事件 回车事件
+   * @param e
+   */
   handleKeyUp(e) {
     const { onBlur, onKeyUp, onEnterPress } = this.props
     if (e.keyCode === 13) {

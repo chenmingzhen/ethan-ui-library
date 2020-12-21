@@ -10,14 +10,15 @@ import icons from '../icons'
 import Spin from '../Spin'
 import Input from './Input'
 
-const hideInput = 0
-const showInput = 1
+const hideInput = Symbol('hideInput')
+const showInput = Symbol('showInput')
 
 class Tag extends PureComponent {
   constructor(props) {
     super(props)
 
     this.state = {
+      // 0 未关闭 1 关闭中 2 已关闭
       dismiss: 0,
       inputVisible: hideInput, // tag input status
       value: null,
@@ -44,9 +45,14 @@ class Tag extends PureComponent {
     this.setState({ dismiss: 2 })
   }
 
+  /**
+   * 处理dismiss变化
+   * @param e
+   */
   dismiss(e) {
     const { onClose } = this.props
     let callback
+    // 如果传入值是布尔 非函数
     if (onClose === true) {
       this.closeTag()
       return
@@ -54,6 +60,8 @@ class Tag extends PureComponent {
     if (typeof onClose === 'function') {
       callback = onClose(e)
     }
+
+    // 如果onClose的返回值是Promise 执行其中的then
     if (isPromise(callback)) {
       this.setState({ dismiss: 1 })
       callback.then(() => {
@@ -67,6 +75,10 @@ class Tag extends PureComponent {
     this.closeTag()
   }
 
+  /**
+   * 点击Input框外时 默认算完成输入
+   * @param value
+   */
   inputBlur(value) {
     const { onCompleted } = this.props
     if (isFunc(onCompleted)) onCompleted(value)
@@ -77,10 +89,13 @@ class Tag extends PureComponent {
     this.setState({ value })
   }
 
+  /**
+   * 控制Input的显示
+   */
   toggleInputVisible() {
     const { inputVisible, value } = this.state
     const { onCompleted } = this.props
-    // if onCompleted is not null
+
     if (onCompleted && !isEmpty(value))
       this.setState({ inputVisible: inputVisible === hideInput ? showInput : hideInput })
   }
@@ -89,7 +104,6 @@ class Tag extends PureComponent {
     const { onClick, disabled } = this.props
     if (disabled) return
 
-    // toggle input visible
     this.toggleInputVisible()
 
     if (typeof onClick === 'function') {
@@ -103,6 +117,7 @@ class Tag extends PureComponent {
     this.dismiss(e)
   }
 
+  // 渲染 关闭|关闭中
   renderClose(dismiss) {
     const { onClose } = this.props
     if (!onClose) return null
@@ -128,7 +143,6 @@ class Tag extends PureComponent {
 
     const { children, className, type, backgroundColor, onClose, disabled, onCompleted } = this.props
 
-    // if editable and input visible
     if (onCompleted && inputVisible === showInput)
       return <Input value={value} onBlur={this.inputBlur} onChange={this.inputChange} />
 
@@ -151,6 +165,7 @@ class Tag extends PureComponent {
     }
     return (
       <div className={tagClassName} style={tagStyle} {...click}>
+        {/* 如果有onClose close渲染出来是div标签 添加一层包裹 */}
         {onClose ? (
           <div onClick={this.handleClick} className={inlineClassName}>
             {childrenParsed}
@@ -167,6 +182,7 @@ class Tag extends PureComponent {
 Tag.propTypes = {
   ...getProps(PropTypes, 'type'),
   children: PropTypes.any,
+  onClick: PropTypes.func,
   onClose: PropTypes.oneOfType([PropTypes.func, PropTypes.bool]),
   backgroundColor: PropTypes.string,
   onCompleted: PropTypes.func,
