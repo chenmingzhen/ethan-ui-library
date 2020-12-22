@@ -1,10 +1,10 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
-import Tag from '@/component/Tag/example'
+import Tabs from '@/component/Tabs/example'
 
 ReactDOM.render(
   <div>
-    <Tag />
+    <Tabs />
   </div>,
   document.getElementById('root')
 )

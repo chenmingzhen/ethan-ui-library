@@ -1,4 +1,5 @@
 import { curry } from '@/utils/func'
+import { isValidElement } from 'react'
 
 const nameIs = curry((name, val) => val && val.constructor && val.constructor.name === name)
 
@@ -52,3 +53,11 @@ export const isOne = val => {
 export const isPercent = n => typeof n === 'string' && /\d{1,3}%$/.test(n)
 export const isInseparable = val =>
   Object(val) !== val || isFunc(val) || isDate(val) || isError(val) || isSet(val) || isMap(val) || isRegexp(val)
+
+export const isLink = el => {
+  if (!isValidElement(el)) return false
+  if (!el.type) return false
+  if (el.type === 'a') return true
+  if (el.props && el.props.to) return true
+  return false
+}
