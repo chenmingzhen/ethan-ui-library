@@ -15,6 +15,7 @@ class Header extends PureComponent {
     this.state = {
       attribute: 0,
       overflow: false,
+      attributeString: '',
     }
 
     this.setPosition = this.setPosition.bind(this)
@@ -55,32 +56,50 @@ class Header extends PureComponent {
   }
 
   /**
-   * 左右移动
+   * 左右按钮点击移动
    * @param lt true 左边 false 右边
    */
   handleMove(lt) {
     const { attributeString, attribute: a } = this.state
+
     const innerAttribute = this.innerElement[`client${attributeString}`]
     const scrollAttribute = this.scrollElement[`client${attributeString}`]
 
     // 计算滑动距离
     let attribute = a + (lt ? -innerAttribute : innerAttribute)
+    // 距离超过左|顶
     if (attribute < 0) attribute = 0
+    // 距离超过右|底
     if (attribute + innerAttribute > scrollAttribute) attribute = scrollAttribute - innerAttribute
+
     this.setState({ attribute })
   }
 
+  /**
+   * Tab被点击时顺带触发此事件 Tab回调执行
+   * @param tabRect
+   * @param last 是否是最后一个Tab
+   * @param first 是否是第一个Tab
+   */
   moveToCenter(tabRect, last, first) {
     const { isVertical } = this.props
     const positions = isVertical ? ['top', 'bottom'] : ['left', 'right']
     const rect = this.innerElement.getBoundingClientRect()
+
+    // 比较Tab与容器的位置
+    // marginLeft负数 左边
     if (tabRect[positions[0]] < rect[positions[0]]) {
+      // Tab 小于 容器 Tab在容器左或在容器上了
+      // 点击pre箭头触发
       this.setState(
         immer(draft => {
+          console.log(draft.attribute)
           draft.attribute -= rect[positions[0]] - tabRect[positions[0]] + (first ? 0 : REDUNDANT)
+          console.log(draft.attribute)
         })
       )
     } else if (tabRect[positions[1]] > rect[positions[1]]) {
+      // 点击next箭头触发
       this.setState(
         immer(draft => {
           draft.attribute +=

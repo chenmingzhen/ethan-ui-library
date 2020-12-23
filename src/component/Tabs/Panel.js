@@ -9,6 +9,7 @@ const CollapseList = List(['collapse'], 'fast')
 class Panel extends PureComponent {
   constructor(props) {
     super(props)
+    // 是否未触发过渲染
     this.isPristine = true
   }
 
@@ -28,6 +29,7 @@ class Panel extends PureComponent {
 
     if (!collapsible) return result
 
+    // 处理折叠情况
     return <CollapseList show={!collapsed}>{result}</CollapseList>
   }
 }

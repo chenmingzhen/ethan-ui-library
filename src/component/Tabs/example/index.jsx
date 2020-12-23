@@ -18,7 +18,7 @@ export default function() {
   return (
     <>
       <Tabs defaultActive={1}>
-        <Tabs.Panel style={panelStyle} tab="Home">
+        <Tabs.Panel style={panelStyle} tab="Home" border="#000">
           1
         </Tabs.Panel>
         <Tabs.Panel style={panelStyle} tab="Profile">
@@ -179,6 +179,7 @@ const LinkDemo = () => {
 
   return (
     <Tabs active={active} onChange={handleChange} shape="line">
+      <Tabs.Link href="http://www.w3school.com.cn">Href</Tabs.Link>
       <Tabs.Link href="www.baidu.com">Href</Tabs.Link>
       <Tabs.Link href="www.baidu.com">Href</Tabs.Link>
       {/* <Tabs.Link> */}

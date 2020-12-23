@@ -9,6 +9,7 @@ class Tab extends PureComponent {
     super(props)
     this.getActiveStyle = this.getActiveStyle.bind(this)
     this.handleClick = this.handleClick.bind(this)
+    // 每个Tab的唯一标志
     this.uid = `tab_unique_${getUidStr()}`
   }
 
@@ -73,6 +74,7 @@ class Tab extends PureComponent {
       style,
     }
 
+    // 对Link做处理
     if (children.type && children.type.isTabLink) {
       return React.cloneElement(children, { ...props })
     }

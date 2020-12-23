@@ -37,7 +37,13 @@ class Tabs extends PureComponent {
     return { align, isVertical }
   }
 
+  /**
+   * 获取当前Active的Tab
+   * @returns {number|*}
+   */
   getActive() {
+    // 如果Tabs的Active状态由prop控制，不由该UI层做处理
+    // Active由业务||封装组件处理
     if ('active' in this.props) return this.props.active
     return this.state.active
   }
@@ -52,6 +58,12 @@ class Tabs extends PureComponent {
     this.setState({ collapsed })
   }
 
+  /**
+   * 渲染头部
+   * @param align 位置
+   * @param isVertical 是否垂直
+   * @returns {JSX.Element}
+   */
   renderHeader({ align, isVertical }) {
     const { children, color, shape, tabBarStyle, inactiveBackground, collapsible, tabBarExtraContent } = this.props
     const active = this.getActive()
@@ -59,20 +71,22 @@ class Tabs extends PureComponent {
 
     let { border } = this.props
     Children.toArray(children).forEach((child, i, arr) => {
+      // 如果child不存在type Panel 或者Link  type: class Panel type:class Link
       if (!child || !child.type) return
 
       let tab = null
       if (child.type.isTabPanel) {
-        // eslint-disable-next-line
-                tab = child.props.tab
+        // 获取Tabs.Panel 的tab props
+        // eslint-disable-next-line prefer-destructuring
+        tab = child.props.tab
       } else if (child.type.isTabLink) {
         tab = child
       } else return
 
       const { id = i, background } = child.props
       let childBorder = child.props.border
-      // eslint-disable-next-line
-            if (active === id) {
+
+      if (active === id) {
         if (childBorder) border = childBorder
         else childBorder = border
       }
@@ -108,7 +122,9 @@ class Tabs extends PureComponent {
   }
 
   renderContent(child, i) {
+    // 剔除非Tab组件下的children
     if (!(child && child.type && child.type.isTabPanel)) return null
+
     const { collapsible, lazy } = this.props
     const { id = i, ...other } = child.props
 
@@ -134,6 +150,7 @@ class Tabs extends PureComponent {
       this.props.className
     )
 
+    // 分层渲染 根据align的位置渲染wrapper的内容
     return (
       <div className={className} style={style}>
         {align !== 'vertical-right' && align !== 'bottom' && this.renderHeader(position)}
@@ -147,20 +164,20 @@ class Tabs extends PureComponent {
 Tabs.propTypes = {
   active: PropTypes.any,
   align: PropTypes.oneOf(['left', 'right', 'vertical-left', 'vertical-right', 'bottom']),
-  background: PropTypes.string,
-  border: PropTypes.string,
+  background: PropTypes.string, // 选中标签背景色
+  border: PropTypes.string, // 边框颜色
   children: PropTypes.oneOfType([PropTypes.element, PropTypes.array]),
   className: PropTypes.string,
   collapsible: PropTypes.bool,
   color: PropTypes.string,
   defaultActive: PropTypes.any,
   defaultCollapsed: PropTypes.bool,
-  inactiveBackground: PropTypes.string,
+  inactiveBackground: PropTypes.string, // 未选中标签背景色
   onChange: PropTypes.func,
   shape: PropTypes.oneOf(['card', 'line', 'button', 'bordered', 'dash']),
   style: PropTypes.object,
   tabBarExtraContent: PropTypes.oneOfType([PropTypes.string, PropTypes.element]),
-  tabBarStyle: PropTypes.object,
+  tabBarStyle: PropTypes.object, // tab bar 的样式对象
   lazy: PropTypes.bool,
 }
 
