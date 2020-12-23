@@ -43,6 +43,7 @@ class Header extends PureComponent {
   setPosition(isVertical) {
     const attributeString = isVertical ? 'Height' : 'Width'
     if (!this.innerElement) return
+    // 元素的宽||高
     const innerAttribute = this.innerElement[`client${attributeString}`]
     const scrollAttribute = this.scrollElement[`client${attributeString}`]
     const { attribute: domAttribute } = this.state
@@ -53,10 +54,16 @@ class Header extends PureComponent {
     this[name] = el
   }
 
+  /**
+   * 左右移动
+   * @param lt true 左边 false 右边
+   */
   handleMove(lt) {
     const { attributeString, attribute: a } = this.state
     const innerAttribute = this.innerElement[`client${attributeString}`]
     const scrollAttribute = this.scrollElement[`client${attributeString}`]
+
+    // 计算滑动距离
     let attribute = a + (lt ? -innerAttribute : innerAttribute)
     if (attribute < 0) attribute = 0
     if (attribute + innerAttribute > scrollAttribute) attribute = scrollAttribute - innerAttribute
@@ -91,6 +98,10 @@ class Header extends PureComponent {
     }
   }
 
+  /**
+   * 折叠处理
+   * @param e
+   */
   handleCollapse(e) {
     const { onCollapse, collapsed } = this.props
     if (!onCollapse) return
@@ -150,7 +161,9 @@ class Header extends PureComponent {
               {icons.AngleLeft}
             </div>
           )}
+          {/* 宽度容器 */}
           <div ref={this.bindInner} className={tabsClass('inner')}>
+            {/* 实际内容 */}
             <div ref={this.bindScroll} style={{ [`margin${position}`]: -attribute }} className={tabsClass('scroll')}>
               {tabs.map(this.renderTab)}
             </div>

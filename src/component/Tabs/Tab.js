@@ -55,6 +55,7 @@ class Tab extends PureComponent {
   render() {
     const { isActive, disabled, children, shape } = this.props
 
+    // 获取Active的Style
     const style = this.getActiveStyle()
     const isBordered = shape === 'bordered'
 
