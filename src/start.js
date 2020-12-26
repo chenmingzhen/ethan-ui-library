@@ -1,10 +1,10 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
-import Tabs from '@/component/Tabs/example'
+import Sticky from '@/component/Sticky/example'
 
 ReactDOM.render(
   <div>
-    <Tabs />
+    <Sticky />
   </div>,
   document.getElementById('root')
 )

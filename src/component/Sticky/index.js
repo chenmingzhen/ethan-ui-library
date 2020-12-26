@@ -25,6 +25,7 @@ class Sticky extends PureComponent {
   componentDidMount() {
     super.componentDidMount()
     const { target } = this.props
+    // 获取目标实例的dom
     this.targetElement = getParent(this.element, target)
     this.handlePosition()
     this.bindScroll()
@@ -51,6 +52,7 @@ class Sticky extends PureComponent {
       if (supportSticky) {
         style.position = 'sticky'
       } else {
+        // 兼容不支持Sticky的情况
         style.position = 'absolute'
         if (mode === 'top') {
           style.transform = `translateY(${offset}${this.targetElement.scrollTop}px)`
@@ -67,11 +69,17 @@ class Sticky extends PureComponent {
   setPosition() {
     const { bottom, top, target } = this.props
     const { mode, scrollWidth } = this.state
+
+    // children自身的位置信息
     const selfRect = this.element.getBoundingClientRect().toJSON()
+    // 如果有设置父容器 获取父容器元素
     const scrollElement = this.targetElement || document.body
+    // 父容器元素的位置信息
     const scrollRect = scrollElement.getBoundingClientRect()
 
+    // placeholder的位置信息
     const placeholderRect = this.placeholder ? this.placeholder.getBoundingClientRect().toJSON() : null
+    // 视口高度
     const viewHeight = docSize.height
 
     if (this.origin) {
@@ -80,6 +88,7 @@ class Sticky extends PureComponent {
       if (placeholderRect) placeholderRect.width = width
     }
 
+    // 占位元素的style
     const placeholderStyle = {
       width: selfRect.width,
       // if target element is not null, set height to 0
@@ -88,9 +97,13 @@ class Sticky extends PureComponent {
 
     let style
     let placeholder
+    // sticky的Top
     let limitTop = top
+    // sticky的Bottom
     let limitBottom = viewHeight - bottom
 
+    // 如果有目标容器 非body
+    // 计算element在目标容器的top与bottom
     if (this.targetElement) {
       limitTop += scrollRect.top
       limitBottom = scrollRect.bottom - bottom
@@ -98,19 +111,28 @@ class Sticky extends PureComponent {
 
     if (top !== undefined && mode !== 'bottom') {
       if (selfRect.top < limitTop) {
+        // 元素的Top到达限制的Top
+        console.log(1)
         this.setState({ scrollWidth: scrollRect.width, mode: 'top' })
         style = this.getStyle('top', top, selfRect.left, selfRect.width)
         placeholder = placeholderStyle
       } else if (placeholderRect && selfRect.top < placeholderRect.top) {
+        // 同时设置top bottom时的处理
+        // 如 top 0 bottom 0
         if (!(target && selfRect.top === limitTop)) {
+          // 当前既不固Top 也不固Bottom
+          // 处于漂浮状态 不设置占位
+          // 处于漂浮或复位 执行这里
           this.setState({ mode: '' })
           style = {}
           placeholder = null
         }
       } else if (this.targetElement && placeholderRect) {
+        // 暂无作用
         style = this.getStyle('top', top, selfRect.left, selfRect.width)
         placeholder = placeholderStyle
       } else if (scrollWidth && placeholderRect && scrollWidth !== scrollRect.width) {
+        // 处理页面resize的情况
         this.setState({ scrollWidth: scrollRect.width, mode: 'top' })
         style = this.getStyle('top', top, placeholderRect.left, placeholderRect.width)
         placeholder = placeholderStyle
@@ -148,6 +170,7 @@ class Sticky extends PureComponent {
   }
 
   handlePosition() {
+    // 如果锁住 不操作
     if (this.locked) {
       this.scrollCount += 1
       return
@@ -157,6 +180,7 @@ class Sticky extends PureComponent {
     this.scrollCount = 0
 
     this.setPosition()
+    // 因为锁住 所以不需要clearTimer
     this.scrollTimer = setTimeout(() => {
       this.locked = false
       if (this.scrollCount > 0) {
@@ -177,6 +201,7 @@ class Sticky extends PureComponent {
     this.placeholder = el
   }
 
+  // 绑定滚动事件
   bindScroll() {
     if (this.targetElement) {
       this.targetElement.addEventListener('scroll', this.handlePosition, eventPassive)
@@ -199,6 +224,8 @@ class Sticky extends PureComponent {
 
   render() {
     const { children, className, target } = this.props
+
+    // 占位 使漂浮的元素位置不因滚动被占
     const { placeholder } = this.state
 
     let outerStyle = this.props.style
@@ -214,7 +241,7 @@ class Sticky extends PureComponent {
           {children}
         </div>
         <div ref={this.bindOrigin} />
-        {placeholder && <div ref={this.bindPlaceholder} style={placeholder} />}
+        {placeholder && <div ref={this.bindPlaceholder} style={placeholder} id={`placeholder${Math.random()}`} />}
       </div>
     )
   }
@@ -232,6 +259,6 @@ Sticky.defaultProps = {
   ...defaultProps,
 }
 
-Sticky.displayName = 'ShineoutSticky'
+Sticky.displayName = 'EthanSticky'
 
 export default Sticky
