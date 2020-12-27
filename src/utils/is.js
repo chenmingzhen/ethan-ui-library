@@ -61,3 +61,5 @@ export const isLink = el => {
   if (el.props && el.props.to) return true
   return false
 }
+
+export const isEnterPress = e => e.keyCode === 13
