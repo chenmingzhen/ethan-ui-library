@@ -19,3 +19,7 @@ export function compose(...funcs) {
   // last(...args) 起始值
   return (...args) => rest.reduceRight((composed, f) => f(composed), last(...args))
 }
+
+export function empty(e) {
+  e.preventDefault()
+}

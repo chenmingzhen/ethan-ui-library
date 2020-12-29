@@ -33,7 +33,7 @@ const data = [
 export default function() {
   return (
     <>
-      <Tree data={data} keygen="id" defaultExpanded={['2']} renderItem={n => `node ${n.text}`} />
+      <Tree data={data} keygen="id" defaultExpanded={['2']} renderItem={n => `node ${n.text}`} doubleClickExpand />
     </>
   )
 }

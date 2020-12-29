@@ -40,6 +40,9 @@ class Content extends PureComponent {
     if (hasChildren) this.handleIndicatorClick()
   }
 
+  /**
+   * 点击指示器
+   */
   handleIndicatorClick() {
     const { id, data, onToggle, loader, childrenKey, setFetching } = this.props
 
@@ -57,6 +60,10 @@ class Content extends PureComponent {
     return render(data, expanded, active, id)
   }
 
+  /**
+   * 渲染指示器图标
+   * @returns {JSX.Element|null}
+   */
   renderIndicator() {
     const { data, expanded, expandIcons, loader, childrenKey, fetching, iconClass } = this.props
     const children = data[childrenKey]

@@ -62,16 +62,22 @@ class Node extends PureComponent {
   handleToggle() {
     const { id, onToggle } = this.props
     // eslint-disable-next-line
-        const expanded = !this.state.expanded
+    const expanded = !this.state.expanded
     this.setState({ expanded })
     if (onToggle) onToggle(id, expanded)
   }
 
+  /**
+   * 开始拖动 复制节点 隐藏原节点
+   * @param event
+   */
   handleDragStart(event) {
     const { dragImageSelector, dragImageStyle, data } = this.props
     if (isDragging) return
     isDragging = true
 
+    // DataTransfer 对象用于保存拖动并放下（drag and drop）过程中的数据
+    // https://developer.mozilla.org/zh-CN/docs/Web/API/DataTransfer
     event.dataTransfer.effectAllowed = 'copyMove'
     event.dataTransfer.setData('text/plain', this.props.id)
 
@@ -79,6 +85,7 @@ class Node extends PureComponent {
 
     const dragImage = element || this.element.querySelector(`.${treeClass('content')}`)
     const rect = dragImage.getBoundingClientRect()
+    // 原生复制节点
     this.dragImage = dragImage.cloneNode(true)
     document.body.appendChild(this.dragImage)
     this.dragImage.style.position = 'absolute'
@@ -94,9 +101,11 @@ class Node extends PureComponent {
       })
     }
 
+    // 设置自定义的拖动图像。
     event.dataTransfer.setDragImage(this.dragImage, event.clientX - rect.left, event.clientY - rect.top)
 
     setTimeout(() => {
+      // 拖拽过程隐藏
       this.element.style.display = 'none'
     }, 0)
   }
@@ -132,6 +141,7 @@ class Node extends PureComponent {
   }
 
   handleDragEnd() {
+    // 显示
     this.element.style.display = ''
 
     if (!isDragging || !placeElement.parentNode) return
@@ -168,6 +178,9 @@ class Node extends PureComponent {
       childrenClassName: childrenClass(data),
     }
 
+    // https://blog.csdn.net/weixin_33672400/article/details/94206193
+    // ondragover 当某被拖动的对象在另一对象容器范围内拖动时触发此事件
+    // ondragend 用户完成元素拖动后触发 在被拖动目标上触发的事件
     const wrapProps = {}
     if (onDrop) {
       Object.assign(wrapProps, {
