@@ -1,6 +1,11 @@
 import shallowEqual from '@/utils/shallowEqual'
 import { CHANGE_TOPIC, WITH_OUT_DISPATCH } from './types'
 
+/**
+ * 装载一组数据的HOC List
+ * 事件派发
+ * 值存储
+ */
 export default class {
   constructor(args = {}) {
     const { format, onChange, separator, value, prediction, distinct, disabled, limit } = args
@@ -53,10 +58,12 @@ export default class {
     }
   }
 
+  // 处理Change 并触发事件派发
   handleChange(values, ...args) {
     this.$values = values
     this.dispatch(CHANGE_TOPIC)
     if (this.onChange) {
+      // 构造参数的onChange
       this.onChange(this.getValue(), ...args)
     }
   }
@@ -91,7 +98,9 @@ export default class {
       raws = this.flattenTreeData(raws, childrenKey)
     }
     raws = raws.filter(v => {
+      // 获取是否disabled
       const disabled = this.disabled(v)
+      // 如果为disabled 不做add操作
       if (disabled) return false
       if (this.distinct) return !this.check(v)
       return true
@@ -111,6 +120,11 @@ export default class {
     this.add(value)
   }
 
+  /**
+   * 点击选中 checkbox
+   * @param raw
+   * @returns {boolean}
+   */
   check(raw) {
     if (this.prediction) {
       for (let i = 0, count = this.values.length; i < count; i++) {
@@ -135,6 +149,7 @@ export default class {
     this.values = []
   }
 
+  // 派发事件
   dispatch(name, ...args) {
     const event = this.$events[name]
     if (!event) return
@@ -144,6 +159,8 @@ export default class {
   initFormat(f) {
     switch (typeof f) {
       case 'string':
+        // 获取格式化后的值  如data的item {id:1,color:"red"} datum={{format:"color"}}
+        // 获取就是color的值
         this.format = value => value[f]
         break
       case 'function':
@@ -185,6 +202,11 @@ export default class {
     this.handleChange(values, value, false)
   }
 
+  /**
+   * 订阅事件
+   * @param name
+   * @param fn
+   */
   subscribe(name, fn) {
     if (!this.$events[name]) this.$events[name] = []
     const events = this.$events[name]
@@ -200,7 +222,7 @@ export default class {
   getValue() {
     let value = this.values
     // eslint-disable-next-line
-        if (this.limit === 1) value = this.values[0]
+    if (this.limit === 1) value = this.values[0]
     else if (this.separator) value = this.values.join(this.separator)
     this.$cachedValue = value
     return value

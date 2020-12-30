@@ -32,16 +32,20 @@ export default curry((options, Origin) => {
     constructor(props) {
       super(props)
       const { datum, onChange, initValidate } = props
+
       const value = props[key]
 
       if (datum instanceof Datum) {
         this.datum = datum
       } else {
+        // 绑定指定Props
         const ops = bindProps.reduce(
           (o, k) => {
+            // o {value,limit,initValidate} k keys
             o[k] = props[k]
             return o
           },
+          // 初始值
           { value, limit, initValidate }
         )
         this.datum = new Datum(Object.assign(ops, datum))
@@ -82,7 +86,6 @@ export default curry((options, Origin) => {
       }
 
       if (type === 'list') this.setValue(WITH_OUT_DISPATCH)
-      // delete props[key]
 
       return <Origin {...props} datum={this.datum} />
     }

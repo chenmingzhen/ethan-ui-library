@@ -64,3 +64,55 @@ export function cssSupport(attr, value) {
   }
   return false
 }
+
+export function getCursorOffset(length) {
+  if (window.getSelection) {
+    return window.getSelection().anchorOffset
+  }
+  if (document.selection) {
+    const range = document.selection.createRange()
+    range.moveStart('character', -length)
+    return range.text.length
+  }
+  return null
+}
+
+function select(element) {
+  if (element && element.innerText.length === 0) {
+    element.focus()
+    return
+  }
+  if (window.getSelection && document.createRange) {
+    if (element) element.focus()
+    const range = document.createRange()
+    if (element) range.selectNodeContents(element)
+    const sel = window.getSelection()
+    sel.removeAllRanges()
+    sel.addRange(range)
+  } else if (document.selection) {
+    const range = document.selection.createRange()
+    range.moveToElementText(element)
+    range.select()
+  }
+}
+
+function end(element) {
+  if (!element) return
+  element.focus()
+  if (element.tagName === 'INPUT' || element.tagName === 'TEXTAREA') {
+    element.selectionStart = -1
+    return
+  }
+  if (window.getSelection) {
+    const range = window.getSelection()
+    range.selectAllChildren(element)
+    range.collapseToEnd()
+  } else if (document.selection) {
+    const range = document.selection.createRange()
+    range.moveToElementText(element)
+    range.collapse(false)
+    range.select()
+  }
+}
+
+export const focusElement = { select, end, wrapSpan }
