@@ -4,6 +4,10 @@ import { PureComponent } from '@/utils/component'
 import { treeClass } from '@/styles'
 import Checkbox from '../Checkbox/Checkbox'
 
+/**
+ * Checkbox状态的Tree
+ * 通过Datum来管理值
+ */
 export default class extends PureComponent {
   static propTypes = {
     datum: PropTypes.object.isRequired,
@@ -15,11 +19,13 @@ export default class extends PureComponent {
   constructor(props) {
     super(props)
     this.handleChange = this.handleChange.bind(this)
+    // TODO Find The Place usage
     props.datum.bind(props.id, this.forceUpdate.bind(this))
   }
 
   componentWillUnmount() {
     super.componentWillUnmount()
+    // TODO Find The Place usage
     this.props.datum.unbind(this.props.id)
   }
 
