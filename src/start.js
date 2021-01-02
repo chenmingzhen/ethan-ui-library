@@ -1,10 +1,11 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
-import Sticky from '@/component/Sticky/example'
+import '@/styles/normalize.less'
+import Tree from '@/component/Tree/example'
 
 ReactDOM.render(
   <div>
-    <Sticky />
+    <Tree />
   </div>,
   document.getElementById('root')
 )

@@ -6,6 +6,7 @@ import { getProps } from '@/utils/proptypes'
 import { treeClass } from '@/styles'
 import Content from './Content'
 
+// 用于移动时暂存信息的div以及移动时占移动位
 const placeElement = document.createElement('div')
 placeElement.className = treeClass('drag-place')
 const innerPlaceElement = document.createElement('div')
@@ -17,6 +18,7 @@ class Node extends PureComponent {
   constructor(props) {
     super(props)
 
+    // 执行
     const { active, expanded } = props.bindNode(props.id, this.update.bind(this))
     this.state = { active, expanded, fetching: false }
 
@@ -110,29 +112,41 @@ class Node extends PureComponent {
     }, 0)
   }
 
+  /**
+   * 在另一对象中拖动时执行
+   * @param e
+   */
   handleDragOver(e) {
     if (!isDragging) return
 
     const { dragHoverExpand } = this.props
 
+    // 设置拖动过程要展开
     if (dragHoverExpand && !this.state.expanded) this.handleToggle()
 
+    // 获取当前拖动的元素的节点
     const hover = this.element
     const rect = hover.getBoundingClientRect()
+    // 获取拖动划过的元素的高度
     const clientHeight = e.target.getBoundingClientRect().height || 20
     const hoverMiddleY = (rect.bottom - rect.top) / 2
+
     const hoverClientY = e.clientY - rect.top
 
     let position = this.props.index
     innerPlaceElement.style.height = '0px'
+    // 计算插入到e的前面或后面
     if (hoverClientY < hoverMiddleY + clientHeight * 0.2) {
+      // 占位
       hover.parentNode.insertBefore(placeElement, hover)
       if (hoverClientY > clientHeight * 0.3) {
         position = -1
         innerPlaceElement.style.height = `${rect.height}px`
       }
     } else {
+      // 位置+1
       position += 1
+      // 占位
       hover.parentNode.insertBefore(placeElement, hover.nextElementSibling)
     }
 
@@ -190,6 +204,12 @@ class Node extends PureComponent {
       })
     }
 
+    // React.createElement()： 根据指定的第一个参数创建一个React元素。
+    // React.createElement(
+    //     type,
+    //     [props],
+    //     [...children]
+    // )
     return (
       <div
         {...wrapProps}
