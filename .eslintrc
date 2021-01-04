@@ -76,6 +76,7 @@
     "no-unused-vars": 1,
     "no-use-before-define": 0,
     // 顺序排序方法 关闭
-    "react/sort-comp": 0
+    "react/sort-comp": 0,
+    "import/no-cycle": 0
   }
 }
