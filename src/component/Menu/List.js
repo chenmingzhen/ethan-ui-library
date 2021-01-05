@@ -3,7 +3,12 @@ import PropTypes from 'prop-types'
 import classnames from 'classnames'
 import { getKey } from '@/utils/uid'
 import { menuClass } from '@/styles'
+import ListHoc from '@/component/List'
 import Item from './Item'
+
+const CollapseList = ListHoc('collapse', 'fast')
+
+// List > Item
 
 class List extends PureComponent {
   render() {

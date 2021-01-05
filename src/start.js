@@ -1,11 +1,11 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 import '@/styles/normalize.less'
-import Breadcrumb from '@/component/Breadcrumb/example'
+import Menu from '@/component/Menu/example'
 
 ReactDOM.render(
   <div>
-    <Breadcrumb />
+    <Menu />
   </div>,
   document.getElementById('root')
 )

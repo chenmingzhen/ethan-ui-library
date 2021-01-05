@@ -20,6 +20,7 @@ class Item extends PureComponent {
       this.updateOpen.bind(this),
       this.updateInPath.bind(this)
     )
+
     this.state = {
       open: openUpdate(key),
       isActive: activeUpdate(this.id, props.data),
@@ -193,9 +194,9 @@ class Item extends PureComponent {
     return (
       <li className={className} {...events} ref={this.bindElement}>
         {item}
+        {/* 如果存在children 继续嵌套 */}
         {children.length > 0 && (
           <List
-            // className={menuClass('sub')}
             data={children}
             disabled={disabled}
             renderItem={renderItem}

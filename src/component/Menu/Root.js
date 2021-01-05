@@ -40,12 +40,6 @@ function keyToMap(keys = [], value = true) {
   return keyMap
 }
 
-// function isSubMenu(el) {
-//   if (el.matches(`.${menuClass('sub')}`)) return true
-//   if (!el.parentElement) return false
-//   return isSubMenu(el.parentElement)
-// }
-
 class Root extends React.Component {
   constructor(props) {
     super(props)
@@ -63,11 +57,13 @@ class Root extends React.Component {
     this.handleClick = this.handleClick.bind(this)
     this.handleScrollLeft = this.handleScrollX.bind(this, 'Left')
     this.handleScrollTop = this.handleScrollX.bind(this, 'Top')
-    this.handleScroll = this.handleScroll.bind(this)
+
     this.handleWheel = this.handleWheel.bind(this)
     this.renderItem = this.renderItem.bind(this)
     this.bindRootElement = this.bindRootElement.bind(this)
     this.toggleOpenKeys = this.toggleOpenKeys.bind(this)
+
+    // 通过Context传递给Item
     this.providerValue = {
       bindItem: this.bindItem.bind(this),
       unbindItem: this.unbindItem.bind(this),
@@ -92,7 +88,10 @@ class Root extends React.Component {
 
   getOpenKeys() {
     const { openKeys, defaultOpenKeys } = this.props
+
     if (openKeys) return openKeys
+
+    // 根据是否已经点击后来判断返回的OpenKeys
     return this.hasToggled ? Array.from(this.state.openKeys.keys()) : defaultOpenKeys
   }
 
@@ -103,10 +102,19 @@ class Root extends React.Component {
     this.rootElement = el.querySelector(`.${menuClass('root')}`)
   }
 
+  /**
+   * Item中使用
+   * @param id
+   * @param updateActive
+   * @param updateOpen
+   * @param updateInPath
+   * @returns {((function(*, *=): (*|boolean))|(function(*=): boolean))[]}
+   */
   bindItem(id, updateActive, updateOpen, updateInPath) {
     this.items[id] = updateActive
     this.itemsOpen[id] = updateOpen
     this.itemsInPath[id] = updateInPath
+
     return [this.checkActive, this.checkOpen, this.checkInPath]
   }
 
@@ -116,9 +124,16 @@ class Root extends React.Component {
     delete this.itemsInPath[id]
   }
 
+  /**
+   * 是否为激活状态
+   * @param id
+   * @param data
+   * @returns {*|boolean}
+   */
   checkActive(id, data) {
     const { active } = this.props
     const act = typeof active === 'function' ? active(data) : id === this.state.activeKey
+
     if (act) this.state.activeKey = id
     return act
   }
@@ -133,15 +148,18 @@ class Root extends React.Component {
 
   checkInPath(id) {
     const { activeKey } = this.state
+
     if (!activeKey || !id) return false
     return activeKey.indexOf(id) >= 0
   }
 
   updateState() {
     const { mode } = this.props
+
     this.updateActive()
     this.updateOpen()
     this.updateInPath()
+
     if (!this.container) return
     const bindMethod = mode !== 'inline' ? this.container.addEventListener : this.container.removeEventListener
     bindMethod.call(this.container, 'wheel', this.handleWheel, { passive: false })
@@ -156,11 +174,14 @@ class Root extends React.Component {
 
   updateOpen() {
     const { data, keygen } = this.props
+
     Object.keys(this.itemsOpen).forEach(id => {
       const update = this.itemsOpen[id]
       update(this.checkOpen)
     })
+
     const hasOpen = this.getOpenKeys().filter(k => data.find((d, i) => getKey(d, keygen, i) === k)).length > 0
+
     if (hasOpen !== this.state.hasOpen) {
       this.setState({ hasOpen })
     }
@@ -173,15 +194,23 @@ class Root extends React.Component {
     })
   }
 
+  /**
+   * 设置打开的MenuKeys
+   * @param id
+   * @param open
+   */
   toggleOpenKeys(id, open) {
     const newOpenKeys = immer(keyToMap(this.getOpenKeys()), draft => {
       if (open) {
         draft.set(id, true)
       } else draft.delete(id)
     })
+
     this.hasToggled = true
+
     const keys = newOpenKeys.keys()
     const { onOpenChange = () => {}, openKeys } = this.props
+
     if (openKeys) {
       onOpenChange(keys)
       return
@@ -194,41 +223,43 @@ class Root extends React.Component {
     const sizeKey = pos === 'Top' ? 'height' : 'width'
     const size = this.container.getBoundingClientRect()[sizeKey]
     const scroll = this.rootElement.getBoundingClientRect()[sizeKey]
+
     this.wrapper[`scroll${pos}`] = param * (scroll - size)
     this.setState({ [`scroll${pos}`]: param })
   }
 
-  handleScroll(top) {
-    const { height } = this.container.getBoundingClientRect()
-    const scrollHeight = this.rootElement.getBoundingClientRect().height
-    this.wrapper.scrollTop = top * (scrollHeight - height)
-    this.setState({ scrollTop: top })
-  }
-
   handleWheel(e) {
-    // if (isSubMenu(e.target)) return
     const { mode } = this.props
     const { key, pos, direction } = getOption(mode)
     const wheel = normalizeWheel(e)
     const size = this.container.getBoundingClientRect()[key]
-    // const size = this.rootElement.getBoundingClientRect()[key] - this.container.getBoundingClientRect()[key]
+
     this.wrapper[`scroll${pos}`] += wheel[`pixel${direction}`]
     const precent = this.wrapper[`scroll${pos}`] / size
     this.setState({ [`scroll${pos}`]: precent > 1 ? 1 : precent })
-    // this.setState({ [`scroll${pos}`]: size === 0 ? 0 : this.wrapper[`scroll${pos}`] / size })
+
     e.preventDefault()
   }
 
   handleClick(id, data) {
     const { onClick } = this.props
+
     this.setState({ activeKey: id })
+
     if (onClick) onClick(data)
   }
 
+  /**
+   * 自定义render
+   * @param data
+   * @returns {null|*}
+   */
   renderItem(data) {
     const { renderItem } = this.props
+
     if (typeof renderItem === 'string') return data[renderItem]
     if (typeof renderItem === 'function') return renderItem(data)
+
     return null
   }
 
@@ -243,6 +274,7 @@ class Root extends React.Component {
     if (direction === 'x') {
       const { width } = this.container.getBoundingClientRect()
       const scrollWidth = this.rootElement.getBoundingClientRect().width
+      // 内容器未大于外容器 不渲染滚动条
       if (scrollWidth <= width) return null
 
       return (
@@ -334,12 +366,12 @@ class Root extends React.Component {
 
 Root.propTypes = {
   ...getProps(PropTypes, 'style', 'keygen'),
-  active: PropTypes.func,
-  data: PropTypes.array,
-  defaultOpenKeys: PropTypes.array,
-  openKeys: PropTypes.array,
+  active: PropTypes.func, // 验证是否激活,参数为对应的数据对象,返回true则代表该菜单激活
+  data: PropTypes.array, // 需要渲染成菜单的数据
+  defaultOpenKeys: PropTypes.array, // 初始展开的菜单;如果需要设置此值,则需要设置keygen,此值为一个包含key的数组
+  openKeys: PropTypes.array, // 展开的菜单(受控)
   disabled: PropTypes.func,
-  inlineIndent: PropTypes.number,
+  inlineIndent: PropTypes.number, // 每一层缩进宽度
   mode: PropTypes.oneOf(['inline', 'vertical', 'horizontal', 'vertical-auto']),
   onClick: PropTypes.func,
   renderItem: PropTypes.oneOfType([PropTypes.string, PropTypes.func]),
