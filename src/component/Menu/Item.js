@@ -54,6 +54,7 @@ class Item extends PureComponent {
     document.removeEventListener('click', this.handleMouseLeave)
   }
 
+  // Root中updateActive时触发 check为Root的checkActive
   update(check, activePath) {
     const isActive = check(this.id, this.props.data)
     const isHighLight = activePath && isActive ? activePath.indexOf(this.id) > -1 : false
@@ -61,6 +62,7 @@ class Item extends PureComponent {
     this.setState({ isActive, isHighLight })
   }
 
+  // Root中updateOpen时触发 check为Root的checkOpen
   updateOpen(check) {
     const isOpen = check(this.getKey())
     this.setState({ open: isOpen })
@@ -92,6 +94,7 @@ class Item extends PureComponent {
     if (data.disabled) return
 
     if (mode === 'inline' && data.children && data.children.length) {
+      // 触发Root的toggleOpenKeys
       toggleOpenKeys(this.getKey(), !this.state.open)
     }
 
@@ -107,6 +110,9 @@ class Item extends PureComponent {
     if (!isLeaf) e.nativeEvent.stopImmediatePropagation()
   }
 
+  /**
+   * 自定义render的Click事件触发
+   */
   handleItemClick(clickMethod, e) {
     clickMethod()
     this.handleClick(e)
@@ -169,9 +175,11 @@ class Item extends PureComponent {
 
     const style = {}
     const events = {}
+
     if (mode === 'inline') {
       style.paddingLeft = 20 + level * inlineIndent
     } else {
+      // 处理非inline的特殊情况 鼠标靠近离开就触发
       events.onMouseEnter = this.handleMouseEnter
       events.onMouseLeave = this.handleMouseLeave
     }

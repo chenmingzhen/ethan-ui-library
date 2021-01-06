@@ -12,13 +12,13 @@ import Disabled from './Disabled'
 export default () => (
   <>
     <Base />
-    {/* <Link /> */}
-    {/* <Layout /> */}
-    {/* <Vertical /> */}
-    {/* <Disabled /> */}
-    {/* <Control /> */}
-    {/* <CustomRender /> */}
-    {/* <Click /> */}
-    {/* <Dark /> */}
+    <Link />
+    <Layout />
+    <Vertical />
+    <Disabled />
+    <Control />
+    <CustomRender />
+    <Click />
+    <Dark />
   </>
 )

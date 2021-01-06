@@ -177,7 +177,6 @@ export default function(List) {
         scrollElement,
         autoClass,
         zIndex,
-        // do not need the value
         value,
         ...props
       } = this.props

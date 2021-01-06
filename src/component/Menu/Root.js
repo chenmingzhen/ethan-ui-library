@@ -32,6 +32,7 @@ const getOption = mode =>
         direction: 'X',
       }
 
+// Array To Map
 function keyToMap(keys = [], value = true) {
   const keyMap = new Map()
   keys.forEach(v => {
@@ -45,6 +46,7 @@ class Root extends React.Component {
     super(props)
 
     this.state = {
+      // 目前所在的Key
       activeKey: null,
       scrollTop: 0,
       scrollLeft: 0,
@@ -63,12 +65,18 @@ class Root extends React.Component {
     this.bindRootElement = this.bindRootElement.bind(this)
     this.toggleOpenKeys = this.toggleOpenKeys.bind(this)
 
+    // 关于绑定 每次刷新组件的时候，执行updateState，执行updateActive，其中在updateXXX中
+    // 对item itemsOpen itemsInPath的绑定进行执行，传递对应的check方法与状态给Item Item通过check方法进行判断 actived inPath
     // 通过Context传递给Item
     this.providerValue = {
       bindItem: this.bindItem.bind(this),
       unbindItem: this.unbindItem.bind(this),
     }
 
+    /**
+     * Item中进行绑定
+     * @type {{}}
+     */
     this.items = {}
     this.itemsOpen = {}
     this.itemsInPath = {}
@@ -115,6 +123,7 @@ class Root extends React.Component {
     this.itemsOpen[id] = updateOpen
     this.itemsInPath[id] = updateInPath
 
+    // Item的初始化State中使用
     return [this.checkActive, this.checkOpen, this.checkInPath]
   }
 
@@ -140,9 +149,11 @@ class Root extends React.Component {
 
   checkOpen(id) {
     const openKeys = this.getOpenKeys()
+
     if (isArray(openKeys)) {
       return openKeys.indexOf(id) > -1
     }
+
     return false
   }
 
@@ -195,7 +206,7 @@ class Root extends React.Component {
   }
 
   /**
-   * 设置打开的MenuKeys
+   * 设置打开的MenuKeys Item中调用
    * @param id
    * @param open
    */
@@ -211,10 +222,12 @@ class Root extends React.Component {
     const keys = newOpenKeys.keys()
     const { onOpenChange = () => {}, openKeys } = this.props
 
+    // 用户受控
     if (openKeys) {
       onOpenChange(keys)
       return
     }
+
     this.setState({ openKeys: newOpenKeys, hasOpen: keys.length > 0 })
     onOpenChange(keys)
   }
@@ -244,6 +257,7 @@ class Root extends React.Component {
   handleClick(id, data) {
     const { onClick } = this.props
 
+    // 目前所在的Key
     this.setState({ activeKey: id })
 
     if (onClick) onClick(data)
