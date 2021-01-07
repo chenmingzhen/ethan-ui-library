@@ -4,6 +4,7 @@ import classnames from 'classnames'
 import { scrollClass } from '@/styles'
 import fixedLength from './fixedLength'
 
+// 滚动条
 class ScrollBar extends PureComponent {
   constructor(props) {
     super(props)
@@ -25,6 +26,8 @@ class ScrollBar extends PureComponent {
 
   toggleClassList(method) {
     const { classList } = this.handle.parentNode.parentNode
+
+    // 添加class属性
     if (classList) {
       classList[method](scrollClass('dragging'))
     }
@@ -46,16 +49,20 @@ class ScrollBar extends PureComponent {
     document.removeEventListener('mouseup', this.unbindEvent)
   }
 
+  // 点击滚动条
   handleBarClick(event) {
     const { offset } = this.props
     this.cacheOffset = offset
     this.setState({ dragging: true })
     this.mouseX = event.clientX
     this.mouseY = event.clientY
+
+    // 拉动过程添加class
     this.toggleClassList('add')
     this.bindEvent()
   }
 
+  // 移动过程计算移动值
   handleMouseMove(event) {
     const x = event.clientX - this.mouseX
     const y = event.clientY - this.mouseY
@@ -74,6 +81,7 @@ class ScrollBar extends PureComponent {
   }
 
   handleBgClick(event) {
+    // 点击Bar内部内容 不处理
     if (event.target === this.handle) return
 
     const { direction, length, scrollLength, offset, onScroll } = this.props
@@ -96,7 +104,9 @@ class ScrollBar extends PureComponent {
   render() {
     const { direction, length, scrollLength, offset, barLength, forceHeight } = this.props
     const { dragging } = this.state
+    // 溢出显示Bar
     const show = scrollLength > length
+
     const className = classnames(
       scrollClass('bar', direction, show && 'show', dragging && 'dragging', !forceHeight && 'padding-y'),
       this.props.className
@@ -108,6 +118,7 @@ class ScrollBar extends PureComponent {
     if (scrollLength > 0) {
       if (direction === 'x') {
         style.width = `${(length / scrollLength) * 100}%`
+        // 偏移值
         style.left = value
       } else {
         style.height = `${(length / scrollLength) * 100}%`
@@ -116,7 +127,9 @@ class ScrollBar extends PureComponent {
     }
 
     return (
+      //  滚动容器
       <div className={className} style={{ height: forceHeight }} onMouseDown={show ? this.handleBgClick : undefined}>
+        {/* 滚动条 */}
         <div className={scrollClass('handle')} onMouseDown={this.handleBarClick} ref={this.bindHandle} style={style} />
       </div>
     )
@@ -128,10 +141,10 @@ ScrollBar.propTypes = {
   className: PropTypes.string,
   direction: PropTypes.oneOf(['x', 'y']),
   forceHeight: PropTypes.number,
-  length: PropTypes.number.isRequired,
-  offset: PropTypes.number.isRequired,
+  length: PropTypes.number.isRequired, // 容器长度
+  offset: PropTypes.number.isRequired, // scrollTop || scrollLeft
   onScroll: PropTypes.func.isRequired,
-  scrollLength: PropTypes.number.isRequired,
+  scrollLength: PropTypes.number.isRequired, // 滚动的内容总长度
 }
 
 ScrollBar.defaultProps = {
