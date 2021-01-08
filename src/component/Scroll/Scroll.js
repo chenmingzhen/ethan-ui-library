@@ -87,6 +87,10 @@ class Scroll extends PureComponent {
     this.forceUpdate()
   }
 
+  /**
+   * 设置滚动比例
+   * @param height
+   */
   setBaseScrollHeightRatio(height) {
     if (this.baseScrollRatio) return
     this.baseScrollRatio = 1
@@ -118,17 +122,6 @@ class Scroll extends PureComponent {
   }
 
   boundleScroll() {
-    /*
-    this.locked = true
-    this.scrollTimer = setTimeout(() => {
-      this.locked = false
-      if (this.pixelX !== 0 || this.pixelY !== 0) {
-        this.boundleScroll()
-      }
-    }, 32)
-    */
-
-    // lock direction
     if (Math.abs(this.pixelX) > Math.abs(this.pixelY)) {
       this.pixelY = 0
     } else {
@@ -157,6 +150,7 @@ class Scroll extends PureComponent {
     const scrollY = this.wheelY
     const { innerScrollAttr } = this.props
     if (!scrollX && !scrollY) return
+
     if (innerScrollAttr.find(attr => event.target.hasAttribute(attr))) {
       event.stopPropagation()
       return
@@ -175,9 +169,7 @@ class Scroll extends PureComponent {
       event.preventDefault()
     } else if (scrollY) event.preventDefault()
 
-    // if (!this.locked) {
     this.boundleScroll()
-    // }
   }
 
   handleScroll(x, y, pixelX, pixelY) {
@@ -256,7 +248,6 @@ class Scroll extends PureComponent {
 Scroll.propTypes = {
   ...getProps(PropTypes),
   left: PropTypes.number.isRequired,
-  // overLock: PropTypes.bool,
   top: PropTypes.number.isRequired,
   onScroll: PropTypes.func.isRequired,
   scrollHeight: PropTypes.number,
@@ -269,7 +260,6 @@ Scroll.propTypes = {
 
 Scroll.defaultProps = {
   ...defaultProps,
-  // overLock: true,
   scrollHeight: 0,
   scrollWidth: 0,
   innerScrollAttr: [],

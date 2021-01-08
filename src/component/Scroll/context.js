@@ -5,8 +5,7 @@ const context = createReactContext()
 
 const { Consumer } = context
 
-// eslint-disable-next-line
-export const Provider = context.Provider
+export const { Provider } = context
 
 export const scrollConsumer = Origin => props => (
   <Consumer>

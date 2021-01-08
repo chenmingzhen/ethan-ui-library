@@ -166,6 +166,7 @@ class OptionList extends Component {
     const { hoverIndex, currentIndex } = this.state
 
     let scroll = ''
+    // Scroll的高度 包括隐藏部分
     const scrollHeight = lineHeight * data.length
     if (height < scrollHeight) {
       scroll = 'y'

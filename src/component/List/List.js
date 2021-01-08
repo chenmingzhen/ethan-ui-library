@@ -4,12 +4,11 @@ import classnames from 'classnames'
 import { getProps, defaultProps } from '@/utils/proptypes'
 import { listClass } from '@/styles'
 
-// Use Component cause stateless Element can't use ref
-// eslint-disable-next-line
 class List extends Component {
   render() {
     const className = classnames(listClass('_'), this.props.className)
     const { show, getRef, ...props } = this.props
+    // children in here
     return <div ref={getRef} {...props} className={className} style={this.props.style} />
   }
 }

@@ -80,6 +80,7 @@ class ScrollBar extends PureComponent {
     onScroll(newOffset)
   }
 
+  // 点击滚动容器 滚动条外的部分
   handleBgClick(event) {
     // 点击Bar内部内容 不处理
     if (event.target === this.handle) return
