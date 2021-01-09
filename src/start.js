@@ -1,11 +1,11 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 import '@/styles/normalize.less'
-import Menu from '@/component/Menu/example'
+import Card from '@/component/Card/example'
 
 ReactDOM.render(
   <div>
-    <Menu />
+    <Card />
   </div>,
   document.getElementById('root')
 )
