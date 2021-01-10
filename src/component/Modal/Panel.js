@@ -30,24 +30,6 @@ const handleStop = e => e.stopPropagation()
 export default class Panel extends PureComponent {
   panel = null
 
-  componentDidMount() {
-    const { container } = this.props
-    this.updateOrigin()
-    this.animate()
-
-    const { autoFocusButton, id } = this.props
-    if (!autoFocusButton) return
-    const el = container.querySelector(`#${id}-${autoFocusButton}`)
-    if (!el) return
-    el.focus()
-  }
-
-  componentDidUpdate() {
-    if (this.getShow()) return
-    this.updateOrigin()
-    this.animate()
-  }
-
   getShow() {
     const { container } = this.props
     if (container.classList.contains(modalClass('show'))) return true
@@ -88,14 +70,19 @@ export default class Panel extends PureComponent {
 
   updateOrigin() {
     const { position, zoom } = this.props
+
     if (position || !zoom) return
+
     const node = this.panel
+
     setTransformOrigin(node, '')
+
     if (node) {
       if (mousePosition) {
         const { left, top } = node.getBoundingClientRect()
         const ol = mousePosition.x - left
         const ot = mousePosition.y - top
+
         setTransformOrigin(node, `${ol}px ${ot}px`)
       } else {
         setTransformOrigin(node, '')
@@ -103,20 +90,42 @@ export default class Panel extends PureComponent {
     }
   }
 
-  // eslint-disable-next-line
-  lockWheel(event) {
-    event.preventDefault()
+  componentDidMount() {
+    const { container } = this.props
+
+    this.updateOrigin()
+    this.animate()
+
+    const { autoFocusButton, id } = this.props
+
+    if (!autoFocusButton) return
+    const el = container.querySelector(`#${id}-${autoFocusButton}`)
+
+    if (!el) return
+
+    el.focus()
+  }
+
+  componentDidUpdate() {
+    if (this.getShow()) return
+
+    this.updateOrigin()
+    this.animate()
   }
 
   renderIcon() {
     const { type } = this.props
+
     if (type === 'default') return null
+
     const iconType = type.charAt(0).toUpperCase() + type.slice(1)
+
     return Icons[iconType]
   }
 
   renderTitle(justRenderClassComponent = false) {
     const { from, title } = this.props
+
     if (!title) return null
 
     if (from === 'method') {
@@ -125,7 +134,6 @@ export default class Panel extends PureComponent {
       return <div className={modalClass('title')}>{title}</div>
     }
 
-    // base Component
     const icon = this.renderIcon()
 
     return (
@@ -167,6 +175,7 @@ export default class Panel extends PureComponent {
 
     const className = classnames(modalClass('panel', type, position, zoom && !moveable && 'zoom'), this.props.className)
     const showClose = typeof hideClose === 'boolean' ? !hideClose : maskCloseAble || maskCloseAble === null
+
     return (
       <ZProvider value>
         <Provider value={{ element: undefined }}>
@@ -200,7 +209,7 @@ export default class Panel extends PureComponent {
   }
 }
 
-Panel.displayName = 'ShineoutModalPanel'
+Panel.displayName = 'EthanModalPanel'
 
 Panel.propTypes = {
   ...getProps(PropTypes),
