@@ -8,13 +8,12 @@ import Card from '../Card'
 import { Provider } from '../Scroll/context'
 import { Provider as ZProvider } from './context'
 
-const setTransformOrigin = (node, value) => {
+function setTransformOrigin(node, value) {
   const { style } = node
   style.transformOrigin = value
 }
 
 let mousePosition = null
-
 const getClickPosition = e => {
   mousePosition = {
     x: e.clientX,
@@ -22,13 +21,38 @@ const getClickPosition = e => {
   }
   setTimeout(() => {
     mousePosition = null
-  }, 200)
+  }, 100)
 }
 
 document.addEventListener('click', getClickPosition, true)
 
+const handleStop = e => e.stopPropagation()
 export default class Panel extends PureComponent {
   panel = null
+
+  componentDidMount() {
+    const { container } = this.props
+    this.updateOrigin()
+    this.animate()
+
+    const { autoFocusButton, id } = this.props
+    if (!autoFocusButton) return
+    const el = container.querySelector(`#${id}-${autoFocusButton}`)
+    if (!el) return
+    el.focus()
+  }
+
+  componentDidUpdate() {
+    if (this.getShow()) return
+    this.updateOrigin()
+    this.animate()
+  }
+
+  getShow() {
+    const { container } = this.props
+    if (container.classList.contains(modalClass('show'))) return true
+    return false
+  }
 
   getStyle() {
     const { width, height, top, position, style } = this.props
@@ -54,26 +78,24 @@ export default class Panel extends PureComponent {
     this.panel = node
   }
 
-  // eslint-disable-next-line class-methods-use-this
-  lockWheel(event) {
-    event.preventDefault()
+  animate() {
+    const { container, position } = this.props
+    setTimeout(() => {
+      container.classList.add(modalClass('show'))
+      if (!position) container.classList.add(modalClass('start'))
+    })
   }
 
   updateOrigin() {
-    const { position } = this.props
-
-    if (position) return
-
+    const { position, zoom } = this.props
+    if (position || !zoom) return
     const node = this.panel
-
     setTransformOrigin(node, '')
-
     if (node) {
       if (mousePosition) {
         const { left, top } = node.getBoundingClientRect()
         const ol = mousePosition.x - left
         const ot = mousePosition.y - top
-
         setTransformOrigin(node, `${ol}px ${ot}px`)
       } else {
         setTransformOrigin(node, '')
@@ -81,56 +103,75 @@ export default class Panel extends PureComponent {
     }
   }
 
-  componentDidMount() {
-    this.updateOrigin()
-
-    const { autoFocusButton, id } = this.props
-
-    if (!autoFocusButton) return
-
-    const el = document.querySelector(`#${id}-${autoFocusButton}`)
-
-    if (!el) return
-
-    el.focus()
+  // eslint-disable-next-line
+  lockWheel(event) {
+    event.preventDefault()
   }
 
-  componentDidUpdate() {
-    this.updateOrigin()
+  renderIcon() {
+    const { type } = this.props
+    if (type === 'default') return null
+    const iconType = type.charAt(0).toUpperCase() + type.slice(1)
+    return Icons[iconType]
+  }
+
+  renderTitle(justRenderClassComponent = false) {
+    const { from, title } = this.props
+    if (!title) return null
+
+    if (from === 'method') {
+      if (justRenderClassComponent) return null
+
+      return <div className={modalClass('title')}>{title}</div>
+    }
+
+    // base Component
+    const icon = this.renderIcon()
+
+    return (
+      <Card.Header className={modalClass('title', icon && 'with-icon')}>
+        {icon && <div className={modalClass('icon')}>{icon}</div>}
+        {title}
+      </Card.Header>
+    )
   }
 
   renderContent() {
-    const { children, noPadding, title, type, padding, position, bodyStyle } = this.props
+    const { children, noPadding, padding, position, bodyStyle, from = null } = this.props
 
     let style = { padding: noPadding === true ? 0 : padding }
     if (position) style.overflow = 'auto'
 
     if (bodyStyle) style = Object.assign(style, bodyStyle)
 
-    if (type === 'default') return <Card.Body style={style}>{children}</Card.Body>
+    if (!from || from !== 'method')
+      return (
+        <Card.Body style={style} onScroll={handleStop}>
+          {children}
+        </Card.Body>
+      )
 
-    const iconType = type.charAt(0).toUpperCase() + type.slice(1)
-    const icon = Icons[iconType]
+    const icon = this.renderIcon()
+
     return (
-      <Card.Body className={modalClass('body')} style={style}>
+      <Card.Body className={modalClass('body')} style={style} onScroll={handleStop}>
         {icon && <div className={modalClass('icon')}>{icon}</div>}
-        {title && <div className={modalClass('title')}>{title}</div>}
+        {this.renderTitle()}
         <div>{children}</div>
       </Card.Body>
     )
   }
 
   render() {
-    const { footer, title, type, onClose, maskCloseAble, position, moveable, resizable, hideClose } = this.props
+    const { footer, type, onClose, maskCloseAble, position, moveable, zoom, resizable, hideClose, from } = this.props
 
-    const className = classnames(modalClass('panel', type, position), this.props.className)
-
+    const className = classnames(modalClass('panel', type, position, zoom && !moveable && 'zoom'), this.props.className)
     const showClose = typeof hideClose === 'boolean' ? !hideClose : maskCloseAble || maskCloseAble === null
-
     return (
       <ZProvider value>
         <Provider value={{ element: undefined }}>
           <div key="mask" className={modalClass('mask')} onClick={maskCloseAble ? onClose : undefined} />
+
           <Card
             forwardedRef={this.savePanel}
             moveable={moveable}
@@ -145,10 +186,10 @@ export default class Panel extends PureComponent {
                 {Icons.Close}
               </a>
             )}
-            {title && type === 'default' && <Card.Header className={modalClass('title')}>{title}</Card.Header>}
+            {this.renderTitle(true)}
             {this.renderContent()}
             {footer && (
-              <Card.Footer className={modalClass('footer')} align="right">
+              <Card.Footer className={modalClass('footer', from)} align="right">
                 {footer}
               </Card.Footer>
             )}
@@ -159,7 +200,7 @@ export default class Panel extends PureComponent {
   }
 }
 
-Panel.displayName = 'EthanModalPanel'
+Panel.displayName = 'ShineoutModalPanel'
 
 Panel.propTypes = {
   ...getProps(PropTypes),
@@ -175,6 +216,9 @@ Panel.propTypes = {
   moveable: PropTypes.bool,
   resizable: PropTypes.oneOfType([PropTypes.bool, PropTypes.object]),
   hideClose: PropTypes.bool,
+  from: PropTypes.string,
+  zoom: PropTypes.bool,
+  container: PropTypes.any,
 }
 
 Panel.defaultProps = {

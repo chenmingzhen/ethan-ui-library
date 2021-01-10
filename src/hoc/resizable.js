@@ -84,12 +84,12 @@ export default curry(
         const { resizable } = this.props
         if (!resizable || this.appended) return
         this.appended = true
-        this.el.document.querySelector(`.${resizableClass(this.resizableId)}`)
+        this.el = document.querySelector(`.${resizableClass(this.resizableId)}`)
 
         if (!this.el) return
         this.size = {
-          width: this.el.width,
-          height: this.el.height,
+          width: this.el.clientWidth,
+          height: this.el.clientHeight,
         }
 
         this.handlers = new Map()

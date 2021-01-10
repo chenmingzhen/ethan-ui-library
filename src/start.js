@@ -1,11 +1,11 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 import '@/styles/normalize.less'
-import Card from '@/component/Card/example'
+import Modal from '@/component/Modal/example'
 
 ReactDOM.render(
   <div>
-    <Card />
+    <Modal />
   </div>,
   document.getElementById('root')
 )
