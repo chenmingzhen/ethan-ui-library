@@ -43,6 +43,8 @@ const destroy = (id, unmount) => {
   // 从 DOM 中移除已经挂载的 React 组件，清除相应的事件处理器和 state。
   // 如果在 container 内没有组件挂载，这个函数将什么都不做。
   // 如果组件成功移除，则返回 true；如果没有组件被移除，则返回 false。
+
+  // 这个unMount多余 考虑去除
   if (unmount) ReactDOM.unmountComponentAtNode(div)
   container.removeChild(div)
 }
@@ -131,6 +133,8 @@ const open = (props, isPortal) => {
     div.classList.add(modalClass('show'))
   }, 10)
 
+  // 注意 此ReactNode会被存储 Panel的正常更新不会让此组件unMount再Mount 而是Update
+  // 见example update
   const panel = (
     <Panel {...otherProps} onClose={handleClose} container={div}>
       {content}

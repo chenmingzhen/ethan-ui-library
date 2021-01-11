@@ -7,7 +7,6 @@ export default class extends Component {
     super(props)
     this.state = {
       visible: false,
-      position: 'right',
     }
   }
 
@@ -31,7 +30,6 @@ export default class extends Component {
   }
 
   render() {
-    const { position } = this.state
     return (
       <div>
         <Button onClick={this.toggle.bind(this, true)}>click me</Button>

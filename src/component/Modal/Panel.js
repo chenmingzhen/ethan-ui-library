@@ -6,6 +6,7 @@ import { modalClass } from '@/styles'
 import Icons from '../icons'
 import Card from '../Card'
 import { Provider } from '../Scroll/context'
+// 用于设置默认zIndex
 import { Provider as ZProvider } from './context'
 
 function setTransformOrigin(node, value) {
@@ -14,11 +15,14 @@ function setTransformOrigin(node, value) {
 }
 
 let mousePosition = null
+
+// 对Zoom情况做处理 记录点击的位置 从点击点缩放到中心
 const getClickPosition = e => {
   mousePosition = {
     x: e.clientX,
     y: e.clientY,
   }
+  // 100 无实际意义
   setTimeout(() => {
     mousePosition = null
   }, 100)
@@ -27,6 +31,7 @@ const getClickPosition = e => {
 document.addEventListener('click', getClickPosition, true)
 
 const handleStop = e => e.stopPropagation()
+
 export default class Panel extends PureComponent {
   panel = null
 
@@ -60,6 +65,9 @@ export default class Panel extends PureComponent {
     this.panel = node
   }
 
+  /**
+   * 无作用 考虑去掉此方法
+   */
   animate() {
     const { container, position } = this.props
     setTimeout(() => {
@@ -77,14 +85,17 @@ export default class Panel extends PureComponent {
 
     setTransformOrigin(node, '')
 
+    // 控制位置动画
     if (node) {
       if (mousePosition) {
         const { left, top } = node.getBoundingClientRect()
+
         const ol = mousePosition.x - left
         const ot = mousePosition.y - top
 
         setTransformOrigin(node, `${ol}px ${ot}px`)
       } else {
+        // 无作用 考虑去掉
         setTransformOrigin(node, '')
       }
     }
@@ -128,6 +139,7 @@ export default class Panel extends PureComponent {
 
     if (!title) return null
 
+    // 对Success Info等做特殊处理
     if (from === 'method') {
       if (justRenderClassComponent) return null
 
@@ -180,7 +192,6 @@ export default class Panel extends PureComponent {
       <ZProvider value>
         <Provider value={{ element: undefined }}>
           <div key="mask" className={modalClass('mask')} onClick={maskCloseAble ? onClose : undefined} />
-
           <Card
             forwardedRef={this.savePanel}
             moveable={moveable}

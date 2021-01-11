@@ -7,6 +7,7 @@ import Focus from './Focus'
 import Multiple from './Multiple'
 import Position from './Position'
 import Zoom from './Zoom'
+import Update from './Update'
 
 export default () => (
   <>
@@ -18,5 +19,6 @@ export default () => (
     <Multiple />
     <Position />
     <Zoom />
+    <Update />
   </>
 )

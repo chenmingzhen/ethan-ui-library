@@ -8,11 +8,14 @@ import { open, close, destroy } from './events'
 class Modal extends Component {
   constructor(props) {
     super(props)
+    // 唯一Id
     this.id = getUidStr()
+    // 是否可见
     this.visible = props.visible
     this.handleUpdate = this.handleUpdate.bind(this)
   }
 
+  // 整合Props 与event中createModalMethod相同理解
   getOption() {
     const { children, usePortal, visible, ...props } = this.props
     return {
@@ -35,6 +38,7 @@ class Modal extends Component {
 
   shouldComponentUpdate(nextProps) {
     if (shallowEqual(this.props, nextProps)) return false
+
     if (nextProps.visible) return true
 
     close({ ...this.props, id: this.id }, this.handleUpdate)
