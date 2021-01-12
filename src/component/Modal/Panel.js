@@ -93,6 +93,11 @@ export default class Panel extends PureComponent {
         const ol = mousePosition.x - left
         const ot = mousePosition.y - top
 
+        // 设置transform的中心点 启用start动画
+        // 注意 影响的是scale缩放
+        // 可以理解origin的设置 对translate是无影响的 该移动多少还是多少
+        // 关闭时候执行end scale缩放
+        // 没被destroy时  只是动画制造消失的假象，Dom在动画结束后还在中心原处
         setTransformOrigin(node, `${ol}px ${ot}px`)
       } else {
         // 无作用 考虑去掉
