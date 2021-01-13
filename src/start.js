@@ -1,11 +1,11 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 import '@/styles/normalize.less'
-import Modal from '@/component/Modal/example'
+import Textarea from '@/component/Textarea/example'
 
 ReactDOM.render(
   <div>
-    <Modal />
+    <Textarea />
   </div>,
   document.getElementById('root')
 )
