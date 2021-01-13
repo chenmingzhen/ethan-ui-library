@@ -60,9 +60,11 @@ export default curry(
       }
 
       handleMouseMove(e) {
+        // 移动的值
         let x = e.movementX
         let y = e.movementY
         if (!this.active) return
+
         this.setState(
           immer(draft => {
             x += draft.x

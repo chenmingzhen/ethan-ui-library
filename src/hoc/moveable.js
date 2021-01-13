@@ -41,7 +41,6 @@ export default curry(
         }
       }
 
-      // eslint-disable-next-line react/sort-comp
       bindEvent() {
         this.el = document.querySelector(`.${moveableClass(this.moveabledId)}`)
         if (!this.el) return
@@ -50,11 +49,18 @@ export default curry(
       }
 
       handleMouseDown(e) {
+        // button 事件属性可返回一个整数，指示当事件被触发时哪个鼠标按键被点击。
+        // https://www.w3school.com.cn/jsref/event_button.asp
         if (e.button !== 0 || !this.el) return
+
+        // 拖拽handler才移动 Card的header
+        // handler存在且该元素还是handler的子元素时才继续
         if (handler && !e.target.matches(handler)) return
+
         document.addEventListener('mousemove', this.handleMouseMove)
         document.addEventListener('mouseup', this.handleMouseUp)
         document.addEventListener('mouseleave', this.handleMouseUp)
+
         if (!this.handlerPos) {
           this.handlerPos = this.handlerEl.getBoundingClientRect()
         }
@@ -68,6 +74,7 @@ export default curry(
         this.setState(prev => {
           let x = prev.x + e.movementX
           let y = prev.y + e.movementY
+          // 超过设定范围 不操作
           if (this.handlerPos.right + x < DIS_LIMIT || this.handlerPos.left + x > docSize.width - DIS_LIMIT) {
             // eslint-disable-next-line prefer-destructuring
             x = prev.x
