@@ -1,11 +1,11 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 import '@/styles/normalize.less'
-import Textarea from '@/component/Textarea/example'
+import Radio from '@/component/Radio/example'
 
 ReactDOM.render(
   <div>
-    <Textarea />
+    <Radio />
   </div>,
   document.getElementById('root')
 )

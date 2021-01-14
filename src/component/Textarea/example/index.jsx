@@ -20,7 +20,7 @@ const renderInfo = value => {
 export default function() {
   return (
     <>
-      <Textarea rows={6} placeholder="input something" />
+      <Textarea rows={6} placeholder="input something" resize />
       <div>
         <Textarea rows={2} autosize maxHeight={200} placeholder="autosize" />
         <br />

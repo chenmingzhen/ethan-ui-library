@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect, useRef } from 'react'
+import React, { useState, useCallback, useEffect, useRef, memo } from 'react'
 import PropTypes from 'prop-types'
 import { inputClass } from '@/styles'
 import cleanProps from '@/utils/cleanProps'
@@ -145,4 +145,4 @@ Textarea.defaultProps = {
   resize: false,
 }
 
-export default Textarea
+export default memo(Textarea)
