@@ -6,10 +6,12 @@ import cleanProps from '@/utils/cleanProps'
 function Textarea(props) {
   const [height, setHeight] = useState(0)
   const shadow = useRef()
+  // 上一个props值
   const prevPropsRef = useRef()
   const prevProps = prevPropsRef.current
   // ----------------------lifeCycle---------------------
   useEffect(() => {
+    // 记录上一个props值
     prevPropsRef.current = props
     if (props.autosize) textareaResize()
   }, [])
@@ -115,6 +117,7 @@ function Textarea(props) {
     renderInfo(),
   ]
 
+  // 占位 如果autoSize存在 这个textarea固定高度 然后内容超过的时候 出现scrollHeight 这时的scrollHeight就是上面真正textarea的高度
   if (autosize) {
     ts.push(
       <textarea key="s" ref={bindShadow} className={inputClass('shadow')} rows={props.rows} defaultValue={value} />
