@@ -8,6 +8,9 @@ import { isEnterPress } from '@/utils/is'
 import { checkInputClass } from '@/styles'
 import Input from '../Input'
 
+/**
+ * @param type radio||switch||checkbox
+ */
 export default function(type) {
   class CheckItem extends PureComponent {
     constructor(props) {
