@@ -14,6 +14,7 @@ function RadioGroup(props) {
   const update = useUpdate()
   // ---------------------------lifecycle---------------------------
   useEffect(() => {
+    // 订阅value改变时
     props.datum.subscribe(CHANGE_TOPIC, update)
     return () => {
       props.datum.unsubscribe(CHANGE_TOPIC, update)
@@ -40,6 +41,7 @@ function RadioGroup(props) {
       const { renderItem } = props
 
       if (typeof renderItem === 'string') {
+        // 渲染数据data的指定属性
         return d[renderItem]
       }
       if (typeof renderItem === 'function') {
@@ -69,6 +71,7 @@ function RadioGroup(props) {
     [block, button, size, props.className]
   )
 
+  // 无data  传回调交给用户自行操作
   if (data === undefined) {
     return (
       <div className={className}>

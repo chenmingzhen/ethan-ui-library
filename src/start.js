@@ -1,11 +1,11 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 import '@/styles/normalize.less'
-import Switch from '@/component/Switch/example'
+import Radio from '@/component/Radio/example'
 
 ReactDOM.render(
   <div>
-    <Switch />
+    <Radio />
   </div>,
   document.getElementById('root')
 )
