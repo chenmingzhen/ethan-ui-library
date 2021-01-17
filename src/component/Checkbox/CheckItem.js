@@ -66,6 +66,10 @@ export default function(type) {
       }
     }
 
+    /**
+     * 原生input发生变化时
+     * @param e
+     */
     handleChange(e) {
       const { onChange, onRawChange, index, inputable } = this.props
       const { checked } = e.target
@@ -84,6 +88,10 @@ export default function(type) {
       if (onChange) onChange(value, checked, index)
     }
 
+    /**
+     * Input组件值改变 执行props回调
+     * @param val
+     */
     handleInputChange(val) {
       const { onChange, index } = this.props
       const checked = val.length > 0

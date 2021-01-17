@@ -34,6 +34,7 @@ export default class {
     return this.$values
   }
 
+  // 暴露外部设置values
   set values(values) {
     this.$values = values
     this.dispatch(CHANGE_TOPIC)
@@ -68,6 +69,8 @@ export default class {
     }
   }
 
+  // TODO
+  // 扁平化属性Data
   flattenTreeData(data, childrenKey) {
     const keys = data.map(v => this.format(v)).filter(v => typeof v !== 'object')
     const key = keys.join()
@@ -87,6 +90,7 @@ export default class {
     return flatten
   }
 
+  // hoc=》setValue=》本类set=》本类add
   add(data, _, childrenKey, unshift) {
     if (data === undefined || data === null) return
 
@@ -108,6 +112,7 @@ export default class {
 
     const values = []
     for (const r of raws) {
+      // 获取格式化后的值
       const v = this.format(r)
       if (v !== undefined) values.push(v)
     }
@@ -237,17 +242,25 @@ export default class {
     this.dispatch('set-value')
   }
 
+  /**
+   * 格式化数据并返回
+   * @param values
+   * @returns {*[][]|*[]|*}
+   */
   formatValue(values = []) {
+    // 限制为1 且value不是数组 返回一个数组
     if (this.limit === 1 && !Array.isArray(values)) {
       return [values]
     }
 
+    // 空数值
     if (!values) return []
 
     if (Array.isArray(values)) {
       return values
     }
 
+    // values值string类型 判断是否传入分割符  根据分割符来返回values的数组
     if (typeof values === 'string') {
       if (this.separator) {
         return values.split(this.separator).map(s => s.trim())
@@ -261,12 +274,19 @@ export default class {
     return []
   }
 
+  /**
+   * 每次SetValue时需要将值缓存
+   * @param values
+   * @param type
+   */
   setValue(values = [], type) {
     if (type === WITH_OUT_DISPATCH) {
       this.$values = this.formatValue(values)
     } else {
+      // TODO 表单时候
       this.resetValue(this.formatValue(values), shallowEqual(this.$cachedValue, values))
     }
+    // 将value缓存
     this.$cachedValue = this.getValue()
   }
 }

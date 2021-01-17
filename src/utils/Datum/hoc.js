@@ -11,6 +11,9 @@ const types = {
   list: List,
 }
 
+/**
+ * Datum的高阶组件容器
+ */
 export default curry((options, Origin) => {
   const { type = 'list', key = 'value', limit = 0, bindProps = [], ignoreUndefined, pure = true } = options || {}
   const Datum = types[type]
@@ -35,6 +38,7 @@ export default curry((options, Origin) => {
 
       const value = props[key]
 
+      // 判断外部是否传进Datum
       if (datum instanceof Datum) {
         this.datum = datum
       } else {
@@ -57,6 +61,7 @@ export default curry((options, Origin) => {
     }
 
     componentDidMount() {
+      // 记录上一个值
       this.prevValues = this.props[key]
     }
 
