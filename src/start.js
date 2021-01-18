@@ -1,11 +1,11 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 import '@/styles/normalize.less'
-import Radio from '@/component/Radio/example'
+import EditaleArea from '@/component/EditaleArea/example'
 
 ReactDOM.render(
   <div>
-    <Radio />
+    <EditaleArea />
   </div>,
   document.getElementById('root')
 )

@@ -12,7 +12,7 @@ const types = {
 }
 
 /**
- * Datum的高阶组件容器
+ * Datum的高阶组件容器 通常给Group赋值Datum
  */
 export default curry((options, Origin) => {
   const { type = 'list', key = 'value', limit = 0, bindProps = [], ignoreUndefined, pure = true } = options || {}

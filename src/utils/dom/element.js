@@ -82,6 +82,8 @@ function select(element) {
     element.focus()
     return
   }
+  // getSelection()方法的功能：返回当前DOM对象选中的文本信息
+  // createRange https://www.cnblogs.com/lijinwen/p/6254148.html
   if (window.getSelection && document.createRange) {
     if (element) element.focus()
     const range = document.createRange()
