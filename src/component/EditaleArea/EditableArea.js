@@ -42,6 +42,7 @@ const Editable = props => {
   })
 
   // ------------------------method---------------------------
+
   const bindInput = useCallback(el => {
     inputRef.current = el
   }, [])

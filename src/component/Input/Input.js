@@ -17,7 +17,9 @@ class Input extends PureComponent {
   }
 
   bindRef(el) {
+    const { forwardedRef } = this.props
     this.ref = el
+    if (forwardedRef) forwardedRef(el)
   }
 
   /**
@@ -137,6 +139,7 @@ class Input extends PureComponent {
       htmlName,
       forceChange,
       onEnterPress,
+      forwardedRef,
       ...other
     } = this.props
     const value = this.props.value == null ? '' : this.props.value
