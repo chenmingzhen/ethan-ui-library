@@ -11,13 +11,14 @@ function Textarea(props) {
   const prevProps = prevPropsRef.current
   // ----------------------lifeCycle---------------------
   useEffect(() => {
-    // 记录上一个props值
-    prevPropsRef.current = props
     if (props.autosize) textareaResize()
   }, [])
 
   useEffect(() => () => {
     if (props.autosize && prevProps && prevProps.value !== props.value) textareaResize(props.value)
+
+    // 记录上一个props值
+    prevPropsRef.current = props
   })
   // ---------------------method-------------------------
   const defaultInfo = useCallback(
