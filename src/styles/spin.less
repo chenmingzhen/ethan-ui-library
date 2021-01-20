@@ -6,6 +6,7 @@
 .@{spin-prefix} {
   &-container {
     position: relative;
+
     .@{spin-prefix}-loading {
       position: absolute;
       top: 0;
@@ -17,9 +18,11 @@
       justify-content: center;
       align-items: center;
     }
+
     .@{spin-prefix}-content {
       position: relative;
       z-index: 2;
+
       &:after {
         position: absolute;
         top: 0;
@@ -37,6 +40,7 @@
       }
     }
   }
+
   &-show &-content:after {
     opacity: .5;
   }

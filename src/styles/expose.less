@@ -6,21 +6,25 @@
 
 .borderMixin(@attr, @type) when (@attr = border) {
   @color-var-name: %('colors-%s', @type);
+
   border-color: @@color-var-name;
 }
 
 .backgroundMixin(@attr, @type) when (@attr = background) {
   @color-var-name: %('colors-%s', @type);
+
   background-color: @@color-var-name;
 }
 
 .colorMixin(@attr, @type) when (@attr = color) {
   @color-var-name: %('colors-%s', @type);
+
   color: @@color-var-name;
 }
 
 .generate-attrs(@data, @n, @type, @i: 1) when (@i =< @n) {
   @name: extract(@attrs, @i);
+
   &-@{name} {
     .borderMixin(@name, @type);
     .backgroundMixin(@name, @type);
@@ -31,6 +35,7 @@
 
 .generate-types(@data, @n, @i: 1) when (@i =< @n) {
   @name: extract(@types, @i);
+
   &-@{name} {
     .generate-attrs(@attrs, 3, @name)
   }
@@ -40,6 +45,7 @@
 .generate-location(@data, @n, @i: 1) when (@i =< @n) {
   @name: extract(@types, @i);
   @color-var-name: %('colors-%s', @name);
+
   &-location-@{name} {
     color: @@color-var-name;
     display: none;
@@ -50,6 +56,7 @@
 
 .loop-gray(@n, @i: 1) when (@i =< @n) {
   @var-name: %('gray-%s00', @i);
+
   &-gray-@{i}00 {
     color: @@var-name;
   }

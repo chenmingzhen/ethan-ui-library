@@ -27,6 +27,7 @@
 
     .@{treeSelect-prefix}-single .@{so-prefix}-tree-content {
       cursor: default;
+
       &:hover {
         background: @primary-color-fade-10;
       }
@@ -98,11 +99,13 @@
         opacity: .9;
         text-overflow: unset;
         transition: none;
+
         > span {
           vertical-align: middle;
           letter-spacing: 2px;
         }
       }
+
       &-more {
         background: @primary-color-fade-60;
         color: #fff;
@@ -140,6 +143,7 @@
     display: flex;
     flex-direction: row;
     flex-wrap: nowrap;
+
     .@{treeSelect-prefix}-ban {
       padding-right: @select-result-space;
     }
@@ -200,6 +204,7 @@
     border-radius: 2px;
     padding: 0 4px;
   }
+
   &-options span.@{treeSelect-prefix}-selected {
     background-color: @primary-color-fade-60;
     color: white;
@@ -362,6 +367,7 @@
   &-multiple &-result {
     padding-left: @padding-base-horizontal / 2;
     padding-right: @padding-base-horizontal + 22;
+
     a.@{treeSelect-prefix}-close.@{treeSelect-prefix}-indicator {
       right: 17px;
     }
@@ -370,6 +376,7 @@
   &-multiple &-compressed {
     padding-left: @padding-base-horizontal / 2;
     padding-right: @padding-base-horizontal + 12;
+
     a.@{treeSelect-prefix}-close.@{treeSelect-prefix}-indicator {
       right: 7px;
     }
@@ -400,6 +407,7 @@
   &-disabled {
     .@{treeSelect-prefix}-result {
       cursor: not-allowed;
+
       .@{treeSelect-prefix}-item {
         padding-right: @select-result-space;
         background: @input-bg-disabled;

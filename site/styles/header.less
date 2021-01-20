@@ -11,6 +11,7 @@
   height: @header-height;
   align-items: center;
   border-bottom: solid 1px rgb(232, 242, 255);
+
   @media (max-width: 979px) and (min-width: 0px){
     position: fixed;
     right: 0;
@@ -67,6 +68,7 @@
 
   &-light {
     vertical-align: middle;
+
     button,
     button:hover,
     button:focus,
@@ -98,6 +100,7 @@
     overflow: auto;
     height: 100%;
     background: @doc-code-bg;
+
     &-close {
       margin-left: 8px;
       float: left;
@@ -107,55 +110,67 @@
       height: 10px;
       padding: 0;
     }
+
     &-item {
       display: flex;
       flex-direction: row;
       align-items: center;
     }
+
     &-footer {
       height: 44px;
       line-height: 44px;
       padding: 0 24px 0 12px;
       text-align: right;
       color: @editor-text-color;
+
       span {
         transition: color .3s;
         cursor: pointer;
         margin-left: 14px;
         color: @editor-darken-text-color;
+
         &:hover {
           color: @colors-primary;
         }
       }
     }
+
     &-content {
       width: 283px;
       flex: 1;
       padding: 15px 18px;
       overflow: auto;
+
       > div {
         margin-bottom: 20px;
+
         .@{so-prefix}-form-item {
           padding: 5px 0;
           margin-bottom: 0;
           display: block;
+
           .@{so-prefix}-form-label {
             font-size: 12px;
             width: auto;
             color: @editor-darken-text-color;
           }
+
           .@{doc-header-prefix}-attr-item {
             display: flex;
             flex-direction: row;
+
             > label {
               margin-right: 8px;
             }
+
             .@{doc-header-prefix}-color {
               width: 34px;
               height: 34px;
             }
           }
         }
+
         .@{doc-header-prefix}-form-desc {
           font-size: 12px;
           font-style: italic;
@@ -165,6 +180,7 @@
           color: #aaa;
         }
       }
+
       h2 {
         cursor: pointer;
         user-select: none;
@@ -173,14 +189,18 @@
         font-weight: 400;
         margin: 0 0 8px 0;
         transition: color .3s;
+
         &.@{doc-header-prefix}-active {
           padding-bottom: 8px;
           border-bottom: 2px solid fade(@editor-text-color, 30%);
           color: @editor-darken-text-color;
+
           > span {
             .caret-outline(up, @caret-width);
+
             margin-right: 10px;
             display: inline-block;
+
             &:after {
               width: 8px;
               height: 8px;
@@ -190,14 +210,18 @@
             }
           }
         }
+
         &:hover {
           color: @editor-darken-text-color;
         }
+
         > span {
           .caret-outline(down, @caret-width);
+
           float: right;
           margin-right: 10px;
           display: inline-block;
+
           &:after {
             width: 8px;
             height: 8px;
@@ -206,19 +230,23 @@
             border-width: 0 1px 1px 0;
           }
         }
+
         & + div {
           margin-left: -5px;
         }
       }
     }
+
     .@{doc-header-prefix}-color {
       &-item {
         display: inline-block;
         text-align: left;
         margin-right: 18px;
         margin-bottom: 8px;
+
         > p {
           margin: 0;
+
           &:first-child {
             text-transform: capitalize;
             margin-bottom: 4px;
@@ -250,6 +278,7 @@
       border-color: inherit;
       border-radius: inherit;
     }
+
     &-picker {
       box-shadow: none !important;
     }
@@ -264,33 +293,44 @@
     align-items: center;
     justify-content: flex-start;
   }
+
   @media (max-width: 979px) and (min-width: 599px) {
     &-logo svg{
       width: 100px;
     }
+
     a {
       line-height: normal;
     }
+
     &-light {
       display: none !important;
     }
+
     &-right {
       .so-button{
         margin-bottom: 0;
       }
     }
+
     &-search::-webkit-input-placeholder { color:transparent; }
+
     &-search::placeholder { color:transparent; }
+
     &-search:-ms-input-placeholder { color:transparent; }
+
     .so-button-link{
       display: none;
     }
+
     &-search {
       width: 0;
     }
+
     &-search:focus {
       width: 100px;
     }
+
     &-nav {
       -webkit-overflow-scrolling: touch;
       display: flex;
@@ -325,6 +365,7 @@
       display: block;
 
     }
+
     &-logo {
       padding: 0;
       margin: 0 10px;
@@ -360,25 +401,33 @@
     &-light {
       display: none !important;
     }
+
     &-right {
       padding-right: 5px;
+
       .so-button{
         padding: 2px 5px;
         font-size: 12px;
         margin-bottom: 0;
       }
     }
+
     &-search {
       width: 0px;
       margin-right: 0;
       overflow: hidden;
     }
+
     &-search:focus {
       width: 80px;
     }
+
     &-search::-webkit-input-placeholder { color:transparent; }
+
     &-search::placeholder { color:transparent; }
+
     &-search:-ms-input-placeholder { color:transparent; }
+
     .so-button-link{
       display: none;
     }

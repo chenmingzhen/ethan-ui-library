@@ -41,9 +41,11 @@
     padding: @panel-header-padding-vertical @panel-header-padding-horizontal;
     background-color: @card-header-bg;
     color: @card-header-color;
+
     &:after {
       bottom: 0;
     }
+
     .@{card-prefix}-indicator {
       display: inline-block;
       width: @panel-indicator-size;
@@ -89,6 +91,7 @@
     &:hover {
       .@{card-prefix}-foldup {
         background: @gray-300;
+
         > span {
           margin-bottom: 1px;
           border-bottom-color: #fff;
@@ -126,6 +129,7 @@
     padding: @panel-footer-padding-vertical @panel-footer-padding-horizontal;
     background-color: @card-footer-bg;
     color: @card-footer-color;
+
     &:after {
       top: 0;
     }

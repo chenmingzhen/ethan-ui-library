@@ -8,6 +8,7 @@
   0% {
     transform: scale(.2);
   }
+
   100% {
     // translate(0,0) can be removed
     transform: scale(1) translate(0, 0);
@@ -19,6 +20,7 @@
     // translate(0,0) can be removed
     transform: scale(1) translate(0, 0);
   }
+
   100% {
     transform: scale(.2);
   }
@@ -96,6 +98,7 @@
     overflow-x: hidden;
     overflow-y: hidden;
     transition: opacity .3s @zoom-out;
+
     .@{modal-prefix}-panel {
       transition: transform .3s @zoom-out;
     }
@@ -104,9 +107,11 @@
   &-end {
     opacity: 0;
     transition: opacity .3s @zoom-out;
+
     .@{modal-prefix}-panel {
       transition: transform .3s @zoom-out;
     }
+
     .@{modal-prefix}-panel.@{modal-prefix}-zoom {
       animation: scale-out .3s @zoom-out;
     }
@@ -115,6 +120,7 @@
   &-show {
     opacity: 1;
     transition: opacity .3s @zoom-in;
+
     .@{modal-prefix}-panel {
       transition: transform .3s @zoom-in;
       transform: scale(1) translate(0, 0);
@@ -234,26 +240,32 @@
     border-radius: @modal-border-radius;
     border: @modal-border-width solid @modal-border-color;
     color:  @modal-color;
+
     &-hover:hover,
     &-shadow {
       box-shadow: @modal-box-shadow;
     }
+
     > .@{card-prefix}-header {
       padding: @modal-header-padding;
       border-radius: @modal-border-radius @modal-border-radius 0 0;
       background: @modal-header-bg;
     }
+
     > .@{card-prefix}-body {
       padding: @modal-body-padding;
     }
+
     .@{modal-prefix}-body {
       padding: @modal-icon-body-padding;
     }
+
     > .@{card-prefix}-footer {
       padding: @modal-footer-padding;
       border-radius: 0 0 @modal-border-radius @modal-border-radius;
       background: @modal-footer-bg;
     }
+
     > .@{card-prefix}-header, > .@{card-prefix}-footer {
       &:after {
         height: @modal-divider-height;

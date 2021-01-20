@@ -21,9 +21,11 @@
     height: @dropdown-caret-size;
     display: inline-block;
     vertical-align: middle;
+
     svg {
       vertical-align: top;
     }
+
     &:after {
       vertical-align: @dropdown-arrow-vertical;
     }
@@ -193,8 +195,10 @@
   &-box-list {
     padding: @dropdown-columns-padding;
     box-sizing: content-box;
+
     .@{dropdown-prefix}-item {
       text-align: center;
+
       &:hover {
         color: @colors-primary;
       }
@@ -217,6 +221,7 @@
     &:after {
       margin-left: 0;
     }
+
     .@{dropdown-prefix}-caret {
       &:after {
         margin-left: 0;

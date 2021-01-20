@@ -49,9 +49,11 @@
           background-clip: padding-box;
           line-height: @line-height-base;
           word-break: break-all;
+
           &:first-child {
             border-radius: @table-row-border-radius 0 0 @table-row-border-radius;
           }
+
           &:last-child {
             border-radius: 0 @table-row-border-radius @table-row-border-radius 0;
           }
@@ -223,6 +225,7 @@
         padding: @table-header-cell-padding;
       }
     }
+
     table {
       > tbody,
       > tfoot {
@@ -286,6 +289,7 @@
       &:before {
         bottom: -1px;
       }
+
       &:after {
         bottom: -1px;
       }
@@ -295,6 +299,7 @@
     .@{table-prefix}-fixed-left {
       border-right: 0;
       z-index: 1;
+
       &:after {
         bottom: -1px;
         position: absolute;
@@ -310,6 +315,7 @@
     .@{so-prefix}-scroll-y {
       border-left: 1px solid @table-border-color;
     }
+
     .@{so-prefix}-scroll-x {
       &:after {
         position: absolute;
@@ -327,7 +333,8 @@
   table > tbody > tr&-even > td {
     background-color: @table-even-td-bgc;
   }
-  table > tbody >tr&-odd > td {
+
+  table > tbody > tr&-odd > td {
     background-color: @table-odd-td-bgc;
   }
 
@@ -337,6 +344,7 @@
 
   &-simple-head.@{table-prefix}-scroll-y.@{table-prefix}-head {
     padding-right: 0;
+
     &:after {
       display: none;
     }
@@ -521,6 +529,7 @@
 
   td&-align-center, th&-align-center {
     text-align: center;
+
     > div.@{table-prefix}-has-sorter {
       justify-content: center;
     }
@@ -534,6 +543,7 @@
   
   td&-align-right, th&-align-right {
     text-align: right;
+
     > div.@{table-prefix}-has-sorter {
       justify-content: flex-end;
     }
@@ -541,6 +551,7 @@
 
   td&-align-left, th&-align-left {
     text-align: left;
+
     > div.@{table-prefix}-has-sorter {
       justify-content: flex-start;
     }
@@ -558,6 +569,7 @@
       opacity: 0;
       transition: opacity .3s;
       cursor: ew-resize;
+
       &:after, &:before {
         border-width: 3px;
         content: " ";
@@ -568,38 +580,45 @@
         bottom: 0;
         top: 0;
       }
+
       &:after {
         border-style: dashed solid dashed dashed;
         border-color: transparent @colors-primary transparent transparent;
         right: 4px;
       }
+
       &:before {
         border-style: dashed dashed dashed solid;
         border-color: transparent transparent transparent @colors-primary;
         left: 4px;
       }
     }
+
     thead tr th:last-child .@{table-prefix}-resize-spanner {
       display: none;
     }
+
     table.@{table-prefix}-resizing span.@{table-prefix}-resize-spanner{
       opacity: 0;
     }
+
     table th.@{table-prefix}-resizing-item .@{table-prefix}-resize-spanner {
       opacity: 1;
     }
+
     th:hover .@{table-prefix}-resize-spanner{
       opacity: 1;
     }
   }
 
   &-placeholder-tr td{
-    padding-top: 0!important;
-    padding-bottom: 0!important;
-    border-bottom-width: 0!important;
-    line-height: 0!important;
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+    border-bottom-width: 0 !important;
+    line-height: 0 !important;
+
     > div {
-      height: 0!important;
+      height: 0 !important;
       overflow: hidden;
     }
   }
