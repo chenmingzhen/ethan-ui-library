@@ -87,7 +87,9 @@ function select(element) {
   if (window.getSelection && document.createRange) {
     if (element) element.focus()
     const range = document.createRange()
+    // selectNodeContents() 方法把范围边界设置为一个节点的子节点。
     if (element) range.selectNodeContents(element)
+    // 返回一个 Selection 对象，表示用户选择的文本范围或光标的当前位置。
     const sel = window.getSelection()
     sel.removeAllRanges()
     sel.addRange(range)
@@ -102,14 +104,19 @@ function end(element) {
   if (!element) return
   element.focus()
   if (element.tagName === 'INPUT' || element.tagName === 'TEXTAREA') {
+    // https://www.cnblogs.com/perseverancevictory/p/3665814.html
+
+    // 从element的起点开始记录
     element.selectionStart = -1
     return
   }
   if (window.getSelection) {
     const range = window.getSelection()
     range.selectAllChildren(element)
+    // Selection.collapseToEnd() 方法的作用是取消当前选区，并把光标定位在原选区的最末尾处，如果此时光标所处的位置是可编辑的，且它获得了焦点，则光标会在原地闪烁。
     range.collapseToEnd()
   } else if (document.selection) {
+    // 兼容IE
     const range = document.selection.createRange()
     range.moveToElementText(element)
     range.collapse(false)

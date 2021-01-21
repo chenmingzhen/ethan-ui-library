@@ -1,11 +1,11 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 import '@/styles/normalize.less'
-import Textarea from '@/component/Textarea/example'
+import EditaleArea from '@/component/EditaleArea/example'
 
 ReactDOM.render(
   <div>
-    <Textarea />
+    <EditaleArea />
   </div>,
   document.getElementById('root')
 )
