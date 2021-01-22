@@ -106,12 +106,14 @@ function end(element) {
   if (element.tagName === 'INPUT' || element.tagName === 'TEXTAREA') {
     // https://www.cnblogs.com/perseverancevictory/p/3665814.html
 
-    // 从element的起点开始记录
+    // 从element的起点开始记录 或将光标移动最后面
     element.selectionStart = -1
     return
   }
   if (window.getSelection) {
     const range = window.getSelection()
+    // Selection.selectAllChildren()把指定元素的所有子元素设为选中区域，并取消之前的选中区域。
+    // https://developer.mozilla.org/zh-cn/docs/web/api/selection/selectallchildren
     range.selectAllChildren(element)
     // Selection.collapseToEnd() 方法的作用是取消当前选区，并把光标定位在原选区的最末尾处，如果此时光标所处的位置是可编辑的，且它获得了焦点，则光标会在原地闪烁。
     range.collapseToEnd()

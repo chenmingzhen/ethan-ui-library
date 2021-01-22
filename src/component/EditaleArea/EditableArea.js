@@ -42,16 +42,18 @@ const Editable = props => {
   })
 
   // ------------------------method---------------------------
-
+  // 绑定InputRef
   const bindInput = useCallback(el => {
     inputRef.current = el
   }, [])
 
+  // 绑定textarea的Ref
   const bindContainer = useCallback(el => {
     containerRef.current = el
   }, [])
 
   const updateShowTextarea = useCallback(flag => {
+    // Input的上层 label标签的
     if (flag && inputRef.current)
       popWidth.current = getParent(inputRef.current, `.${editableAreaClass('input')}`).offsetWidth
     setShowTextarea(flag)
@@ -132,6 +134,7 @@ const Editable = props => {
   const ms = Object.assign({ width }, style)
   const popStyle = { width: popWidth.current }
 
+  // Popover 作用是 输入足够多的内容时 Input被掩盖，由Textarea接管显示
   return (
     <div className={cls} style={ms}>
       {renderInput()}
