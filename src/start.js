@@ -1,11 +1,11 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 import '@/styles/normalize.less'
-import EditaleArea from '@/component/EditaleArea/example'
+import Rate from '@/component/Rate/example'
 
 ReactDOM.render(
   <div>
-    <EditaleArea />
+    <Rate />
   </div>,
   document.getElementById('root')
 )

@@ -5,3 +5,6 @@ export function range(end, start = 0) {
   }
   return Array.from({ length: end - start }, (v, k) => k + start)
 }
+
+// Array.from({length:2},(v,k)=>k+1)
+// [1,2]
