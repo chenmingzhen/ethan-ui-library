@@ -44,8 +44,11 @@ const Rate = props => {
         if (!icon) icon = icons[icons.length - 1]
       }
 
+      // 非half
       if (remain <= 0 || remain >= 1 || isBg) return icon
 
+      // 对half处理
+      // half的情况remain是0.5
       const style = { width: `${remain * 100}%`, display: 'block', overflow: 'hidden', fontSize: 'inherit' }
       return (
         <span style={style} className={allowHalf && rateClass('allow-half')}>
@@ -107,6 +110,7 @@ const Rate = props => {
       props.onChange(value)
       setHighlight(value)
 
+      // 高亮动画
       if (highlightTimer.current) clearTimeout(highlightTimer.current)
       highlightTimer.current = setTimeout(() => {
         setHighlight(-1)
@@ -124,6 +128,7 @@ const Rate = props => {
 
   const handleMove = useCallback((_hover, e) => {
     const { x, width } = e.target.getBoundingClientRect()
+
     setHover(_hover - (x + width / 2 > e.clientX ? 0.5 : 0))
   }, [])
 
@@ -144,6 +149,7 @@ const Rate = props => {
             style={style}
           >
             {value > v ? getIcon(front, v) : <span>&nbsp;</span>}
+            {/* 点击后的动画 */}
             {highlight === v + 1 && <i className={rateClass('highlight')}>{getIcon(front, v)}</i>}
           </span>
         ))}
