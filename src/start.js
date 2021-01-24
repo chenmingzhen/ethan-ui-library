@@ -1,11 +1,11 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 import '@/styles/normalize.less'
-import Rate from '@/component/Rate/example'
+import Slider from '@/component/Slider/example'
 
 ReactDOM.render(
   <div>
-    <Rate />
+    <Slider />
   </div>,
   document.getElementById('root')
 )

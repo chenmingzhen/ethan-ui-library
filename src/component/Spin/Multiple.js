@@ -69,7 +69,7 @@ export function ChasingRing(prop) {
 
 // =============================================================================
 
-function multRenderDiv(className, i, { color, itemStyle, itemClass }) {
+function multipleRenderDiv(className, i, { color, itemStyle, itemClass }) {
   const style = Object.assign({ backgroundColor: color }, itemStyle)
   return (
     <div key={i} className={className('item', itemClass)}>
@@ -87,7 +87,7 @@ export function Default(prop) {
       count={12}
       itemStyle={{ width: size, borderRadius: size }}
       spinClass={defaultClass}
-      render={multRenderDiv}
+      render={multipleRenderDiv}
     />
   )
 }
