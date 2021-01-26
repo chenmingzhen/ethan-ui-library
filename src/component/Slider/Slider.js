@@ -39,13 +39,15 @@ const Slider = props => {
   const handleDrag = useCallback(
     (mx, my) => {
       const { scale, onDrag, value, vertical, onIncrease } = props
-      console.log(parentElement.current.clientWidth)
+
       const m = vertical ? my / parentElement.current.clientHeight : mx / parentElement.current.clientWidth
 
       const min = props.min ? valueToPer(props.min, scale) : 0
       const max = props.max ? valueToPer(props.max, scale) : 1
 
+      // y轴向下为正
       let newLength = length + (vertical ? -m : m)
+
       const needIncrease = newLength > 1
 
       if (newLength < min) newLength = min
