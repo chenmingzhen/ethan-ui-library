@@ -23,3 +23,8 @@ export function compose(...funcs) {
 export function empty(e) {
   e.preventDefault()
 }
+
+export function createFunc(func) {
+  if (typeof func === 'function') return func
+  return data => (func ? data[func] : data)
+}
