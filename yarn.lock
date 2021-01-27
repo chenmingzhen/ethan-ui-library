@@ -5098,10 +5098,10 @@ etag@~1.8.1:
   resolved "https://registry.yarnpkg.com/etag/-/etag-1.8.1.tgz#41ae2eeb65efa62268aebfea83ac7d79299b0887"
   integrity sha1-Qa4u62XvpiJorr/qg6x9eSmbCIc=
 
-ethan-use-hooks@^0.1.5:
-  version "0.1.5"
-  resolved "https://registry.yarnpkg.com/ethan-use-hooks/-/ethan-use-hooks-0.1.5.tgz#8058094adf7c56154fa3a3512cf16eff23fca2f5"
-  integrity sha512-FwshG4xsgR730e+SL8EP8TZWV8oUbWmu39NUPG1DqZvmeGYOD3M9Dtka1vGxCiUJpc6tMz46UzVyJ7+pPPng6g==
+ethan-use-hooks@^0.1.6:
+  version "0.1.6"
+  resolved "https://registry.yarnpkg.com/ethan-use-hooks/-/ethan-use-hooks-0.1.6.tgz#4505691a606258fb5fe22dfe7e92af9b0c1344a0"
+  integrity sha512-6VLIQ2MxaVZiN0YTB3mQPd9XxPrKgx2w0bM8A04mZyv11Pc+USpa7DaspHCyR25jseTV8JPOF6OXsVCvcCHhdQ==
   dependencies:
     copy-to-clipboard "^3.3.1"
     deep-eql "^4.0.0"
