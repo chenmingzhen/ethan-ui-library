@@ -20,6 +20,4 @@ const splitSelecteds = (selecteds, props) => {
   return [left, right]
 }
 
-export default {
-  splitSelecteds,
-}
+export default splitSelecteds

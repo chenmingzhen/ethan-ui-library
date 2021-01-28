@@ -54,7 +54,7 @@ const LazyList = props => {
 
         // scroll over bottom
         if (lastScrollTop.current > contentHeight) lastScrollTop.current = contentHeight
-        newScrollTop = lastScrollTop / contentHeight
+        newScrollTop = lastScrollTop.current / contentHeight
         optionInner.current.style.marginTop = `${scrollTop * h}px`
       }
 
@@ -67,11 +67,18 @@ const LazyList = props => {
       setScrollTop(newScrollTop)
       setCurrentIndex(index)
     },
-    [optionInner.current, lastScrollTop.current, data, itemsInView, lineHeight, scrollHeight]
+    [optionInner.current, lastScrollTop.current, data, itemsInView, lineHeight, scrollHeight, scrollTop]
   )
   // ------------------------------------render------------------------------
   return (
-    <Scroll stable scroll={scroll} style={{ height: scroll ? height : undefined }} onScroll={handleScroll}>
+    <Scroll
+      stable
+      scroll={scroll}
+      style={{ height: scroll ? height : undefined }}
+      onScroll={handleScroll}
+      scrollHeight={scrollHeight}
+      scrollTop={scrollTop}
+    >
       <div
         ref={el => {
           optionInner.current = el

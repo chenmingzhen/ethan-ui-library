@@ -10,14 +10,14 @@ export default Origin => {
     const filterData = useMemo(() => {
       if (!onFilter || !text) return data
       return data.filter(d => onFilter(text, d, !index))
-    }, [onFilter, data, index])
+    }, [onFilter, data, index, text])
 
     const handleFilter = useCallback(
       rawText => {
         if (onSearch) onSearch(rawText, !index)
         setText(rawText)
       },
-      [onSearch]
+      [onSearch, index]
     )
     // -----------------------render-------------------------
 
@@ -31,4 +31,6 @@ export default Origin => {
     onSearch: PropTypes.func,
     index: PropTypes.number,
   }
+
+  return Filter
 }

@@ -1,11 +1,11 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 import '@/styles/normalize.less'
-import Slider from '@/component/Slider/example'
+import Transfer from '@/component/Transfer/example'
 
 ReactDOM.render(
   <div>
-    <Slider />
+    <Transfer />
   </div>,
   document.getElementById('root')
 )
