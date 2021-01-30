@@ -1,4 +1,4 @@
-import React, { useState, useCallback, memo } from 'react'
+import React, { useState, useCallback, memo, useMemo } from 'react'
 import PropTypes from 'prop-types'
 import classnames from 'classnames'
 import { transferClass } from '@/styles'
@@ -60,6 +60,8 @@ const Transfer = props => {
     },
     [loading]
   )
+
+  // 获取左右的勾选项
   const getSelected = useCallback(() => {
     if ('selectedKeys' in props) return splitSelecteds(props.selectedKeys, props)
     return selecteds
@@ -68,16 +70,23 @@ const Transfer = props => {
   // ------------------------------------render------------------------
   // eslint-disable-next-line no-underscore-dangle
   const _selecteds = getSelected()
+  // 从Datum中获取数据
   const datumValues = datum.getValue()
+
   if ('value' in props && datumValues !== props.value) {
     props.datum.setValue(props.value)
   }
-  const sources = data.filter(d => !datum.check(d))
-  const targets = datumValues.reduce((p, n) => {
-    const d = datum.getDataByValue(data, n)
-    if (d) p.push(d)
-    return p
-  }, [])
+
+  const sources = useMemo(() => data.filter(d => !datum.check(d)), [data, datumValues])
+  const targets = useMemo(
+    () =>
+      datumValues.reduce((p, n) => {
+        const d = datum.getDataByValue(data, n)
+        if (d) p.push(d)
+        return p
+      }, []),
+    [datumValues, data]
+  )
 
   return (
     <div className={classnames(transferClass('_'), className)} style={style}>
@@ -159,14 +168,14 @@ Transfer.defaultProps = {
 
 Transfer.propTypes = {
   titles: PropTypes.array,
-  data: PropTypes.array,
+  data: PropTypes.array, // 数据源
   datum: PropTypes.object,
   keygen: PropTypes.oneOfType([PropTypes.string, PropTypes.func]),
   renderItem: PropTypes.oneOfType([PropTypes.string, PropTypes.func]),
   footers: PropTypes.array,
   operations: PropTypes.array,
   operationIcon: PropTypes.bool,
-  value: PropTypes.array,
+  value: PropTypes.array, // 显示在右侧框数据的值集合
   className: PropTypes.string,
   style: PropTypes.object,
   listClassName: PropTypes.string,

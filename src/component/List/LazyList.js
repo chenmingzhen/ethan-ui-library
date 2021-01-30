@@ -4,8 +4,10 @@ import { usePrevious, useUpdateEffect } from 'ethan-use-hooks'
 import { setTranslate } from '@/utils/dom/translate'
 import Scroll from '../Scroll'
 
+// 懒加载原理，通过滚动的高度，以及props的itemsInView，itemsInView,data来计算当前的currentIndex，在而加上itemsInView 渲染数据
 const LazyList = props => {
   const [currentIndex, setCurrentIndex] = useState(0)
+  // 滚动比例系数
   const [scrollTop, setScrollTop] = useState(0)
   const { scrollHeight, height, lineHeight, data, itemsInView, renderItem } = props
   const optionInner = useRef()
@@ -28,6 +30,7 @@ const LazyList = props => {
     return ''
   }, [height, scrollHeight])
 
+  // 懒加载原理
   const items = useMemo(() => data.slice(currentIndex, currentIndex + itemsInView).map((d, i) => renderItem(d, i)), [
     data,
     currentIndex,
@@ -44,8 +47,12 @@ const LazyList = props => {
       // 容器的高度大于内容高度 不需要设置滚动
       let newScrollTop = h > fullHeight ? 0 : y
 
+      // 设置滚动
       optionInner.current.style.marginTop = `${scrollTop * h}px`
 
+      // 以向下方向为例
+      // marginTop 负责将容器往下顶
+      // transform负责将内容上移
       if (pixelY === undefined || pixelY === 0) {
         lastScrollTop.current = scrollTop * contentHeight
       } else {

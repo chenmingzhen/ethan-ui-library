@@ -213,7 +213,7 @@ Card.propTypes = {
   setSelecteds: PropTypes.func,
   title: PropTypes.oneOfType([PropTypes.string, PropTypes.object]),
   renderItem: PropTypes.oneOfType([PropTypes.string, PropTypes.func]),
-  index: PropTypes.number,
+  index: PropTypes.number, // 0左1右
   footer: PropTypes.object,
   listClassName: PropTypes.string,
   listStyle: PropTypes.object,

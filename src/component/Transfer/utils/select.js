@@ -1,5 +1,11 @@
 import { getKey } from '@/utils/uid'
 
+/**
+ * 获取左右的勾选项
+ * @param selecteds
+ * @param props
+ * @returns {[[], []]|null}
+ */
 const splitSelecteds = (selecteds, props) => {
   if (!selecteds) return null
 
