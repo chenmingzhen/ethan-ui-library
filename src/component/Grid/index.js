@@ -1,4 +1,4 @@
-import React, { Children, cloneElement } from 'react'
+import React, { Children, cloneElement, memo } from 'react'
 import PropTypes from 'prop-types'
 import classnames from 'classnames'
 import { getGrid } from './util'
@@ -61,4 +61,4 @@ Grid.propTypes = {
   width: PropTypes.number,
 }
 
-export default Grid
+export default memo(Grid)
