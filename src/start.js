@@ -1,11 +1,11 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 import '@/styles/normalize.less'
-import Grid from '@/component/Grid/example'
+import Cascader from '@/component/Cascader/example'
 
 ReactDOM.render(
   <div>
-    <Grid />
+    <Cascader />
   </div>,
   document.getElementById('root')
 )

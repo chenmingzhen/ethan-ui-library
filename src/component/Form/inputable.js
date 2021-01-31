@@ -247,6 +247,7 @@ export default curry(Origin =>
           })
       }
 
+      // 子组件value改变 (datum管理value) 此处驱动更新
       handleChange(value, ...args) {
         const { formDatum, name, fieldSetValidate, onChange } = this.props
         const currentValue = this.getValue()

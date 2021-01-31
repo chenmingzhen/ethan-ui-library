@@ -23,7 +23,9 @@ export default class {
     this.disabled = disabled || (() => false)
     this.childrenKey = childrenKey
 
+    // value 当前选中的值
     this.setValue(value)
+    // data 数据源
     this.setData(data)
   }
 
@@ -53,6 +55,7 @@ export default class {
           if (checked >= 1) value.push(id)
           break
         case CheckedMode.Child:
+          // TODO
           if (checked === 1 && this.pathMap.get(id).children.length === 0) value.push(id)
           break
         case CheckedMode.Shallow:
@@ -73,9 +76,15 @@ export default class {
     return value
   }
 
+  /**
+   * 根据id设置当前节点value  是否选中
+   * @param id
+   * @param checked
+   */
   setValueMap(id, checked) {
     this.valueMap.set(id, checked)
     const update = this.events[id]
+    // 状态改变的回调 bind中绑定
     if (update) update()
   }
 
@@ -85,7 +94,10 @@ export default class {
 
     const { path, children } = this.pathMap.get(id)
 
+    // asc 上升 desc下降
+
     // children
+    // 或点击根节点
     if (direction !== 'asc') {
       children.forEach(cid => {
         this.set(cid, checked, 'desc')
@@ -93,10 +105,13 @@ export default class {
     }
 
     // parent
+    // 不处理根节点 即第一层
     if (direction !== 'desc' && path.length > 0) {
       const parentId = path[path.length - 1]
       let parentChecked = checked
+      // 设置父节点是否为indeterminate
       this.pathMap.get(parentId).children.forEach(cid => {
+        // 父节点存在子节点为选择 设为indeterminate
         if (parentChecked !== this.valueMap.get(cid)) {
           parentChecked = 2
         }
@@ -130,18 +145,28 @@ export default class {
     return checked
   }
 
+  /**
+   * 为每一个dataItem生成key值
+   * @param data
+   * @param id
+   * @param index
+   * @returns {string|*}
+   */
   getKey(data, id = '', index) {
     if (typeof this.keygen === 'function') return this.keygen(data, id)
     if (this.keygen) return data[this.keygen]
     return id + (id ? ',' : '') + index
   }
 
+  // 更新最初由这里发起
   initValue(ids, forceCheck) {
     if (!this.data || !this.value) return undefined
 
     if (!ids) {
+      // 第一次进来
       ids = []
       this.pathMap.forEach((val, id) => {
+        // 根层次
         if (val.path.length === 0) ids.push(id)
       })
     }
@@ -169,17 +194,30 @@ export default class {
       this.setValueMap(id, childChecked)
 
       if (checked === undefined) checked = childChecked
+      // 暂无作用
       else if (checked !== childChecked) checked = 2
     })
 
     return checked
   }
 
+  /**
+   * 初始化数据源
+   * @param data
+   * @param path tree的path，根据id向下 id索引
+   * @param disabled
+   * @param index
+   * @returns {[]} 当前层次的ids
+   */
   initData(data, path, disabled, index = []) {
+    // 当前层次的ids
     const ids = []
+
     data.forEach((d, i) => {
       const id = this.getKey(d, path[path.length - 1], i)
+
       if (this.dataMap.get(id)) {
+        // 重复key警告
         console.warn(`There is already a key "${id}" exists. The key must be unique.`)
       }
       this.dataMap.set(id, d)
@@ -189,12 +227,15 @@ export default class {
         isDisabled = this.disabled(d, i)
       }
 
+      // data的idPath索引
       const indexPath = [...index, i]
       ids.push(id)
+
       let children = []
       if (Array.isArray(d[this.childrenKey])) {
         children = this.initData(d[this.childrenKey], [...path, id], isDisabled, indexPath)
       }
+
       this.pathMap.set(id, {
         children,
         path,
@@ -210,6 +251,7 @@ export default class {
     const prevValue = this.value || []
     this.cachedValue = []
     this.pathMap = new Map()
+    // key:id value:dataItem 数据源id映射
     this.dataMap = new Map()
     this.data = data
 
