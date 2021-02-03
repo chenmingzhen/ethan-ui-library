@@ -1,11 +1,11 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 import '@/styles/normalize.less'
-import Cascader from '@/component/Cascader/example'
+import BackTop from '@/component/BackTop/example'
 
 ReactDOM.render(
   <div>
-    <Cascader />
+    <BackTop />
   </div>,
   document.getElementById('root')
 )

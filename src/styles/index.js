@@ -3,6 +3,7 @@ import genaration from '@/utils/classnames'
 // 注意 这里的引入顺序会影响后面的样式叠加
 import alertLess from './alert.less'
 import buttonLess from './button.less'
+import backTopLess from './backTop.less'
 import dropdownLess from './dropdown.less'
 import hidableLess from './hidable.less'
 import listLess from './list.less'
@@ -42,6 +43,7 @@ import resizableLess from './resizable.less'
 import lazyloadLess from './lazyload.less'
 
 export const alertClass = genaration(alertLess, 'alert')
+export const backTopClass = genaration(backTopLess, 'backTop')
 export const buttonClass = genaration(buttonLess, 'button')
 export const dropdownClass = genaration(dropdownLess, 'dropdown')
 export const hidableClass = genaration(hidableLess, 'hidable')

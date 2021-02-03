@@ -4,7 +4,7 @@ import Icon from './Icon'
 const links = {}
 const scripts = {}
 
-export default function(url = '', fontFamily = 'iconfont', prefix = 'icon') {
+function createIcon(url = '', fontFamily = 'iconfont', prefix = 'icon') {
   const ext = url.substr(url.lastIndexOf('.') + 1)
   // 向浏览器添加css脚本或js脚本
   if (ext === 'css' && !links[url]) {
@@ -26,3 +26,9 @@ export default function(url = '', fontFamily = 'iconfont', prefix = 'icon') {
   wrapperIcon.isEthanIcon = true
   return wrapperIcon
 }
+
+export default createIcon
+
+const url = 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css'
+
+export const FontAwesome = createIcon(url, 'FontAwesome', 'fa')
