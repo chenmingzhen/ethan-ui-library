@@ -70,4 +70,6 @@ BackTop.propTypes = {
   bottom: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
 }
 
+BackTop.displayName = 'EthanBackTop'
+
 export default memo(BackTop)
