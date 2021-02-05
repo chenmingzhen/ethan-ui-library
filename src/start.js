@@ -1,11 +1,11 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 import '@/styles/normalize.less'
-import BackTop from '@/component/BackTop/example'
+import Steps from '@/component/Steps/example'
 
 ReactDOM.render(
   <div>
-    <BackTop />
+    <Steps />
   </div>,
   document.getElementById('root')
 )

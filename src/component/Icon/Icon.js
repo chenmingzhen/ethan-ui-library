@@ -45,4 +45,5 @@ Icon.defaultProps = {
 }
 
 Icon.displayName = 'EthanIcon'
+
 export default memo(Icon)

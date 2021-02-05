@@ -28,6 +28,7 @@ import tooltipLess from './tooltip.less'
 import popoverLess from './popover.less'
 import treeLess from './tree.less'
 import sliderLess from './slider.less'
+import stepsLess from './steps.less'
 import tabsLess from './tabs.less'
 import tagLess from './tag.less'
 import progressLess from './progress.less'
@@ -77,6 +78,7 @@ export const carouselClass = genaration(carouselLess, 'carousel')
 export const cascaderClass = genaration(cascaderLess, 'cascader')
 export const transferClass = genaration(transferLess, 'transfer')
 export const spinClass = genaration(spinLess, 'spin')
+export const stepsClass = genaration(stepsLess, 'steps')
 export const cardGroupClass = genaration(cardGroupLess, 'card-group')
 export const editableAreaClass = genaration(editableAreaLess, 'editableArea')
 export const moveableClass = genaration(moveableLess, 'moveable')
