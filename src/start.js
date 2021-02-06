@@ -1,11 +1,11 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 import '@/styles/normalize.less'
-import Steps from '@/component/Steps/example'
+import Loading from '@/component/Loading/example'
 
 ReactDOM.render(
   <div>
-    <Steps />
+    <Loading />
   </div>,
   document.getElementById('root')
 )

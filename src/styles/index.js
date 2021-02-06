@@ -42,6 +42,7 @@ import editableAreaLess from './editableArea.less'
 import moveableLess from './moveable.less'
 import resizableLess from './resizable.less'
 import lazyloadLess from './lazyload.less'
+import loadingLess from './loading.less'
 
 export const alertClass = genaration(alertLess, 'alert')
 export const backTopClass = genaration(backTopLess, 'backTop')
@@ -84,3 +85,4 @@ export const editableAreaClass = genaration(editableAreaLess, 'editableArea')
 export const moveableClass = genaration(moveableLess, 'moveable')
 export const resizableClass = genaration(resizableLess, 'resizable')
 export const lazyloadClass = genaration(lazyloadLess, 'lazyload')
+export const loadingClass = genaration(loadingLess, 'loading')
