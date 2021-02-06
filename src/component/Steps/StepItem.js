@@ -1,12 +1,20 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useMemo } from 'react'
 import PropTypes from 'prop-types'
 import { stepsClass } from '@/styles'
 import { FontAwesome } from '@/component/Icon'
 
 const StepItem = props => {
-  const { icon: Icon, title, description, step, status, width } = props
+  const { icon: Icon, title, description, step, status, width, height } = props
   const [showCustomIcon, setShowCustomIcon] = useState(Icon && Icon.type && Icon.type.displayName === 'EthanIcon')
-  const style = Object.assign({}, props.style, width ? { width: `${width}%` } : {})
+
+  const style = useMemo(() => {
+    const computed = {}
+
+    width ? (computed.width = `${width}%`) : null
+    height ? (computed.height = `${height}%`) : null
+
+    return computed
+  }, [width, height])
 
   useEffect(() => {
     if (!Icon) return
@@ -52,6 +60,7 @@ StepItem.defaultProps = {
 StepItem.propTypes = {
   step: PropTypes.number,
   width: PropTypes.number,
+  height: PropTypes.number,
   title: PropTypes.string,
   description: PropTypes.string,
   status: PropTypes.oneOf(['wait', 'process', 'finish', 'error']),

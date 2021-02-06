@@ -24,13 +24,14 @@ const Steps = props => {
   }, [children, current, mini, status, vertical])
 
   const renderStep = useCallback(() => {
-    const width = React.Children.count(filterChildren)
+    const total = React.Children.count(filterChildren)
 
     return React.Children.map(filterChildren, (child, index) => {
       const childProps = {}
 
       childProps.step = index + 1
-      childProps.width = !vertical ? 100 / width : 0
+      childProps.width = !vertical ? 100 / total : 0
+      childProps.height = vertical ? 100 / total : 0
 
       if (index === Number(current)) {
         childProps.status = status === 'error' ? 'error' : 'process'
@@ -60,6 +61,7 @@ Steps.propTypes = {
   vertical: PropTypes.bool,
   mini: PropTypes.bool,
   status: PropTypes.oneOf(['wait', 'process', 'finish', 'error']),
+  style: PropTypes.object,
 }
 
 export default memo(Steps)
