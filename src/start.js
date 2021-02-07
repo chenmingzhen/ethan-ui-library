@@ -1,11 +1,11 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 import '@/styles/normalize.less'
-import Badge from '@/component/Badge/example'
+import Avatar from '@/component/Avatar/example'
 
 ReactDOM.render(
   <div>
-    <Badge />
+    <Avatar />
   </div>,
   document.getElementById('root')
 )

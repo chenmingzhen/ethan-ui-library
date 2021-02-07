@@ -2,6 +2,7 @@ import genaration from '@/utils/classnames'
 
 // 注意 这里的引入顺序会影响后面的样式叠加
 import alertLess from './alert.less'
+import avatarLess from './avatar.less'
 import buttonLess from './button.less'
 import backTopLess from './backTop.less'
 import dropdownLess from './dropdown.less'
@@ -46,6 +47,7 @@ import loadingLess from './loading.less'
 import badgeLess from './badge.less'
 
 export const alertClass = genaration(alertLess, 'alert')
+export const avatarClass = genaration(avatarLess, 'avatar')
 export const backTopClass = genaration(backTopLess, 'backTop')
 export const buttonClass = genaration(buttonLess, 'button')
 export const badgeClass = genaration(badgeLess, 'badge')
