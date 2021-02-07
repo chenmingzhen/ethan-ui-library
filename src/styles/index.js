@@ -43,10 +43,12 @@ import moveableLess from './moveable.less'
 import resizableLess from './resizable.less'
 import lazyloadLess from './lazyload.less'
 import loadingLess from './loading.less'
+import badgeLess from './badge.less'
 
 export const alertClass = genaration(alertLess, 'alert')
 export const backTopClass = genaration(backTopLess, 'backTop')
 export const buttonClass = genaration(buttonLess, 'button')
+export const badgeClass = genaration(badgeLess, 'badge')
 export const dropdownClass = genaration(dropdownLess, 'dropdown')
 export const hidableClass = genaration(hidableLess, 'hidable')
 export const listClass = genaration(listLess, 'list')

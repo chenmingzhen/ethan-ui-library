@@ -1,11 +1,11 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 import '@/styles/normalize.less'
-import Loading from '@/component/Loading/example'
+import Badge from '@/component/Badge/example'
 
 ReactDOM.render(
   <div>
-    <Loading />
+    <Badge />
   </div>,
   document.getElementById('root')
 )
