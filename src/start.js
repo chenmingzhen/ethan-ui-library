@@ -1,11 +1,11 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 import '@/styles/normalize.less'
-import Avatar from '@/component/Avatar/example'
+import Alert from '@/component/Alert/example'
 
 ReactDOM.render(
   <div>
-    <Avatar />
+    <Alert />
   </div>,
   document.getElementById('root')
 )

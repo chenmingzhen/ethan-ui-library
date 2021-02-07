@@ -62,6 +62,7 @@
   }
 
   /* animation  */
+
   &-dismissed {
     opacity: 0;
     transform: scaleY(0);
@@ -145,6 +146,36 @@
       display: block;
       margin-top: 1px;
       margin-right: 10px;
+    }
+  }
+
+  // scroll
+  &-scroll {
+    // border:1px solid #dcdee0;
+    border-radius: 2px;
+    height: min-content;
+    box-sizing: border-box;
+    overflow: hidden;
+    position: relative;
+
+    &-container {
+      padding: 12px 16px;
+      box-sizing: content-box;
+      transition-timing-function: ease-in-out;
+    }
+
+    .@{alert-prefix}{
+      opacity: 0;
+      transition: transform 0.216s, opacity 0.6s ease-out;
+    }
+
+
+    &-active-item {
+      opacity: 1 !important;
+    }
+
+    &-virtual-item {
+      opacity: 1 !important;
     }
   }
 }
