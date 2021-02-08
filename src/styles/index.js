@@ -45,6 +45,7 @@ import resizableLess from './resizable.less'
 import lazyloadLess from './lazyload.less'
 import loadingLess from './loading.less'
 import badgeLess from './badge.less'
+import timeLineLess from './timeLine.less'
 
 export const alertClass = genaration(alertLess, 'alert')
 export const avatarClass = genaration(avatarLess, 'avatar')
@@ -90,3 +91,4 @@ export const moveableClass = genaration(moveableLess, 'moveable')
 export const resizableClass = genaration(resizableLess, 'resizable')
 export const lazyloadClass = genaration(lazyloadLess, 'lazyload')
 export const loadingClass = genaration(loadingLess, 'loading')
+export const timeLineClass = genaration(timeLineLess, 'timeline')

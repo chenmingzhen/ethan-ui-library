@@ -1,11 +1,11 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 import '@/styles/normalize.less'
-import Alert from '@/component/Alert/example'
+import TimeLine from '@/component/TimeLine/example'
 
 ReactDOM.render(
   <div>
-    <Alert />
+    <TimeLine />
   </div>,
   document.getElementById('root')
 )
