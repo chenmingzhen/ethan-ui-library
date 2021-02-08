@@ -16,68 +16,57 @@
   &-content {
     position: relative;
     z-index: 10;
-    width: 60%;
-    margin: 15% 15% 0 25%;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
     font-size: 18px;
+    text-align: center;
 
-    @media (max-width: 979px) and (min-width: 600px){
+    @media (max-width: 979px) and (min-width: 600px) {
       margin: 50% 30% 0 25%;
       width: 80%;
     }
 
-    @media (max-width: 599px) and (min-width: 0px){
+    @media (max-width: 599px) and (min-width: 0px) {
       margin: 80% 30% 0 45%;
       width: 90%;
     }
 
+    h1 {
+      color: #005388;
+      font-size: 60px;
+    }
+
     h2 {
-      margin-bottom: 30px;
+      color: #005388;
+      margin-top: 60px;
       font-family: 'Futura';
-      font-size: 48px;
+      font-weight: 300;
+      font-size: 34px;
     }
   }
 
   &-buttons {
-    padding-top: 40px;
-
-    @media (max-width: 979px) and (min-width: 0px){
-      .so-button{
+    margin: 10px 0 180px;
+    @media (max-width: 979px) and (min-width: 0px) {
+      .so-button {
         margin-bottom: 10px;
       }
     }
   }
 
-  &-bottom-left {
-    position: absolute;
-    z-index: 0;
-    bottom: 0;
-    left: 0;
-    width: 90%;
-    font-size: 0;
+  &-right {
+    margin-left: 10px;
 
-    @media (max-width: 979px) and (min-width: 0px){
-      position: fixed;
+    a{
+      color: #333;
     }
   }
 
-  &-right {
-    position: relative;
-    overflow: hidden;
-    width: 45vw;
-
-    .doc-home-img {
-      position: absolute;
-      top: 50%;
-      margin-top: -22vw;
-
-      @media (max-width: 599px) and (min-width: 0px){
-        display: none;
-      }
-    }
-
-    img {
-      width: 100%;
-    }
+  &-github{
+    margin-left: 4px;
   }
 }
 
@@ -89,7 +78,7 @@ table .table-bg-success > td {
   background: #f6ffed;
 }
 
-@media (max-width: 979px) and (min-width: 0px){
+@media (max-width: 979px) and (min-width: 0px) {
   .so-button {
     margin-bottom: 10px;
   }

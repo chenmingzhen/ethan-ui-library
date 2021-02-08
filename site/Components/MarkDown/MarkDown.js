@@ -2,13 +2,12 @@ import React, { useState, useEffect } from 'react'
 import PropTypes from 'prop-types'
 import ReactMarkDown from 'react-markdown'
 import { Link } from 'react-router-dom'
-import { getUidStr } from 'shineout/utils/uid'
+import { getUidStr } from '@/utils/uid'
 import { markdownClass } from 'doc/styles'
 import locate from '../../locate'
 import CodeBlock from '../CodeBlock'
 import Example from '../Example'
 import Console from './Console'
-import Table from '../Table'
 
 const codeReg = /^<code name="([\w|-]+)" /
 const exampleReg = /^<example name="([\w|-]+)"/
@@ -130,7 +129,6 @@ export default function MarkDown({ onHeadingSetted, codes, examples, source }) {
 
           return null
         },
-        table: Table,
         link: prop => {
           const target = prop.href.indexOf('http') === 0 ? '_blank' : undefined
           if (target)

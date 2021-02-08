@@ -1,7 +1,7 @@
 import React, { Fragment, Suspense, useEffect, useState } from 'react'
 import PropTypes from 'prop-types'
 import { Route, Redirect, Switch, NavLink } from 'react-router-dom'
-import { Sticky } from 'ethan'
+import { Sticky } from 'ethan/index'
 import locate from 'doc/locate'
 import Loading from 'docs/Loading'
 import { mainClass } from 'doc/styles'
@@ -14,10 +14,10 @@ function getUrl(base, page) {
   return `${base}/${page.path || page.name}`
 }
 
-export default function (pages) {
+export default function(pages) {
   function Page(props) {
     const base = props.match.url
-    const indexRoute = pages.find((p) => typeof p !== 'string')
+    const indexRoute = pages.find(p => typeof p !== 'string')
 
     const { search } = props.history.location || { search: '' }
 
@@ -27,7 +27,7 @@ export default function (pages) {
 
     const toggleCode = () => {
       if (window.innerWidth > 979) return
-      const el = document.querySelector('#-shineout-menu')
+      const el = document.querySelector('#-ethan-menu')
       const showNav = !shownav
       if (showNav) {
         setShowNav(showNav)
@@ -56,14 +56,14 @@ export default function (pages) {
           <Icon name={shownav ? 'Menu' : 'close'} onClick={toggleCode} />
         </div>
 
-        <Sticky top={0}>
-          <div id="-shineout-menu" className={mainClass('menu', shownav && 'hidden')}>
+        <Sticky top={0} style={{ borderRight: '1px solid #e8e8e8' }}>
+          <div id="-ethan-menu" className={mainClass('menu', shownav && 'hidden')}>
             {pages
-              .filter((v) => filters.indexOf(v.name) === -1)
+              .filter(v => filters.indexOf(v.name) === -1)
               .map((p, i) =>
                 typeof p === 'string' ? (
                   // eslint-disable-next-line
-                                    <label key={i}>{p}</label>
+                    <label key={i}>{p}</label>
                 ) : (
                   <NavLink
                     className={mainClass(p.level === 2 && 'sub')}
@@ -87,8 +87,8 @@ export default function (pages) {
             <Switch>
               <Redirect from={base} exact to={getUrl(base, indexRoute)} />
               {pages
-                .filter((p) => typeof p === 'object')
-                .map((p) => (
+                .filter(p => typeof p === 'object')
+                .map(p => (
                   <Route
                     key={p.name + search}
                     path={getUrl(base, p)}

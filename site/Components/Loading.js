@@ -1,8 +1,17 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { Spin } from 'ethan/index'
+import { useMount, useUnmount } from 'ethan-use-hooks'
+import { Spin, Loading as ld } from 'ethan/index'
 
 function Loading({ style }) {
+  useMount(() => {
+    ld.start()
+  })
+
+  useUnmount(() => {
+    ld.finish()
+  })
+
   return (
     <div
       style={Object.assign(
@@ -14,7 +23,7 @@ function Loading({ style }) {
         style
       )}
     >
-      <Spin type="fading-circle" size={50} color="rgba(0,0,0,0.5)" />
+      <Spin size="54px" name="four-dots" color="#53a0fd" />
     </div>
   )
 }

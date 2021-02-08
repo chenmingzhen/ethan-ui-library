@@ -9,7 +9,7 @@
  *    -- When the onClose is a function, call this function after hiding it.
  */
 import React, { PureComponent } from 'react'
-import { Alert } from 'shineout'
+import { Alert } from 'ethan/index'
 
 export default class extends PureComponent {
   constructor(props) {

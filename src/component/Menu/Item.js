@@ -38,7 +38,7 @@ class Item extends PureComponent {
 
   componentWillUnmount() {
     super.componentWillUnmount()
-    this.props.unbindItem(this.id)
+    this.props?.unbindItem(this.id)
     this.unbindDocumentEvent()
   }
 

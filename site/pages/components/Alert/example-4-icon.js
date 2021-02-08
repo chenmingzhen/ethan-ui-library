@@ -5,7 +5,7 @@
  *    -- Set the icon property to display the built-in icon.
  */
 import React from 'react'
-import { Alert } from 'shineout'
+import { Alert } from 'ethan/index'
 
 export default function () {
   return (

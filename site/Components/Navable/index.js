@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react'
-import Sticky from 'ethan/Sticky'
+import { Sticky } from 'ethan/index'
 import { navClass } from 'doc/styles'
 import history from '../../history'
 

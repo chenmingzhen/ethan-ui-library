@@ -5,7 +5,7 @@
  *    -- There are four built-in types (styles), [success, info, warning, danger], the default value is warning.
  */
 import React from 'react'
-import { Alert } from 'shineout'
+import { Alert } from 'ethan/index'
 
 export default function() {
   return (

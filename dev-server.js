@@ -56,9 +56,9 @@ router.get('**/docsearch.css', async ctx => {
   await send(ctx, 'node_modules/docsearch.js/dist/cdn/docsearch.min.css')
 })
 
-router.get('**/versions.json', async ctx => {
-  await send(ctx, 'site/versions.json')
-})
+// router.get('**/versions.json', async ctx => {
+//   await send(ctx, 'site/versions.json')
+// })
 
 router.get('/images/*', async ctx => {
   await send(ctx, `site/${ctx.path}`)
@@ -89,8 +89,6 @@ router.get(config.dev.scriptPath, async (ctx, next) => {
       method: 'GET',
     }
     ctx.set('Access-Control-Allow-Origin', '*')
-    console.log(ctx.url, options)
-    // ctx.body = request(options)
     ctx.body = await got(options.url).then(data => data.body)
   }
 })
@@ -122,6 +120,7 @@ router.get('/*', async ctx => {
   const styles = config.dev.styles || []
   ctx.type = 'text/html; charset=utf-8'
   // 页面真正的渲染处理 通过ejs渲染处理 将参数传给模板
+  // 页面中引入/site/index.js 进而显示web页面
   ctx.body = await ejs.renderFile(`./site/index.html`, {
     scripts,
     env: 'development',

@@ -2,7 +2,13 @@ import React from 'react'
 import ReactDOM from 'react-dom'
 import '../src/styles/normalize.less'
 import './styles/index.less'
+import 'prismjs/themes/prism.css'
+import theme from './utils/theme'
 
 import App from './App'
 
-ReactDOM.render(<App />, document.getElementById('root'))
+theme.init(() => {
+  ReactDOM.render(<App />, document.getElementById('root'))
+})
+
+if (module.hot) module.hot.accept()

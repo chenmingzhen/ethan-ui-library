@@ -21,6 +21,7 @@ const lessLoader = (name, hot) => {
     {
       loader: 'less-loader',
       options: {
+        // 通过modifyVars 修改默认的主题 对应less文件的变量
         modifyVars: {
           'so-prefix': process.env.SO_PREFIX || 'so',
           'so-theme': name,
@@ -67,6 +68,9 @@ module.exports = function({
       ],
     },
     plugins: [
+      // 打包后样式的名字 对应default antd ethan的.css
+      // 样式请求到这里
+      // css 单独打包
       new MiniCssExtractPlugin({
         filename: prefix ? `${prefix}.${name}.css` : `${name}.css`,
       }),

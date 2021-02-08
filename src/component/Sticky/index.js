@@ -112,7 +112,6 @@ class Sticky extends PureComponent {
     if (top !== undefined && mode !== 'bottom') {
       if (selfRect.top < limitTop) {
         // 元素的Top到达限制的Top
-        console.log(1)
         this.setState({ scrollWidth: scrollRect.width, mode: 'top' })
         style = this.getStyle('top', top, selfRect.left, selfRect.width)
         placeholder = placeholderStyle

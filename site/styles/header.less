@@ -7,12 +7,16 @@
 .doc-header {
   @header-height: 60px;
 
+  //position: fixed;
+  //width: 100%;
+  //z-index: 100;
+
   display: flex;
   height: @header-height;
   align-items: center;
   border-bottom: solid 1px rgb(232, 242, 255);
 
-  @media (max-width: 979px) and (min-width: 0px){
+  @media (max-width: 979px) and (min-width: 0px) {
     position: fixed;
     right: 0;
     left: 0;
@@ -23,32 +27,27 @@
   &-logo {
     width: 20%;
     padding: 18px 50px;
-    font-size: 0;
+    display: flex;
+    align-items: center;
 
-    svg {
-      width: 120px;
-      height: 24px;
+    img{
+      width: 25px;
+      height: 25px;
     }
+
+    a {
+      margin-left: 5px;
+      font-size: 18px;
+      letter-spacing: 1px;
+      font-weight: bold;
+      color: #39495f;
+      font-family: -apple-system, CenturyGothic, BlinkMacSystemFont, PingFang SC, Helvetica Neue, Hiragino Sans GB, Segoe UI, Microsoft YaHei, Source Han Sans SC, Noto Sans CJK SC, WenQuanYi Micro Hei, sans-serif !important;
+    }
+
   }
 
   &-nav {
-    display: inline-block;
     flex: 1;
-    padding-left: 30px;
-
-    a {
-      display: inline-block;
-      padding: 0 10px;
-      margin: 0 20px;
-      color: #333;
-      line-height: @header-height;
-      text-decoration: none;
-    }
-
-    a.doc-header-active,
-    a:hover {
-      color: #333;
-    }
   }
 
   &-right {
@@ -295,7 +294,7 @@
   }
 
   @media (max-width: 979px) and (min-width: 599px) {
-    &-logo svg{
+    &-logo svg {
       width: 100px;
     }
 
@@ -308,18 +307,24 @@
     }
 
     &-right {
-      .so-button{
+      .so-button {
         margin-bottom: 0;
       }
     }
 
-    &-search::-webkit-input-placeholder { color:transparent; }
+    &-search::-webkit-input-placeholder {
+      color: transparent;
+    }
 
-    &-search::placeholder { color:transparent; }
+    &-search::placeholder {
+      color: transparent;
+    }
 
-    &-search:-ms-input-placeholder { color:transparent; }
+    &-search:-ms-input-placeholder {
+      color: transparent;
+    }
 
-    .so-button-link{
+    .so-button-link {
       display: none;
     }
 
@@ -344,7 +349,7 @@
         display: none;
       }
 
-      a{
+      a {
         min-width: 50px;
       }
     }
@@ -372,7 +377,7 @@
       min-width: 100px;
     }
 
-    &-logo svg{
+    &-logo svg {
       width: 100px;
     }
 
@@ -389,10 +394,11 @@
         display: none;
       }
 
-      > a{
+      > a {
         min-width: 50px;
       }
     }
+
     // a {
     //   line-height: normal;
     //   margin: 0;
@@ -405,7 +411,7 @@
     &-right {
       padding-right: 5px;
 
-      .so-button{
+      .so-button {
         padding: 2px 5px;
         font-size: 12px;
         margin-bottom: 0;
@@ -422,13 +428,19 @@
       width: 80px;
     }
 
-    &-search::-webkit-input-placeholder { color:transparent; }
+    &-search::-webkit-input-placeholder {
+      color: transparent;
+    }
 
-    &-search::placeholder { color:transparent; }
+    &-search::placeholder {
+      color: transparent;
+    }
 
-    &-search:-ms-input-placeholder { color:transparent; }
+    &-search:-ms-input-placeholder {
+      color: transparent;
+    }
 
-    .so-button-link{
+    .so-button-link {
       display: none;
     }
   }

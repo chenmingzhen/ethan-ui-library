@@ -5,7 +5,7 @@
  *    -- Basic usage
  */
 import React from 'react'
-import { Alert } from 'shineout'
+import { Alert } from 'ethan/index'
 
 export default function() {
   return (
