@@ -8,7 +8,7 @@ import CodeBlock from '../CodeBlock'
 
 const placeholder = (
   <div className={exampleClass('placeholder')}>
-    <Spin />
+    <Spin size="54px" name="four-dots" color="#53a0fd" />
   </div>
 )
 
@@ -19,28 +19,16 @@ export default function Example({ component, id, name, rawText, title: propsTitl
   const [codeHeight, setCodeHeight] = useState()
   let [bottom] = useState()
 
+  // 正则去除文件非代码内容
   const text = rawText.replace(/(^|\n|\r)\s*\/\*[\s\S]*?\*\/\s*(?:\r|\n|$)/, '').trim()
-
-  const collapse = (height, remain, isBottom) => {
-    codeblock.current.style.height = `${height * (remain - 1)}px`
-    if (remain > 1) {
-      setTimeout(() => {
-        collapse(height, remain - 1, isBottom)
-      }, 16)
-    }
-    if (isBottom) {
-      document.documentElement.scrollTop -= height
-    }
-  }
 
   useEffect(() => {
     if (!codeblock.current) return
+
     if (showcode) {
       codeblock.current.style.height = `${codeHeight}px`
     } else {
-      const y = codeHeight % 15
-      if (y > 0) collapse(y, 1, bottom)
-      collapse((codeHeight - y) / 15, 15, bottom)
+      codeblock.current.style.height = `0`
     }
   }, [showcode])
 
@@ -50,10 +38,11 @@ export default function Example({ component, id, name, rawText, title: propsTitl
 
   const toggleCode = isBottom => {
     const showCode = !showcode
-    setShowCode(showCode)
     bottom = isBottom
+    setShowCode(showCode)
   }
 
+  // isBottom  true 当前为展开模式
   const renderCodeHandle = isBottom => (
     <a className={exampleClass('toggle')} onClick={toggleCode.bind(null, isBottom)}>
       <Icon name={showcode ? 'code-close' : 'code'} />
@@ -64,11 +53,12 @@ export default function Example({ component, id, name, rawText, title: propsTitl
   const examplePrefix = '?example='
   if (search.indexOf(examplePrefix) === 0) {
     search = search.replace(examplePrefix, '')
+
     if (name.indexOf(search) < 0) return null
   }
 
   // eslint-disable-next-line
-    let [title, ...sub] = propsTitle.split('\n')
+  let [title, ...sub] = propsTitle.split('\n')
   if (title) title = title.trim()
 
   return (
@@ -81,8 +71,8 @@ export default function Example({ component, id, name, rawText, title: propsTitl
 
       <Lazyload placeholder={placeholder}>
         <div className={exampleClass('_', showcode && 'showcode')}>
+          {/* 实例组件 */}
           <div className={exampleClass('body')}>{com}</div>
-
           {propsTitle.length > 0 && (
             <div className={exampleClass('desc')}>
               {sub.map((s, i) => (
@@ -91,9 +81,8 @@ export default function Example({ component, id, name, rawText, title: propsTitl
               {renderCodeHandle(false)}
             </div>
           )}
-
           <div ref={codeblock} className={exampleClass('code')}>
-            <CodeBlock onHighLight={setCodeBlockHeight} onClose={toggleCode} value={text} />
+            <CodeBlock onHighLight={setCodeBlockHeight} value={text} />
             {renderCodeHandle(true)}
           </div>
         </div>

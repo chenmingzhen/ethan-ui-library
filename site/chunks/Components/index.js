@@ -12,7 +12,9 @@ const pages = [
         level: 2,
         component: lazy(() => import(/* webpackChunkName: "Icon" */ './Icon')),
         },
-                'Form',
+                'Layout',
+                    'Form',
+                    'Navigation',
                     'Data',
                 {
         name: 'Carousel',
@@ -27,8 +29,7 @@ const pages = [
         level: 2,
         component: lazy(() => import(/* webpackChunkName: "Alert" */ './Alert')),
         },
-                'Layout',
-                    'Navigation',
+                'Other',
         ]
 
 export default Page(pages)

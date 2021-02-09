@@ -4,8 +4,8 @@ import Prism from 'prismjs'
 import 'prismjs/components/prism-jsx'
 import { exampleClass } from 'doc/styles'
 
-export default prop => {
-  const { language = 'lang-jsx', onHighLight, value } = prop
+export default props => {
+  const { language = 'lang-jsx', onHighLight, value } = props
 
   const elRef = useRef(null)
 

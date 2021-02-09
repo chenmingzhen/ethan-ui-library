@@ -20,6 +20,7 @@ const examples = [
     'Base \n Basic usage'
     ),
     component: require('doc/pages/components/Alert/example-1-base.js').default,
+    // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
     rawText: require('!raw-loader!doc/pages/components/Alert/example-1-base.js'),
     },
     {
@@ -29,6 +30,7 @@ const examples = [
     'type \n There are four built-in types (styles), [success, info, warning, danger], the default value is warning.'
     ),
     component: require('doc/pages/components/Alert/example-2-type.js').default,
+    // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
     rawText: require('!raw-loader!doc/pages/components/Alert/example-2-type.js'),
     },
     {
@@ -38,6 +40,7 @@ const examples = [
     'onClose \n When the onClose property is set, the close button is displayed. \n When the onClose property is true, only hide the component. \n When the onClose is a function, call this function after hiding it.'
     ),
     component: require('doc/pages/components/Alert/example-3-close.js').default,
+    // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
     rawText: require('!raw-loader!doc/pages/components/Alert/example-3-close.js'),
     },
     {
@@ -47,6 +50,7 @@ const examples = [
     'Icon \n Set the icon property to display the built-in icon.'
     ),
     component: require('doc/pages/components/Alert/example-4-icon.js').default,
+    // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
     rawText: require('!raw-loader!doc/pages/components/Alert/example-4-icon.js'),
     },
 ]

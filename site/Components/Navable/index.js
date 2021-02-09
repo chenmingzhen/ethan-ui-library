@@ -14,10 +14,14 @@ const scrollTo = id => {
   }
 }
 
+// 右侧导航条
 export default function(Component) {
   return function Nav(prop) {
+    // 当前active的header
     const [active, setActive] = useState('')
+    // h标签array
     const [headings] = useState([])
+    // 路由hash
     const { hash } = prop.location
 
     const setHeading = useCallback(hs => {

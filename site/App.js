@@ -13,7 +13,6 @@ const Home = lazy(() => import(/* webpackChunkName: "Home" */ './pages/Home'))
 const Components = lazy(() => import(/* webpackChunkName: "Components" */ './chunks/Components'))
 
 const App = () => {
-  const [versions, setVersions] = useState([])
   const [lastPath] = useState({ pathname: history.location.pathname })
   const [, setUpdate] = useState()
 
@@ -30,18 +29,6 @@ const App = () => {
         lastPath.pathname = loc.pathname
       }
     })
-
-    // fetch('../../../versions.json')
-    //   .then(res => res.json())
-    //   .then(json => {
-    //     const language = locate('cn', 'en')
-    //     const jsonVersions = json.map(v => ({
-    //       content: v,
-    //       url: '', // versionUrl(v, language)
-    //     }))
-    //     setVersions(jsonVersions)
-    //   })
-    //   .catch(() => {})
 
     return () => {
       unListen()

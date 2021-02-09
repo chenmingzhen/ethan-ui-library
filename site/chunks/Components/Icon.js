@@ -20,6 +20,7 @@ const examples = [
     'Base \n Create a new compoennt with url, then use it anywhere.'
     ),
     component: require('doc/pages/components/Icon/example-1-awesome.js').default,
+    // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
     rawText: require('!raw-loader!doc/pages/components/Icon/example-1-awesome.js'),
     },
     {
@@ -29,6 +30,7 @@ const examples = [
     'Customize Font \n You can customize an icon in <a target="_blank" href="http://iconfont.cn">iconfont.cn</a> or <a target="_blank" href="http://fontastic.me/">fontastic.me</a>, support font and svg.'
     ),
     component: require('doc/pages/components/Icon/example-2-iconfont.js').default,
+    // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
     rawText: require('!raw-loader!doc/pages/components/Icon/example-2-iconfont.js'),
     },
     {
@@ -38,6 +40,7 @@ const examples = [
     'Style \n Set fontSize and type to change icon size and color.'
     ),
     component: require('doc/pages/components/Icon/example-3-size.js').default,
+    // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
     rawText: require('!raw-loader!doc/pages/components/Icon/example-3-size.js'),
     },
 ]

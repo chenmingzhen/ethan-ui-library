@@ -1,7 +1,7 @@
-import React, { Fragment, Suspense, useEffect, useState } from 'react'
+import React, { Suspense, useEffect, useState } from 'react'
 import PropTypes from 'prop-types'
 import { Route, Redirect, Switch, NavLink } from 'react-router-dom'
-import { Sticky } from 'ethan/index'
+import { Sticky, BackTop } from 'ethan/index'
 import locate from 'doc/locate'
 import Loading from 'docs/Loading'
 import { mainClass } from 'doc/styles'
@@ -23,12 +23,16 @@ export default function(pages) {
 
     if (search.indexOf('?example=') === 0) search.replace('?example=', '')
 
+    // 右下角汉堡菜单
     const [shownav, setShowNav] = useState(window.innerWidth < 979)
 
     const toggleCode = () => {
       if (window.innerWidth > 979) return
+
+      // 小屏下的处理
       const el = document.querySelector('#-ethan-menu')
       const showNav = !shownav
+
       if (showNav) {
         setShowNav(showNav)
         setTimeout(() => {
@@ -50,8 +54,11 @@ export default function(pages) {
       return () => window.removeEventListener('resize', changeNav)
     }, [])
 
+    // <NavLink>是<Link>的一个特定版本，会在匹配上当前的url的时候给已经渲染的元素添加参数
+
     return (
       <>
+        {/* 汉堡菜单 */}
         <div tabIndex="-1" className={mainClass('nav-open-close')}>
           <Icon name={shownav ? 'Menu' : 'close'} onClick={toggleCode} />
         </div>
@@ -61,6 +68,7 @@ export default function(pages) {
             {pages
               .filter(v => filters.indexOf(v.name) === -1)
               .map((p, i) =>
+                /* 标题 */
                 typeof p === 'string' ? (
                   // eslint-disable-next-line
                     <label key={i}>{p}</label>
@@ -85,7 +93,7 @@ export default function(pages) {
         <div className={mainClass('page')}>
           <Suspense fallback={<Loading />}>
             <Switch>
-              <Redirect from={base} exact to={getUrl(base, indexRoute)} />
+              {/* <Redirect from={base} exact to={getUrl(base, indexRoute)} /> */}
               {pages
                 .filter(p => typeof p === 'object')
                 .map(p => (
@@ -101,6 +109,8 @@ export default function(pages) {
             </Switch>
           </Suspense>
         </div>
+
+        {!shownav && <BackTop height={300} />}
       </>
     )
   }

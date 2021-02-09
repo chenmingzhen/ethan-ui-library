@@ -8,6 +8,7 @@ import locate from '../../locate'
 import CodeBlock from '../CodeBlock'
 import Example from '../Example'
 import Console from './Console'
+import Table from '../Table'
 
 const codeReg = /^<code name="([\w|-]+)" /
 const exampleReg = /^<example name="([\w|-]+)"/
@@ -17,20 +18,24 @@ const createId = (level, str) => {
   return `${level}-${(str || '').replace(/[\W|-]/g, '-')}`
 }
 
+// apiTable example 最终汇入此组件
 export default function MarkDown({ onHeadingSetted, codes, examples, source }) {
   let [headings] = useState([])
   const [cache] = useState({})
 
   useEffect(() => {
+    // 执行Navable回调
     if (onHeadingSetted) {
       onHeadingSetted(headings)
     }
   }, [])
 
+  // 填充header
   const appendHeading = heading => {
     headings.push(heading)
   }
 
+  // TODO
   const renderCode = name => {
     const code = codes[name]
     if (code) {
@@ -67,7 +72,7 @@ export default function MarkDown({ onHeadingSetted, codes, examples, source }) {
             level: 3,
             children: [title],
           })
-          return <Example key={i} id={sid} {...prop} lazy={i > 2} />
+          return <Example key={i} id={sid} {...prop} />
         }
         return undefined
       }),
@@ -113,8 +118,12 @@ export default function MarkDown({ onHeadingSetted, codes, examples, source }) {
     <ReactMarkDown
       className={markdownClass('_')}
       source={source}
+      // 对应pages/components/XXX/xx.md的格式
+      // 根据内容渲染
       renderers={{
+        // markdown code 渲染方式
         code: CodeBlock,
+        // markdown header 渲染方式
         heading: renderHeading,
         html: prop => {
           if (prop.value === '<example />') return renderExamples()
@@ -129,6 +138,9 @@ export default function MarkDown({ onHeadingSetted, codes, examples, source }) {
 
           return null
         },
+        // markdown table 渲染方式
+        table: Table,
+        // markdown link 渲染方式
         link: prop => {
           const target = prop.href.indexOf('http') === 0 ? '_blank' : undefined
           if (target)

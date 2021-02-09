@@ -3,6 +3,7 @@ import PropTypes from 'prop-types'
 import { backTopClass } from '@/styles'
 import { FontAwesome } from '@/component/Icon'
 import Transition from '@/component/Transition'
+import { useUnmount } from 'ethan-use-hooks'
 import Transfer from './transfer'
 
 const BackTop = props => {
@@ -42,6 +43,10 @@ const BackTop = props => {
   }
 
   const style = { right: `${right}px`, bottom: `${bottom}px` }
+
+  useUnmount(() => {
+    if (backTopTimer.current) clearInterval(backTopTimer.current)
+  })
 
   return (
     <Transfer onScroll={onScroll}>

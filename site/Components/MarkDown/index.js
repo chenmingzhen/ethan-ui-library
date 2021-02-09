@@ -3,7 +3,7 @@ import MarkDown from './MarkDown'
 import lazy from './Lazy'
 import navable from '../Navable'
 
-const LazyMarkDown = lazy(MarkDown)
+const LazyMarkDown = lazy()
 export default LazyMarkDown
 
 export function createMarkDown(loader, noNav) {
