@@ -4,7 +4,7 @@ import ReactMarkDown from 'react-markdown'
 import { Link } from 'react-router-dom'
 import { getUidStr } from '@/utils/uid'
 import { markdownClass } from 'doc/styles'
-import locate from '../../locate'
+import locate from '../../utils/locate'
 import CodeBlock from '../CodeBlock'
 import Example from '../Example'
 import Console from './Console'
@@ -20,7 +20,7 @@ const createId = (level, str) => {
 
 // apiTable example 最终汇入此组件
 export default function MarkDown({ onHeadingSetted, codes, examples, source }) {
-  let [headings] = useState([])
+  const [headings] = useState([])
   const [cache] = useState({})
 
   useEffect(() => {
@@ -85,7 +85,6 @@ export default function MarkDown({ onHeadingSetted, codes, examples, source }) {
     const key = `example-${name}`
     if (!cache[key]) {
       const example = (examples || []).find(e => e.name === name)
-
       if (!example) cache[key] = null
       else cache[key] = <Example {...example} />
     }
@@ -112,11 +111,12 @@ export default function MarkDown({ onHeadingSetted, codes, examples, source }) {
   }
 
   // clear headings
-  headings = []
+  // headings = []
 
   return (
     <ReactMarkDown
       className={markdownClass('_')}
+      // markdown 通过source来切换中英状态
       source={source}
       // 对应pages/components/XXX/xx.md的格式
       // 根据内容渲染

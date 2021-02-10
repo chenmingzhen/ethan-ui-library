@@ -1,5 +1,4 @@
 import React from 'react'
-import MarkDown from './MarkDown'
 import lazy from './Lazy'
 import navable from '../Navable'
 

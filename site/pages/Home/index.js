@@ -1,7 +1,7 @@
 import React from 'react'
 import { Button, FontAwesome } from 'ethan/index'
 import { homeClass } from 'doc/styles'
-import history from '../../history'
+import history from 'docs/history'
 
 const Home = () => (
   <div className={homeClass('_')}>
@@ -13,7 +13,7 @@ const Home = () => (
           type="primary"
           className={homeClass('left')}
           onClick={() => {
-            history.push('/components/GetStart')
+            history.push('/components/Start')
           }}
         >
           开始使用

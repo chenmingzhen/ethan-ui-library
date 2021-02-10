@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect, Fragment, createElement } from 'rea
 import PropTypes from 'prop-types'
 import { Lazyload, Spin } from 'ethan/index'
 import Icon from 'doc/icons/Icon'
-import history from 'doc/history'
+import history from 'docs/history'
 import { exampleClass } from 'doc/styles'
 import CodeBlock from '../CodeBlock'
 
@@ -72,6 +72,7 @@ export default function Example({ component, id, name, rawText, title: propsTitl
       <Lazyload placeholder={placeholder}>
         <div className={exampleClass('_', showcode && 'showcode')}>
           {/* 实例组件 */}
+          {/* example-locale 也是下面渲染 com */}
           <div className={exampleClass('body')}>{com}</div>
           {propsTitle.length > 0 && (
             <div className={exampleClass('desc')}>

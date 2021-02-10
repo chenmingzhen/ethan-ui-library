@@ -5,7 +5,13 @@ import { lazy } from 'react'
 import Page from 'doc/pages/Page'
 
 const pages = [
-                    'General',
+                {
+        name: 'Start',
+        cn: '快速上手',
+        level: 1,
+        component: lazy(() => import(/* webpackChunkName: "Start" */ './Start')),
+        },
+                'General',
                 {
         name: 'Icon',
         cn: '图标',

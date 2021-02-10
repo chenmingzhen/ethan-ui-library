@@ -7,21 +7,21 @@ import MarkDown from 'docs/MarkDown'
 
 import locate from 'doc/utils/locate'
 
-import cn from 'doc/pages/components/Carousel/cn.md'
-import en from 'doc/pages/components/Carousel/en.md'
+import cn from 'doc/pages/components/Start/cn.md'
+import en from 'doc/pages/components/Start/en.md'
 
 const source = locate(cn, en)
 
 const examples = [
     {
-    name: '2-custom-indicator',
+    name: 'locale',
     title: locate(
-    '自定义 Indicator \n 当 indicatorType 为函数时，可以自定义 Indicator',
-    'Custom Indicator \n Indicators can be customized when indicatorType is a function.'
+    '',
+    ''
     ),
-    component: require('doc/pages/components/Carousel/example-2-custom-indicator.js').default,
+    component: require('doc/pages/components/Start/example-locale.js').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Carousel/example-2-custom-indicator.js'),
+    rawText: require('!raw-loader!doc/pages/components/Start/example-locale.js'),
     },
 ]
 

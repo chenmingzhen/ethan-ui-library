@@ -7,7 +7,7 @@ const getParameterByName = name => {
   const { search } = window.location
   const regex = new RegExp(`[?&]${name}(=([^&#]*)|&|#|$)`)
   const results = regex.exec(search)
-  console.log('theme regex result:', results)
+
   if (!results) return null
   if (!results[2]) return ''
   return decodeURIComponent(results[2].replace(/\+/g, ' '))

@@ -5,7 +5,7 @@ import React from 'react'
 import navable from 'docs/Navable'
 import MarkDown from 'docs/MarkDown'
 
-import locate from 'doc/locate'
+import locate from 'doc/utils/locate'
 
 import cn from 'doc/pages/components/Icon/cn.md'
 import en from 'doc/pages/components/Icon/en.md'

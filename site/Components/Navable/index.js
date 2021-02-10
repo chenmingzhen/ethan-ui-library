@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useCallback } from 'react'
 import { Sticky } from 'ethan/index'
+import { useUpdate } from 'ethan-use-hooks'
 import { navClass } from 'doc/styles'
-import history from '../../history'
+import history from '../history'
 
 const scrollTo = id => {
   const isSingleMode = history.location.search.indexOf('?example=') === 0
@@ -24,10 +25,13 @@ export default function(Component) {
     // 路由hash
     const { hash } = prop.location
 
+    const update = useUpdate()
+
     const setHeading = useCallback(hs => {
       hs.forEach(h => {
         headings.push(h)
       })
+      update()
     }, [])
 
     const hashScroll = useCallback(() => {

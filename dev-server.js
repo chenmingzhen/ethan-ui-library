@@ -88,6 +88,9 @@ router.get(config.dev.scriptPath, async (ctx, next) => {
       url: `http://localhost:${config.dev.webpackPort}/${url}`,
       method: 'GET',
     }
+    if (url.endsWith('.css')) {
+      ctx.set('Content-Type', 'text/css; charset=utf-8')
+    }
     ctx.set('Access-Control-Allow-Origin', '*')
     ctx.body = await got(options.url).then(data => data.body)
   }

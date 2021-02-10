@@ -5,7 +5,7 @@ import React from 'react'
 import navable from 'docs/Navable'
 import MarkDown from 'docs/MarkDown'
 
-import locate from 'doc/locate'
+import locate from 'doc/utils/locate'
 
 import cn from 'doc/pages/components/Alert/cn.md'
 import en from 'doc/pages/components/Alert/en.md'
@@ -52,6 +52,16 @@ const examples = [
     component: require('doc/pages/components/Alert/example-4-icon.js').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
     rawText: require('!raw-loader!doc/pages/components/Alert/example-4-icon.js'),
+    },
+    {
+    name: '5-scroll',
+    title: locate(
+    '滚动 \n 滚动的使用',
+    'Scroll \n Scroll usage'
+    ),
+    component: require('doc/pages/components/Alert/example-5-scroll.js').default,
+    // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
+    rawText: require('!raw-loader!doc/pages/components/Alert/example-5-scroll.js'),
     },
 ]
 
