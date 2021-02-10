@@ -45,20 +45,12 @@ router.get('**/react.production.min.js', async ctx => {
 router.get('**/react-dom.production.min.js', async ctx => {
   await send(ctx, 'node_modules/react-dom/umd/react-dom.development.js')
 })
-router.get('**/prop-types.min.js', async ctx => {
-  await send(ctx, 'node_modules/prop-types/prop-types.js')
-})
+// router.get('**/prop-types.min.js', async ctx => {
+//   await send(ctx, 'node_modules/prop-types/prop-types.js')
+// })
 router.get('**/jszip.min.js', async ctx => {
   await send(ctx, 'node_modules/jszip/dist/jszip.min.js')
 })
-
-router.get('**/docsearch.css', async ctx => {
-  await send(ctx, 'node_modules/docsearch.js/dist/cdn/docsearch.min.css')
-})
-
-// router.get('**/versions.json', async ctx => {
-//   await send(ctx, 'site/versions.json')
-// })
 
 router.get('/images/*', async ctx => {
   await send(ctx, `site/${ctx.path}`)

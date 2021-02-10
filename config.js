@@ -16,12 +16,10 @@ module.exports = {
     scripts: [
       `/react@${versions.react}/umd/react.production.min.js`,
       `/react-dom@${versions['react-dom']}/umd/react-dom.production.min.js`,
-      `/prop-types@${versions['prop-types']}/prop-types.min.js`,
+      // `/prop-types@${versions['prop-types']}/prop-types.min.js`,
       `/jszip@${versions.jszip}/dist/jszip.min.js`,
     ],
-    styles: [
-      /* `/docsearch.js@${versions['docsearch.js']}/dist/cdn/docsearch.css` */
-    ],
+    styles: [],
   },
   themes: ['default', 'ethan', 'antd'],
   webpack: {
@@ -54,12 +52,12 @@ module.exports = {
         commonjs: 'react-dom',
         amd: 'react-dom',
       },
-      'prop-types': {
-        root: 'PropTypes',
-        commonjs2: 'prop-types',
-        commonjs: 'prop-types',
-        amd: 'prop-types',
-      },
+      // 'prop-types': {
+      //   root: 'PropTypes',
+      //   commonjs2: 'prop-types',
+      //   commonjs: 'prop-types',
+      //   amd: 'prop-types',
+      // },
     },
   },
 }
