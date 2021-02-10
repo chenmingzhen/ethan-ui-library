@@ -71,6 +71,9 @@ module.exports = function({
       // 打包后样式的名字 对应default antd ethan的.css
       // 样式请求到这里
       // css 单独打包
+      // 打包结果 会结合所有的less  例如现在打包入口的normalize.less
+      // 在  normalize.less中添加body background red  name.css也会填充  name.css结合所有的less打包结果 生成一个请求链接
+      // localhost:3000/name.css
       new MiniCssExtractPlugin({
         filename: prefix ? `${prefix}.${name}.css` : `${name}.css`,
       }),

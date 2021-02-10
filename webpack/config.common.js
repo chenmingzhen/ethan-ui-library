@@ -5,11 +5,9 @@ const webpack = require('webpack')
 
 module.exports = function getCommon(config) {
   const lessLoader = [
-    // dev 环境 忽然了 less-loader
-    // {
-    //   loader: MiniCssExtractPlugin.loader,
-    // },
-    'style-loader',
+    {
+      loader: MiniCssExtractPlugin.loader,
+    },
     {
       loader: 'css-loader',
     },
@@ -93,7 +91,8 @@ module.exports = function getCommon(config) {
 
         {
           test: /\.less$/,
-          use: lessLoader, // config.DEV ? 'ignore-loader' : lessLoader, // 注意这里使样式失效了
+          // dev环境 less由cssConfig负责打包
+          use: config.DEV ? 'ignore-loader' : lessLoader,
         },
 
         {
