@@ -51,6 +51,8 @@ const cssConfig = config.themes.map(name =>
 )
 
 // js文件打包位置
+// 默认的css样式也会被打包进app.js
+// site加载完毕 随着cssConfig将theme打包完成 site/utils/theme.js被添加进页面 所以样式的文件名为主题.css
 const jsConfig = merge(common({ ...config.webpack, DEV: true }), {
   devtool: config.webpack.devtool,
   entry: getEntry(config.webpack.entry),

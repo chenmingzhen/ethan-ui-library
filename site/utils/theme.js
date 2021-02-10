@@ -14,6 +14,8 @@ const getParameterByName = name => {
 }
 
 const init = callback => {
+  // 手动添加link标签进页面
+  // 不通过webpack添加
   theme = getParameterByName('theme') || 'ethan'
   link = document.createElement('link')
   link.setAttribute('rel', 'stylesheet')
@@ -22,6 +24,8 @@ const init = callback => {
   link.onload = callback
 
   document.head.appendChild(link)
+
+  callback()
 }
 
 const change = next => {
