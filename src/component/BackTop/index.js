@@ -9,12 +9,13 @@ import Transfer from './transfer'
 const BackTop = props => {
   const [visible, setVisible] = useState(false)
   const backTopTimer = useRef()
+  const isUnmount = useRef(false)
   const { right, bottom } = props
 
   const onScroll = () => {
     const top = document.body.scrollTop || document.documentElement.scrollTop || window.scrollY
     const newVisible = top >= props.height
-    setVisible(newVisible)
+    !isUnmount.current && setVisible(newVisible)
   }
 
   const onClick = () => {
@@ -24,7 +25,7 @@ const BackTop = props => {
       clearInterval(backTopTimer.current)
     }
 
-    let height = 80
+    const height = 80
 
     backTopTimer.current = setInterval(() => {
       const oTop = document.body.scrollTop || document.documentElement.scrollTop || window.scrollY
@@ -37,14 +38,15 @@ const BackTop = props => {
         clearInterval(backTopTimer.current)
       }
 
-      if (height <= 15) height = 15
-      else height -= 1
+      // if (height <= 15) height = 15
+      // else height -= 1
     }, 10)
   }
 
   const style = { right: `${right}px`, bottom: `${bottom}px` }
 
   useUnmount(() => {
+    isUnmount.current = true
     if (backTopTimer.current) clearInterval(backTopTimer.current)
   })
 
