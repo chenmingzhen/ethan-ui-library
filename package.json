@@ -14,7 +14,16 @@
     "dev": "cross-env NODE_ENV=development webpack-dev-server --config webpack/dev-webpack-config.js",
     "start": "cross-env NODE_ENV=development LOG_ENV=rc node dev-server.js",
     "lint": "npx eslint --fix src/**/**.js",
-    "stylelint": "stylelint site/**/*.less --fix && stylelint src/**/*.less --fix"
+    "stylelint": "stylelint site/**/*.less --fix && stylelint src/**/*.less --fix",
+    "build-clean": "rm -rf publish/es publish/dist publish/lib publish/css",
+    "build-index": "node scripts/src-index.js",
+    "build-package": "node scripts/build-package.js",
+    "build-dist": "cross-env NODE_ENV=production webpack --config webpack/config.dist.js",
+    "build-es6": "cp -R src publish/es",
+    "build-less": "mkdir publish/lib && cp -R src/styles publish/lib/styles",
+    "build-es5": "node scripts/build-es5.js",
+    "build-css": "node scripts/build-css.js",
+    "build": "npm-run-all build-*"
   },
   "eslintConfig": {
     "extends": "react-app"
