@@ -24,8 +24,6 @@ const init = callback => {
   link.onload = callback
 
   document.head.appendChild(link)
-
-  callback()
 }
 
 const change = next => {
