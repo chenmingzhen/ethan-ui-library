@@ -56,9 +56,14 @@ router.get('/images/*', async ctx => {
   await send(ctx, `site/${ctx.path}`)
 })
 
+if (!fs.existsSync('temp')) {
+  fs.mkdirSync('temp')
+}
+
+// 不使用中间件的保存位置配置 自行读入文件
 const upload = multer({})
 router.post('/upload/', upload.single('file'), async ctx => {
-  fs.writeFileSync(ctx.req.file.originalname, ctx.req.file.buffer)
+  fs.writeFileSync(`temp/${ctx.req.file.originalname}`, ctx.req.file.buffer)
   ctx.body = {
     success: true,
     model: {
