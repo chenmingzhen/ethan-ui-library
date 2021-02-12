@@ -19,7 +19,9 @@ import Drop from './Drop'
 import acceptHOC from './accept'
 
 const VALIDATORITEMS = [
+  // 大小检验
   { key: 'size', param: blob => blob.size },
+  // 拓展名
   {
     key: 'ext',
     param: blob => {
@@ -53,6 +55,7 @@ class Upload extends PureComponent {
     props.validateHook(this.validate.bind(this))
   }
 
+  // 获取上传的地址
   getAction(file) {
     const { action } = this.props
     if (typeof action === 'string') return action
@@ -60,6 +63,7 @@ class Upload extends PureComponent {
     return ''
   }
 
+  // 自定义的错误处理
   validatorHandle(error, file) {
     const { validatorHandle: vth } = this.props
 
@@ -86,11 +90,13 @@ class Upload extends PureComponent {
     })
   }
 
+  // 移除正在上传或上传失败的文件
   removeFile(id) {
     const { onErrorRemove } = this.props
     const file = this.state.files[id]
 
     if (file) {
+      // 如果该请求已被发出，XMLHttpRequest.abort() 方法将终止该请求。
       if (file.xhr && file.xhr.abort) file.xhr.abort()
       this.setState(
         immer(draft => {
@@ -105,23 +111,30 @@ class Upload extends PureComponent {
     }
   }
 
+  // 移除上传成功的文件
   removeValue(index) {
     const { recoverAble, disabled } = this.props
+
     if (disabled) return
+
     this.setState(
       immer(draft => {
         draft.recycle.push(this.props.value[index])
+
+        // 可恢复文件数量的下限数 低于值 删除头部的信息
         if (typeof recoverAble === 'number' && draft.recycle.length > recoverAble) {
           draft.recycle.shift()
         }
       })
     )
+
     const value = immer(this.props.value, draft => {
       draft.splice(index, 1)
     })
     this.props.onChange(value)
   }
 
+  // 从删除中恢复
   recoverValue(index, value) {
     const { disabled } = this.props
     if (disabled) return
@@ -145,10 +158,12 @@ class Upload extends PureComponent {
 
     if (forceAccept) {
       const acceptRes = attrAccept(blob, accept)
+      // 不符合简要校验规则 抛出异常
       if (!acceptRes) return new Error(getLocale('invalidAccept'))
     }
 
     while (VALIDATORITEMS[i]) {
+      // 自定义的规则检验
       const item = VALIDATORITEMS[i]
       if (typeof validator[item.key] === 'function') {
         error = validator[item.key](item.param(blob), files)
@@ -163,11 +178,16 @@ class Upload extends PureComponent {
   addFile(e) {
     const { beforeUpload, value, limit, filesFilter } = this.props
     // eslint-disable-next-line
-        const files = { ...this.state.files }
+    const files = { ...this.state.files }
+
     let fileList = e.fromDragger && e.files ? e.files : e.target.files
+
     if (filesFilter) fileList = filesFilter(Array.from(fileList))
+
     const addLength = limit - value.length - Object.keys(this.state.files).length
+
     if (addLength <= 0) return
+
     Array.from({ length: Math.min(fileList.length, addLength) }).forEach((_, i) => {
       const blob = fileList[i]
       const id = getUidStr()
@@ -209,6 +229,7 @@ class Upload extends PureComponent {
         beforeUpload(blob, this.validatorHandle)
           .then(args => {
             if (args.status !== ERROR) files[id].xhr = this.uploadFile(id, blob, args.data)
+
             this.setState(
               immer(draft => {
                 draft.files[id] = Object.assign({}, draft.files[id], args)
@@ -230,6 +251,7 @@ class Upload extends PureComponent {
     this.setState({ files })
   }
 
+  // 上传文件处理
   uploadFile(id, file, data) {
     const {
       onSuccess,
@@ -255,9 +277,7 @@ class Upload extends PureComponent {
       withCredentials,
       file,
       headers,
-
       onStart,
-
       onProgress: (e, msg) => {
         const percent = typeof e.percent === 'number' ? e.percent : (e.loaded / e.total) * 100
         if (throttle) return
@@ -281,11 +301,11 @@ class Upload extends PureComponent {
           )
         }
       },
-
       onSuccess,
-
+      // 请求完成执行
       onLoad: xhr => {
         if (!/^2|1223/.test(xhr.status)) {
+          // 非200类状态码 处理异常
           this.handleError(id, xhr, file)
           return
         }
@@ -319,6 +339,7 @@ class Upload extends PureComponent {
 
       onError: xhr => this.handleError(id, xhr, file),
     }
+
     if (onProgress === false || onProgress === null) {
       delete options.onProgress
     }
@@ -330,6 +351,7 @@ class Upload extends PureComponent {
     this.addFile({ files, fromDragger: true })
   }
 
+  // Drop 替代与原来的文件
   handleReplace(files, index) {
     this.removeValue(index)
     setTimeout(() => {
@@ -337,6 +359,7 @@ class Upload extends PureComponent {
     })
   }
 
+  // 处理传输过程中的异常
   handleError(id, xhr, file) {
     const { onError, onHttpError } = this.props
 
@@ -352,9 +375,11 @@ class Upload extends PureComponent {
     )
   }
 
+  // 上传按钮 或 上传图片占位 handle
   renderHandle() {
     const { limit, value, children, accept, multiple, disabled, webkitdirectory, drop } = this.props
     const count = value.length + Object.keys(this.state.files).length
+    // 超过限制 不显示上传
     if (limit > 0 && limit <= count) return null
 
     const dragProps = {
@@ -407,6 +432,8 @@ class Upload extends PureComponent {
       uploadClass('_', disabled && 'disabled', showUploadList === false && 'hide-list'),
       this.props.className
     )
+
+    // 判断是否为Image或者File
     const FileComponent = imageStyle ? ImageFile : File
     const ResultComponent = imageStyle ? ImageResult : Result
 
@@ -430,6 +457,7 @@ class Upload extends PureComponent {
               multiple={false}
               key={i}
               accept={accept}
+              // 附带信息 下标
               dropData={i}
               disabled={disabled}
               onDrop={this.handleReplace}

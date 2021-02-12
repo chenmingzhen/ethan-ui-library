@@ -6,13 +6,14 @@ import fileAccept from '@/utils/accept'
 
 const Drop = props => {
   const [drop, setDrop] = useState(false)
-  const { className, disabled, multiple, accept, onDrop, dropData, children, drop: pDrop } = props
+  const { className, disabled, multiple, accept, onDrop, children, drop: pDrop, dropData } = props
 
   // --------------------------------------method------------------------------------------
   const handleFileDrop = useCallback(
     e => {
       const { files } = e.dataTransfer
       const filter = accept ? Array.prototype.filter.call(files, f => fileAccept(f, accept)) : files
+
       if (!filter || filter.length === 0) return
       if (onDrop) onDrop(multiple ? filter : [filter[0]], dropData)
     },
@@ -21,9 +22,13 @@ const Drop = props => {
   const handleDrag = useCallback(
     e => {
       if (disabled) return
+
       e.preventDefault()
       e.stopPropagation()
+
+      // 拖动进行中
       setDrop(e.type === 'dragover')
+      // 拖动完成
       if (e.type === 'drop') handleFileDrop(e)
     },
     [disabled, handleFileDrop]

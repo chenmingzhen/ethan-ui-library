@@ -16,8 +16,8 @@ const examples = [
     {
     name: '1-awesome',
     title: locate(
-    '基本用法 \n 引入一个在线地址（本示例为 font-awesome）创建一个新的 Icon 组件，在需要使用的地方引入。',
-    'Base \n Create a new compoennt with url, then use it anywhere.'
+    '基本用法 \n 基本用法',
+    'Base \n Base'
     ),
     component: require('doc/pages/components/Icon/example-1-awesome.js').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
@@ -36,8 +36,8 @@ const examples = [
     {
     name: '3-size',
     title: locate(
-    '样式 \n 通过 fontSize 和 type 属性可以便捷的设置大小和颜色，更多样式可以通过 style 属性设置。',
-    'Style \n Set fontSize and type to change icon size and color.'
+    '样式 \n 通过fontSize,type,style设置样式',
+    'Style \n Set fontSize,type and style to change Component style'
     ),
     component: require('doc/pages/components/Icon/example-3-size.js').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选

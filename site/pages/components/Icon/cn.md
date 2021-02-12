@@ -1,6 +1,4 @@
 # Icon *图标*
-组件库没有内置图标集，而是提供了一个函数生成一个新的图标组件。<br />
-一个项目内可以创建多个不同名称的图标组件。
 
 <example />
 
@@ -23,3 +21,6 @@
 | fontSize | string | 无 | 图标大小，和 style.fontSize 相同 |
 | style | object | 无 | 扩展样式，可以用来设定特定的大小和颜色等 |
 | type | string | 'default' | 内置颜色，可选值为 \['default', 'primary', 'secondary', 'success', 'info', 'warning', 'danger'] |
+
+### FontAwesome *已封装的Icon组件*
+参数与MyIcon一致，前往[Fontawesome](http://www.fontawesome.com.cn/) 选取图案

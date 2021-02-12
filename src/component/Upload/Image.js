@@ -6,6 +6,7 @@ import { getLocale } from '@/locale'
 import Upload from './Upload'
 import { ERROR } from './utils/request'
 
+// Upload Image
 class Image extends PureComponent {
   constructor(props) {
     super(props)
@@ -22,6 +23,8 @@ class Image extends PureComponent {
     return new Promise((resolve, reject) => {
       const { imageSize } = this.props.validator
       const file = {}
+      // FileReader 对象允许Web应用程序异步读取存储在用户计算机上的文件（或原始数据缓冲区）的内容，使用 File 或 Blob 对象指定要读取的文件或数据。
+      // https://developer.mozilla.org/zh-CN/docs/Web/API/FileReader
       const reader = new FileReader()
 
       reader.onload = e => {
@@ -53,6 +56,8 @@ class Image extends PureComponent {
         image.src = data
       }
 
+      // FileReader.readAsDataURL()
+      // https://developer.mozilla.org/zh-CN/docs/Web/API/FileReader/readAsDataURL
       reader.readAsDataURL(blob)
     })
   }

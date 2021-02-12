@@ -20,4 +20,4 @@ const attrAccept = (file, acceptedFiles) => {
   return true
 }
 
-export default attrAccept()
+export default attrAccept

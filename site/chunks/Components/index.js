@@ -20,7 +20,13 @@ const pages = [
         },
                 'Layout',
                     'Form',
-                    'Navigation',
+                {
+        name: 'Upload',
+        cn: '上传',
+        level: 2,
+        component: lazy(() => import(/* webpackChunkName: "Upload" */ './Upload')),
+        },
+                'Navigation',
                     'Data',
                 {
         name: 'Carousel',

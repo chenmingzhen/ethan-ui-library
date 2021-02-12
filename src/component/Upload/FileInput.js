@@ -1,9 +1,8 @@
-import React, { useCallback, useRef, memo } from 'react'
-import PropTypes from 'prop-types'
+import React, { useCallback, useRef, memo, useImperativeHandle } from 'react'
 
 const inputStyle = { display: 'none' }
 
-const FileInput = props => {
+const FileInput = (props, ref) => {
   const inputRef = useRef()
   const locked = useRef(false)
 
@@ -18,6 +17,8 @@ const FileInput = props => {
       locked.current = false
     }, 1000)
   }, [inputRef.current, locked.current])
+
+  useImperativeHandle(ref, () => ({ click }))
 
   const { accept, onChange, multiple, webkitdirectory } = props
 
@@ -35,11 +36,4 @@ const FileInput = props => {
   )
 }
 
-FileInput.propTypes = {
-  accept: PropTypes.string,
-  multiple: PropTypes.bool,
-  onChange: PropTypes.func.isRequired,
-  webkitdirectory: PropTypes.oneOfType([PropTypes.bool, PropTypes.string]),
-}
-
-export default memo(FileInput)
+export default memo(React.forwardRef(FileInput))

@@ -1,8 +1,8 @@
 /**
  * cn - 基本用法
- *    -- 引入一个在线地址（本示例为 font-awesome）创建一个新的 Icon 组件，在需要使用的地方引入。
+ *    -- 基本用法
  * en - Base
- *    -- Create a new compoennt with url, then use it anywhere.
+ *    -- Base
  */
 import React from 'react'
 import { Icon } from 'ethan/index'
@@ -14,10 +14,10 @@ const margin = { marginRight: 20 }
 export default function() {
   return (
     <div>
-      <FontAwesome style={margin} name="home" />
-      <FontAwesome style={margin} name="info" type="info" />
-      <FontAwesome style={margin} name="check" type="success" />
-      <FontAwesome style={margin} name="close" type="danger" />
+      <FontAwesome style={margin} name="camera-retro" />
+      <FontAwesome style={margin} name="camera-retro" type="info" />
+      <FontAwesome style={margin} name="camera-retro" type="success" />
+      <FontAwesome style={margin} name="camera-retro" type="danger" />
     </div>
   )
 }

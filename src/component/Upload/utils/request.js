@@ -3,7 +3,7 @@ export const SUCCESS = 2
 export const ERROR = 3
 
 const createCORSRequest = (method, url) => {
-  let xhr = XMLHttpRequest()
+  let xhr = new XMLHttpRequest()
 
   if ('withCredentials' in xhr) {
     xhr.open(method, url, true)
@@ -18,6 +18,7 @@ const createCORSRequest = (method, url) => {
   return xhr
 }
 
+// 默认上传request方法
 export default args => {
   const {
     url,
