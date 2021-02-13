@@ -23,7 +23,12 @@
     "build-less": "mkdir publish/lib && cp -R src/styles publish/lib/styles",
     "build-es5": "node scripts/build-es5.js",
     "build-css": "node scripts/build-css.js",
-    "build": "npm-run-all build-*"
+    "build": "npm-run-all build-*",
+    "docs-build-clean": "node scripts/gh-clean.js",
+    "docs-build-chunk": "cross-env NODE_ENV=production node scripts/dev-site.js",
+    "docs-build-js": "cross-env NODE_ENV=production webpack --config webpack/config.doc.js",
+    "docs-build-html": "node scripts/build-html.js",
+    "docs-build": "npm-run-all docs-build-*"
   },
   "eslintConfig": {
     "extends": "react-app"
