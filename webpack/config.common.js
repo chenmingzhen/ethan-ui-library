@@ -56,6 +56,7 @@ module.exports = function getCommon(config) {
     optimization: {
       minimizer: [
         // UglifyJS Webpack Plugin插件用来缩小（压缩优化）js文件
+        // 打包生成的vendors文件由此产生
         new UglifyWebpackPlugin({
           cache: true, // 是否启用文件缓存 ，默认缓存在node_modules/.cache/uglifyjs-webpack-plugin.目录
           parallel: true, // 使用多进程并行运行来提高构建速度
