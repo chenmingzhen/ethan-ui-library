@@ -28,8 +28,5 @@ yarn-error.log*
 #site
 /gh-pages
 
-#build-effect
-/site/chunks
-
 #temp
 /temp
