@@ -18,6 +18,12 @@ const pages = [
         level: 2,
         component: lazy(() => import(/* webpackChunkName: "Icon" */ './Icon')),
         },
+            {
+        name: 'Image',
+        cn: '图片',
+        level: 2,
+        component: lazy(() => import(/* webpackChunkName: "Image" */ './Image')),
+        },
                 'Layout',
                     'Form',
                 {

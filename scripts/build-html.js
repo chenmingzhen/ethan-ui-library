@@ -1,4 +1,5 @@
 const fs = require('fs')
+const fsExtra = require('fs-extra')
 const path = require('path')
 const ejs = require('./ejs')
 const pkg = require('../package.json')
@@ -91,3 +92,7 @@ async function buildHtml(lang) {
 
 buildHtml('en')
 buildHtml('cn')
+
+// copy 404
+const errorPath = path.resolve(__dirname, '../site/404.html')
+fsExtra.copySync(errorPath, `${dir}/404.html`)
