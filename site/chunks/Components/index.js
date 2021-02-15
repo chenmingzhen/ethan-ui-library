@@ -27,6 +27,12 @@ const pages = [
                 'Layout',
                     'Form',
                 {
+        name: 'Select',
+        cn: '选择框',
+        level: 2,
+        component: lazy(() => import(/* webpackChunkName: "Select" */ './Select')),
+        },
+            {
         name: 'Upload',
         cn: '上传',
         level: 2,

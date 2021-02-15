@@ -12,9 +12,9 @@ const lessLoader = (name, hot) => {
     {
       loader: 'css-loader',
     },
-    {
-      loader: 'var-polyfill-loader',
-    },
+    // {
+    //   loader: 'var-polyfill-loader',
+    // },
     {
       loader: 'postcss-loader',
     },

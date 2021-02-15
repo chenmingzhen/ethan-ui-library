@@ -66,6 +66,7 @@ export function cssSupport(attr, value) {
 }
 
 export function getCursorOffset(length) {
+  // https://developer.mozilla.org/zh-cn/docs/web/api/selection/anchoroffset
   if (window.getSelection) {
     return window.getSelection().anchorOffset
   }
