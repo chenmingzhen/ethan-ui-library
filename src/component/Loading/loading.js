@@ -13,7 +13,7 @@ const Loading = (props, ref) => {
   const [error, setError] = useState(props.error)
   const [loadingText, setLoadingText] = useState(props.loadingText)
   const [size, setSize] = useState(props.size)
-  console.log(color)
+
   const barClassName = useMemo(() => loadingClass('line', error && 'error'), [error])
   const barStyle = useMemo(() => {
     const style = {}
