@@ -8,12 +8,12 @@ const Loading = (props, ref) => {
   const [visible, setVisible] = useState(true)
   const [percent, setPercent] = useState(props.percent ? props.percent : 0)
   const [height, setHeight] = useState(props.height ? props.height : 4)
-  const [color, setColor] = useState(props.color)
+  const [color, setColor] = useState(props.color || '#3399ff')
   const [type, setType] = useState(props.type)
   const [error, setError] = useState(props.error)
   const [loadingText, setLoadingText] = useState(props.loadingText)
   const [size, setSize] = useState(props.size)
-
+  console.log(color)
   const barClassName = useMemo(() => loadingClass('line', error && 'error'), [error])
   const barStyle = useMemo(() => {
     const style = {}
@@ -52,7 +52,7 @@ const Loading = (props, ref) => {
           setLoadingText(loadingText)
           break
         case 'color':
-          setColor(color)
+          color && setColor(color)
           break
         case 'height':
           setHeight(height)
@@ -72,7 +72,12 @@ const Loading = (props, ref) => {
     <Transition show={visible}>
       <div className={loadingClass('_')} style={wrapStyle}>
         {type === 'line' ? (
-          <div className={barClassName} style={barStyle} />
+          <>
+            <div className={barClassName} style={barStyle} />
+            <div className={loadingClass('spin')}>
+              <Spin name="ring" color={color} size={24} />
+            </div>
+          </>
         ) : (
           <div className={loadingClass('inner')}>
             <div>

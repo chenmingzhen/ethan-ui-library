@@ -36,8 +36,8 @@ const loading = () => {
 
     update({ percent: per })
 
-    if (ref.current.percent >= 95) {
-      update({ percent: 95 })
+    if (ref.current.percent >= 100) {
+      update({ percent: 100 })
       clearInterval(timer)
     }
   }, 200)
