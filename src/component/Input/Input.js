@@ -42,7 +42,7 @@ class Input extends PureComponent {
       // 最终结果 ^-?\d*\.?\d{0,digits}$
     }
     reg += '$'
-    console.log(reg)
+
     reg = new RegExp(reg)
     return !reg.test(value)
   }
