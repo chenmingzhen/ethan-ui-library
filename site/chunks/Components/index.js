@@ -46,6 +46,12 @@ const pages = [
         level: 2,
         component: lazy(() => import(/* webpackChunkName: "Carousel" */ './Carousel')),
         },
+            {
+        name: 'Pagination',
+        cn: '分页',
+        level: 2,
+        component: lazy(() => import(/* webpackChunkName: "Pagination" */ './Pagination')),
+        },
                 'Feedback',
                 {
         name: 'Alert',
