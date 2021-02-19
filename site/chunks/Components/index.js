@@ -41,6 +41,12 @@ const pages = [
                 'Navigation',
                     'Data',
                 {
+        name: 'Avatar',
+        cn: '头像',
+        level: 2,
+        component: lazy(() => import(/* webpackChunkName: "Avatar" */ './Avatar')),
+        },
+            {
         name: 'Carousel',
         cn: '轮播',
         level: 2,
