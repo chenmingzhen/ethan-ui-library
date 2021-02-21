@@ -1,5 +1,5 @@
 {
-  "name": "react-ui-library",
+  "name": "ethan-ui",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
@@ -16,12 +16,12 @@
     "start": "rimraf temp && cross-env NODE_ENV=development LOG_ENV=rc node dev-server.js",
     "lint": "npx eslint --fix src/**/**.js",
     "stylelint": "stylelint site/**/*.less --fix && stylelint src/**/*.less --fix",
-    "build-clean": "rm -rf publish/es publish/dist publish/lib publish/css",
+    "build-clean": "rimraf publish/es publish/dist publish/lib publish/css",
     "build-index": "node scripts/src-index.js",
     "build-package": "node scripts/build-package.js",
     "build-dist": "cross-env NODE_ENV=production webpack --config webpack/config.dist.js",
-    "build-es6": "cp -R src publish/es",
-    "build-less": "mkdir publish/lib && cp -R src/styles publish/lib/styles",
+    "build-es6": "node scripts/cp-src.js",
+    "build-less": "node scripts/cp-less.js",
     "build-es5": "node scripts/build-es5.js",
     "build-css": "node scripts/build-css.js",
     "build": "npm-run-all build-*",
