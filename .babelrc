@@ -34,7 +34,8 @@
           {
             "useBuiltIns": true
           }
-        ]
+        ],
+        [ "babel-plugin-webpack-alias", { "config": "./babel.alias.js" } ]
       ],
       "presets": [
         [
