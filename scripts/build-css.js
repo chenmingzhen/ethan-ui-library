@@ -1,3 +1,5 @@
+// less => css
+
 const fs = require('fs')
 const less = require('less')
 const path = require('path')
@@ -7,6 +9,7 @@ const autoprefixer = require('autoprefixer')
 const root = path.resolve(__dirname, '../src')
 const publish = path.resolve(__dirname, '../publish')
 
+// build less content to css content
 async function render(data, setting) {
   return new Promise((resolve, reject) => {
     less.render(data, setting, (err, d) => {
@@ -45,6 +48,7 @@ function buildCss(stylePath) {
     })
 }
 
+// 将style下的js文件的less引入改为css引入
 function replaceLess() {
   const dir = path.resolve(publish, 'css/styles/')
   fs.readdirSync(dir)
