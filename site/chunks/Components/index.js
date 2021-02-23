@@ -47,6 +47,12 @@ const pages = [
         component: lazy(() => import(/* webpackChunkName: "Avatar" */ './Avatar')),
         },
             {
+        name: 'Badge',
+        cn: '徽标数',
+        level: 2,
+        component: lazy(() => import(/* webpackChunkName: "Badge" */ './Badge')),
+        },
+            {
         name: 'Carousel',
         cn: '轮播',
         level: 2,
