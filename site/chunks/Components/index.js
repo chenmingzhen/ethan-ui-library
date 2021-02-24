@@ -13,6 +13,12 @@ const pages = [
         },
                 'General',
                 {
+        name: 'Button',
+        cn: '按钮',
+        level: 2,
+        component: lazy(() => import(/* webpackChunkName: "Button" */ './Button')),
+        },
+            {
         name: 'Icon',
         cn: '图标',
         level: 2,
