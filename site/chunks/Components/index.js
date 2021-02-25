@@ -77,6 +77,12 @@ const pages = [
         level: 2,
         component: lazy(() => import(/* webpackChunkName: "Alert" */ './Alert')),
         },
+            {
+        name: 'Loading',
+        cn: '顶部进度条',
+        level: 2,
+        component: lazy(() => import(/* webpackChunkName: "Loading" */ './Loading')),
+        },
                 'Other',
         ]
 
