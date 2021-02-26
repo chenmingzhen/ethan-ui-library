@@ -83,6 +83,12 @@ const pages = [
         level: 2,
         component: lazy(() => import(/* webpackChunkName: "Loading" */ './Loading')),
         },
+            {
+        name: 'Message',
+        cn: '消息提示',
+        level: 2,
+        component: lazy(() => import(/* webpackChunkName: "Message" */ './Message')),
+        },
                 'Other',
         ]
 
