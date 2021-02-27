@@ -36,7 +36,8 @@
   },
   "Navigation": {
     "Breadcrumb": "面包屑",
-    "Menu": "菜单"
+    "Menu": "菜单",
+    "Steps": "步骤条"
   },
   "Data": {
     "Avatar": "头像",

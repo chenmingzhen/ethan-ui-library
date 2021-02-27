@@ -45,7 +45,13 @@ const pages = [
         component: lazy(() => import(/* webpackChunkName: "Upload" */ './Upload')),
         },
                 'Navigation',
-                    'Data',
+                {
+        name: 'Steps',
+        cn: '步骤条',
+        level: 2,
+        component: lazy(() => import(/* webpackChunkName: "Steps" */ './Steps')),
+        },
+                'Data',
                 {
         name: 'Avatar',
         cn: '头像',

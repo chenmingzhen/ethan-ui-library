@@ -1,10 +1,10 @@
-import React, { useEffect, useState, useMemo } from 'react'
+import React, { useEffect, useState, useMemo, useCallback } from 'react'
 import PropTypes from 'prop-types'
 import { stepsClass } from '@/styles'
 import { FontAwesome } from '@/component/Icon'
 
 const StepItem = props => {
-  const { icon: Icon, title, description, step, status, width, height } = props
+  const { icon: Icon, title, description, step, status, width, height, onClick, index } = props
   const [showCustomIcon, setShowCustomIcon] = useState(Icon && Icon.type && Icon.type.displayName === 'EthanIcon')
 
   const style = useMemo(() => {
@@ -15,6 +15,10 @@ const StepItem = props => {
 
     return computed
   }, [width, height])
+
+  const handleClick = useCallback(() => {
+    onClick?.(index)
+  }, [onClick, index])
 
   useEffect(() => {
     if (!Icon) return
@@ -31,7 +35,7 @@ const StepItem = props => {
   }, [Icon])
 
   return (
-    <div className={stepsClass('step-item', `${status}`)} style={style}>
+    <div className={stepsClass('step-item', `${status}`)} style={style} onClick={handleClick}>
       <div className={stepsClass('step-item-tail')}>
         <i />
       </div>
@@ -65,6 +69,8 @@ StepItem.propTypes = {
   description: PropTypes.string,
   status: PropTypes.oneOf(['wait', 'process', 'finish', 'error']),
   icon: PropTypes.element,
+  onClick: PropTypes.func,
+  index: PropTypes.number,
 }
 
 export default React.memo(StepItem)

@@ -32,6 +32,7 @@ const Steps = props => {
       childProps.step = index + 1
       childProps.width = !vertical ? 100 / total : 0
       childProps.height = vertical ? 100 / total : 0
+      childProps.index = index
 
       if (index === Number(current)) {
         childProps.status = status === 'error' ? 'error' : 'process'
