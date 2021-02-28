@@ -33,6 +33,12 @@ const pages = [
                 'Layout',
                     'Form',
                 {
+        name: 'DatePicker',
+        cn: '日期选择',
+        level: 2,
+        component: lazy(() => import(/* webpackChunkName: "DatePicker" */ './DatePicker')),
+        },
+            {
         name: 'Select',
         cn: '选择框',
         level: 2,
