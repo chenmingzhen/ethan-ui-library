@@ -16,7 +16,7 @@ const getParameterByName = name => {
 const init = callback => {
   // 手动添加link标签进页面
   // 不通过webpack添加
-  theme = getParameterByName('theme') || 'ethan'
+  theme = getParameterByName('theme') || 'default'
   link = document.createElement('link')
   link.setAttribute('rel', 'stylesheet')
   link.setAttribute('type', 'text/css')
