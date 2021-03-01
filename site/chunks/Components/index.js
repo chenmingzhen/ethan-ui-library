@@ -52,6 +52,12 @@ const pages = [
         },
                 'Navigation',
                 {
+        name: 'BackTop',
+        cn: '回到顶部',
+        level: 2,
+        component: lazy(() => import(/* webpackChunkName: "BackTop" */ './BackTop')),
+        },
+            {
         name: 'Steps',
         cn: '步骤条',
         level: 2,
@@ -101,7 +107,6 @@ const pages = [
         level: 2,
         component: lazy(() => import(/* webpackChunkName: "Message" */ './Message')),
         },
-                'Other',
-        ]
+    ]
 
 export default Page(pages)

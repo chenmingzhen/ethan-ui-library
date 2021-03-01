@@ -37,7 +37,8 @@
   "Navigation": {
     "Breadcrumb": "面包屑",
     "Menu": "菜单",
-    "Steps": "步骤条"
+    "Steps": "步骤条",
+    "BackTop": "回到顶部"
   },
   "Data": {
     "Avatar": "头像",
@@ -59,8 +60,5 @@
     "Tooltip": "提示",
     "Tag": "标签",
     "Loading": "顶部进度条"
-  },
-  "Other": {
-    "BackTop": "回到顶部"
   }
 }

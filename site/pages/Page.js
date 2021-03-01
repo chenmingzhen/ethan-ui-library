@@ -1,7 +1,7 @@
 import React, { Suspense, useEffect, useState } from 'react'
 import PropTypes from 'prop-types'
 import { Route, Switch, NavLink } from 'react-router-dom'
-import { Sticky, BackTop } from 'ethan/index'
+import { Sticky } from 'ethan/index'
 import locate from 'doc/utils/locate'
 import Loading from 'docs/Loading'
 import { mainClass } from 'doc/styles'
@@ -93,7 +93,6 @@ export default function(pages) {
         <div className={mainClass('page')}>
           <Suspense fallback={<Loading />}>
             <Switch>
-              {/* <Redirect from={base} exact to={getUrl(base, indexRoute)} /> */}
               {pages
                 .filter(p => typeof p === 'object')
                 .map(p => (
@@ -109,8 +108,6 @@ export default function(pages) {
             </Switch>
           </Suspense>
         </div>
-
-        {!shownav && <BackTop height={300} />}
       </>
     )
   }
