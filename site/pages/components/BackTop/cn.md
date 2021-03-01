@@ -1,10 +1,10 @@
-# Badge *徽标*
+# BackTop *回到顶部*
 
 <example />
 
 ## API
 
-### Badge
+### BackTop
 
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |

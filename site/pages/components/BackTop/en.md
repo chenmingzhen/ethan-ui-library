@@ -1,10 +1,10 @@
-# Badge 
+# BackTop 
 
 <example />
 
 ## API
 
-### Badge
+### BackTop
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
