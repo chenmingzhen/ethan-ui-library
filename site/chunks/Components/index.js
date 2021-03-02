@@ -88,6 +88,12 @@ const pages = [
         level: 2,
         component: lazy(() => import(/* webpackChunkName: "Pagination" */ './Pagination')),
         },
+            {
+        name: 'Timeline',
+        cn: '时间轴',
+        level: 2,
+        component: lazy(() => import(/* webpackChunkName: "Timeline" */ './Timeline')),
+        },
                 'Feedback',
                 {
         name: 'Alert',

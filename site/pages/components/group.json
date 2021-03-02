@@ -48,7 +48,8 @@
     "Datum.List": "数据处理",
     "Pagination": "分页",
     "Table": "表格",
-    "Tree": "树"
+    "Tree": "树",
+    "Timeline": "时间轴"
   },
   "Feedback": {
     "Alert": "提示框",
