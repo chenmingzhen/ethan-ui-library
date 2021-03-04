@@ -19,6 +19,12 @@ const pages = [
         component: lazy(() => import(/* webpackChunkName: "Button" */ './Button')),
         },
             {
+        name: 'Dropdown',
+        cn: '下拉菜单',
+        level: 2,
+        component: lazy(() => import(/* webpackChunkName: "Dropdown" */ './Dropdown')),
+        },
+            {
         name: 'Icon',
         cn: '图标',
         level: 2,
