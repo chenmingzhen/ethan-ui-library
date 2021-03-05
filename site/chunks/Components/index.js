@@ -37,7 +37,13 @@ const pages = [
         component: lazy(() => import(/* webpackChunkName: "Image" */ './Image')),
         },
                 'Layout',
-                    'Form',
+                {
+        name: 'Card',
+        cn: '卡片',
+        level: 2,
+        component: lazy(() => import(/* webpackChunkName: "Card" */ './Card')),
+        },
+                'Form',
                 {
         name: 'DatePicker',
         cn: '日期选择',
