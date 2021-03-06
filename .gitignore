@@ -28,6 +28,9 @@ yarn-error.log*
 #publish
 /publish
 
+#private
+id_rsa
+
 #site
 /gh-pages
 
