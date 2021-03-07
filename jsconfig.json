@@ -8,8 +8,9 @@
       "ethan/*": ["./src/*"]
     },
     "target": "ES6",
-    "allowSyntheticDefaultImports": true
+    "allowSyntheticDefaultImports": true,
+    "module": "commonjs"
   },
-  "include": ["src/**/*","./site"],
+  "include": ["src/**/*", "./site"],
   "exclude": ["node_modules"]
 }
