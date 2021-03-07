@@ -64,6 +64,7 @@ class Container extends PureComponent {
     this.clearClickAway()
   }
 
+  // 获取当前设置的Date事件
   getCurrent() {
     let current
     const { defaultRangeMonth } = this.props
@@ -71,6 +72,7 @@ class Container extends PureComponent {
     if (this.props.range) {
       current = (this.props.value || []).map((v, i) => {
         v = this.parseDate(v)
+
         if (utils.isInvalid(v)) v = utils.newDate(defaultRangeMonth[i])
         return v
       })
@@ -79,6 +81,8 @@ class Container extends PureComponent {
       current = this.parseDate(this.props.value)
     }
 
+    // 返回Date实例
+    // Tue Mar 02 2021 22:46:18 GMT+0800 (中国标准时间)
     return current
   }
 
@@ -103,6 +107,7 @@ class Container extends PureComponent {
     }
   }
 
+  // 从快速选择中获取数组Date
   getQuick(format) {
     const { quickSelect } = this.props
 
@@ -119,6 +124,7 @@ class Container extends PureComponent {
     })
   }
 
+  // 获取默认时间Date
   getDefaultTime() {
     const { defaultTime } = this.props
 
@@ -127,10 +133,12 @@ class Container extends PureComponent {
     return []
   }
 
+  // 绑定外层div ref
   bindElement(el) {
     this.element = el
   }
 
+  // 绑定Picker组件 ref
   bindPicker(picker) {
     this.picker = picker
   }
@@ -139,18 +147,22 @@ class Container extends PureComponent {
     this.pickerContainer = el
   }
 
+  // result中text的实例引用
   bindTextSpan(el) {
     this.textSpan = el
   }
 
+  // 根据value和format解析出Date对象
   parseDate(value) {
     return utils.toDateWithFormat(value, this.getFormat(), undefined)
   }
 
+  // 绑定点击document事件
   bindClickAway() {
     document.addEventListener('mousedown', this.handleClickAway)
   }
 
+  // 清除点击document事件
   clearClickAway() {
     document.removeEventListener('mousedown', this.handleClickAway)
   }
@@ -175,6 +187,7 @@ class Container extends PureComponent {
 
   handleFocus(e) {
     if (!this.shouldFocus(e.target)) return
+
     this.props.onFocus(e)
     this.bindClickAway()
   }
@@ -188,28 +201,36 @@ class Container extends PureComponent {
     // fot close the list
     if (e.keyCode === 9) {
       this.props.onBlur(e)
-      // e.preventDefault()
+
       if (this.state.focus) this.handleToggle(false)
       else this.clearClickAway()
     }
   }
 
+  // 展开DatePicker
+  // setState操作
   handleToggle(focus, e) {
     if (this.props.disabled === true) return
+
     if (focus === this.state.focus) return
+
+    // 处于展开状态且点击DatePicker展开框不处理
     if (e && focus && getParent(e.target, this.pickerContainer)) return
 
-    // click close icon
+    // 点击close Icon
     if (focus && e && e.target.classList.contains(datepickerClass('close'))) return
 
     this.setState(
       immer(state => {
         state.focus = focus
+
         if (focus === true) {
           const rect = this.element.getBoundingClientRect()
           const windowHeight = docSize.height
           const windowWidth = docSize.width
           const pickerWidth = this.props.range ? 540 : 270
+
+          // 计算DatePicker展开的位置
           if (!this.props.position) {
             if (rect.bottom + 300 > windowHeight) {
               if (rect.left + pickerWidth > windowWidth) state.position = 'right-top'
@@ -222,10 +243,12 @@ class Container extends PureComponent {
       })
     )
 
+    // 重置picker的值
     if (focus && this.picker && this.picker.resetRange) {
       this.picker.resetRange((this.props.value || []).map(this.parseDate))
     }
 
+    // 绑定事件
     if (focus === true) {
       this.firstRender = true
 
@@ -235,6 +258,7 @@ class Container extends PureComponent {
     }
   }
 
+  // value失焦执行
   triggerValueBlur(cb) {
     const { inputable } = this.props
     const { focus } = this.state
@@ -248,6 +272,7 @@ class Container extends PureComponent {
     }
   }
 
+  // result 中 text改变回调
   handleTextChange(date, index) {
     const format = this.getFormat()
     const val = date ? utils.format(date, format) : ''
@@ -263,6 +288,7 @@ class Container extends PureComponent {
       }),
     ]
 
+    // 比对时间 调整位置
     if (utils.compareAsc(value[0], value[1]) > 0) value.push(value.shift())
 
     this.props.onChange(
@@ -282,6 +308,7 @@ class Container extends PureComponent {
     return [date[0] || current[0], date[1] || current[1]]
   }
 
+  // DatePicker实例改变的回调(Range or Picker)
   handleChange(date, change, blur, isEnd) {
     // is range only select one
     const rangeOne = this.props.range && !(date[0] && date[1])
@@ -318,29 +345,32 @@ class Container extends PureComponent {
     }
   }
 
+  // 清除value
   handleClear(e) {
     e.stopPropagation()
 
-    const value = this.props.range ? ['', ''] : ''
+    // Remove the warning with null value instead of string value
+    const value = this.props.range ? [null, null] : null
 
     this.props.onChange(value, () => {
       this.props.onValueBlur()
-
       this.handleToggle(false)
-
       this.element.focus()
     })
   }
 
+  // DatePicker实例Hover的回调(Range or Picker)
   handleHover(index, isEnter) {
     this.setState({
       [`picker${index}`]: isEnter,
     })
   }
 
+  // 渲染Result中的text
   renderText(value, placeholder, key) {
     const { inputable, formatResult, disabled } = this.props
 
+    // Date对象值
     const date = this.parseDate(value)
 
     const className = classnames(
@@ -367,6 +397,7 @@ class Container extends PureComponent {
     )
   }
 
+  // 结果框
   renderResult() {
     const { disabled, range, placeholder, type } = this.props
 
@@ -414,6 +445,7 @@ class Container extends PureComponent {
   }
 
   renderPicker() {
+    // TODO 移除firstRender
     if (!this.firstRender) return undefined
 
     const { range, type, value, min, max, disabled, allowSingle, hourStep, minuteStep, secondStep } = this.props
@@ -481,6 +513,12 @@ class Container extends PureComponent {
 Container.propTypes = {
   clearable: PropTypes.bool,
   disabled: PropTypes.oneOfType([PropTypes.bool, PropTypes.func]),
+  // 不同type对应的默认值
+  // 'date': 'yyyy-MM-dd'
+  // 'time': 'HH:mm:ss'
+  // 'week': 'RRRR II'
+  // 'month': 'yyyy-MM'
+  // 'datetime': 'yyyy-MM-dd HH:mm:ss'
   format: PropTypes.string,
   formatResult: PropTypes.string,
   inputable: PropTypes.bool,
@@ -489,19 +527,25 @@ Container.propTypes = {
   onChange: PropTypes.func.isRequired,
   onFocus: PropTypes.func.isRequired,
   position: PropTypes.string,
+  // 范围跨度，单位 秒，为 true 时表示不限制选择范围。
   range: PropTypes.oneOfType([PropTypes.bool, PropTypes.number]),
   size: PropTypes.string,
+  // 时间类型
+  // 'date' | 'time' | 'datetime' | 'month' | 'week'
   type: PropTypes.string,
   allowSingle: PropTypes.bool,
   defaultTime: PropTypes.oneOfType([PropTypes.string, PropTypes.array]),
+  // 值为 string 时，需要和 format 属性匹配。range 属性为 true 时，值为长度为2的数组
   value: PropTypes.oneOfType([PropTypes.number, PropTypes.string, PropTypes.object, PropTypes.array]),
   absolute: PropTypes.bool,
   zIndex: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
   onValueBlur: PropTypes.func,
   children: PropTypes.oneOfType([PropTypes.string, PropTypes.object]),
+  // 快速选择, 仅在 range 模式下有效, name: 文字提示, value: 时间范围
   quickSelect: PropTypes.array,
   min: PropTypes.oneOfType([PropTypes.number, PropTypes.string, PropTypes.object]),
   max: PropTypes.oneOfType([PropTypes.number, PropTypes.string, PropTypes.object]),
+  // 范围选择的初始月份, 值为时间对象 或者时间戳, 仅在 range 模式下生效, 优先级低于 value 和 defaultValue
   defaultRangeMonth: PropTypes.array,
   hourStep: PropTypes.number,
   minuteStep: PropTypes.number,

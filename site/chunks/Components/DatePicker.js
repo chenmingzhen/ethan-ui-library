@@ -166,8 +166,8 @@ const examples = [
     {
     name: '12-inputable',
     title: locate(
-    '可输入 \n 设置 inputable 使日期可输入',
-    'Inputable \n Set inputable to true, you can change the value by input'
+    '可输入 \n 设置 inputable 使日期可输入 如果输入与format不一致的值会被清除',
+    'Inputable \n Set inputable to true, you can change the value by input,If you enter a value that is not consistent with format, it will be'
     ),
     component: require('doc/pages/components/DatePicker/example-12-inputable.js').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选

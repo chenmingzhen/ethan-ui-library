@@ -40,6 +40,7 @@ function getDaysOfMonth(dirtyDate) {
 }
 
 function isInvalid(date) {
+  // Date对象 isNaN为false
   // eslint-disable-next-line no-restricted-globals
   return isNaN(date)
 }
@@ -67,6 +68,7 @@ function compareMonth(dateLeft, dateRight, pad = 0) {
 
 function newDate(defaultDate) {
   const date = defaultDate ? new Date(defaultDate) : new Date()
+
   return new Date(date.getFullYear(), date.getMonth(), date.getDate())
 }
 

@@ -23,6 +23,7 @@ class Text extends PureComponent {
     this.bindElement = this.bindElement.bind(this)
   }
 
+  // container handleClickAway失焦使用
   bindElement(el) {
     const { onTextSpanRef } = this.props
 
@@ -31,10 +32,13 @@ class Text extends PureComponent {
     if (onTextSpanRef) onTextSpanRef(el)
   }
 
+  // span失去焦点时执行
   handleBlur(e) {
     const { format, index, onChange, value } = this.props
+    // 由于span是可编辑的 获取内容
     const txt = e.target.innerText
 
+    // 如果为picker 则不处理
     if (getParent(target, `.${datepickerClass('picker')}`)) return
 
     if (txt === value) return
@@ -46,7 +50,6 @@ class Text extends PureComponent {
       if (!newValue) {
         this.element.innerText = null
       }
-      onChange(newValue, index)
     }
   }
 
