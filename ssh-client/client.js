@@ -1,94 +1,83 @@
-const ssh = require('ssh2')
-const util = require('util')
-const events = require('events')
-const fs = require('fs')
 const path = require('path')
+const archiver = require('archiver')
+const fs = require('fs')
+const ssh2 = require('ssh2')
 const chalk = require('chalk')
+const { server, cmd } = require('./private')
 
-const { Client } = ssh
+const localPath = path.resolve(__dirname, 'publish.zip')
+const remotePath = '/ethan/publish.zip'
 
-const server = {
-  host: '193.112.175.198',
-  port: 22,
-  username: 'root',
-  privateKey: fs.readFileSync(path.join(__dirname, '../id_rsa')),
-}
+const ssh = ssh2()
 
-const SSHConnect = Client()
-
-let isConnected = false
-
-SSHConnect.on('ready', () => {
-  isConnected = true
-})
-  .on('error', error => {
-    console.log(chalk.red('SSH ERROR:', error))
-  })
-  .on('end', () => {
-    console.log(chalk.blue('SSH END'))
-  })
-  .on('close', () => {
-    console.log(chalk.blue('SSH CLOSE'))
-  })
-  .connect(server)
-
-const getInstance = () =>
-  new Promise(yes => {
-    const wait = setInterval(() => {
-      if (isConnected) {
-        clearInterval(wait)
-        yes(SSHConnect)
-      }
-    }, 1000)
-  })
-
-function GetFileAndDirList(localDir, dirs, files) {
-  const dir = fs.readdirSync(localDir)
-  for (let i = 0; i < dir.length; i++) {
-    const p = path.join(localDir, dir[i])
-    const stat = fs.statSync(p)
-    if (stat.isDirectory()) {
-      dirs.push(p)
-      GetFileAndDirList(p, dirs, files)
-    } else {
-      files.push(p)
-    }
-  }
-}
-
-async function Shell(cmd) {
-  const client = await getInstance()
-
-  return new Promise((yes, no) => {
-    client.shell((e, s) => {
-      if (e) {
-        no(e)
-      } else {
-        s.on('close', () => {
-          yes()
-        }).on('data', data => {
-          yes()
-          s.close()
-        })
-        console.log(cmd)
-        s.end(cmd)
-      }
+const connect = callback => {
+  ssh
+    .on('ready', () => {
+      console.log(chalk.green('connect ready'))
+      callback(ssh)
     })
+    .on('close', () => {
+      console.log(chalk.green('connect close'))
+    })
+    .connect(server)
+}
+
+const shell = conn => {
+  conn.shell((err, stream) => {
+    if (err) {
+      console.log(chalk.ref(err))
+    } else {
+      stream
+        .on('close', () => {
+          conn.end()
+        })
+        .on('data', data => {
+          console.log(`OUTPUT: ${data}`)
+        })
+      stream.end(cmd)
+    }
   })
 }
 
-async function UploadDir(localDir, remoteDir) {
-  const dirs = []
-  const files = []
-  GetFileAndDirList(localDir, dirs, files)
-
-  // 创建远程目录
-  for (let i = 0; i < dirs.length - 1; i++) {
-    const to = path.join(remoteDir, dirs[i].slice(localDir.length + 1)).replace(/[\\]/g, '/')
-    const cmd = `mkdir -p ${to} \n`
-
-    await Shell(cmd)
-  }
+const uploadFile = conn => {
+  conn.sftp((err, sftp) => {
+    if (err) {
+      console.log(err)
+    } else {
+      sftp.fastPut(localPath, remotePath, error => {
+        if (!error) {
+          fs.unlinkSync(path.resolve(__dirname, 'publish.zip'), e => {
+            if (!e) console.log(chalk.green('delete publish.zip success'))
+          })
+          shell(conn)
+        }
+      })
+    }
+  })
 }
 
-UploadDir(path.join(__dirname, '../publish'), '/ethan')
+// 压缩dist目录为public.zip
+function startZip() {
+  const archive = archiver('zip', {
+    zlib: { level: 5 }, // 递归扫描最多5层
+  }).on('error', err => {
+    throw err
+  })
+
+  const output = fs.createWriteStream(`${__dirname}/publish.zip`).on('close', err => {
+    if (err) {
+      console.log(chalk.red(err))
+      return
+    }
+    console.log(chalk.green('已生成zip包'))
+    console.log(chalk.blue('开始上传public.zip至远程机器...'))
+    connect(uploadFile)
+  })
+
+  archive.pipe(output)
+  // 将srcPach路径对应的内容添加到zip包中/public路径
+  archive.directory(path.resolve(__dirname, '../publish'), '/publish')
+  archive.finalize()
+}
+
+startZip()

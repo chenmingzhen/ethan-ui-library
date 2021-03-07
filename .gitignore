@@ -29,7 +29,7 @@ yarn-error.log*
 /publish
 
 #private
-id_rsa
+/ssh-client/private/*
 
 #site
 /gh-pages
