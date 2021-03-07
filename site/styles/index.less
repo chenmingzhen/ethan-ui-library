@@ -45,13 +45,17 @@ a:focus {
   }
 
   &-menu {
-    overflow: auto;
+    overflow: hidden;
     width: 20%;
     max-width: 360px;
     min-width: 240px;
     max-height: 100vh;
     transition: opacity 0.35s ease, margin 0.35s ease;
     opacity: 1;
+
+    &:hover{
+      overflow: auto;
+    }
 
     @media (max-width: 979px) and (min-width: 0px){
       position: fixed;
