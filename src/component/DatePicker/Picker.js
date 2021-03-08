@@ -24,6 +24,7 @@ class Picker extends PureComponent {
     }
 
     this.state = { mode }
+    //  默认current
     this.defaultCurrent = new Date(
       utils.formatDateWithDefaultTime(utils.newDate(), undefined, props.defaultTime[0], 'yyyy-MM-dd HH:mm:ss')
     )

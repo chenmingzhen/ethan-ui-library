@@ -88,6 +88,7 @@ class Range extends PureComponent {
         immer(draft => {
           draft.rangeDate[index] = date
           const [s, e] = draft.rangeDate
+
           if (index !== 0) {
             if (s && s.getHours() === e.getHours()) {
               if (utils.compareAsc(s, e) === 1) {
@@ -183,6 +184,7 @@ class Range extends PureComponent {
     this.props.onChange(quick.value, true)
   }
 
+  // 创建快速选择
   createQuick() {
     const { quicks, type } = this.props
     const { rangeDate } = this.state

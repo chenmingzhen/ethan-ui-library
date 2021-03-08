@@ -29,6 +29,7 @@ class Day extends PureComponent {
     this.formatWithDefaultTime = this.formatWithDefaultTime.bind(this)
   }
 
+  // 获取Day的数组
   getDays() {
     const { current } = this.props
 
@@ -43,6 +44,8 @@ class Day extends PureComponent {
     return this.cachedDays
   }
 
+  // 格式化时间
+  // 将default的HMS克隆到current上
   formatWithDefaultTime(i) {
     let idx = 0
     const { current, defaultTime, index } = this.props
@@ -61,10 +64,12 @@ class Day extends PureComponent {
     this.handleDayClick(date, 1)
   }
 
+  // 点击Day处理
   handleDayClick(date, sync) {
     const { type, allowSingle, rangeDate, min, max, index } = this.props
     const current = this.formatWithDefaultTime(sync)
     const onChange = typeof sync === 'number' ? this.props.onChangeSync.bind(this.props, sync) : this.props.onChange
+
     if (type === 'week') {
       onChange(date, true, true)
     } else {
@@ -76,7 +81,7 @@ class Day extends PureComponent {
         current.getMinutes(),
         current.getSeconds()
       )
-      // only can select day with the same day of min/max
+
       if (min && utils.compareAsc(newDate, min) < 0) utils.setTime(newDate, min)
       if (max && utils.compareAsc(newDate, max) > 0) utils.setTime(newDate, max)
 
@@ -86,6 +91,7 @@ class Day extends PureComponent {
         utils.clearHMS(newDate).getTime() === utils.clearHMS(rangeDate[index]).getTime()
       )
         newDate = ''
+      // datetime模式 点击day未结束操作
       onChange(newDate, true, type !== 'datetime')
     }
   }
@@ -94,10 +100,12 @@ class Day extends PureComponent {
     this.props.onChange(time, true, false, mode)
   }
 
+  // type week 模式 滑进或滑出
   handleWeek(hover) {
     this.setState({ hover })
   }
 
+  // 点击double箭头 处理月份的变化
   handleMonth(month) {
     const { current, onChange } = this.props
 
@@ -112,10 +120,12 @@ class Day extends PureComponent {
     this.props.onDayHover(date)
   }
 
+  // 渲染day
   renderDay(date, minD, maxD) {
     const { current, disabled, value, index, type, rangeDate, range, rangeTemp, min, max } = this.props
     const { hover } = this.state
     const hmsDate = new Date(date)
+
     utils.setTime(hmsDate, current)
     let isDisabled = disabled ? disabled(date) : false
 
@@ -142,6 +152,7 @@ class Day extends PureComponent {
 
     const classList = [
       utils.isSameDay(date, this.today) && 'today',
+      // 其他月份的日期 灰色显示
       current.getMonth() !== date.getMonth() && 'other-month',
       isDisabled && 'disabled',
     ]
@@ -161,6 +172,7 @@ class Day extends PureComponent {
       ) {
         hoverClass = datepickerClass(
           'active',
+          // week模式下 选中后 左右点
           date.getDay() === weekStart && 'hover-start',
           date.getDay() === weekEnd && 'hover-end'
         )
@@ -172,16 +184,20 @@ class Day extends PureComponent {
       ) {
         hoverClass = datepickerClass(
           'hover',
+          // hover下classname
           date.getDay() === weekStart && 'hover-start',
           date.getDay() === weekEnd && 'hover-end'
         )
       }
-    } else if (rangeDate && current.getMonth() === date.getMonth()) {
+    }
+    // range 模式
+    else if (rangeDate && current.getMonth() === date.getMonth()) {
       hoverProps.onMouseEnter = this.handleDayHover.bind(this, date)
 
       classList.push(utils.isSameDay(date, rangeDate[index]) && 'active')
 
       hoverClass = datepickerClass(
+        //  选中时间区间内的days 灰色方块hover
         utils.compareAsc(rangeDate[0], date) <= 0 && utils.compareAsc(rangeDate[1], date) >= 0 && 'hover',
         // Datetime Picker range end datetime classname #330
         utils.isSameDay(rangeDate[index], date) && `hover-${index === 0 ? 'start' : 'end'} active`
@@ -203,6 +219,7 @@ class Day extends PureComponent {
     )
   }
 
+  // 渲染HMS组件
   renderTimepicker() {
     const { rangeDate, index, showTimePicker } = this.props
     if (this.props.type !== 'datetime') return undefined
@@ -234,7 +251,9 @@ class Day extends PureComponent {
 
     this.today = utils.newDate()
 
+    // 最小日期
     const minDate = min && new Date(utils.format(min, minStr, new Date()))
+    // 最大日期
     const maxDate = max && new Date(utils.format(max, maxStr, new Date()))
 
     return (

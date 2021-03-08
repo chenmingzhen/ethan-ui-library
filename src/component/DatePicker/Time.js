@@ -15,6 +15,7 @@ class Time extends PureComponent {
     this.handleAMPMChange = this.handleChange.bind(this, 'ampm')
   }
 
+  // 没有values时获取的defaultValues
   getDefaultTime() {
     let idx = 0
     const current = utils.newDate()

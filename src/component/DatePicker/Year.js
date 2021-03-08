@@ -5,20 +5,25 @@ import { datepickerClass } from '@/styles'
 import Icon from './Icon'
 import utils from './utils'
 
+// 选择年份
 const Year = ({ current, onChange, onModeChange, value }) => {
   const handleChange = useCallback(
     year => {
       const date = new Date(current.getTime())
 
+      // 在当前日期设置year
       date.setFullYear(year)
 
+      // 回调date
       onChange(date)
 
+      // 下一个模式
       onModeChange('month')
     },
     [current, onChange, onModeChange]
   )
 
+  // 年份调整;
   const handleRangeChange = useCallback(
     year => {
       onChange(utils.addYears(current, year))
@@ -26,6 +31,7 @@ const Year = ({ current, onChange, onModeChange, value }) => {
     [current, onChange]
   )
 
+  // 而可选的范围为当前年份的前后7年
   const cy = current.getFullYear() - 7
   const years = range(15, 0).map(i => cy + i)
 

@@ -18,11 +18,15 @@ import { getLocale } from '@/locale'
 
 const TIME_FORMAT = 'HH:mm:ss'
 
+// 获取月份的天数 并填充前后至42个
 function getDaysOfMonth(dirtyDate) {
   const date = toDate(dirtyDate)
+
+  // 从date中获取月份第一天的Date，再获取第一个Day
   let current = startOfWeek(startOfMonth(date), {
     weekStartsOn: getLocale('startOfWeek'),
   })
+
   current.setHours(dirtyDate.getHours())
   current.setMinutes(dirtyDate.getMinutes())
   current.setSeconds(dirtyDate.getSeconds())
@@ -210,7 +214,6 @@ export default {
   isValid,
   newDate,
   setTime,
-  parse,
   toDate,
   toDateWithFormat,
   formatDateWithDefaultTime,

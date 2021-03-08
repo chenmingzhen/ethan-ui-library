@@ -25,6 +25,7 @@ class Month extends PureComponent {
     this.props.onModeChange('year')
   }
 
+  // 月份点击
   handleMonthClick(month) {
     const { current, onChange, onModeChange } = this.props
     const date = new Date(current.getTime())
@@ -35,6 +36,7 @@ class Month extends PureComponent {
     if (!isMonthType) onModeChange('day')
   }
 
+  // 渲染月份
   renderMonth(m, i) {
     const { value, min, disabled, range, type, current } = this.props
     const date = new Date(MONTHBASE)

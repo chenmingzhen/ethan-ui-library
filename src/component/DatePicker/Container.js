@@ -309,6 +309,7 @@ class Container extends PureComponent {
   }
 
   // DatePicker实例改变的回调(Range or Picker)
+  // change为true 表示为最终选中 可以把date设为value而非current
   handleChange(date, change, blur, isEnd) {
     // is range only select one
     const rangeOne = this.props.range && !(date[0] && date[1])
@@ -536,6 +537,7 @@ Container.propTypes = {
   allowSingle: PropTypes.bool,
   defaultTime: PropTypes.oneOfType([PropTypes.string, PropTypes.array]),
   // 值为 string 时，需要和 format 属性匹配。range 属性为 true 时，值为长度为2的数组
+  // 实际已选中值 current为暂时值
   value: PropTypes.oneOfType([PropTypes.number, PropTypes.string, PropTypes.object, PropTypes.array]),
   absolute: PropTypes.bool,
   zIndex: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
