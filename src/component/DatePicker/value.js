@@ -58,6 +58,7 @@ export default Origin =>
       }
     }
 
+    // value 是否为单个
     rangeWithSingle() {
       if (!this.state.value) return false
       return this.props.range && !this.props.allowSingle && this.state.value.filter(v => v).length === 1

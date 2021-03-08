@@ -53,21 +53,25 @@ class Range extends PureComponent {
   handleDayHover(date) {
     if (this.state.rangeDate.length === 1) {
       utils.cloneTime(date, this.props.value[1], this.props.format)
-      // this.setState({ hover: date })
     }
   }
 
+  // 转化RangeDate
+  // 判断左右是否符合标准 如左小于右  规范左右
   changeDateSmart(rangeDate) {
     if (!rangeDate[0] || !rangeDate[1]) return
-    const [s, e] = rangeDate
+    const [l, r] = rangeDate
     const { range } = this.props
     if (typeof range === 'number') {
-      if (utils.compareAsc(s, utils.addSeconds(e, -range)) < 0) rangeDate[1] = utils.addSeconds(s, range)
+      // 右减range仍然比左大，右取左+range
+      if (utils.compareAsc(l, utils.addSeconds(r, -range)) < 0) rangeDate[1] = utils.addSeconds(l, range)
     }
-    if (utils.compareAsc(s, e) > 0) {
-      const sWitheTime = new Date(s)
-      utils.setTime(sWitheTime, e)
-      rangeDate[1] = utils.compareAsc(s, sWitheTime) > 0 ? s : sWitheTime
+
+    // 左大于右
+    if (utils.compareAsc(l, r) > 0) {
+      const sWitheTime = new Date(l)
+      utils.setTime(sWitheTime, r)
+      rangeDate[1] = utils.compareAsc(l, sWitheTime) > 0 ? l : sWitheTime
     }
   }
 
@@ -142,6 +146,7 @@ class Range extends PureComponent {
       return
     }
 
+    // 根据min max 比对date的大小 然后设置不合标准的date
     utils.cloneTime(date, this.props.value[index])
     if (min && utils.compareAsc(date, min) <= 0) {
       utils.setTime(date, min)
@@ -149,23 +154,15 @@ class Range extends PureComponent {
     if (max && utils.compareAsc(date, max) >= 0) {
       utils.setTime(date, max)
     }
-    // if (this.state.rangeDate.filter(a => a).length !== 1) {
-    //   this.setState({ rangeDate: index === 1 ? [undefined, date] : [date], hover: undefined })
-    //   return
-    // }
 
     this.setState(
       immer(draft => {
-        // const method = utils.compareAsc(draft.rangeDate[0], date) > 0 ? 'unshift' : 'push'
         draft.rangeDate[index] = date
         draft.rangeDate[1 - index] = draft.rangeDate[1 - index] || ''
-        // draft.rangeDate.map(this.fillTime)
-        // range change start&end
         this.changeDateSmart(draft.rangeDate)
         draft.hover = undefined
       }),
       () => {
-        // only 'datetime' don not need close, 'time is up'
         this.props.onChange(this.state.rangeDate, true, type !== 'datetime', index === 1)
       }
     )
