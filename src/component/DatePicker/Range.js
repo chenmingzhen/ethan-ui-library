@@ -86,31 +86,42 @@ class Range extends PureComponent {
       let endChangedDate
       this.setState(
         immer(draft => {
+          // 设置值进去rangeDate
           draft.rangeDate[index] = date
-          const [s, e] = draft.rangeDate
+          // 从draft中获取最新的rangeDate值
+          const [l, r] = draft.rangeDate
+          // 右Picker
           if (index !== 0) {
-            if (s && s.getHours() === e.getHours()) {
-              if (utils.compareAsc(s, e) === 1) {
-                e.setMinutes(s.getMinutes())
+            if (l && l.getHours() === r.getHours()) {
+              if (utils.compareAsc(l, r) === 1) {
+                r.setMinutes(l.getMinutes())
               }
             }
             return
           }
-          if (range && utils.compareAsc(s, e) === 1) {
+
+          // 左Picker
+
+          // 存在选值范围且左右相等 将最后选择的设置为endChangedDate
+          if (range && utils.compareAsc(l, r) === 1) {
             endChangedDate = date
             draft.rangeDate[1] = endChangedDate
           }
-          if (typeof range === 'number' && utils.compareAsc(s, utils.addSeconds(e, -range)) < 0) {
-            endChangedDate = utils.addSeconds(s, range)
+
+          // 左右已经选择的情况，此时设有range，如果再选择左边，然后右边溢出范围，需要将右重新赋值，结果为左加最大range
+          if (typeof range === 'number' && utils.compareAsc(l, utils.addSeconds(r, -range)) < 0) {
+            endChangedDate = utils.addSeconds(l, range)
             draft.rangeDate[1] = endChangedDate
           }
         }),
         () => {
-          const current = immer(this.props.value, draft => {
-            draft[index] = date
-            if (endChangedDate) draft[1] = endChangedDate
-            draft[1 - index] = draft[1 - index] || ''
-          })
+          // const current = immer(this.props.value, draft => {
+          //   draft[index] = date
+          //   if (endChangedDate) draft[1] = endChangedDate
+          //   draft[1 - index] = draft[1 - index] || ''
+          // })
+          // 回调onChange
+          const current = this.state.rangeDate
           this.props.onChange(current, true)
         }
       )

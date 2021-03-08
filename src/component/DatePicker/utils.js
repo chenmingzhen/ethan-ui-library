@@ -199,6 +199,7 @@ export default {
   addYears,
   addSeconds,
   cloneTime,
+  // 将日期按升序排序。 为此，如果第一个日期在第二个日期之后，则返回1；如果第一个日期在第二个日期之前，则返回-1；如果日期相等，则返回0。
   compareAsc,
   compareMonth,
   getDaysOfMonth,
