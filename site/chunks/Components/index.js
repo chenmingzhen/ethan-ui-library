@@ -45,6 +45,12 @@ const pages = [
         },
                 'Form',
                 {
+        name: 'Checkbox',
+        cn: '复选框',
+        level: 2,
+        component: lazy(() => import(/* webpackChunkName: "Checkbox" */ './Checkbox')),
+        },
+            {
         name: 'DatePicker',
         cn: '日期选择',
         level: 2,
