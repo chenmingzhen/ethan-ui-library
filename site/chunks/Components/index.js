@@ -43,6 +43,12 @@ const pages = [
         level: 2,
         component: lazy(() => import(/* webpackChunkName: "Card" */ './Card')),
         },
+            {
+        name: 'Grid',
+        cn: '栅格',
+        level: 2,
+        component: lazy(() => import(/* webpackChunkName: "Grid" */ './Grid')),
+        },
                 'Form',
                 {
         name: 'Checkbox',
