@@ -52,8 +52,11 @@ class ScrollBar extends PureComponent {
   // 点击滚动条
   handleBarClick(event) {
     const { offset } = this.props
+    // 缓存offset 用于handleMouseMove
     this.cacheOffset = offset
+    // 设置正在拖拽
     this.setState({ dragging: true })
+    // 记录x,y
     this.mouseX = event.clientX
     this.mouseY = event.clientY
 
@@ -62,7 +65,7 @@ class ScrollBar extends PureComponent {
     this.bindEvent()
   }
 
-  // 移动过程计算移动值
+  // 移动过程计算移动值 推算offset 回调onScroll
   handleMouseMove(event) {
     const x = event.clientX - this.mouseX
     const y = event.clientY - this.mouseY
@@ -86,9 +89,12 @@ class ScrollBar extends PureComponent {
     if (event.target === this.handle) return
 
     const { direction, length, scrollLength, offset, onScroll } = this.props
+    // 获取bar的位置信息
     const rect = this.handle.getBoundingClientRect()
 
     let newOffset = offset
+
+    // 点击后的计算值 用于下面计算
     const page = length / (scrollLength - length)
 
     if ((direction === 'x' && event.clientX < rect.left) || (direction === 'y' && event.clientY < rect.top)) {
@@ -99,6 +105,7 @@ class ScrollBar extends PureComponent {
       if (newOffset > 1) newOffset = 1
     }
 
+    // 回调偏差值
     onScroll(newOffset)
   }
 
@@ -118,11 +125,13 @@ class ScrollBar extends PureComponent {
     const style = {}
     if (scrollLength > 0) {
       if (direction === 'x') {
+        // bar的宽/高
         style.width = `${(length / scrollLength) * 100}%`
-        // 偏移值
+        // 偏移值x
         style.left = value
       } else {
         style.height = `${(length / scrollLength) * 100}%`
+        // 偏移值y
         style.top = value
       }
     }
@@ -138,12 +147,15 @@ class ScrollBar extends PureComponent {
 }
 
 ScrollBar.propTypes = {
+  // bar的长度
   barLength: PropTypes.number.isRequired,
   className: PropTypes.string,
   direction: PropTypes.oneOf(['x', 'y']),
+  // 当scrollHeight小于Wheel div的高度时 强制滚动bar容器的高度为scrollHeight的高度
   forceHeight: PropTypes.number,
   length: PropTypes.number.isRequired, // 容器长度
-  offset: PropTypes.number.isRequired, // scrollTop || scrollLeft
+  offset: PropTypes.number.isRequired, // bar 所在的位置比例 如0.1 0.2
+  // 滚动过程中 回调新的offset
   onScroll: PropTypes.func.isRequired,
   scrollLength: PropTypes.number.isRequired, // 滚动的内容总长度
 }
