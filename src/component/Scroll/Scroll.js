@@ -23,7 +23,9 @@ class Scroll extends PureComponent {
     this.wheelX = true
     this.wheelY = true
 
+    // 像素x 实际值
     this.pixelX = 0
+    // 像素y 实际值
     this.pixelY = 0
 
     this.cacheWidth = 0
@@ -45,6 +47,7 @@ class Scroll extends PureComponent {
     super.componentDidMount()
     setTimeout(this.setRect)
     this.wheelElement.addEventListener('wheel', this.handleWheel, { passive: false })
+    // 移动端事件
     this.wheelElement.addEventListener('touchstart', this.handleTouchStart, { passive: true })
     this.wheelElement.addEventListener('touchmove', this.handleTouchMove, { passive: false })
   }
@@ -82,6 +85,7 @@ class Scroll extends PureComponent {
     return { width, height }
   }
 
+  // 设置scroll的滚动位置
   setRect() {
     this.handleScroll(this.props.left, this.props.top)
     this.forceUpdate()
@@ -102,15 +106,19 @@ class Scroll extends PureComponent {
     }
   }
 
+  // 设置点击的起始点
   setStartPoint(position) {
     this.touchStartX = position.clientX
     this.touchStartY = position.clientY
   }
 
   bindInner(el) {
+    // 实际渲染内容的容器(children的父容器)
     this.inner = el
   }
 
+  // contentDocument 属性能够以 HTML 对象来返回 iframe 中的文档。
+  // https://www.runoob.com/jsref/prop-frame-contentwindow.html
   bindIframe(el) {
     if (el && el.contentWindow) {
       el.contentWindow.onresize = throttleWrapper(this.setRect)
@@ -121,7 +129,9 @@ class Scroll extends PureComponent {
     this.wheelElement = el
   }
 
+  // wheel滚动处理 移动端滚动处理
   boundleScroll() {
+    // 只能一个方向滚动 一个方向滚动 另外一个方向设置为0
     if (Math.abs(this.pixelX) > Math.abs(this.pixelY)) {
       this.pixelY = 0
     } else {
@@ -130,9 +140,13 @@ class Scroll extends PureComponent {
 
     const { left, top } = this.props
     const { scrollWidth, scrollHeight } = this.props
+
+    // 计算left 偏差比例 0.1 0.2
     let x = left + this.pixelX / scrollWidth
     if (x < 0) x = 0
     if (x > 1) x = 1
+
+    // 计算top 偏差比例 0.1 0.2
     let y = top + this.pixelY / scrollHeight
     if (y < 0) y = 0
     if (y > 1) y = 1
@@ -141,6 +155,7 @@ class Scroll extends PureComponent {
       this.handleScroll(x, y, this.pixelX, this.pixelY)
     }
 
+    // 滚动完毕之后重置鼠标滚动xy
     this.pixelX = 0
     this.pixelY = 0
   }
@@ -151,17 +166,20 @@ class Scroll extends PureComponent {
     const { innerScrollAttr } = this.props
     if (!scrollX && !scrollY) return
 
+    // innerScrollAttr 包含当前e的attr 不处理
     if (innerScrollAttr.find(attr => event.target.hasAttribute(attr))) {
       event.stopPropagation()
       return
     }
 
+    // 非本组件鼠标滚动 子组件的滚动 不处理
     const target = getParent(event.target, `.${scrollClass('_')}`)
     if (target !== this.wheelElement) return
 
     const wheel = normalizeWheel(event)
     this.setBaseScrollHeightRatio(wheel.pixelY)
 
+    // 计算 x y的鼠标滚动值
     if (scrollX) this.pixelX += wheel.pixelX
     if (scrollY) this.pixelY += wheel.pixelY * this.baseScrollRatio
 
@@ -172,38 +190,48 @@ class Scroll extends PureComponent {
     this.boundleScroll()
   }
 
+  // bar的滚动回调 handleScrollX=>handleScroll=>props=>onScroll
   handleScroll(x, y, pixelX, pixelY) {
     const { scrollWidth } = this.props
+    // 获取容器wheel的信息
     const { width, height } = this.getWheelRect()
     const max = Math.round((1 - width / scrollWidth) * scrollWidth)
+
     if (this.props.onScroll) {
       this.props.onScroll(x, y, max, this.inner, width, height, pixelX, pixelY)
     }
   }
 
+  // left 比例值 0.1
   handleScrollX(left) {
     this.handleScroll(left, this.props.top, undefined, 0)
   }
 
+  // top 比例值 0.1
   handleScrollY(top) {
     this.handleScroll(this.props.left, top)
   }
 
+  // 移动端 开始点击
   handleTouchStart(e) {
     this.setStartPoint(e.changedTouches[0])
   }
 
+  // 移动端 移动
   handleTouchMove(e) {
     const { scrollX, scrollY } = this.props
     e.preventDefault()
+    // 拿到移动的点
     const position = e.changedTouches[0]
+    // 计算移动值
     const moveX = position.clientX - this.touchStartX
     const moveY = position.clientY - this.touchStartY
 
+    // 记录偏移值
     if (scrollX) this.pixelX = -moveX
     if (scrollY) this.pixelY = -moveY
 
-    // need reset the start
+    // 重置起始点
     this.setStartPoint(position)
 
     this.boundleScroll()
@@ -211,26 +239,33 @@ class Scroll extends PureComponent {
 
   render() {
     const { children, scrollWidth, scrollHeight, left, top, scrollX, scrollY, style } = this.props
+    // 滚动容器的总宽与总长
     const { width, height } = this.getWheelRect()
 
     const className = classnames(scrollClass('_', scrollX && 'show-x', scrollY && 'show-y'), this.props.className)
 
-    const yLength = scrollHeight < height ? scrollHeight : height
+    // wheel 滚动
+    // bar的容器长度
+    const barLength = scrollHeight < height ? scrollHeight : height
 
-    this.wheelY = Math.ceil(scrollHeight) > Math.ceil(yLength)
+    // 需要y滚动
+    this.wheelY = Math.ceil(scrollHeight) > Math.ceil(barLength)
+    // 需要x滚动
     this.wheelX = Math.ceil(scrollWidth) > Math.ceil(width)
 
     return (
       <div style={style} ref={this.bindWheel} className={className}>
+        {/* iframe用于占位计算onresize */}
         <iframe tabIndex={-1} title="scroll" ref={this.bindIframe} className={scrollClass('iframe')} />
         <div className={scrollClass('iframe')} />
         <div ref={this.bindInner} className={scrollClass('inner')}>
+          {/* left: x的滚动准确数值 top:y的滚动准确数值 element:滚动容器ref */}
           <Provider value={{ left: left * width, top: top * height, element: this.wheelElement }}>{children}</Provider>
         </div>
         {scrollY && (
           <Bar
             direction="y"
-            length={yLength}
+            length={barLength}
             forceHeight={scrollHeight < height ? scrollHeight : undefined}
             scrollLength={scrollHeight}
             offset={top}
@@ -247,12 +282,18 @@ class Scroll extends PureComponent {
 
 Scroll.propTypes = {
   ...getProps(PropTypes),
+  // x的偏差值 如0.1 0.2 与bar的offset一致
   left: PropTypes.number.isRequired,
+  // y的偏差值 如0.1 0.2 与bar的offset一致
   top: PropTypes.number.isRequired,
   onScroll: PropTypes.func.isRequired,
+  // 滚动y的总长度
   scrollHeight: PropTypes.number,
+  // 滚动x的总长度
   scrollWidth: PropTypes.number,
+  // x方向滚动
   scrollX: PropTypes.bool.isRequired,
+  // y方向滚动
   scrollY: PropTypes.bool.isRequired,
   stable: PropTypes.bool,
   innerScrollAttr: PropTypes.arrayOf(PropTypes.string),

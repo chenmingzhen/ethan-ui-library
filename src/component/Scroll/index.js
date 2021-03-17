@@ -6,8 +6,11 @@ import Scroll from './Scroll'
 export default class extends PureComponent {
   static propTypes = {
     onScroll: PropTypes.func,
+    // 滚动方向
     scroll: PropTypes.oneOf(['x', 'y', 'both', '']),
+    // left的偏差值 0.1 0.2
     scrollLeft: PropTypes.number,
+    // top的偏差值 0.1 0.2
     scrollTop: PropTypes.number,
   }
 
@@ -44,7 +47,10 @@ export default class extends PureComponent {
   handleScroll(x, y, ...others) {
     const left = this.scrollX ? x : 0
     const top = this.scrollY ? y : 0
+
+    // 设置偏差比例
     this.setState({ left, top })
+
     if (this.props.onScroll) {
       this.props.onScroll(left, top, ...others)
     }
@@ -52,6 +58,7 @@ export default class extends PureComponent {
 
   render() {
     const { left, top } = this.getRect()
+
     return (
       <Scroll
         {...this.props}
