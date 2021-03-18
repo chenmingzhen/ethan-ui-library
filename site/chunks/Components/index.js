@@ -130,6 +130,12 @@ const pages = [
         level: 2,
         component: lazy(() => import(/* webpackChunkName: "Timeline" */ './Timeline')),
         },
+            {
+        name: 'Tree',
+        cn: '树',
+        level: 2,
+        component: lazy(() => import(/* webpackChunkName: "Tree" */ './Tree')),
+        },
                 'Feedback',
                 {
         name: 'Alert',
