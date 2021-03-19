@@ -69,6 +69,12 @@ const pages = [
         component: lazy(() => import(/* webpackChunkName: "EditableArea" */ './EditableArea')),
         },
             {
+        name: 'Input',
+        cn: '输入框',
+        level: 2,
+        component: lazy(() => import(/* webpackChunkName: "Input" */ './Input')),
+        },
+            {
         name: 'Select',
         cn: '选择框',
         level: 2,
