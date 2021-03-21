@@ -5,6 +5,7 @@ import { selectClass } from '@/styles'
 import { isObject } from '@/utils/is'
 import icons from '../icons'
 
+// 每个选项
 class Option extends PureComponent {
   constructor(props) {
     super(props)
@@ -15,7 +16,9 @@ class Option extends PureComponent {
   handleClick() {
     const { data, onClick, isActive, index, disabled, groupKey } = this.props
 
+    // 点击Group标题 不处理
     if (this.locked || disabled || data[groupKey]) return
+
     this.locked = true
 
     onClick(!isActive, data, index)
@@ -25,6 +28,7 @@ class Option extends PureComponent {
     }, 200)
   }
 
+  // hover处理
   handleHover() {
     this.props.onHover(this.props.index)
   }

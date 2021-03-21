@@ -3,6 +3,8 @@ const LINE_HEIGHT = 40
 const PAGE_HEIGHT = 800
 const DELTA_LENGTH = 120
 
+// 规范滚轮事件
+// https://developer.mozilla.org/zh-CN/docs/Web/API/Element/mousewheel_event
 export default function(event) {
   let sX = 0
   let sY = 0

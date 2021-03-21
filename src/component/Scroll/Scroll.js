@@ -65,10 +65,12 @@ class Scroll extends PureComponent {
     this.wheelElement.removeEventListener('touchmove', this.handleTouchMove)
   }
 
+  // 获取wheel容器的宽度和高度
   getWheelRect() {
     if (!this.wheelElement) return { width: 0, height: 0 }
-    let width = this.wheelElement.clientWidth
-    let height = this.wheelElement.clientHeight
+    // let width = this.wheelElement.clientWidth
+    // let height = this.wheelElement.clientHeight
+    let { width, height } = this.wheelElement.getBoundingClientRect()
 
     // display none
     if (width === 0 && height === 0) {
@@ -114,6 +116,7 @@ class Scroll extends PureComponent {
 
   bindInner(el) {
     // 实际渲染内容的容器(children的父容器)
+    // 无实际意义 返回给调用者 调用者展无使用 可以去掉此容器
     this.inner = el
   }
 
@@ -164,6 +167,7 @@ class Scroll extends PureComponent {
     const scrollX = this.wheelX
     const scrollY = this.wheelY
     const { innerScrollAttr } = this.props
+
     if (!scrollX && !scrollY) return
 
     // innerScrollAttr 包含当前e的attr 不处理
@@ -195,6 +199,7 @@ class Scroll extends PureComponent {
     const { scrollWidth } = this.props
     // 获取容器wheel的信息
     const { width, height } = this.getWheelRect()
+
     const max = Math.round((1 - width / scrollWidth) * scrollWidth)
 
     if (this.props.onScroll) {
@@ -258,6 +263,7 @@ class Scroll extends PureComponent {
         {/* iframe用于占位计算onresize */}
         <iframe tabIndex={-1} title="scroll" ref={this.bindIframe} className={scrollClass('iframe')} />
         <div className={scrollClass('iframe')} />
+        {/* 看bindInner  可以去掉此容器 */}
         <div ref={this.bindInner} className={scrollClass('inner')}>
           {/* left: x的滚动准确数值 top:y的滚动准确数值 element:滚动容器ref */}
           <Provider value={{ left: left * width, top: top * height, element: this.wheelElement }}>{children}</Provider>

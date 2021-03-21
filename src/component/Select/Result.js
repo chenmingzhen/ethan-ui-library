@@ -19,6 +19,7 @@ const getResultClassName = (f, value) => {
   return null
 }
 
+// 获取result的内容
 const getResultContent = (data, renderResult, renderUnmatched) => {
   if (isObject(data) && data.IS_NOT_MATCHED_VALUE) {
     if (typeof renderUnmatched === 'function') return renderUnmatched(data.value)
@@ -73,10 +74,12 @@ class Result extends PureComponent {
     }, 10)
   }
 
+  // 判断是否为空result
   isEmptyResult() {
     const { result, renderResult, renderUnmatched } = this.props
 
     if (result.length <= 0) return true
+
     const res = result.reduce((acc, cur) => {
       if (getResultContent(cur, renderResult, renderUnmatched)) {
         acc.push(cur)
@@ -116,12 +119,13 @@ class Result extends PureComponent {
     )
   }
 
+  // 清除icon
   renderClear() {
     const { onClear, result, disabled } = this.props
 
     if (onClear && result.length > 0 && disabled !== true) {
       return (
-        <div onClick={onClear} className={selectClass('close-warpper')}>
+        <div onClick={onClear} className={selectClass('close-wrapper')}>
           {/* eslint-disable-next-line jsx-a11y/anchor-has-content */}
           <a tabIndex={-1} data-role="close" className={selectClass('indicator', 'close')} />
         </div>
@@ -150,9 +154,11 @@ class Result extends PureComponent {
     )
   }
 
+  // 当result为空时渲染placeholder
   renderPlaceholder() {
     const { focus, onFilter } = this.props
 
+    // 可输入模式 渲染input
     if (focus && onFilter) {
       return this.renderInput()
     }
@@ -179,6 +185,7 @@ class Result extends PureComponent {
       resultClassName,
     } = this.props
 
+    // 多选模式下
     if (multiple) {
       const neededResult = compressed ? result.slice(0, 1) : result
       const firstRemove = !compressed || result.length === 1
@@ -195,6 +202,7 @@ class Result extends PureComponent {
         />
       ))
 
+      // 渲染显示更多
       if (compressed && result.length > 1) {
         items.push(this.renderMore(result))
       }

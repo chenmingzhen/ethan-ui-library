@@ -40,6 +40,7 @@ class FilterInput extends Component {
     this.focus()
   }
 
+  // 处理Value后返回
   getProcessedValue(text) {
     const { trim } = this.props
     // https://www.jianshu.com/p/4317e3749a13
@@ -64,6 +65,8 @@ class FilterInput extends Component {
     this.editElement = el
   }
 
+  // span 输入处理
+  // 回调onFilter
   handleInput(e) {
     const text = e.target.innerText.replace('\feff ', '')
 
@@ -71,13 +74,16 @@ class FilterInput extends Component {
     this.props.onFilter(this.getProcessedValue(text))
   }
 
+  // 失焦
   handleBlur(e) {
     const { text: txt } = this.props
+
     const text = this.getProcessedValue(e.target.innerText.replace('\feff ', ''))
     if (text === txt) return
     this.props.onInputBlur(text)
   }
 
+  // 粘贴
   handlePaste(e) {
     // https://www.jianshu.com/p/bd7159ac6ced
     const text = (e.clipboardData || window.clipboardData).getData('text/plain')

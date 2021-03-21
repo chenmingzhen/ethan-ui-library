@@ -14,6 +14,7 @@ import LazyList from '../List/LazyList'
 const ScaleList = List(['fade', 'scale-y'], 'fast', 'flex')
 const emptyFunc = () => {}
 
+// 多列选项
 class BoxList extends Component {
   constructor(props) {
     super(props)

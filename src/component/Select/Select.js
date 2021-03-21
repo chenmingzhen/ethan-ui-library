@@ -18,6 +18,7 @@ const WrappedOptionList = absoluteList(OptionList)
 const WrappedBoxList = absoluteList(BoxList)
 const WrappedOptionTree = absoluteList(OptionTree)
 
+// 判断元素是否为result输入框
 const isResult = el => getParent(el, `.${selectClass('result')}`)
 
 class Select extends PureComponent {
@@ -93,6 +94,7 @@ class Select extends PureComponent {
   }
 
   bindOptionFunc(name, fn) {
+    // 选项List绑定
     this.optionList[name] = fn
   }
 
@@ -100,10 +102,12 @@ class Select extends PureComponent {
     this.element = el
   }
 
+  // 绑定document的点击事件
   bindClickAway() {
     document.addEventListener('click', this.handleClickAway, true)
   }
 
+  // 解绑document的点击事件
   clearClickAway() {
     document.removeEventListener('click', this.handleClickAway, true)
   }
@@ -116,11 +120,16 @@ class Select extends PureComponent {
     if (!desc) {
       // absolute情况
       if (!getParent(e.target, `[data-id=${this.selectId}]`)) {
+        // 失焦
         this.blured = true
+        // 回调onBlur
         this.props.onBlur()
+        // 清除document事件
         this.clearClickAway()
+        // Select外层div失去焦点
         if (this.element) this.element.blur()
       }
+
       this.handleState(false, null)
     }
   }
@@ -134,6 +143,7 @@ class Select extends PureComponent {
       this.handleState(false, e)
       return
     }
+
     this.handleState(true, e)
   }
 
@@ -143,15 +153,17 @@ class Select extends PureComponent {
 
     if (focus === this.state.focus) return
 
-    // click close icon
+    // 点击了关闭的icon 不处理
     if (focus && e && e.target.classList.contains(selectClass('close'))) return
 
     const { height, onCollapse } = this.props
     let { position } = this.props
+    // 计算选择框的位置
     const windowHeight = docSize.height
     const bottom = height + this.element.getBoundingClientRect().bottom
     if (bottom > windowHeight && !position) position = 'drop-up'
 
+    // 执行折叠回调
     if (onCollapse) onCollapse(focus)
     this.setState({ focus, position: position || 'drop-down' })
 
@@ -161,10 +173,12 @@ class Select extends PureComponent {
     }
   }
 
+  // 转换控制模式
   handleControlChange(control) {
     if (control !== this.state.control) this.setState({ control })
   }
 
+  // data改变执行
   handleChange(_, data, fromInput) {
     const { datum, multiple, disabled, emptyAfterSelect, onFilter, filterText, onCreate } = this.props
     if (disabled === true) return
@@ -175,15 +189,19 @@ class Select extends PureComponent {
       clearTimeout(this.inputBlurTimer)
     }
 
+    // 多选
     if (multiple) {
       if (isObject(data) && data.IS_NOT_MATCHED_VALUE) {
         datum.remove(data)
       } else {
         const checked = !datum.check(data)
+        //
         if (checked) {
+          // 选中添加
           datum.add(data)
         } else {
           if (fromInput === true) return
+          // 移除
           datum.remove(data)
         }
         if (this.inputReset) this.inputReset()
@@ -191,7 +209,7 @@ class Select extends PureComponent {
     } else {
       datum.set(data)
       this.handleState(false)
-      //  let the element focus
+      // 元素聚焦
       setTimeout(() => {
         if (onCreate && this.blured) return
         if (this.element) this.element.focus()
@@ -201,9 +219,13 @@ class Select extends PureComponent {
     if (emptyAfterSelect && onFilter && filterText) onFilter('')
   }
 
+  // 判断是否需要focus
   shouldFocus(el) {
+    // 点击为自身
     if (el.getAttribute('data-id') === this.selectId) return true
+    // 点击结果result框
     if (getParent(el, `.${selectClass('result')}`)) return true
+
     return false
   }
 
@@ -211,20 +233,25 @@ class Select extends PureComponent {
   handleFocus(e) {
     if (!this.shouldFocus(e.target)) return
 
+    // 回调Focus
     this.props.onFocus(e)
+
     this.bindClickAway()
   }
 
+  // result input 聚焦
   handleInputFocus() {
     this.inputLocked = true
     if (this.props.inputable && this.state.control === 'keyboard') {
+      // 暂不显示选中
       if (this.optionList.handleHover) this.optionList.handleHover(0, true)
     }
   }
 
-  // 输入框失焦
+  // result Input 失焦
   handleInputBlur(text) {
     const { onFilter, onCreate, multiple, filterSingleSelect, data } = this.props
+
     if (onFilter && text && filterSingleSelect && data.length === 1) {
       this.handleChange(null, data[0], false)
       return
@@ -252,6 +279,8 @@ class Select extends PureComponent {
     }
   }
 
+  // 处理回车事件
+  // 获取选中的数值
   handleEnter() {
     const hoverIndex = this.optionList.getIndex && this.optionList.getIndex()
 
@@ -259,11 +288,14 @@ class Select extends PureComponent {
 
     if (data && !data[this.props.groupKey]) {
       const checked = !this.props.datum.check(data)
+
       this.handleChange(checked, data)
+
       if (this.optionList.handleHover) this.optionList.handleHover(hoverIndex)
     }
   }
 
+  // 处理keycode事件
   handleKeyDown(e) {
     // just for enter to open the list
     if ((e.keyCode === 13 || e.keyCode === 40) && !this.state.focus) {
@@ -275,8 +307,9 @@ class Select extends PureComponent {
     // fot close the list
     if (e.keyCode === 9) {
       this.props.onBlur(e)
-      // e.preventDefault()
+
       if (this.state.focus) this.handleState(false, e)
+      // TODO 考虑删除下面多余逻辑
       else this.clearClickAway()
       return
     }
@@ -287,6 +320,7 @@ class Select extends PureComponent {
     this.handleControlChange('keyboard')
 
     switch (e.keyCode) {
+      // 移动数据
       case 38:
         if (this.optionList.hoverMove) this.optionList.hoverMove(-1)
         e.preventDefault()
@@ -485,10 +519,15 @@ class Select extends PureComponent {
 
 Select.propTypes = {
   ...getProps(PropTypes, 'placeholder', 'keygen'),
+  // 为 true 时，选项弹出层在 DOM 中独立 render
   absolute: PropTypes.bool,
+  // 是否可清除值
   clearable: PropTypes.bool,
+  // columns 大于 1 时，选项展示为多列布局模式
   columns: PropTypes.number,
+  // 数据项，单条数据作为 value 的数据必须是唯一的
   data: PropTypes.array,
+  // 树形结构数据项，[{children: []}]
   treeData: PropTypes.array,
   datum: PropTypes.object.isRequired,
   disabled: PropTypes.oneOfType([PropTypes.bool, PropTypes.func]),
@@ -499,23 +538,39 @@ Select.propTypes = {
   loading: PropTypes.oneOfType([PropTypes.element, PropTypes.bool]),
   multiple: PropTypes.bool,
   onBlur: PropTypes.func,
+  // 如果设置了 onCreate 事件，组件为可输入状态
+  // onCreate为函数时，将此函数返回值作为新的选项拆入最上方
+  // onCreate为true时，使用默认函数 text => text
   onCreate: PropTypes.func,
+  // onFilter 不为空时，可以输入过滤数据
+  // onFilter 如果返回一个函数，使用这个函数做前端过滤
+  // 如果不返回，可以自行做后端过滤
   onFilter: PropTypes.func,
   onFocus: PropTypes.func,
   position: PropTypes.string,
+  // 为 string 时，返回 d[string]
+  // 为 function 时，返回函数结果
   renderItem: PropTypes.oneOfType([PropTypes.string, PropTypes.func]),
   result: PropTypes.array,
   size: PropTypes.string,
   text: PropTypes.object,
+  // 将选中值合并，只在多选模式下有效
   compressed: PropTypes.bool,
   trim: PropTypes.bool,
+  // autoAdapt
   autoAdapt: PropTypes.bool,
+  // 当筛选数据仅为一条时，失焦后直接选中该条数据。仅在 Filter 下有效。
   filterSingleSelect: PropTypes.bool,
+  // 渲染未匹配值的方式
   renderUnmatched: PropTypes.func,
+  // 选中后是否清空输入框内容 ｜
   emptyAfterSelect: PropTypes.bool,
+  // 是否显示下拉箭头，仅针对单选情况
   showArrow: PropTypes.bool,
+  // onCreate 或 onFilter 在单选情况下单击值后是否选中值
   focusSelected: PropTypes.bool,
   compressedClassName: PropTypes.string,
+  // 下拉列表展开/收起回调
   onCollapse: PropTypes.func,
   resultClassName: PropTypes.oneOfType([PropTypes.string, PropTypes.func]),
 }
@@ -525,7 +580,7 @@ Select.defaultProps = {
   data: [],
   height: 250,
   itemsInView: 10,
-  lineHeight: 34,
+  lineHeight: 32,
   loading: false,
   multiple: false,
   renderItem: e => e,

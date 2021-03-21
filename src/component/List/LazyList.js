@@ -48,6 +48,7 @@ const LazyList = props => {
       let newScrollTop = h > fullHeight ? 0 : y
 
       // 设置滚动
+      // TODO 参考Select中的OptionList 去掉marginTop的引用
       optionInner.current.style.marginTop = `${scrollTop * h}px`
 
       // 以向下方向为例
