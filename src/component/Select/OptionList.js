@@ -84,43 +84,37 @@ class OptionList extends Component {
 
     if (hoverIndex < 0) hoverIndex = max - 1
 
-    // 滚动系数
-    const scrollTop = hoverIndex / max
-    // 滚动值
-    const offset = scrollTop * height
-    const emptyHeight = hoverIndex * lineHeight + offset
+    const emptyHeight = hoverIndex * lineHeight
 
-    if (emptyHeight < this.lastScrollTop + offset) {
+    if (emptyHeight < this.lastScrollTop) {
       // 到达当前视图的顶部
-      this.optionInner.style.marginTop = `${offset}px`
 
       setTranslate(this.optionInner, '0px', `-${emptyHeight}px`)
 
-      this.lastScrollTop = emptyHeight - offset
+      this.lastScrollTop = emptyHeight
 
       currentIndex = hoverIndex - 1
 
       if (currentIndex < 0) currentIndex = max - itemsInView
 
       this.setState({ currentIndex, scrollTop: emptyHeight / (lineHeight * max) })
-    } else if (emptyHeight + lineHeight > this.lastScrollTop + offset + height) {
+    } else if (emptyHeight + lineHeight > this.lastScrollTop + height) {
       // 到达当前视图的底部
-      this.optionInner.style.marginTop = `${offset}px`
 
+      // 滚动的高度等于当前的hover*行高加上一个行高减去容器的高度
       const scrollHeight = emptyHeight + lineHeight - height
 
       setTranslate(this.optionInner, '0px', `-${scrollHeight}px`)
 
-      this.lastScrollTop = scrollHeight - offset
+      this.lastScrollTop = scrollHeight
 
       currentIndex = hoverIndex - Math.ceil(height / lineHeight)
 
       if (currentIndex < 0) currentIndex = 0
 
-      this.setState({ currentIndex, scrollTop: scrollHeight / (lineHeight * max) })
+      this.setState({ currentIndex, scrollTop: emptyHeight / (lineHeight * max) })
     } else if (hoverIndex === 0 && emptyHeight === 0) {
       // 到达数据源的顶部(0 1)
-      this.optionInner.style.marginTop = '0px'
 
       setTranslate(this.optionInner, '0px', '0px')
 
@@ -134,7 +128,6 @@ class OptionList extends Component {
     if (!this.optionInner) return
 
     // 冲突掉hoverMove的marginTop影响
-    this.optionInner.style.marginTop = '0px'
 
     const { data, itemsInView, lineHeight } = this.props
 
