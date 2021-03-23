@@ -31,6 +31,7 @@ class OptionList extends Component {
     this.handleMouseMove = this.handleMouseMove.bind(this)
     this.renderList = this.renderList.bind(this)
 
+    // 只有出现滚动才会有值
     this.lastScrollTop = 0
 
     props.bindOptionFunc('handleHover', this.handleHover)
@@ -60,6 +61,7 @@ class OptionList extends Component {
 
   // Select中使用
   // 上下键移动
+  // 不同于handleScroll 因为handleScroll是必然滚动的，此处不一定滚动，所以滚动高度逻辑 以及ScrollTop逻辑发生改变
   hoverMove(step) {
     const max = this.props.data.length
     const { lineHeight, height, groupKey, itemsInView } = this.props
@@ -84,8 +86,13 @@ class OptionList extends Component {
 
     if (hoverIndex < 0) hoverIndex = max - 1
 
+    // 用于计算的无意义高度
+    // 当前hover的位置*每个Item的高度
     const emptyHeight = hoverIndex * lineHeight
 
+    // 推理2：由于在到达当前视图的底部逻辑中，对lastScrollTop设置为scrollHeight，注意到scrollHeight是有减去height
+    // 此时在height以内的高度 向上移动是不会触发lastScrollTop的更新，scrollTop不会得到重新的计算
+    // 如果超过了height的阀值，即到达当前视图的顶部 就会触发下面的逻辑
     if (emptyHeight < this.lastScrollTop) {
       // 到达当前视图的顶部
 
@@ -93,11 +100,18 @@ class OptionList extends Component {
 
       this.lastScrollTop = emptyHeight
 
+      // 向上的方向直接使用hoverIndex减1
       currentIndex = hoverIndex - 1
 
+      // TODO FIX 性能 向上滚动时白屏
+      console.log('hoverIndex:', hoverIndex)
+      console.log('currentIndex:', currentIndex)
       if (currentIndex < 0) currentIndex = max - itemsInView
 
       this.setState({ currentIndex, scrollTop: emptyHeight / (lineHeight * max) })
+      // lastScrollTop的初始值为0
+      // 推理1：假设是打开Select(高度足够滚动) 此时的lastScrollTop的高度为0，height是容器的高度，一直移动
+      // 当emptyHeight的高度大于容器的高度的时候 就应该触发到达当前视图的底部的逻辑
     } else if (emptyHeight + lineHeight > this.lastScrollTop + height) {
       // 到达当前视图的底部
 
@@ -108,6 +122,10 @@ class OptionList extends Component {
 
       this.lastScrollTop = scrollHeight
 
+      // 由于currentIndex涉及到data的懒加载渲染，见RenderList
+      // 到达视图底部，继续向下时，currentIndex的位置应该是当前hoverIndex减去（容器的高度/每个Item的高度）
+      // 所以currentIndex会是在当前视图的顶部
+      // 然后currentIndex+itemsInView确保数据被渲染出来
       currentIndex = hoverIndex - Math.ceil(height / lineHeight)
 
       if (currentIndex < 0) currentIndex = 0
