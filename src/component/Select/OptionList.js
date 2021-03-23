@@ -187,6 +187,7 @@ class OptionList extends Component {
   }
 
   // 处理靠近
+  // Select中handleInputFocus
   handleHover(index, force) {
     if ((this.props.control === 'mouse' || force) && this.state.hoverIndex !== index) {
       this.setState({ hoverIndex: index })

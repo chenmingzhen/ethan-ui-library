@@ -242,6 +242,8 @@ class Select extends PureComponent {
   // result input 聚焦
   handleInputFocus() {
     this.inputLocked = true
+    // 如果上一次操作是通过keycode保存的 那么就保持hover的位置
+    // 否则 清除hover的位置
     if (this.props.inputable && this.state.control === 'keyboard') {
       // 暂不显示选中
       if (this.optionList.handleHover) this.optionList.handleHover(0, true)
