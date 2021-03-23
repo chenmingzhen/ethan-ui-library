@@ -100,13 +100,9 @@ class OptionList extends Component {
 
       this.lastScrollTop = emptyHeight
 
-      // 向上的方向直接使用hoverIndex减1
-      currentIndex = hoverIndex - 1
-
-      // TODO FIX 性能 向上滚动时白屏
-      console.log('hoverIndex:', hoverIndex)
-      console.log('currentIndex:', currentIndex)
-      if (currentIndex < 0) currentIndex = max - itemsInView
+      // FIX 处理hover为1 时白屏
+      currentIndex = hoverIndex
+      // if (currentIndex < 0) currentIndex = max - itemsInView
 
       this.setState({ currentIndex, scrollTop: emptyHeight / (lineHeight * max) })
       // lastScrollTop的初始值为0
