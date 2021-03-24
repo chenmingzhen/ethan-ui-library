@@ -34,11 +34,13 @@ class BoxList extends Component {
   }
 
   getWidth() {
+    // column 单列宽度，仅在 columns 大于 1 时有效
     const { columnWidth, columns } = this.props
     if (columns === -1) return columnWidth
     return columnWidth * columns
   }
 
+  // Header中选择全部
   handleSelectAll(_, checked) {
     const { datum, data } = this.props
     if (checked) datum.add(data)
@@ -49,6 +51,9 @@ class BoxList extends Component {
     this.props.onFilter(text)
   }
 
+  // 渲染LazyList中的Item项目
+  // 数据为renderLazyList分好的每一组
+  // [1,2,3]
   handleRenderItem(data, groupIndex) {
     const { datum, keygen, columns, multiple, onChange, renderItem, lineHeight } = this.props
     return (
@@ -72,6 +77,7 @@ class BoxList extends Component {
     )
   }
 
+  // 暂无使用
   renderFilter() {
     const { filterText } = this.props
     return (
@@ -107,17 +113,27 @@ class BoxList extends Component {
 
   renderLazyList() {
     const { columns, height, lineHeight, data, itemsInView } = this.props
+
+    // 滚动内容总高度
     const scrollHeight = lineHeight * Math.ceil(data.length / columns)
+
+    // 根据列数再次分割数据
+    // 如columns=3
+    // [[1,2,3],[4,5,6]]
     const sliceData = data.reduce((red, item) => {
       let lastItem = red[red.length - 1]
+
       if (!lastItem) {
         lastItem = []
         red.push(lastItem)
       }
+
       if (lastItem.length >= columns) red.push([item])
       else lastItem.push(item)
+
       return red
     }, [])
+
     return (
       <LazyList
         scrollHeight={scrollHeight}

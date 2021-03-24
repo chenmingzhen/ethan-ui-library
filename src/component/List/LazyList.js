@@ -55,8 +55,10 @@ const LazyList = props => {
       // marginTop 负责将容器往下顶
       // transform负责将内容上移
       if (pixelY === undefined || pixelY === 0) {
+        // 点击条造成滚动
         lastScrollTop.current = scrollTop * contentHeight
       } else {
+        // 鼠标滚轮滚动
         lastScrollTop.current += pixelY
         if (lastScrollTop.current < 0) lastScrollTop.current = 0
 

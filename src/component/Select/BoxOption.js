@@ -4,12 +4,14 @@ import { selectClass } from '@/styles'
 import Checkbox from '../Checkbox/Checkbox'
 import Radio from '../Radio/Radio'
 
+// 多列column下的Option
 class BoxOption extends PureComponent {
   constructor(props) {
     super(props)
     this.handleClick = this.handleClick.bind(this)
   }
 
+  // 点击后 回调数据
   handleClick() {
     const { data, onClick, isActive, index, disabled } = this.props
 
@@ -27,7 +29,11 @@ class BoxOption extends PureComponent {
     const { data, index, isActive, renderItem, columns, multiple } = this.props
 
     const className = selectClass('option')
+    // 每一列的宽度
+    // columns 为-1时 堆 -100%  无效的style
     const width = `${(1 / columns) * 100}%`
+
+    // 根据多选来判断
     const Input = multiple ? Checkbox : Radio
 
     const result = renderItem(data, index)
