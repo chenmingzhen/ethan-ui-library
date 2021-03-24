@@ -82,9 +82,11 @@ class BoxList extends Component {
     )
   }
 
+  // 渲染头部
   renderHeader(count) {
     const { data, loading, multiple, columnsTitle } = this.props
 
+    // 加载中|非多选 返回空
     if (loading || !multiple) return null
 
     let checked = 'indeterminate'
@@ -128,8 +130,10 @@ class BoxList extends Component {
     )
   }
 
+  // column -1 渲染堆
   renderStack() {
     const { columns, datum, multiple, onChange, renderItem, data, keygen } = this.props
+
     return data.map((d, i) => {
       const isActive = datum.check(d)
       return (
@@ -147,11 +151,17 @@ class BoxList extends Component {
     })
   }
 
+  // 渲染选项
   renderOptions() {
     const { loading, columns, data } = this.props
+
     if (loading) return null
+
+    // -1堆叠展示
     const stack = columns === -1
+
     const empty = data.length === 0
+
     return (
       <div className={selectClass('box-options', stack && 'scrollable')}>
         {empty && (

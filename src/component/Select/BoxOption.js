@@ -1,8 +1,6 @@
 import React, { PureComponent } from 'react'
 import PropTypes from 'prop-types'
-import classnames from 'classnames'
 import { selectClass } from '@/styles'
-import { getGrid } from '@/component/Grid/util'
 import Checkbox from '../Checkbox/Checkbox'
 import Radio from '../Radio/Radio'
 
