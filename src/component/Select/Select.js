@@ -191,6 +191,7 @@ class Select extends PureComponent {
 
     // 多选
     if (multiple) {
+      // filter中getResultByValues设置IS_NOT_MATCHED_VALUE 无匹配到值
       if (isObject(data) && data.IS_NOT_MATCHED_VALUE) {
         datum.remove(data)
       } else {

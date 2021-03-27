@@ -20,6 +20,7 @@ export default class {
     this.$cachedFlatten = new Map()
     this.setDisabled(disabled)
 
+    // 默认使用 format 函数执行的结果来比较是否匹配，在某些情况下（例如返回原始数据的对象，更新数据时，生成了一个值相同，非同一个对象的选项），需要借助 prediction 函数来判断是否匹配
     if (prediction) this.prediction = prediction
 
     this.setValue(value, WITH_OUT_DISPATCH)
@@ -30,6 +31,7 @@ export default class {
     return this.$values.length
   }
 
+  // this.values就是this.$values
   get values() {
     return this.$values
   }
@@ -43,6 +45,7 @@ export default class {
     }
   }
 
+  // 设置disabled
   setDisabled(disabled) {
     if (this.$cachedDisabled === disabled) return
     this.$cachedDisabled = disabled
@@ -63,6 +66,7 @@ export default class {
   handleChange(values, ...args) {
     this.$values = values
     this.dispatch(CHANGE_TOPIC)
+
     if (this.onChange) {
       // 构造参数的onChange
       this.onChange(this.getValue(), ...args)
@@ -157,6 +161,7 @@ export default class {
   // 派发事件
   dispatch(name, ...args) {
     const event = this.$events[name]
+
     if (!event) return
     event.forEach(fn => fn(...args))
   }
@@ -228,6 +233,7 @@ export default class {
     let value = this.values
     // eslint-disable-next-line
     if (this.limit === 1) value = this.values[0]
+    // 分割符进行分割
     else if (this.separator) value = this.values.join(this.separator)
     this.$cachedValue = value
     return value

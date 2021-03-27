@@ -43,6 +43,7 @@ export default curry((options, Origin) => {
         this.datum = datum
       } else {
         // 绑定指定Props
+        // 让Datum使用Props指定bind的值
         const ops = bindProps.reduce(
           (o, k) => {
             // o {value,limit,initValidate} k keys
@@ -52,12 +53,17 @@ export default curry((options, Origin) => {
           // 初始值
           { value, limit, initValidate }
         )
+
+        if (onChange) {
+          ops.onChange = onChange
+        }
+
         this.datum = new Datum(Object.assign(ops, datum))
       }
 
-      if (onChange) {
-        this.datum.onChange = onChange
-      }
+      // if (onChange) {
+      //   this.datum.onChange = onChange
+      // }
     }
 
     componentDidMount() {
@@ -71,6 +77,7 @@ export default curry((options, Origin) => {
         this.datum.onChange = this.props.onChange
       }
       const values = this.props[key]
+      // 值发生改变时 重新设置值
       if (!shallowEqual(values, this.prevValues)) {
         this.setValue(this.props.initValidate ? undefined : IGNORE_VALIDATE)
         this.prevValues = values
@@ -79,18 +86,21 @@ export default curry((options, Origin) => {
 
     setValue(t) {
       const values = this.props[key]
+
       if (ignoreUndefined && values === undefined) return
+
       this.datum.setValue(values, t)
     }
 
     render() {
       const { onDatumBind, ...props } = this.props
-      if (onDatumBind) onDatumBind(this.datum)
-      if (bindProps.includes('disabled')) {
-        this.datum.setDisabled(props.disabled)
-      }
 
-      if (type === 'list') this.setValue(WITH_OUT_DISPATCH)
+      if (onDatumBind) onDatumBind(this.datum)
+      // if (bindProps.includes('disabled')) {
+      //   this.datum.setDisabled(props.disabled)
+      // }
+      //
+      // if (type === 'list') this.setValue(WITH_OUT_DISPATCH)
 
       return <Origin {...props} datum={this.datum} />
     }

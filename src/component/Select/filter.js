@@ -30,8 +30,11 @@ export default Origin =>
     constructor(props) {
       super(props)
       this.state = {
+        // filter方法
         innerFilter: undefined,
+        // onCreate产生的值
         innerData: undefined,
+        // 过滤的关键字text
         filterText: '',
       }
       this.handleCreate = this.handleCreate.bind(this)
@@ -43,6 +46,7 @@ export default Origin =>
 
     componentDidUpdate(prevProps) {
       const { datum, multiple } = this.props
+
       if (prevProps.multiple !== multiple) {
         datum.limit = multiple ? 0 : 1
       }
@@ -73,23 +77,28 @@ export default Origin =>
 
       for (let i = 0, count = data.length; i < count; i++) {
         const d = data[i]
+        // 利用prediction判断是否相等
         if (prediction(value, d)) return d
       }
 
+      // 无结果 创建新选项
       if (onCreate) return this.handleCreate(value)
 
       return undefined
     }
 
+    // 获取输入框中的result
     getResultByValues() {
       const { datum, noCache } = this.props
       const { values = [] } = datum
 
       const result = []
       values.forEach(v => {
+        // 是否从缓存中获取
         let res = noCache ? undefined : this.resultCache.get(v)
         if (!res) {
           res = this.getResult(v)
+
           if (res !== undefined && !noCache) this.resultCache.set(v, res)
           else if (res === undefined) res = { [IS_NOT_MATCHED_VALUE]: true, value: v }
         }
@@ -104,11 +113,15 @@ export default Origin =>
     handleFilter(text) {
       const { filterDelay, onFilter, onCreate } = this.props
 
+      //  onFilter={text => d => d.indexOf(text) >= 0}
+
       // not filter
       if (!text) {
         this.setState({ filterText: '', innerFilter: undefined, innerData: undefined })
+
         if (this.timer) clearTimeout(this.timer)
         if (onFilter) onFilter(text)
+
         return
       }
 
@@ -130,9 +143,11 @@ export default Origin =>
       }, filterDelay)
     }
 
+    // 创建新选项
     handleCreate(text) {
       const { onCreate } = this.props
       const createFn = typeof onCreate === 'boolean' ? t => t : onCreate
+
       return createFn(text)
     }
 
@@ -158,15 +173,20 @@ export default Origin =>
       }
     }
 
+    // 获取过滤掉的数据
     filterData() {
       const { data, ...other } = this.props
       const { innerFilter, innerData } = this.state
       let newData = data
+
+      // filter方法
       if (innerFilter) newData = data.filter(d => innerFilter(d))
+
       if (innerData) {
         const newKey = getKey(innerData, other.keygen, innerData)
         newData = [innerData, ...newData.filter(d => getKey(d, other.keygen, d) !== newKey)]
       }
+
       return {
         data: newData,
       }
@@ -186,6 +206,7 @@ export default Origin =>
         onFilter: filterFn,
         ...dataGenerator.call(this),
       }
+
       return <Origin {...props} />
     }
   }
