@@ -100,6 +100,12 @@ const pages = [
         component: lazy(() => import(/* webpackChunkName: "Breadcrumb" */ './Breadcrumb')),
         },
             {
+        name: 'Menu',
+        cn: '菜单',
+        level: 2,
+        component: lazy(() => import(/* webpackChunkName: "Menu" */ './Menu')),
+        },
+            {
         name: 'Steps',
         cn: '步骤条',
         level: 2,
