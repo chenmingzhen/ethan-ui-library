@@ -167,6 +167,12 @@ const pages = [
         level: 2,
         component: lazy(() => import(/* webpackChunkName: "Message" */ './Message')),
         },
+            {
+        name: 'Modal',
+        cn: '对话框',
+        level: 2,
+        component: lazy(() => import(/* webpackChunkName: "Modal" */ './Modal')),
+        },
     ]
 
 export default Page(pages)
