@@ -1,13 +1,15 @@
+const pkg = require('../../package.json')
+
+const version = `${pkg.version.substr(0, pkg.version.lastIndexOf('.') + 1)}x`
+
 const cmd = `
-cd /root/nginx/upload \n
+cd /root/nginx/upload/ethan-ui-pages \n
 
-rm -rf ethan-ui-pages \n
+rm -rf ${version}\n
 
-mkdir ethan-ui-pages \n
+mkdir ${version} \n
 
-unzip docs-pages.zip -d ethan-ui-pages \n
-
-rm -rf docs-pages.zip \n
+unzip ${version}.zip -d ${version} \n
 
 exit\n
 `

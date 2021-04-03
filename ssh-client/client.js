@@ -78,6 +78,7 @@ class Client {
     const archive = archiver('zip', {
       zlib: { level: 5 }, // 递归扫描最多5层
     }).on('error', err => {
+      Client.log(err, ERROR)
       throw err
     })
 
