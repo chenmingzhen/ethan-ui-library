@@ -3,81 +3,108 @@ const archiver = require('archiver')
 const fs = require('fs')
 const ssh2 = require('ssh2')
 const chalk = require('chalk')
-const { server, cmd } = require('./private')
 
-const localPath = path.resolve(__dirname, 'publish.zip')
-const remotePath = '/ethan/publish.zip'
+const ERROR = 'red'
+const SUCCESS = 'green'
+const INFO = 'blue'
 
-const ssh = ssh2()
+class Client {
+  constructor() {
+    this.ssh = ssh2()
+  }
 
-const connect = callback => {
-  ssh
-    .on('ready', () => {
-      console.log(chalk.green('connect ready'))
-      callback(ssh)
-    })
-    .on('close', () => {
-      console.log(chalk.green('connect close'))
-    })
-    .connect(server)
-}
+  connect(server) {
+    return new Promise((yes, no) => {
+      this.ssh
+        .on('ready', () => {
+          Client.log('connect ready')
 
-const shell = conn => {
-  conn.shell((err, stream) => {
-    if (err) {
-      console.log(chalk.ref(err))
-    } else {
-      stream
+          yes()
+        })
         .on('close', () => {
-          conn.end()
+          Client.log('connect close')
         })
-        .on('data', data => {
-          console.log(`OUTPUT: ${data}`)
+        .on('error', e => {
+          Client.log(e, ERROR)
+          no(e)
         })
-      stream.end(cmd)
-    }
-  })
-}
+        .connect(server)
+    })
+  }
 
-const uploadFile = conn => {
-  conn.sftp((err, sftp) => {
-    if (err) {
-      console.log(err)
-    } else {
-      sftp.fastPut(localPath, remotePath, error => {
-        if (!error) {
-          fs.unlinkSync(path.resolve(__dirname, 'publish.zip'), e => {
-            if (!e) console.log(chalk.green('delete publish.zip success'))
+  uploadFile(localPath, remotePath) {
+    return new Promise((yes, no) => {
+      this.ssh.sftp((err, sftp) => {
+        if (err) {
+          Client.log(err, ERROR)
+          no(err)
+        } else {
+          sftp.fastPut(localPath, remotePath, error => {
+            if (!error) {
+              const filePath = localPath.split('/')
+              const fileName = filePath[filePath.length - 1]
+
+              fs.unlinkSync(path.resolve(__dirname, fileName))
+              yes()
+            }
           })
-          shell(conn)
         }
       })
-    }
-  })
+    })
+  }
+
+  shell(cmd) {
+    return new Promise((yes, no) => {
+      this.ssh.shell((err, stream) => {
+        if (err) {
+          Client.log(err, ERROR)
+          no(err)
+        } else {
+          stream
+            .on('close', () => {
+              yes()
+            })
+            .on('data', data => {
+              Client.log(`OUTPUT: ${data}`, INFO)
+            })
+          stream.end(cmd)
+        }
+      })
+    })
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  async zip(target, targetSrc) {
+    const archive = archiver('zip', {
+      zlib: { level: 5 }, // 递归扫描最多5层
+    }).on('error', err => {
+      throw err
+    })
+
+    const output = fs.createWriteStream(`${target}`).on('close', err => {
+      if (err) {
+        Client.log(err, ERROR)
+        return
+      }
+
+      Client.log('已生成zip包')
+
+      Client.log('开始上传zip', INFO)
+    })
+
+    archive.pipe(output)
+
+    // 将srcPach路径对应的内容添加到zip包中/public路径
+    // 第二个参数是否将内容放到某个文件夹的下面
+    // 这里直接放到根目录下
+    archive.directory(targetSrc, '/')
+
+    await archive.finalize()
+  }
+
+  static log(message, color = SUCCESS) {
+    console.log(chalk[color](message))
+  }
 }
 
-// 压缩dist目录为public.zip
-function startZip() {
-  const archive = archiver('zip', {
-    zlib: { level: 5 }, // 递归扫描最多5层
-  }).on('error', err => {
-    throw err
-  })
-
-  const output = fs.createWriteStream(`${__dirname}/publish.zip`).on('close', err => {
-    if (err) {
-      console.log(chalk.red(err))
-      return
-    }
-    console.log(chalk.green('已生成zip包'))
-    console.log(chalk.blue('开始上传public.zip至远程机器...'))
-    connect(uploadFile)
-  })
-
-  archive.pipe(output)
-  // 将srcPach路径对应的内容添加到zip包中/public路径
-  archive.directory(path.resolve(__dirname, '../publish'), '/publish')
-  archive.finalize()
-}
-
-startZip()
+module.exports = Client

@@ -35,7 +35,9 @@
     "docs-build-image": "cross-env node scripts/docs-pages-image.js",
     "docs-build-html": "node scripts/build-html.js",
     "docs-build": "npm-run-all docs-build-*",
-    "upload": "node ssh-client/client.js"
+    "upload-docs-pages": "node ssh-client/upload-docs-pages.js",
+    "upload-publish": "node ssh-client/upload-publish.js",
+    "upload": "npm-run-all upload-*"
   },
   "eslintConfig": {
     "extends": "react-app"
