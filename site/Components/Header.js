@@ -1,8 +1,10 @@
-import React, { useCallback, useEffect, useState } from 'react'
-import { Link, useLocation } from 'react-router-dom'
+import React, { useCallback } from 'react'
+import { Link } from 'react-router-dom'
 import { Button, Dropdown, Menu } from '@/index'
 import themes from 'doc/enum/themes'
 import theme from 'doc/utils/theme'
+import useVersion from '../hooks/useVersion'
+import useNav from '../hooks/useNav'
 import Icon from '../icons/Icon'
 import { headerClass } from '../styles'
 import history from './history'
@@ -23,14 +25,9 @@ const handleThemeClick = data => {
 }
 
 const Header = () => {
-  const navs = [
-    { path: '/index/', en: 'Home', cn: '首页' },
-    { path: '/components/Start', en: 'Components', cn: '组件' },
-  ]
+  const [currentPath, navs] = useNav()
 
-  const [currentPath, setPath] = useState(navs[0].path)
-
-  const location = useLocation()
+  const [version, versions] = useVersion()
 
   const handleNavClick = useCallback(nav => {
     history.push(`${nav.path}`)
@@ -43,20 +40,9 @@ const Header = () => {
     const href = window.location.href.replace(`/${langs[0]}`, `/${langs[1]}`)
 
     setItem(STORAGE_KEY, langs[2])
+
     window.location = href
   }
-
-  useEffect(() => {
-    setPath(location.pathname.indexOf('/index/') !== -1 ? navs[0].path : navs[1].path)
-
-    const unListen = history.listen(loc => {
-      setPath(loc.pathname.indexOf('/index/') !== -1 ? navs[0].path : navs[1].path)
-    })
-
-    return () => {
-      unListen()
-    }
-  }, [])
 
   return (
     <div className={headerClass('_')}>
@@ -80,6 +66,17 @@ const Header = () => {
         <Button size="small" onClick={handleLangClick} style={{ margin: '0 12px' }}>
           {locate('English', '中文')}
         </Button>
+
+        {version && (
+          <Dropdown
+            className={headerClass('light')}
+            data={versions}
+            trigger="hover"
+            placeholder={version}
+            size="small"
+            style={{ marginRight: 12 }}
+          />
+        )}
 
         <Dropdown
           className={headerClass('light')}

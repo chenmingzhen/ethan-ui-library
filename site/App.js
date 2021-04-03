@@ -4,7 +4,7 @@ import { useUpdate } from 'ethan-use-hooks'
 import history from 'docs/history'
 import Header from 'docs/Header'
 import Loading from './Components/Loading'
-import locate, { setLanguage, STORAGE_KEY, getItem } from './utils/locate'
+import { setLanguage, STORAGE_KEY, getItem } from './utils/locate'
 import { mainClass } from './styles'
 
 const filterLang = href => (href.indexOf('/en') > -1 ? 'en-US' : 'zh-CN')
@@ -15,11 +15,14 @@ const Components = lazy(() => import(/* webpackChunkName: "Components" */ './chu
 
 const App = () => {
   const [lastPath] = useState({ pathname: history.location.pathname })
+
   const update = useUpdate()
 
   useEffect(() => {
     const lang = filterLang(window.location.href)
+
     setLanguage(lang)
+
     if (getItem(STORAGE_KEY) !== lang) {
       update()
     }
