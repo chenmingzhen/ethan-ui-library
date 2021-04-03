@@ -7,7 +7,7 @@ const config = require('../config')
 
 const version = `${pkg.version.substr(0, pkg.version.lastIndexOf('.') + 1)}x`
 const cdn = 'https://unpkg.com'
-const dir = `gh-pages/${version}`
+const dir = `docs-pages/${version}`
 const componentPaths = path.resolve(__dirname, '../site/pages/components')
 // const documentPaths = path.resolve(__dirname, '../site/pages/documentation')
 

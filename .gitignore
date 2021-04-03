@@ -33,6 +33,7 @@ yarn-error.log*
 
 #site
 /gh-pages
+/docs-pages
 
 #temp
 /temp

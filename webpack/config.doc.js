@@ -20,7 +20,7 @@ const cssConfig = config.themes.map(name =>
       './site/styles/index.js',
       './site/less-entry.js',
     ],
-    output: { path: path.join(__dirname, `../gh-pages/${dir}x`) },
+    output: { path: path.join(__dirname, `../docs-pages/${dir}x`) },
     clean: true,
     prefix: '',
   })
@@ -34,7 +34,7 @@ const jsConfig = merge(common({ ...config.webpack, DEV: true }), {
   devtool: config.webpack.devtool,
   entry: config.webpack.entry,
   output: {
-    path: path.join(__dirname, `../gh-pages/${dir}x`),
+    path: path.join(__dirname, `../docs-pages/${dir}x`),
     // 打包后资源的指定前缀 这里指app.js 生成 ../../app.js
     // https://webpack.docschina.org/configuration/output/#outputpublicpath
     // 以打包后html为基准

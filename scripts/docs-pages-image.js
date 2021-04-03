@@ -4,7 +4,7 @@ const pkg = require('../package.json')
 
 const version = `${pkg.version.substr(0, pkg.version.lastIndexOf('.') + 1)}x`
 
-const dir = `gh-pages/${version}`
+const dir = `docs-pages/${version}`
 const imagePath = `${dir}/images`
 
 const oriImgPath = `site/images`
