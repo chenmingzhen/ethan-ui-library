@@ -1,7 +1,7 @@
 @import './variables.less';
-@import './themes/@{so-theme}.less';
+@import './themes/@{ethan-theme}.less';
 
-@image-prefix: ~'@{so-prefix}-image';
+@image-prefix: ~'@{ethan-prefix}-image';
 
 .@{image-prefix} {
   @keyframe-f2c: ~'@{image-prefix}-kf-f2c';
@@ -311,7 +311,8 @@
     }
   }
 
-  &-left, &-right {
+  &-left,
+  &-right {
     .@{image-prefix}-magnify-loading {
       display: none;
     }

@@ -30,7 +30,7 @@
     display: flex;
     align-items: center;
 
-    img{
+    img {
       width: 25px;
       height: 25px;
     }
@@ -41,9 +41,9 @@
       letter-spacing: 1px;
       font-weight: bold;
       color: #39495f;
-      font-family: -apple-system, CenturyGothic, BlinkMacSystemFont, PingFang SC, Helvetica Neue, Hiragino Sans GB, Segoe UI, Microsoft YaHei, Source Han Sans SC, Noto Sans CJK SC, WenQuanYi Micro Hei, sans-serif !important;
+      font-family: -apple-system, CenturyGothic, BlinkMacSystemFont, PingFang SC, Helvetica Neue, Hiragino Sans GB,
+        Segoe UI, Microsoft YaHei, Source Han Sans SC, Noto Sans CJK SC, WenQuanYi Micro Hei, sans-serif !important;
     }
-
   }
 
   &-nav {
@@ -124,7 +124,7 @@
       color: @editor-text-color;
 
       span {
-        transition: color .3s;
+        transition: color 0.3s;
         cursor: pointer;
         margin-left: 14px;
         color: @editor-darken-text-color;
@@ -144,12 +144,12 @@
       > div {
         margin-bottom: 20px;
 
-        .@{so-prefix}-form-item {
+        .@{ethan-prefix}-form-item {
           padding: 5px 0;
           margin-bottom: 0;
           display: block;
 
-          .@{so-prefix}-form-label {
+          .@{ethan-prefix}-form-label {
             font-size: 12px;
             width: auto;
             color: @editor-darken-text-color;
@@ -187,7 +187,7 @@
         font-size: 15px;
         font-weight: 400;
         margin: 0 0 8px 0;
-        transition: color .3s;
+        transition: color 0.3s;
 
         &.@{doc-header-prefix}-active {
           padding-bottom: 8px;
@@ -356,7 +356,6 @@
   }
 
   @media (max-width: 599px) and (min-width: 0px) {
-
     .ds-dropdown-menu {
       z-index: 100;
       position: fixed !important;
@@ -368,7 +367,6 @@
       max-height: calc(100% - 5rem);
       min-width: 200px !important;
       display: block;
-
     }
 
     &-logo {

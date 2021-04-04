@@ -1,7 +1,7 @@
 @import './variables.less';
-@import './themes/@{so-theme}.less';
+@import './themes/@{ethan-theme}.less';
 
-@select-prefix: ~'@{so-prefix}-select';
+@select-prefix: ~'@{ethan-prefix}-select';
 
 .@{select-prefix} {
   position: relative;
@@ -62,7 +62,8 @@
       display: inline-block;
       overflow: hidden;
       max-width: 80%;
-      padding: @select-result-padding-vertical @select-result-space-16 @select-result-padding-vertical @select-result-space;
+      padding: @select-result-padding-vertical @select-result-space-16 @select-result-padding-vertical
+        @select-result-space;
       margin-right: @select-result-space;
       margin-bottom: @padding-base-vertical;
       background: @select-result-bg;
@@ -168,7 +169,7 @@
     }
 
     &.@{select-prefix}-caret {
-      transition: transform .3s cubic-bezier(0.78, 0.14, 0.15, 0.86);
+      transition: transform 0.3s cubic-bezier(0.78, 0.14, 0.15, 0.86);
 
       svg {
         fill: @gray-500;
@@ -184,7 +185,8 @@
       transform: translate(-3px, 100%);
       text-align: left;
 
-      &:after, &:before {
+      &:after,
+      &:before {
         display: inline-block;
         content: '';
         width: 3px;
@@ -233,13 +235,13 @@
     .@{select-prefix}-tree-wrapper {
       padding: 8px 8px 4px 8px;
 
-      .@{so-prefix}-tree-node {
+      .@{ethan-prefix}-tree-node {
         &:last-child > div {
           padding-bottom: 4px;
         }
       }
 
-      .@{so-prefix}-tree-content {
+      .@{ethan-prefix}-tree-content {
         color: @gray-600;
         white-space: nowrap;
         cursor: default;
@@ -367,7 +369,7 @@
 
     &:hover {
       background-color: @select-option-hover-bg;
-      color: @select-option-hover-color
+      color: @select-option-hover-color;
     }
 
     &.@{select-prefix}-disabled {
@@ -521,13 +523,14 @@
   }
 
   &-pre {
-    .@{select-prefix}-item, .@{select-prefix}-option, .@{select-prefix}-result .@{select-prefix}-input {
+    .@{select-prefix}-item,
+    .@{select-prefix}-option,
+    .@{select-prefix}-result .@{select-prefix}-input {
       // white-space 属性设置如何处理元素内的空白。
       // 空白会被浏览器保留。其行为方式类似 HTML 中的 <pre> 标签。
       white-space: pre;
     }
   }
-
 
   // for normal Select
   &-auto-adapt.@{select-prefix}-options {

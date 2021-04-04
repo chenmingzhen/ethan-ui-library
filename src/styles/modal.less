@@ -1,12 +1,12 @@
 @import './variables.less';
-@import './themes/@{so-theme}.less';
-@modal-prefix: ~'@{so-prefix}-modal';
-@card-prefix: ~'@{so-prefix}-card';
-@moveable-prefix: ~'@{so-prefix}-moveable';
+@import './themes/@{ethan-theme}.less';
+@modal-prefix: ~'@{ethan-prefix}-modal';
+@card-prefix: ~'@{ethan-prefix}-card';
+@moveable-prefix: ~'@{ethan-prefix}-moveable';
 
 @keyframes scale-in {
   0% {
-    transform: scale(.2);
+    transform: scale(0.2);
   }
 
   100% {
@@ -22,7 +22,7 @@
   }
 
   100% {
-    transform: scale(.2);
+    transform: scale(0.2);
   }
 }
 
@@ -57,14 +57,13 @@
     line-height: 1.5;
     padding-right: @modal-title-distance-to-right;
 
-
     &.@{modal-prefix}-with-icon {
       display: flex;
       justify-content: flex-start;
       align-items: center;
     }
 
-    .@{modal-prefix}-icon{
+    .@{modal-prefix}-icon {
       margin-right: 8px;
       width: @modal-default-title-icon-size;
       height: @modal-default-title-icon-size;
@@ -97,39 +96,39 @@
   &-position {
     overflow-x: hidden;
     overflow-y: hidden;
-    transition: opacity .3s @zoom-out;
+    transition: opacity 0.3s @zoom-out;
 
     .@{modal-prefix}-panel {
-      transition: transform .3s @zoom-out;
+      transition: transform 0.3s @zoom-out;
     }
   }
 
   &-end {
     opacity: 0;
-    transition: opacity .3s @zoom-out;
+    transition: opacity 0.3s @zoom-out;
 
     .@{modal-prefix}-panel {
-      transition: transform .3s @zoom-out;
+      transition: transform 0.3s @zoom-out;
     }
 
     .@{modal-prefix}-panel.@{modal-prefix}-zoom {
-      animation: scale-out .3s @zoom-out;
+      animation: scale-out 0.3s @zoom-out;
     }
   }
 
   &-show {
     opacity: 1;
-    transition: opacity .3s @zoom-in;
+    transition: opacity 0.3s @zoom-in;
 
     .@{modal-prefix}-panel {
-      transition: transform .3s @zoom-in;
+      transition: transform 0.3s @zoom-in;
       transform: scale(1) translate(0, 0);
     }
   }
 
   &-start {
     .@{modal-prefix}-panel.@{modal-prefix}-zoom {
-      animation: scale-in .3s @zoom-in;
+      animation: scale-in 0.3s @zoom-in;
     }
   }
 
@@ -239,7 +238,7 @@
     font-size: @modal-font-size;
     border-radius: @modal-border-radius;
     border: @modal-border-width solid @modal-border-color;
-    color:  @modal-color;
+    color: @modal-color;
 
     &-hover:hover,
     &-shadow {
@@ -266,7 +265,8 @@
       background: @modal-footer-bg;
     }
 
-    > .@{card-prefix}-header, > .@{card-prefix}-footer {
+    > .@{card-prefix}-header,
+    > .@{card-prefix}-footer {
       &:after {
         height: @modal-divider-height;
         width: @modal-divider-width;

@@ -1,8 +1,8 @@
 @import './variables.less';
-@import './themes/@{so-theme}.less';
+@import './themes/@{ethan-theme}.less';
 
-@checkinput-prefix: ~'@{so-prefix}-checkinput';
-@switch-transition: all 0.36s cubic-bezier(.78, .14, .15, .86);
+@checkinput-prefix: ~'@{ethan-prefix}-checkinput';
+@switch-transition: all 0.36s cubic-bezier(0.78, 0.14, 0.15, 0.86);
 
 .@{checkinput-prefix} {
   @keyname: ~'@{checkinput-prefix}-focus';
@@ -40,7 +40,6 @@
 
   &-button {
     > .@{checkinput-prefix}.@{checkinput-prefix}-disabled {
-      
       &.@{checkinput-prefix}:not(.@{checkinput-prefix}-checked) {
         background: @button-disabled-bg;
         color: @button-disabled-color;
@@ -51,20 +50,16 @@
         }
       }
     }
-    
+
     &.@{checkinput-prefix}-small {
       .@{checkinput-prefix} {
-        .button-size(
-          @btn-padding-small-y; @btn-padding-small-x; @button-font-size-small; @line-height-small; 0px
-        );
+        .button-size(@btn-padding-small-y; @btn-padding-small-x; @button-font-size-small; @line-height-small; 0px);
       }
     }
 
     &.@{checkinput-prefix}-large {
       .@{checkinput-prefix} {
-        .button-size(
-          @btn-padding-large-y; @btn-padding-large-x; @button-font-size-large; @line-height-base; 0px;
-        );
+        .button-size(@btn-padding-large-y; @btn-padding-large-x; @button-font-size-large; @line-height-base; 0px;);
       }
     }
 
@@ -85,7 +80,8 @@
 
       border-radius: 0px;
 
-      & > .@{checkinput-prefix}-indicator, & > input {
+      & > .@{checkinput-prefix}-indicator,
+      & > input {
         display: none;
       }
 
@@ -139,7 +135,9 @@
         color: @colors-primary;
         border-right-width: 1px;
 
-        &:hover, &:active, &:focus {
+        &:hover,
+        &:active,
+        &:focus {
           border-color: @colors-primary;
           background: transparent;
           color: @colors-primary;
@@ -227,7 +225,7 @@
     padding-left: @switch-small-indicator-size;
     padding-right: 0;
 
-    .@{checkinput-prefix}-switch-indicator{
+    .@{checkinput-prefix}-switch-indicator {
       width: @switch-small-indicator-size;
       height: @switch-small-indicator-size;
       top: @switch-small-indicator-top;
@@ -242,7 +240,7 @@
     padding-left: @switch-large-indicator-size;
     padding-right: 0;
 
-    .@{checkinput-prefix}-switch-indicator{
+    .@{checkinput-prefix}-switch-indicator {
       width: @switch-large-indicator-size;
       height: @switch-large-indicator-size;
       top: @switch-large-indicator-top;
@@ -250,7 +248,7 @@
   }
 
   &-disabled&-switch {
-    opacity: .4;
+    opacity: 0.4;
   }
 
   &-checked i&-indicator,
@@ -331,13 +329,14 @@
   &:focus {
     outline: none;
 
-    i.@{checkinput-prefix}-indicator{
+    i.@{checkinput-prefix}-indicator {
       box-shadow: 0 0 0 @input-focus-width @color-rgba;
     }
   }
 
-  &:hover,&:focus{
-    i.@{checkinput-prefix}-indicator{
+  &:hover,
+  &:focus {
+    i.@{checkinput-prefix}-indicator {
       border-color: @checkbox-hover-color;
     }
   }

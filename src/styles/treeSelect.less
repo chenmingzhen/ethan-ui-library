@@ -1,7 +1,7 @@
 @import './variables.less';
-@import './themes/@{so-theme}.less';
+@import './themes/@{ethan-theme}.less';
 
-@treeSelect-prefix: ~'@{so-prefix}-treeSelect';
+@treeSelect-prefix: ~'@{ethan-prefix}-treeSelect';
 
 .@{treeSelect-prefix} {
   position: relative;
@@ -15,24 +15,23 @@
     color: @gray-600;
     padding: 8px 8px 4px 8px;
 
-    .@{so-prefix}-tree-node {
+    .@{ethan-prefix}-tree-node {
       &:last-child > div {
         padding-bottom: 4px;
       }
 
-      .@{so-prefix}-tree-content {
+      .@{ethan-prefix}-tree-content {
         white-space: nowrap;
       }
     }
 
-    .@{treeSelect-prefix}-single .@{so-prefix}-tree-content {
+    .@{treeSelect-prefix}-single .@{ethan-prefix}-tree-content {
       cursor: default;
 
       &:hover {
         background: @primary-color-fade-10;
       }
     }
-
   }
 
   &-result {
@@ -85,7 +84,8 @@
       display: inline-block;
       overflow: hidden;
       max-width: 80%;
-      padding: @select-result-padding-vertical @select-result-space-16 @select-result-padding-vertical @select-result-space;
+      padding: @select-result-padding-vertical @select-result-space-16 @select-result-padding-vertical
+        @select-result-space;
       margin-right: @select-result-space;
       margin-bottom: @padding-base-vertical;
       background: @select-result-bg;
@@ -96,7 +96,7 @@
       &-compressed {
         padding: 0 8px;
         font-size: 80%;
-        opacity: .9;
+        opacity: 0.9;
         text-overflow: unset;
         transition: none;
 
@@ -208,7 +208,6 @@
   &-options span.@{treeSelect-prefix}-selected {
     background-color: @primary-color-fade-60;
     color: white;
-
   }
 
   &-box-list {

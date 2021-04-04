@@ -1,6 +1,6 @@
 @import './variables.less';
-@import './themes/@{so-theme}.less';
-@tabs-prefix: ~'@{so-prefix}-tabs';
+@import './themes/@{ethan-theme}.less';
+@tabs-prefix: ~'@{ethan-prefix}-tabs';
 
 @tabs-animation-duration-time: 0.2s;
 
@@ -188,9 +188,8 @@
   }
 
   &-align-vertical-left {
-
     .@{tabs-prefix}-header-tabs {
-       flex-direction: column;
+      flex-direction: column;
     }
 
     .@{tabs-prefix}-header {
@@ -209,8 +208,8 @@
   &-align-vertical-right {
     .@{tabs-prefix}-header-tabs {
       flex-direction: column;
-   }
-   
+    }
+
     .@{tabs-prefix}-tab {
       border-radius: 0 @tabs-link-border-radius @tabs-link-border-radius 0;
     }

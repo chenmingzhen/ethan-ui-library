@@ -1,7 +1,7 @@
 @import './variables.less';
-@import './themes/@{so-theme}.less';
+@import './themes/@{ethan-theme}.less';
 
-@tree-prefix: ~'@{so-prefix}-tree';
+@tree-prefix: ~'@{ethan-prefix}-tree';
 
 .@{tree-prefix} {
   position: relative;
@@ -14,7 +14,7 @@
     > .@{tree-prefix}-children {
       margin-left: @tree-level-indent;
     }
-    
+
     & > div {
       padding-bottom: @tree-node-margin-bottom;
     }
@@ -79,7 +79,7 @@
       }
 
       &:focus span.@{tree-prefix}-default-icon {
-        .input-focus()
+        .input-focus();
       }
 
       span.@{tree-prefix}-default-icon {

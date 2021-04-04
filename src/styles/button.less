@@ -1,7 +1,7 @@
 @import './variables.less';
-@import './themes/@{so-theme}.less';
+@import './themes/@{ethan-theme}.less';
 
-@button-prefix: ~'@{so-prefix}-button';
+@button-prefix: ~'@{ethan-prefix}-button';
 @button-disabled: ~'.@{button-prefix}-disabled';
 
 .@{button-prefix} {
@@ -68,7 +68,7 @@
       .button-outline(@btn-default-color; @btn-default-bg; @btn-default-bg;);
     }
 
-    & when (@so-theme = antd) {
+    & when (@ethan-theme = antd) {
       &:hover,
       &:focus {
         border-color: @link-color;

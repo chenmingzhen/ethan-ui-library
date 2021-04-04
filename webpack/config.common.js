@@ -18,7 +18,7 @@ module.exports = function getCommon(config) {
       loader: 'less-loader',
       options: {
         modifyVars: {
-          'so-prefix': process.env.SO_PREFIX || 'so',
+          'ethan-prefix': process.env.ETHAN_PREFIX || 'ethan',
           ...config.modifyVars,
         },
       },
@@ -38,7 +38,7 @@ module.exports = function getCommon(config) {
     }),
     new webpack.DefinePlugin({
       'process.env': {
-        SO_PREFIX: JSON.stringify(process.env.SO_PREFIX || ''),
+        ETHAN_PREFIX: JSON.stringify(process.env.ETHAN_PREFIX || ''),
         CSS_MODULE: !!process.env.LOCAL_IDENT_NAME,
         LOG_ENV: JSON.stringify(process.env.LOG_ENV || ''),
       },

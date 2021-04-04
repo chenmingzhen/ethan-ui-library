@@ -2,7 +2,7 @@ import { entries } from './utils/objects'
 
 const config = {
   cssModule: process.env.CSS_MODULE || false,
-  prefix: process.env.SO_PREFIX || 'so',
+  prefix: process.env.ETHAN_PREFIX || 'ethan',
   locale: process.env.LOCALE || 'en-US',
   delay: undefined,
   scrollRatio: 100,

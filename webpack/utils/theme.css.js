@@ -23,8 +23,8 @@ const lessLoader = (name, hot) => {
       options: {
         // 通过modifyVars 修改默认的主题 对应less文件的变量
         modifyVars: {
-          'so-prefix': process.env.SO_PREFIX || 'so',
-          'so-theme': name,
+          'ethan-prefix': process.env.ETHAN_PREFIX || 'ethan',
+          'ethan-theme': name,
         },
       },
     },
