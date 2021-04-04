@@ -45,9 +45,8 @@ router.get('**/react.production.min.js', async ctx => {
 router.get('**/react-dom.production.min.js', async ctx => {
   await send(ctx, 'node_modules/react-dom/umd/react-dom.development.js')
 })
-// router.get('**/prop-types.min.js', async ctx => {
-//   await send(ctx, 'node_modules/prop-types/prop-types.js')
-// })
+
+// docs upload中使用
 router.get('**/jszip.min.js', async ctx => {
   await send(ctx, 'node_modules/jszip/dist/jszip.min.js')
 })
