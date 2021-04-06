@@ -2,7 +2,7 @@ const path = require('path')
 const fs = require('fs')
 
 const versions = {}
-;['react', 'react-dom', 'lodash'].forEach(lib => {
+;['react', 'react-dom'].forEach(lib => {
   const pkg = JSON.parse(fs.readFileSync(path.resolve(__dirname, 'node_modules/', lib, 'package.json')))
   versions[lib] = pkg.version
 })
