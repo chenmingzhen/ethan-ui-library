@@ -173,6 +173,12 @@ const pages = [
         level: 2,
         component: lazy(() => import(/* webpackChunkName: "Modal" */ './Modal')),
         },
+            {
+        name: 'Popover',
+        cn: '气泡',
+        level: 2,
+        component: lazy(() => import(/* webpackChunkName: "Popover" */ './Popover')),
+        },
     ]
 
 export default Page(pages)
