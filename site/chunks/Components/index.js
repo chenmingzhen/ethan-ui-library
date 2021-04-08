@@ -179,6 +179,12 @@ const pages = [
         level: 2,
         component: lazy(() => import(/* webpackChunkName: "Popover" */ './Popover')),
         },
+            {
+        name: 'Progress',
+        cn: '进度条',
+        level: 2,
+        component: lazy(() => import(/* webpackChunkName: "Progress" */ './Progress')),
+        },
     ]
 
 export default Page(pages)
