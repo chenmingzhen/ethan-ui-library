@@ -1,7 +1,7 @@
 import Alert from './alert'
 import Scroll from './scrollAlert'
 
-Scroll.displayname = 'EthanAlertScroll'
+Scroll.displayName = 'EthanAlertScroll'
 
 Alert.Scroll = Scroll
 
