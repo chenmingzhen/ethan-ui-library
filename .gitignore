@@ -28,6 +28,9 @@ yarn-error.log*
 #publish
 /publish
 
+#webpack
+/webpack/dll
+
 #private
 /ssh-client/private/*
 

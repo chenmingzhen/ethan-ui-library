@@ -22,6 +22,7 @@ module.exports = {
       `/react-dom@${versions['react-dom']}/umd/react-dom.production.min.js`,
       // upload examples中使用jszip 将jsZip打包进来 window中即存在 window.jszip
       `/jszip@${versions.jszip}/dist/jszip.min.js`,
+      './webpack/dll/vendors.dll.js',
     ],
     styles: [],
   },

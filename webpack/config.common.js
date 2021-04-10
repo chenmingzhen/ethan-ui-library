@@ -2,6 +2,7 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const UglifyWebpackPlugin = require('uglifyjs-webpack-plugin')
 const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin')
 const webpack = require('webpack')
+const path = require('path')
 
 module.exports = function getCommon(config) {
   const lessLoader = [
@@ -42,6 +43,10 @@ module.exports = function getCommon(config) {
         CSS_MODULE: !!process.env.LOCAL_IDENT_NAME,
         LOG_ENV: JSON.stringify(process.env.LOG_ENV || ''),
       },
+    }),
+    new webpack.DllReferencePlugin({
+      context: __dirname,
+      manifest: path.resolve(__dirname, './dll/vendors.manifest.json'),
     }),
   ]
   if (config.IGNORE_LESS) {

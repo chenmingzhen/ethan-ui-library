@@ -7,6 +7,8 @@ const multer = require('koa-multer')
 const fs = require('fs')
 const webpack = require('webpack')
 const WebpackDevServer = require('webpack-dev-server')
+const path = require('path')
+const { execSync } = require('child_process')
 const webpackConfig = require('./webpack/config.dev')
 const config = require('./config')
 const { version } = require('./package.json')
@@ -16,6 +18,13 @@ const ejs = require('./scripts/ejs')
 require('./scripts/dev-site')
 
 //  webpack server ===========================================
+
+// webpack dll 动态链接库 提升打包速度
+const isExistDll = fs.existsSync(path.resolve(__dirname, './webpack/dll'))
+
+if (!isExistDll) {
+  execSync('node ./webpack/config.dll.js')
+}
 
 // 生成临时打包文件 供后面koa2使用
 
@@ -44,6 +53,11 @@ router.get('**/react.production.min.js', async ctx => {
 })
 router.get('**/react-dom.production.min.js', async ctx => {
   await send(ctx, 'node_modules/react-dom/umd/react-dom.development.js')
+})
+
+// dll
+router.get('**/vendors.dll.js', async ctx => {
+  await send(ctx, './webpack/dll/vendors.dll.js')
 })
 
 // docs upload中使用
