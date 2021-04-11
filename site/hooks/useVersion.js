@@ -22,6 +22,7 @@ const useVersion = () => {
   }, [])
 
   useEffect(() => {
+    if (process.env.NODE_ENV === 'development') return
     // ethan-ui-pages/ 目录下 与新增的images同级
     fetch('../../../versions.json')
       .then(ver => ver.json())
