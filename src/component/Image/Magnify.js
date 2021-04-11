@@ -48,12 +48,17 @@ class Magnify extends PureComponent {
   move(clientX, clientY) {
     const rect = this.element.getBoundingClientRect()
     const image = this.element.querySelector('img')
-    const width = rect.width - 100
-    const height = rect.height - 100
-    const x = (clientX - rect.left - 50) / width
-    const y = (clientY - rect.top - 50) / height
-    this.element.scrollTop = (image.offsetHeight - height) * y
-    this.element.scrollLeft = (image.offsetWidth - width) * x
+
+    // 浏览器滚动条宽度
+    const browserBarWidth = window.innerWidth - document.body.clientWidth
+
+    const { width, height } = rect
+
+    const x = (clientX - rect.left) / (width - browserBarWidth)
+    const y = (clientY - rect.top) / (height - browserBarWidth)
+    // 20为this.element的上下Padding总和
+    this.element.scrollTop = (image.offsetHeight - height + 20) * y
+    this.element.scrollLeft = (image.offsetWidth - width + 20) * x
   }
 
   handleLoaded() {
