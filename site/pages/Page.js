@@ -1,5 +1,6 @@
 import React, { Suspense, useEffect, useState } from 'react'
 import PropTypes from 'prop-types'
+import { useLocation } from 'react-router'
 import { Route, Switch, NavLink } from 'react-router-dom'
 import { Sticky } from 'ethan/index'
 import locate from 'doc/utils/locate'
@@ -17,11 +18,10 @@ function getUrl(base, page) {
 export default function(pages) {
   function Page(props) {
     const base = props.match.url
-    const indexRoute = pages.find(p => typeof p !== 'string')
+    const location = useLocation()
+    const { search } = location
 
-    const { search } = props.history.location || { search: '' }
-
-    if (search.indexOf('?example=') === 0) search.replace('?example=', '')
+    if (search?.indexOf('?example=') === 0) search.replace('?example=', '')
 
     // 右下角汉堡菜单
     const [shownav, setShowNav] = useState(window.innerWidth < 979)
@@ -71,7 +71,7 @@ export default function(pages) {
                 /* 标题 */
                 typeof p === 'string' ? (
                   // eslint-disable-next-line
-                    <label key={i}>{p}</label>
+                  <label key={i}>{p}</label>
                 ) : (
                   <NavLink
                     className={mainClass(p.level === 2 && 'sub')}
