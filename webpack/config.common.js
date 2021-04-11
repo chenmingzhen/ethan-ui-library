@@ -2,7 +2,6 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const UglifyWebpackPlugin = require('uglifyjs-webpack-plugin')
 const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin')
 const webpack = require('webpack')
-const path = require('path')
 
 module.exports = function getCommon(config) {
   const lessLoader = [
@@ -43,10 +42,6 @@ module.exports = function getCommon(config) {
         CSS_MODULE: !!process.env.LOCAL_IDENT_NAME,
         LOG_ENV: JSON.stringify(process.env.LOG_ENV || ''),
       },
-    }),
-    new webpack.DllReferencePlugin({
-      context: __dirname,
-      manifest: path.resolve(__dirname, './dll/vendors.manifest.json'),
     }),
   ]
   if (config.IGNORE_LESS) {
@@ -113,7 +108,9 @@ module.exports = function getCommon(config) {
               loader: 'url-loader',
               options: {
                 limit: 10000,
+                // 以打包后的app.js为基的相对路径  通过require的形式引入 见Image的example
                 name: './images/[name].[ext]',
+                // name: './img/[name].[ext]',
               },
             },
           ],

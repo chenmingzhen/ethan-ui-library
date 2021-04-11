@@ -2,12 +2,12 @@ const path = require('path')
 const fs = require('fs')
 
 const versions = {}
-;['react', 'react-dom'].forEach(lib => {
+;['react', 'react-dom', 'jszip'].forEach(lib => {
   const pkg = JSON.parse(fs.readFileSync(path.resolve(__dirname, 'node_modules/', lib, 'package.json')))
   versions[lib] = pkg.version
 })
 
-module.exports = {
+const config = {
   appName: 'Ethan',
   dev: {
     publishPort: 3000,
@@ -22,7 +22,7 @@ module.exports = {
       `/react-dom@${versions['react-dom']}/umd/react-dom.production.min.js`,
       // upload examples中使用jszip 将jsZip打包进来 window中即存在 window.jszip
       `/jszip@${versions.jszip}/dist/jszip.min.js`,
-      './webpack/dll/vendors.dll.js',
+      // './webpack/dll/vendors.dll.js',
     ],
     styles: [],
   },
@@ -62,3 +62,7 @@ module.exports = {
     },
   },
 }
+
+if (process.env.NODE_ENV === 'development') config.dev.scripts.push('./webpack/dll/vendors.dll.js')
+
+module.exports = config

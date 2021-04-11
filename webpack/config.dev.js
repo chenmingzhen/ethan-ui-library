@@ -1,6 +1,7 @@
 const webpack = require('webpack')
 // 注意 webpack-merge版本
 const merge = require('webpack-merge')
+const path = require('path')
 const config = require('../config')
 const common = require('./config.common')
 const cssConf = require('./utils/theme.css')
@@ -62,7 +63,13 @@ const jsConfig = merge(common({ ...config.webpack, DEV: true }), {
     libraryTarget: 'umd',
   },
   mode: 'development',
-  plugins: [new webpack.HotModuleReplacementPlugin()],
+  plugins: [
+    new webpack.HotModuleReplacementPlugin(),
+    new webpack.DllReferencePlugin({
+      context: __dirname,
+      manifest: path.resolve(__dirname, './dll/vendors.manifest.json'),
+    }),
+  ],
 })
 
 module.exports = [jsConfig, ...cssConfig]
