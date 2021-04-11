@@ -17,8 +17,8 @@ export default function() {
           height={80}
           fit="fill"
           shape="thumbnail"
-          src={`../../../images/${i}_s.jpg`}
-          href={`../../../images/${i}_b.jpg`}
+          src={require(`../../../images/${i}_s.jpg`)}
+          href={require(`../../../images/${i}_b.jpg`)}
         />
       ))}
     </Image.Group>

@@ -6,7 +6,8 @@
  */
 import React from 'react'
 import { Image } from 'ethan/index'
+import img from '../../../images/1_b.jpg'
 
 export default function() {
-  return <Image width={200} height={125} src="../../../images/1_b.jpg" />
+  return <Image width={200} height={125} src={img} />
 }

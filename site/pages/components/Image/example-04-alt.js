@@ -7,6 +7,8 @@
 import React from 'react'
 import { Image } from 'ethan/index'
 
+const alt = require('../../../images/1_b.jpg')
+
 export default function() {
-  return <Image width={200} height={125} src="notfound" alt="../../../images/1_b.jpg" />
+  return <Image width={200} height={125} src="notfound" alt={alt} />
 }
