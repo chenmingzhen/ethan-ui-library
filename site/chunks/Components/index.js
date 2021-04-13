@@ -75,6 +75,12 @@ const pages = [
         component: lazy(() => import(/* webpackChunkName: "Input" */ './Input')),
         },
             {
+        name: 'Radio',
+        cn: '单选框',
+        level: 2,
+        component: lazy(() => import(/* webpackChunkName: "Radio" */ './Radio')),
+        },
+            {
         name: 'Select',
         cn: '选择框',
         level: 2,
