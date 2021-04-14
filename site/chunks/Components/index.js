@@ -81,6 +81,12 @@ const pages = [
         component: lazy(() => import(/* webpackChunkName: "Radio" */ './Radio')),
         },
             {
+        name: 'Rate',
+        cn: '评分',
+        level: 2,
+        component: lazy(() => import(/* webpackChunkName: "Rate" */ './Rate')),
+        },
+            {
         name: 'Select',
         cn: '选择框',
         level: 2,
