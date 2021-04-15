@@ -69,7 +69,6 @@ class Input extends PureComponent {
     const { onKeyUp, onEnterPress } = this.props
     // enterLock false 证明是中文等输入情况
     if (e.keyCode === 13 && onEnterPress && !this.enterLock) {
-      console.log(1)
       onEnterPress(e.target.value, e)
     }
     if (onKeyUp) onKeyUp(e)
