@@ -114,6 +114,7 @@ function getComponentPage(name, file) {
   return page
 }
 
+// 生成chunks/Components/index
 function generateComponents(file = '') {
   // 获取ejs模板文件
   const template = ejs.compile(fs.readFileSync(path.resolve(__dirname, './component-index.ejs'), 'utf-8'))
@@ -139,6 +140,7 @@ function generateComponents(file = '') {
 
   if (lastComponentText !== text) {
     console.log('write file chunks/Components/index.js')
+    // 将模板内容写入chunks/Components/index
     fs.writeFile(path.resolve(chunkPath, './Components/index.js'), text, err => {
       if (err) console.log(err)
     })
