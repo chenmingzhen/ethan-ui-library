@@ -17,7 +17,7 @@
   },
   "scripts": {
     "dev": "cross-env NODE_ENV=development webpack-dev-server --config webpack/dev-webpack-config.js",
-    "start": "rimraf temp && cross-env NODE_ENV=development LOG_ENV=rc node dev-server.js",
+    "start": "rimraf temp && cross-env NODE_ENV=development LOG_ENV=rc ts-node dev-server.ts",
     "lint": "npx eslint --fix src/**/**.js",
     "stylelint": "stylelint site/**/*.less --fix && stylelint src/**/*.less --fix",
     "build-clean": "rimraf publish/es publish/dist publish/lib publish/css",
@@ -135,6 +135,7 @@
     "style-loader": "^0.21.0",
     "stylelint": "^9.10.1",
     "stylelint-config-idiomatic-order": "^6.2.0",
+    "ts-loader": "^8.1.0",
     "ts-migrate": "^0.1.16",
     "typescript": "^3.8.3",
     "uglifyjs-webpack-plugin": "^2.1.1",

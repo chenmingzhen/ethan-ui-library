@@ -74,7 +74,7 @@ module.exports = function getCommon(config) {
 
     resolve: {
       alias: config.alias,
-      extensions: ['.js', '.json', '.jsx'],
+      extensions: ['.js', '.json', '.jsx', '.ts', 'tsx'],
     },
 
     // 外部loader和自定义loader位置 ignore-loader例子
@@ -89,7 +89,13 @@ module.exports = function getCommon(config) {
           exclude: [/node_modules/],
           use: jsLoaders,
         },
-
+        {
+          test: /\.tsx?$/,
+          loader: 'ts-loader',
+          options: {
+            transpileOnly: true, // use transpileOnly mode to speed-up compilation
+          },
+        },
         {
           test: /\.less$/,
           // dev环境 less由cssConfig负责打包
