@@ -1,7 +1,7 @@
 const path = require('path')
 const fs = require('fs')
 
-const versions = {}
+const versions: any = {}
 ;['react', 'react-dom', 'jszip'].forEach(lib => {
   const pkg = JSON.parse(fs.readFileSync(path.resolve(__dirname, 'node_modules/', lib, 'package.json')))
   versions[lib] = pkg.version
@@ -29,7 +29,7 @@ const config = {
   themes: ['default', 'ethan', 'antd'],
   webpack: {
     entry: {
-      app: './site/index.js',
+      app: './site/index.tsx',
     },
     output: {
       chunkFilename: '[name].[chunkhash].js',

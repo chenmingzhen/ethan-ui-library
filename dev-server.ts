@@ -1,4 +1,3 @@
-// const request = require('request')
 const got = require('got')
 const Koa = require('koa')
 const send = require('koa-send')
@@ -109,7 +108,7 @@ router.get(config.dev.scriptPath, async (ctx, next) => {
 // react-hot-loader proxy
 router.get('/*.hot-update.js(on)?', async ctx => {
   const options = {
-    uri: `http://localhost:${config.dev.webpackPort}/${ctx.url}`,
+    url: `http://localhost:${config.dev.webpackPort}/${ctx.url}`,
     method: 'GET',
   }
   ctx.set('Access-Control-Allow-Origin', '*')
@@ -151,3 +150,5 @@ app.listen(config.dev.publishPort, () => {
   const ps = config.dev.publishPort === 80 ? '' : `:${config.dev.publishPort}`
   console.log(`server running on http://localhost${ps}`)
 })
+
+export {}

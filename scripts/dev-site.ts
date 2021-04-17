@@ -1,4 +1,6 @@
-const fs = require('fs')
+// @ts-nocheck
+import fs from 'fs'
+
 const path = require('path')
 // Nodejs文件监控chokidar
 const chokidar = require('chokidar')

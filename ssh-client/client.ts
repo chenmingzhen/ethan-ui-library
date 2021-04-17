@@ -9,6 +9,8 @@ const SUCCESS = 'green'
 const INFO = 'blue'
 
 class Client {
+  ssh
+
   constructor() {
     this.ssh = ssh2()
   }

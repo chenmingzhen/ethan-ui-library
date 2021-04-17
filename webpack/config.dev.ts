@@ -1,7 +1,9 @@
-const webpack = require('webpack')
+import webpack from 'webpack'
 // 注意 webpack-merge版本
-const merge = require('webpack-merge')
-const path = require('path')
+import merge from 'webpack-merge'
+
+import path from 'path'
+
 const config = require('../config')
 const common = require('./config.common')
 const cssConf = require('./utils/theme.css')

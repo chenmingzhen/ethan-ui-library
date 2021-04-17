@@ -1,3 +1,4 @@
+// @ts-nocheck
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const UglifyWebpackPlugin = require('uglifyjs-webpack-plugin')
 const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin')
@@ -45,6 +46,7 @@ module.exports = function getCommon(config) {
     }),
   ]
   if (config.IGNORE_LESS) {
+    // @ts-ignore
     jsLoaders.splice(0, 0, { loader: 'remove-less-loader' })
     plugins.push(
       new webpack.IgnorePlugin({
@@ -85,16 +87,16 @@ module.exports = function getCommon(config) {
     module: {
       rules: [
         {
-          test: /\.jsx?$/,
-          exclude: [/node_modules/],
-          use: jsLoaders,
-        },
-        {
           test: /\.tsx?$/,
           loader: 'ts-loader',
           options: {
             transpileOnly: true, // use transpileOnly mode to speed-up compilation
           },
+        },
+        {
+          test: /\.jsx?$/,
+          exclude: [/node_modules/],
+          use: jsLoaders,
         },
         {
           test: /\.less$/,
