@@ -1,8 +1,8 @@
-// @ts-nocheck
+import webpack = require('webpack')
+
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const UglifyWebpackPlugin = require('uglifyjs-webpack-plugin')
 const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin')
-const webpack = require('webpack')
 
 module.exports = function getCommon(config) {
   const lessLoader = [
@@ -76,7 +76,7 @@ module.exports = function getCommon(config) {
 
     resolve: {
       alias: config.alias,
-      extensions: ['.js', '.json', '.jsx', '.ts', 'tsx'],
+      extensions: ['.ts', '.tsx', '.js', '.json', '.jsx'],
     },
 
     // 外部loader和自定义loader位置 ignore-loader例子

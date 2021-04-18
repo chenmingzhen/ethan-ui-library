@@ -150,5 +150,3 @@ app.listen(config.dev.publishPort, () => {
   const ps = config.dev.publishPort === 80 ? '' : `:${config.dev.publishPort}`
   console.log(`server running on http://localhost${ps}`)
 })
-
-export {}

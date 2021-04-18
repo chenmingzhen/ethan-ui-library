@@ -1,12 +1,28 @@
 {
-  "extends": ["airbnb", "prettier"],
-  "plugins": ["prettier"],
-  "parser": "babel-eslint",
+  "extends": [
+    "airbnb",
+    "prettier"
+  ],
+  "plugins": [
+    "prettier"
+  ],
+  "parser": "@typescript-eslint/parser",
   "parserOptions": {
-    "sourceType": "module",
-    "allowImportExportEverywhere": true,
-    "ecmaFeatures": {
-      "jsx": true
+    "project": "./tsconfig.json"
+  },
+  "settings": {
+    "import/parsers": {
+      "@typescript-eslint/parser": [
+        ".ts",
+        ".tsx"
+      ]
+    },
+    "import/resolver": {
+      "typescript": {
+        "webpack": {
+          "config": "webpack.config.eslint.ts"
+        }
+      }
     }
   },
   "env": {
@@ -14,14 +30,6 @@
     "es6": true,
     "node": true,
     "jest": true
-  },
-  "settings": {
-    "import/parser": "babel-eslint",
-    "import/resolver": {
-      "webpack": {
-        "config": "webpack.config.eslint.js"
-      }
-    }
   },
   "rules": {
     "prettier/prettier": "error",
@@ -33,7 +41,10 @@
     "react/jsx-indent": 0,
     "react/no-find-dom-node": 0,
     "react/require-default-props": 0,
-    "semi": [2, "never"],
+    "semi": [
+      2,
+      "never"
+    ],
     "global-require": 0,
     "import/no-duplicates": 0,
     "import/no-extraneous-dependencies": 0,
@@ -58,7 +69,11 @@
     "jsx-a11y/no-static-element-interactions": 0,
     "jsx-a11y/click-events-have-key-events": 0,
     "react/destructuring-assignment": 0,
-    "linebreak-style": [0, "error", "windows"],
+    "linebreak-style": [
+      0,
+      "error",
+      "windows"
+    ],
     //
     // const { loading, children } = props
     "react/prop-types": 0,
@@ -67,7 +82,12 @@
     "react/jsx-filename-extension": [
       1,
       {
-        "extensions": [".js", ".jsx"]
+        "extensions": [
+          ".js",
+          ".jsx",
+          ".ts",
+          ".tsx"
+        ]
       }
     ],
     "react/jsx-props-no-spreading": 0,
@@ -79,6 +99,16 @@
     "react/sort-comp": 0,
     "import/no-cycle": 0,
     "react/jsx-one-expression-per-line": 0,
-    "no-unused-expressions": 0
+    "no-unused-expressions": 0,
+    "import/extensions": [
+      1,
+      "ignorePackages",
+      {
+        "js": "never",
+        "jsx": "never",
+        "ts": "never",
+        "tsx": "never"
+      }
+    ]
   }
 }

@@ -37,12 +37,12 @@ const cssConfig = config.themes.map(name =>
       'webpack/hot/only-dev-server',
       // reset css file
       './src/styles/normalize.less',
-      './src/styles/expose.js',
-      './src/styles/index.js',
-      './src/styles/spin.js',
+      './src/styles/expose.ts',
+      './src/styles/index.ts',
+      './src/styles/spin.ts',
       // site style
-      './site/styles/index.js',
-      './site/less-entry.js',
+      './site/styles/index.ts',
+      './site/less-entry.ts',
     ],
     output: { publicPath: getPublishPath() },
     clean: false,
