@@ -5,15 +5,15 @@ import Progress from './Progress'
 import Dragger from './Dragger'
 import { consumer } from './context'
 
-const exports = inputable(Upload)
-exports.Image = inputable(Image)
-exports.Button = inputable(Progress)
-exports.Dragger = consumer(Dragger)
+const UploadContainer = inputable(Upload)
+UploadContainer.Image = inputable(Image)
+UploadContainer.Button = inputable(Progress)
+UploadContainer.Dragger = consumer(Dragger)
 
-exports.displayName = 'EthanUpload'
+UploadContainer.displayName = 'EthanUpload'
 
-exports.Image.displayName = 'EthanImageUpload'
-exports.Button.displayName = 'EthanButtonUpload'
-exports.Dragger.displayName = 'EthanDraggerUpload'
+UploadContainer.Image.displayName = 'EthanImageUpload'
+UploadContainer.Button.displayName = 'EthanButtonUpload'
+UploadContainer.Dragger.displayName = 'EthanDraggerUpload'
 
-export default exports
+export default UploadContainer

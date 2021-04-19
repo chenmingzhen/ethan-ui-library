@@ -10,12 +10,12 @@ import Group from './Group'
 import Password from './Password'
 
 // delay 是柯里化函数 传入第一个值对应defaultDelay
-const exports = compose(inputAble, inputBorder({}), delay(400), trim, coin('input'))(Input)
-exports.Group = inputBorder({ tag: 'div', isGroup: true, from: 'input' })(Group)
-exports.Number = compose(inputAble, inputBorder({}), coin())(Number)
-exports.Password = compose(inputAble, inputBorder({}))(Password)
+const InputContainer = compose(inputAble, inputBorder({}), delay(400), trim, coin('input'))(Input)
+InputContainer.Group = inputBorder({ tag: 'div', isGroup: true, from: 'input' })(Group)
+InputContainer.Number = compose(inputAble, inputBorder({}), coin())(Number)
+InputContainer.Password = compose(inputAble, inputBorder({}))(Password)
 
-exports.displayName = 'EthanInput'
-exports.Group.displayName = 'EthanInputGroup'
+InputContainer.displayName = 'EthanInput'
+InputContainer.Group.displayName = 'EthanInputGroup'
 
-export default exports
+export default InputContainer

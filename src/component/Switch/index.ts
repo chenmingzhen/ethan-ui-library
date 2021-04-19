@@ -3,9 +3,9 @@ import inputable from '../Form/inputable'
 import Switch from './Switch'
 import { consumer } from '../Checkbox/context'
 
-const exports = compose(inputable, consumer)(Switch)
+const SwitchContainer = compose(inputable, consumer)(Switch)
 
-exports.displayName = 'EthanSwitch'
-exports.Switch = Switch
+SwitchContainer.displayName = 'EthanSwitch'
+SwitchContainer.Switch = Switch
 
-export default exports
+export default SwitchContainer

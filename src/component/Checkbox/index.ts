@@ -5,11 +5,14 @@ import Checkbox from './Checkbox'
 import Group from './Group'
 import { consumer } from './context'
 
-const exports = compose(inputable, consumer)(Checkbox)
-exports.Group = compose(inputable, Datum.hoc({ bindProps: ['disabled', 'format', 'prediction', 'separator'] }))(Group)
-exports.Checkbox = Checkbox
+const CheckboxContainer = compose(inputable, consumer)(Checkbox)
+CheckboxContainer.Group = compose(
+  inputable,
+  Datum.hoc({ bindProps: ['disabled', 'format', 'prediction', 'separator'] })
+)(Group)
+CheckboxContainer.Checkbox = Checkbox
 
-exports.displayName = 'EthanCheckbox'
-exports.Group.displayName = 'EthanCheckboxGroup'
+CheckboxContainer.displayName = 'EthanCheckbox'
+CheckboxContainer.Group.displayName = 'EthanCheckboxGroup'
 
-export default exports
+export default CheckboxContainer

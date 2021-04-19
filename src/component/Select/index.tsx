@@ -15,7 +15,7 @@ const limitWrap = Origin => props => {
   return <Origin {...props} limit={limit} />
 }
 
-const exportSelect = compose(
+const SelectContainer = compose(
   inputable,
   inputBorder({ className: selectClass('_'), tag: 'div' }),
   limitWrap,
@@ -25,6 +25,6 @@ const exportSelect = compose(
   absolute
 )(Select)
 
-exportSelect.displayName = 'EthanSelect'
+SelectContainer.displayName = 'EthanSelect'
 
-export default exportSelect
+export default SelectContainer
