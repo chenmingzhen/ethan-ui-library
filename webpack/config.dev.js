@@ -70,4 +70,4 @@ const jsConfig = merge(common({ ...config.webpack, DEV: true }), {
   },
 })
 
-module.exports = [jsConfig]
+module.exports = [jsConfig, ...cssConfig]

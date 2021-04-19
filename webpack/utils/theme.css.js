@@ -46,6 +46,7 @@ module.exports = function({ name, hot, entry, output, clean, prefix = 'theme', m
     },
     resolve: {
       alias: config.webpack.alias,
+      extensions: ['.ts', '.tsx', '.js', '.json', '.jsx'],
     },
     output: {
       ...output,
