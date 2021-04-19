@@ -65,9 +65,6 @@ const jsConfig = merge(common({ ...config.webpack, DEV: true }), {
   },
   mode: 'development',
   plugins: [new webpack.HotModuleReplacementPlugin()],
-  resolve: {
-    extensions: ['.ts', '.tsx', '.js', '.json', '.jsx'],
-  },
 })
 
 module.exports = [jsConfig, ...cssConfig]
