@@ -1,8 +1,8 @@
-import webpack from 'webpack'
+const webpack = require('webpack')
 // 注意 webpack-merge版本
-import merge from 'webpack-merge'
+const merge = require('webpack-merge')
 
-import path from 'path'
+const path = require('path')
 
 const config = require('../config')
 const common = require('./config.common')
@@ -62,16 +62,12 @@ const jsConfig = merge(common({ ...config.webpack, DEV: true }), {
   output: {
     filename: '[name].js',
     publicPath: getPublishPath(),
-    libraryTarget: 'umd',
   },
   mode: 'development',
-  plugins: [
-    new webpack.HotModuleReplacementPlugin(),
-    new webpack.DllReferencePlugin({
-      context: __dirname,
-      manifest: path.resolve(__dirname, './dll/vendors.manifest.json'),
-    }),
-  ],
+  plugins: [new webpack.HotModuleReplacementPlugin()],
+  resolve: {
+    extensions: ['.ts', '.tsx', '.js', '.json', '.jsx'],
+  },
 })
 
-module.exports = [jsConfig, ...cssConfig]
+module.exports = [jsConfig]

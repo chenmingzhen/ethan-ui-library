@@ -1,4 +1,4 @@
-import webpack = require('webpack')
+const webpack = require('webpack')
 
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const UglifyWebpackPlugin = require('uglifyjs-webpack-plugin')
@@ -87,21 +87,23 @@ module.exports = function getCommon(config) {
     module: {
       rules: [
         {
-          test: /\.tsx?$/,
-          loader: 'ts-loader',
-          options: {
-            transpileOnly: true, // use transpileOnly mode to speed-up compilation
-          },
-        },
-        {
           test: /\.jsx?$/,
           exclude: [/node_modules/],
           use: jsLoaders,
         },
         {
+          test: /\.tsx?$/,
+          exclude: [/node_modules/],
+          loader: 'ts-loader',
+          // loader: 'babel!ts-loader',
+          options: {
+            transpileOnly: true, // use transpileOnly mode to speed-up compilation
+          },
+        },
+        {
           test: /\.less$/,
           // dev环境 less由cssConfig负责打包
-          use: config.DEV ? 'ignore-loader' : lessLoader,
+          use: lessLoader,
         },
 
         {

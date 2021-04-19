@@ -18,13 +18,6 @@ require('./scripts/dev-site')
 
 //  webpack server ===========================================
 
-// webpack dll 动态链接库 提升打包速度
-const isExistDll = fs.existsSync(path.resolve(__dirname, './webpack/dll'))
-
-if (!isExistDll) {
-  execSync('node ./webpack/config.dll.js')
-}
-
 // 生成临时打包文件 供后面koa2使用
 
 new WebpackDevServer(webpack(webpackConfig), {

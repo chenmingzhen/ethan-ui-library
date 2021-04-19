@@ -17,7 +17,7 @@
   },
   "scripts": {
     "dev": "cross-env NODE_ENV=development webpack-dev-server --config webpack/dev-webpack-config.js",
-    "start": "rimraf temp && cross-env NODE_ENV=development LOG_ENV=rc ts-node dev-server.ts",
+    "start": "rimraf temp && cross-env NODE_ENV=development LOG_ENV=rc node dev-server.js",
     "lint": "npx eslint --fix src/**/**.js",
     "stylelint": "stylelint site/**/*.less --fix && stylelint src/**/*.less --fix",
     "build-clean": "rimraf publish/es publish/dist publish/lib publish/css",

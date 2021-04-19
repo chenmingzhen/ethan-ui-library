@@ -1,4 +1,4 @@
-import classGenerate from '../utils/classname'
+import classGenerate from '../utils/classname.ts'
 
 export const exampleClass = classGenerate(require('./example.less'), 'example')
 export const headerClass = classGenerate(require('./header.less'), 'header')

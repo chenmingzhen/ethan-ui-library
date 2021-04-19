@@ -1,4 +1,3 @@
-// @ts-nocheck
 const ejs = require('ejs')
 
 const rf = ejs.renderFile
