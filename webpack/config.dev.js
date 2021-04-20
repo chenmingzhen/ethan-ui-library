@@ -62,6 +62,7 @@ const jsConfig = merge(common({ ...config.webpack, DEV: true }), {
   output: {
     filename: '[name].js',
     publicPath: getPublishPath(),
+    libraryTarget: 'umd',
   },
   mode: 'development',
   plugins: [new webpack.HotModuleReplacementPlugin()],
