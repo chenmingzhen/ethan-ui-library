@@ -1,8 +1,8 @@
 // build publish package.json
 
-const fs = require('fs')
-const path = require('path')
-const pkg = require('../package.json')
+import fs = require('fs')
+import path = require('path')
+import pkg = require('../package.json')
 
 delete pkg.devDependencies
 

@@ -16,6 +16,8 @@
       "ethan/*": ["./src/*"],
       "ethan": ["./src/index.ts"]
     },
+    "rootDir": "src",
+    "outDir": "publish/css",
     "experimentalDecorators": true,
     "allowJs": true,
     "checkJs": true,
@@ -37,5 +39,5 @@
     "alwaysStrict": false,
     "downlevelIteration": true
   },
-  "include": ["src", "site", "scripts", "webpack", "ssh-client"]
+  "include": ["src"]
 }

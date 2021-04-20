@@ -1,10 +1,10 @@
 // less => css
 
-const fs = require('fs')
-const less = require('less')
-const path = require('path')
-const postcss = require('postcss')
-const autoprefixer = require('autoprefixer')
+import fs = require('fs')
+import less = require('less')
+import path = require('path')
+import postcss = require('postcss')
+import autoprefixer = require('autoprefixer')
 
 const root = path.resolve(__dirname, '../src')
 const publish = path.resolve(__dirname, '../publish')

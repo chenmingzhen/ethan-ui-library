@@ -1,4 +1,4 @@
-const fs = require('fs-extra')
+import fs = require('fs-extra')
 
 const origin = 'src/styles'
 const to = 'publish/lib/styles'

@@ -1,7 +1,7 @@
-const fs = require('fs')
-const path = require('path')
-const ejs = require('ejs')
-const pack = require('../package')
+import fs = require('fs')
+import path = require('path')
+import ejs = require('ejs')
+import pack = require('../package.json')
 
 const rootPath = path.resolve(__dirname, '../src')
 
