@@ -1,3 +1,4 @@
+// @ts-nocheck 
 import genaration from '@/utils/classnames'
 
 // 注意 这里的引入顺序会影响后面的样式叠加

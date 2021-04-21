@@ -1,3 +1,4 @@
+// @ts-nocheck 
 import React, { PureComponent, Children, cloneElement } from 'react'
 import PropTypes from 'prop-types'
 import { imageClass } from '@/styles'

@@ -1,3 +1,4 @@
+// @ts-nocheck 
 import React, { PureComponent, cloneElement, isValidElement } from 'react'
 import PropTypes from 'prop-types'
 import { tooltipClass } from '@/styles'

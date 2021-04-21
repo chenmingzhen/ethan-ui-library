@@ -1,3 +1,4 @@
+// @ts-nocheck 
 import React from 'react'
 import Icon from '@/component/Icon'
 import Button from './index'

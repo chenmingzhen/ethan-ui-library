@@ -1,3 +1,4 @@
+// @ts-nocheck 
 const attrAccept = (file, acceptedFiles) => {
   if (file && acceptedFiles) {
     const acceptedFilesArray = Array.isArray(acceptedFiles) ? acceptedFiles : acceptedFiles.split(',')

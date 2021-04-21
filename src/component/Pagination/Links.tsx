@@ -1,3 +1,4 @@
+// @ts-nocheck 
 import React, { memo, useMemo } from 'react'
 import PropTypes from 'prop-types'
 import { paginationClass } from '@/styles'

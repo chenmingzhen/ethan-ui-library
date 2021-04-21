@@ -1,3 +1,4 @@
+// @ts-nocheck 
 import { isEmpty, isObject } from './is'
 import { deepClone } from './clone'
 

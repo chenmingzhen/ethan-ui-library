@@ -1,3 +1,4 @@
+// @ts-nocheck 
 import hidable from '@/hoc/hidable'
 import List from './List'
 

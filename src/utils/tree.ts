@@ -1,3 +1,4 @@
+// @ts-nocheck 
 function getFilterTree(treeNodes, filterFunc, filterExpandKeys, keyFunc, childrenKey = 'children', showHitDescendants) {
   const mapFilteredNodeToData = node => {
     if (!node) return null

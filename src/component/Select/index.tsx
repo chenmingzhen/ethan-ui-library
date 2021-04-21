@@ -1,3 +1,4 @@
+// @ts-nocheck 
 import React from 'react'
 import { compose } from '@/utils/func'
 import Datum from '@/utils/Datum'

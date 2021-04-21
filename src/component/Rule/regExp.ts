@@ -1,3 +1,4 @@
+// @ts-nocheck 
 import { deepMerge } from '@/utils/objects'
 import { getLocale } from '@/locale'
 

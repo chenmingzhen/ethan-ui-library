@@ -1,3 +1,4 @@
+// @ts-nocheck 
 import { isArray, isDate, isMap, isSet, isRegexp, isMergeable, isError } from './is'
 
 const cloneArray = source => Array.from(source, x => deepClone(x))

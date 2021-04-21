@@ -1,3 +1,4 @@
+// @ts-nocheck 
 let uid = Date.now()
 
 export function getUid() {

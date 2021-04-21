@@ -1,3 +1,4 @@
+// @ts-nocheck 
 export class FormError extends Error {
   constructor(message, name, value) {
     super()

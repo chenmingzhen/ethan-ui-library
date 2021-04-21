@@ -1,3 +1,4 @@
+// @ts-nocheck 
 import { capitalize } from './strings'
 import { entries } from './objects'
 import cssInject from './vars-inject'

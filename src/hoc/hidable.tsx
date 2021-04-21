@@ -1,3 +1,4 @@
+// @ts-nocheck 
 import React from 'react'
 import classnames from 'classnames'
 import createReactContext from 'create-react-context'

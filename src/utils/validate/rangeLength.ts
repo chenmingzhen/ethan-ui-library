@@ -1,3 +1,4 @@
+// @ts-nocheck 
 import { isEmpty } from '../is'
 
 export default options => (value, formData, callback) => {

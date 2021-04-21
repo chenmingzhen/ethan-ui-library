@@ -1,3 +1,4 @@
+// @ts-nocheck 
 import React from 'react'
 
 // https://developer.mozilla.org/zh-CN/docs/Web/API/Element/matches

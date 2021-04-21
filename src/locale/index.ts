@@ -1,3 +1,4 @@
+// @ts-nocheck 
 import { deepMerge, deepGet } from '@/utils/objects'
 import config from '../config'
 import cn from './zh-CN'

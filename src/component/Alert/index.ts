@@ -1,3 +1,4 @@
+// @ts-nocheck 
 import Alert from './alert'
 import Scroll from './scrollAlert'
 

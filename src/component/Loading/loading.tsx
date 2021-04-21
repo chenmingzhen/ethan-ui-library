@@ -1,3 +1,4 @@
+// @ts-nocheck 
 import React, { useMemo, memo, useState, useImperativeHandle, forwardRef, useCallback } from 'react'
 import { loadingClass } from '@/styles'
 import { isObject } from '@/utils/is'

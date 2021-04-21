@@ -1,3 +1,4 @@
+// @ts-nocheck 
 import Tag from './Tag'
 import Input from './Input'
 

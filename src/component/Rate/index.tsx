@@ -1,3 +1,4 @@
+// @ts-nocheck 
 import React from 'react'
 import Component from './Rate'
 import inputable from '../Form/inputable'

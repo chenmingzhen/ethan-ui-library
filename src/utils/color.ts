@@ -1,3 +1,4 @@
+// @ts-nocheck 
 import { isOne, isPercent } from './is'
 
 const CSS_INTEGER = '[-\\+]?\\d+%?'

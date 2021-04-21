@@ -1,3 +1,4 @@
+// @ts-nocheck 
 import React, { memo, useCallback, useMemo } from 'react'
 import PropTypes from 'prop-types'
 import { uploadClass } from '@/styles'

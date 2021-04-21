@@ -1,3 +1,4 @@
+// @ts-nocheck 
 import React from 'react'
 import { ringClass, planeClass, pulseClass } from '@/styles/spin'
 import Spin from './Spin'

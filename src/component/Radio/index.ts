@@ -1,3 +1,4 @@
+// @ts-nocheck 
 import { compose } from '@/utils/func'
 import Datum from '@/utils/Datum'
 import inputable from '../Form/inputable'

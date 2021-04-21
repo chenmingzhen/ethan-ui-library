@@ -1,3 +1,4 @@
+// @ts-nocheck 
 import React, { isValidElement, cloneElement } from 'react'
 import PropTypes from 'prop-types'
 import { getProps, defaultProps } from '@/utils/proptypes'

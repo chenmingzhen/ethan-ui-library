@@ -1,3 +1,4 @@
+// @ts-nocheck 
 import React, { memo, useMemo, useCallback } from 'react'
 import PropTypes from 'prop-types'
 import { stepsClass } from '@/styles'

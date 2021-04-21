@@ -1,3 +1,4 @@
+// @ts-nocheck 
 import shallowEqual from '@/utils/shallowEqual'
 import { CHANGE_TOPIC, WITH_OUT_DISPATCH } from './types'
 

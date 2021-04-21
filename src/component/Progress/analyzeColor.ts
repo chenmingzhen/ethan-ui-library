@@ -1,3 +1,4 @@
+// @ts-nocheck 
 const color = () => {
   if (color.from) {
     return [

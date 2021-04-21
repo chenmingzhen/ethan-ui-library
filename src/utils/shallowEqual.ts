@@ -1,3 +1,4 @@
+// @ts-nocheck 
 import deepEqual from 'deep-eql' // 深度比较值
 
 const { hasOwnProperty } = Object.prototype

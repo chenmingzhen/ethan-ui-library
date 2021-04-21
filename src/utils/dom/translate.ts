@@ -1,3 +1,4 @@
+// @ts-nocheck 
 import { has3d, getTransformName } from './detect'
 
 let use3d

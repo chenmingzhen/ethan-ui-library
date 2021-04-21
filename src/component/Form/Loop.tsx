@@ -1,3 +1,4 @@
+// @ts-nocheck 
 import React from 'react'
 import PropTypes from 'prop-types'
 import createReactContext from 'create-react-context'

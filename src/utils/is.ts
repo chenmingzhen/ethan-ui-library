@@ -1,3 +1,4 @@
+// @ts-nocheck 
 import { curry } from '@/utils/func'
 import { isValidElement } from 'react'
 

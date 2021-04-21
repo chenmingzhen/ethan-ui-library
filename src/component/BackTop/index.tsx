@@ -1,3 +1,4 @@
+// @ts-nocheck 
 import React, { useRef, useState, memo } from 'react'
 import PropTypes from 'prop-types'
 import { backTopClass } from '@/styles'

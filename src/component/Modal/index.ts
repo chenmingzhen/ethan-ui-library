@@ -1,3 +1,4 @@
+// @ts-nocheck 
 import Modal from './Modal'
 import { createModalMethod } from './events'
 import Card from '../Card'

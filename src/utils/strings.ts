@@ -1,3 +1,4 @@
+// @ts-nocheck 
 export function capitalize(str) {
   if (typeof str !== 'string') {
     console.error(new Error('str should be a string'))

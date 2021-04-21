@@ -1,3 +1,4 @@
+// @ts-nocheck 
 export default fn => (value, formData, callback) => {
   if (value == null || value.length === 0) {
     callback(true)

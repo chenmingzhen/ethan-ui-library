@@ -1,3 +1,4 @@
+// @ts-nocheck 
 import inputBorder from '@/hoc/inputBorder'
 import { selectClass } from '@/styles'
 import { compose } from '@/utils/func'

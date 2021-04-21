@@ -1,3 +1,4 @@
+// @ts-nocheck 
 import inputBorder from '@/hoc/inputBorder'
 import { compose } from '@/utils/func'
 import { datepickerClass } from '@/styles'

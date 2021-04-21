@@ -1,3 +1,4 @@
+// @ts-nocheck 
 import React, { memo, useCallback, useMemo, useRef } from 'react'
 import PropTypes from 'prop-types'
 import { useUpdate } from 'ethan-use-hooks'

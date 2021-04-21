@@ -1,3 +1,4 @@
+// @ts-nocheck 
 import React, { memo, Children } from 'react'
 import { timeLineClass } from '@/styles'
 import kindOf from '@/utils/kindOf'

@@ -1,3 +1,4 @@
+// @ts-nocheck 
 import deepEqual from 'deep-eql'
 import { unflatten, insertValue, spliceValue, getSthByName } from '@/utils/flat'
 import { fastClone, deepClone } from '@/utils/clone'

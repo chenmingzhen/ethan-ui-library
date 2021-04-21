@@ -1,3 +1,4 @@
+// @ts-nocheck 
 import React, { useCallback, useRef, memo, useImperativeHandle } from 'react'
 
 const inputStyle = { display: 'none' }

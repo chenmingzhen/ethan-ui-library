@@ -1,3 +1,4 @@
+// @ts-nocheck 
 import { compose } from '@/utils/func'
 import inputAble from '@/component/Form/inputable'
 import inputBorder from '@/hoc/inputBorder'

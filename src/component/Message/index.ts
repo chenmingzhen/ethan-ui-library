@@ -1,3 +1,4 @@
+// @ts-nocheck 
 import { destroy, getComponent, closeWithAnimation } from './messager'
 
 // 构造函数

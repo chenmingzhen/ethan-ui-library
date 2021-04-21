@@ -1,3 +1,4 @@
+// @ts-nocheck 
 export default function(el) {
   return typeof HTMLElement === 'function'
     ? el instanceof HTMLElement

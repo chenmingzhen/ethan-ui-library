@@ -1,3 +1,4 @@
+// @ts-nocheck 
 import { isMergeable, isObject } from '@/utils/is'
 import { insertPoint } from './flat'
 

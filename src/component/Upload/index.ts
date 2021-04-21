@@ -1,3 +1,4 @@
+// @ts-nocheck 
 import inputable from '../Form/inputable'
 import Upload from './Upload'
 import Image from './Image'

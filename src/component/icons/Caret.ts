@@ -1,3 +1,4 @@
+// @ts-nocheck 
 import config from '@/config'
 import cssAccessor from '@/utils/css-accessors'
 import icons from './index'

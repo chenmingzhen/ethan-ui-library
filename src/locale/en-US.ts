@@ -1,3 +1,4 @@
+// @ts-nocheck 
 export default {
   weekdayValues: {
     narrow: ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'],

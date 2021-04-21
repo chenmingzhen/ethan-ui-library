@@ -1,3 +1,4 @@
+// @ts-nocheck 
 // Array.from({length:2},(v,k)=>k+1)
 // [1,2]
 export function range(end, start = 0) {

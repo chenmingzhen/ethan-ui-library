@@ -1,3 +1,4 @@
+// @ts-nocheck 
 import React, { useState, useEffect, useCallback, useRef, memo } from 'react'
 import PropTypes from 'prop-types'
 import { sliderClass } from '@/styles'

@@ -1,3 +1,4 @@
+// @ts-nocheck 
 import Steps from './Steps'
 import StepItem from './StepItem'
 

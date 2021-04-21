@@ -1,3 +1,4 @@
+// @ts-nocheck 
 import classnames from 'classnames'
 import { tooltipClass } from '@/styles'
 import ready from '@/utils/dom/ready'

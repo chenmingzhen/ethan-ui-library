@@ -1,3 +1,4 @@
+// @ts-nocheck 
 import { exposeClass } from '@/styles/expose'
 import { darken, fade } from './color'
 import { set as configSet } from '../config'

@@ -1,3 +1,4 @@
+// @ts-nocheck 
 // function的参数个数可以用length来获取  const f=(a,b,c)=>{}  f.length
 // 此方法将多余的参数进行再封装 递归执行
 // 需要筹齐所有参数才会执行的函数

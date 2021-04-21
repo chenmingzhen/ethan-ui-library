@@ -1,3 +1,4 @@
+// @ts-nocheck 
 export default function(value) {
   if (typeof value === 'object') return true
   if (

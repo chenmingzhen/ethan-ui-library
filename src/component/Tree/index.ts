@@ -1,3 +1,4 @@
+// @ts-nocheck 
 import Tree from './Tree'
 import inputable from '../Form/inputable'
 

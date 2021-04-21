@@ -1,3 +1,4 @@
+// @ts-nocheck 
 import { toPrecision } from '@/utils/numbers'
 
 export function valueToPer(value, scale) {

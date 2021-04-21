@@ -1,3 +1,4 @@
+// @ts-nocheck 
 import React from 'react'
 import { render } from 'react-dom'
 import Loading from './loading'

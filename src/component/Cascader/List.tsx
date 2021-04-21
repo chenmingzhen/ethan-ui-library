@@ -1,3 +1,4 @@
+// @ts-nocheck 
 import React, { useCallback, memo } from 'react'
 import PropTypes from 'prop-types'
 import { getLocale } from '@/locale'

@@ -1,3 +1,4 @@
+// @ts-nocheck 
 export default function(callback) {
   if (!callback) return
   if (document.readyState !== 'loading') callback()

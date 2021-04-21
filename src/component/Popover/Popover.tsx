@@ -1,3 +1,4 @@
+// @ts-nocheck 
 import React from 'react'
 import Container from '../Tooltip/Container'
 import * as events from './event'

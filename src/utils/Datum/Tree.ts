@@ -1,3 +1,4 @@
+// @ts-nocheck 
 export const CheckedMode = {
   // 只返回全选数据，包含父节点和子节点
   Full: 0,

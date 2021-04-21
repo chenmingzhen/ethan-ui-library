@@ -1,3 +1,4 @@
+// @ts-nocheck 
 import { isObject } from '@/utils/is'
 import { curry } from '@/utils/func'
 

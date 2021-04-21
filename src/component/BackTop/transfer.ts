@@ -1,3 +1,4 @@
+// @ts-nocheck 
 import { memo, useRef } from 'react'
 import Render from 'react-dom'
 import PropTypes from 'prop-types'

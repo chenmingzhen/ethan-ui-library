@@ -1,3 +1,4 @@
+// @ts-nocheck 
 import Confirm from './Confirm'
 import Popover from './Popover'
 

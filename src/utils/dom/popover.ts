@@ -1,3 +1,4 @@
+// @ts-nocheck 
 import { docScroll, docSize } from '@/utils/dom/document'
 
 const posKeys = ['left', 'top', 'bottom', 'right']

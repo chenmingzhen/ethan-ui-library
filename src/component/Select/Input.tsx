@@ -1,3 +1,4 @@
+// @ts-nocheck 
 import React, { Component, isValidElement, cloneElement } from 'react'
 import PropTypes from 'prop-types'
 import { selectClass } from '@/styles'

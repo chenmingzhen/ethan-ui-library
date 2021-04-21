@@ -1,3 +1,4 @@
+// @ts-nocheck 
 const PIXEL_STEP = 10
 const LINE_HEIGHT = 40
 const PAGE_HEIGHT = 800

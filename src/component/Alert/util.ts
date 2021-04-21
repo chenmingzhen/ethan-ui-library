@@ -1,3 +1,4 @@
+// @ts-nocheck 
 import { Children } from 'react'
 import kindOf from '@/utils/kindOf'
 import Alert from './alert'

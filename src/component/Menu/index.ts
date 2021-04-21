@@ -1,3 +1,4 @@
+// @ts-nocheck 
 import Root from './Root'
 
 Root.displayName = 'EthanMenu'

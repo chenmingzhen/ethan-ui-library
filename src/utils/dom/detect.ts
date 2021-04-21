@@ -1,3 +1,4 @@
+// @ts-nocheck 
 /* eslint-disable no-empty */
 // check support passive
 let supportPassive = false

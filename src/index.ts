@@ -1,3 +1,4 @@
+// @ts-nocheck 
 // Created by scripts/src-index.js.
 import './styles/normalize.less'
 

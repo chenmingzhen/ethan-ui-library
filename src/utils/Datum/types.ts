@@ -1,3 +1,4 @@
+// @ts-nocheck 
 export const changeSubscribe = name => `__CHANGE_SUBSCRIBE_${name}__`
 
 export const errorSubscribe = name => `__ERROR_SUBSCRIBE_${name}__`
