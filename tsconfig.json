@@ -1,14 +1,8 @@
 {
   "compilerOptions": {
-    // 由于使用了?.最新语法 但是不应该是ES2020嘛
     // https://github.com/TypeStrong/ts-loader/issues/1061
-    "target": "ES2019",
-    // "lib": ["dom", "ES2015","ES2019"],
-    "lib": [
-      "dom",
-      "dom.iterable",
-      "esnext"
-    ],
+    "target": "ES5",
+    "lib": ["dom", "dom.iterable", "esnext"],
     "paths": {
       "@/*": ["./src/*"],
       "doc/*": ["./site/*"],
@@ -29,7 +23,6 @@
     "module": "CommonJS",
     "moduleResolution": "node",
     "resolveJsonModule": true,
-    "noEmit": true,
     "jsx": "react",
     "strict": false,
     "noImplicitAny": false,
@@ -37,7 +30,8 @@
     "baseUrl": "./",
     "strictNullChecks": false,
     "alwaysStrict": false,
-    "downlevelIteration": true
+    "downlevelIteration": true,
+    "declaration": true
   },
   "include": ["src"]
 }
