@@ -31,8 +31,10 @@
     "strictNullChecks": false,
     "alwaysStrict": false,
     "downlevelIteration": true,
-    "declaration": true
+    // 暂时不打包声明 待checkbox等HOC重构完成后再使用声明
+    // https://stackoverflow.com/questions/31685129/typescript-blocks-node-module-factory-pattern-error-ts4060
+    // "declaration": true
   },
   "include": ["src"],
-  "exclude": ["node_modules", "ssh-client", "webpack", "scripts"]
+  "exclude": ["node_modules", "ssh-client", "webpack", "scripts", "docs-pages","publish"]
 }

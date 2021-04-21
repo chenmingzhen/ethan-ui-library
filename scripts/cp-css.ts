@@ -6,3 +6,5 @@ const to = 'publish/lib'
 fs.mkdirpSync('publish/lib')
 
 fs.copySync(origin, to)
+
+export {}

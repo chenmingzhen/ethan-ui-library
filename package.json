@@ -27,7 +27,7 @@
     "build-es6": "ts-node scripts/cp-src.ts",
     "build-less": "ts-node scripts/cp-less.ts",
     "build-es5": "tsc && ts-node scripts/cp-css.ts",
-    "build-css": "node scripts/build-css.ts",
+    "build-css": "ts-node scripts/build-css.ts",
     "build": "npm-run-all build-*",
     "webpack-clean": "rimraf webpack/dll",
     "docs-build-clean": "node scripts/docs-pages-clean.js",
