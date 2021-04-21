@@ -3,13 +3,14 @@
     "airbnb",
     "prettier"
   ],
+  // @typescript-eslint 考虑添加
   "plugins": [
     "prettier"
   ],
   "parser": "@typescript-eslint/parser",
-  "parserOptions": {
-    "project": "./tsconfig.json"
-  },
+  // "parserOptions": {
+  //   "project": "./tsconfig.json"
+  // },
   "settings": {
     "import/parsers": {
       "@typescript-eslint/parser": [

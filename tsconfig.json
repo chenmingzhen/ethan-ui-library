@@ -33,5 +33,6 @@
     "downlevelIteration": true,
     "declaration": true
   },
-  "include": ["src"]
+  "include": ["src"],
+  "exclude": ["node_modules", "ssh-client", "webpack", "scripts"]
 }
