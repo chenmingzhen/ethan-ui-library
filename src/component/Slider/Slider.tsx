@@ -2,7 +2,7 @@
 import React, { useState, useEffect, useCallback, useRef, memo } from 'react'
 import PropTypes from 'prop-types'
 import { sliderClass } from '@/styles'
-import { usePrevious } from 'ethan-use-hooks'
+import { usePrevious } from 'react-use'
 import { perToValue, valueToPer } from './utils'
 import Indicator from './Indicator'
 

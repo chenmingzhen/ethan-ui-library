@@ -2,7 +2,7 @@
 import React, { useEffect, useCallback, useMemo, memo } from 'react'
 import PropTypes from 'prop-types'
 import classnames from 'classnames'
-import { useUpdate } from 'ethan-use-hooks'
+import { useUpdate } from 'react-use'
 import { getProps } from '@/utils/proptypes'
 import { getKey } from '@/utils/uid'
 import { CHANGE_TOPIC } from '@/utils/Datum/types'

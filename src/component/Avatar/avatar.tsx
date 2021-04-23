@@ -1,7 +1,7 @@
 // @ts-nocheck 
 import React, { memo, useState, useRef } from 'react'
 import PropTypes from 'prop-types'
-import { useMount, useUpdateEffect, usePrevious } from 'ethan-use-hooks'
+import { useMount, useUpdateEffect, usePrevious } from 'react-use'
 import { FontAwesome } from '@/component/Icon'
 import { avatarClass } from '@/styles'
 import fitText from '@/component/Avatar/util'

@@ -1,6 +1,6 @@
 import React, { useState, lazy, Suspense, useEffect } from 'react'
 import { Router, Switch, Route } from 'react-router-dom'
-import { useUpdate } from 'ethan-use-hooks'
+import { useUpdate } from 'react-use'
 import history from 'docs/history'
 import Header from 'docs/Header'
 import Loading from './Components/Loading'

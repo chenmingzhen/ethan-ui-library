@@ -10,7 +10,7 @@
       "ethan/*": ["./src/*"],
       "ethan": ["./src/index.ts"]
     },
-    "rootDir": "src",
+    "rootDirs": ["src", "site"],
     "outDir": "publish/css",
     "experimentalDecorators": true,
     "allowJs": true,
@@ -36,6 +36,6 @@
     // https://stackoverflow.com/questions/31685129/typescript-blocks-node-module-factory-pattern-error-ts4060
     // "declaration": true
   },
-  "include": ["src"],
+  "include": ["src", "site"],
   "exclude": ["node_modules", "ssh-client", "webpack", "scripts", "docs-pages", "publish"]
 }

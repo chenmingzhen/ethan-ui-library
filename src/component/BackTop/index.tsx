@@ -4,7 +4,7 @@ import PropTypes from 'prop-types'
 import { backTopClass } from '@/styles'
 import { FontAwesome } from '@/component/Icon'
 import Transition from '@/component/Transition'
-import { useUnmount } from 'ethan-use-hooks'
+import { useUnmount } from 'react-use'
 import Transfer from './transfer'
 
 const BackTop = props => {

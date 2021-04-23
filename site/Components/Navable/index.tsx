@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react'
 import { Sticky } from 'ethan/index'
-import { useUpdate } from 'ethan-use-hooks'
+import { useUpdate } from 'react-use'
 import { navClass } from 'doc/styles'
 import history from '../history'
 

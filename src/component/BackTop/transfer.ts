@@ -2,7 +2,7 @@
 import { memo, useRef } from 'react'
 import Render from 'react-dom'
 import PropTypes from 'prop-types'
-import { useUpdateEffect, useUnmount, useMount } from 'ethan-use-hooks'
+import { useUpdateEffect, useUnmount, useMount } from 'react-use'
 
 const Transfer = props => {
   const { transfer, docOnClick, onResize, onScroll, children } = props

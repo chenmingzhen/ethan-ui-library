@@ -1,7 +1,7 @@
 // @ts-nocheck 
 import React, { memo, useState } from 'react'
 import { PropTypes } from 'prop-types'
-import { useMount, useUnmount, useUpdateEffect } from 'ethan-use-hooks'
+import { useMount, useUnmount, useUpdateEffect } from 'react-use'
 import { CSSTransition } from 'react-transition-group'
 
 const Transition = props => {

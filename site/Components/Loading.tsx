@@ -1,6 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { useMount, useUnmount } from 'ethan-use-hooks'
+import { useMount, useUnmount } from 'react-use'
 import { Spin, Loading as ld } from 'ethan/index'
 
 function Loading({ style }) {
