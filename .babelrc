@@ -12,19 +12,11 @@
         ],
         "@babel/preset-react"
       ],
-      "plugins": [
-        "@babel/plugin-proposal-class-properties"
-      ]
+      "plugins": ["@babel/plugin-proposal-class-properties"]
     },
     "production": {
-      "presets": [
-        "@babel/preset-env",
-        "@babel/preset-react"
-      ],
-      "plugins": [
-        "@babel/plugin-proposal-class-properties",
-        "@babel/plugin-transform-runtime"
-      ]
+      "presets": ["@babel/preset-env", "@babel/preset-react"],
+      "plugins": ["@babel/plugin-proposal-class-properties", "@babel/plugin-transform-runtime"]
     },
     "publish": {
       "plugins": [
@@ -35,17 +27,15 @@
             "useBuiltIns": true
           }
         ],
-        [ "babel-plugin-webpack-alias", { "config": "./babel.alias.js" } ]
+        ["babel-plugin-webpack-alias", { "config": "./babel.alias.js" }]
+       
       ],
       "presets": [
         [
           "@babel/preset-env",
           {
             "targets": {
-              "browsers": [
-                "last 2 versions",
-                "ie >= 9"
-              ]
+              "browsers": ["last 2 versions", "ie >= 9"]
             },
             "loose": true
           }
@@ -54,10 +44,7 @@
       ]
     },
     "test": {
-      "presets": [
-        "react-app"
-      ]
+      "presets": ["react-app"]
     }
   }
 }
-
