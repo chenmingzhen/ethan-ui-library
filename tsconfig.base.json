@@ -1,0 +1,39 @@
+{
+    //  公共的配置选项
+    "compilerOptions": {
+      // https://github.com/TypeStrong/ts-loader/issues/1061
+      "target": "ES5",
+      "lib": ["dom", "dom.iterable", "esnext"],
+      "paths": {
+        "@/*": ["./src/*"],
+        "doc/*": ["./site/*"],
+        "docs/*": ["./site/Components/*"],
+        "ethan/*": ["./src/*"],
+        "ethan": ["./src/index.ts"]
+      },
+      "experimentalDecorators": true,
+      "allowJs": true,
+      "checkJs": true,
+      "skipLibCheck": true,
+      "importHelpers": true,
+      "allowSyntheticDefaultImports": true,
+      "forceConsistentCasingInFileNames": true,
+      "noFallthroughCasesInSwitch": true,
+      "moduleResolution": "node",
+      "module": "commonjs",
+      "esModuleInterop": true,
+      "resolveJsonModule": true,
+      "jsx": "react",
+      "strict": false,
+      "noImplicitAny": false,
+      "suppressImplicitAnyIndexErrors": true,
+      "baseUrl": "./",
+      "strictNullChecks": false,
+      "alwaysStrict": false,
+      "downlevelIteration": true
+      // 暂时不打包声明 待checkbox等HOC重构完成后再使用声明
+      // https://stackoverflow.com/questions/31685129/typescript-blocks-node-module-factory-pattern-error-ts4060
+      // "declaration": true
+    },
+  }
+  

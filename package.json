@@ -1,6 +1,6 @@
 {
   "name": "ethan-ui",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "main": "./lib/index.js",
   "peerDependencies": {
     "react": ">=16.0.0",
@@ -27,7 +27,7 @@
     "build-dist": "cross-env NODE_ENV=production webpack --config webpack/config.dist.js",
     "build-es6": "ts-node scripts/cp-src.ts",
     "build-less": "ts-node scripts/cp-less.ts",
-    "build-es5": "tsc && tsc-alias -p tsconfig.json && ts-node scripts/cp-css.ts",
+    "build-es5": "tsc --p tsconfig.dist.json && tsc-alias -p tsconfig.dist.json && ts-node scripts/cp-css.ts",
     "build-css": "ts-node scripts/build-css.ts",
     "build": "npm-run-all build-*",
     "webpack-clean": "rimraf webpack/dll",

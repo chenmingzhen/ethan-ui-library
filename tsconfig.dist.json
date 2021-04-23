@@ -1,0 +1,10 @@
+{
+  // tsc 编译使用
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": {
+    "rootDir": "src",
+    "outDir": "publish/css"
+  },
+  "include": ["src"],
+  "exclude": ["node_modules", "ssh-client", "webpack", "scripts", "docs-pages", "publish", "site"]
+}
