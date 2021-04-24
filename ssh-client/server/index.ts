@@ -1,6 +1,6 @@
-const fs = require('fs')
-const path = require('path')
-const host = require('../private/host')
+import fs = require('fs')
+import path = require('path')
+import host = require('../private/host')
 
 const server = {
   host,
@@ -9,4 +9,4 @@ const server = {
   privateKey: fs.readFileSync(path.join(__dirname, '../private/id_rsa')),
 }
 
-module.exports = server
+export = server

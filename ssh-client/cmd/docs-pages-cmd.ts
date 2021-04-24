@@ -1,4 +1,4 @@
-const pkg = require('../../package.json')
+import pkg = require('../../package.json')
 
 const version = `${pkg.version.substr(0, pkg.version.lastIndexOf('.') + 1)}x`
 
@@ -14,4 +14,4 @@ unzip ${version}.zip -d ${version} \n
 exit\n
 `
 
-module.exports = cmd
+export = cmd

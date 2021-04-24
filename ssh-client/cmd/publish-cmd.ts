@@ -12,4 +12,4 @@ rm -rf publish.zip \n
 exit\n
 `
 
-module.exports = cmd
+export = cmd

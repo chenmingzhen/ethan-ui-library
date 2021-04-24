@@ -2,6 +2,7 @@
   "name": "ethan-ui",
   "version": "0.3.1",
   "main": "./lib/index.js",
+  "license": "MIT",
   "peerDependencies": {
     "react": ">=16.0.0",
     "react-dom": ">=16.0.0"
@@ -37,8 +38,8 @@
     "docs-build-image": "ts-node scripts/docs-pages-image.ts",
     "docs-build-html": "ts-node scripts/build-html.ts",
     "docs-build": "npm-run-all docs-build-*",
-    "upload-docs-pages": "node ssh-client/upload-docs-pages.js",
-    "upload-publish": "node ssh-client/upload-publish.js",
+    "upload-docs-pages": "ts-node ssh-client/upload-docs-pages.ts",
+    "upload-publish": "ts-node ssh-client/upload-publish.ts",
     "upload": "npm-run-all upload-*"
   },
   "eslintConfig": {

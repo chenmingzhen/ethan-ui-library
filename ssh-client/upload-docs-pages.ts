@@ -1,9 +1,8 @@
-const path = require('path')
-const pkg = require('../package.json')
-const Client = require('./client')
-
-const server = require('./server')
-const cmd = require('./cmd/docs-pages-cmd')
+import path = require('path')
+import pkg = require('../package.json')
+import Client = require('./client')
+import server = require('./server')
+import cmd = require('./cmd/docs-pages-cmd')
 
 const version = `${pkg.version.substr(0, pkg.version.lastIndexOf('.') + 1)}x`
 

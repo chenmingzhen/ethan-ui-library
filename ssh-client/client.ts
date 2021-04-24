@@ -1,7 +1,7 @@
 const path = require('path')
 const archiver = require('archiver')
 const fs = require('fs')
-const ssh2 = require('ssh2')
+import ssh2 from 'ssh2'
 const chalk = require('chalk')
 
 const ERROR = 'red'
@@ -9,7 +9,7 @@ const SUCCESS = 'green'
 const INFO = 'blue'
 
 class Client {
-  ssh
+  ssh: ssh2
 
   constructor() {
     this.ssh = ssh2()
@@ -21,7 +21,7 @@ class Client {
         .on('ready', () => {
           Client.log('connect ready')
 
-          yes()
+          yes(null)
         })
         .on('close', () => {
           Client.log('connect close')
@@ -47,7 +47,7 @@ class Client {
               const fileName = filePath[filePath.length - 1]
 
               fs.unlinkSync(path.resolve(__dirname, fileName))
-              yes()
+              yes(null)
             }
           })
         }
@@ -64,7 +64,7 @@ class Client {
         } else {
           stream
             .on('close', () => {
-              yes()
+              yes(null)
             })
             .on('data', data => {
               Client.log(`OUTPUT: ${data}`, INFO)
@@ -110,4 +110,4 @@ class Client {
   }
 }
 
-module.exports = Client
+export = Client

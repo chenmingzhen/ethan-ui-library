@@ -1,8 +1,8 @@
-const path = require('path')
-const Client = require('./client')
+import path = require('path')
+import Client = require('./client')
 
-const server = require('./server')
-const cmd = require('./cmd/publish-cmd')
+import server = require('./server')
+import cmd = require('./cmd/publish-cmd')
 
 const localPath = path.resolve(__dirname, 'publish.zip')
 const remotePath = '/root/nginx/upload/publish.zip'
