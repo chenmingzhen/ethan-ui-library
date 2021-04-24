@@ -1,6 +1,6 @@
-const fs = require('fs')
-const rimraf = require('rimraf')
-const pkg = require('../package.json')
+import fs = require('fs')
+import rimraf = require('rimraf')
+import pkg = require('../package.json')
 
 const version = `${pkg.version.substr(0, pkg.version.lastIndexOf('.') + 1)}x`
 

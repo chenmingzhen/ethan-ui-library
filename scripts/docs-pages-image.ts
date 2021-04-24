@@ -1,6 +1,6 @@
 // TODO 考虑到webpack url-loader中已经将图片打包进来 只有icon无打包进docs-pages/x.x.x/ 部分图片复制操作多余
-const fs = require('fs-extra')
-const pkg = require('../package.json')
+import fs = require('fs-extra')
+import pkg = require('../package.json')
 
 const version = `${pkg.version.substr(0, pkg.version.lastIndexOf('.') + 1)}x`
 

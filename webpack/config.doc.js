@@ -13,12 +13,12 @@ const cssConfig = config.themes.map(name =>
     name,
     entry: [
       './src/styles/normalize.less',
-      './src/styles/expose.js',
-      './src/styles/index.js',
-      './src/styles/spin.js',
+      './src/styles/expose.ts',
+      './src/styles/index.ts',
+      './src/styles/spin.ts',
       // site style
-      './site/styles/index.js',
-      './site/less-entry.js',
+      './site/styles/index.ts',
+      './site/less-entry.ts',
     ],
     output: { path: path.join(__dirname, `../docs-pages/${dir}x`) },
     clean: true,

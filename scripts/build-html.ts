@@ -1,9 +1,9 @@
-const fs = require('fs')
-const fsExtra = require('fs-extra')
-const path = require('path')
-const ejs = require('./ejs')
-const pkg = require('../package.json')
-const config = require('../config')
+import fs = require('fs')
+import fsExtra = require('fs-extra')
+import path = require('path')
+import ejs = require('./ejs')
+import pkg = require('../package.json')
+import config = require('../config')
 
 const version = `${pkg.version.substr(0, pkg.version.lastIndexOf('.') + 1)}x`
 const cdn = 'https://unpkg.com'
