@@ -30,6 +30,7 @@
     "build-less": "ts-node scripts/cp-less.ts",
     "build-es5": "tsc --p tsconfig.dist.json && tsc-alias -p tsconfig.dist.json && ts-node scripts/cp-css.ts",
     "build-css": "ts-node scripts/build-css.ts",
+    "build-ts": "ts-node scripts/build-ts.ts",
     "build": "npm-run-all build-*",
     "webpack-clean": "rimraf webpack/dll",
     "docs-build-clean": "ts-node scripts/docs-pages-clean.ts",
