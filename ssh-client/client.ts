@@ -1,7 +1,8 @@
-const path = require('path')
-const archiver = require('archiver')
-const fs = require('fs')
-import ssh2 from 'ssh2'
+import path = require('path')
+import archiver = require('archiver')
+import fs = require('fs')
+import ssh2 = require('ssh2')
+
 const chalk = require('chalk')
 
 const ERROR = 'red'
