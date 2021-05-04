@@ -11,6 +11,8 @@
         "ethan/*": ["./src/*"],
         "ethan": ["./src/index.ts"]
       },
+      // https://webpack.docschina.org/guides/typescript/#source-maps 
+      "sourceMap": true,
       "experimentalDecorators": true,
       "allowJs": true,
       "checkJs": true,
