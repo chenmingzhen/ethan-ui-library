@@ -28,6 +28,8 @@ const useDismiss = ({ onClose, el, duration, outAnimation }: useDismissParams) =
     if (outAnimation) {
       if (typeof onClose === 'function') {
         onClose(duration, el.current.offsetHeight)
+
+        return
       }
     }
 
