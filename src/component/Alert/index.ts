@@ -1,11 +1,15 @@
-// @ts-nocheck 
-import Alert from './alert'
+import { MemoExoticComponent, ForwardRefExoticComponent, RefAttributes } from 'react'
+import Alert, { AlertInstance, AlertProps } from './alert'
 import Scroll from './scrollAlert'
 
-Scroll.displayName = 'EthanAlertScroll'
+interface AlertComponent
+  extends MemoExoticComponent<ForwardRefExoticComponent<AlertProps & RefAttributes<AlertInstance>>> {
+  Scroll: typeof Scroll
+}
 
-Alert.Scroll = Scroll
+Scroll.displayName = 'EthanAlertScroll'
+;(Alert as AlertComponent).Scroll = Scroll
 
 Alert.displayName = 'EthanAlert'
 
-export default Alert
+export default Alert as AlertComponent

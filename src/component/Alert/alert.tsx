@@ -1,158 +1,92 @@
-// @ts-nocheck 
-import React from 'react'
-import PropTypes from 'prop-types'
-import { PureComponent } from '@/utils/component'
+import React, { useRef, useCallback, useEffect, useImperativeHandle, memo } from 'react'
 import { alertClass } from '@/styles'
-import { capitalize } from '@/utils/strings'
-import { getProps, defaultProps } from '@/utils/proptypes'
 import Spin from '@/component/Spin'
-import icons from '../icons'
+import Type from '../../../type/type'
+import useDissmiss from './hooks/useDismiss'
+import useRender from './hooks/useRender'
 
-class Alert extends PureComponent {
-  constructor(props) {
-    super(props)
+export interface AlertProps {
+  className?: string
 
-    /* 0:normal 1:running closed 2:running closed over */
-    this.state = {
-      dismiss: 0,
-    }
+  style?: React.CSSProperties
 
-    this.bindRef = this.bindRef.bind(this)
-    this.dismiss = this.dismiss.bind(this)
-    this.handleClose = this.handleClose.bind(this)
-    this.renderClose = this.renderClose.bind(this)
-    this.offsetHeight = this.clientHeight.bind(this)
-  }
+  type?: Type
 
-  componentDidUpdate(prevProps) {
-    if (this.props.dismiss !== prevProps.dismiss && this.props.dismiss) {
-      this.handleClose()
-    }
-  }
+  dismiss?: boolean
 
-  clientHeight() {
-    return this.element.clientHeight
-  }
+  icon?: boolean | Element
 
-  bindRef(el) {
-    this.element = el
-  }
+  iconSize?: number
 
-  dismiss() {
-    const { onClose } = this.props
-    this.setState({ dismiss: 2 })
-    if (typeof onClose === 'function') {
-      onClose()
-    }
-  }
+  onClose?(t?: number, h?: number): any
 
-  handleClose() {
-    if (this.state.dismiss > 0) return
-    const { duration, outAnimation, onClose } = this.props
+  outAnimation?: boolean
 
-    // outer animation
-    // 参数传回去 本组件不处理动画 由上容器设置动画效果
-    if (outAnimation) {
-      if (typeof onClose === 'function') {
-        onClose(duration, this.element.offsetHeight)
-      }
-      return
-    }
+  duration?: number
 
-    if (duration > 0) {
-      this.setState({ dismiss: 1 }, () => {
-        setTimeout(this.dismiss, duration)
-      })
-    } else {
-      this.dismiss()
-    }
-  }
+  closeItem?: React.ReactNode
 
-  renderIcon() {
-    let { icon } = this.props
-    const { type, iconSize } = this.props
-    if (typeof icon === 'boolean' && icon) {
-      icon = icons[capitalize(type)]
-    }
-
-    if (!icon) return null
-    const style = {
-      width: iconSize,
-      height: iconSize,
-      marginRight: iconSize / 2,
-    }
-
-    return (
-      <div className={alertClass('icon')} style={style}>
-        {icon}
-      </div>
-    )
-  }
-
-  /* React.cloneElement
-      https://www.jianshu.com/p/9a42566e4b67
-    */
-  renderClose() {
-    const { closeItem } = this.props
-    if (React.isValidElement(closeItem)) return React.cloneElement(closeItem, { onClick: this.handleClose })
-    return (
-      <a className={alertClass('close')} onClick={this.handleClose}>
-        {closeItem || icons.Close}
-      </a>
-    )
-  }
-
-  render() {
-    const { dismiss } = this.state
-    /* destroy by this */
-    /* because we have not effets like setTimeout.we can destroy by returning null */
-    if (dismiss === 2) return null
-
-    const { children, className, type, onClose, outAnimation } = this.props
-    const icon = this.renderIcon()
-
-    const { style } = this.props
-    let wrapClassName = alertClass(
-      '_',
-      type,
-      /* shrink animation control by this (dismissed) */
-      !outAnimation && dismiss === 1 && 'dismissed',
-      onClose && 'with-close',
-      icon && 'with-icon'
-    )
-
-    // 由样式加载顺序决定 class的覆盖
-    if (className) wrapClassName = `${wrapClassName} ${className}`
-
-    return (
-      <div ref={this.bindRef} className={wrapClassName} style={style}>
-        {onClose && this.renderClose()}
-        {type !== 'loading' ? (
-          icon
-        ) : (
-          <Spin name="ring" size={18} className={alertClass('loading-icon')} color="#17a2b8" />
-        )}
-        <div className={alertClass('content')}>{children}</div>
-      </div>
-    )
-  }
+  children?: React.ReactNode
 }
 
-Alert.propTypes = {
-  ...getProps(PropTypes, 'type'),
-  children: PropTypes.any,
-  dismiss: PropTypes.bool,
-  duration: PropTypes.number,
-  icon: PropTypes.oneOfType([PropTypes.bool, PropTypes.element]),
-  iconSize: PropTypes.number,
-  onClose: PropTypes.oneOfType([PropTypes.func, PropTypes.bool]),
+export interface AlertInstance {
+  clientHeight(): number
 }
 
-Alert.defaultProps = {
-  ...defaultProps,
-  duration: 200,
-  iconSize: 16,
-  type: 'warning',
-}
+export default memo(
+  React.forwardRef<AlertInstance, AlertProps>(
+    (
+      {
+        className,
+        style,
+        dismiss: outerDismiss,
+        icon,
+        iconSize = 16,
+        onClose,
+        outAnimation,
+        duration = 200,
+        type = 'warning',
+        closeItem,
+        children,
+      },
+      alertRef
+    ) => {
+      const ref = useRef<HTMLDivElement>()
+      const { dismiss, handleClose } = useDissmiss({ onClose, outAnimation, duration, el: ref })
+      const { renderClose, renderIcon } = useRender({ icon, iconSize, handleClose, type, closeItem })
 
-export default Alert
+      const clientHeight = useCallback(() => ref.current?.clientHeight, [])
+
+      useEffect(() => {
+        outerDismiss && handleClose()
+      }, [outerDismiss])
+
+      useImperativeHandle(alertRef, () => ({ clientHeight }))
+
+      if (dismiss === 2) return null
+
+      let wrapClassName = alertClass(
+        '_',
+        type,
+        /* shrink animation control by this (dismissed) */
+        !outAnimation && dismiss === 1 && 'dismissed',
+        onClose && 'with-close',
+        icon && 'with-icon'
+      )
+
+      if (className) wrapClassName = `${wrapClassName} ${className}`
+
+      return (
+        <div ref={ref} className={wrapClassName} style={style}>
+          {onClose && renderClose}
+          {type !== 'loading' ? (
+            renderIcon
+          ) : (
+            <Spin name="ring" size={18} className={alertClass('loading-icon')} color="#17a2b8" />
+          )}
+          <div className={alertClass('content')}>{children}</div>
+        </div>
+      )
+    }
+  )
+)

@@ -1,192 +1,129 @@
-// @ts-nocheck 
-import React from 'react'
-import PropTypes from 'prop-types'
-import { PureComponent } from '@/utils/component'
+import React, { useEffect, useState, useRef, useCallback, useMemo } from 'react'
 import { alertClass } from '@/styles'
+import { useList, useTimeoutFn, useUpdateEffect } from 'react-use'
 import { getRenderChildrenFromProps, cloneChildren } from './util'
-import Alert from './alert'
+import Alert, { AlertInstance, AlertProps } from './alert'
 
-const DefaultState = {
-  items: [],
-  renderItems: [],
-  transitionDuration: 0,
-  containerHeight: 0,
-  activeIndex: 0,
+interface ScrollAlertProps extends AlertProps {
+  scrollInterval?: number
+
+  /** 关闭所有节点时触发的回调 */
+  onClose?(): void
+
+  /** 用于统一设置Alert的样式 勿添加Margin 影响计算值 */
+  style?: React.CSSProperties
+
+  className?: string
 }
 
-class ScrollAlert extends PureComponent {
-  constructor(props) {
-    super(props)
+const ScrollAlert: React.FC<ScrollAlertProps> = ({ scrollInterval = 5000, children, onClose, className, ...rest }) => {
+  const { items: i, renderItems: ri } = useMemo(() => getRenderChildrenFromProps(children), [])
+  const [activeIndex, setActived] = useState(0)
+  const [containerHeight, setHeight] = useState(0)
+  const [transitionDuration, setDuration] = useState(0)
+  const [items, { set: setItems }] = useList(i)
+  const [renderItems, { set: setRenderItems }] = useList(ri)
 
-    this.timeoutId = null
+  const firstChildHeight = useRef<number>()
+  const onFirstChildRef = useCallback((itemInstance: AlertInstance) => {
+    firstChildHeight.current = itemInstance?.clientHeight() || 0
+  }, [])
 
-    // 第一个子节点的高度
-    this.firstChildHeight = 0
+  // 重置节点为0
+  const resetChildren = useCallback(() => {
+    setDuration(0)
+    setActived(0)
+  }, [])
 
-    this.state = {
-      ...DefaultState,
-      ...getRenderChildrenFromProps(props.children),
-    }
-  }
+  // 节点滚动事件
+  const scrollIntervalFn = useCallback(() => {
+    const { length } = renderItems
+    // 空节点、一个节点均不产生动画
+    if (length <= 1) return
 
-  onFirstChildRef = itemInstance => {
-    this.firstChildHeight = itemInstance?.clientHeight() || 0
-  }
+    const index = activeIndex + 1
 
-  /**
-   * 重置节点为0
-   */
-  resetChildren = () => {
-    this.setState({
-      transitionDuration: 0,
-      activeIndex: 0,
-    })
-  }
+    setDuration(600)
+    setActived(index)
 
-  onCloseItemHandler = index => {
-    const { onClose } = this.props
-    const { items } = this.state
-
-    if (index === items.length) {
-      index = 0
-      this.resetChildren()
-    }
-    // 删除items元素
-    const afterDeleteItems = items.filter((_, i) => index !== i)
-
-    // 删除所有节点时，清除timeout并触发close回调
-    if (afterDeleteItems.length === 0) {
-      onClose?.()
-    }
-    // items只有一个元素时, 删除最后一项
-    else if (afterDeleteItems.length === 1 || index === afterDeleteItems.length) {
-      this.resetChildren()
+    // 滚动到最后一个节点时，重置为初始位置
+    if (index === length - 1) {
+      setTimeout(resetChildren, 600)
     }
 
-    this.setState({
-      items: afterDeleteItems,
-      renderItems: cloneChildren(afterDeleteItems),
-    })
-  }
+    reset()
+  }, [scrollInterval, renderItems, activeIndex])
 
-  /**
-   * 清除timeout
-   */
-  clearTimer = () => {
-    if (this.timeoutId) {
-      clearTimeout(this.timeoutId)
-      this.timeoutId = null
-    }
-  }
+  const [, cancel, reset] = useTimeoutFn(scrollIntervalFn, scrollInterval)
 
-  /**
-   * 节点滚动事件
-   */
-  scrollHandler = () => {
-    const { scrollInterval } = this.props
-
-    this.timeoutId = setTimeout(() => {
-      const { renderItems, activeIndex } = this.state
-      const { length } = renderItems
-      // 空节点、一个节点均不产生动画
-      if (length <= 1) return
-
-      const index = activeIndex + 1
-      this.setState({
-        transitionDuration: 600,
-        activeIndex: index,
-      })
-
-      // 滚动到最后一个节点时，重置为初始位置
-      if (index === length - 1) {
-        setTimeout(this.resetChildren, 600)
+  const onCloseItemHandler = useCallback(
+    index => {
+      // 为克隆item的最后一项 即第一项
+      if (index === items.length) {
+        index = 0
+        resetChildren()
       }
 
-      this.scrollHandler()
-    }, scrollInterval)
-  }
+      // 删除items元素
+      const afterDeleteItems = items.filter((_, _i) => index !== _i)
 
-  // 鼠标移入，动画暂停
-  stopScroll = () => {
-    this.clearTimer()
-  }
+      // 删除所有节点时，清除timeout并触发close回调
+      if (afterDeleteItems.length === 0) {
+        onClose?.()
+      } // items只有一个元素时, 删除最后一项
+      else if (afterDeleteItems.length === 1 || index === afterDeleteItems.length) {
+        resetChildren()
+      }
 
-  // 鼠标移出，动画继续
-  continueScroll = () => {
-    this.scrollHandler()
-  }
+      setItems(afterDeleteItems)
+      setRenderItems(cloneChildren(afterDeleteItems))
+    },
+    [onClose, items]
+  )
 
-  get renderItem() {
-    const { children, onClose, ...rest } = this.props
-    const { renderItems, activeIndex } = this.state
-    const { length } = renderItems
+  useEffect(() => {
+    setHeight(firstChildHeight.current)
+    return cancel
+  }, [])
 
-    return React.Children.map(renderItems, (item, index) => {
-      const props = Object.assign({}, { ...item.props }, rest)
+  useUpdateEffect(() => {
+    reset()
+  }, [containerHeight])
 
-      return (
-        <Alert
-          {...props}
-          className={alertClass({
-            'scroll-active-item': index === activeIndex,
-            'scroll-virtual-item': !index && activeIndex === length - 1,
-          })}
-          key={index}
-          onClose={() => this.onCloseItemHandler(index)}
-          ref={!index ? this.onFirstChildRef : undefined}
-        />
-      )
-    })
-  }
+  const scrollCls = alertClass('scroll', className)
 
-  componentDidMount() {
-    super.componentDidMount()
-    this.setState({ containerHeight: this.firstChildHeight }, this.scrollHandler)
-  }
+  return renderItems.length > 0 ? (
+    <div className={scrollCls}>
+      <div
+        className={alertClass('scroll-container')}
+        style={{
+          height: containerHeight,
+          transform: `translateY(-${(containerHeight + 22) * activeIndex}px)`,
+          transitionDuration: `${transitionDuration}ms`,
+          transitionProperty: 'transform',
+        }}
+        onMouseEnter={cancel}
+        onMouseLeave={reset}
+      >
+        {React.Children.map(renderItems, (item, index) => {
+          const props = Object.assign({}, { ...item.props }, rest)
 
-  componentWillUnmount() {
-    super.componentWillUnmount()
-    this.clearTimer()
-  }
-
-  render() {
-    const { className } = this.props
-
-    const { transitionDuration, containerHeight, activeIndex } = this.state
-    const { renderItem } = this
-
-    const scrollCls = alertClass('scroll', className)
-
-    return renderItem.length > 0 ? (
-      <div className={scrollCls}>
-        <div
-          className={alertClass('scroll-container')}
-          style={{
-            height: containerHeight,
-            transform: `translateY(-${(containerHeight + 22) * activeIndex}px)`,
-            transitionDuration: `${transitionDuration}ms`,
-            transitionProperty: 'transform',
-          }}
-          onMouseEnter={this.stopScroll}
-          onMouseLeave={this.continueScroll}
-        >
-          {renderItem}
-        </div>
+          return (
+            <Alert
+              {...props}
+              className={alertClass({
+                'scroll-active-item': index === activeIndex,
+                'scroll-virtual-item': !index && activeIndex === renderItems.length - 1,
+              })}
+              key={index}
+              onClose={() => onCloseItemHandler(index)}
+              ref={!index ? onFirstChildRef : undefined}
+            />
+          )
+        })}
       </div>
-    ) : null
-  }
-}
-
-ScrollAlert.defaultProps = {
-  scrollInterval: 5000,
-}
-
-ScrollAlert.propTypes = {
-  scrollInterval: PropTypes.number,
-  // 关闭所有节点时触发的回调
-  onClose: PropTypes.func,
-  // 用于统一设置Alert的样式 勿添加Margin 影响计算值
-  style: PropTypes.object,
+    </div>
+  ) : null
 }
 
 export default ScrollAlert

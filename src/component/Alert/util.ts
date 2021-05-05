@@ -1,4 +1,3 @@
-// @ts-nocheck 
 import { Children } from 'react'
 import kindOf from '@/utils/kindOf'
 import Alert from './alert'
@@ -20,7 +19,7 @@ const cloneChildren = children => {
 
 // 获取有效的渲染节点
 const getRenderChildrenFromProps = children => {
-  const childArray = Children.toArray(children)
+  const childArray: any[] = Children.toArray(children)
 
   const items = childArray.reduce((alertItemArray, child) => {
     const { type } = child

@@ -1,4 +1,4 @@
-// @ts-nocheck 
+// @ts-nocheck
 import React, { memo } from 'react'
 import PropTypes from 'prop-types'
 import config from '@/config'
@@ -89,6 +89,7 @@ Spin.propTypes = {
     'three-bounce',
     'wave',
   ]),
+  className: PropTypes.string,
 }
 
 Spin.defaultProps = {
