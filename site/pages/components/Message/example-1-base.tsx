@@ -49,7 +49,7 @@ export default function() {
         onClick={() => {
           const hide = Message.loading('Loading', 0)
           setTimeout(() => {
-            hide.then(close => close())
+            hide()
           }, 2000)
         }}
       >

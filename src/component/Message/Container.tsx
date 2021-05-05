@@ -146,15 +146,6 @@ class Container extends PureComponent {
     }, duration)
   }
 
-  /* 暂时未使用 */
-  closeEvent(id, duration) {
-    if (duration === 0) {
-      return this.removeMessage.bind(this, id)
-    }
-
-    return undefined
-  }
-
   removeAllMessage() {
     this.setState(
       immer(state => {

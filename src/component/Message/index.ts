@@ -1,11 +1,22 @@
-// @ts-nocheck 
 import { destroy, getComponent, closeWithAnimation } from './messager'
 
+export interface MessageOption {
+  onClose?(): void
+
+  position?: 'top' | 'middle' | 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right'
+
+  title?: string | number
+
+  className?: string
+
+  top?: string
+}
+
 // 构造函数
-const create = type => async (content, duration = 3, options = {}) => {
+const create = type => (content, duration = 3, options: MessageOption = {}) => {
   const { onClose, position = 'top', title, className = '', top = 'auto' } = options
 
-  const find = ['top', 'middle', 'top-left', 'top-right', 'bottom-left', 'bottom-right', 'loading'].indexOf(position)
+  const find = ['top', 'middle', 'top-left', 'top-right', 'bottom-left', 'bottom-right'].indexOf(position)
 
   if (find < 0) {
     console.warn(
@@ -17,7 +28,7 @@ const create = type => async (content, duration = 3, options = {}) => {
   let e
   let i
 
-  await getComponent(position).then(messager => {
+  getComponent(position).then(messager => {
     const { entity, id } = messager.addMessage({
       content,
       duration,
@@ -33,7 +44,9 @@ const create = type => async (content, duration = 3, options = {}) => {
   })
 
   if (type === 'loading') {
-    return e.removeLoadingMsg.bind(e, i)
+    return setTimeout.bind(null, () => {
+      e?.removeLoadingMsg(i)
+    })
   }
   return null
 }
