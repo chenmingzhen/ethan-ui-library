@@ -93,6 +93,12 @@ const pages = [
         component: lazy(() => import(/* webpackChunkName: "Select" */ './Select')),
         },
             {
+        name: 'Slider',
+        cn: '滑块',
+        level: 2,
+        component: lazy(() => import(/* webpackChunkName: "Slider" */ './Slider')),
+        },
+            {
         name: 'Upload',
         cn: '上传',
         level: 2,
