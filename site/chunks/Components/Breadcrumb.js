@@ -14,7 +14,7 @@ const source = locate(cn, en)
 
 const examples = [
     {
-    name: '1-base.tsx',
+    name: '1-basex',
     title: locate(
     '基本用法 \n 组件调用通过 json 数据配置',
     'Base \n The basic usage.'
@@ -24,7 +24,7 @@ const examples = [
     rawText: require('!raw-loader!doc/pages/components/Breadcrumb/example-1-base.tsx'),
     },
     {
-    name: '2-separator.tsx',
+    name: '2-separatorx',
     title: locate(
     '分隔符 \n 默认的分隔符为 \'/\'，可以通过 separator 属性自定义',
     'separator \n The default separator is \'/\'.'
@@ -34,7 +34,7 @@ const examples = [
     rawText: require('!raw-loader!doc/pages/components/Breadcrumb/example-2-separator.tsx'),
     },
     {
-    name: '3-icon.tsx',
+    name: '3-iconx',
     title: locate(
     '图标 \n 带图标的面包屑',
     'icon \n Breadcrumbs with icons'

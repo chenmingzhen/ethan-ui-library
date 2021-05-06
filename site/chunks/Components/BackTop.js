@@ -14,7 +14,7 @@ const source = locate(cn, en)
 
 const examples = [
     {
-    name: '1-base.tsx',
+    name: '1-basex',
     title: locate(
     '基本用法 \n 基本的使用',
     'Base \n Basic usage'
@@ -24,7 +24,7 @@ const examples = [
     rawText: require('!raw-loader!doc/pages/components/BackTop/example-1-base.tsx'),
     },
     {
-    name: '2-location.tsx',
+    name: '2-locationx',
     title: locate(
     '位置 \n 自定义按钮位置',
     'Location \n Customize the button position'
@@ -34,7 +34,7 @@ const examples = [
     rawText: require('!raw-loader!doc/pages/components/BackTop/example-2-location.tsx'),
     },
     {
-    name: '3-content.tsx',
+    name: '3-contentx',
     title: locate(
     '内容 \n 自定义内容',
     'Content \n Custom content'

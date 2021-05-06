@@ -14,7 +14,7 @@ const source = locate(cn, en)
 
 const examples = [
     {
-    name: '1-base.tsx',
+    name: '1-basex',
     title: locate(
     '基本用法 \n 开始加载,结束加载和错误加载',
     'Base \n Start loading , end loading and error Loading'
@@ -24,7 +24,7 @@ const examples = [
     rawText: require('!raw-loader!doc/pages/components/Loading/example-1-base.tsx'),
     },
     {
-    name: '2-custom.tsx',
+    name: '2-customx',
     title: locate(
     '自定义 \n 自定义加载风格和加载进度',
     'Customize \n Customize the loading style and loading schedule'
@@ -34,7 +34,7 @@ const examples = [
     rawText: require('!raw-loader!doc/pages/components/Loading/example-2-custom.tsx'),
     },
     {
-    name: '3-global.tsx',
+    name: '3-globalx',
     title: locate(
     '全局加载 \n 整屏设置加载中，加载图案参考Spin的type',
     'Global loading \n Full screen Settings are loaded,Load the pattern with reference to the type of Spin'

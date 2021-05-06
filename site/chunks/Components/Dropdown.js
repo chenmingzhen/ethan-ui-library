@@ -14,7 +14,7 @@ const source = locate(cn, en)
 
 const examples = [
     {
-    name: '1-base.tsx',
+    name: '1-basex',
     title: locate(
     '基本用法 \n Dropdown 通过数据来渲染，支持 json 格式数据、React 组件',
     'Base \n Dropdown is rendered through data and supports json formatted data and React components.'
@@ -24,7 +24,7 @@ const examples = [
     rawText: require('!raw-loader!doc/pages/components/Dropdown/example-1-base.tsx'),
     },
     {
-    name: '2-hover.tsx',
+    name: '2-hoverx',
     title: locate(
     '触发 \n Dropdown 默认通过点击触发下拉行为，设置 trigger="hover" 属性可以改为移入触发',
     'Trigger \n By default, Dropdown toggled clicking, setting trigger="hover" can toggled by mouse move in.'
@@ -34,7 +34,7 @@ const examples = [
     rawText: require('!raw-loader!doc/pages/components/Dropdown/example-2-hover.tsx'),
     },
     {
-    name: '3-position.tsx',
+    name: '3-positionx',
     title: locate(
     '弹出位置 \n 设置 position 属性可以控制下拉菜单弹出的方向和位置',
     'Position \n Set position property can control the direction and position of the drop-down menu.'
@@ -44,7 +44,7 @@ const examples = [
     rawText: require('!raw-loader!doc/pages/components/Dropdown/example-3-position.tsx'),
     },
     {
-    name: '4-items.tsx',
+    name: '4-itemsx',
     title: locate(
     '多列平铺 \n 设置 columns 属性可以让选项多列平铺',
     'Multiple columns \n Set columns property can make the option multi-column tiled.'
@@ -54,7 +54,7 @@ const examples = [
     rawText: require('!raw-loader!doc/pages/components/Dropdown/example-4-items.tsx'),
     },
     {
-    name: '5-split.tsx',
+    name: '5-splitx',
     title: locate(
     '组合 \n 在 Button.Group 中组合使用，通常用于隐藏一组按钮中不太常用的选项',
     'Group \n Dropdown can be combined with Button used in Button.Group.'
@@ -64,7 +64,7 @@ const examples = [
     rawText: require('!raw-loader!doc/pages/components/Dropdown/example-5-split.tsx'),
     },
     {
-    name: '6-type.tsx',
+    name: '6-typex',
     title: locate(
     '样式 \n 使用了和Button相同的 type 和 size 设置样式',
     'type \n Style is set using the same type and size as Button.'
@@ -74,7 +74,7 @@ const examples = [
     rawText: require('!raw-loader!doc/pages/components/Dropdown/example-6-type.tsx'),
     },
     {
-    name: '7-base.tsx',
+    name: '7-basex',
     title: locate(
     '绝对定位 \n 如果选项弹出层的父容器被遮挡，可以设置 absolute 属性使弹出选项在单独层中渲染。',
     'Absolute \n If the parent container of the pop-up layer is occluded, you can set the absolute property to make the pop-up options rendered in a separate layer.'

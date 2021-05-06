@@ -14,7 +14,7 @@ const source = locate(cn, en)
 
 const examples = [
     {
-    name: 'locale.tsx',
+    name: 'localex',
     title: locate(
     '',
     ''

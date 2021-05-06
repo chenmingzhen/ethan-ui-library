@@ -14,7 +14,7 @@ const source = locate(cn, en)
 
 const examples = [
     {
-    name: '1-awesome.tsx',
+    name: '1-awesomex',
     title: locate(
     '基本用法 \n 基本用法',
     'Base \n Base'
@@ -24,7 +24,7 @@ const examples = [
     rawText: require('!raw-loader!doc/pages/components/Icon/example-1-awesome.tsx'),
     },
     {
-    name: '2-iconfont.tsx',
+    name: '2-iconfontx',
     title: locate(
     '使用 Iconfont \n 可以在 iconfont.cn 定制一个图标，在项目中引入，支持font和svg两种方式',
     'Customize Font \n You can customize an icon in <a target="_blank" href="http://iconfont.cn">iconfont.cn</a> or <a target="_blank" href="http://fontastic.me/">fontastic.me</a>, support font and svg.'
@@ -34,7 +34,7 @@ const examples = [
     rawText: require('!raw-loader!doc/pages/components/Icon/example-2-iconfont.tsx'),
     },
     {
-    name: '3-size.tsx',
+    name: '3-sizex',
     title: locate(
     '样式 \n 通过fontSize,type,style设置样式',
     'Style \n Set fontSize,type and style to change Component style'

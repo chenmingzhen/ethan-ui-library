@@ -14,7 +14,7 @@ const source = locate(cn, en)
 
 const examples = [
     {
-    name: '1-base.tsx',
+    name: '1-basex',
     title: locate(
     '基本用法 \n 基本的使用',
     'Base \n Basic usage'
@@ -24,7 +24,7 @@ const examples = [
     rawText: require('!raw-loader!doc/pages/components/Badge/example-1-base.tsx'),
     },
     {
-    name: '2-dot.tsx',
+    name: '2-dotx',
     title: locate(
     '点 \n 设置为点',
     'Dot \n Set to the dot'
@@ -34,7 +34,7 @@ const examples = [
     rawText: require('!raw-loader!doc/pages/components/Badge/example-2-dot.tsx'),
     },
     {
-    name: '3-overflow.tsx',
+    name: '3-overflowx',
     title: locate(
     '数字隐藏 \n 数字模式超出隐藏',
     'Overflow \n Digital mode beyond hidden'
@@ -44,7 +44,7 @@ const examples = [
     rawText: require('!raw-loader!doc/pages/components/Badge/example-3-overflow.tsx'),
     },
     {
-    name: '4-color.tsx',
+    name: '4-colorx',
     title: locate(
     '颜色 \n 自定义颜色',
     'Color \n Custom color'

@@ -14,7 +14,7 @@ const source = locate(cn, en)
 
 const examples = [
     {
-    name: '1-base.tsx',
+    name: '1-basex',
     title: locate(
     '基本用法 \n 简单的步骤条',
     'Base \n Simple steps'
@@ -24,7 +24,7 @@ const examples = [
     rawText: require('!raw-loader!doc/pages/components/Steps/example-1-base.tsx'),
     },
     {
-    name: '2-mini.tsx',
+    name: '2-minix',
     title: locate(
     '迷你 \n 迷你的步骤条',
     'Mini \n Mini steps'
@@ -34,7 +34,7 @@ const examples = [
     rawText: require('!raw-loader!doc/pages/components/Steps/example-2-mini.tsx'),
     },
     {
-    name: '3-icon.tsx',
+    name: '3-iconx',
     title: locate(
     '图标 \n 自定义图标',
     'Icon \n Custom Icon'
@@ -44,7 +44,7 @@ const examples = [
     rawText: require('!raw-loader!doc/pages/components/Steps/example-3-icon.tsx'),
     },
     {
-    name: '4-error.tsx',
+    name: '4-errorx',
     title: locate(
     '错误 \n 步骤出现错误',
     'Error \n Error in steps'
@@ -54,7 +54,7 @@ const examples = [
     rawText: require('!raw-loader!doc/pages/components/Steps/example-4-error.tsx'),
     },
     {
-    name: '5-change.tsx',
+    name: '5-changex',
     title: locate(
     '步骤切换 \n 改变流程的处理进度',
     'Steps to switch \n Change the processing schedule of the process'
@@ -64,7 +64,7 @@ const examples = [
     rawText: require('!raw-loader!doc/pages/components/Steps/example-5-change.tsx'),
     },
     {
-    name: '6-vertical.tsx',
+    name: '6-verticalx',
     title: locate(
     '垂直 \n 设置 vertical 属性，修改组件为垂直方向',
     'Vertical \n Set the vertical property to change the component vertical.'

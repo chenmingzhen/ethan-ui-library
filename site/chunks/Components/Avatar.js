@@ -14,7 +14,7 @@ const source = locate(cn, en)
 
 const examples = [
     {
-    name: '1-base.tsx',
+    name: '1-basex',
     title: locate(
     '基本用法 \n 基本的使用',
     'Base \n Basic usage'
@@ -24,7 +24,7 @@ const examples = [
     rawText: require('!raw-loader!doc/pages/components/Avatar/example-1-base.tsx'),
     },
     {
-    name: '2-text-size.tsx',
+    name: '2-text-sizex',
     title: locate(
     '适应 \n 自适应文字大小',
     'Adaptive \n Adaptive text size'
@@ -34,7 +34,7 @@ const examples = [
     rawText: require('!raw-loader!doc/pages/components/Avatar/example-2-text-size.tsx'),
     },
     {
-    name: '3-custom.tsx',
+    name: '3-customx',
     title: locate(
     '自定义 \n 自定义样式',
     'Custom \n custom style'

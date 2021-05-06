@@ -14,7 +14,7 @@ const source = locate(cn, en)
 
 const examples = [
     {
-    name: '1-base.tsx',
+    name: '1-basex',
     title: locate(
     '基本用法 \n 基本的使用',
     'Base \n Basic usage'
@@ -24,7 +24,7 @@ const examples = [
     rawText: require('!raw-loader!doc/pages/components/Timeline/example-1-base.tsx'),
     },
     {
-    name: '2-custom.tsx',
+    name: '2-customx',
     title: locate(
     '图标 \n 自定义图标内容',
     'Icon \n Customize the icon content'
