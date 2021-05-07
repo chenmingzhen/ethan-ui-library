@@ -49,6 +49,12 @@ const pages = [
         level: 2,
         component: lazy(() => import(/* webpackChunkName: "Grid" */ './Grid')),
         },
+            {
+        name: 'Sticky',
+        cn: '附着',
+        level: 2,
+        component: lazy(() => import(/* webpackChunkName: "Sticky" */ './Sticky')),
+        },
                 'Form',
                 {
         name: 'Checkbox',
