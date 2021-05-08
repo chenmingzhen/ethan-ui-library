@@ -209,6 +209,12 @@ const pages = [
         level: 2,
         component: lazy(() => import(/* webpackChunkName: "Progress" */ './Progress')),
         },
+            {
+        name: 'Tag',
+        cn: '标签',
+        level: 2,
+        component: lazy(() => import(/* webpackChunkName: "Tag" */ './Tag')),
+        },
     ]
 
 export default Page(pages)
