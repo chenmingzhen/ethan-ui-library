@@ -111,6 +111,12 @@ const pages = [
         component: lazy(() => import(/* webpackChunkName: "Textarea" */ './Textarea')),
         },
             {
+        name: 'Transfer',
+        cn: '穿梭框',
+        level: 2,
+        component: lazy(() => import(/* webpackChunkName: "Transfer" */ './Transfer')),
+        },
+            {
         name: 'Upload',
         cn: '上传',
         level: 2,
