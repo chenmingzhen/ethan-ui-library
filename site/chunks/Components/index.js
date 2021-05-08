@@ -105,6 +105,12 @@ const pages = [
         component: lazy(() => import(/* webpackChunkName: "Slider" */ './Slider')),
         },
             {
+        name: 'Textarea',
+        cn: '多行文本框',
+        level: 2,
+        component: lazy(() => import(/* webpackChunkName: "Textarea" */ './Textarea')),
+        },
+            {
         name: 'Upload',
         cn: '上传',
         level: 2,
