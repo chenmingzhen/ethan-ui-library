@@ -221,6 +221,12 @@ const pages = [
         level: 2,
         component: lazy(() => import(/* webpackChunkName: "Tag" */ './Tag')),
         },
+            {
+        name: 'Tooltip',
+        cn: '提示',
+        level: 2,
+        component: lazy(() => import(/* webpackChunkName: "Tooltip" */ './Tooltip')),
+        },
     ]
 
 export default Page(pages)
