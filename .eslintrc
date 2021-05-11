@@ -1,22 +1,14 @@
 {
-  "extends": [
-    "airbnb",
-    "prettier"
-  ],
+  "extends": ["plugin:@typescript-eslint/recommended", "airbnb", "prettier"],
   // @typescript-eslint 考虑添加
-  "plugins": [
-    "prettier"
-  ],
+  "plugins": ["prettier"],
   "parser": "@typescript-eslint/parser",
   // "parserOptions": {
   //   "project": "./tsconfig.json"
   // },
   "settings": {
     "import/parsers": {
-      "@typescript-eslint/parser": [
-        ".ts",
-        ".tsx"
-      ]
+      "@typescript-eslint/parser": [".ts", ".tsx"]
     },
     "import/resolver": {
       "typescript": {
@@ -42,10 +34,7 @@
     "react/jsx-indent": 0,
     "react/no-find-dom-node": 0,
     "react/require-default-props": 0,
-    "semi": [
-      2,
-      "never"
-    ],
+    "semi": [2, "never"],
     "global-require": 0,
     "import/no-duplicates": 0,
     "import/no-extraneous-dependencies": 0,
@@ -70,11 +59,7 @@
     "jsx-a11y/no-static-element-interactions": 0,
     "jsx-a11y/click-events-have-key-events": 0,
     "react/destructuring-assignment": 0,
-    "linebreak-style": [
-      0,
-      "error",
-      "windows"
-    ],
+    "linebreak-style": [0, "error", "windows"],
     //
     // const { loading, children } = props
     "react/prop-types": 0,
@@ -83,18 +68,13 @@
     "react/jsx-filename-extension": [
       1,
       {
-        "extensions": [
-          ".js",
-          ".jsx",
-          ".ts",
-          ".tsx"
-        ]
+        "extensions": [".js", ".jsx", ".ts", ".tsx"]
       }
     ],
     "react/jsx-props-no-spreading": 0,
     // Object asign 错误
     "prefer-object-spread": 0,
-    "no-unused-vars": 1,
+    "@typescript-eslint/no-unused-vars": 1,
     "no-use-before-define": 0,
     // 顺序排序方法 关闭
     "react/sort-comp": 0,
