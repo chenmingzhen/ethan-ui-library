@@ -1,8 +1,8 @@
-// @ts-nocheck 
+// @ts-nocheck
 import React from 'react'
 import ReactDOM from 'react-dom'
 import { messageClass } from '@/styles'
-import Container from './Container'
+import Container, { MessageContainerInstance } from './Container'
 
 // 存放同一position类型的div容器
 const elements = {}
@@ -40,7 +40,7 @@ export function closeWithAnimation(type) {
   }
 }
 
-export function getComponent(type) {
+export function getComponent(type): Promise<MessageContainerInstance> {
   return new Promise(resolve => {
     const component = components[type]
     // 判断有无这个type(position)的容器  每个type对应一个所有组件容器

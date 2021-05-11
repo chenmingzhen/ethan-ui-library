@@ -1,91 +1,83 @@
 import { useCallback } from 'react'
 import useImmer from '@/hooks/useImmer'
 import { getUidStr } from '@/utils/uid'
+import { AlertType } from '../../Alert/alert'
 
-interface Message {
-  id: string
+export interface Message {
+  id?: string
 
-  type: 'success' | 'warn' | 'info' | 'error'
+  type?: AlertType
 
-  content: string
+  content?: string
 
-  dismiss: boolean
+  dismiss?: boolean
 
-  h: number
+  h?: number
 
-  title: string
+  title?: string | number
 
   className?: string
 
-  position: 'top' | 'middle' | 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right'
+  position?: 'top' | 'middle' | 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right'
 
-  onClose(): void
+  onClose?(): void
+
+  duration?: number
+
+  top?: string
 }
 
-const useMessage = (type, onDestroy) => {
+const useMessage = onDestroy => {
   const [messages, setMessages] = useImmer<Message[]>([])
 
-  const addMessage = useCallback(
-    msg => {
-      const id = getUidStr()
+  const addMessage = (msg: Message) => {
+    const id = getUidStr()
 
-      // 大于5个的时候自动dismiss第一个
-      if (messages.length > 5) {
+    setMessages(draft => {
+      draft.push(Object.assign({ id }, msg))
+    })
+
+    // message退场时间
+    if (msg.duration > 0) {
+      setTimeout(() => {
         setMessages(draft => {
-          draft[0].dismiss = true
-        })
-      }
-
-      setMessages(draft => {
-        draft.push(Object.assign({ id }, msg))
-      })
-
-      // message退场时间
-      if (msg.loading > 0 && type !== 'loading') {
-        setTimeout(() => {
-          setMessages(draft => {
-            draft.forEach(m => {
-              if (m.id === id) m.dismiss = true
-            })
+          draft.forEach(m => {
+            if (m.id === id) m.dismiss = true
           })
-        }, msg.duration * 1000)
-      }
+        })
+      }, msg.duration * 1000)
+    }
 
-      // loading类型处理
-
-      return removeLoadingMessage.bind(null, id)
-    },
-    [type]
-  )
+    // 仅为Loading时有效
+    // 返回移除消息回调
+    return removeLoadingMessage.bind(null, id)
+  }
 
   // 普通类型Message
-  const removeMessage = useCallback(
-    (id: string) => {
-      // 存储message的onClose callback
-      let callback
+  const removeMessage = (id: string) => {
+    // 存储message的onClose callback
+    let callback
 
-      const newMessages = messages.filter(m => {
-        if (m.id !== id) return true
+    const newMessages = messages.filter(m => {
+      if (m.id !== id) return true
 
-        if (m.onClose) callback = m.onClose
+      if (m.onClose) callback = m.onClose
 
-        return false
-      })
+      return false
+    })
 
-      if (newMessages.length === 0) {
-        // 如果为最后一个message 清除装组件的dom容器
-        onDestroy?.()
-      } else {
-        setMessages(newMessages)
-      }
+    if (newMessages.length === 0) {
+      // 如果为最后一个message 清除装组件的dom容器
+      onDestroy?.()
+    } else {
+      setMessages(newMessages)
+    }
 
-      callback?.()
-    },
-    [onDestroy]
-  )
+    callback?.()
+  }
 
   // 移除Loading的Message
-  const removeLoadingMessage = useCallback(id => {
+  const removeLoadingMessage = id => {
     setMessages(draft => {
       draft.filter(m => {
         if (m.id !== id) return true
@@ -95,18 +87,20 @@ const useMessage = (type, onDestroy) => {
         return false
       })
     })
-  }, [])
+  }
 
-  const removeAllMessage = useCallback(() => {
+  const removeAllMessage = () => {
     setMessages(draft => {
       draft.forEach(m => {
         m.dismiss = true
       })
     })
-  }, [])
+  }
 
   // 根据alert的动画处理回调函数 手动处理动画
-  const closeMessageForAnimation = useCallback(([id, duration, msgHeight]) => {
+  const closeMessageForAnimation = (...args) => {
+    const [id, duration, msgHeight] = args
+
     if (!duration) {
       removeMessage(id)
 
@@ -126,7 +120,7 @@ const useMessage = (type, onDestroy) => {
     setTimeout(() => {
       removeMessage(id)
     }, duration)
-  }, [])
+  }
 
   return { messages, addMessage, removeAllMessage, closeMessageForAnimation }
 }

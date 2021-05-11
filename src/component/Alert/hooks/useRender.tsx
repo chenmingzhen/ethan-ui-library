@@ -1,15 +1,15 @@
 import React, { useMemo } from 'react'
 import { capitalize } from '@/utils/strings'
 import { alertClass } from '@/styles'
-import Type from '../../../../type/type'
 import icons from '../../icons'
+import { AlertType } from '../alert'
 
 interface useRenderParams {
   closeItem?: React.ReactNode
 
   icon?: boolean | Element
 
-  type?: Type
+  type?: AlertType
 
   iconSize?: number
 

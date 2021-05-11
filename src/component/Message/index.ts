@@ -25,11 +25,10 @@ const create = type => (content, duration = 3, options: MessageOption = {}) => {
   }
 
   // loading特殊处理
-  let e
-  let i
+  let callback
 
   getComponent(position).then(messager => {
-    const { entity, id } = messager.addMessage({
+    callback = messager.addMessage({
       content,
       duration,
       type,
@@ -39,13 +38,11 @@ const create = type => (content, duration = 3, options: MessageOption = {}) => {
       top,
       position,
     })
-    e = entity
-    i = id
   })
 
   if (type === 'loading') {
     return setTimeout.bind(null, () => {
-      e?.removeLoadingMsg(i)
+      callback?.()
     })
   }
   return null
