@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react'
 import { capitalize } from '@/utils/strings'
 import { alertClass } from '@/styles'
-import Type from '../../../../type/type'
+import Type from '../../../type/type'
 import icons from '../../icons'
 
 interface useRenderParams {

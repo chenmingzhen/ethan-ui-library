@@ -1,7 +1,7 @@
 import React, { useRef, useCallback, useEffect, useImperativeHandle, memo } from 'react'
 import { alertClass } from '@/styles'
 import Spin from '@/component/Spin'
-import Type from '../../../type/type'
+import Type from '../../type/type'
 import useDissmiss from './hooks/useDismiss'
 import useRender from './hooks/useRender'
 
