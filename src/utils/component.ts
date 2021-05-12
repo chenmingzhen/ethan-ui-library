@@ -1,9 +1,12 @@
-// @ts-nocheck 
 import React from 'react'
 
 function create(name) {
   const Base = React[name]
   return class extends Base {
+    $isMounted
+
+    forceUpdateTimer
+
     componentDidMount() {
       this.$isMounted = true
     }
@@ -26,5 +29,7 @@ function create(name) {
   }
 }
 
-export const Component = create('Component')
-export const PureComponent = create('PureComponent')
+export const Component = (create('Component') as unknown) as typeof React.Component
+export const PureComponent = (create('PureComponent') as unknown) as typeof React.PureComponent
+
+export default create

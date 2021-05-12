@@ -1,16 +1,16 @@
 import React, { useRef, useCallback, useEffect, useImperativeHandle, memo } from 'react'
 import { alertClass } from '@/styles'
 import Spin from '@/component/Spin'
-import Type from '../../type/type'
 import useDissmiss from './hooks/useDismiss'
 import useRender from './hooks/useRender'
 
+export type AlertType = 'success' | 'info' | 'warning' | 'danger' | 'error' | 'loading'
 export interface AlertProps {
   className?: string
 
   style?: React.CSSProperties
 
-  type?: Type
+  type?: AlertType
 
   dismiss?: boolean
 
