@@ -4,7 +4,7 @@ import Spin from '@/component/Spin'
 import useDissmiss from './hooks/useDismiss'
 import useRender from './hooks/useRender'
 
-export type AlertType = 'success' | 'info' | 'warning' | 'danger' | 'error' | 'loading'
+export type AlertType = 'default' | 'success' | 'info' | 'warning' | 'danger' | 'error' | 'loading'
 export interface AlertProps {
   className?: string
 

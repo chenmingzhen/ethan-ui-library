@@ -1,5 +1,5 @@
 import { destroy, getComponent, closeWithAnimation } from './messager'
-
+import { AlertType } from '@/component/Alert/alert'
 export interface MessageOption {
   onClose?(): void
 
@@ -13,7 +13,7 @@ export interface MessageOption {
 }
 
 // 构造函数
-const create = type => (content, duration = 3, options: MessageOption = {}) => {
+const create = (type: AlertType) => (content, duration = 3, options: MessageOption = {}) => {
   const { onClose, position = 'top', title, className = '', top = 'auto' } = options
 
   const find = ['top', 'middle', 'top-left', 'top-right', 'bottom-left', 'bottom-right'].indexOf(position)
@@ -45,7 +45,6 @@ const create = type => (content, duration = 3, options: MessageOption = {}) => {
       callback?.()
     })
   }
-  return null
 }
 
 // 导入此依赖就会执行  create (type)=>这个函数  返回闭包
