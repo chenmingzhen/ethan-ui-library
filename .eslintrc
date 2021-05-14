@@ -1,11 +1,10 @@
 {
-  "extends": ["plugin:@typescript-eslint/recommended", "airbnb", "prettier"],
-  // @typescript-eslint 考虑添加
+  "extends": ["airbnb-typescript", "plugin:@typescript-eslint/recommended", "prettier"],
   "plugins": ["prettier"],
   "parser": "@typescript-eslint/parser",
-  // "parserOptions": {
-  //   "project": "./tsconfig.json"
-  // },
+  "parserOptions": {
+    "project": "./tsconfig.json"
+  },
   "settings": {
     "import/parsers": {
       "@typescript-eslint/parser": [".ts", ".tsx"]
@@ -26,15 +25,15 @@
   },
   "rules": {
     "prettier/prettier": "error",
+    "@typescript-eslint/semi": 0,
+    "@typescript-eslint/no-extra-semi": 0,
     "react/forbid-prop-types": 0,
     "react/jsx-no-bind": 0,
     "jsx-a11y/label-has-for": 0,
     "react/no-did-mount-set-state": 0,
     "react/no-array-index-key": 0,
-    "react/jsx-indent": 0,
     "react/no-find-dom-node": 0,
     "react/require-default-props": 0,
-    "semi": [2, "never"],
     "global-require": 0,
     "import/no-duplicates": 0,
     "import/no-extraneous-dependencies": 0,
