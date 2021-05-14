@@ -1,94 +1,95 @@
 {
-  "extends": ["airbnb-typescript", "plugin:@typescript-eslint/recommended", "prettier"],
-  "plugins": ["prettier"],
-  "parser": "@typescript-eslint/parser",
-  "parserOptions": {
-    "project": "./tsconfig.json"
-  },
-  "settings": {
-    "import/parsers": {
-      "@typescript-eslint/parser": [".ts", ".tsx"]
+    "extends": ["airbnb-typescript", "plugin:@typescript-eslint/recommended", "prettier"],
+    "plugins": ["prettier"],
+    "parser": "@typescript-eslint/parser",
+    "parserOptions": {
+        "project": "./tsconfig.json"
     },
-    "import/resolver": {
-      "typescript": {
-        "webpack": {
-          "config": "webpack.config.eslint.ts"
+    "settings": {
+        "import/parsers": {
+            "@typescript-eslint/parser": [".ts", ".tsx"]
+        },
+        "import/resolver": {
+            "typescript": {
+                "webpack": {
+                    "config": "webpack.config.eslint.ts"
+                }
+            }
         }
-      }
+    },
+    "env": {
+        "browser": true,
+        "es6": true,
+        "node": true,
+        "jest": true
+    },
+    "rules": {
+        "prettier/prettier": "error",
+        "@typescript-eslint/semi": 0,
+        "@typescript-eslint/no-extra-semi": 0,
+        "@typescript-eslint/indent": [2, 4],
+        "react/forbid-prop-types": 0,
+        "react/jsx-no-bind": 0,
+        "jsx-a11y/label-has-for": 0,
+        "react/no-did-mount-set-state": 0,
+        "react/no-array-index-key": 0,
+        "react/no-find-dom-node": 0,
+        "react/require-default-props": 0,
+        "global-require": 0,
+        "import/no-duplicates": 0,
+        "import/no-extraneous-dependencies": 0,
+        "import/no-webpack-loader-syntax": 0,
+        "import/prefer-default-export": 0,
+        "max-len": 0,
+        "no-console": 0,
+        "no-continue": 0,
+        "no-labels": 0,
+        "no-restricted-syntax": 0,
+        "no-script-url": 0,
+        "no-param-reassign": 0,
+        "no-cond-assign": 0,
+        "no-plusplus": [
+            "error",
+            {
+                "allowForLoopAfterthoughts": true
+            }
+        ],
+        "no-static-element-interactions": 0,
+        "jsx-a11y/anchor-is-valid": 0,
+        "jsx-a11y/no-static-element-interactions": 0,
+        "jsx-a11y/click-events-have-key-events": 0,
+        "react/destructuring-assignment": 0,
+        "linebreak-style": [0, "error", "windows"],
+        //
+        // const { loading, children } = props
+        "react/prop-types": 0,
+        // 遇到jsx语法 必须.jsx结尾  关闭该规则
+        //https://github.com/yannickcr/eslint-plugin-react/blob/master/docs/rules/jsx-filename-extension.md
+        "react/jsx-filename-extension": [
+            1,
+            {
+                "extensions": [".js", ".jsx", ".ts", ".tsx"]
+            }
+        ],
+        "react/jsx-props-no-spreading": 0,
+        // Object asign 错误
+        "prefer-object-spread": 0,
+        "@typescript-eslint/no-unused-vars": 1,
+        "no-use-before-define": 0,
+        // 顺序排序方法 关闭
+        "react/sort-comp": 0,
+        "import/no-cycle": 0,
+        "react/jsx-one-expression-per-line": 0,
+        "no-unused-expressions": 0,
+        "import/extensions": [
+            1,
+            "ignorePackages",
+            {
+                "js": "never",
+                "jsx": "never",
+                "ts": "never",
+                "tsx": "never"
+            }
+        ]
     }
-  },
-  "env": {
-    "browser": true,
-    "es6": true,
-    "node": true,
-    "jest": true
-  },
-  "rules": {
-    "prettier/prettier": "error",
-    "@typescript-eslint/semi": 0,
-    "@typescript-eslint/no-extra-semi": 0,
-    "react/forbid-prop-types": 0,
-    "react/jsx-no-bind": 0,
-    "jsx-a11y/label-has-for": 0,
-    "react/no-did-mount-set-state": 0,
-    "react/no-array-index-key": 0,
-    "react/no-find-dom-node": 0,
-    "react/require-default-props": 0,
-    "global-require": 0,
-    "import/no-duplicates": 0,
-    "import/no-extraneous-dependencies": 0,
-    "import/no-webpack-loader-syntax": 0,
-    "import/prefer-default-export": 0,
-    "max-len": 0,
-    "no-console": 0,
-    "no-continue": 0,
-    "no-labels": 0,
-    "no-restricted-syntax": 0,
-    "no-script-url": 0,
-    "no-param-reassign": 0,
-    "no-cond-assign": 0,
-    "no-plusplus": [
-      "error",
-      {
-        "allowForLoopAfterthoughts": true
-      }
-    ],
-    "no-static-element-interactions": 0,
-    "jsx-a11y/anchor-is-valid": 0,
-    "jsx-a11y/no-static-element-interactions": 0,
-    "jsx-a11y/click-events-have-key-events": 0,
-    "react/destructuring-assignment": 0,
-    "linebreak-style": [0, "error", "windows"],
-    //
-    // const { loading, children } = props
-    "react/prop-types": 0,
-    // 遇到jsx语法 必须.jsx结尾  关闭该规则
-    //https://github.com/yannickcr/eslint-plugin-react/blob/master/docs/rules/jsx-filename-extension.md
-    "react/jsx-filename-extension": [
-      1,
-      {
-        "extensions": [".js", ".jsx", ".ts", ".tsx"]
-      }
-    ],
-    "react/jsx-props-no-spreading": 0,
-    // Object asign 错误
-    "prefer-object-spread": 0,
-    "@typescript-eslint/no-unused-vars": 1,
-    "no-use-before-define": 0,
-    // 顺序排序方法 关闭
-    "react/sort-comp": 0,
-    "import/no-cycle": 0,
-    "react/jsx-one-expression-per-line": 0,
-    "no-unused-expressions": 0,
-    "import/extensions": [
-      1,
-      "ignorePackages",
-      {
-        "js": "never",
-        "jsx": "never",
-        "ts": "never",
-        "tsx": "never"
-      }
-    ]
-  }
 }
