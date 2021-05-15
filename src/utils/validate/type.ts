@@ -1,4 +1,4 @@
-// @ts-nocheck 
+// @ts-nocheck
 import nullable from './nullable'
 import isJson from './isJson'
 
@@ -72,24 +72,24 @@ const regs = {
 /* eslint-enable */
 
 export default (type, message) =>
-  nullable((value, formdata, callback) => {
-    const error = new Error(message)
-    if (type === 'json') {
-      if (isJson(value)) callback(true)
-      else callback(error)
+    nullable((value, formdata, callback) => {
+        const error = new Error(message)
+        if (type === 'json') {
+            if (isJson(value)) callback(true)
+            else callback(error)
 
-      return
-    }
+            return
+        }
 
-    const reg = regs[type]
-    if (!reg) {
-      console.error(new Error(`Type '${type}' not existed.`))
-      callback(new Error(`Validate failured. Type '${type}' not existed.`))
-    }
+        const reg = regs[type]
+        if (!reg) {
+            console.error(new Error(`Type '${type}' not existed.`))
+            callback(new Error(`Validate failured. Type '${type}' not existed.`))
+        }
 
-    if (reg.test(value)) {
-      callback(true)
-    } else {
-      callback(error)
-    }
-  })
+        if (reg.test(value)) {
+            callback(true)
+        } else {
+            callback(error)
+        }
+    })

@@ -1,4 +1,4 @@
-// @ts-nocheck 
+// @ts-nocheck
 import checkItem from '../Checkbox/CheckItem'
 
 export default checkItem('radio')

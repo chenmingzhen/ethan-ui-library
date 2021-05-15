@@ -1,4 +1,4 @@
-// @ts-nocheck 
+// @ts-nocheck
 import React from 'react'
 import ReactDOM from 'react-dom'
 import { imageClass } from '@/styles'
@@ -7,31 +7,31 @@ import Gallery from './Gallery'
 let container
 
 function keyClose(e) {
-  if (e.keyCode === 27) close()
+    if (e.keyCode === 27) close()
 }
 
 function close() {
-  document.removeEventListener('keydown', keyClose)
-  ReactDOM.unmountComponentAtNode(container)
-  document.body.removeChild(container)
-  container = null
+    document.removeEventListener('keydown', keyClose)
+    ReactDOM.unmountComponentAtNode(container)
+    document.body.removeChild(container)
+    container = null
 }
 
 function getContainer() {
-  if (container) return container
+    if (container) return container
 
-  container = document.createElement('div')
-  document.body.appendChild(container)
-  container.className = imageClass('gallery')
+    container = document.createElement('div')
+    document.body.appendChild(container)
+    container.className = imageClass('gallery')
 
-  return container
+    return container
 }
 
 export default function(images, current = 0) {
-  if (!Array.isArray(images)) images = [images]
-  const div = getContainer()
+    if (!Array.isArray(images)) images = [images]
+    const div = getContainer()
 
-  document.addEventListener('keydown', keyClose)
+    document.addEventListener('keydown', keyClose)
 
-  ReactDOM.render(<Gallery onClose={close} current={current} images={images} />, div)
+    ReactDOM.render(<Gallery onClose={close} current={current} images={images} />, div)
 }

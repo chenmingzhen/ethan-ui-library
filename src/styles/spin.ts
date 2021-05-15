@@ -1,4 +1,4 @@
-// @ts-nocheck 
+// @ts-nocheck
 // Created by scripts/create-style.js.
 import genaration from '@/utils/classnames'
 

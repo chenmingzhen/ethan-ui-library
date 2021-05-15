@@ -1,4 +1,4 @@
-// @ts-nocheck 
+// @ts-nocheck
 import classnames from 'classnames'
 import config from '../config'
 
@@ -9,17 +9,17 @@ import config from '../config'
  * @param prefix - string, default value is 'so'
  */
 export default (style, module, prefix = config.prefix) => (...args) => {
-  const className = classnames(...args)
-  if (!className) return ''
+    const className = classnames(...args)
+    if (!className) return ''
 
-  const ns = `${prefix}${module ? `-${module}` : '-'}`
+    const ns = `${prefix}${module ? `-${module}` : '-'}`
 
-  // _ means default(ns)
-  let list = className.split(' ').map(item => (item === '_' ? ns : `${ns}-${item}`))
+    // _ means default(ns)
+    let list = className.split(' ').map(item => (item === '_' ? ns : `${ns}-${item}`))
 
-  // If you turn on modularity
-  if (config.cssModule) {
-    list = list.map(item => style[item] || item)
-  }
-  return list.join(' ')
+    // If you turn on modularity
+    if (config.cssModule) {
+        list = list.map(item => style[item] || item)
+    }
+    return list.join(' ')
 }

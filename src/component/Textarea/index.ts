@@ -1,4 +1,4 @@
-// @ts-nocheck 
+// @ts-nocheck
 import { compose } from '@/utils/func'
 import delay from '@/hoc/delay'
 import trim from '@/hoc/trim'

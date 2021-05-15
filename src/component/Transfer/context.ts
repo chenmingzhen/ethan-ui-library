@@ -1,4 +1,4 @@
-// @ts-nocheck 
+// @ts-nocheck
 import createContext from 'create-react-context'
 
 export const { Provider, Consumer } = createContext()

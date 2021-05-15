@@ -1,4 +1,4 @@
-// @ts-nocheck 
+// @ts-nocheck
 import React, { useEffect, useCallback, useMemo, memo } from 'react'
 import PropTypes from 'prop-types'
 import classnames from 'classnames'
@@ -11,106 +11,108 @@ import { Provider } from '../Checkbox/context'
 import Radio from './Radio'
 
 function RadioGroup(props) {
-  // ---------------------------state------------------------------
-  const update = useUpdate()
-  // ---------------------------lifecycle---------------------------
-  useEffect(() => {
-    // 订阅value改变时
-    props.datum.subscribe(CHANGE_TOPIC, update)
-    return () => {
-      props.datum.unsubscribe(CHANGE_TOPIC, update)
-    }
-  }, [])
-  // ----------------------------method------------------------------
-  const handleRawChange = useCallback(
-    value => {
-      props.datum.set(value)
-    },
-    [props.datum]
-  )
-
-  const handleClick = useCallback(
-    (val, checked, index) => {
-      const { data, datum } = props
-      datum.set(data[index])
-    },
-    [props.data, props.datum]
-  )
-
-  const getContent = useCallback(
-    d => {
-      const { renderItem } = props
-
-      if (typeof renderItem === 'string') {
-        // 渲染数据data的指定属性
-        return d[renderItem]
-      }
-      if (typeof renderItem === 'function') {
-        return renderItem(d)
-      }
-
-      return ''
-    },
-    [props.renderItem]
-  )
-
-  // ----------------------------render------------------------------
-  const { block, data, datum, keygen, children, button, size } = props
-
-  const className = useMemo(
-    () =>
-      classnames(
-        checkInputClass(
-          'group',
-          block && 'block',
-          button && 'button',
-          button === 'outline' && 'outline',
-          button && size
-        ),
-        props.className
-      ),
-    [block, button, size, props.className]
-  )
-
-  // 无data  传回调交给用户自行操作
-  if (data === undefined) {
-    return (
-      <div className={className}>
-        <Provider value={{ onRawChange: handleRawChange, checked: datum.check.bind(datum) }}>{children}</Provider>
-      </div>
+    // ---------------------------state------------------------------
+    const update = useUpdate()
+    // ---------------------------lifecycle---------------------------
+    useEffect(() => {
+        // 订阅value改变时
+        props.datum.subscribe(CHANGE_TOPIC, update)
+        return () => {
+            props.datum.unsubscribe(CHANGE_TOPIC, update)
+        }
+    }, [])
+    // ----------------------------method------------------------------
+    const handleRawChange = useCallback(
+        value => {
+            props.datum.set(value)
+        },
+        [props.datum]
     )
-  }
 
-  return (
-    <div className={className}>
-      {data.map((d, i) => (
-        <Radio
-          checked={datum.check(d)}
-          disabled={datum.disabled(d)}
-          key={getKey(d, keygen, i)}
-          htmlValue={i}
-          index={i}
-          onChange={handleClick}
-        >
-          {getContent(d)}
-        </Radio>
-      ))}
-      {children}
-    </div>
-  )
+    const handleClick = useCallback(
+        (val, checked, index) => {
+            const { data, datum } = props
+            datum.set(data[index])
+        },
+        [props.data, props.datum]
+    )
+
+    const getContent = useCallback(
+        d => {
+            const { renderItem } = props
+
+            if (typeof renderItem === 'string') {
+                // 渲染数据data的指定属性
+                return d[renderItem]
+            }
+            if (typeof renderItem === 'function') {
+                return renderItem(d)
+            }
+
+            return ''
+        },
+        [props.renderItem]
+    )
+
+    // ----------------------------render------------------------------
+    const { block, data, datum, keygen, children, button, size } = props
+
+    const className = useMemo(
+        () =>
+            classnames(
+                checkInputClass(
+                    'group',
+                    block && 'block',
+                    button && 'button',
+                    button === 'outline' && 'outline',
+                    button && size
+                ),
+                props.className
+            ),
+        [block, button, size, props.className]
+    )
+
+    // 无data  传回调交给用户自行操作
+    if (data === undefined) {
+        return (
+            <div className={className}>
+                <Provider value={{ onRawChange: handleRawChange, checked: datum.check.bind(datum) }}>
+                    {children}
+                </Provider>
+            </div>
+        )
+    }
+
+    return (
+        <div className={className}>
+            {data.map((d, i) => (
+                <Radio
+                    checked={datum.check(d)}
+                    disabled={datum.disabled(d)}
+                    key={getKey(d, keygen, i)}
+                    htmlValue={i}
+                    index={i}
+                    onChange={handleClick}
+                >
+                    {getContent(d)}
+                </Radio>
+            ))}
+            {children}
+        </div>
+    )
 }
 
 RadioGroup.propTypes = {
-  ...getProps(PropTypes, 'children', 'keygen', 'size'),
-  block: PropTypes.bool,
-  data: PropTypes.array,
-  button: PropTypes.oneOfType([PropTypes.string, PropTypes.bool]),
-  datum: PropTypes.object.isRequired,
-  renderItem: PropTypes.oneOfType([PropTypes.string, PropTypes.func]),
+    ...getProps(PropTypes, 'children', 'keygen', 'size'),
+    block: PropTypes.bool,
+    data: PropTypes.array,
+    button: PropTypes.oneOfType([PropTypes.string, PropTypes.bool]),
+    datum: PropTypes.object.isRequired,
+    renderItem: PropTypes.oneOfType([PropTypes.string, PropTypes.func]),
 }
 
 RadioGroup.defaultProps = {
-  renderItem: d => d,
+    renderItem: d => d,
 }
 
 export default memo(RadioGroup)

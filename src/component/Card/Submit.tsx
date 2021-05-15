@@ -1,43 +1,43 @@
-// @ts-nocheck 
+// @ts-nocheck
 import React, { PureComponent } from 'react'
 import PropTypes from 'prop-types'
 import Button from '../Button'
 
 class Submit extends PureComponent {
-  constructor(props) {
-    super(props)
-    this.handleClick = this.handleClick.bind(this)
-  }
+    constructor(props) {
+        super(props)
+        this.handleClick = this.handleClick.bind(this)
+    }
 
-  handleClick(e) {
-    e.persist()
-    setTimeout(() => {
-      this.props.onSubmit(e.target)
-    }, 50)
-  }
+    handleClick(e) {
+        e.persist()
+        setTimeout(() => {
+            this.props.onSubmit(e.target)
+        }, 50)
+    }
 
-  render() {
-    const { onSubmit, loading, children, formStatus, ...other } = this.props
-    return (
-      <Button
-        type="primary"
-        {...other}
-        disabled={formStatus === 'disabled'}
-        loading={formStatus === 'pending' || loading}
-        onClick={this.handleClick}
-      >
-        {children}
-      </Button>
-    )
-  }
+    render() {
+        const { onSubmit, loading, children, formStatus, ...other } = this.props
+        return (
+            <Button
+                type="primary"
+                {...other}
+                disabled={formStatus === 'disabled'}
+                loading={formStatus === 'pending' || loading}
+                onClick={this.handleClick}
+            >
+                {children}
+            </Button>
+        )
+    }
 }
 
 Submit.propTypes = {
-  children: PropTypes.any,
-  formStatus: PropTypes.string,
-  loading: PropTypes.bool,
-  onCollapse: PropTypes.func,
-  onSubmit: PropTypes.func,
+    children: PropTypes.any,
+    formStatus: PropTypes.string,
+    loading: PropTypes.bool,
+    onCollapse: PropTypes.func,
+    onSubmit: PropTypes.func,
 }
 
 export default Submit

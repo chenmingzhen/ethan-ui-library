@@ -1,4 +1,4 @@
-// @ts-nocheck 
+// @ts-nocheck
 import genaration from '@/utils/classnames'
 import exposeLess from './expose.less'
 

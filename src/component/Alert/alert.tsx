@@ -6,87 +6,87 @@ import useRender from './hooks/useRender'
 
 export type AlertType = 'default' | 'success' | 'info' | 'warning' | 'danger' | 'error' | 'loading'
 export interface AlertProps {
-  className?: string
+    className?: string
 
-  style?: React.CSSProperties
+    style?: React.CSSProperties
 
-  type?: AlertType
+    type?: AlertType
 
-  dismiss?: boolean
+    dismiss?: boolean
 
-  icon?: boolean | Element
+    icon?: boolean | Element
 
-  iconSize?: number
+    iconSize?: number
 
-  onClose?(t?: number, h?: number): any
+    onClose?(t?: number, h?: number): any
 
-  outAnimation?: boolean
+    outAnimation?: boolean
 
-  duration?: number
+    duration?: number
 
-  closeItem?: React.ReactNode
+    closeItem?: React.ReactNode
 
-  children?: React.ReactNode
+    children?: React.ReactNode
 }
 
 export interface AlertInstance {
-  clientHeight(): number
+    clientHeight(): number
 }
 
 export default memo(
-  React.forwardRef<AlertInstance, AlertProps>(
-    (
-      {
-        className,
-        style,
-        dismiss: outerDismiss,
-        icon,
-        iconSize = 16,
-        onClose,
-        outAnimation,
-        duration = 200,
-        type = 'warning',
-        closeItem,
-        children,
-      },
-      alertRef
-    ) => {
-      const ref = useRef<HTMLDivElement>()
-      const { dismiss, handleClose } = useDissmiss({ onClose, outAnimation, duration, el: ref })
-      const { renderClose, renderIcon } = useRender({ icon, iconSize, handleClose, type, closeItem })
+    React.forwardRef<AlertInstance, AlertProps>(
+        (
+            {
+                className,
+                style,
+                dismiss: outerDismiss,
+                icon,
+                iconSize = 16,
+                onClose,
+                outAnimation,
+                duration = 200,
+                type = 'warning',
+                closeItem,
+                children,
+            },
+            alertRef
+        ) => {
+            const ref = useRef<HTMLDivElement>()
+            const { dismiss, handleClose } = useDissmiss({ onClose, outAnimation, duration, el: ref })
+            const { renderClose, renderIcon } = useRender({ icon, iconSize, handleClose, type, closeItem })
 
-      const clientHeight = useCallback(() => ref.current?.clientHeight, [])
+            const clientHeight = useCallback(() => ref.current?.clientHeight, [])
 
-      useEffect(() => {
-        outerDismiss && handleClose()
-      }, [outerDismiss])
+            useEffect(() => {
+                outerDismiss && handleClose()
+            }, [outerDismiss])
 
-      useImperativeHandle(alertRef, () => ({ clientHeight }))
+            useImperativeHandle(alertRef, () => ({ clientHeight }))
 
-      if (dismiss === 2) return null
+            if (dismiss === 2) return null
 
-      let wrapClassName = alertClass(
-        '_',
-        type,
-        /* shrink animation control by this (dismissed) */
-        !outAnimation && dismiss === 1 && 'dismissed',
-        onClose && 'with-close',
-        icon && 'with-icon'
-      )
+            let wrapClassName = alertClass(
+                '_',
+                type,
+                /* shrink animation control by this (dismissed) */
+                !outAnimation && dismiss === 1 && 'dismissed',
+                onClose && 'with-close',
+                icon && 'with-icon'
+            )
 
-      if (className) wrapClassName = `${wrapClassName} ${className}`
+            if (className) wrapClassName = `${wrapClassName} ${className}`
 
-      return (
-        <div ref={ref} className={wrapClassName} style={style}>
-          {onClose && renderClose}
-          {type !== 'loading' ? (
-            renderIcon
-          ) : (
-            <Spin name="ring" size={18} className={alertClass('loading-icon')} color="#17a2b8" />
-          )}
-          <div className={alertClass('content')}>{children}</div>
-        </div>
-      )
-    }
-  )
+            return (
+                <div ref={ref} className={wrapClassName} style={style}>
+                    {onClose && renderClose}
+                    {type !== 'loading' ? (
+                        renderIcon
+                    ) : (
+                        <Spin name="ring" size={18} className={alertClass('loading-icon')} color="#17a2b8" />
+                    )}
+                    <div className={alertClass('content')}>{children}</div>
+                </div>
+            )
+        }
+    )
 )

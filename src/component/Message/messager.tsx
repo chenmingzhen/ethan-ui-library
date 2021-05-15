@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React from 'react'
 import ReactDOM from 'react-dom'
 import { messageClass } from '@/styles'
@@ -14,51 +13,51 @@ const components = {}
   相同的position会放到同一个容器中
 */
 function getElement(type) {
-  const div = document.createElement('div')
-  div.className = messageClass('_', type)
+    const div = document.createElement('div')
+    div.className = messageClass('_', type)
 
-  document.body.appendChild(div)
-  elements[type] = div
-  return div
+    document.body.appendChild(div)
+    elements[type] = div
+    return div
 }
 
 export function destroy(type) {
-  // 卸载组件 装组件的容器
-  if (elements[type]) {
-    ReactDOM.unmountComponentAtNode(elements[type])
-    document.body.removeChild(elements[type])
-    delete elements[type]
-  }
-  if (components[type]) {
-    delete components[type]
-  }
+    // 卸载组件 装组件的容器
+    if (elements[type]) {
+        ReactDOM.unmountComponentAtNode(elements[type])
+        document.body.removeChild(elements[type])
+        delete elements[type]
+    }
+    if (components[type]) {
+        delete components[type]
+    }
 }
 
 export function closeWithAnimation(type) {
-  for (type in components) {
-    if (components[type]) components[type].removeAllMessage()
-  }
+    for (type in components) {
+        if (components[type]) components[type].removeAllMessage()
+    }
 }
 
 export function getComponent(type): Promise<Container> {
-  return new Promise(resolve => {
-    const component = components[type]
-    // 判断有无这个type(position)的容器  每个type对应一个所有组件容器
-    if (component) {
-      resolve(component)
-    } else {
-      // 如果该position为第一次创建 则resolve Container的实例回去
-      ReactDOM.render(
-        <Container
-          /* resolve这个实例回去 并记录在组件容器中 */
-          ref={comp => {
-            components[type] = comp
-            resolve(comp)
-          }}
-          onDestroy={destroy.bind(null, type)}
-        />,
-        getElement(type)
-      )
-    }
-  })
+    return new Promise(resolve => {
+        const component = components[type]
+        // 判断有无这个type(position)的容器  每个type对应一个所有组件容器
+        if (component) {
+            resolve(component)
+        } else {
+            // 如果该position为第一次创建 则resolve Container的实例回去
+            ReactDOM.render(
+                <Container
+                    /* resolve这个实例回去 并记录在组件容器中 */
+                    ref={comp => {
+                        components[type] = comp
+                        resolve(comp)
+                    }}
+                    onDestroy={destroy.bind(null, type)}
+                />,
+                getElement(type)
+            )
+        }
+    })
 }

@@ -1,4 +1,4 @@
-// @ts-nocheck 
+// @ts-nocheck
 import { compose } from '@/utils/func'
 import Datum from '@/utils/Datum'
 import inputable from '../Form/inputable'
@@ -8,8 +8,8 @@ import { consumer } from './context'
 
 const CheckboxContainer = compose(inputable, consumer)(Checkbox)
 CheckboxContainer.Group = compose(
-  inputable,
-  Datum.hoc({ bindProps: ['disabled', 'format', 'prediction', 'separator'] })
+    inputable,
+    Datum.hoc({ bindProps: ['disabled', 'format', 'prediction', 'separator'] })
 )(Group)
 CheckboxContainer.Checkbox = Checkbox
 

@@ -1,77 +1,77 @@
-// @ts-nocheck 
+// @ts-nocheck
 import React, { useEffect, useState, useMemo, useCallback } from 'react'
 import PropTypes from 'prop-types'
 import { stepsClass } from '@/styles'
 import { FontAwesome } from '@/component/Icon'
 
 const StepItem = props => {
-  const { icon: Icon, title, description, step, status, width, height, onClick, index } = props
-  const [showCustomIcon, setShowCustomIcon] = useState(Icon && Icon.type && Icon.type.displayName === 'EthanIcon')
+    const { icon: Icon, title, description, step, status, width, height, onClick, index } = props
+    const [showCustomIcon, setShowCustomIcon] = useState(Icon && Icon.type && Icon.type.displayName === 'EthanIcon')
 
-  const style = useMemo(() => {
-    const computed = {}
+    const style = useMemo(() => {
+        const computed = {}
 
-    width ? (computed.width = `${width}%`) : null
-    height ? (computed.height = `${height}%`) : null
+        width ? (computed.width = `${width}%`) : null
+        height ? (computed.height = `${height}%`) : null
 
-    return computed
-  }, [width, height])
+        return computed
+    }, [width, height])
 
-  const handleClick = useCallback(() => {
-    onClick?.(index)
-  }, [onClick, index])
+    const handleClick = useCallback(() => {
+        onClick?.(index)
+    }, [onClick, index])
 
-  useEffect(() => {
-    if (!Icon) return
+    useEffect(() => {
+        if (!Icon) return
 
-    if (!React.isValidElement(Icon)) {
-      console.error('Icon is not a valid Icon ,please check you Icon!')
+        if (!React.isValidElement(Icon)) {
+            console.error('Icon is not a valid Icon ,please check you Icon!')
 
-      setShowCustomIcon(false)
+            setShowCustomIcon(false)
 
-      return
-    }
+            return
+        }
 
-    setShowCustomIcon(true)
-  }, [Icon])
+        setShowCustomIcon(true)
+    }, [Icon])
 
-  return (
-    <div className={stepsClass('step-item', `${status}`)} style={style} onClick={handleClick}>
-      <div className={stepsClass('step-item-tail')}>
-        <i />
-      </div>
-      <div className={stepsClass('step-item-icon')}>
-        {showCustomIcon && Icon}
-        {!showCustomIcon && (
-          <div className={stepsClass('step-item-icon-inner')}>
-            {status !== 'finish' && status !== 'error' && <span>{step}</span>}
-            {status === 'finish' && <FontAwesome name="check-square-o" />}
-            {status === 'error' && <FontAwesome name="close" />}
-          </div>
-        )}
-      </div>
-      <div className={stepsClass('step-item-main')}>
-        <div className={stepsClass('step-item-title')}>{title}</div>
-        <div className={stepsClass('step-item-description')}>{description}</div>
-      </div>
-    </div>
-  )
+    return (
+        <div className={stepsClass('step-item', `${status}`)} style={style} onClick={handleClick}>
+            <div className={stepsClass('step-item-tail')}>
+                <i />
+            </div>
+            <div className={stepsClass('step-item-icon')}>
+                {showCustomIcon && Icon}
+                {!showCustomIcon && (
+                    <div className={stepsClass('step-item-icon-inner')}>
+                        {status !== 'finish' && status !== 'error' && <span>{step}</span>}
+                        {status === 'finish' && <FontAwesome name="check-square-o" />}
+                        {status === 'error' && <FontAwesome name="close" />}
+                    </div>
+                )}
+            </div>
+            <div className={stepsClass('step-item-main')}>
+                <div className={stepsClass('step-item-title')}>{title}</div>
+                <div className={stepsClass('step-item-description')}>{description}</div>
+            </div>
+        </div>
+    )
 }
 
 StepItem.defaultProps = {
-  status: 'wait',
+    status: 'wait',
 }
 
 StepItem.propTypes = {
-  step: PropTypes.number,
-  width: PropTypes.number,
-  height: PropTypes.number,
-  title: PropTypes.string,
-  description: PropTypes.string,
-  status: PropTypes.oneOf(['wait', 'process', 'finish', 'error']),
-  icon: PropTypes.element,
-  onClick: PropTypes.func,
-  index: PropTypes.number,
+    step: PropTypes.number,
+    width: PropTypes.number,
+    height: PropTypes.number,
+    title: PropTypes.string,
+    description: PropTypes.string,
+    status: PropTypes.oneOf(['wait', 'process', 'finish', 'error']),
+    icon: PropTypes.element,
+    onClick: PropTypes.func,
+    index: PropTypes.number,
 }
 
 export default React.memo(StepItem)

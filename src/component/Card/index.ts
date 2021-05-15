@@ -1,4 +1,4 @@
-// @ts-nocheck 
+// @ts-nocheck
 import Card from './Card'
 import Submit from './Submit'
 import { consumer } from './context'

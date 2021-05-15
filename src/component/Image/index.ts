@@ -1,4 +1,4 @@
-// @ts-nocheck 
+// @ts-nocheck
 import Image from './Image'
 import Group from './Group'
 

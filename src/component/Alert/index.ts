@@ -3,8 +3,8 @@ import Alert, { AlertInstance, AlertProps } from './alert'
 import Scroll from './scrollAlert'
 
 interface AlertComponent
-  extends MemoExoticComponent<ForwardRefExoticComponent<AlertProps & RefAttributes<AlertInstance>>> {
-  Scroll: typeof Scroll
+    extends MemoExoticComponent<ForwardRefExoticComponent<AlertProps & RefAttributes<AlertInstance>>> {
+    Scroll: typeof Scroll
 }
 
 Scroll.displayName = 'EthanAlertScroll'

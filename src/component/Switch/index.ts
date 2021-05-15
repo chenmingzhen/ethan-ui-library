@@ -1,4 +1,4 @@
-// @ts-nocheck 
+// @ts-nocheck
 import { compose } from '@/utils/func'
 import inputable from '../Form/inputable'
 import Switch from './Switch'

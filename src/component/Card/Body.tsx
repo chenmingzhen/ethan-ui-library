@@ -1,4 +1,4 @@
-// @ts-nocheck 
+// @ts-nocheck
 import React, { PureComponent } from 'react'
 import PropTypes from 'prop-types'
 import classnames from 'classnames'
@@ -8,36 +8,36 @@ import List from '../List'
 const CollapseList = List(['collapse'], 'fast')
 
 class Body extends PureComponent {
-  // eslint-disable-next-line react/static-property-placement
-  static propTypes = {
-    children: PropTypes.any,
-    className: PropTypes.string,
-    collapsed: PropTypes.bool,
-    collapsible: PropTypes.bool,
-    style: PropTypes.object,
-    onCollapse: PropTypes.func,
-  }
+    // eslint-disable-next-line react/static-property-placement
+    static propTypes = {
+        children: PropTypes.any,
+        className: PropTypes.string,
+        collapsed: PropTypes.bool,
+        collapsible: PropTypes.bool,
+        style: PropTypes.object,
+        onCollapse: PropTypes.func,
+    }
 
-  render() {
-    const { className, collapsed, collapsible, onCollapse, ...other } = this.props
-    const newClassName = classnames(cardClass('body'), className)
+    render() {
+        const { className, collapsed, collapsible, onCollapse, ...other } = this.props
+        const newClassName = classnames(cardClass('body'), className)
 
-    if (!collapsible) return <div {...other} className={newClassName} />
+        if (!collapsible) return <div {...other} className={newClassName} />
 
-    const onClick = typeof collapsed === 'boolean' ? onCollapse : undefined
-    return (
-      <CollapseList show={!collapsed}>
-        <div {...other} className={newClassName}>
-          {other.children}
-          {collapsible === 'bottom' && (
-            <div className={cardClass('foldup')} onClick={onClick}>
-              <span />
-            </div>
-          )}
-        </div>
-      </CollapseList>
-    )
-  }
+        const onClick = typeof collapsed === 'boolean' ? onCollapse : undefined
+        return (
+            <CollapseList show={!collapsed}>
+                <div {...other} className={newClassName}>
+                    {other.children}
+                    {collapsible === 'bottom' && (
+                        <div className={cardClass('foldup')} onClick={onClick}>
+                            <span />
+                        </div>
+                    )}
+                </div>
+            </CollapseList>
+        )
+    }
 }
 
 Body.propTypes = {}

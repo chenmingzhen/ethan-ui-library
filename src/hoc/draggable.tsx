@@ -1,98 +1,98 @@
-// @ts-nocheck 
+// @ts-nocheck
 import React from 'react'
 import PropTypes from 'prop-types'
 import { curry } from '@/utils/func'
 
 export default curry(Origin => {
-  class Drag extends React.PureComponent {
-    constructor(props) {
-      super(props)
+    class Drag extends React.PureComponent {
+        constructor(props) {
+            super(props)
 
-      this.handleDragStart = this.handleDragStart.bind(this)
-      this.handleDrag = this.handleDrag.bind(this)
-      this.handleDragEnd = this.handleDragEnd.bind(this)
+            this.handleDragStart = this.handleDragStart.bind(this)
+            this.handleDrag = this.handleDrag.bind(this)
+            this.handleDragEnd = this.handleDragEnd.bind(this)
+        }
+
+        componentDidMount() {
+            const { client, onDragStart } = this.props
+            if (client) {
+                this.clientX = client.x
+                this.clientY = client.y
+                this.dragging = true
+                this.addEvents()
+                onDragStart(true)
+            }
+        }
+
+        componentWillUnmount() {
+            this.removeEvents()
+        }
+
+        addEvents() {
+            document.addEventListener('mousemove', this.handleDrag)
+            document.addEventListener('mouseup', this.handleDragEnd)
+            document.addEventListener('mouseleave', this.handleDragEnd)
+        }
+
+        removeEvents() {
+            document.removeEventListener('mousemove', this.handleDrag)
+            document.removeEventListener('mouseup', this.handleDragEnd)
+            document.removeEventListener('mouseleave', this.handleDragEnd)
+        }
+
+        handleDrag(e) {
+            if (!this.dragging) return
+            if (e.clientX === 0 && e.clientY === 0) return
+
+            const { onDrag } = this.props
+            const mx = e.clientX - this.clientX
+            const my = e.clientY - this.clientY
+            if (mx === 0 && my === 0) return
+
+            this.clientX = e.clientX
+            this.clientY = e.clientY
+
+            onDrag(mx, my, e.clientX, e.clientY)
+        }
+
+        handleDragStart(e) {
+            if (e.button !== 0) return
+            const { onDragStart } = this.props
+
+            this.clientX = e.clientX
+            this.clientY = e.clientY
+            this.dragging = true
+            this.addEvents()
+            onDragStart(true)
+        }
+
+        handleDragEnd() {
+            if (!this.dragging) return
+            const { onDragEnd } = this.props
+
+            this.dragging = false
+            this.removeEvents()
+            onDragEnd(false)
+        }
+
+        render() {
+            return <Origin {...this.props} onDragStart={this.handleDragStart} />
+        }
     }
 
-    componentDidMount() {
-      const { client, onDragStart } = this.props
-      if (client) {
-        this.clientX = client.x
-        this.clientY = client.y
-        this.dragging = true
-        this.addEvents()
-        onDragStart(true)
-      }
+    Drag.propTypes = {
+        client: PropTypes.object,
+        onDragStart: PropTypes.func,
+        onDrag: PropTypes.func,
+        onDragEnd: PropTypes.func,
     }
 
-    componentWillUnmount() {
-      this.removeEvents()
+    Drag.defaultProps = {
+        client: undefined,
+        onDragStart() {},
+        onDrag() {},
+        onDragEnd() {},
     }
 
-    addEvents() {
-      document.addEventListener('mousemove', this.handleDrag)
-      document.addEventListener('mouseup', this.handleDragEnd)
-      document.addEventListener('mouseleave', this.handleDragEnd)
-    }
-
-    removeEvents() {
-      document.removeEventListener('mousemove', this.handleDrag)
-      document.removeEventListener('mouseup', this.handleDragEnd)
-      document.removeEventListener('mouseleave', this.handleDragEnd)
-    }
-
-    handleDrag(e) {
-      if (!this.dragging) return
-      if (e.clientX === 0 && e.clientY === 0) return
-
-      const { onDrag } = this.props
-      const mx = e.clientX - this.clientX
-      const my = e.clientY - this.clientY
-      if (mx === 0 && my === 0) return
-
-      this.clientX = e.clientX
-      this.clientY = e.clientY
-
-      onDrag(mx, my, e.clientX, e.clientY)
-    }
-
-    handleDragStart(e) {
-      if (e.button !== 0) return
-      const { onDragStart } = this.props
-
-      this.clientX = e.clientX
-      this.clientY = e.clientY
-      this.dragging = true
-      this.addEvents()
-      onDragStart(true)
-    }
-
-    handleDragEnd() {
-      if (!this.dragging) return
-      const { onDragEnd } = this.props
-
-      this.dragging = false
-      this.removeEvents()
-      onDragEnd(false)
-    }
-
-    render() {
-      return <Origin {...this.props} onDragStart={this.handleDragStart} />
-    }
-  }
-
-  Drag.propTypes = {
-    client: PropTypes.object,
-    onDragStart: PropTypes.func,
-    onDrag: PropTypes.func,
-    onDragEnd: PropTypes.func,
-  }
-
-  Drag.defaultProps = {
-    client: undefined,
-    onDragStart() {},
-    onDrag() {},
-    onDragEnd() {},
-  }
-
-  return Drag
+    return Drag
 })

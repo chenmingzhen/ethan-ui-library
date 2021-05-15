@@ -1,4 +1,4 @@
-// @ts-nocheck 
+// @ts-nocheck
 import create from './Container'
 import * as events from './events'
 

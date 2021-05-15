@@ -1,20 +1,20 @@
-// @ts-nocheck 
+// @ts-nocheck
 import immer from 'immer'
 
 const names = [
-  'delay',
-  'onDatumBind',
-  'rules',
-  'formDatum',
-  'forceChange',
-  'trim',
-  'beforeChange',
-  'validateHook',
-  'innerFormNamePath',
-  'fieldSetValidate',
-  'combineRules',
-  'popoverProps',
-  'info',
+    'delay',
+    'onDatumBind',
+    'rules',
+    'formDatum',
+    'forceChange',
+    'trim',
+    'beforeChange',
+    'validateHook',
+    'innerFormNamePath',
+    'fieldSetValidate',
+    'combineRules',
+    'popoverProps',
+    'info',
 ]
 
 // Warning: Invalid value for prop `info` on <input>
@@ -25,7 +25,7 @@ const names = [
  * @param props
  */
 export default function cleanProps(props) {
-  return immer(props, draft => {
-    names.forEach(p => delete draft[p])
-  })
+    return immer(props, draft => {
+        names.forEach(p => delete draft[p])
+    })
 }

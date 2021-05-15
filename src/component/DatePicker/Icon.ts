@@ -1,32 +1,32 @@
-// @ts-nocheck 
+// @ts-nocheck
 import { createElement, PureComponent } from 'react'
 import PropTypes from 'prop-types'
 import { datepickerClass } from '@/styles'
 import icons from '../icons'
 
 class Icon extends PureComponent {
-  render() {
-    const { className, name, onClick, tag, disabled } = this.props
+    render() {
+        const { className, name, onClick, tag, disabled } = this.props
 
-    const newProps = {
-      className: datepickerClass(className, 'icon', disabled && 'disabled'),
-      onClick: disabled ? undefined : onClick,
+        const newProps = {
+            className: datepickerClass(className, 'icon', disabled && 'disabled'),
+            onClick: disabled ? undefined : onClick,
+        }
+
+        return createElement(tag, newProps, icons[name])
     }
-
-    return createElement(tag, newProps, icons[name])
-  }
 }
 
 Icon.propTypes = {
-  className: PropTypes.string,
-  disabled: PropTypes.bool,
-  name: PropTypes.string.isRequired,
-  onClick: PropTypes.func,
-  tag: PropTypes.string,
+    className: PropTypes.string,
+    disabled: PropTypes.bool,
+    name: PropTypes.string.isRequired,
+    onClick: PropTypes.func,
+    tag: PropTypes.string,
 }
 
 Icon.defaultProps = {
-  tag: 'span',
+    tag: 'span',
 }
 
 export default Icon

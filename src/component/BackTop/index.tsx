@@ -1,4 +1,4 @@
-// @ts-nocheck 
+// @ts-nocheck
 import React, { useRef, useState, memo } from 'react'
 import PropTypes from 'prop-types'
 import { backTopClass } from '@/styles'
@@ -8,74 +8,74 @@ import { useUnmount } from 'react-use'
 import Transfer from './transfer'
 
 const BackTop = props => {
-  const [visible, setVisible] = useState(false)
-  const backTopTimer = useRef()
-  const isUnmount = useRef(false)
-  const { right, bottom } = props
+    const [visible, setVisible] = useState(false)
+    const backTopTimer = useRef()
+    const isUnmount = useRef(false)
+    const { right, bottom } = props
 
-  const onScroll = () => {
-    const top = document.body.scrollTop || document.documentElement.scrollTop || window.scrollY
-    const newVisible = top >= props.height
-    !isUnmount.current && setVisible(newVisible)
-  }
-
-  const onClick = () => {
-    props.onClick && props.onClick()
-
-    if (backTopTimer.current) {
-      clearInterval(backTopTimer.current)
+    const onScroll = () => {
+        const top = document.body.scrollTop || document.documentElement.scrollTop || window.scrollY
+        const newVisible = top >= props.height
+        !isUnmount.current && setVisible(newVisible)
     }
 
-    const height = 80
+    const onClick = () => {
+        props.onClick && props.onClick()
 
-    backTopTimer.current = setInterval(() => {
-      const oTop = document.body.scrollTop || document.documentElement.scrollTop || window.scrollY
-      if (oTop > 0) {
-        document.documentElement.scrollTop = oTop - height
-        document.body.scrollTop = document.documentElement.scrollTop
+        if (backTopTimer.current) {
+            clearInterval(backTopTimer.current)
+        }
 
-        if (window.setScroll) window.setScroll(-height)
-      } else {
-        clearInterval(backTopTimer.current)
-      }
+        const height = 80
 
-      // if (height <= 15) height = 15
-      // else height -= 1
-    }, 10)
-  }
+        backTopTimer.current = setInterval(() => {
+            const oTop = document.body.scrollTop || document.documentElement.scrollTop || window.scrollY
+            if (oTop > 0) {
+                document.documentElement.scrollTop = oTop - height
+                document.body.scrollTop = document.documentElement.scrollTop
 
-  const style = { right: `${right}px`, bottom: `${bottom}px` }
+                if (window.setScroll) window.setScroll(-height)
+            } else {
+                clearInterval(backTopTimer.current)
+            }
 
-  useUnmount(() => {
-    isUnmount.current = true
-    if (backTopTimer.current) clearInterval(backTopTimer.current)
-  })
+            // if (height <= 15) height = 15
+            // else height -= 1
+        }, 10)
+    }
 
-  return (
-    <Transfer onScroll={onScroll}>
-      <Transition show={visible}>
-        <div className={backTopClass('_')} onClick={onClick} style={style}>
-          {props.children ? (
-            props.children
-          ) : (
-            <div className={backTopClass('content')}>
-              <FontAwesome name="angle-double-up" />
-            </div>
-          )}
-        </div>
-      </Transition>
-    </Transfer>
-  )
+    const style = { right: `${right}px`, bottom: `${bottom}px` }
+
+    useUnmount(() => {
+        isUnmount.current = true
+        if (backTopTimer.current) clearInterval(backTopTimer.current)
+    })
+
+    return (
+        <Transfer onScroll={onScroll}>
+            <Transition show={visible}>
+                <div className={backTopClass('_')} onClick={onClick} style={style}>
+                    {props.children ? (
+                        props.children
+                    ) : (
+                        <div className={backTopClass('content')}>
+                            <FontAwesome name="angle-double-up" />
+                        </div>
+                    )}
+                </div>
+            </Transition>
+        </Transfer>
+    )
 }
 
 BackTop.defaultProps = {
-  height: 100,
+    height: 100,
 }
 BackTop.propTypes = {
-  onClick: PropTypes.func,
-  height: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
-  right: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
-  bottom: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    onClick: PropTypes.func,
+    height: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    right: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    bottom: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
 }
 
 BackTop.displayName = 'EthanBackTop'

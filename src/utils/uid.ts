@@ -1,34 +1,34 @@
-// @ts-nocheck 
+// @ts-nocheck
 let uid = Date.now()
 
 export function getUid() {
-  uid += 1
-  return uid
+    uid += 1
+    return uid
 }
 
 /*
     return only id
 */
 export function getUidStr() {
-  return getUid().toString(36)
+    return getUid().toString(36)
 }
 
 function $getKey(d, gen, index) {
-  if (gen === true) return d
-  if (typeof gen === 'string') return d[gen]
-  if (typeof gen === 'function') return gen(d, index)
+    if (gen === true) return d
+    if (typeof gen === 'string') return d[gen]
+    if (typeof gen === 'function') return gen(d, index)
 
-  console.warn('Key generator not found or invalid, use index.')
-  return index
+    console.warn('Key generator not found or invalid, use index.')
+    return index
 }
 
 export function getKey(...args) {
-  const key = $getKey(...args)
-  if (typeof key !== 'string' && typeof key !== 'number') {
-    console.error(new Error(`keygen result expect a string or a number, get '${typeof key}'`))
-  }
+    const key = $getKey(...args)
+    if (typeof key !== 'string' && typeof key !== 'number') {
+        console.error(new Error(`keygen result expect a string or a number, get '${typeof key}'`))
+    }
 
-  return key
+    return key
 }
 
 export const defer = typeof Promise === 'function' ? Promise.resolve().then.bind(Promise.resolve()) : setTimeout

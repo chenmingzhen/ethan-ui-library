@@ -1,4 +1,4 @@
-// @ts-nocheck 
+// @ts-nocheck
 import { compose } from '@/utils/func'
 import Datum from '@/utils/Datum'
 import inputable from '../Form/inputable'
@@ -10,8 +10,8 @@ import Radio from './Radio'
 const RadioContainer = consumer(Radio)
 
 RadioContainer.Group = compose(
-  inputable,
-  Datum.hoc({ limit: 1, bindProps: ['disabled', 'format', 'prediction'], pure: false })
+    inputable,
+    Datum.hoc({ limit: 1, bindProps: ['disabled', 'format', 'prediction'], pure: false })
 )(Group)
 
 RadioContainer.displayName = 'EthanRadio'

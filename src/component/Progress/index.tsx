@@ -1,24 +1,24 @@
-// @ts-nocheck 
+// @ts-nocheck
 import React from 'react'
 import PropTypes from 'prop-types'
 import Line from './Line'
 import Circle from './Circle'
 
 function Progress(props) {
-  switch (props.shape) {
-    case 'circle':
-      return <Circle {...props} />
-    default:
-      return <Line {...props} />
-  }
+    switch (props.shape) {
+        case 'circle':
+            return <Circle {...props} />
+        default:
+            return <Line {...props} />
+    }
 }
 
 Progress.propTypes = {
-  shape: PropTypes.oneOf(['line', 'circle']),
+    shape: PropTypes.oneOf(['line', 'circle']),
 }
 
 Progress.defaultProps = {
-  shape: 'line',
+    shape: 'line',
 }
 
 Progress.displayName = 'EthanProgress'
