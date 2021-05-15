@@ -32,7 +32,7 @@ export function flatten(data, skipArray) {
         } else {
             let empty = true
             // eslint-disable-next-line
-      for (const p in cur) {
+            for (const p in cur) {
                 empty = false
                 recurse(cur[p], prop ? `${prop}.${p}` : p)
             }
@@ -40,8 +40,8 @@ export function flatten(data, skipArray) {
                 result[prop] = {}
             }
         }
-        }
     }
+
     recurse(data, '')
     return result
 }
@@ -57,18 +57,18 @@ export function unflatten(rawdata) {
     let { cur, prop, idx, last, temp, match } = {}
 
     // eslint-disable-next-line
-  Object.keys(data).sort().forEach((p) => {
+    Object.keys(data).sort().forEach((p) => {
             const pathWithPoint = insertPoint(p)
             cur = result
-        prop = ''
+            prop = ''
             last = 0
             do {
-            idx = pathWithPoint.indexOf('.', last)
+                idx = pathWithPoint.indexOf('.', last)
                 temp = pathWithPoint.substring(last, idx !== -1 ? idx : undefined)
                 match = /^\[(\d+)\]$/.exec(temp)
                 cur = cur[prop] || (cur[prop] = match ? [] : {})
                 prop = match ? match[1] : temp
-            last = idx + 1
+                last = idx + 1
             } while (idx >= 0)
             cur[prop] = deepClone(data[p])
         })
@@ -137,7 +137,7 @@ export const getSthByName = (name, source = {}) => {
     name.split('.').forEach(n => {
         const match = /^\[(\d+)\]$/.exec(n)
         // eslint-disable-next-line
-    if (match) n = match[1]
+        if (match) n = match[1]
         if (result) result = result[n]
         else result = undefined
     })

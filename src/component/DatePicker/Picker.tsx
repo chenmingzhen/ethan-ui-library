@@ -70,7 +70,8 @@ class Picker extends PureComponent {
 
         // only range has index prop
         if (index === undefined)
-            return <Render {...otherProps} current={current || this.defaultCurrent} onModeChange={this.handleModeChange} />
+            return (
+                <Render {...otherProps} current={current || this.defaultCurrent} onModeChange={this.handleModeChange} />
             )
 
         return (
