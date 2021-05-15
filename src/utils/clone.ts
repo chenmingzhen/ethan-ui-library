@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { isArray, isDate, isMap, isSet, isRegexp, isMergeable, isError } from './is'
 
 const cloneArray = source => Array.from(source, x => deepClone(x))
@@ -6,7 +5,6 @@ const cloneArray = source => Array.from(source, x => deepClone(x))
 const cloneObject = (source, specialKeys = []) => {
     const target = Object.create(Object.getPrototypeOf(source))
     ;[...specialKeys, ...Object.keys(source)].forEach(k => {
-        // eslint-disable-next-line
         target[k] = deepClone(source[k])
     })
     return target

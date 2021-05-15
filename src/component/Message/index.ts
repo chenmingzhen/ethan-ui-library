@@ -1,21 +1,34 @@
 import { AlertType } from '@/component/Alert/alert'
 import { destroy, getComponent, closeWithAnimation } from './messager'
 
+/**
+ * 对外暴露的API
+ */
 export interface MessageOption {
+    /**
+     * 关闭Message的回调
+     */
     onClose?(): void
 
+    /**
+     * Message的位置
+     */
     position?: 'top' | 'middle' | 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right'
 
+    /**
+     * Message标题
+     */
     title?: string | number
 
+    /**
+     * Message额外className
+     */
     className?: string
-
-    top?: string
 }
 
 // 构造函数
 const create = (type: AlertType) => (content, duration = 3, options: MessageOption = {}) => {
-    const { onClose, position = 'top', title, className = '', top = 'auto' } = options
+    const { onClose, position = 'top', title, className = '' } = options
 
     const find = ['top', 'middle', 'top-left', 'top-right', 'bottom-left', 'bottom-right'].indexOf(position)
 
@@ -36,16 +49,14 @@ const create = (type: AlertType) => (content, duration = 3, options: MessageOpti
             onClose,
             title,
             className,
-            top,
             position,
         })
     })
 
-    if (type === 'loading') {
-        return setTimeout.bind(null, () => {
-            callback?.()
-        })
-    }
+    // 获取容器时异步操作 需要添加setTimeout加入栈中
+    return setTimeout.bind(null, () => {
+        callback?.()
+    })
 }
 
 // 导入此依赖就会执行  create (type)=>这个函数  返回闭包

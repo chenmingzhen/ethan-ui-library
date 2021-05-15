@@ -9,25 +9,44 @@ import { AlertType } from '../Alert/alert'
 interface Message {
     id?: string
 
+    /**
+     * message 类型
+     */
     type?: AlertType
 
+    /**
+     * message 内容
+     */
     content?: string
 
+    /**
+     * 是否消失
+     */
     dismiss?: boolean
 
+    /**
+     * 高度 用于dismiss
+     */
     h?: number
 
+    /**
+     * Message 标题
+     */
     title?: string | number
 
     className?: string
 
+    /**
+     * Message出现的位置
+     */
     position?: 'top' | 'middle' | 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right'
 
     onClose?(): void
 
+    /**
+     * Message显示时长
+     */
     duration?: number
-
-    top?: string
 }
 
 interface ContainerProps {
@@ -105,7 +124,6 @@ class Container extends PureComponent<ContainerProps, ContainerState> {
             }, msg.duration * 1000)
         }
 
-        // loading 特殊处理 返回
         return this.removeLoadingMsg.bind(this, id)
     }
 
@@ -168,13 +186,22 @@ class Container extends PureComponent<ContainerProps, ContainerState> {
     }
 
     removeAllMessage() {
-        this.setState(
-            immer(state => {
-                state.messages.forEach(c => {
-                    c.dismiss = true
-                })
-            })
-        )
+        for (let i = 0; i < this.state.messages.length; i++) {
+            // setState不一定能获取到最新的 使用唯一id找到对应的message
+            const { id } = this.state.messages[i]
+
+            setTimeout(() => {
+                this.setState(
+                    immer(state => {
+                        const find = state.messages.find(m => m.id === id)
+
+                        if (find) {
+                            find.dismiss = true
+                        }
+                    })
+                )
+            }, i * 200)
+        }
     }
 
     render() {
@@ -190,10 +217,9 @@ class Container extends PureComponent<ContainerProps, ContainerState> {
                         <Alert
                             /* 自行处理动画效果 */
                             outAnimation
+                            onClose={this.closeMessageForAnimation.bind(this, id)}
                             className={messageClass('msg')}
                             dismiss={dismiss}
-                            /* 自行处理动画效果 */
-                            onClose={this.closeMessageForAnimation.bind(this, id)}
                             icon
                             iconSize={title ? 20 : 14}
                             type={type}

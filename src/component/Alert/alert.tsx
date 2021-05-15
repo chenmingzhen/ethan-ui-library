@@ -18,7 +18,7 @@ export interface AlertProps {
 
     iconSize?: number
 
-    onClose?(t?: number, h?: number): any
+    onClose?(t?: number, h?: number): void
 
     outAnimation?: boolean
 

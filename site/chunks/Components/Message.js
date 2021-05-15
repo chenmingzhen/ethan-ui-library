@@ -56,8 +56,8 @@ const examples = [
     {
     name: '5-manual-closex',
     title: locate(
-    '手动关闭 \n Message 会异步返回一个关闭函数，调用它来关闭当前 Messsage',
-    'Close \n Message return close func async'
+    '手动关闭 \n Message 会返回一个关闭函数，调用它来关闭当前 Messsage',
+    'Close \n Message return close func'
     ),
     component: require('doc/pages/components/Message/example-5-manual-close.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
