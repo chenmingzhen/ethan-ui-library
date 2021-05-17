@@ -1,104 +1,114 @@
-// @ts-nocheck
-import React from 'react'
-import PropTypes from 'prop-types'
+import React, { ReactNode, useRef } from 'react'
 import classnames from 'classnames'
-import { PureComponent } from '@/utils/component'
-import { addStack, removeStack } from '@/utils/lazyload'
 import { imageClass } from '@/styles'
 import Spin from '@/component/Spin'
 import showGallery from './events'
+import { PLACEHOLDER, SRC, ALT, ERROR } from './variable'
+import useImage from './hooks/useImage'
 
-const PLACEHOLDER = 0
-const SRC = 1
-const ALT = 2
-const ERROR = 3
+export interface ImageProps {
+    alt?: string
 
-class Image extends PureComponent {
-    constructor(props) {
-        super(props)
+    className?: string
 
-        this.state = {
-            status: PLACEHOLDER,
-        }
+    /**
+     * 图片高度
+     */
+    height?: number | string
 
-        this.bindElement = this.bindElement.bind(this)
-        this.markToRender = this.markToRender.bind(this)
-        this.handleAlt = this.handleAlt.bind(this)
-        this.handleClick = this.handleClick.bind(this)
-    }
+    /**
+     * 图片宽度
+     */
+    width?: number | string
 
-    componentDidMount() {
-        super.componentDidMount()
-        this.fetchImage()
-    }
+    href?: string
 
-    componentDidUpdate(prevProps) {
-        const { src, alt } = this.props
-        if (prevProps.src !== src || prevProps.alt !== alt) {
-            this.fetchImage()
-        }
-    }
+    /**
+     * 懒加载
+     */
+    lazy?: boolean | number
 
-    componentWillUnmount() {
-        super.componentWillUnmount()
-        removeStack(this.lazyId)
-        delete this.image
-    }
+    onClick?(e: React.MouseEvent<HTMLElement, MouseEvent>): void
 
-    bindElement(el) {
-        this.element = el
-    }
+    placeholder?: ReactNode | string
 
-    fetchImage() {
-        if (this.lazyId) removeStack(this.lazyId)
-        if (!this.props.lazy) {
-            this.markToRender()
-        } else {
-            const { container } = this.props
-            this.lazyId = addStack({
-                offset: typeof this.props.lazy === 'number' ? this.props.lazy : 0,
-                element: this.element,
-                render: this.markToRender,
-                container: typeof container === 'string' ? document.querySelector(container) : container,
-            })
-        }
-    }
+    /**
+     * 形状
+     */
+    shape?: 'rounded' | 'circle' | 'thumbnail'
 
-    markToRender() {
-        const { src } = this.props
-        if (!src) {
-            this.handleAlt()
-            return
-        }
+    /**
+     * 适应
+     */
+    fit: 'fill' | 'center' | 'fit' | 'stretch'
 
-        delete this.image
-        const image = new window.Image()
-        // onload加载完成后执行
-        image.onload = () => this.setState({ status: SRC })
-        image.onerror = this.handleAlt
-        // 设置src开始加载
-        image.src = this.props.src
-        this.image = image
-    }
+    src?: string
 
-    handleAlt() {
-        const { alt } = this.props
-        if (!alt) {
-            this.setState({ status: ERROR })
-            return
-        }
+    style?: React.CSSProperties
 
-        // 浏览器会对这个地址的图片进行缓存
-        // src不能找到时 渲染alt地址的图片
-        const image = new window.Image()
-        image.onload = () => this.setState({ status: ALT })
-        image.onerror = () => this.setState({ status: ERROR })
-        // 加载
-        image.src = alt
-    }
+    target?: '_blank' | '_sele' | '_modal' | '_download'
 
-    handleClick(e) {
-        const { onClick, target, src, href } = this.props
+    title?: string
+
+    /**
+     * 目标容器
+     */
+    container?: string
+
+    /**
+     * 图片出错的展示
+     */
+    error?: ReactNode
+
+    /**
+     * 加载中形状
+     */
+    loadingName?:
+        | 'default'
+        | 'chasing-ring'
+        | 'chasing-dots'
+        | 'cube-grid'
+        | 'double-bounce'
+        | 'fading-circle'
+        | 'four-dots'
+        | 'plane'
+        | 'pulse'
+        | 'ring'
+        | 'scale-circle'
+        | 'three-bounce'
+        | 'wave'
+
+    /**
+     * 加载中颜色
+     */
+    loadingColor?: string
+}
+
+const Image: React.FC<ImageProps> = props => {
+    const {
+        src,
+        alt,
+        lazy = false,
+        container,
+        shape,
+        fit,
+        href,
+        target = '_modal',
+        width = '100%',
+        height = '100%',
+        style,
+        onClick,
+        error,
+        title,
+        placeholder,
+        loadingColor: color,
+        loadingName: name,
+    } = props
+
+    const el = useRef<any>()
+    const { status } = useImage(lazy, src, alt, container, el)
+
+    const handleClick = (e: React.MouseEvent<HTMLElement, MouseEvent>) => {
         if (onClick) {
             onClick(e)
             return
@@ -110,20 +120,7 @@ class Image extends PureComponent {
         }
     }
 
-    renderType(src) {
-        const { title, fit } = this.props
-
-        return fit === 'fill' || fit === 'fit' ? (
-            <div className={imageClass('inner')} title={title} style={{ backgroundImage: `url("${src}")` }} />
-        ) : (
-            <div className={imageClass('inner')} title={title}>
-                <img alt="" src={src} />
-            </div>
-        )
-    }
-
-    renderPlaceholder() {
-        const { placeholder, title, loadingColor: color, loadingName: name } = this.props
+    const renderPlaceholder = () => {
         if (React.isValidElement(placeholder)) {
             return <div className={imageClass('inner')}>{placeholder}</div>
         }
@@ -133,24 +130,31 @@ class Image extends PureComponent {
             <div className={imageClass('inner', 'mask')}>
                 <div>
                     {title}
-                    {/* <span className={imageClass('placeholder')}>{placeholder || getLocale('loading')}</span> */}
+
                     <Spin {...loadingStyle} />
                 </div>
             </div>
         )
     }
 
-    renderImage() {
-        const { status } = this.state
-        const { alt, src, title, error } = this.props
+    const renderType = source => {
+        return fit === 'fill' || fit === 'fit' ? (
+            <div className={imageClass('inner')} title={title} style={{ backgroundImage: `url("${source}")` }} />
+        ) : (
+            <div className={imageClass('inner')} title={title}>
+                <img alt="" src={source} />
+            </div>
+        )
+    }
 
+    const renderImage = () => {
         switch (status) {
             case PLACEHOLDER:
-                return this.renderPlaceholder()
+                return renderPlaceholder()
             case SRC:
-                return this.renderType(src)
+                return renderType(src)
             case ALT:
-                return this.renderType(alt)
+                return renderType(alt)
             case ERROR:
                 return (
                     <div className={imageClass('inner', 'mask')}>
@@ -162,69 +166,20 @@ class Image extends PureComponent {
         }
     }
 
-    render() {
-        const { href, height, style, shape, fit, width, target } = this.props
-
-        const className = classnames(imageClass('_', shape, fit), this.props.className)
-
-        const Tag = href ? 'a' : 'div'
-        const props = {
-            ref: this.bindElement,
-            onClick: this.handleClick,
-            target: target === '_download' ? '_self' : target,
-            download: target === '_download',
-            className,
-            style: Object.assign({}, style, { width, paddingBottom: height }),
-        }
-        if (!href || target !== '_modal') props.href = href
-        return <Tag {...props}>{this.renderImage()}</Tag>
+    const className = classnames(imageClass('_', shape, fit), props.className)
+    const Tag = href ? 'a' : 'div'
+    const newProps = {
+        ref: el,
+        onClick: handleClick,
+        target: target === '_download' ? '_self' : target,
+        download: target === '_download',
+        className,
+        style: Object.assign({}, style, { width, paddingBottom: height }),
     }
+
+    return <Tag {...newProps}>{renderImage()}</Tag>
 }
 
-Image.propTypes = {
-    alt: PropTypes.string,
-    className: PropTypes.string,
-    height: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
-    href: PropTypes.string,
-    lazy: PropTypes.oneOfType([PropTypes.bool, PropTypes.number]),
-    onClick: PropTypes.func,
-    placeholder: PropTypes.oneOfType([PropTypes.element, PropTypes.string]),
-    shape: PropTypes.oneOf(['rounded', 'circle', 'thumbnail']),
-    src: PropTypes.string,
-    style: PropTypes.object,
-    target: PropTypes.oneOf(['_blank', '_self', '_modal', '_download']),
-    title: PropTypes.string,
-    fit: PropTypes.oneOf(['fill', 'fit', 'stretch', 'center']),
-    width: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
-    container: PropTypes.string,
-    error: PropTypes.node,
-    loadingName: PropTypes.oneOf([
-        'default',
-        'chasing-ring',
-        'chasing-dots',
-        'cube-grid',
-        'double-bounce',
-        'fading-circle',
-        'four-dots',
-        'plane',
-        'pulse',
-        'ring',
-        'scale-circle',
-        'three-bounce',
-        'wave',
-    ]),
-    loadingColor: PropTypes.string,
-}
-
-Image.defaultProps = {
-    lazy: false,
-    target: '_modal',
-    width: '100%',
-    height: '100%',
-}
-
-export const IMAGE = {}
-
-Image.symbolType = IMAGE
+Image.displayName = 'EthanImage'
 
 export default Image

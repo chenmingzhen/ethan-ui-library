@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { getUidStr } from './uid'
 import { docSize } from './dom/document'
 import { eventPassive } from './dom/detect'
