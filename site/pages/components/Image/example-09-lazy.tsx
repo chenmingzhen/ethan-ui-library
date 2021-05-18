@@ -10,11 +10,11 @@ import { Image } from 'ethan/index'
 const data = [1, 2, 3, 4].map(i => require(`../../../images/${i}_b.jpg`))
 
 export default function() {
-  return (
-    <div>
-      {data.map((img, i) => (
-        <Image lazy key={i} fit="fill" height="66%" src={img} />
-      ))}
-    </div>
-  )
+    return (
+        <div>
+            {data.map((img, i) => (
+                <Image lazy key={i} fit="fill" height="66%" src={img} />
+            ))}
+        </div>
+    )
 }

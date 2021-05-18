@@ -8,5 +8,5 @@ import React from 'react'
 import { Image } from 'ethan/index'
 
 export default function() {
-  return <Image width={200} height={125} src="notfound" title="Image not exist" />
+    return <Image width={200} height={125} src="notfound" title="Image not exist" />
 }

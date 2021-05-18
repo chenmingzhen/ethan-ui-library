@@ -40,7 +40,7 @@ export interface ImageProps {
     /**
      * 适应
      */
-    fit: 'fill' | 'center' | 'fit' | 'stretch'
+    fit?: 'fill' | 'center' | 'fit' | 'stretch'
 
     src?: string
 
@@ -182,4 +182,4 @@ const Image: React.FC<ImageProps> = props => {
 
 Image.displayName = 'EthanImage'
 
-export default Image
+export default React.memo(Image)

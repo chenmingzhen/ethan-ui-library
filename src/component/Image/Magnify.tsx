@@ -1,9 +1,5 @@
-// @ts-nocheck
-import React from 'react'
-import PropTypes from 'prop-types'
-import immer from 'immer'
+import React, { useState, useEffect, useRef, useCallback } from 'react'
 import { imageClass } from '@/styles'
-import { PureComponent } from '@/utils/component'
 import Spin from '../Spin'
 
 /**
@@ -12,124 +8,114 @@ import Spin from '../Spin'
  * 正常情况status=0 img里面的宽高会受到max的限制 status=1时 img的max style被清除 显示一个完整的图形
  * 由于父级容器存在溢出隐藏 所有出现活动条 这时候mousemove的作用就来了 status为1时 计算父级容器div的scrollTop与scrollLeft
  */
-class Magnify extends PureComponent {
-    constructor(props) {
-        super(props)
 
-        this.state = {
-            loading: true,
-            // 1 放大 0 正常
-            status: 0,
-            style: {
-                maxHeight: props.maxHeight,
-                maxWidth: props.maxWidth,
-            },
-        }
+export interface MagnifyProps {
+    maxHeight: number
 
-        this.handleMove = this.handleMove.bind(this)
-        this.handleResize = this.handleResize.bind(this)
-        this.handleLoaded = this.handleLoaded.bind(this)
+    maxWidth: number
+
+    src: string
+
+    position: string
+
+    lockScroll(e: boolean): void
+}
+
+const Magnify: React.FC<MagnifyProps> = ({ maxHeight, maxWidth, src, position, lockScroll }) => {
+    const [loading, setLoading] = useState<boolean>(true)
+    // 1 放大 0 正常
+    const [status, setStatus] = useState<0 | 1>(0)
+    const [style, setStyle] = useState<{ maxHeight: number; maxWidth: number }>({
+        maxHeight,
+        maxWidth,
+    })
+
+    const elementRef = useRef<HTMLDivElement>()
+    // 点击图片开启放大器模式时 记录点击点的位置 触发移动
+    const resizeRef = useRef<{ clientX: number | undefined; clientY: number | undefined }>({
+        clientX: undefined,
+        clientY: undefined,
+    })
+
+    const handleResize = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+        if (position !== 'center') return
+
+        const newStatus = status === 1 ? 0 : 1
+        const { clientX, clientY } = e
+
+        setStatus(newStatus)
+        setStyle(newStatus === 0 ? { maxHeight, maxWidth } : undefined)
+
+        resizeRef.current = { clientX, clientY }
+
+        lockScroll(newStatus === 1)
     }
 
-    componentDidUpdate(prevProps) {
-        if (prevProps.src !== this.props.src && this.state.status === 1) {
-            // eslint-disable-next-line
-      this.setState({
-                loading: true,
-                status: 0,
-                style: {
-                    maxHeight: this.props.maxHeight,
-                    maxWidth: this.props.maxWidth,
-                },
-            })
-            this.props.lockScroll(false)
-        }
-    }
-
-    move(clientX, clientY) {
-        const rect = this.element.getBoundingClientRect()
-        const image = this.element.querySelector('img')
-
+    const move = useCallback((clientX, clientY) => {
+        const rect = elementRef.current.getBoundingClientRect()
+        const image = elementRef.current.querySelector('img')
         // 浏览器滚动条宽度
         const browserBarWidth = window.innerWidth - document.body.clientWidth
-
         const { width, height } = rect
-
         const x = (clientX - rect.left) / (width - browserBarWidth)
         const y = (clientY - rect.top) / (height - browserBarWidth)
         // 20为this.element的上下Padding总和
-        this.element.scrollTop = (image.offsetHeight - height + 20) * y
-        this.element.scrollLeft = (image.offsetWidth - width + 20) * x
-    }
+        elementRef.current.scrollTop = (image.offsetHeight - height + 20) * y
+        elementRef.current.scrollLeft = (image.offsetWidth - width + 20) * x
+    }, [])
 
-    handleLoaded() {
-        this.setState({ loading: false })
-    }
+    const handleMove = useCallback((e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+        move(e.clientX, e.clientY)
+    }, [])
 
-    handleMove(e) {
-        this.move(e.clientX, e.clientY)
-    }
+    const handleLoaded = useCallback(() => {
+        setLoading(false)
+    }, [])
 
-    handleResize(e) {
-        const { maxHeight, maxWidth, position } = this.props
-        if (position !== 'center') return
-        const status = this.state.status === 1 ? 0 : 1
-        const { clientX, clientY } = e
-
-        this.setState(
-            immer(state => {
-                state.status = status
-                state.style = status === 0 ? { maxHeight, maxWidth } : undefined
-            }),
-            () => {
-                if (status === 0) return
-                this.move(clientX, clientY)
-            }
-        )
-        this.props.lockScroll(status === 1)
-    }
-
-    render() {
-        const { maxHeight, maxWidth, src } = this.props
-        const { status, loading } = this.state
-        // eslint-disable-next-line
-    const cursor = this.props.position === 'center' ? (status === 1 ? 'zoom-out' : 'zoom-in') : 'pointer'
-        const style = { maxHeight, maxWidth, cursor }
+    useEffect(() => {
         if (status === 1) {
-            style.overflow = 'scroll'
-            style.borderRightWidth = 0
-            style.borderBottomWidth = 0
+            setLoading(true)
+            setStatus(0)
+            setStyle({ maxHeight, maxWidth })
+            lockScroll(false)
         }
+    }, [src])
 
-        const onMouseMove = status === 1 ? this.handleMove : undefined
+    useEffect(() => {
+        if (status === 0) return
 
-        return (
-            <div
-                onClick={this.handleResize}
-                onMouseMove={onMouseMove}
-                ref={el => {
-                    this.element = el
-                }}
-                style={style}
-                className={imageClass('magnify')}
-            >
-                <img onLoad={this.handleLoaded} src={src} alt="" style={this.state.style} />
-                {loading && (
-                    <div className={imageClass('magnify-loading')}>
-                        <Spin size={30} />
-                    </div>
-                )}
-            </div>
-        )
+        const { clientX, clientY } = resizeRef.current
+
+        move(clientX, clientY)
+    }, [status, style])
+
+    const cursor = position === 'center' ? (status === 1 ? 'zoom-out' : 'zoom-in') : 'pointer'
+    const newStyle: React.CSSProperties = { maxHeight, maxWidth, cursor }
+
+    if (status === 1) {
+        newStyle.overflow = 'scroll'
+        newStyle.borderRightWidth = 0
+        newStyle.borderBottomWidth = 0
     }
-}
 
-Magnify.propTypes = {
-    lockScroll: PropTypes.func,
-    maxHeight: PropTypes.number,
-    maxWidth: PropTypes.number,
-    position: PropTypes.string,
-    src: PropTypes.string,
+    const onMouseMove = status === 1 ? handleMove : undefined
+
+    return (
+        <div
+            onClick={handleResize}
+            onMouseMove={onMouseMove}
+            ref={elementRef}
+            style={newStyle}
+            className={imageClass('magnify')}
+        >
+            <img onLoad={handleLoaded} src={src} alt="" style={style} />
+            {loading && (
+                <div className={imageClass('magnify-loading')}>
+                    <Spin size={30} />
+                </div>
+            )}
+        </div>
+    )
 }
 
 export default Magnify

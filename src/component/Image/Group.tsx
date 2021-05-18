@@ -1,19 +1,46 @@
-// @ts-nocheck
-import React, { PureComponent, Children, cloneElement } from 'react'
-import PropTypes from 'prop-types'
+import React, { Children, cloneElement, ReactElement } from 'react'
 import { imageClass } from '@/styles'
-import { IMAGE } from './Image'
 import showGallery from './events'
+import { ImageProps } from './Image'
 
-class Group extends PureComponent {
-    handleClick(index) {
-        const { children } = this.props
+interface GroupProps {
+    /**
+     * 是否堆叠
+     */
+    pile?: boolean
+    /**
+     * 是否懒加载
+     */
+    lazy?: boolean
+    /**
+     * 单个图片高度(值为百分比时，对比值为图片宽度)
+     */
+    height?: number | string
+    /**
+     * 单个图片宽度
+     */
+    width?: number | string
+    /**
+     * 图片打开方式
+     */
+    target: '_modal' | '_blank' | '_self' | '_download'
+
+    style?: React.CSSProperties
+}
+
+const Group: React.FC<GroupProps> = ({ pile, children, style, ...props }) => {
+    const handleClick = index => {
         const images = []
+
         let current = 0
-        Children.toArray(children).forEach((child, i) => {
-            if (child && child.type && child.type.symbolType === IMAGE) {
+
+        // @ts-ignore
+        Children.toArray(children).forEach((child: ReactElement<ImageProps, { displayName: string }>, i) => {
+            if (child?.type?.displayName === 'EthanImage') {
                 if (index === i) current = images.length
+
                 const { src, href } = child.props
+
                 images.push({ thumb: src, src: href || src, key: i })
             }
         })
@@ -21,25 +48,18 @@ class Group extends PureComponent {
         showGallery(images, current)
     }
 
-    render() {
-        const { children, pile, style, ...props } = this.props
-        return (
-            <div className={imageClass('group', pile && 'pile')} style={style}>
-                {Children.toArray(this.props.children).map((child, i) =>
-                    cloneElement(child, {
-                        ...props,
-                        onClick: this.handleClick.bind(this, i),
-                    })
-                )}
-            </div>
-        )
-    }
+    return (
+        <div className={imageClass('group', pile && 'pile')} style={style}>
+            {Children.toArray(children).map((child: ReactElement, i) =>
+                cloneElement(child, {
+                    ...props,
+                    onClick: handleClick.bind(this, i),
+                })
+            )}
+        </div>
+    )
 }
 
-Group.propTypes = {
-    children: PropTypes.oneOfType([PropTypes.element, PropTypes.array]),
-    pile: PropTypes.bool,
-    style: PropTypes.object,
-}
+Group.displayName = 'EthanImageGroup'
 
 export default Group

@@ -10,15 +10,15 @@ import { Image } from 'ethan/index'
 const src = require('../../../images/1_s.jpg')
 
 export default function() {
-  return (
-    <div>
-      {['_modal', '_blank', '_self', '_download'].map(target => (
-        <div key={target} style={{ display: 'inline-block', marginRight: 12, textAlign: 'center' }}>
-          <Image width={80} height={80} target={target} shape="thumbnail" fit="fill" src={src} href={src} />
-          <br />
-          {target}
+    return (
+        <div>
+            {['_modal', '_blank', '_self', '_download'].map(target => (
+                <div key={target} style={{ display: 'inline-block', marginRight: 12, textAlign: 'center' }}>
+                    <Image width={80} height={80} target={target} shape="thumbnail" fit="fill" src={src} href={src} />
+                    <br />
+                    {target}
+                </div>
+            ))}
         </div>
-      ))}
-    </div>
-  )
+    )
 }

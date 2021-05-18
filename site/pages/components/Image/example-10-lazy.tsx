@@ -10,11 +10,11 @@ import { Image } from 'ethan/index'
 const data = [1, 2, 3, 4].map(i => require(`../../../images/${i}_b.jpg`))
 
 export default function() {
-  return (
-    <div id="image-container" style={{ height: '300px', overflowY: 'scroll' }}>
-      {data.map((img, i) => (
-        <Image lazy container="#image-container" key={i} fit="fill" height="66%" src={img} />
-      ))}
-    </div>
-  )
+    return (
+        <div id="image-container" style={{ height: '300px', overflowY: 'scroll' }}>
+            {data.map((img, i) => (
+                <Image lazy container="#image-container" key={i} fit="fill" height="66%" src={img} />
+            ))}
+        </div>
+    )
 }
