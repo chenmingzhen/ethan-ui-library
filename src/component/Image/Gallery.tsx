@@ -123,8 +123,6 @@ const Gallery: React.FC<GalleryProps> = props => {
     if (images[current - 1]) result.push(renderImage(images[current - 1], 'left'))
     if (images[current + 1]) result.push(renderImage(images[current + 1], 'right'))
 
-    console.log(result)
-
     return (result as unknown) as JSX.Element
 }
 

@@ -1,7 +1,6 @@
 import React, { Children, cloneElement, ReactElement } from 'react'
 import { imageClass } from '@/styles'
 import showGallery from './events'
-import { ImageProps } from './Image'
 
 interface GroupProps {
     /**
@@ -23,7 +22,7 @@ interface GroupProps {
     /**
      * 图片打开方式
      */
-    target: '_modal' | '_blank' | '_self' | '_download'
+    target?: '_modal' | '_blank' | '_self' | '_download'
 
     style?: React.CSSProperties
 }
@@ -34,9 +33,8 @@ const Group: React.FC<GroupProps> = ({ pile, children, style, ...props }) => {
 
         let current = 0
 
-        // @ts-ignore
-        Children.toArray(children).forEach((child: ReactElement<ImageProps, { displayName: string }>, i) => {
-            if (child?.type?.displayName === 'EthanImage') {
+        Children.toArray(children).forEach((child: any, i) => {
+            if (child?.type?.IS_ETHAN_IMAGE) {
                 if (index === i) current = images.length
 
                 const { src, href } = child.props
@@ -53,7 +51,7 @@ const Group: React.FC<GroupProps> = ({ pile, children, style, ...props }) => {
             {Children.toArray(children).map((child: ReactElement, i) =>
                 cloneElement(child, {
                     ...props,
-                    onClick: handleClick.bind(this, i),
+                    onClick: handleClick.bind(null, i),
                 })
             )}
         </div>
