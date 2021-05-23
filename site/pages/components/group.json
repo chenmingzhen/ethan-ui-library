@@ -7,7 +7,8 @@
     "Button": "按钮",
     "Dropdown": "下拉菜单",
     "Icon": "图标",
-    "Image": "图片"
+    "Image": "图片",
+    "PhotoView":"照片展览"
   },
   "Layout": {
     "Card": "卡片",

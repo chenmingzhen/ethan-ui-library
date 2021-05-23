@@ -36,6 +36,12 @@ const pages = [
         level: 2,
         component: lazy(() => import(/* webpackChunkName: "Image" */ './Image')),
         },
+            {
+        name: 'PhotoView',
+        cn: '照片展览',
+        level: 2,
+        component: lazy(() => import(/* webpackChunkName: "PhotoView" */ './PhotoView')),
+        },
                 'Layout',
                 {
         name: 'Card',

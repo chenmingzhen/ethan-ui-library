@@ -1,4 +1,3 @@
-// @ts-nocheck
 let uid = Date.now()
 
 export function getUid() {
@@ -22,7 +21,7 @@ function $getKey(d, gen, index) {
     return index
 }
 
-export function getKey(...args) {
+export function getKey(...args: [any, any, any]) {
     const key = $getKey(...args)
     if (typeof key !== 'string' && typeof key !== 'number') {
         console.error(new Error(`keygen result expect a string or a number, get '${typeof key}'`))
