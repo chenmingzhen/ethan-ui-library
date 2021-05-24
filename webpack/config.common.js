@@ -1,5 +1,5 @@
 const webpack = require('webpack')
-
+const { ESBuildMinifyPlugin } = require('esbuild-loader')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const UglifyWebpackPlugin = require('uglifyjs-webpack-plugin')
 const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin')
@@ -68,6 +68,10 @@ module.exports = function getCommon(config) {
                         },
                     },
                 }),
+                // esbuild 压缩插件 
+                new ESBuildMinifyPlugin({
+                    target: 'es2015', // Syntax to compile to (see options below for possible values)
+                }),
                 new OptimizeCSSAssetsPlugin({}),
             ],
         },
@@ -87,9 +91,12 @@ module.exports = function getCommon(config) {
         module: {
             rules: [
                 {
-                    test: /\.jsx?$/,
-                    exclude: [/node_modules/],
-                    use: jsLoaders,
+                    test: /\.js$/,
+                    loader: 'esbuild-loader',
+                    options: {
+                        loader: 'jsx', // Remove this if you're not using JSX
+                        target: 'es2015', // Syntax to compile to (see options below for possible values)
+                    },
                 },
                 {
                     test: /\.tsx?$/,
