@@ -1,4 +1,3 @@
-// @ts-nocheck
 import classnames from 'classnames'
 import config from '../config'
 

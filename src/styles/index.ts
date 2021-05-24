@@ -1,4 +1,3 @@
-// @ts-nocheck
 import genaration from '@/utils/classnames'
 
 // 注意 这里的引入顺序会影响后面的样式叠加
@@ -47,6 +46,7 @@ import lazyloadLess from './lazyload.less'
 import loadingLess from './loading.less'
 import badgeLess from './badge.less'
 import timeLineLess from './timeLine.less'
+import photoViewLess from './photoView.less'
 
 export const alertClass = genaration(alertLess, 'alert')
 export const avatarClass = genaration(avatarLess, 'avatar')
@@ -93,3 +93,4 @@ export const resizableClass = genaration(resizableLess, 'resizable')
 export const lazyloadClass = genaration(lazyloadLess, 'lazyload')
 export const loadingClass = genaration(loadingLess, 'loading')
 export const timeLineClass = genaration(timeLineLess, 'timeline')
+export const photoViewClass = genaration(photoViewLess, 'photoView')
