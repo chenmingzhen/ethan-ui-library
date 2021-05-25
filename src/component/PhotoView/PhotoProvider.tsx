@@ -9,17 +9,25 @@ export interface PhotoProviderProps extends IPhotoProviderBase {
 
 type PhotoProviderState = {
     images: DataType[]
+
     visible: boolean
+    
     index: number
 }
 
+/**
+ * 装载图片组的容器 处理点击图片组内容时的动作 如打开Slider 增加Item 溢移除Item
+ */
 export default class PhotoProvider extends React.Component<PhotoProviderProps, PhotoProviderState> {
     constructor(props) {
         super(props)
 
         this.state = {
+            // 图片Arr
             images: [],
+            // 当前是否可见
             visible: false,
+            // 当前选中的Image 用于打开Slider
             index: 0,
         }
     }
@@ -34,6 +42,7 @@ export default class PhotoProvider extends React.Component<PhotoProviderProps, P
         this.setState(({ images, index }) => {
             const nextImages = images.filter(item => item.key !== key)
             const nextEndIndex = nextImages.length - 1
+
             return {
                 images: nextImages,
                 index: Math.min(nextEndIndex, index),
@@ -43,6 +52,7 @@ export default class PhotoProvider extends React.Component<PhotoProviderProps, P
 
     handleShow = (key: string) => {
         const { images } = this.state
+
         this.setState({
             visible: true,
             index: images.findIndex(item => item.key === key),
