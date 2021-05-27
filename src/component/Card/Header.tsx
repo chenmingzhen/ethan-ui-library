@@ -1,39 +1,32 @@
-// @ts-nocheck
-import React, { PureComponent } from 'react'
-import PropTypes from 'prop-types'
+import React from 'react'
 import classnames from 'classnames'
 import { cardClass } from '@/styles'
 import icons from '../icons'
 
-export default class extends PureComponent {
-    // eslint-disable-next-line react/static-property-placement
-    static propTypes = {
-        align: PropTypes.string,
-        children: PropTypes.any,
-        className: PropTypes.string,
-        collapsed: PropTypes.bool,
-        onCollapse: PropTypes.func,
-        style: PropTypes.object,
-    }
+export interface CardHeaderProps {
+    align: string
 
-    renderIndicator() {
-        const { collapsed } = this.props
-        if (collapsed === undefined) return undefined
-        const className = cardClass('indicator')
-        return <span className={className}>{icons.AngleRight}</span>
-    }
+    className: string
 
-    render() {
-        const { style, align, className, children, onCollapse, collapsed } = this.props
+    // 是否折叠
+    collapsed: boolean
 
-        const newClassName = classnames(cardClass('header', align), className)
-        const onClick = typeof collapsed === 'boolean' ? onCollapse : undefined
+    // 折叠回调
+    onCollapse(e: React.MouseEvent<HTMLElement>): void
 
-        return (
-            <div style={style} onClick={onClick} className={newClassName}>
-                {this.renderIndicator()}
-                {children}
-            </div>
-        )
-    }
+    style: React.CSSProperties
 }
+
+const Header: React.FC<CardHeaderProps> = ({ align, className, collapsed, onCollapse, style, children }) => {
+    const newClassName = classnames(cardClass('header', align), className)
+    const onClick = typeof collapsed === 'boolean' ? onCollapse : null
+
+    return (
+        <div style={style} onClick={onClick} className={newClassName}>
+            {collapsed ? <span className={cardClass('indicator')}>{icons.AngleRight}</span> : null}
+            {children}
+        </div>
+    )
+}
+
+export default React.memo(Header)
