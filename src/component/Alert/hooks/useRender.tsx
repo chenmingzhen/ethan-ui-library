@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react'
 import { capitalize } from '@/utils/strings'
 import { alertClass } from '@/styles'
-import Type from '../../../type/type'
+import { AlertType } from '../alert'
 import icons from '../../icons'
 
 interface useRenderParams {
@@ -9,7 +9,7 @@ interface useRenderParams {
 
     icon?: boolean | Element
 
-    type?: Type
+    type?: AlertType
 
     iconSize?: number
 
