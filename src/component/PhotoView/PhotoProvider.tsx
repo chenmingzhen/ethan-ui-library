@@ -1,9 +1,9 @@
 import React from 'react'
 import Context, { AddItem } from './context'
 import PhotoSlider from './PhotoSlider'
-import { DataType, IPhotoProviderBase } from './types'
+import { DataType, PhotoProviderBase } from './types'
 
-export interface PhotoProviderProps extends IPhotoProviderBase {
+export interface PhotoProviderProps extends PhotoProviderBase {
     children: React.ReactNode
 }
 
@@ -11,7 +11,7 @@ type PhotoProviderState = {
     images: DataType[]
 
     visible: boolean
-    
+
     index: number
 }
 

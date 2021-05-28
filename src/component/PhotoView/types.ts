@@ -33,7 +33,7 @@ export type OverlayRenderProps = {
     onRotate: (rotate: number) => void
 }
 
-export interface IPhotoProviderBase {
+export interface PhotoProviderBase {
     // 背景可点击关闭，默认 true
     maskClosable?: boolean
     // 图片点击可关闭，默认 false
@@ -109,7 +109,7 @@ export enum ShowAnimateEnum {
  */
 export type OriginRectType =
     | {
-          clientX: number
-          clientY: number
-      }
+        clientX: number
+        clientY: number
+    }
     | undefined

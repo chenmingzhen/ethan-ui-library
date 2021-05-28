@@ -6,12 +6,12 @@ import SlideWrap from './SlideWrap'
 import VisibleAnimationHandle from './VisibleAnimationHandle'
 import Icons from '../icons'
 import { isTouchDevice } from './utils'
-import { DataType, IPhotoProviderBase, OverlayRenderProps, ReachTypeEnum, ShowAnimateEnum } from './types'
+import { DataType, PhotoProviderBase, OverlayRenderProps, ReachTypeEnum, ShowAnimateEnum } from './types'
 import { defaultOpacity, horizontalOffset, maxMoveOffset } from './variables'
 
 const { Close, AngleLeft, AngleRight } = Icons
 
-export interface PhotoSliderProps extends IPhotoProviderBase {
+export interface PhotoSliderProps extends PhotoProviderBase {
     // 图片列表
     images: DataType[]
     // 图片当前索引
@@ -29,7 +29,6 @@ type PhotoSliderState = {
     translateX: number
     // 图片当前的 index
     photoIndex: number
-
     // 图片处于触摸的状态
     touched: boolean
     // 该状态是否需要 transition
@@ -49,7 +48,6 @@ type PhotoSliderState = {
     // 旋转集合
     rotatingMap: Map<number, number>
 }
-
 export default class PhotoSlider extends PureComponent<PhotoSliderProps, PhotoSliderState> {
     static displayName = 'PhotoSlider'
 
@@ -106,7 +104,9 @@ export default class PhotoSlider extends PureComponent<PhotoSliderProps, PhotoSl
     handleClose = (evt?: React.MouseEvent | React.TouchEvent) => {
         const { onClose } = this.props
         const { backdropOpacity } = this.state
+
         onClose(evt)
+
         this.setState({
             overlayVisible: true,
             // 记录当前关闭时的透明度
@@ -146,7 +146,9 @@ export default class PhotoSlider extends PureComponent<PhotoSliderProps, PhotoSl
 
     handleRotate = (rotating: number) => {
         const { photoIndex, rotatingMap } = this.state
+
         rotatingMap.set(photoIndex, rotating)
+
         this.setState({
             rotatingMap,
         })
@@ -226,6 +228,8 @@ export default class PhotoSlider extends PureComponent<PhotoSliderProps, PhotoSl
     handleIndexChange = (photoIndex: number, shouldTransition = true) => {
         const singlePageWidth = window.innerWidth + horizontalOffset
         const translateX = -singlePageWidth * photoIndex
+        const { onIndexChange } = this.props
+
         this.setState({
             touched: false,
             lastClientX: undefined,
@@ -234,7 +238,7 @@ export default class PhotoSlider extends PureComponent<PhotoSliderProps, PhotoSl
             photoIndex,
             shouldTransition,
         })
-        const { onIndexChange } = this.props
+
         if (onIndexChange) {
             onIndexChange(photoIndex)
         }
