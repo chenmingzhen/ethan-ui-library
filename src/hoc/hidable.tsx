@@ -12,6 +12,26 @@ export const consumer = Origin => props => (
     <context.Consumer>{value => <Origin {...value} {...props} />}</context.Consumer>
 )
 
+interface CollapseHandlerProps {
+    type?: string[]
+
+    duration?: number
+
+    display?: Pick<React.CSSProperties, 'display'>
+
+    hasCollapse: boolean
+
+    needTransform: boolean
+}
+
+const CollapseHandler: React.FC<CollapseHandlerProps> = ({
+    type,
+    duration = 360,
+    display = 'block',
+    hasCollapse,
+    needTransform,
+}) => {}
+
 /**
  *
  * @param component
@@ -19,7 +39,7 @@ export const consumer = Origin => props => (
  * @param duration
  * @param display
  */
-export default function(Component, { type = ['fade'], duration = 360, display = 'block' }) {
+export default function({ type = ['fade'], duration = 360, display = 'block' }) {
     const hasCollapse = type.indexOf('collapse') >= 0
     const needTransform = type.indexOf('scale-y') >= 0
 
