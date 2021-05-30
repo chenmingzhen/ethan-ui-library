@@ -1,23 +1,20 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import classnames from 'classnames'
 import { cardClass } from '@/styles'
 import icons from '../icons'
+import { context } from './context'
 
 export interface CardHeaderProps {
     align: string
 
     className: string
 
-    // 是否折叠
-    collapsed: boolean
-
-    // 折叠回调
-    onCollapse(e: React.MouseEvent<HTMLElement>): void
-
     style: React.CSSProperties
 }
 
-const Header: React.FC<CardHeaderProps> = ({ align, className, collapsed, onCollapse, style, children }) => {
+const Header: React.FC<CardHeaderProps> = ({ align, className, style, children }) => {
+    const { collapsed, onCollapse } = useContext(context)
+
     const newClassName = classnames(cardClass('header', align), className)
     const onClick = typeof collapsed === 'boolean' ? onCollapse : null
 

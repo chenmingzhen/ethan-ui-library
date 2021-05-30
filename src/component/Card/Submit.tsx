@@ -1,43 +1,33 @@
-// @ts-nocheck
-import React, { PureComponent } from 'react'
-import PropTypes from 'prop-types'
+import React, { useContext } from 'react'
 import Button from '../Button'
+import { context } from './context'
 
-class Submit extends PureComponent {
-    constructor(props) {
-        super(props)
-        this.handleClick = this.handleClick.bind(this)
-    }
+interface CardSubmitProps extends React.DetailedHTMLProps<React.HTMLAttributes<HTMLDivElement>, HTMLDivElement> {
+    loading: boolean
+}
 
-    handleClick(e) {
+const Submit: React.FC<CardSubmitProps> = ({ loading, children, ...props }) => {
+    const { onSubmit, formStatus } = useContext(context)
+
+    const handleClick = (e: React.MouseEvent) => {
         e.persist()
+
         setTimeout(() => {
-            this.props.onSubmit(e.target)
+            onSubmit(e.target)
         }, 50)
     }
 
-    render() {
-        const { onSubmit, loading, children, formStatus, ...other } = this.props
-        return (
-            <Button
-                type="primary"
-                {...other}
-                disabled={formStatus === 'disabled'}
-                loading={formStatus === 'pending' || loading}
-                onClick={this.handleClick}
-            >
-                {children}
-            </Button>
-        )
-    }
+    return (
+        <Button
+            {...props}
+            type="primary"
+            disabled={formStatus === 'disabled'}
+            loading={formStatus === 'pending' || loading}
+            onClick={handleClick}
+        >
+            {children}
+        </Button>
+    )
 }
 
-Submit.propTypes = {
-    children: PropTypes.any,
-    formStatus: PropTypes.string,
-    loading: PropTypes.bool,
-    onCollapse: PropTypes.func,
-    onSubmit: PropTypes.func,
-}
-
-export default Submit
+export default React.memo(Submit)

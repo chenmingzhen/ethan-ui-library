@@ -1,22 +1,20 @@
-// @ts-nocheck
-import React from 'react'
-import createReactContext from 'create-react-context'
+import { createContext } from 'react'
 
-const context = createReactContext()
+export interface CardContext {
+    // 折叠回调
+    onCollapse(): void
+    // 是否可折叠，'bottom' 表示从下方点击折叠
+    collapsible: boolean | 'bottom'
+    // 是否折叠
+    collapsed: boolean
 
-export const { Provider } = context
+    formStatus: string
 
-function filterProps(props, keys) {
-    if (!props) return {}
+    onSubmit(target: EventTarget): void
 
-    const value = {}
-    keys.forEach(k => {
-        value[k] = props[k]
-    })
-
-    return value
+    setFormStatus(status: string): void
 }
 
-export const consumer = (Origin, keys = []) => props => (
-    <context.Consumer>{value => <Origin {...props} {...filterProps(value, keys)} />}</context.Consumer>
-)
+export const context = createContext<CardContext>(null)
+
+export const { Provider } = context

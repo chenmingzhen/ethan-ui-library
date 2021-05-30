@@ -1,45 +1,41 @@
-// @ts-nocheck
 import React, { PureComponent } from 'react'
 import PropTypes from 'prop-types'
 import classnames from 'classnames'
 import { cardClass } from '@/styles'
 import List from '../List'
+import { context } from './context'
 
 const CollapseList = List(['collapse'], 'fast')
 
-class Body extends PureComponent {
-    // eslint-disable-next-line react/static-property-placement
-    static propTypes = {
-        children: PropTypes.any,
-        className: PropTypes.string,
-        collapsed: PropTypes.bool,
-        collapsible: PropTypes.bool,
-        style: PropTypes.object,
-        onCollapse: PropTypes.func,
-    }
+interface CardBodyProps extends React.DetailedHTMLProps<React.HTMLAttributes<HTMLDivElement>, HTMLDivElement> {
+    className?: string
 
-    render() {
-        const { className, collapsed, collapsible, onCollapse, ...other } = this.props
-        const newClassName = classnames(cardClass('body'), className)
+    // 初始折叠状态（仅在 collapsible 为 true 时有效）
+    defaultCollapsed?: boolean
 
-        if (!collapsible) return <div {...other} className={newClassName} />
-
-        const onClick = typeof collapsed === 'boolean' ? onCollapse : undefined
-        return (
-            <CollapseList show={!collapsed}>
-                <div {...other} className={newClassName}>
-                    {other.children}
-                    {collapsible === 'bottom' && (
-                        <div className={cardClass('foldup')} onClick={onClick}>
-                            <span />
-                        </div>
-                    )}
-                </div>
-            </CollapseList>
-        )
-    }
+    // 最外层扩展样式
+    style?: React.CSSProperties
 }
 
-Body.propTypes = {}
+const Body: React.FC<CardBodyProps> = ({ className, ...props }) => {
+    const { collapsible, collapsed, onCollapse } = React.useContext(context)
 
-export default Body
+    if (!collapsible) return <div {...props} className={classnames(cardClass('body'), className)} />
+
+    const onClick = typeof collapsed === 'boolean' ? onCollapse : undefined
+
+    return (
+        <CollapseList show={!collapsed}>
+            <div {...props} className={classnames(cardClass('body'), className)}>
+                {props.children}
+                {collapsible === 'bottom' && (
+                    <div className={cardClass('foldup')} onClick={onClick}>
+                        <span />
+                    </div>
+                )}
+            </div>
+        </CollapseList>
+    )
+}
+
+export default React.memo(Body)

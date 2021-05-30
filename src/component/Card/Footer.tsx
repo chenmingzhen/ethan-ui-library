@@ -1,20 +1,16 @@
-// @ts-nocheck
-import React, { PureComponent } from 'react'
-import PropTypes from 'prop-types'
+import React from 'react'
 import classnames from 'classnames'
 import { cardClass } from '@/styles'
 
-export default class extends PureComponent {
-    // eslint-disable-next-line react/static-property-placement
-    static propTypes = {
-        align: PropTypes.string,
-        className: PropTypes.string,
-    }
+interface CardFooterProps extends React.DetailedHTMLProps<React.HTMLAttributes<HTMLDivElement>, HTMLDivElement> {
+    // 对齐方式
+    align?: 'center' | 'right'
 
-    render() {
-        const { align, className, ...props } = this.props
-        const newClassName = classnames(cardClass('footer', align), className)
-
-        return <div {...props} className={newClassName} />
-    }
+    className?: string
 }
+
+const Footer: React.FC<CardFooterProps> = ({ align, className, ...props }) => (
+    <div {...props} className={classnames(cardClass('footer', align), className)} />
+)
+
+export default React.memo(Footer)

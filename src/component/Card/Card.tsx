@@ -1,105 +1,92 @@
-// @ts-nocheck
-import React, { PureComponent } from 'react'
-import PropTypes from 'prop-types'
+import React, { useState } from 'react'
 import classnames from 'classnames'
-import { getProps, defaultProps } from '@/utils/proptypes'
 import { dispatchEvent } from '@/utils/dom/element'
 import { cardClass } from '@/styles'
 import { compose } from '@/utils/func'
 import resizable from '@/hoc/resizable'
 import moveable from '@/hoc/moveable'
-import { Provider } from './context'
+import { Provider, CardContext } from './context'
 
-// 将onCollapse
-// collapsible
-// collapsed
-// formStatus
-// onSubmit
-// setFormStatus
-// 状态通过context往下传递
-class Card extends PureComponent {
-    constructor(props) {
-        super(props)
+interface CardInstance {
+    el: HTMLDivElement
+}
 
-        this.state = {
-            collapsed: props.defaultCollapsed,
-            formStatus: '',
-        }
+interface CardProps {
+    /** 是否显示阴影 */
+    shadow?: boolean | 'hover'
+    /** 初始折叠状态（仅在 collapsible 为 true 时有效） */
+    defaultCollapsed?: boolean
+    /** 是否可折叠，'bottom' 表示从下方点击折叠 */
+    collapsible?: boolean
+    /** 手风琴下控制展开的值 */
+    id?: string | number
+    /**最外层样式名 */
+    className?: string
+    /** 是否折叠，用于受控状态 */
+    collapsed: boolean
+    /** 折叠状态改变时回调事件 */
+    onCollapse(e: boolean): void
+    /**最外层扩展样式 */
+    style: React.CSSProperties
+}
 
-        this.bindElement = this.bindElement.bind(this)
-        this.handleSubmit = this.handleSubmit.bind(this)
-        this.handleCollapse = this.handleCollapse.bind(this)
-        this.setFormStatus = this.setFormStatus.bind(this)
-    }
+const Card = React.memo(
+    React.forwardRef<CardInstance, CardProps>(({ collapsible = false, ...props }, ref) => {
+        const [collapsed, setCollapsed] = useState<boolean>(props.defaultCollapsed || true)
+        const [formStatus, setStatus] = useState<string>('')
+        const elRef = React.useRef<HTMLDivElement>()
 
-    // 获取是否折叠状态
-    getCollapsed() {
-        const { collapsible, collapsed } = this.props
-        if (!collapsible) return undefined
-        return collapsed !== undefined ? collapsed : this.state.collapsed
-    }
+        // 判断是否为折叠状态
+        const computedCollapsed = React.useMemo(() => {
+            if (!collapsible) return undefined
 
-    setFormStatus(status) {
-        if (status !== this.state.formStatus) {
-            this.setState({ formStatus: status })
-        }
-    }
+            // es2020特性
+            return props.collapsed ?? collapsed
+        }, [collapsed, props.collapsed, collapsible])
 
-    bindElement(el) {
-        this.element = el
-        const { forwardedRef } = this.props
-        if (forwardedRef) forwardedRef(el)
-    }
-
-    handleCollapse() {
-        const collapsed = !this.getCollapsed()
-        if (this.props.onCollapse) this.props.onCollapse(collapsed)
-        else this.setState({ collapsed })
-    }
-
-    handleSubmit(target) {
-        const form = this.element.querySelector('form')
-        if (form) dispatchEvent(form, 'submit', target)
-        else console.error(new Error('No form found.'))
-    }
-
-    render() {
-        const { collapsible } = this.props
-        const collapsed = this.getCollapsed()
-        const shadow = this.props.shadow === true ? 'shadow' : this.props.shadow
-        const className = classnames(
-            cardClass('_', shadow, collapsible && 'collapsible', collapsed && 'collapsed'),
-            this.props.className
+        const setFormStatus = React.useCallback(
+            (status: string) => {
+                if (status !== formStatus) setStatus(status)
+            },
+            [formStatus]
         )
 
-        const providerValue = {
-            onCollapse: this.handleCollapse,
+        const handleCollapse = React.useCallback(() => {
+            if (props.onCollapse) props.onCollapse(!computedCollapsed)
+            else setCollapsed(!computedCollapsed)
+        }, [computedCollapsed, props.onCollapse])
+
+        const handleSubmit = React.useCallback(target => {
+            const form = elRef.current.querySelector('form')
+
+            if (form) dispatchEvent(form, 'submit', target)
+            else console.error(new Error('No form found.'))
+        }, [])
+
+        const { shadow, className } = props
+        const newShadow = shadow === true ? 'shadow' : shadow
+        const newClasName = classnames(
+            cardClass('_', newShadow, collapsible && 'collapsible', collapsed && 'collapsed'),
+            className
+        )
+
+        const providerValue: CardContext = {
+            onCollapse: handleCollapse,
             collapsible,
-            collapsed,
-            formStatus: this.state.formStatus,
-            onSubmit: this.handleSubmit,
-            setFormStatus: this.setFormStatus,
+            collapsed: computedCollapsed,
+            formStatus,
+            onSubmit: handleSubmit,
+            setFormStatus: setFormStatus,
         }
+
+        React.useImperativeHandle(ref, () => ({ el: elRef.current }))
 
         return (
-            <div className={className} ref={this.bindElement} style={this.props.style}>
-                {/* 将Props作为context的传递值 传递下去 后面的组件根据需要进行filter */}
-                <Provider value={providerValue}>{this.props.children}</Provider>
+            <div className={newClasName} ref={elRef} style={props.style}>
+                <Provider value={providerValue}>{props.children}</Provider>
             </div>
         )
-    }
-}
-
-Card.propTypes = {
-    ...getProps(PropTypes),
-    shadow: PropTypes.oneOf([true, false, 'hover']),
-    forwardedRef: PropTypes.func,
-}
-
-Card.defaultProps = {
-    ...defaultProps,
-    defaultCollapsed: true,
-    collapsible: false,
-}
+    })
+)
 
 export default compose(moveable(`.${cardClass('header')}`), resizable)(Card)
