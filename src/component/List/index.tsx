@@ -1,20 +1,17 @@
-import React, { useRef, useCallback, useEffect, memo } from 'react'
+import React, { useRef, useEffect, memo } from 'react'
 import { useUpdateEffect } from 'react-use'
-import { getUidStr } from '@/utils/uid'
 import { hidableClass } from '@/styles'
 import classnames from 'classnames'
 import { listClass } from '@/styles'
 
-interface ListProps extends Element {
+interface ListProps extends React.DetailedHTMLProps<React.HTMLAttributes<HTMLDivElement>, HTMLDivElement> {
     show: boolean
 
-    height: number
+    height?: number
 
-    className: string
+    className?: string
 
-    getRef(e: HTMLDivElement): void
-
-    style: React.CSSProperties
+    getRef?(e: HTMLDivElement): void
 }
 
 const transformDuration = (duration: string | number) => {
@@ -40,30 +37,22 @@ export default function(type: string[], rawDuration: string | number, display = 
 
     const HideHander: React.FC<ListProps> = ({ show, getRef, style, ...props }) => {
         const height = useRef<number>(0)
-        const id = useRef<string>(`__hidable_${getUidStr()}__`)
         const isShowing = useRef<boolean>(false)
+        const elRef = useRef<HTMLDivElement>()
 
         let animation = `animation-${duration}`
         if (!needTransform) {
             animation = `fade-${animation}`
         }
-        const className = classnames(
-            // 控制动画
-            hidableClass('_', ...type, animation),
-            props.className,
-            id.current
-        )
-
-        const getElement = () => {
-            return document.querySelector(`.${id.current}`) as HTMLDivElement
-        }
+        const className = classnames(hidableClass('_', ...type, animation), props.className)
 
         const doShow = () => {
-            const el = getElement()
+            const el = elRef.current
             const es = el.style
 
             es.display = display
 
+            // 由于先将display none转为可见形态 设置延时 将div添加show的属性 进而有transform
             setTimeout(() => {
                 el.classList.add(hidableClass('show'))
             })
@@ -83,8 +72,9 @@ export default function(type: string[], rawDuration: string | number, display = 
         }
 
         const doHide = () => {
-            const el = getElement()
+            const el = elRef.current
 
+            // 移除show
             el.classList.remove(hidableClass('show'))
 
             if (hasCollapse) {
@@ -104,7 +94,7 @@ export default function(type: string[], rawDuration: string | number, display = 
         }
 
         useEffect(() => {
-            const el = getElement()
+            const el = elRef.current
 
             // 已经是显示状态 不执行
             if (show) {
@@ -129,7 +119,17 @@ export default function(type: string[], rawDuration: string | number, display = 
             else doHide()
         }, [show])
 
-        return <div {...props} ref={getRef} className={classnames(listClass('_'), className)} style={style} />
+        return (
+            <div
+                {...props}
+                ref={e => {
+                    getRef?.(e)
+                    elRef.current = e
+                }}
+                className={classnames(listClass('_'), className)}
+                style={style}
+            />
+        )
     }
 
     return memo(HideHander)
