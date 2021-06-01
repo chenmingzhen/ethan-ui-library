@@ -1,6 +1,5 @@
-// @ts-nocheck
 import { curry } from '@/utils/func'
-import { isValidElement } from 'react'
+import React, { isValidElement } from 'react'
 
 const nameIs = curry((name, val) => val && val.constructor && val.constructor.name === name)
 
@@ -8,7 +7,6 @@ export const { isArray } = Array
 export const isObject = val => val && typeof val === 'object' && !isArray(val)
 export const isDate = val => val instanceof Date
 export const isFunc = f => typeof f === 'function'
-// eslint-disable-next-line no-self-compare
 export const isNan = a => a !== a
 export const isString = s => typeof s === 'string'
 export const isError = val => val instanceof Error
@@ -55,7 +53,7 @@ export const isPercent = n => typeof n === 'string' && /\d{1,3}%$/.test(n)
 export const isInseparable = val =>
     Object(val) !== val || isFunc(val) || isDate(val) || isError(val) || isSet(val) || isMap(val) || isRegexp(val)
 
-export const isLink = el => {
+export const isLink = (el: React.ReactElement<{ to?: any }>) => {
     if (!isValidElement(el)) return false
     if (!el.type) return false
     if (el.type === 'a') return true
