@@ -48,6 +48,7 @@ export function dispatchEvent(form, name, detail) {
 
     // 自定义事件 兼容性写法
     if (CustomEvent) {
+        // https://developer.mozilla.org/zh-CN/docs/Web/API/CustomEvent/CustomEvent
         event = new CustomEvent(name, { bubbles: false, cancelable: true, detail })
     } else {
         event = document.createEvent('HTMLEvents')

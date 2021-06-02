@@ -1,29 +1,49 @@
-// @ts-nocheck
 import React from 'react'
-import PropTypes from 'prop-types'
+import { PureComponent } from '@/utils/component'
 import classnames from 'classnames'
 import immer from 'immer'
 import { resizableClass } from '@/styles'
 import { getUidStr } from '@/utils/uid'
 import { curry } from '@/utils/func'
 
+interface ResizableProps {
+    style?: React.CSSProperties
+
+    className?: string
+
+    resizable?: boolean
+
+    [rest: string]: any
+}
+
+interface ResizableState {
+    x: number
+
+    y: number
+}
+
 export default curry(
     Origin =>
-        class Resizable extends React.PureComponent {
-            // eslint-disable-next-line react/static-property-placement
-            static propTypes = {
-                style: PropTypes.object,
-                className: PropTypes.string,
-                resizable: PropTypes.oneOfType([PropTypes.bool, PropTypes.object]),
-            }
+        class Resizable extends PureComponent<ResizableProps, ResizableState> {
+            resizableId: string = getUidStr()
+
+            appended: boolean = false
+
+            active: string | undefined
+
+            size: { width: number; height: number }
+
+            el: HTMLDivElement
+
+            handlers: Map<HTMLDivElement, (dir: any) => void> = new Map()
 
             constructor(props) {
                 super(props)
+
                 this.state = {
                     x: 0,
                     y: 0,
                 }
-                this.resizableId = getUidStr()
                 this.handleMouseUp = this.handleMouseUp.bind(this)
                 this.handleMouseMove = this.handleMouseMove.bind(this)
             }
@@ -39,14 +59,16 @@ export default curry(
             }
 
             componentWillUnmount() {
-                if (this.handlers) {
-                    this.handlers.forEach((action, handler) => handler.removeEventListener('mousedown', action))
-                }
+                this.handlers?.forEach((action, handler) => handler.removeEventListener('mousedown', action))
+
+                this.handlers.clear()
             }
 
             getStyle() {
                 const { x, y } = this.state
+
                 if (!this.size) return undefined
+
                 return {
                     width: this.size.width + x,
                     height: this.size.height + y,
@@ -60,10 +82,11 @@ export default curry(
                 document.removeEventListener('mouseleave', this.handleMouseUp)
             }
 
-            handleMouseMove(e) {
+            handleMouseMove(e: MouseEvent) {
                 // 移动的值
                 let x = e.movementX
                 let y = e.movementY
+
                 if (!this.active) return
 
                 this.setState(
@@ -78,6 +101,7 @@ export default curry(
 
             handleMouseDown(dir) {
                 this.active = dir
+
                 document.addEventListener('mousemove', this.handleMouseMove)
                 document.addEventListener('mouseup', this.handleMouseUp)
                 document.addEventListener('mouseleave', this.handleMouseUp)
@@ -85,22 +109,23 @@ export default curry(
 
             appendHandler() {
                 const { resizable } = this.props
+
                 if (!resizable || this.appended) return
+
                 this.appended = true
+
                 this.el = document.querySelector(`.${resizableClass(this.resizableId)}`)
 
                 if (!this.el) return
+
                 this.size = {
                     width: this.el.clientWidth,
                     height: this.el.clientHeight,
                 }
-
-                this.handlers = new Map()
-                // ❗❗❗ different github version
-                // 这里添加;的原因是 因为上面Map() 这里是数组 上面又没有 怕压缩出错 加一个分号
                 ;['e', 's', 'se'].forEach(dir => {
                     const handler = document.createElement('div')
                     const action = this.handleMouseDown.bind(this, dir)
+
                     handler.className = resizableClass('handler', `handler-${dir}`)
                     handler.addEventListener('mousedown', action)
                     this.el.appendChild(handler)
