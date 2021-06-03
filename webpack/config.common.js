@@ -68,7 +68,7 @@ module.exports = function getCommon(config) {
                         },
                     },
                 }),
-                // esbuild 压缩插件 
+                // esbuild 压缩插件
                 new ESBuildMinifyPlugin({
                     target: 'es2015', // Syntax to compile to (see options below for possible values)
                 }),
@@ -110,7 +110,7 @@ module.exports = function getCommon(config) {
                 {
                     test: /\.less$/,
                     // dev环境 less由cssConfig负责打包
-                    use: lessLoader,
+                    use: 'raw-loader',
                 },
 
                 {
