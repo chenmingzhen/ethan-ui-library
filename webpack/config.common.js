@@ -5,34 +5,6 @@ const UglifyWebpackPlugin = require('uglifyjs-webpack-plugin')
 const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin')
 
 module.exports = function getCommon(config) {
-    const lessLoader = [
-        {
-            loader: MiniCssExtractPlugin.loader,
-        },
-        {
-            loader: 'css-loader',
-        },
-        {
-            loader: 'postcss-loader',
-        },
-        {
-            loader: 'less-loader',
-            options: {
-                modifyVars: {
-                    'ethan-prefix': process.env.ETHAN_PREFIX || 'ethan',
-                    ...config.modifyVars,
-                },
-            },
-        },
-    ]
-    const jsLoaders = [
-        {
-            loader: 'babel-loader',
-            options: {
-                cacheDirectory: true,
-            },
-        },
-    ]
     const plugins = [
         new MiniCssExtractPlugin({
             filename: `${config.extractTextPluginPath}`,
@@ -45,35 +17,35 @@ module.exports = function getCommon(config) {
             },
         }),
     ]
-    if (config.IGNORE_LESS) {
-        // @ts-ignore
-        jsLoaders.splice(0, 0, { loader: 'remove-less-loader' })
-        plugins.push(
-            new webpack.IgnorePlugin({
-                resourceRegExp: /\.less$/,
+
+    const minimizer = [
+        // UglifyJS Webpack Plugin插件用来缩小（压缩优化）js文件
+        // 打包生成的vendors文件由此产生
+        new UglifyWebpackPlugin({
+            cache: true, // 是否启用文件缓存 ，默认缓存在node_modules/.cache/uglifyjs-webpack-plugin.目录
+            parallel: true, // 使用多进程并行运行来提高构建速度
+            uglifyOptions: {
+                output: {
+                    comments: false,
+                },
+            },
+        }),
+
+        new OptimizeCSSAssetsPlugin({}),
+    ]
+
+    if (config.DEV) {
+        // esbuild 压缩插件
+        minimizer.push(
+            new ESBuildMinifyPlugin({
+                target: 'es2015', // Syntax to compile to (see options below for possible values)
             })
         )
     }
+
     return {
         optimization: {
-            minimizer: [
-                // UglifyJS Webpack Plugin插件用来缩小（压缩优化）js文件
-                // 打包生成的vendors文件由此产生
-                new UglifyWebpackPlugin({
-                    cache: true, // 是否启用文件缓存 ，默认缓存在node_modules/.cache/uglifyjs-webpack-plugin.目录
-                    parallel: true, // 使用多进程并行运行来提高构建速度
-                    uglifyOptions: {
-                        output: {
-                            comments: false,
-                        },
-                    },
-                }),
-                // esbuild 压缩插件
-                new ESBuildMinifyPlugin({
-                    target: 'es2015', // Syntax to compile to (see options below for possible values)
-                }),
-                new OptimizeCSSAssetsPlugin({}),
-            ],
+            minimizer: minimizer,
         },
 
         externals: config.externals,
@@ -91,26 +63,45 @@ module.exports = function getCommon(config) {
         module: {
             rules: [
                 {
-                    test: /\.js$/,
-                    loader: 'esbuild-loader',
+                    test: /\.jsx?$/,
+                    exclude: [/node_modules/],
+                    loader: 'babel-loader',
                     options: {
-                        loader: 'jsx', // Remove this if you're not using JSX
-                        target: 'es2015', // Syntax to compile to (see options below for possible values)
+                        cacheDirectory: true,
                     },
                 },
                 {
                     test: /\.tsx?$/,
                     exclude: [/node_modules/],
-                    loader: 'esbuild-loader',
-                    options: {
-                        loader: 'tsx',
-                        target: 'es2015',
-                    },
+                    use: [
+                        !config.DEV
+                            ? {
+                                  // 由于生产环境中UglifyWebpackPlugin不支持es6的压缩
+                                  // 而且esbuild的target最低为es2015 所以生产环境中使用ts-ignore
+                                  loader: 'ts-loader',
+                                  options: {
+                                      transpileOnly: true, // use transpileOnly mode to speed-up compilation
+                                  },
+                              }
+                            : {
+                                  loader: 'esbuild-loader',
+                                  options: {
+                                      loader: 'tsx',
+                                      target: 'es2015',
+                                  },
+                              },
+                        // dev环境 less由cssConfig负责打包 移除所有的less导入 改为var $1={}
+                        {
+                            // 将tsx中的less的引入代码剔除 在ignore-loader中已经将less的内容置空
+                            loader: 'remove-less-loader',
+                        },
+                    ],
                 },
                 {
                     test: /\.less$/,
                     // dev环境 less由cssConfig负责打包
-                    use: 'raw-loader',
+                    // 将less文件内容置空
+                    use: 'ignore-loader',
                 },
 
                 {
