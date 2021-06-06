@@ -21,7 +21,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Dropdown/example-1-base.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Dropdown/example-1-base.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Dropdown/example-1-base.tsx').default,
     },
     {
     name: '2-hoverx',
@@ -31,7 +31,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Dropdown/example-2-hover.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Dropdown/example-2-hover.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Dropdown/example-2-hover.tsx').default,
     },
     {
     name: '3-positionx',
@@ -41,7 +41,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Dropdown/example-3-position.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Dropdown/example-3-position.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Dropdown/example-3-position.tsx').default,
     },
     {
     name: '4-itemsx',
@@ -51,7 +51,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Dropdown/example-4-items.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Dropdown/example-4-items.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Dropdown/example-4-items.tsx').default,
     },
     {
     name: '5-splitx',
@@ -61,7 +61,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Dropdown/example-5-split.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Dropdown/example-5-split.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Dropdown/example-5-split.tsx').default,
     },
     {
     name: '6-typex',
@@ -71,7 +71,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Dropdown/example-6-type.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Dropdown/example-6-type.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Dropdown/example-6-type.tsx').default,
     },
     {
     name: '7-basex',
@@ -81,7 +81,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Dropdown/example-7-base.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Dropdown/example-7-base.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Dropdown/example-7-base.tsx').default,
     },
 ]
 

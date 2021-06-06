@@ -1,19 +1,17 @@
-// @ts-nocheck
-// Created by scripts/create-style.js.
 import genaration from '@/utils/classnames'
 
-import defaultLess from './spin/default.less'
-import ringLess from './spin/ring.less'
-import planeLess from './spin/plane.less'
-import pulseLess from './spin/pulse.less'
-import waveLess from './spin/wave.less'
-import chasingDotsLess from './spin/chasing-dots.less'
-import doubleBounceLess from './spin/double-bounce.less'
-import cubeGridLess from './spin/cube-grid.less'
-import chasingRingLess from './spin/chasing-ring.less'
-import scaleCircleLess from './spin/scale-circle.less'
-import threeBounceLess from './spin/three-bounce.less'
-import fourDotsLess from './spin/four-dots.less'
+import * as defaultLess from './spin/default.less'
+import * as ringLess from './spin/ring.less'
+import * as planeLess from './spin/plane.less'
+import * as pulseLess from './spin/pulse.less'
+import * as waveLess from './spin/wave.less'
+import * as chasingDotsLess from './spin/chasing-dots.less'
+import * as doubleBounceLess from './spin/double-bounce.less'
+import * as cubeGridLess from './spin/cube-grid.less'
+import * as chasingRingLess from './spin/chasing-ring.less'
+import * as scaleCircleLess from './spin/scale-circle.less'
+import * as threeBounceLess from './spin/three-bounce.less'
+import * as fourDotsLess from './spin/four-dots.less'
 
 export const defaultClass = genaration(defaultLess, 'spin-default')
 export const ringClass = genaration(ringLess, 'spin-ring')

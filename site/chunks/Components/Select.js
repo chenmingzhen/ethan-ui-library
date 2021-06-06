@@ -21,7 +21,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Select/example-01-base.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Select/example-01-base.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Select/example-01-base.tsx').default,
     },
     {
     name: '01-cadaptx',
@@ -31,7 +31,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Select/example-01-cadapt.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Select/example-01-cadapt.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Select/example-01-cadapt.tsx').default,
     },
     {
     name: '01-multiplex',
@@ -41,7 +41,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Select/example-01-multiple.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Select/example-01-multiple.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Select/example-01-multiple.tsx').default,
     },
     {
     name: '01-o-compressedx',
@@ -51,7 +51,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Select/example-01-o-compressed.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Select/example-01-o-compressed.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Select/example-01-o-compressed.tsx').default,
     },
     {
     name: '02-formatx',
@@ -61,7 +61,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Select/example-02-format.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Select/example-02-format.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Select/example-02-format.tsx').default,
     },
     {
     name: '02-groupx',
@@ -71,7 +71,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Select/example-02-group.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Select/example-02-group.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Select/example-02-group.tsx').default,
     },
     {
     name: '04-clearablex',
@@ -81,7 +81,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Select/example-04-clearable.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Select/example-04-clearable.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Select/example-04-clearable.tsx').default,
     },
     {
     name: '04-sizex',
@@ -91,7 +91,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Select/example-04-size.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Select/example-04-size.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Select/example-04-size.tsx').default,
     },
     {
     name: '06-bigdatax',
@@ -101,7 +101,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Select/example-06-bigdata.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Select/example-06-bigdata.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Select/example-06-bigdata.tsx').default,
     },
     {
     name: '07-disabledx',
@@ -111,7 +111,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Select/example-07-disabled.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Select/example-07-disabled.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Select/example-07-disabled.tsx').default,
     },
     {
     name: '08-filterx',
@@ -121,7 +121,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Select/example-08-filter.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Select/example-08-filter.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Select/example-08-filter.tsx').default,
     },
     {
     name: '09-filterx',
@@ -131,7 +131,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Select/example-09-filter.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Select/example-09-filter.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Select/example-09-filter.tsx').default,
     },
     {
     name: '10-filterx',
@@ -141,7 +141,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Select/example-10-filter.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Select/example-10-filter.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Select/example-10-filter.tsx').default,
     },
     {
     name: '11-createx',
@@ -151,7 +151,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Select/example-11-create.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Select/example-11-create.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Select/example-11-create.tsx').default,
     },
     {
     name: '12-createx',
@@ -161,7 +161,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Select/example-12-create.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Select/example-12-create.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Select/example-12-create.tsx').default,
     },
     {
     name: '13-absolutex',
@@ -171,7 +171,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Select/example-13-absolute.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Select/example-13-absolute.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Select/example-13-absolute.tsx').default,
     },
     {
     name: '14-columns-defaultx',
@@ -181,7 +181,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Select/example-14-columns-default.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Select/example-14-columns-default.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Select/example-14-columns-default.tsx').default,
     },
     {
     name: '14-columns-stackx',
@@ -191,7 +191,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Select/example-14-columns-stack.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Select/example-14-columns-stack.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Select/example-14-columns-stack.tsx').default,
     },
     {
     name: '15-treeDatax',
@@ -201,7 +201,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Select/example-15-treeData.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Select/example-15-treeData.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Select/example-15-treeData.tsx').default,
     },
     {
     name: '16-onFilterx',
@@ -211,7 +211,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Select/example-16-onFilter.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Select/example-16-onFilter.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Select/example-16-onFilter.tsx').default,
     },
     {
     name: '17-resultx',
@@ -221,7 +221,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Select/example-17-result.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Select/example-17-result.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Select/example-17-result.tsx').default,
     },
 ]
 

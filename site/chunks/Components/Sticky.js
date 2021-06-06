@@ -21,7 +21,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Sticky/example-1-top.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Sticky/example-1-top.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Sticky/example-1-top.tsx').default,
     },
     {
     name: '2-elementx',
@@ -31,7 +31,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Sticky/example-2-element.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Sticky/example-2-element.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Sticky/example-2-element.tsx').default,
     },
     {
     name: '3-bottomx',
@@ -41,7 +41,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Sticky/example-3-bottom.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Sticky/example-3-bottom.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Sticky/example-3-bottom.tsx').default,
     },
 ]
 

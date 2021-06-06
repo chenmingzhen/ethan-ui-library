@@ -21,7 +21,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Image/example-01-base.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Image/example-01-base.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Image/example-01-base.tsx').default,
     },
     {
     name: '02-shapex',
@@ -31,7 +31,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Image/example-02-shape.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Image/example-02-shape.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Image/example-02-shape.tsx').default,
     },
     {
     name: '03-fitx',
@@ -41,7 +41,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Image/example-03-fit.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Image/example-03-fit.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Image/example-03-fit.tsx').default,
     },
     {
     name: '04-altx',
@@ -51,7 +51,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Image/example-04-alt.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Image/example-04-alt.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Image/example-04-alt.tsx').default,
     },
     {
     name: '05-errorx',
@@ -61,7 +61,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Image/example-05-error.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Image/example-05-error.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Image/example-05-error.tsx').default,
     },
     {
     name: '06-targetx',
@@ -71,7 +71,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Image/example-06-target.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Image/example-06-target.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Image/example-06-target.tsx').default,
     },
     {
     name: '07-groupx',
@@ -81,7 +81,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Image/example-07-group.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Image/example-07-group.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Image/example-07-group.tsx').default,
     },
     {
     name: '08-groupx',
@@ -91,7 +91,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Image/example-08-group.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Image/example-08-group.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Image/example-08-group.tsx').default,
     },
     {
     name: '09-lazyx',
@@ -101,7 +101,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Image/example-09-lazy.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Image/example-09-lazy.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Image/example-09-lazy.tsx').default,
     },
     {
     name: '10-lazyx',
@@ -111,7 +111,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Image/example-10-lazy.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Image/example-10-lazy.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Image/example-10-lazy.tsx').default,
     },
 ]
 

@@ -21,7 +21,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Card/example-1-base.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Card/example-1-base.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Card/example-1-base.tsx').default,
     },
     {
     name: '2-boxshadowx',
@@ -31,7 +31,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Card/example-2-boxshadow.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Card/example-2-boxshadow.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Card/example-2-boxshadow.tsx').default,
     },
     {
     name: '4-collapsex',
@@ -41,7 +41,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Card/example-4-collapse.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Card/example-4-collapse.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Card/example-4-collapse.tsx').default,
     },
     {
     name: '5-accordionx',
@@ -51,7 +51,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Card/example-5-accordion.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Card/example-5-accordion.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Card/example-5-accordion.tsx').default,
     },
 ]
 

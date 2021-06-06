@@ -21,7 +21,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Tag/example-1-base.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Tag/example-1-base.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Tag/example-1-base.tsx').default,
     },
     {
     name: '2-typex',
@@ -31,7 +31,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Tag/example-2-type.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Tag/example-2-type.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Tag/example-2-type.tsx').default,
     },
     {
     name: '3-bgcolorx',
@@ -41,7 +41,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Tag/example-3-bgcolor.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Tag/example-3-bgcolor.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Tag/example-3-bgcolor.tsx').default,
     },
     {
     name: '4-closex',
@@ -51,7 +51,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Tag/example-4-close.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Tag/example-4-close.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Tag/example-4-close.tsx').default,
     },
     {
     name: '5-disabledx',
@@ -61,7 +61,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Tag/example-5-disabled.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Tag/example-5-disabled.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Tag/example-5-disabled.tsx').default,
     },
     {
     name: '6-dynamicx',
@@ -71,7 +71,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Tag/example-6-dynamic.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Tag/example-6-dynamic.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Tag/example-6-dynamic.tsx').default,
     },
     {
     name: '7-editablex',
@@ -81,7 +81,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Tag/example-7-editable.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Tag/example-7-editable.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Tag/example-7-editable.tsx').default,
     },
 ]
 

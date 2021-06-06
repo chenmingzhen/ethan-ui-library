@@ -21,7 +21,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Progress/example-1-base.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Progress/example-1-base.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Progress/example-1-base.tsx').default,
     },
     {
     name: '2-typex',
@@ -31,7 +31,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Progress/example-2-type.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Progress/example-2-type.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Progress/example-2-type.tsx').default,
     },
     {
     name: '3-colorx',
@@ -41,7 +41,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Progress/example-3-color.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Progress/example-3-color.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Progress/example-3-color.tsx').default,
     },
     {
     name: '3-linearx',
@@ -51,7 +51,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Progress/example-3-linear.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Progress/example-3-linear.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Progress/example-3-linear.tsx').default,
     },
     {
     name: '4-circlex',
@@ -61,7 +61,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Progress/example-4-circle.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Progress/example-4-circle.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Progress/example-4-circle.tsx').default,
     },
     {
     name: '5-sizex',
@@ -71,7 +71,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Progress/example-5-size.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Progress/example-5-size.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Progress/example-5-size.tsx').default,
     },
     {
     name: '6-animationx',
@@ -81,7 +81,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Progress/example-6-animation.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Progress/example-6-animation.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Progress/example-6-animation.tsx').default,
     },
 ]
 

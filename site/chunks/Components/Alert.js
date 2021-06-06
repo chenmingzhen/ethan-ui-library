@@ -21,7 +21,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Alert/example-1-base.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Alert/example-1-base.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Alert/example-1-base.tsx').default,
     },
     {
     name: '2-typex',
@@ -31,7 +31,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Alert/example-2-type.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Alert/example-2-type.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Alert/example-2-type.tsx').default,
     },
     {
     name: '3-closex',
@@ -41,7 +41,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Alert/example-3-close.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Alert/example-3-close.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Alert/example-3-close.tsx').default,
     },
     {
     name: '4-iconx',
@@ -51,7 +51,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Alert/example-4-icon.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Alert/example-4-icon.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Alert/example-4-icon.tsx').default,
     },
     {
     name: '5-scrollx',
@@ -61,7 +61,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Alert/example-5-scroll.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Alert/example-5-scroll.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Alert/example-5-scroll.tsx').default,
     },
 ]
 

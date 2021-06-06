@@ -21,7 +21,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Pagination/example-1-base.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Pagination/example-1-base.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Pagination/example-1-base.tsx').default,
     },
     {
     name: '2-sizex',
@@ -31,7 +31,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Pagination/example-2-size.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Pagination/example-2-size.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Pagination/example-2-size.tsx').default,
     },
     {
     name: '3-layoutx',
@@ -41,7 +41,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Pagination/example-3-layout.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Pagination/example-3-layout.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Pagination/example-3-layout.tsx').default,
     },
     {
     name: '4-textx',
@@ -51,7 +51,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Pagination/example-4-text.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Pagination/example-4-text.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Pagination/example-4-text.tsx').default,
     },
     {
     name: '5-alignx',
@@ -61,7 +61,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Pagination/example-5-align.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Pagination/example-5-align.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Pagination/example-5-align.tsx').default,
     },
     {
     name: '7-controlledx',
@@ -71,7 +71,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Pagination/example-7-controlled.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Pagination/example-7-controlled.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Pagination/example-7-controlled.tsx').default,
     },
     {
     name: '8-disabledx',
@@ -81,7 +81,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Pagination/example-8-disabled.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Pagination/example-8-disabled.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Pagination/example-8-disabled.tsx').default,
     },
     {
     name: '9-simplex',
@@ -91,7 +91,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Pagination/example-9-simple.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Pagination/example-9-simple.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Pagination/example-9-simple.tsx').default,
     },
 ]
 

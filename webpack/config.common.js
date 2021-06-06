@@ -16,6 +16,13 @@ module.exports = function getCommon(config) {
                 LOG_ENV: JSON.stringify(process.env.LOG_ENV || ''),
             },
         }),
+        // https://webpack.docschina.org/plugins/provide-plugin/#root
+        // webpack5中不提供process模块
+        // process 在浏览器环境中不存在 需要垫片支持
+        // https://github.com/vfile/vfile/issues/38
+        new webpack.ProvidePlugin({
+            process: 'process/browser',
+        }),
     ]
 
     const minimizer = [
@@ -51,8 +58,16 @@ module.exports = function getCommon(config) {
         externals: config.externals,
 
         resolve: {
+            // fix ReferenceError: process is not defined
+            // https://stackoverflow.com/questions/65018431/webpack-5-uncaught-referenceerror-process-is-not-defined
             alias: config.alias,
             extensions: ['.ts', '.tsx', '.js', '.json', '.jsx'],
+            // webpack5中不提供path模块
+            // https://webpack.docschina.org/configuration/resolve/#resolvefallback
+            // https://stackoverflow.com/questions/64557638/how-to-polyfill-node-core-modules-in-webpack-5
+            fallback: {
+                path: require.resolve('path-browserify'),
+            },
         },
 
         // 外部loader和自定义loader位置 ignore-loader例子

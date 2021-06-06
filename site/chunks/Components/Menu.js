@@ -21,7 +21,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Menu/example-1-base.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Menu/example-1-base.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Menu/example-1-base.tsx').default,
     },
     {
     name: '1-linkx',
@@ -31,7 +31,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Menu/example-1-link.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Menu/example-1-link.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Menu/example-1-link.tsx').default,
     },
     {
     name: '2-horizontalx',
@@ -41,7 +41,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Menu/example-2-horizontal.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Menu/example-2-horizontal.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Menu/example-2-horizontal.tsx').default,
     },
     {
     name: '3-verticalx',
@@ -51,7 +51,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Menu/example-3-vertical.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Menu/example-3-vertical.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Menu/example-3-vertical.tsx').default,
     },
     {
     name: '4-disabledx',
@@ -61,7 +61,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Menu/example-4-disabled.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Menu/example-4-disabled.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Menu/example-4-disabled.tsx').default,
     },
     {
     name: '5-selectedx',
@@ -71,7 +71,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Menu/example-5-selected.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Menu/example-5-selected.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Menu/example-5-selected.tsx').default,
     },
     {
     name: '6-itemRenderx',
@@ -81,7 +81,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Menu/example-6-itemRender.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Menu/example-6-itemRender.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Menu/example-6-itemRender.tsx').default,
     },
     {
     name: '7-clickx',
@@ -91,7 +91,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Menu/example-7-click.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Menu/example-7-click.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Menu/example-7-click.tsx').default,
     },
     {
     name: '8-darkx',
@@ -101,7 +101,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Menu/example-8-dark.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Menu/example-8-dark.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Menu/example-8-dark.tsx').default,
     },
 ]
 

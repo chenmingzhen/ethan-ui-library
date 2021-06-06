@@ -21,7 +21,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Rate/example-01-base.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Rate/example-01-base.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Rate/example-01-base.tsx').default,
     },
     {
     name: '01-halfx',
@@ -31,7 +31,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Rate/example-01-half.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Rate/example-01-half.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Rate/example-01-half.tsx').default,
     },
     {
     name: '02-colorx',
@@ -41,7 +41,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Rate/example-02-color.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Rate/example-02-color.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Rate/example-02-color.tsx').default,
     },
     {
     name: '04-maxx',
@@ -51,7 +51,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Rate/example-04-max.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Rate/example-04-max.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Rate/example-04-max.tsx').default,
     },
     {
     name: '05-sizex',
@@ -61,7 +61,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Rate/example-05-size.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Rate/example-05-size.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Rate/example-05-size.tsx').default,
     },
     {
     name: '06-textx',
@@ -71,7 +71,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Rate/example-06-text.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Rate/example-06-text.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Rate/example-06-text.tsx').default,
     },
     {
     name: '07-disabledx',
@@ -81,7 +81,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Rate/example-07-disabled.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Rate/example-07-disabled.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Rate/example-07-disabled.tsx').default,
     },
     {
     name: '08-facex',
@@ -91,7 +91,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Rate/example-08-face.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Rate/example-08-face.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Rate/example-08-face.tsx').default,
     },
     {
     name: '09-arrayx',
@@ -101,7 +101,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Rate/example-09-array.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Rate/example-09-array.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Rate/example-09-array.tsx').default,
     },
     {
     name: '10-clearablex',
@@ -111,7 +111,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Rate/example-10-clearable.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Rate/example-10-clearable.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Rate/example-10-clearable.tsx').default,
     },
 ]
 

@@ -21,7 +21,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Checkbox/example-01-base.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Checkbox/example-01-base.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Checkbox/example-01-base.tsx').default,
     },
     {
     name: '02-checkedx',
@@ -31,7 +31,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Checkbox/example-02-checked.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Checkbox/example-02-checked.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Checkbox/example-02-checked.tsx').default,
     },
     {
     name: '03-valuex',
@@ -41,7 +41,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Checkbox/example-03-value.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Checkbox/example-03-value.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Checkbox/example-03-value.tsx').default,
     },
     {
     name: '04-rawgroupx',
@@ -51,7 +51,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Checkbox/example-04-rawgroup.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Checkbox/example-04-rawgroup.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Checkbox/example-04-rawgroup.tsx').default,
     },
     {
     name: '05-groupx',
@@ -61,7 +61,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Checkbox/example-05-group.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Checkbox/example-05-group.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Checkbox/example-05-group.tsx').default,
     },
     {
     name: '06-formatx',
@@ -71,7 +71,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Checkbox/example-06-format.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Checkbox/example-06-format.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Checkbox/example-06-format.tsx').default,
     },
     {
     name: '08-blockx',
@@ -81,7 +81,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Checkbox/example-08-block.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Checkbox/example-08-block.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Checkbox/example-08-block.tsx').default,
     },
     {
     name: '09-disabledx',
@@ -91,7 +91,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Checkbox/example-09-disabled.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Checkbox/example-09-disabled.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Checkbox/example-09-disabled.tsx').default,
     },
     {
     name: '10-disabledx',
@@ -101,7 +101,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Checkbox/example-10-disabled.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Checkbox/example-10-disabled.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Checkbox/example-10-disabled.tsx').default,
     },
     {
     name: '11-inputx',
@@ -111,7 +111,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Checkbox/example-11-input.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Checkbox/example-11-input.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Checkbox/example-11-input.tsx').default,
     },
 ]
 

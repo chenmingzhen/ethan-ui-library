@@ -21,7 +21,7 @@ const examples = [
     ),
     component: require('doc/pages/components/BackTop/example-1-base.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/BackTop/example-1-base.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/BackTop/example-1-base.tsx').default,
     },
     {
     name: '2-locationx',
@@ -31,7 +31,7 @@ const examples = [
     ),
     component: require('doc/pages/components/BackTop/example-2-location.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/BackTop/example-2-location.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/BackTop/example-2-location.tsx').default,
     },
     {
     name: '3-contentx',
@@ -41,7 +41,7 @@ const examples = [
     ),
     component: require('doc/pages/components/BackTop/example-3-content.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/BackTop/example-3-content.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/BackTop/example-3-content.tsx').default,
     },
 ]
 

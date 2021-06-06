@@ -21,7 +21,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Radio/example-1-base.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Radio/example-1-base.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Radio/example-1-base.tsx').default,
     },
     {
     name: '2-groupx',
@@ -31,7 +31,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Radio/example-2-group.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Radio/example-2-group.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Radio/example-2-group.tsx').default,
     },
     {
     name: '3-formatx',
@@ -41,7 +41,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Radio/example-3-format.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Radio/example-3-format.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Radio/example-3-format.tsx').default,
     },
     {
     name: '5-blockx',
@@ -51,7 +51,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Radio/example-5-block.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Radio/example-5-block.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Radio/example-5-block.tsx').default,
     },
     {
     name: '6-button-1x',
@@ -61,7 +61,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Radio/example-6-button-1.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Radio/example-6-button-1.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Radio/example-6-button-1.tsx').default,
     },
     {
     name: '6-button-2x',
@@ -71,7 +71,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Radio/example-6-button-2.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Radio/example-6-button-2.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Radio/example-6-button-2.tsx').default,
     },
     {
     name: '6-button-3x',
@@ -81,7 +81,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Radio/example-6-button-3.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Radio/example-6-button-3.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Radio/example-6-button-3.tsx').default,
     },
     {
     name: '7-disabledx',
@@ -91,7 +91,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Radio/example-7-disabled.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Radio/example-7-disabled.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Radio/example-7-disabled.tsx').default,
     },
     {
     name: '8-disabledx',
@@ -101,7 +101,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Radio/example-8-disabled.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Radio/example-8-disabled.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Radio/example-8-disabled.tsx').default,
     },
     {
     name: '9-togglex',
@@ -111,7 +111,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Radio/example-9-toggle.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Radio/example-9-toggle.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Radio/example-9-toggle.tsx').default,
     },
 ]
 

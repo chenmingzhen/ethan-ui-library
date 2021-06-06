@@ -21,7 +21,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Tree/example-01-base.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Tree/example-01-base.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Tree/example-01-base.tsx').default,
     },
     {
     name: '02-iconx',
@@ -31,7 +31,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Tree/example-02-icon.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Tree/example-02-icon.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Tree/example-02-icon.tsx').default,
     },
     {
     name: '03-clickx',
@@ -41,7 +41,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Tree/example-03-click.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Tree/example-03-click.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Tree/example-03-click.tsx').default,
     },
     {
     name: '04-nolinex',
@@ -51,7 +51,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Tree/example-04-noline.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Tree/example-04-noline.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Tree/example-04-noline.tsx').default,
     },
     {
     name: '05-expandedx',
@@ -61,7 +61,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Tree/example-05-expanded.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Tree/example-05-expanded.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Tree/example-05-expanded.tsx').default,
     },
     {
     name: '06-changex',
@@ -71,7 +71,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Tree/example-06-change.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Tree/example-06-change.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Tree/example-06-change.tsx').default,
     },
     {
     name: '07-disabledx',
@@ -81,7 +81,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Tree/example-07-disabled.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Tree/example-07-disabled.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Tree/example-07-disabled.tsx').default,
     },
     {
     name: '08-dragx',
@@ -91,7 +91,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Tree/example-08-drag.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Tree/example-08-drag.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Tree/example-08-drag.tsx').default,
     },
     {
     name: '08-styledragx',
@@ -101,7 +101,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Tree/example-08-styledrag.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Tree/example-08-styledrag.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Tree/example-08-styledrag.tsx').default,
     },
     {
     name: '09-lazyloadx',
@@ -111,7 +111,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Tree/example-09-lazyload.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Tree/example-09-lazyload.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Tree/example-09-lazyload.tsx').default,
     },
     {
     name: 'datax',
@@ -121,7 +121,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Tree/example-data.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Tree/example-data.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Tree/example-data.tsx').default,
     },
 ]
 

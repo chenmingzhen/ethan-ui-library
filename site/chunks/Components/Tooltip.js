@@ -21,7 +21,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Tooltip/example-1-base.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Tooltip/example-1-base.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Tooltip/example-1-base.tsx').default,
     },
     {
     name: '2-clickx',
@@ -31,7 +31,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Tooltip/example-2-click.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Tooltip/example-2-click.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Tooltip/example-2-click.tsx').default,
     },
     {
     name: '3-disabled-innerx',
@@ -41,7 +41,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Tooltip/example-3-disabled-inner.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Tooltip/example-3-disabled-inner.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Tooltip/example-3-disabled-inner.tsx').default,
     },
 ]
 

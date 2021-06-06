@@ -21,7 +21,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Upload/example-01-base.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Upload/example-01-base.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Upload/example-01-base.tsx').default,
     },
     {
     name: '01-onChangex',
@@ -31,7 +31,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Upload/example-01-onChange.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Upload/example-01-onChange.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Upload/example-01-onChange.tsx').default,
     },
     {
     name: '02-imagex',
@@ -41,7 +41,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Upload/example-02-image.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Upload/example-02-image.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Upload/example-02-image.tsx').default,
     },
     {
     name: '02-show-imagex',
@@ -51,7 +51,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Upload/example-02-show-image.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Upload/example-02-show-image.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Upload/example-02-show-image.tsx').default,
     },
     {
     name: '03-buttonx',
@@ -61,7 +61,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Upload/example-03-button.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Upload/example-03-button.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Upload/example-03-button.tsx').default,
     },
     {
     name: '04-validatorx',
@@ -71,7 +71,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Upload/example-04-validator.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Upload/example-04-validator.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Upload/example-04-validator.tsx').default,
     },
     {
     name: '05-filesizex',
@@ -81,7 +81,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Upload/example-05-filesize.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Upload/example-05-filesize.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Upload/example-05-filesize.tsx').default,
     },
     {
     name: '06-errorx',
@@ -91,7 +91,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Upload/example-06-error.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Upload/example-06-error.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Upload/example-06-error.tsx').default,
     },
     {
     name: '07-recoverx',
@@ -101,7 +101,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Upload/example-07-recover.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Upload/example-07-recover.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Upload/example-07-recover.tsx').default,
     },
     {
     name: '08-requestx',
@@ -111,7 +111,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Upload/example-08-request.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Upload/example-08-request.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Upload/example-08-request.tsx').default,
     },
     {
     name: '09-zipx',
@@ -121,7 +121,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Upload/example-09-zip.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Upload/example-09-zip.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Upload/example-09-zip.tsx').default,
     },
     {
     name: '10-defaultValuex',
@@ -131,7 +131,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Upload/example-10-defaultValue.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Upload/example-10-defaultValue.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Upload/example-10-defaultValue.tsx').default,
     },
     {
     name: '11-draggerx',
@@ -141,7 +141,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Upload/example-11-dragger.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Upload/example-11-dragger.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Upload/example-11-dragger.tsx').default,
     },
 ]
 

@@ -21,7 +21,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Button/example-1-base.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Button/example-1-base.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Button/example-1-base.tsx').default,
     },
     {
     name: '1-textx',
@@ -31,7 +31,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Button/example-1-text.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Button/example-1-text.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Button/example-1-text.tsx').default,
     },
     {
     name: '2-iconx',
@@ -41,7 +41,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Button/example-2-icon.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Button/example-2-icon.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Button/example-2-icon.tsx').default,
     },
     {
     name: '3-sizex',
@@ -51,7 +51,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Button/example-3-size.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Button/example-3-size.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Button/example-3-size.tsx').default,
     },
     {
     name: '4-disabledx',
@@ -61,7 +61,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Button/example-4-disabled.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Button/example-4-disabled.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Button/example-4-disabled.tsx').default,
     },
     {
     name: '5-loadingx',
@@ -71,7 +71,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Button/example-5-loading.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Button/example-5-loading.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Button/example-5-loading.tsx').default,
     },
     {
     name: '6-hrefx',
@@ -81,7 +81,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Button/example-6-href.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Button/example-6-href.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Button/example-6-href.tsx').default,
     },
     {
     name: '7-outlinex',
@@ -91,7 +91,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Button/example-7-outline.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Button/example-7-outline.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Button/example-7-outline.tsx').default,
     },
     {
     name: '8-groupx',
@@ -101,7 +101,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Button/example-8-group.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Button/example-8-group.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Button/example-8-group.tsx').default,
     },
 ]
 

@@ -22,10 +22,12 @@ const lessLoader = (name, hot) => {
         {
             loader: 'less-loader',
             options: {
-                // 通过modifyVars 修改默认的主题 对应less文件的变量
-                modifyVars: {
-                    'ethan-prefix': process.env.ETHAN_PREFIX || 'ethan',
-                    'ethan-theme': name,
+                lessOptions: {
+                    // 通过modifyVars 修改默认的主题 对应less文件的变量
+                    modifyVars: {
+                        'ethan-prefix': process.env.ETHAN_PREFIX || 'ethan',
+                        'ethan-theme': name,
+                    },
                 },
             },
         },

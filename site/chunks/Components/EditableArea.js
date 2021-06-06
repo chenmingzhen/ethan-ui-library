@@ -21,7 +21,7 @@ const examples = [
     ),
     component: require('doc/pages/components/EditableArea/example-01-base.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/EditableArea/example-01-base.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/EditableArea/example-01-base.tsx').default,
     },
     {
     name: '02-controlledx',
@@ -31,7 +31,7 @@ const examples = [
     ),
     component: require('doc/pages/components/EditableArea/example-02-controlled.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/EditableArea/example-02-controlled.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/EditableArea/example-02-controlled.tsx').default,
     },
     {
     name: '03-containerx',
@@ -41,7 +41,7 @@ const examples = [
     ),
     component: require('doc/pages/components/EditableArea/example-03-container.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/EditableArea/example-03-container.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/EditableArea/example-03-container.tsx').default,
     },
 ]
 

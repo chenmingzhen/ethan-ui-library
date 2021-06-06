@@ -21,7 +21,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Avatar/example-1-base.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Avatar/example-1-base.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Avatar/example-1-base.tsx').default,
     },
     {
     name: '2-text-sizex',
@@ -31,7 +31,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Avatar/example-2-text-size.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Avatar/example-2-text-size.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Avatar/example-2-text-size.tsx').default,
     },
     {
     name: '3-customx',
@@ -41,7 +41,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Avatar/example-3-custom.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Avatar/example-3-custom.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Avatar/example-3-custom.tsx').default,
     },
 ]
 

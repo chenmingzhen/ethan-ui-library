@@ -21,7 +21,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Grid/example-01-base.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Grid/example-01-base.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Grid/example-01-base.tsx').default,
     },
     {
     name: '02-offsetx',
@@ -31,7 +31,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Grid/example-02-offset.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Grid/example-02-offset.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Grid/example-02-offset.tsx').default,
     },
     {
     name: '03-nestedx',
@@ -41,7 +41,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Grid/example-03-nested.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Grid/example-03-nested.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Grid/example-03-nested.tsx').default,
     },
     {
     name: '04-gutterx',
@@ -51,7 +51,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Grid/example-04-gutter.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Grid/example-04-gutter.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Grid/example-04-gutter.tsx').default,
     },
 ]
 

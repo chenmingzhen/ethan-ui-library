@@ -21,7 +21,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Start/example-locale.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Start/example-locale.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Start/example-locale.tsx').default,
     },
 ]
 

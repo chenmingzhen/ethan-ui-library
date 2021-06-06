@@ -21,7 +21,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Slider/example-01-base.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Slider/example-01-base.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Slider/example-01-base.tsx').default,
     },
     {
     name: '01-inputx',
@@ -31,7 +31,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Slider/example-01-input.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Slider/example-01-input.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Slider/example-01-input.tsx').default,
     },
     {
     name: '02-rangex',
@@ -41,7 +41,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Slider/example-02-range.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Slider/example-02-range.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Slider/example-02-range.tsx').default,
     },
     {
     name: '03-scalex',
@@ -51,7 +51,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Slider/example-03-scale.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Slider/example-03-scale.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Slider/example-03-scale.tsx').default,
     },
     {
     name: '04-formatx',
@@ -61,7 +61,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Slider/example-04-format.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Slider/example-04-format.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Slider/example-04-format.tsx').default,
     },
     {
     name: '05-stepx',
@@ -71,7 +71,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Slider/example-05-step.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Slider/example-05-step.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Slider/example-05-step.tsx').default,
     },
     {
     name: '06-stepx',
@@ -81,7 +81,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Slider/example-06-step.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Slider/example-06-step.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Slider/example-06-step.tsx').default,
     },
     {
     name: '07-hidex',
@@ -91,7 +91,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Slider/example-07-hide.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Slider/example-07-hide.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Slider/example-07-hide.tsx').default,
     },
     {
     name: '08-hidex',
@@ -101,7 +101,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Slider/example-08-hide.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Slider/example-08-hide.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Slider/example-08-hide.tsx').default,
     },
     {
     name: '09-disabledx',
@@ -111,7 +111,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Slider/example-09-disabled.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Slider/example-09-disabled.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Slider/example-09-disabled.tsx').default,
     },
     {
     name: '10-verticalx',
@@ -121,7 +121,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Slider/example-10-vertical.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Slider/example-10-vertical.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Slider/example-10-vertical.tsx').default,
     },
     {
     name: '11-increasex',
@@ -131,7 +131,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Slider/example-11-increase.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Slider/example-11-increase.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Slider/example-11-increase.tsx').default,
     },
 ]
 

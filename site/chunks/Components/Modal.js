@@ -21,7 +21,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Modal/example-1-base.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Modal/example-1-base.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Modal/example-1-base.tsx').default,
     },
     {
     name: '2-specialx',
@@ -31,7 +31,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Modal/example-2-special.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Modal/example-2-special.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Modal/example-2-special.tsx').default,
     },
     {
     name: '3-confirmx',
@@ -41,7 +41,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Modal/example-3-confirm.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Modal/example-3-confirm.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Modal/example-3-confirm.tsx').default,
     },
     {
     name: '3-focusx',
@@ -51,7 +51,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Modal/example-3-focus.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Modal/example-3-focus.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Modal/example-3-focus.tsx').default,
     },
     {
     name: '3-gcontainerx',
@@ -61,7 +61,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Modal/example-3-gcontainer.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Modal/example-3-gcontainer.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Modal/example-3-gcontainer.tsx').default,
     },
     {
     name: '4-moveablex',
@@ -71,7 +71,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Modal/example-4-moveable.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Modal/example-4-moveable.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Modal/example-4-moveable.tsx').default,
     },
     {
     name: '5-multistagex',
@@ -81,7 +81,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Modal/example-5-multistage.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Modal/example-5-multistage.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Modal/example-5-multistage.tsx').default,
     },
     {
     name: '6-closex',
@@ -91,7 +91,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Modal/example-6-close.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Modal/example-6-close.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Modal/example-6-close.tsx').default,
     },
     {
     name: '7-positionx',
@@ -101,7 +101,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Modal/example-7-position.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Modal/example-7-position.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Modal/example-7-position.tsx').default,
     },
     {
     name: '8-typex',
@@ -111,7 +111,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Modal/example-8-type.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Modal/example-8-type.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Modal/example-8-type.tsx').default,
     },
     {
     name: '9-zoomx',
@@ -121,7 +121,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Modal/example-9-zoom.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Modal/example-9-zoom.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Modal/example-9-zoom.tsx').default,
     },
 ]
 

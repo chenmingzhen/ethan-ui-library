@@ -21,7 +21,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Message/example-1-base.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Message/example-1-base.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Message/example-1-base.tsx').default,
     },
     {
     name: '2-durationx',
@@ -31,7 +31,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Message/example-2-duration.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Message/example-2-duration.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Message/example-2-duration.tsx').default,
     },
     {
     name: '3-positionx',
@@ -41,7 +41,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Message/example-3-position.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Message/example-3-position.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Message/example-3-position.tsx').default,
     },
     {
     name: '4-closex',
@@ -51,7 +51,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Message/example-4-close.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Message/example-4-close.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Message/example-4-close.tsx').default,
     },
     {
     name: '5-manual-closex',
@@ -61,7 +61,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Message/example-5-manual-close.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Message/example-5-manual-close.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Message/example-5-manual-close.tsx').default,
     },
 ]
 

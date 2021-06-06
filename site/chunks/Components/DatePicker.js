@@ -21,7 +21,7 @@ const examples = [
     ),
     component: require('doc/pages/components/DatePicker/example-01-base.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/DatePicker/example-01-base.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/DatePicker/example-01-base.tsx').default,
     },
     {
     name: '02-formatx',
@@ -31,7 +31,7 @@ const examples = [
     ),
     component: require('doc/pages/components/DatePicker/example-02-format.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/DatePicker/example-02-format.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/DatePicker/example-02-format.tsx').default,
     },
     {
     name: '03-sizex',
@@ -41,7 +41,7 @@ const examples = [
     ),
     component: require('doc/pages/components/DatePicker/example-03-size.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/DatePicker/example-03-size.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/DatePicker/example-03-size.tsx').default,
     },
     {
     name: '04-dayx',
@@ -51,7 +51,7 @@ const examples = [
     ),
     component: require('doc/pages/components/DatePicker/example-04-day.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/DatePicker/example-04-day.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/DatePicker/example-04-day.tsx').default,
     },
     {
     name: '04-minmaxx',
@@ -61,7 +61,7 @@ const examples = [
     ),
     component: require('doc/pages/components/DatePicker/example-04-minmax.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/DatePicker/example-04-minmax.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/DatePicker/example-04-minmax.tsx').default,
     },
     {
     name: '05-weekx',
@@ -71,7 +71,7 @@ const examples = [
     ),
     component: require('doc/pages/components/DatePicker/example-05-week.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/DatePicker/example-05-week.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/DatePicker/example-05-week.tsx').default,
     },
     {
     name: '06-monthx',
@@ -81,7 +81,7 @@ const examples = [
     ),
     component: require('doc/pages/components/DatePicker/example-06-month.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/DatePicker/example-06-month.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/DatePicker/example-06-month.tsx').default,
     },
     {
     name: '07-timex',
@@ -91,7 +91,7 @@ const examples = [
     ),
     component: require('doc/pages/components/DatePicker/example-07-time.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/DatePicker/example-07-time.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/DatePicker/example-07-time.tsx').default,
     },
     {
     name: '08-datetimex',
@@ -101,7 +101,7 @@ const examples = [
     ),
     component: require('doc/pages/components/DatePicker/example-08-datetime.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/DatePicker/example-08-datetime.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/DatePicker/example-08-datetime.tsx').default,
     },
     {
     name: '09-range-datex',
@@ -111,7 +111,7 @@ const examples = [
     ),
     component: require('doc/pages/components/DatePicker/example-09-range-date.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/DatePicker/example-09-range-date.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/DatePicker/example-09-range-date.tsx').default,
     },
     {
     name: '09-range-monthx',
@@ -121,7 +121,7 @@ const examples = [
     ),
     component: require('doc/pages/components/DatePicker/example-09-range-month.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/DatePicker/example-09-range-month.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/DatePicker/example-09-range-month.tsx').default,
     },
     {
     name: '09-singlex',
@@ -131,7 +131,7 @@ const examples = [
     ),
     component: require('doc/pages/components/DatePicker/example-09-single.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/DatePicker/example-09-single.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/DatePicker/example-09-single.tsx').default,
     },
     {
     name: '09-squickx',
@@ -141,7 +141,7 @@ const examples = [
     ),
     component: require('doc/pages/components/DatePicker/example-09-squick.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/DatePicker/example-09-squick.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/DatePicker/example-09-squick.tsx').default,
     },
     {
     name: '10-disabledx',
@@ -151,7 +151,7 @@ const examples = [
     ),
     component: require('doc/pages/components/DatePicker/example-10-disabled.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/DatePicker/example-10-disabled.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/DatePicker/example-10-disabled.tsx').default,
     },
     {
     name: '11-disabledx',
@@ -161,7 +161,7 @@ const examples = [
     ),
     component: require('doc/pages/components/DatePicker/example-11-disabled.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/DatePicker/example-11-disabled.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/DatePicker/example-11-disabled.tsx').default,
     },
     {
     name: '12-inputablex',
@@ -171,7 +171,7 @@ const examples = [
     ),
     component: require('doc/pages/components/DatePicker/example-12-inputable.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/DatePicker/example-12-inputable.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/DatePicker/example-12-inputable.tsx').default,
     },
     {
     name: '13-absolutex',
@@ -181,7 +181,7 @@ const examples = [
     ),
     component: require('doc/pages/components/DatePicker/example-13-absolute.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/DatePicker/example-13-absolute.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/DatePicker/example-13-absolute.tsx').default,
     },
 ]
 

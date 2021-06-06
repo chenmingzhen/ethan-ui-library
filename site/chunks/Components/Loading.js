@@ -21,7 +21,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Loading/example-1-base.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Loading/example-1-base.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Loading/example-1-base.tsx').default,
     },
     {
     name: '2-customx',
@@ -31,7 +31,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Loading/example-2-custom.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Loading/example-2-custom.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Loading/example-2-custom.tsx').default,
     },
     {
     name: '3-globalx',
@@ -41,7 +41,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Loading/example-3-global.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Loading/example-3-global.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Loading/example-3-global.tsx').default,
     },
 ]
 

@@ -21,7 +21,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Popover/example-1-base.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Popover/example-1-base.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Popover/example-1-base.tsx').default,
     },
     {
     name: '1-controllx',
@@ -31,7 +31,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Popover/example-1-controll.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Popover/example-1-controll.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Popover/example-1-controll.tsx').default,
     },
     {
     name: '10-containerx',
@@ -41,7 +41,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Popover/example-10-container.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Popover/example-10-container.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Popover/example-10-container.tsx').default,
     },
     {
     name: '11-disabledx',
@@ -51,7 +51,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Popover/example-11-disabled.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Popover/example-11-disabled.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Popover/example-11-disabled.tsx').default,
     },
     {
     name: '2-delayx',
@@ -61,7 +61,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Popover/example-2-delay.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Popover/example-2-delay.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Popover/example-2-delay.tsx').default,
     },
     {
     name: '2-positionx',
@@ -71,7 +71,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Popover/example-2-position.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Popover/example-2-position.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Popover/example-2-position.tsx').default,
     },
     {
     name: '3-clickx',
@@ -81,7 +81,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Popover/example-3-click.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Popover/example-3-click.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Popover/example-3-click.tsx').default,
     },
     {
     name: '4-confirmx',
@@ -91,7 +91,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Popover/example-4-confirm.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Popover/example-4-confirm.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Popover/example-4-confirm.tsx').default,
     },
     {
     name: '5-funcx',
@@ -101,7 +101,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Popover/example-5-func.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Popover/example-5-func.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Popover/example-5-func.tsx').default,
     },
     {
     name: '6-typex',
@@ -111,7 +111,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Popover/example-6-type.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Popover/example-6-type.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Popover/example-6-type.tsx').default,
     },
     {
     name: '7-typex',
@@ -121,7 +121,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Popover/example-7-type.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Popover/example-7-type.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Popover/example-7-type.tsx').default,
     },
     {
     name: '9-eventx',
@@ -131,7 +131,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Popover/example-9-event.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Popover/example-9-event.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Popover/example-9-event.tsx').default,
     },
 ]
 

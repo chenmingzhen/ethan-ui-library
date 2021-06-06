@@ -21,7 +21,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Input/example-1-base.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Input/example-1-base.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Input/example-1-base.tsx').default,
     },
     {
     name: '1-clearablex',
@@ -31,7 +31,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Input/example-1-clearable.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Input/example-1-clearable.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Input/example-1-clearable.tsx').default,
     },
     {
     name: '2-sizex',
@@ -41,7 +41,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Input/example-2-size.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Input/example-2-size.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Input/example-2-size.tsx').default,
     },
     {
     name: '3-numberx',
@@ -51,7 +51,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Input/example-3-number.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Input/example-3-number.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Input/example-3-number.tsx').default,
     },
     {
     name: '4-numberx',
@@ -61,7 +61,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Input/example-4-number.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Input/example-4-number.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Input/example-4-number.tsx').default,
     },
     {
     name: '5-groupx',
@@ -71,7 +71,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Input/example-5-group.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Input/example-5-group.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Input/example-5-group.tsx').default,
     },
     {
     name: '6-tipx',
@@ -81,7 +81,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Input/example-6-tip.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Input/example-6-tip.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Input/example-6-tip.tsx').default,
     },
     {
     name: '7-validatex',
@@ -91,7 +91,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Input/example-7-validate.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Input/example-7-validate.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Input/example-7-validate.tsx').default,
     },
     {
     name: '8-disabledx',
@@ -101,7 +101,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Input/example-8-disabled.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Input/example-8-disabled.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Input/example-8-disabled.tsx').default,
     },
     {
     name: '9-passwordx',
@@ -111,7 +111,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Input/example-9-password.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Input/example-9-password.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Input/example-9-password.tsx').default,
     },
 ]
 

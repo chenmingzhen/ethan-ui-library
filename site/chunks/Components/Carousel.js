@@ -21,7 +21,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Carousel/example-1-base.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Carousel/example-1-base.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Carousel/example-1-base.tsx').default,
     },
     {
     name: '2-custom-indicatorx',
@@ -31,7 +31,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Carousel/example-2-custom-indicator.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Carousel/example-2-custom-indicator.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Carousel/example-2-custom-indicator.tsx').default,
     },
 ]
 

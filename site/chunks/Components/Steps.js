@@ -21,7 +21,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Steps/example-1-base.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Steps/example-1-base.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Steps/example-1-base.tsx').default,
     },
     {
     name: '2-minix',
@@ -31,7 +31,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Steps/example-2-mini.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Steps/example-2-mini.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Steps/example-2-mini.tsx').default,
     },
     {
     name: '3-iconx',
@@ -41,7 +41,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Steps/example-3-icon.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Steps/example-3-icon.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Steps/example-3-icon.tsx').default,
     },
     {
     name: '4-errorx',
@@ -51,7 +51,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Steps/example-4-error.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Steps/example-4-error.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Steps/example-4-error.tsx').default,
     },
     {
     name: '5-changex',
@@ -61,7 +61,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Steps/example-5-change.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Steps/example-5-change.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Steps/example-5-change.tsx').default,
     },
     {
     name: '6-verticalx',
@@ -71,7 +71,7 @@ const examples = [
     ),
     component: require('doc/pages/components/Steps/example-6-vertical.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Steps/example-6-vertical.tsx'),
+    rawText: require('!raw-loader!doc/pages/components/Steps/example-6-vertical.tsx').default,
     },
 ]
 
