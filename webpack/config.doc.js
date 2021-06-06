@@ -1,5 +1,5 @@
 const path = require('path')
-const merge = require('webpack-merge')
+const { merge } = require('webpack-merge')
 const config = require('../config')
 const common = require('./config.common')
 const pkg = require('../package.json')
@@ -30,7 +30,6 @@ const cssConfig = config.themes.map(name =>
 // 目录js 由 webpackChunkName:XXX 见chunks/Components/index
 // Lazy loading 懒加载
 const jsConfig = merge(common({ ...config.webpack, DEV: false }), {
-    stats: { children: false },
     devtool: config.webpack.devtool,
     entry: config.webpack.entry,
     output: {
