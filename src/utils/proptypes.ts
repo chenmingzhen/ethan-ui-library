@@ -1,4 +1,3 @@
-// @ts-nocheck
 export function getProps(PropTypes, ...args) {
     const props = {
         className: PropTypes.string,
