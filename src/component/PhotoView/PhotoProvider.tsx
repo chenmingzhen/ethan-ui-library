@@ -7,7 +7,7 @@ export interface PhotoProviderProps extends PhotoProviderBase {
     children: React.ReactNode
 }
 
-type PhotoProviderState = {
+interface PhotoProviderState {
     images: DataType[]
 
     visible: boolean

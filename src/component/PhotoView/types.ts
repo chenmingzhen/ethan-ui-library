@@ -34,29 +34,28 @@ export type OverlayRenderProps = {
 }
 
 export interface PhotoProviderBase {
-    // 背景可点击关闭，默认 true
+    /* 背景可点击关闭，默认 true */
     maskClosable?: boolean
-    // 图片点击可关闭，默认 false
+    /* 图片点击可关闭，默认 false */
     photoClosable?: boolean
-    // 导航条 visible，默认 true
+    /* 导航条 visible，默认 true */
     bannerVisible?: boolean
-    // 简介 visible，默认 true
+    /* 简介 visible，默认 true */
     introVisible?: boolean
-    // 自定义渲染
+    /* 自定义渲染 */
     overlayRender?: (overlayProps: OverlayRenderProps) => React.ReactNode
-    // 工具栏渲染
+    /* 工具栏渲染 */
     toolbarRender?: (overlayProps: OverlayRenderProps) => React.ReactNode
-    // className
     className?: string
-    // 遮罩 className
+    /* 遮罩 className */
     maskClassName?: string
-    // 图片容器 className
+    /* 图片容器 className */
     viewClassName?: string
-    // 图片 className
+    /* 图片 className */
     imageClassName?: string
-    // 自定义 loading
+    /* 自定义 loading */
     loadingElement?: JSX.Element
-    // 加载失败 Element
+    /* 加载失败 Element */
     brokenElement?: JSX.Element
 }
 
@@ -109,7 +108,7 @@ export enum ShowAnimateEnum {
  */
 export type OriginRectType =
     | {
-        clientX: number
-        clientY: number
-    }
+          clientX: number
+          clientY: number
+      }
     | undefined

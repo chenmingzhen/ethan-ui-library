@@ -12,40 +12,40 @@ import { defaultOpacity, horizontalOffset, maxMoveOffset } from './variables'
 const { Close, AngleLeft, AngleRight } = Icons
 
 export interface PhotoSliderProps extends PhotoProviderBase {
-    // 图片列表
+    /* 图片列表 */
     images: DataType[]
-    // 图片当前索引
+    /* 图片当前索引 */
     index?: number
-    // 可见
+    /* 可见 */
     visible: boolean
-    // 关闭事件
+    /* 关闭事件 */
     onClose: (evt?: React.MouseEvent | React.TouchEvent) => void
-    // 索引改变回调
-    onIndexChange?: any
+    /* 索引改变回调 */
+    onIndexChange?: (index: number) => void
 }
 
-type PhotoSliderState = {
-    // 偏移量
+interface PhotoSliderState {
+    /* 偏移量 */
     translateX: number
-    // 图片当前的 index
+    /* 图片当前的 index */
     photoIndex: number
-    // 图片处于触摸的状态
+    /* 图片处于触摸的状态 */
     touched: boolean
-    // 该状态是否需要 transition
+    /* 该状态是否需要 transition */
     shouldTransition: boolean
-    // Reach 开始时 x 坐标
+    /* Reach 开始时 x 坐标 */
     lastClientX: number | undefined
-    // Reach 开始时 y 坐标
+    /* Reach 开始时 y 坐标 */
     lastClientY: number | undefined
-    // 背景透明度
+    /* 背景透明度 */
     backdropOpacity: number
-    // 上次关闭的背景透明度
+    /* 上次关闭的背景透明度 */
     lastBackdropOpacity: number
-    // 覆盖物可见度
+    /* 覆盖物可见度 */
     overlayVisible: boolean
-    // 可下拉关闭
+    /* 可下拉关闭 */
     canPullClose: boolean
-    // 旋转集合
+    /* 旋转集合 */
     rotatingMap: Map<number, number>
 }
 export default class PhotoSlider extends PureComponent<PhotoSliderProps, PhotoSliderState> {
