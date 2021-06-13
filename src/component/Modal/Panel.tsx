@@ -105,7 +105,7 @@ const ModalPanel: React.FC<ModalPanelProps> = props => {
     }, [props.container])
 
     const style = useMemo(() => {
-        const { width = 500, height, top = '10vh', position, style: rawStyle } = props
+        const { width = 500, height, top = '10vh', position, style: rawStyle, resizable } = props
 
         return Object.assign(
             {
@@ -114,12 +114,12 @@ const ModalPanel: React.FC<ModalPanelProps> = props => {
             position
                 ? {}
                 : {
-                      display: 'inline-flex',
                       width,
                       height,
                       top,
                       position: 'relative',
                   },
+            resizable ? { left: '50%', marginLeft: '-15%' } : {},
             rawStyle || {}
         )
     }, [props.width, props.height, props.top, props.position, props.style])
