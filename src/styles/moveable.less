@@ -3,8 +3,9 @@
 @moveable-prefix: ~'@{ethan-prefix}-moveable';
 
 .@{moveable-prefix} {
-  &-draging {
-    transition-property: transform;
-    transition-duration: 0s;
-  }
+    &-draging {
+        transition-property: transform;
+        transition-duration: 0s;
+        user-select: none;
+    }
 }
