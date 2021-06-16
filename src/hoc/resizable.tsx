@@ -162,7 +162,7 @@ export default curry(
                 // 推拽模式下 只有设置position absolute 宽高才能往左与下延申
                 const position: React.CSSProperties = { position: 'absolute' }
                 const ms: React.CSSProperties = Object.assign({}, style, this.getStyle(), position)
-                const mc = classnames(className, resizableClass('_', this.resizableId))
+                const mc = classnames(className, resizableClass('_', this.resizableId, this.active && 'resize'))
 
                 return <Origin {...others} style={ms} className={mc} />
             }

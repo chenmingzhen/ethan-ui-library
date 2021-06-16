@@ -6,8 +6,6 @@ import { moveableClass } from '@/styles'
 import { getUidStr } from '@/utils/uid'
 import { curry } from '@/utils/func'
 
-const DIS_LIMIT = 50
-
 interface MoveableProps {
     style?: React.CSSProperties
 
@@ -17,18 +15,14 @@ interface MoveableProps {
 }
 
 interface MoveabledState {
-    left: number
+    x: number
 
-    top: number
-
-    startPos: {
-        x: number
-
-        y: number
-    }
+    y: number
 
     draging: boolean
 }
+
+// TODO  优化移动速度
 
 export default curry(
     (handler, Origin) =>
@@ -37,17 +31,16 @@ export default curry(
 
             el: HTMLElement
 
-            handlerEl: HTMLElement
-
             handlerPos: DOMRect
+
+            startPos: { x: number; y: number } = { x: 0, y: 0 }
 
             constructor(props) {
                 super(props)
                 this.state = {
-                    left: 0,
-                    top: 0,
+                    x: 0,
+                    y: 0,
                     draging: false,
-                    startPos: { x: 0, y: 0 },
                 }
             }
 
@@ -67,8 +60,6 @@ export default curry(
                 if (!this.el) return
 
                 this.el.addEventListener('mousedown', this.handleMouseDown)
-
-                this.handlerEl = handler ? this.el.querySelector(handler) || this.el : this.el
             }
 
             handleMouseDown = (e: MouseEvent) => {
@@ -80,30 +71,51 @@ export default curry(
                 // handler存在且该元素还是handler的子元素时才继续
                 if (handler && !(e.target as HTMLElement).matches(handler)) return
 
-                this.setState({ startPos: { x: e.clientX, y: e.clientY } })
+                this.startPos = { x: e.clientX, y: e.clientY }
 
                 document.addEventListener('mousemove', this.handleMouseMove)
                 document.addEventListener('mouseup', this.handleMouseUp)
                 document.addEventListener('mouseleave', this.handleMouseUp)
 
-                this.handlerPos = this.handlerEl.getBoundingClientRect()
+                if (!this.handlerPos) {
+                    this.handlerPos = this.el.getBoundingClientRect()
+                }
 
                 this.setState({
                     draging: true,
                 })
             }
 
-            // TODO 添加边界限制 优化移动速度 修复开启动画效果
             handleMouseMove = (e: MouseEvent) => {
-                const { startPos, left, top } = this.state
+                const { x, y } = this.state
 
-                const moveX = e.clientX - startPos.x
-                const moveY = e.clientY - startPos.y
+                const moveX = e.clientX - this.startPos.x
+                const moveY = e.clientY - this.startPos.y
 
-                this.setState({
-                    left: left + moveX,
-                    top: top + moveY,
-                    startPos: { x: e.clientX, y: e.clientY },
+                this.startPos = { x: e.clientX, y: e.clientY }
+
+                this.setState(prev => {
+                    let finalX = x + moveX
+                    let finalY = y + moveY
+
+                    if (
+                        prev.x + moveX + this.handlerPos.left + this.handlerPos.width > docSize.width ||
+                        prev.x + moveX + this.handlerPos.right - this.handlerPos.width < 0
+                    ) {
+                        finalX = prev.x
+                    }
+
+                    if (
+                        prev.y + moveY + this.handlerPos.top + this.handlerPos.height > docSize.height ||
+                        prev.y + moveY + this.handlerPos.bottom - this.handlerPos.height < 0
+                    ) {
+                        finalY = prev.y
+                    }
+
+                    return {
+                        x: finalX,
+                        y: finalY,
+                    }
                 })
             }
 
@@ -118,10 +130,12 @@ export default curry(
             }
 
             getStyle = () => {
-                const { left, top } = this.state
+                const { x, y } = this.state
+
+                if (!x && !y) return {}
 
                 return {
-                    transform: `translate(${left ?? 0}px, ${top ?? 0}px)`,
+                    transform: `translate(${x}px, ${y}px)`,
                 }
             }
 
