@@ -1,12 +1,9 @@
-import React, { useMemo } from 'react'
+import React, { useMemo, useEffect } from 'react'
 import classnames from 'classnames'
-import { useUpdateEffect } from 'react-use'
 import { modalClass } from '@/styles'
 import Icons from '../icons'
 import Card from '../Card'
-import { Provider } from '../Scroll/context'
-// 用于设置默认zIndex
-import { Provider as ZProvider } from './context'
+import { mousePosition, setTransformOrigin, handleStop } from './util'
 
 interface ModalPanelProps {
     autoFocusButton?: boolean
@@ -69,30 +66,6 @@ interface ModalPanelProps {
     zoom: boolean
 }
 
-function setTransformOrigin(node, value) {
-    const { style } = node
-    style.transformOrigin = value
-}
-
-let mousePosition = null
-
-// 对Zoom情况做处理 记录点击的位置 从点击点缩放到中心
-// https://github.com/ant-design/ant-design/blob/master/components/modal/Modal.tsx
-const getClickPosition = (e: MouseEvent) => {
-    mousePosition = {
-        x: e.clientX,
-        y: e.clientY,
-    }
-
-    setTimeout(() => {
-        mousePosition = null
-    }, 100)
-}
-
-document.addEventListener('click', getClickPosition, true)
-
-const handleStop = e => e.stopPropagation()
-
 const ModalPanel: React.FC<ModalPanelProps> = props => {
     const cardRef = React.useRef<HTMLDivElement>()
 
@@ -126,7 +99,8 @@ const ModalPanel: React.FC<ModalPanelProps> = props => {
 
     const animate = () => {
         const { container, position } = props
-        setTimeout(() => {
+
+        requestAnimationFrame(() => {
             container.classList.add(modalClass('show'))
 
             if (!position) container.classList.add(modalClass('start'))
@@ -143,7 +117,7 @@ const ModalPanel: React.FC<ModalPanelProps> = props => {
         setTransformOrigin(node, '')
 
         // 控制位置动画
-        if (node && mousePosition) {
+        if (node && mousePosition.x !== undefined && mousePosition.y !== undefined) {
             const { left, top } = node.getBoundingClientRect()
 
             const ol = mousePosition.x - left
@@ -158,26 +132,20 @@ const ModalPanel: React.FC<ModalPanelProps> = props => {
         }
     }
 
-    React.useEffect(() => {
+    useEffect(() => {
         const { container, autoFocusButton, id } = props
 
-        updateOrigin()
-        animate()
-
-        if (!autoFocusButton) return
-
-        const el = container.querySelector(`#${id}-${autoFocusButton}`) as HTMLElement
-
-        if (!el) return
-
-        el.focus()
-    }, [])
-
-    useUpdateEffect(() => {
         if (isShow) return
 
         updateOrigin()
+
         animate()
+
+        if (autoFocusButton) {
+            const el = container.querySelector(`#${id}-${autoFocusButton}`) as HTMLElement
+
+            el?.focus()
+        }
     }, [props])
 
     const renderIcon = () => {
@@ -216,6 +184,7 @@ const ModalPanel: React.FC<ModalPanelProps> = props => {
         const { children, noPadding, padding, position, bodyStyle, from = null } = props
 
         let newStyle: React.CSSProperties = { padding: noPadding === true ? 0 : padding }
+
         if (position) newStyle.overflow = 'auto'
 
         if (bodyStyle) newStyle = Object.assign(newStyle, bodyStyle)
@@ -244,33 +213,31 @@ const ModalPanel: React.FC<ModalPanelProps> = props => {
     const showClose = typeof hideClose === 'boolean' ? !hideClose : maskCloseAble || maskCloseAble === null
 
     return (
-        <ZProvider value>
-            <Provider value={{ element: undefined }}>
-                <div key="mask" className={modalClass('mask')} onClick={maskCloseAble ? onClose : undefined} />
-                <Card
-                    forwardedRef={cardRef}
-                    moveable={moveable}
-                    resizable={resizable}
-                    key="card"
-                    shadow
-                    className={className}
-                    style={style}
-                >
-                    {showClose && (
-                        <a className={modalClass('close')} onClick={onClose}>
-                            {Icons.Close}
-                        </a>
-                    )}
-                    {renderTitle(true)}
-                    {renderContent()}
-                    {footer && (
-                        <Card.Footer className={modalClass('footer', from)} align="right">
-                            {footer}
-                        </Card.Footer>
-                    )}
-                </Card>
-            </Provider>
-        </ZProvider>
+        <>
+            <div key="mask" className={modalClass('mask')} onClick={maskCloseAble ? onClose : undefined} />
+            <Card
+                forwardedRef={cardRef}
+                moveable={moveable}
+                resizable={resizable}
+                key="card"
+                shadow
+                className={className}
+                style={style}
+            >
+                {showClose && (
+                    <a className={modalClass('close')} onClick={onClose}>
+                        {Icons.Close}
+                    </a>
+                )}
+                {renderTitle(true)}
+                {renderContent()}
+                {footer && (
+                    <Card.Footer className={modalClass('footer', from)} align="right">
+                        {footer}
+                    </Card.Footer>
+                )}
+            </Card>
+        </>
     )
 }
 
