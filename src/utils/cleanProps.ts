@@ -1,4 +1,3 @@
-// @ts-nocheck
 import immer from 'immer'
 
 const names = [
