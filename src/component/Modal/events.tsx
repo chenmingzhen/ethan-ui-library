@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React from 'react'
 import ReactDOM from 'react-dom'
 import classnames from 'classnames'
@@ -9,27 +8,43 @@ import { getLocale } from '@/locale'
 import { defer } from '@/utils/uid'
 import ready from '@/utils/dom/ready'
 import Panel from './Panel'
+import ModalProps from './type'
 
-const containers = {}
+interface ContainerMap {
+    [id: string]: {
+        div: HTMLElement
+
+        container: HTMLElement
+
+        props: ModalProps
+
+        visible?: boolean
+    }
+}
+
+interface EventOption extends ModalProps {
+    content: React.ReactNode
+
+    id: string
+}
+
+const containers: ContainerMap = {}
+
+// less进退场动画时间为300
 const DURATION = 300
 
-// --------------------method---------------------
-
-const getDiv = id => {
-    const mod = containers[id]
-    return mod ? mod.div : null
-}
+const getDiv = id => containers[id]?.div
 
 // 默认为body
-const getContainer = id => {
-    const mod = containers[id]
-    return mod ? mod.container : null
-}
+const getContainer = id => containers[id]?.container
 
+// 是否有Modal显示中
 const hasVisible = () => Object.keys(containers).some(k => containers[k].visible)
 
-const isMask = id => {
+// 是否为遮罩
+const shoudldAddMaskOpacity = id => {
     const ids = Object.keys(containers).filter(k => containers[k].visible)
+
     return ids.length === 0 ? true : ids[0] === id
 }
 
@@ -39,46 +54,52 @@ const destroy = (id, unmount) => {
     const container = getContainer(id)
 
     if (!div || !container) return
+
     delete containers[id]
 
     // 从 DOM 中移除已经挂载的 React 组件，清除相应的事件处理器和 state。
     // 如果在 container 内没有组件挂载，这个函数将什么都不做。
     // 如果组件成功移除，则返回 true；如果没有组件被移除，则返回 false。
 
-    // 这个unMount多余 考虑去除
-    if (unmount) ReactDOM.unmountComponentAtNode(div)
+    unmount && ReactDOM.unmountComponentAtNode(div)
+
     container.removeChild(div)
 }
 
-const close = (props, callback) => {
+const close = (props: EventOption, callback?: () => void) => {
     const { id } = props
+
     const modal = containers[props.id]
 
     if (!modal || modal.visible === false) return
+
     modal.visible = false
 
     const { div } = modal
 
     div.classList.remove(modalClass('show'), modalClass('start'))
+
     if (!props.position) div.classList.add(modalClass('end'))
 
     setTimeout(() => {
         div.style.display = 'none'
         div.classList.remove(modalClass('end'))
 
-        if (props.destroy) destroy(id, !props.usePortal)
+        props.destroy && destroy(id, !props.usePortal)
 
         if (!hasVisible()) {
-            const doc = document.body.parentNode
+            const doc = document.body.parentNode as HTMLElement
+
             doc.style.overflow = ''
             doc.style.paddingRight = ''
         }
-        if (callback) callback()
+
+        callback?.()
     }, DURATION)
 }
 
 // 创建divDOM
-const createDiv = props => {
+const createDiv = (props: EventOption) => {
     const { id, position, container = document.body, rootClassName } = props
     let div = getDiv(id)
 
@@ -99,53 +120,61 @@ const createDiv = props => {
     return div
 }
 
-const open = (props, isPortal) => {
+const open = (props: EventOption, isPortal?: boolean) => {
     const { content, onClose, zIndex, ...otherProps } = props
+   
     const div = createDiv(props)
 
     div.style.display = 'block'
 
-    const parsed = parseInt(zIndex, 10)
+    div.style.zIndex = String(zIndex)
 
-    if (!Number.isNaN(parsed)) div.style.zIndex = parsed
+    const html = document.body.parentNode as HTMLElement
 
-    const html = document.body.parentNode
-
+    // 滚动条宽度
     const scrollWidth = window.innerWidth - document.body.clientWidth
+
     html.style.overflow = 'hidden'
     html.style.paddingRight = `${scrollWidth}px`
 
     const handleClose = () => {
-        if (onClose) onClose()
-        if (!isPortal) close(props)
+        onClose?.()
+
+        !isPortal && close(props)
     }
 
-    const opacityDefault = props.maskOpacity === undefined ? 0.25 : props.maskOpacity
-    const maskOpacity = isMask(props.id) ? opacityDefault : 0.01
+    const opacity = props.maskOpacity ?? 0.25
+
+    const maskOpacity = shoudldAddMaskOpacity(props.id) ? opacity : 0
+
     div.style.background = props.maskBackground || `rgba(0,0,0,${maskOpacity})`
 
     containers[props.id].visible = true
 
     defer(() => {
-        if (!otherProps.position) div.classList.add(modalClass('start'))
+        // scale缩放动画
+        !otherProps.position && div.classList.add(modalClass('start'))
     })
 
     setTimeout(() => {
         div.classList.add(modalClass('show'))
-    }, 10)
+    }, 100)
 
-    // 注意 此ReactNode会被存储 Panel的正常更新不会让此组件unMount再Mount 而是Update
-    // 见example update
+    // https://developer.mozilla.org/ja/docs/Web/API/Document/activeElement
+    ;(document.activeElement as HTMLElement)?.blur()
+
     const panel = (
         <Panel {...otherProps} onClose={handleClose} container={div}>
             {content}
         </Panel>
     )
 
-    if (isPortal) return ReactDOM.createPortal(panel, div)
-    if (document.activeElement) document.activeElement.blur()
+    if (isPortal) {
+        return ReactDOM.createPortal(panel, div)
+    }
 
     ReactDOM.render(panel, div)
+
     return null
 }
 
@@ -186,6 +215,7 @@ const btnCancel = option => {
 }
 
 // Type类型Modal创建
+// TODO 添加返回示例 通过示例可以关闭Modal与更新Modal
 const createModalMethod = type => option => {
     const props = Object.assign(
         {
