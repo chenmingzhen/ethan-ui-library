@@ -1,23 +1,39 @@
-// @ts-nocheck
 import React from 'react'
-import PropTypes from 'prop-types'
 import classnames from 'classnames'
+import { PureComponent } from '@/utils/component'
 import { docSize } from '@/utils/dom/document'
 import { moveableClass } from '@/styles'
 import { getUidStr } from '@/utils/uid'
 import { curry } from '@/utils/func'
 
-const DIS_LIMIT = 50
+interface MoveableProps {
+    style?: React.CSSProperties
+
+    className?: string
+
+    moveable?: boolean
+}
+
+interface MoveabledState {
+    x: number
+
+    y: number
+
+    draging: boolean
+}
+
+// TODO  优化移动速度
 
 export default curry(
     (handler, Origin) =>
-        class Moveable extends React.Component {
-            // eslint-disable-next-line react/static-property-placement
-            static propTypes = {
-                style: PropTypes.object,
-                className: PropTypes.string,
-                moveable: PropTypes.bool,
-            }
+        class Moveable extends PureComponent<MoveableProps, MoveabledState> {
+            moveabledId: string = getUidStr()
+
+            el: HTMLElement
+
+            handlerPos: DOMRect
+
+            startPos: { x: number; y: number } = { x: 0, y: 0 }
 
             constructor(props) {
                 super(props)
@@ -26,10 +42,6 @@ export default curry(
                     y: 0,
                     draging: false,
                 }
-                this.moveabledId = getUidStr()
-                this.handleMouseDown = this.handleMouseDown.bind(this)
-                this.handleMouseMove = this.handleMouseMove.bind(this)
-                this.handleMouseUp = this.handleMouseUp.bind(this)
             }
 
             componentDidMount() {
@@ -42,74 +54,94 @@ export default curry(
                 }
             }
 
-            bindEvent() {
+            bindEvent = () => {
                 this.el = document.querySelector(`.${moveableClass(this.moveabledId)}`)
+
                 if (!this.el) return
+
                 this.el.addEventListener('mousedown', this.handleMouseDown)
-                this.handlerEl = handler ? this.el.querySelector(handler) || this.el : this.el
             }
 
-            handleMouseDown(e) {
+            handleMouseDown = (e: MouseEvent) => {
                 // button 事件属性可返回一个整数，指示当事件被触发时哪个鼠标按键被点击。
                 // https://www.w3school.com.cn/jsref/event_button.asp
                 if (e.button !== 0 || !this.el) return
 
                 // 拖拽handler才移动 Card的header
                 // handler存在且该元素还是handler的子元素时才继续
-                if (handler && !e.target.matches(handler)) return
+                if (handler && !(e.target as HTMLElement).matches(handler)) return
+
+                this.startPos = { x: e.clientX, y: e.clientY }
 
                 document.addEventListener('mousemove', this.handleMouseMove)
                 document.addEventListener('mouseup', this.handleMouseUp)
                 document.addEventListener('mouseleave', this.handleMouseUp)
 
                 if (!this.handlerPos) {
-                    this.handlerPos = this.handlerEl.getBoundingClientRect()
+                    this.handlerPos = this.el.getBoundingClientRect()
                 }
-                this.hasDragged = true
+
                 this.setState({
                     draging: true,
                 })
             }
 
-            handleMouseMove(e) {
+            handleMouseMove = (e: MouseEvent) => {
+                const { x, y } = this.state
+
+                const moveX = e.clientX - this.startPos.x
+                const moveY = e.clientY - this.startPos.y
+
+                this.startPos = { x: e.clientX, y: e.clientY }
+
                 this.setState(prev => {
-                    let x = prev.x + e.movementX
-                    let y = prev.y + e.movementY
-                    // 超过设定范围 不操作
-                    if (this.handlerPos.right + x < DIS_LIMIT || this.handlerPos.left + x > docSize.width - DIS_LIMIT) {
-                        // eslint-disable-next-line prefer-destructuring
-                        x = prev.x
-                    }
+                    let finalX = x + moveX
+                    let finalY = y + moveY
+
                     if (
-                        this.handlerPos.bottom + y < DIS_LIMIT ||
-                        this.handlerPos.top + y > docSize.height - DIS_LIMIT
+                        prev.x + moveX + this.handlerPos.left + this.handlerPos.width > docSize.width ||
+                        prev.x + moveX + this.handlerPos.right - this.handlerPos.width < 0
                     ) {
-                        // eslint-disable-next-line prefer-destructuring
-                        y = prev.y
+                        finalX = prev.x
                     }
-                    return { x, y }
+
+                    if (
+                        prev.y + moveY + this.handlerPos.top + this.handlerPos.height > docSize.height ||
+                        prev.y + moveY + this.handlerPos.bottom - this.handlerPos.height < 0
+                    ) {
+                        finalY = prev.y
+                    }
+
+                    return {
+                        x: finalX,
+                        y: finalY,
+                    }
                 })
             }
 
-            handleMouseUp() {
+            handleMouseUp = () => {
                 document.removeEventListener('mousemove', this.handleMouseMove)
                 document.removeEventListener('mouseup', this.handleMouseUp)
                 document.removeEventListener('mouseleave', this.handleMouseUp)
+
                 this.setState({
                     draging: false,
                 })
             }
 
-            getStyle() {
+            getStyle = () => {
                 const { x, y } = this.state
-                if (!this.hasDragged) return undefined
+
+                if (!x && !y) return {}
+
                 return {
                     transform: `translate(${x}px, ${y}px)`,
                 }
             }
 
-            render() {
+            render = () => {
                 const { moveable, ...others } = this.props
+
                 if (!moveable) return <Origin {...others} />
 
                 const ms = Object.assign({}, this.props.style, this.getStyle())

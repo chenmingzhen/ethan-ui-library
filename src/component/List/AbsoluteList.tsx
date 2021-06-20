@@ -8,7 +8,6 @@ import { compose } from '@/utils/func'
 import { listClass } from '@/styles'
 import { docScroll, docSize } from '@/utils/dom/document'
 import { scrollConsumer } from '../Scroll/context'
-import zIndexConsumer from '../Modal/context'
 
 const PICKER_V_MARGIN = 4
 let root
@@ -214,5 +213,5 @@ export default function(List) {
         value: PropTypes.any,
     }
 
-    return compose(scrollConsumer, zIndexConsumer)(AbsoluteList)
+    return compose(scrollConsumer)(AbsoluteList)
 }
