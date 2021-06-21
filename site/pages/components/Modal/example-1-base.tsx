@@ -10,58 +10,69 @@ import React from 'react'
 import { Modal, Button } from 'ethan/index'
 
 export default class extends React.Component {
-  constructor(props) {
-    super(props)
-    this.state = {
-      visible: false,
-      content: 1,
+    constructor(props) {
+        super(props)
+        this.state = {
+            visible: false,
+            content: 1,
+            count: 0,
+        }
+        this.show = this.show.bind(this)
     }
-    this.show = this.show.bind(this)
-  }
 
-  show() {
-    this.setState({
-      visible: true,
-    })
-  }
+    show() {
+        this.setState({
+            visible: true,
+        })
+    }
 
-  handleOk = () => {
-    this.setState({
-      visible: false,
-      content: (this.state.content += 1),
-    })
-    console.log('clicked ok!')
-  }
+    handleOk = () => {
+        this.setState({
+            visible: false,
+            content: this.state.content += 1,
+        })
+        console.log('clicked ok!')
+    }
 
-  handleCancel = () => {
-    this.setState({
-      visible: false,
-      content: (this.state.content += 1),
-    })
-    console.log('clicked cancel')
-  }
+    handleCancel = () => {
+        this.setState({
+            visible: false,
+            content: this.state.content += 1,
+        })
+        console.log('clicked cancel')
+    }
 
-  render() {
-    return (
-      <div>
-        <Button onClick={this.show}>click me</Button>
-        <Modal
-          visible={this.state.visible}
-          width={500}
-          title="Modal Title"
-          onClose={this.handleCancel}
-          footer={[
-            <Button key="cancel" onClick={this.handleCancel}>
-              Cancel
-            </Button>,
-            <Button key="ok" type="primary" onClick={this.handleOk}>
-              Ok
-            </Button>,
-          ]}
-        >
-          {`you are visited ${this.state.content}`}
-        </Modal>
-      </div>
-    )
-  }
+    render() {
+        return (
+            <div>
+                <Button onClick={this.show}>click me</Button>
+                <Modal
+                    visible={this.state.visible}
+                    width={500}
+                    title="Modal Title"
+                    onClose={this.handleCancel}
+                    footer={[
+                        <Button key="cancel" onClick={this.handleCancel}>
+                            Cancel
+                        </Button>,
+                        <Button key="ok" type="primary" onClick={this.handleOk}>
+                            Ok
+                        </Button>,
+                    ]}
+                >
+                    {`you are visited ${this.state.content}`}
+
+                    <p
+                        onClick={() => {
+                            this.setState({ count: this.state.count + 1 })
+                        }}
+                    >
+                        click me count
+                    </p>
+
+                    {`you are clicked ${this.state.count}`}
+                </Modal>
+            </div>
+        )
+    }
 }

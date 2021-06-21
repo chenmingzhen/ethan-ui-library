@@ -66,7 +66,7 @@ const destroy = (id, unmount) => {
     container.removeChild(div)
 }
 
-const close = (props: EventOption, callback?: () => void) => {
+const close = (props: Omit<EventOption, 'content'>, callback?: () => void) => {
     const { id } = props
 
     const modal = containers[props.id]
@@ -122,7 +122,7 @@ const createDiv = (props: EventOption) => {
 
 const open = (props: EventOption, isPortal?: boolean) => {
     const { content, onClose, zIndex, ...otherProps } = props
-   
+
     const div = createDiv(props)
 
     div.style.display = 'block'
