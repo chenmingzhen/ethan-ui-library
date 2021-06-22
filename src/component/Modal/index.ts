@@ -1,14 +1,23 @@
-// @ts-nocheck
-import Modal from './Modal'
+import React from 'react'
+import Modal, { ModalExtendsProps } from './Modal'
 import { createModalMethod } from './events'
-import Card from '../Card'
 
-Modal.success = createModalMethod('success')
-Modal.info = createModalMethod('info')
-Modal.warn = createModalMethod('warning')
-Modal.error = createModalMethod('error')
-Modal.confirm = createModalMethod('confirm')
-Modal.show = createModalMethod('normal')
-Modal.Submit = Card.Submit
+export interface ModalComponent extends React.ComponentClass<ModalExtendsProps> {
+    success: ReturnType<typeof createModalMethod>
+    info: ReturnType<typeof createModalMethod>
+    warn: ReturnType<typeof createModalMethod>
+    error: ReturnType<typeof createModalMethod>
+    confirm: ReturnType<typeof createModalMethod>
+    show: ReturnType<typeof createModalMethod>
+}
 
-export default Modal
+const exportModal = (Modal as unknown) as ModalComponent
+
+exportModal.success = createModalMethod('success')
+exportModal.info = createModalMethod('info')
+exportModal.warn = createModalMethod('warning')
+exportModal.error = createModalMethod('error')
+exportModal.confirm = createModalMethod('confirm')
+exportModal.show = createModalMethod('normal')
+
+export default exportModal

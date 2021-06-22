@@ -14,7 +14,7 @@ export default interface ModalProps {
     /* 底部内容 */
     footer?: React.ReactNode
     /* 内部使用 */
-    from: string
+    from?: string
     /* 是否隐藏关闭按钮 */
     hideClose?: boolean
     /* 遮罩背景色，设置后透明度将失效 */
