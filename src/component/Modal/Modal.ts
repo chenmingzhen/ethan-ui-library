@@ -3,7 +3,7 @@ import { getUidStr } from '@/utils/uid'
 import { open, close, destroy } from './events'
 import ModalProps from './type'
 
-interface ModalExtendsProps extends ModalProps {
+export interface ModalExtendsProps extends ModalProps {
     usePortal?: boolean
 
     visible?: boolean

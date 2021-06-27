@@ -16,7 +16,7 @@ interface ContainerMap {
 
         container: HTMLElement
 
-        props: ModalProps
+        props: EventOption
 
         visible?: boolean
     }
@@ -66,7 +66,7 @@ const destroy = (id, unmount) => {
     container.removeChild(div)
 }
 
-const close = (props: Omit<EventOption, 'content'>, callback?: () => void) => {
+const close = (props: Omit<EventOption, 'content'>) => {
     const { id } = props
 
     const modal = containers[props.id]
@@ -93,8 +93,6 @@ const close = (props: Omit<EventOption, 'content'>, callback?: () => void) => {
             doc.style.overflow = ''
             doc.style.paddingRight = ''
         }
-
-        callback?.()
     }, DURATION)
 }
 
@@ -120,7 +118,7 @@ const createDiv = (props: EventOption) => {
     return div
 }
 
-const open = (props: EventOption, isPortal?: boolean) => {
+const open = (props: EventOption, usePortal?: boolean) => {
     const { content, onClose, zIndex, ...otherProps } = props
 
     const div = createDiv(props)
@@ -140,7 +138,7 @@ const open = (props: EventOption, isPortal?: boolean) => {
     const handleClose = () => {
         onClose?.()
 
-        !isPortal && close(props)
+        !usePortal && close(props)
     }
 
     const opacity = props.maskOpacity ?? 0.25
@@ -152,7 +150,6 @@ const open = (props: EventOption, isPortal?: boolean) => {
     containers[props.id].visible = true
 
     defer(() => {
-        // scale缩放动画
         !otherProps.position && div.classList.add(modalClass('start'))
     })
 
@@ -169,7 +166,7 @@ const open = (props: EventOption, isPortal?: boolean) => {
         </Panel>
     )
 
-    if (isPortal) {
+    if (usePortal) {
         return ReactDOM.createPortal(panel, div)
     }
 
@@ -178,46 +175,8 @@ const open = (props: EventOption, isPortal?: boolean) => {
     return null
 }
 
-// 关闭callback
-const closeCallback = (fn, option) => () => {
-    let callback
-
-    if (fn) callback = fn()
-    // 处理Promise情况
-    if (callback && typeof callback.then === 'function') {
-        callback.then(() => {
-            close(option)
-        })
-    } else {
-        close(option)
-    }
-}
-
-const btnOk = option => {
-    const onClick = closeCallback(option.onOk, option)
-
-    return (
-        <Button.Once key="ok" id={`${option.id}-ok`} onClick={onClick} type="primary">
-            {getLocale('ok', option.text)}
-        </Button.Once>
-    )
-}
-
-// 取消按钮
-const btnCancel = option => {
-    const onClick = closeCallback(option.onCancel, option)
-
-    return (
-        <Button.Once id={`${option.id}-cancel`} key="cancel" onClick={onClick}>
-            {getLocale('cancel', option.text)}
-        </Button.Once>
-    )
-}
-
-// Type类型Modal创建
-// TODO 添加返回示例 通过示例可以关闭Modal与更新Modal
 const createModalMethod = type => option => {
-    const props = Object.assign(
+    let props = Object.assign(
         {
             width: 420,
             esc: true,
@@ -231,15 +190,74 @@ const createModalMethod = type => option => {
         }
     )
 
-    if (type === 'confirm') {
-        props.footer = [btnCancel(props), btnOk(props)]
-    } else {
-        props.footer = 'footer' in props ? props.footer : [btnOk(props)]
+    function handleCloseCallback(fn: () => void) {
+        let callback
+
+        if (fn) callback = fn()
+
+        if (callback && typeof callback.then === 'function') {
+            callback.then(() => {
+                close(props)
+            })
+        } else {
+            close(props)
+        }
     }
+
+    function update(configUpdate: ModalProps | ((prevConfigUpdate: ModalProps) => void)) {
+        if (typeof configUpdate === 'function') {
+            configUpdate(props)
+        } else {
+            props = {
+                ...props,
+                ...configUpdate,
+            }
+        }
+
+        buildFooter()
+
+        open(props)
+    }
+
+    function buildFooter() {
+        const btnOk = (
+            <Button
+                key="ok"
+                type="primary"
+                id={`${props.id}-ok`}
+                onClick={handleCloseCallback.bind(this, props.onOk)}
+                {...props.okButtonProps}
+            >
+                {getLocale('ok', props.text)}
+            </Button>
+        )
+
+        const btnCancel = (
+            <Button
+                key="cancel"
+                id={`${props.id}-cancel`}
+                onClick={handleCloseCallback.bind(this, props.onCancel)}
+                {...props.cancelButtonProps}
+            >
+                {getLocale('cancel', props.text)}
+            </Button>
+        )
+
+        if (type === 'confirm' && !option.footer) {
+            props.footer = [btnCancel, btnOk]
+        } else {
+            props.footer = 'footer' in props ? props.footer : [btnOk]
+        }
+    }
+
+    buildFooter()
 
     open(props)
 
-    return () => close(props)
+    return {
+        update,
+        close: close.bind(this, props) as () => void,
+    }
 }
 
 ready(() => {
@@ -249,12 +267,16 @@ ready(() => {
 
         const ids = Object.keys(containers).reverse()
         const opened = ids.find(id => containers[id].visible && containers[id].props.esc)
+
         if (!opened) return
 
         const { props } = containers[opened]
-        const { onClose, isPortal } = props
-        if (onClose) onClose()
-        if (!isPortal) close(props)
+
+        const { onClose, usePortal } = props
+
+        onClose?.()
+
+        if (!usePortal) close(props)
     })
 })
 

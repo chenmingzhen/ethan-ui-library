@@ -47,16 +47,6 @@ const ModalPanel: React.FC<ModalPanelProps> = props => {
         )
     }, [props.width, props.height, props.top, props.position, props.style])
 
-    const animate = () => {
-        const { container, position } = props
-
-        requestAnimationFrame(() => {
-            container.classList.add(modalClass('show'))
-
-            if (!position) container.classList.add(modalClass('start'))
-        })
-    }
-
     const updateOrigin = () => {
         const { position, zoom } = props
 
@@ -69,6 +59,9 @@ const ModalPanel: React.FC<ModalPanelProps> = props => {
         // 控制位置动画
         if (node && mousePosition.x !== undefined && mousePosition.y !== undefined) {
             const { left, top } = node.getBoundingClientRect()
+
+            // TODO getBoundingClientRect获取的值不准确 马上获取时为偏大 设置定时任务时却正常
+            // 导致缩放的点不正确
 
             const ol = mousePosition.x - left
             const ot = mousePosition.y - top
@@ -88,8 +81,6 @@ const ModalPanel: React.FC<ModalPanelProps> = props => {
         if (isShow) return
 
         updateOrigin()
-
-        animate()
 
         if (autoFocusButton) {
             const el = container.querySelector(`#${id}-${autoFocusButton}`) as HTMLElement

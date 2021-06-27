@@ -2,6 +2,9 @@ export default interface ModalProps {
     autoFocusButton?: boolean
     /* ModalBody拓展样式 */
     bodyStyle?: React.CSSProperties
+    /* TODO 添加button的props */
+    okButtonProps?: any
+    cancelButtonProps?: any
     className?: string
     /* 渲染的目标节点 */
     container?: HTMLElement | (() => HTMLElement)
@@ -54,5 +57,5 @@ export default interface ModalProps {
     /* 层级 */
     zIndex?: number
     /* 是否开启 zoom 动画效果 */
-    zoom: boolean
+    zoom?: boolean
 }
