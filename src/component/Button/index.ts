@@ -1,10 +1,13 @@
-// @ts-nocheck
-import Button from './Button'
-import Once from './Once'
+import React, { MemoExoticComponent } from 'react'
+import Button, { ButtonProps } from './Button'
 import Group from './Group'
 
-Button.Once = Once
-Button.Group = Group
-Button.displayName = 'EthanButton'
+interface ButtonComponent extends MemoExoticComponent<React.FC<ButtonProps>> {
+    Group: typeof Group
+}
 
-export default Button
+const ComputedButton = Button as ButtonComponent
+
+ComputedButton.Group = Group
+
+export default ComputedButton
