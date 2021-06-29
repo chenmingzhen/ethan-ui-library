@@ -97,11 +97,11 @@ const Button: React.FC<ButtonProps> = props => {
 
     return (
         <button
+            {...others}
             ref={buttonRef}
             disabled={disabled || loading}
             type={htmlType}
             className={className}
-            {...others}
             onClick={handleClick}
         >
             {loading && (
