@@ -1,4 +1,5 @@
 import { AlertType } from '@/component/Alert/alert'
+import React from 'react'
 import { destroy, getComponent, closeWithAnimation } from './messager'
 
 /**
@@ -27,7 +28,7 @@ export interface MessageOption {
 }
 
 // 构造函数
-const create = (type: AlertType) => (content, duration = 3, options: MessageOption = {}) => {
+const create = (type: AlertType) => (content: React.ReactNode, duration = 3, options: MessageOption = {}) => {
     const { onClose, position = 'top', title, className = '' } = options
 
     const find = ['top', 'middle', 'top-left', 'top-right', 'bottom-left', 'bottom-right'].indexOf(position)
@@ -38,7 +39,6 @@ const create = (type: AlertType) => (content, duration = 3, options: MessageOpti
         )
     }
 
-    // loading特殊处理
     let callback
 
     getComponent(position).then(messager => {
@@ -56,7 +56,7 @@ const create = (type: AlertType) => (content, duration = 3, options: MessageOpti
     // 获取容器时异步操作 需要添加setTimeout加入栈中
     return setTimeout.bind(null, () => {
         callback?.()
-    })
+    }) as () => void
 }
 
 // 导入此依赖就会执行  create (type)=>这个函数  返回闭包
@@ -69,7 +69,7 @@ export default {
     danger: create('danger'),
     error: create('danger'),
     loading: create('loading'),
-    close: position => {
+    close: (position: Pick<MessageOption, 'position'>) => {
         if (position) destroy(position)
         else {
             ;['top', 'middle', 'top-left', 'top-right', 'bottom-left', 'bottom-right'].forEach(c => {
@@ -77,7 +77,7 @@ export default {
             })
         }
     },
-    closeAll: position => {
+    closeAll: (position: Pick<MessageOption, 'position'>) => {
         closeWithAnimation(position)
     },
 }

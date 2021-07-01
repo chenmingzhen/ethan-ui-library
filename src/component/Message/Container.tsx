@@ -17,7 +17,7 @@ interface Message {
     /**
      * message 内容
      */
-    content?: string
+    content?: React.ReactNode
 
     /**
      * 是否消失
@@ -124,10 +124,10 @@ class Container extends PureComponent<ContainerProps, ContainerState> {
             }, msg.duration * 1000)
         }
 
-        return this.removeLoadingMsg.bind(this, id)
+        return this.manualCloseMsg.bind(this, id)
     }
 
-    removeLoadingMsg(id) {
+    manualCloseMsg(id) {
         this.setState(
             immer(state => {
                 state.messages.filter(m => {
