@@ -1,7 +1,7 @@
 import React, { Children, cloneElement } from 'react'
-import Card from './Card'
 import classnames from 'classnames'
 import { cardClass } from '@/styles'
+import Card from './Card'
 
 export interface AccordionProps {
     /** 提供受控的active */
