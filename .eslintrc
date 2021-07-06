@@ -100,6 +100,8 @@
                 "ts": "never",
                 "tsx": "never"
             }
-        ]
+        ],
+        "no-return-assign": 0,
+        "func-names": 0
     }
 }
