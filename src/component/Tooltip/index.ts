@@ -1,8 +1,4 @@
-// @ts-nocheck
-import create from './Container'
-import * as events from './events'
-
-const ToolTip = create(events)
+import ToolTip from './Tooltip'
 
 ToolTip.displayName = 'EthanTooltip'
 

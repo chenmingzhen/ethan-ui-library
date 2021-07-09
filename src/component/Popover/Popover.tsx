@@ -1,13 +1,14 @@
 // @ts-nocheck
 import React from 'react'
-import Container from '../Tooltip/Container'
-import * as events from './event'
+import Tooltip from '../Tooltip/Tooltip'
+// import * as events from './event'
 import Panel from './Panel'
 
-const Component = Container(events)
+//  const Component = Container(events)
 
 function Popover(props) {
-    if (props.content) return <Component {...props} />
+    return <div>temp</div>
+    // if (props.content) return <Component {...props} />
     return <Panel {...props} />
 }
 
