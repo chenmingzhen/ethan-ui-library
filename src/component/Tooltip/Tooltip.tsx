@@ -107,7 +107,6 @@ const Tooltip: React.FC<ToolTipProps> = props => {
             {cloneElement(inner, innerProps)}
         </>
     )
-    // return [<noscript ref={nSRef} key="ns" />, cloneElement(inner, innerProps)]
 }
 
 export default React.memo(Tooltip)
