@@ -42,12 +42,7 @@ const Tooltip: React.FC<ToolTipProps> = props => {
     function showSync() {
         const pos = getPos()
 
-        const newStyle = Object.keys(pos).reduce((data, key) => {
-            data[key] = pos[key]
-            return data
-        }, {})
-
-        const newProps = Object.assign({}, props, { style: newStyle })
+        const newProps = Object.assign({}, props, { style: pos })
 
         show(newProps, props.style)
     }
