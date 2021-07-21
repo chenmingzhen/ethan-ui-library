@@ -1,12 +1,12 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 import { messageClass } from '@/styles'
-import Container from './Container'
+import MessageContainer, { MessageContainerInstance } from './Container'
 
 // 存放同一position类型的div容器
 const elements = new Map<string, HTMLDivElement>()
 // 存放同一position类型的组件容器
-const components = new Map<string, Container>()
+const components = new Map<string, MessageContainerInstance>()
 
 /*
   type 为 position
@@ -51,7 +51,7 @@ export function closeWithAnimation(type) {
     }
 }
 
-export function getComponent(type): Promise<Container> {
+export function getComponent(type): Promise<MessageContainerInstance> {
     return new Promise(resolve => {
         const component = components.get(type)
 
@@ -61,7 +61,7 @@ export function getComponent(type): Promise<Container> {
         } else {
             // 如果该position为第一次创建 则resolve Container的实例回去
             ReactDOM.render(
-                <Container
+                <MessageContainer
                     /* resolve这个实例回去 并记录在组件容器中 */
                     ref={comp => {
                         components.set(type, comp)
