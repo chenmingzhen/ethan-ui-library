@@ -1,9 +1,9 @@
 import { getUidStr } from '@/utils/uid'
-import useImmer from '@/hooks/useImmer'
+import useImmerGetSet from '@/hooks/useImmerGetSet'
 import Message from '../type'
 
 const useMessage = (onDestroy?: () => void) => {
-    const [getMessages, setMessages] = useImmer<Message[]>([])
+    const [getMessages, setMessages] = useImmerGetSet<Message[]>([])
 
     function addMessage(msg: Message): () => void {
         const id = getUidStr()
@@ -53,7 +53,8 @@ const useMessage = (onDestroy?: () => void) => {
             draft.forEach(m => {
                 if (m.id === id) {
                     m.dismiss = true
-                    m.h = msgHeight + 20 // messageHeight + messageMargin  固定 非ant的不断往上风格
+                    // messageHeight + messageMargin
+                    m.h = msgHeight + 20
                 }
             })
         })
@@ -67,6 +68,10 @@ const useMessage = (onDestroy?: () => void) => {
     function removeMessage(id) {
         // 存储message的onClose callback
         let callback
+        // 使用类组件时 state的message能获取到最新的值 可正常结束动画
+        // 但在函数组件的不能获取最新的message
+        // 所以使用useImmer+useGetSet的组合
+        // immer深拷贝，getset获取最新的值
         const messages = getMessages()
 
         const currentMessages = messages.filter(m => {

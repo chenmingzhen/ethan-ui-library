@@ -1,7 +1,9 @@
+/** @copyright https://github.com/alibaba/hooks */
 import { useRef, useEffect } from 'react'
 
 const useUnmountedRef = () => {
     const unmountedRef = useRef(false)
+
     useEffect(() => {
         unmountedRef.current = false
 

@@ -1,7 +1,7 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 import { messageClass } from '@/styles'
-import MessageContainer, { MessageContainerInstance } from './Container'
+import MessageContainer, { MessageContainerInstance } from './MessageContainer'
 
 // 存放同一position类型的div容器
 const elements = new Map<string, HTMLDivElement>()
