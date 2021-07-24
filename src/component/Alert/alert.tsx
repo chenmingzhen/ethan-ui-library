@@ -1,7 +1,7 @@
 import React, { useRef, useCallback, useEffect, useImperativeHandle, memo } from 'react'
 import { alertClass } from '@/styles'
 import Spin from '@/component/Spin'
-import useDissmiss from './hooks/useDismiss'
+import useDismiss from './hooks/useDismiss'
 import useRender from './hooks/useRender'
 
 export type AlertType = 'default' | 'success' | 'info' | 'warning' | 'danger' | 'error' | 'loading'
@@ -52,7 +52,7 @@ export default memo(
             alertRef
         ) => {
             const ref = useRef<HTMLDivElement>()
-            const { dismiss, handleClose } = useDissmiss({ onClose, outAnimation, duration, el: ref })
+            const { dismiss, handleClose } = useDismiss({ onClose, outAnimation, duration, el: ref })
             const { renderClose, renderIcon } = useRender({ icon, iconSize, handleClose, type, closeItem })
 
             const clientHeight = useCallback(() => ref.current?.clientHeight, [])
