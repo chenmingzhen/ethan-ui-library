@@ -129,4 +129,12 @@ function end(element) {
     }
 }
 
+// 判断点击的内容是否在容器或容器内
+export function isDescendent(el: HTMLElement, id: string) {
+    if (el.getAttribute('data-id') === id) return true
+    if (!el.parentElement) return false
+
+    return isDescendent(el.parentElement, id)
+}
+
 export const focusElement = { select, end, wrapSpan }
