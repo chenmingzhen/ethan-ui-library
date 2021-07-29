@@ -1,4 +1,4 @@
-import React, { cloneElement, isValidElement } from 'react'
+import React, { cloneElement, isValidElement, ReactElement, useEffect, useMemo } from 'react'
 import { tooltipClass } from '@/styles'
 import { getPosition, getPositionStr } from '@/utils/dom/popover'
 import { show, hide } from './events'
@@ -24,10 +24,12 @@ export interface ToolTipProps {
     trigger?: 'hover' | 'click'
     /* 延迟显示 */
     delay?: number
+    /* 受控是否可见 */
+    visible?: boolean
 }
 
 const Tooltip: React.FC<ToolTipProps> = props => {
-    const { children, disabledChild, position, tip, trigger = 'hover', delay = 0, priorityDirection } = props
+    const { children, disabledChild, position, tip, trigger = 'hover', delay = 0, priorityDirection, visible } = props
 
     const nSRef = React.useRef<HTMLElement>()
 
@@ -65,6 +67,10 @@ const Tooltip: React.FC<ToolTipProps> = props => {
         }
     }
 
+    function handleHide() {
+        hide()
+    }
+
     if (!isValidElement(children)) {
         console.error(new Error('Tooltip children expect a single ReactElement.'))
 
@@ -72,9 +78,16 @@ const Tooltip: React.FC<ToolTipProps> = props => {
     }
 
     if (!tip) {
-        console.warn('Tooltip must have a text prompt,please check your props "tip"!')
+        console.warn('Tooltip must have something,please check your props "tip"!')
 
         return children
+    }
+
+    function onClick(e: React.MouseEvent) {
+        e?.stopPropagation()
+
+        setTimeout(handleShow, 10)
+        ;(children as ReactElement)?.props?.onClick()
     }
 
     // pointerEvents: 'none' 禁止触发事件
@@ -86,21 +99,31 @@ const Tooltip: React.FC<ToolTipProps> = props => {
         children
     )
 
-    const innerProps: any = { key: 'el' }
+    const innerProps = useMemo(() => {
+        const computed: any = { key: 'el' }
 
-    if (trigger === 'hover') {
-        innerProps.onMouseEnter = handleShow
-        innerProps.onMouseLeave = hide
-    } else {
-        // eslint-disable-next-line @typescript-eslint/space-before-function-paren
-        innerProps.onClick = function(e: React.MouseEvent) {
-            if (e) e.stopPropagation()
+        if (typeof visible === 'boolean') return computed
 
-            setTimeout(handleShow, 10)
-
-            if (children.props.onClick) children.props.onClick()
+        if (trigger === 'hover') {
+            computed.onMouseEnter = handleShow
+            computed.onMouseLeave = handleHide
+        } else {
+            computed.onClick = onClick
         }
-    }
+
+        return computed
+    }, [props])
+
+    useEffect(() => {
+        if (visible) {
+            handleShow()
+
+            return () => {
+                hide()
+            }
+        }
+    }, [visible])
+
     return (
         <>
             <noscript ref={nSRef} key="ns" />
