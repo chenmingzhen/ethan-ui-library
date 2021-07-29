@@ -222,6 +222,12 @@ const pages = [
         component: lazy(() => import(/* webpackChunkName: "Popover" */ './Popover')),
         },
             {
+        name: 'Poptip',
+        cn: '气泡提示框2.0',
+        level: 2,
+        component: lazy(() => import(/* webpackChunkName: "Poptip" */ './Poptip')),
+        },
+            {
         name: 'Progress',
         cn: '进度条',
         level: 2,

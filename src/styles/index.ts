@@ -47,6 +47,7 @@ import * as loadingLess from './loading.less'
 import * as badgeLess from './badge.less'
 import * as timeLineLess from './timeLine.less'
 import * as photoViewLess from './photoView.less'
+import './poptip.less'
 
 export const alertClass = genaration(alertLess, 'alert')
 export const avatarClass = genaration(avatarLess, 'avatar')
