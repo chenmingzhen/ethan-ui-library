@@ -8,11 +8,11 @@ import React from 'react'
 import { Tooltip, Button } from 'ethan'
 
 export default function() {
-  return (
-    <div>
-      <Tooltip tip="Some text." position="left" disabledChild>
-        <Button disabled>Disabled</Button>
-      </Tooltip>
-    </div>
-  )
+    return (
+        <div>
+            <Tooltip tip="Some text." disabledChild>
+                <Button disabled>Disabled</Button>
+            </Tooltip>
+        </div>
+    )
 }

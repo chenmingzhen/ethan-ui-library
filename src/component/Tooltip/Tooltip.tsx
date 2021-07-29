@@ -1,6 +1,6 @@
 import React, { cloneElement, isValidElement } from 'react'
 import { tooltipClass } from '@/styles'
-import { getPosition } from '@/utils/dom/popover'
+import { getPosition, getPositionStr } from '@/utils/dom/popover'
 import { show, hide } from './events'
 
 export interface ToolTipProps {
@@ -14,10 +14,12 @@ export interface ToolTipProps {
     disabledChild?: boolean
     /* 弹出层位置 */
     position?: 'left' | 'top' | 'right' | 'bottom'
+    /** 弹出位置优先级 */
+    priorityDirection?: 'vertical' | 'horizontal'
     /* 最外层扩展样式 */
     style?: React.CSSProperties
-    /* 弹出文字 */
-    tip: string
+    /* 弹出内容 */
+    tip: React.ReactNode
     /* 弹出方式 */
     trigger?: 'hover' | 'click'
     /* 延迟显示 */
@@ -25,7 +27,7 @@ export interface ToolTipProps {
 }
 
 const Tooltip: React.FC<ToolTipProps> = props => {
-    const { children, disabledChild, position = 'top', tip, trigger = 'hover', delay = 0 } = props
+    const { children, disabledChild, position, tip, trigger = 'hover', delay = 0, priorityDirection } = props
 
     const nSRef = React.useRef<HTMLElement>()
 
@@ -34,17 +36,21 @@ const Tooltip: React.FC<ToolTipProps> = props => {
     function getPos() {
         const el = nSRef.current?.nextSibling
 
-        if (!el) return {}
+        if (!el) return [position ?? 'top', {}]
 
-        return getPosition(position, el)
+        const newPosition = position ?? getPositionStr(position, priorityDirection, nSRef.current.parentElement)
+
+        const formatPosition = newPosition.split('-')?.[0]
+
+        return [formatPosition, getPosition(newPosition, el)]
     }
 
     function showSync() {
-        const pos = getPos()
+        const [formatPosition, pos] = getPos()
 
-        const newProps = Object.assign({}, props, { style: pos })
+        const newProps = Object.assign({}, props, { style: pos, position: formatPosition })
 
-        show(newProps, props.style)
+        show(newProps)
     }
 
     function handleShow() {
