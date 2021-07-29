@@ -1,31 +1,67 @@
 import classnames from 'classnames'
 import { tooltipClass } from '@/styles'
-import ready from '@/utils/dom/ready'
 import React from 'react'
 import ReactDOM from 'react-dom'
+import { getUidStr } from '@/utils/uid'
 import { ToolTipProps } from './Tooltip'
 
-// dom
-const div = document.createElement('div')
-const arrow = document.createElement('div')
-const inner = document.createElement('div')
+const divMap = new Map<string, { div: HTMLElement; arrow: HTMLElement; inner: HTMLElement }>()
 
-div.style.display = 'none'
+export function createDiv(getContainer?: () => HTMLElement) {
+    const uuid = getUidStr()
 
-arrow.className = tooltipClass('arrow')
-inner.className = tooltipClass('inner')
+    const container = getContainer?.() || document.body
 
-div.appendChild(arrow)
+    // dom
+    const div = document.createElement('div')
+    const arrow = document.createElement('div')
+    const inner = document.createElement('div')
 
-div.appendChild(inner)
+    div.style.display = 'none'
 
-function clickAway() {
-    hide()
+    arrow.className = tooltipClass('arrow')
+    inner.className = tooltipClass('inner')
+
+    div.appendChild(arrow)
+
+    div.appendChild(inner)
+
+    divMap.set(uuid, { div, arrow, inner })
+
+    // document.body.append(div)
+
+    container.appendChild(div)
+
+    return uuid
+}
+
+export function destroyDiv(uuid, getContainer?: () => HTMLElement) {
+    const { div } = getDiv(uuid)
+
+    if (div) {
+        const container = getContainer()
+
+        container.removeChild(div)
+    }
+
+    divMap.delete(uuid)
+}
+
+export function getDiv(uuid) {
+    return divMap.get(uuid)
+}
+
+function clickAway(uuid) {
+    hide(uuid)
 
     document.removeEventListener('click', clickAway)
 }
 
-export function hide() {
+export function hide(uuid) {
+    if (!uuid) return
+
+    const { div, inner } = getDiv(uuid)
+
     div.style.display = 'none'
     div.className = ''
 
@@ -38,8 +74,10 @@ export function hide() {
  * @param id 目前显示的toolTip的id
  * @param innerStyle 用户输入的style属性 用于覆盖
  */
-export function show(props: ToolTipProps) {
+export function show(props: ToolTipProps, uuid) {
     const { position, style, tip, trigger, animation = true, className: cn } = props
+
+    const { div, inner } = getDiv(uuid)
 
     div.style.cssText = 'display:none'
     Object.keys(style).forEach(k => {
@@ -55,10 +93,6 @@ export function show(props: ToolTipProps) {
 
     // 点击窗口 隐藏
     if (trigger === 'click') {
-        document.addEventListener('click', clickAway)
+        document.addEventListener('click', clickAway.bind(this, uuid))
     }
 }
-
-ready(() => {
-    document.body.append(div)
-})

@@ -1,7 +1,7 @@
 import React, { cloneElement, isValidElement, ReactElement, useEffect, useMemo } from 'react'
 import { tooltipClass } from '@/styles'
 import { getPosition, getPositionStr } from '@/utils/dom/popover'
-import { show, hide } from './events'
+import { show, hide, createDiv, destroyDiv } from './events'
 
 export interface ToolTipProps {
     /* 弹出是否使用动画，默认为 true  */
@@ -26,25 +26,42 @@ export interface ToolTipProps {
     delay?: number
     /* 受控是否可见 */
     visible?: boolean
+    /* 渲染到指定的DOM容器中 不是改变显示的位置 且容器是relative定位才不影响准确的tip的计算 */
+    getContainer?: () => HTMLElement
 }
 
 const Tooltip: React.FC<ToolTipProps> = props => {
-    const { children, disabledChild, position, tip, trigger = 'hover', delay = 0, priorityDirection, visible } = props
+    const {
+        children,
+        disabledChild,
+        position,
+        tip,
+        trigger = 'hover',
+        delay = 0,
+        priorityDirection,
+        visible,
+        getContainer,
+    } = props
 
     const nSRef = React.useRef<HTMLElement>()
 
     const showTimeoutRef = React.useRef<NodeJS.Timeout>()
+
+    const uuidRef = React.useRef<string>()
 
     function getPos() {
         const el = nSRef.current?.nextSibling
 
         if (!el) return [position ?? 'top', {}]
 
-        const newPosition = position ?? getPositionStr(position, priorityDirection, nSRef.current.parentElement)
+        const container = getContainer?.()
+
+        const newPosition =
+            position ?? getPositionStr(position, priorityDirection, container ?? nSRef.current.parentElement)
 
         const formatPosition = newPosition.split('-')?.[0]
 
-        return [formatPosition, getPosition(newPosition, el)]
+        return [formatPosition, getPosition(newPosition, el, container)]
     }
 
     function showSync() {
@@ -52,10 +69,11 @@ const Tooltip: React.FC<ToolTipProps> = props => {
 
         const newProps = Object.assign({}, props, { style: pos, position: formatPosition })
 
-        show(newProps)
+        show(newProps, uuidRef.current)
     }
 
     function handleShow() {
+        if (!uuidRef.current) uuidRef.current = createDiv(getContainer)
         if (showTimeoutRef.current) clearTimeout(showTimeoutRef.current)
 
         if (delay) {
@@ -68,7 +86,7 @@ const Tooltip: React.FC<ToolTipProps> = props => {
     }
 
     function handleHide() {
-        hide()
+        hide(uuidRef.current)
     }
 
     if (!isValidElement(children)) {
@@ -87,7 +105,7 @@ const Tooltip: React.FC<ToolTipProps> = props => {
         e?.stopPropagation()
 
         setTimeout(handleShow, 10)
-        ;(children as ReactElement)?.props?.onClick()
+        ;(children as ReactElement)?.props?.onClick?.()
     }
 
     // pointerEvents: 'none' 禁止触发事件
@@ -115,11 +133,19 @@ const Tooltip: React.FC<ToolTipProps> = props => {
     }, [props])
 
     useEffect(() => {
+        return () => {
+            if (uuidRef.current) {
+                destroyDiv(uuidRef.current, getContainer)
+            }
+        }
+    }, [])
+
+    useEffect(() => {
         if (visible) {
             handleShow()
 
             return () => {
-                hide()
+                hide(uuidRef.current)
             }
         }
     }, [visible])

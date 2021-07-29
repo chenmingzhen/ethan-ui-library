@@ -7,7 +7,7 @@ export const getPosition = (position, el, container = document.body) => {
 
     let containerRect = { top: 0, left: 0, bottom: 0, right: 0 }
 
-    if (container.tagName === 'BODY') container = undefined
+    if (container?.tagName === 'BODY') container = undefined
 
     if (container) containerRect = container.getBoundingClientRect()
 
