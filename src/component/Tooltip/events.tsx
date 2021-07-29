@@ -2,6 +2,7 @@ import classnames from 'classnames'
 import { tooltipClass } from '@/styles'
 import ready from '@/utils/dom/ready'
 import React from 'react'
+import ReactDOM from 'react-dom'
 import { ToolTipProps } from './Tooltip'
 
 // dom
@@ -27,6 +28,8 @@ function clickAway() {
 export function hide() {
     div.style.display = 'none'
     div.className = ''
+
+    ReactDOM.unmountComponentAtNode(inner)
 }
 
 /**
@@ -35,7 +38,7 @@ export function hide() {
  * @param id 目前显示的toolTip的id
  * @param innerStyle 用户输入的style属性 用于覆盖
  */
-export function show(props: ToolTipProps, innerStyle: React.CSSProperties) {
+export function show(props: ToolTipProps) {
     const { position, style, tip, trigger, animation = true, className: cn } = props
 
     div.style.cssText = 'display:none'
@@ -48,14 +51,7 @@ export function show(props: ToolTipProps, innerStyle: React.CSSProperties) {
     div.style.display = 'block'
     div.className = classnames(className, cn)
 
-    inner.innerText = tip
-    inner.setAttribute('style', '')
-
-    if (innerStyle) {
-        Object.keys(innerStyle).forEach(k => {
-            inner.style[k] = typeof innerStyle[k] === 'number' ? `${innerStyle[k]}px` : innerStyle[k]
-        })
-    }
+    ReactDOM.render(<>{tip}</>, inner)
 
     // 点击窗口 隐藏
     if (trigger === 'click') {
