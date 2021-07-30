@@ -1,7 +1,7 @@
 import { useState, useCallback, useEffect, RefObject } from 'react'
 
-interface useDismissParams {
-    onClose?(t?: number, h?: number): any
+interface UseDismissProps {
+    onClose?(t?: number, h?: number): void
 
     duration: number
 
@@ -10,7 +10,7 @@ interface useDismissParams {
     el: RefObject<HTMLDivElement>
 }
 
-const useDismiss = ({ onClose, el, duration, outAnimation }: useDismissParams) => {
+const useDismiss = ({ onClose, el, duration, outAnimation }: UseDismissProps) => {
     /* 0:normal 1:running closed 2:running closed over */
     const [dismiss, setDismiss] = useState(0)
 
