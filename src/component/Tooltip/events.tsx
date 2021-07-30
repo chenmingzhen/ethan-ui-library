@@ -39,7 +39,7 @@ export function destroyDiv(uuid, getContainer?: () => HTMLElement) {
     const { div } = getDiv(uuid)
 
     if (div) {
-        const container = getContainer()
+        const container = getContainer?.() ?? document.body
 
         container.removeChild(div)
     }

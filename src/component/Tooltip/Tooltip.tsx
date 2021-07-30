@@ -133,14 +133,6 @@ const Tooltip: React.FC<ToolTipProps> = props => {
     }, [props])
 
     useEffect(() => {
-        return () => {
-            if (uuidRef.current) {
-                destroyDiv(uuidRef.current, getContainer)
-            }
-        }
-    }, [])
-
-    useEffect(() => {
         if (visible) {
             handleShow()
 
@@ -149,6 +141,14 @@ const Tooltip: React.FC<ToolTipProps> = props => {
             }
         }
     }, [visible])
+
+    useEffect(() => {
+        return () => {
+            if (uuidRef.current) {
+                destroyDiv(uuidRef.current, getContainer)
+            }
+        }
+    }, [])
 
     return (
         <>
