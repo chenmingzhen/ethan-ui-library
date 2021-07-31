@@ -30,6 +30,13 @@ export interface ToolTipProps {
     getContainer?: () => HTMLElement
 }
 
+interface InnerProps {
+    key: string
+    onMouseEnter?: () => void
+    onMouseLeave?: () => void
+    onClick?: () => void
+}
+
 const Tooltip: React.FC<ToolTipProps> = props => {
     const {
         children,
@@ -101,7 +108,7 @@ const Tooltip: React.FC<ToolTipProps> = props => {
         return children
     }
 
-    function onClick(e: React.MouseEvent) {
+    function onClick(e?: React.MouseEvent) {
         e?.stopPropagation()
 
         setTimeout(handleShow, 10)
@@ -118,7 +125,9 @@ const Tooltip: React.FC<ToolTipProps> = props => {
     )
 
     const innerProps = useMemo(() => {
-        const computed: any = { key: 'el' }
+        const computed: InnerProps = {
+            key: 'el',
+        }
 
         if (typeof visible === 'boolean') return computed
 
