@@ -2,6 +2,7 @@ import { docScroll, docSize } from '@/utils/dom/document'
 
 const posKeys = ['left', 'top', 'bottom', 'right']
 
+// 需要样式中transform配合
 export const getPosition = (position, el, container = document.body) => {
     const rect = el.getBoundingClientRect()
 
