@@ -8,9 +8,9 @@ import React from 'react'
 import { Button, Popover } from 'ethan/index'
 
 export default function() {
-  return (
-    <Button>
-      <Popover.Confirm
+    return (
+        <Button>
+            {/* <Popover.Confirm
         onCancel={() => {
           console.log('cancel')
         }}
@@ -23,8 +23,8 @@ export default function() {
         text={{ ok: 'Yes', cancel: 'No' }}
       >
         Are you sure delete ?
-      </Popover.Confirm>
-      Delete
-    </Button>
-  )
+      </Popover.Confirm> */}
+            Delete
+        </Button>
+    )
 }
