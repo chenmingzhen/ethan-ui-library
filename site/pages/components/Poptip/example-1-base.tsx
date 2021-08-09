@@ -1,5 +1,5 @@
 import React from 'react'
-import { Poptip } from 'ethan/index'
+import { Popover } from 'ethan/index'
 
 const content = (
     <div>
@@ -10,11 +10,11 @@ const content = (
 
 export default function() {
     return (
-        <Poptip title="标题" content={content}>
+        <Popover title="标题" content={content}>
             <div id="hello">
                 <div>1</div>
                 <div>2</div>
             </div>
-        </Poptip>
+        </Popover>
     )
 }

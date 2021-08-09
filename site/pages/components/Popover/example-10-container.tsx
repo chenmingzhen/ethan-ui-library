@@ -8,18 +8,17 @@ import React from 'react'
 import { Button, Popover } from 'ethan/index'
 
 export default function() {
-  return (
-    <div id="popup-target" style={{ height: 200, overflowY: 'auto', position: 'relative' }}>
-      <Button style={{ margin: '100px 0' }}>
-        Scrollable
-        <Popover
-          trigger="click"
-          style={{ padding: '8px 16px' }}
-          getPopupContainer={() => document.querySelector('#popup-target')}
-        >
-          render in parent element
-        </Popover>
-      </Button>
-    </div>
-  )
+    return (
+        <div id="popup-target" style={{ height: 200, overflowY: 'auto', position: 'relative' }}>
+            <div style={{ margin: '100px 0' }}>1</div>
+            <Popover
+                trigger="click"
+                getPopupContainer={() => document.querySelector('#popup-target')}
+                content="content"
+                title="title"
+            >
+                <Button>Scrollable</Button>
+            </Popover>
+        </div>
+    )
 }

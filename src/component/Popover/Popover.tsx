@@ -2,9 +2,9 @@ import React from 'react'
 import { Component } from '@/utils/component'
 import ReactDOM from 'react-dom'
 import { getParent, wrapSpan } from '@/utils/dom/element'
-import { getPositionStr } from '@/utils/dom/popover'
+import { getPositionStr, getPosition } from '@/utils/dom/popover'
 import { popoverClass } from '@/styles/index'
-import { getPosition } from './util'
+import isDOMElement from '@/utils/dom/isDOMElement'
 
 export interface PoptipProps {
     placement?: string
@@ -42,6 +42,8 @@ export interface PoptipProps {
     chidlren?: React.ReactElement
 
     defaultVisible?: boolean
+
+    getPopupContainer?: () => HTMLElement
 }
 
 interface PoptipState {
@@ -70,7 +72,7 @@ class Poptip extends Component<PoptipProps, PoptipState> {
 
     dismissTimeout: NodeJS.Timeout
 
-    get parentElement() {
+    get eventHandlerElement() {
         return this.placeHolderRef.current.nextElementSibling as HTMLElement
     }
 
@@ -144,18 +146,18 @@ class Poptip extends Component<PoptipProps, PoptipState> {
     render = () => {
         const { children, title, content } = this.props
 
-        const wrapChildren = typeof children === 'string' ? wrapSpan(children) : children
+        const wrapChildren = !isDOMElement(children) ? wrapSpan(children) : children
 
         if (!this.container) {
             return [
                 <noscript ref={this.placeHolderRef} key="ns" />,
-                React.cloneElement(<>{wrapChildren}</>, { key: children?.props?.key ?? 'children' }),
+                React.cloneElement(<>{wrapChildren}</>, { key: children?.key ?? 'children' }),
             ]
         }
 
         return [
             <noscript ref={this.placeHolderRef} key="ns" />,
-            React.cloneElement(<>{wrapChildren}</>, { key: children?.props?.key ?? 'children' }),
+            React.cloneElement(<>{wrapChildren}</>, { key: children?.key ?? 'children' }),
             ReactDOM.createPortal(
                 <>
                     <div className={popoverClass('arrow')}>
@@ -173,10 +175,27 @@ class Poptip extends Component<PoptipProps, PoptipState> {
         ]
     }
 
+    getContainer = () => {
+        const { getPopupContainer } = this.props
+
+        const container = getPopupContainer?.()
+
+        if (container && isDOMElement(container)) {
+            const child = document.createElement('div')
+            // TODO
+            child.setAttribute('style', ' position: absolute; top: 0px; left: 0px; width: 100% ')
+
+            // TODO 在指定容器中 有时候会计算位置错误
+            return container.appendChild(child)
+        }
+
+        return document.body
+    }
+
     // 初始化DOM元素
     handleInitDOM = () => {
         if (!this.container) {
-            this.container = document.body
+            this.container = this.getContainer()
 
             this.container.appendChild(this.element)
 
@@ -191,7 +210,7 @@ class Poptip extends Component<PoptipProps, PoptipState> {
         const { trigger, visible } = this.props
 
         // remove click handler
-        this.parentElement.removeEventListener('click', this.handleShow)
+        this.eventHandlerElement.removeEventListener('click', this.handleShow)
 
         // remove hover handler
         this.element.removeEventListener('mouseenter', this.handleShow)
@@ -201,23 +220,23 @@ class Poptip extends Component<PoptipProps, PoptipState> {
         if (typeof visible === 'boolean') return
 
         if (trigger === 'hover') {
-            this.parentElement.addEventListener('mouseenter', this.handleShow)
-            this.parentElement.addEventListener('mouseleave', this.handleHide)
+            this.eventHandlerElement.addEventListener('mouseenter', this.handleShow)
+            this.eventHandlerElement.addEventListener('mouseleave', this.handleHide)
             this.element.addEventListener('mouseenter', this.handleShow)
             this.element.addEventListener('mouseleave', this.handleHide)
         } else {
-            this.parentElement.addEventListener('click', this.handleShow)
-            this.parentElement.removeEventListener('mouseenter', this.handleShow)
-            this.parentElement.removeEventListener('mouseleave', this.handleHide)
+            this.eventHandlerElement.addEventListener('click', this.handleShow)
+            this.eventHandlerElement.removeEventListener('mouseenter', this.handleShow)
+            this.eventHandlerElement.removeEventListener('mouseleave', this.handleHide)
         }
     }
 
     handlePos = () => {
         const { placement, style } = this.props
 
-        const position = placement ?? getPositionStr(placement, null, this.parentElement)
+        const position = placement ?? getPositionStr(placement, null, this.placeHolderRef.current.parentElement)
 
-        const posStyle = getPosition(position, this.placeHolderRef.current.nextElementSibling)
+        const posStyle = getPosition(position, this.eventHandlerElement, this.container)
 
         const newStyle = Object.assign({}, style, posStyle)
 
@@ -271,7 +290,7 @@ class Poptip extends Component<PoptipProps, PoptipState> {
     }
 
     clickAway = e => {
-        if (this.parentElement.contains(e.target)) return
+        if (this.eventHandlerElement.contains(e.target)) return
         if (this.element.contains(e.target)) return
         if (getParent(e.target, popoverClass('_'))) return
 
