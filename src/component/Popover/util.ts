@@ -2,13 +2,12 @@ import { docScroll, docSize } from '@/utils/dom/document'
 
 const posKeys = ['left', 'top', 'bottom', 'right']
 
-// 需要样式中transform配合
 export const getPosition = (position, el, container = document.body) => {
     const rect = el.getBoundingClientRect()
 
     let containerRect = { top: 0, left: 0, bottom: 0, right: 0 }
 
-    if (container?.tagName === 'BODY') container = undefined
+    if (container.tagName === 'BODY') container = undefined
 
     if (container) containerRect = container.getBoundingClientRect()
 
@@ -80,39 +79,4 @@ export const getPosition = (position, el, container = document.body) => {
         (data, key) => ({ ...data, [key]: typeof pos[key] === 'number' ? `${Math.round(pos[key])}px` : 'auto' }),
         {}
     )
-}
-
-export function getPositionStr(position, priorityDirection, parentElement: HTMLElement) {
-    if (position) return position
-
-    const rect = parentElement.getBoundingClientRect()
-    const horizontalPoint = rect.left + rect.width / 2
-    const verticalPoint = rect.top + rect.height / 2
-    const windowHeight = docSize.height
-    const windowWidth = docSize.width
-
-    // 计算显示的位置 大于一半 则 上下左右
-    if (priorityDirection === 'horizontal') {
-        // 大于屏幕一半 左边
-        if (horizontalPoint > windowWidth / 2) position = 'left'
-        // 小于 右边 以此类推
-        else position = 'right'
-
-        if (verticalPoint > windowHeight * 0.6) {
-            position += '-bottom'
-        } else if (verticalPoint < windowHeight * 0.4) {
-            position += '-top'
-        }
-    } else {
-        if (verticalPoint > windowHeight / 2) position = 'top'
-        else position = 'bottom'
-
-        if (horizontalPoint > windowWidth * 0.6) {
-            position += '-right'
-        } else if (horizontalPoint < windowWidth * 0.4) {
-            position += '-left'
-        }
-    }
-
-    return position
 }

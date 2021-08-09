@@ -8,10 +8,9 @@ import React from 'react'
 import { Button, Popover } from 'ethan/index'
 
 export default function() {
-  return (
-    <Button>
-      <Popover style={{ padding: '4px 8px' }}>Some text</Popover>
-      Hover
-    </Button>
-  )
+    return (
+        <Popover style={{ padding: '4px 8px' }} title="title" content="content">
+            <Button>Hover</Button>
+        </Popover>
+    )
 }
