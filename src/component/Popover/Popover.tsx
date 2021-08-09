@@ -40,6 +40,8 @@ export interface PoptipProps {
     mouseLeaveDelay?: number
 
     chidlren?: React.ReactElement
+
+    defaultVisible?: boolean
 }
 
 interface PoptipState {
@@ -54,9 +56,9 @@ class Poptip extends Component<PoptipProps, PoptipState> {
         mouseEnterDelay: 0.1,
 
         mouseLeaveDelay: 0.1,
-    }
 
-    hasShow = false
+        defaultVisible: false,
+    }
 
     element = document.createElement('div')
 
@@ -74,7 +76,7 @@ class Poptip extends Component<PoptipProps, PoptipState> {
 
     static getDerivedStateFromProps(nextProps: PoptipProps, prevState: PoptipState) {
         return {
-            state: nextProps.visible ?? prevState.show,
+            show: nextProps.visible ?? prevState.show,
         }
     }
 
@@ -82,12 +84,14 @@ class Poptip extends Component<PoptipProps, PoptipState> {
         super(props)
 
         this.state = {
-            show: props.visible,
+            show: props.defaultVisible || props.visible,
         }
     }
 
-    shouldComponentUpdate = (props, state) => {
-        return state.show
+    shouldComponentUpdate = (nextProps, nextState) => {
+        if (this.state.show === true || nextState.show === true) return true
+
+        return false
     }
 
     getSnapshotBeforeUpdate = (prevProps: PoptipProps) => {
@@ -101,17 +105,27 @@ class Poptip extends Component<PoptipProps, PoptipState> {
     componentDidMount = () => {
         super.componentDidMount()
 
-        this.container = document.body
-
-        this.container.appendChild(this.element)
-
         this.bindEvents()
 
-        this.element.style.display = 'none'
+        if (this.state.show) {
+            this.handleShow(null, true)
+        }
+    }
 
-        this.element.className = popoverClass('_')
+    componentDidUpdate(prevProps, prevState: PoptipState) {
+        const { visible } = this.props
 
-        this.forceUpdate()
+        if (typeof visible === 'boolean') {
+            const isSame = prevState.show === this.state.show
+
+            if (isSame) return
+
+            if (this.state.show) {
+                this.handleShow(null, true)
+            } else {
+                this.handleHide(0)
+            }
+        }
     }
 
     componentWillUnmount = () => {
@@ -119,9 +133,10 @@ class Poptip extends Component<PoptipProps, PoptipState> {
 
         document.removeEventListener('mousedown', this.clickAway)
 
-        if (this.element) {
+        if (this.element && this.container) {
             ReactDOM.unmountComponentAtNode(this.element.parentElement)
 
+            // TODO 此处默认是document.body
             this.container.removeChild(this.element)
         }
     }
@@ -131,7 +146,7 @@ class Poptip extends Component<PoptipProps, PoptipState> {
 
         const wrapChildren = typeof children === 'string' ? wrapSpan(children) : children
 
-        if (!this.container && !this.hasShow) {
+        if (!this.container) {
             return [
                 <noscript ref={this.placeHolderRef} key="ns" />,
                 React.cloneElement(<>{wrapChildren}</>, { key: children?.props?.key ?? 'children' }),
@@ -158,25 +173,42 @@ class Poptip extends Component<PoptipProps, PoptipState> {
         ]
     }
 
+    // 初始化DOM元素
+    handleInitDOM = () => {
+        if (!this.container) {
+            this.container = document.body
+
+            this.container.appendChild(this.element)
+
+            this.element.style.display = 'none'
+
+            this.element.className = popoverClass('_')
+        }
+    }
+
+    // 绑定与清除DOM的处理事件
     bindEvents = () => {
-        const { trigger } = this.props
+        const { trigger, visible } = this.props
+
+        // remove click handler
+        this.parentElement.removeEventListener('click', this.handleShow)
+
+        // remove hover handler
+        this.element.removeEventListener('mouseenter', this.handleShow)
+        this.element.removeEventListener('mouseleave', this.handleHide)
+
+        // 受控不添加事件
+        if (typeof visible === 'boolean') return
 
         if (trigger === 'hover') {
             this.parentElement.addEventListener('mouseenter', this.handleShow)
             this.parentElement.addEventListener('mouseleave', this.handleHide)
             this.element.addEventListener('mouseenter', this.handleShow)
             this.element.addEventListener('mouseleave', this.handleHide)
-
-            // remove click handler
-            this.parentElement.removeEventListener('click', this.handleShow)
         } else {
             this.parentElement.addEventListener('click', this.handleShow)
             this.parentElement.removeEventListener('mouseenter', this.handleShow)
             this.parentElement.removeEventListener('mouseleave', this.handleHide)
-
-            // remove hover handler
-            this.element.removeEventListener('mouseenter', this.handleShow)
-            this.element.removeEventListener('mouseleave', this.handleHide)
         }
     }
 
@@ -196,7 +228,8 @@ class Poptip extends Component<PoptipProps, PoptipState> {
         this.element.setAttribute('ethan-placement', position)
     }
 
-    handleShow = () => {
+    // 控制显示 force表示defaultVisible为true，用于强制显示
+    handleShow = (_, force?: boolean) => {
         if (this.delayTimeout) {
             clearTimeout(this.delayTimeout)
         }
@@ -205,15 +238,18 @@ class Poptip extends Component<PoptipProps, PoptipState> {
             clearTimeout(this.dismissTimeout)
         }
 
-        if (this.state.show) return
+        this.handleInitDOM()
 
-        this.hasShow = true
+        if (this.state.show && !force) return
 
-        document.addEventListener('mousedown', this.clickAway)
+        if (typeof this.props.visible !== 'boolean') document.addEventListener('mousedown', this.clickAway)
 
-        this.handlePos()
+        // 在受控的情况下 可能存在DOM的位置偏差 添加回调使位置正确
+        requestAnimationFrame(() => {
+            this.handlePos()
 
-        this.setShow(true)
+            this.setShow(true)
+        })
     }
 
     handleHide = e => {

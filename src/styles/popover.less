@@ -4,9 +4,8 @@
 @popover-prefix: ~'@{ethan-prefix}-popover';
 
 .transformScale8() {
-
     div[ethan-placement='top'] {
-        transform: scale(.8, .8) translate(-50%, -100%);
+        transform: scale(0.8, 0.8) translate(-50%, -100%);
     }
 }
 
@@ -34,13 +33,13 @@
         from {
             opacity: 0;
             // transform: scale(.8, .8);
-            .transformScale8()
+            .transformScale8();
         }
 
         to {
             opacity: 1;
             // transform: scale(1, 1);
-            .transformScale1()
+            .transformScale1();
         }
     }
 
@@ -57,11 +56,11 @@
     }
 
     &-enter {
-        animation: @keyframe-zoom-in .3s forwards cubic-bezier(0.71, 1.7, 0.77, 1.24);
+        animation: @keyframe-zoom-in 0.3s forwards cubic-bezier(0.71, 1.7, 0.77, 1.24);
     }
 
     &-exit {
-        animation: @keyframe-zoom-out .3s forwards cubic-bezier(0.71, 1.7, 0.77, 1.24);
+        animation: @keyframe-zoom-out 0.3s forwards cubic-bezier(0.71, 1.7, 0.77, 1.24);
     }
 
     .@{popover-prefix}-inner {
@@ -74,8 +73,6 @@
             box-sizing: border-box;
         }
     }
-
-
 
     .@{popover-prefix}-title {
         font-size: 14px;
@@ -107,7 +104,6 @@
     }
 
     &[ethan-placement^='top'] {
-
         .@{popover-prefix}-arrow {
             bottom: 3px;
             height: 9px;
@@ -153,7 +149,7 @@
 
     &[ethan-placement^='bottom'] {
         .@{popover-prefix}-arrow {
-            top: 13px;
+            top: 2px;
             height: 9px;
 
             &-content {
@@ -163,7 +159,7 @@
         }
 
         .@{popover-prefix}-inner {
-            margin-top: 12px;
+            margin-top: 2px;
         }
     }
 
@@ -179,7 +175,6 @@
 
     &[ethan-placement='bottom-left'] {
         transform-origin: left top;
-
 
         .@{popover-prefix}-arrow {
             left: 10px;
@@ -240,7 +235,6 @@
     }
 
     &[ethan-placement^='right'] {
-
         .@{popover-prefix}-arrow {
             left: 3px;
             width: 9px;
@@ -283,6 +277,4 @@
             bottom: 10px;
         }
     }
-
-
 }

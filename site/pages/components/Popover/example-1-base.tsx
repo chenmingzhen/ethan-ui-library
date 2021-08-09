@@ -9,7 +9,7 @@ import { Button, Popover } from 'ethan/index'
 
 export default function() {
     return (
-        <Popover style={{ padding: '4px 8px' }} title="title" content="content">
+        <Popover title="title" content="content" trigger="hover">
             <Button>Hover</Button>
         </Popover>
     )
