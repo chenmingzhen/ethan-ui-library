@@ -1,3 +1,3 @@
-import Poptip from './Popover'
+import Popover from './Popover'
 
-export default Poptip
+export default Popover

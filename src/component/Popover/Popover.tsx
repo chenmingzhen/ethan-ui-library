@@ -6,7 +6,7 @@ import { getPositionStr, getPosition } from '@/utils/dom/popover'
 import { popoverClass } from '@/styles/index'
 import isDOMElement from '@/utils/dom/isDOMElement'
 
-export interface PoptipProps {
+export interface PopoverProps {
     placement?: string
 
     title?: React.ReactNode
@@ -46,11 +46,11 @@ export interface PoptipProps {
     getPopupContainer?: () => HTMLElement
 }
 
-interface PoptipState {
+interface PopoverState {
     show: boolean
 }
 
-class Poptip extends Component<PoptipProps, PoptipState> {
+class Popover extends Component<PopoverProps, PopoverState> {
     static defaultProps = {
         trigger: 'hover',
 
@@ -75,13 +75,13 @@ class Poptip extends Component<PoptipProps, PoptipState> {
         return this.placeHolderRef.current.nextElementSibling as HTMLElement
     }
 
-    static getDerivedStateFromProps(nextProps: PoptipProps, prevState: PoptipState) {
+    static getDerivedStateFromProps(nextProps: PopoverProps, prevState: PopoverState) {
         return {
             show: nextProps.visible ?? prevState.show,
         }
     }
 
-    constructor(props: PoptipProps) {
+    constructor(props: PopoverProps) {
         super(props)
 
         this.state = {
@@ -95,7 +95,7 @@ class Poptip extends Component<PoptipProps, PoptipState> {
         return false
     }
 
-    getSnapshotBeforeUpdate = (prevProps: PoptipProps) => {
+    getSnapshotBeforeUpdate = (prevProps: PopoverProps) => {
         if (prevProps.trigger !== this.props.trigger) {
             this.bindEvents()
         }
@@ -113,7 +113,7 @@ class Poptip extends Component<PoptipProps, PoptipState> {
         }
     }
 
-    componentDidUpdate(prevProps, prevState: PoptipState) {
+    componentDidUpdate(prevProps, prevState: PopoverState) {
         const { visible } = this.props
 
         if (typeof visible === 'boolean') {
@@ -190,7 +190,6 @@ class Poptip extends Component<PoptipProps, PoptipState> {
             child.setAttribute('style', ' position: absolute; top: 0px; left: 0px; width: 100% ')
 
             // appendChild 返回 child  非container
-            // TODO 在指定容器中 有时候会计算位置错误
             return container.appendChild(child)
         }
 
@@ -239,7 +238,8 @@ class Poptip extends Component<PoptipProps, PoptipState> {
     handlePos = () => {
         const { placement, style } = this.props
 
-        const position = placement ?? getPositionStr(placement, null, this.placeHolderRef.current.parentElement)
+        const position =
+            placement ?? getPositionStr(placement, null, this.placeHolderRef.current.parentElement, this.container)
 
         const posStyle = getPosition(position, this.eventHandlerElement, this.container)
 
@@ -333,4 +333,4 @@ class Poptip extends Component<PoptipProps, PoptipState> {
     }
 }
 
-export default Poptip
+export default Popover

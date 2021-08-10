@@ -82,14 +82,24 @@ export const getPosition = (position, el, container = document.body) => {
     )
 }
 
-export function getPositionStr(position, priorityDirection, parentElement: HTMLElement) {
+// TODO 处理自定义容器的情况
+
+export function getPositionStr(position, priorityDirection, parentElement: HTMLElement, container = document.body) {
     if (position) return position
 
     const rect = parentElement.getBoundingClientRect()
+
+    const containerRect = container?.getBoundingClientRect()
+
+    // 父元素水平中点
     const horizontalPoint = rect.left + rect.width / 2
+
+    // 父元素垂直中点
     const verticalPoint = rect.top + rect.height / 2
-    const windowHeight = docSize.height
-    const windowWidth = docSize.width
+
+    const windowHeight = container === document.body ? docSize.height : containerRect.height
+
+    const windowWidth = container === document.body ? docSize.width : containerRect.width
 
     // 计算显示的位置 大于一半 则 上下左右
     if (priorityDirection === 'horizontal') {
