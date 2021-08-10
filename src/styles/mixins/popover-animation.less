@@ -1,0 +1,49 @@
+@import '../variables.less';
+@import '../themes/@{ethan-theme}.less';
+
+@popover-prefix: ~'@{ethan-prefix}-popover';
+
+.popover-animation() {
+    &[ethan-placement='top']&-enter {
+        @keyframe-zoom-in: ~'@{popover-prefix}-kf-zoom-in';
+        @keyframe-zoom-out: ~'@{popover-prefix}-kf-zoom-out';
+
+        @keyframes @keyframe-zoom-in {
+            from {
+                opacity: 0;
+                transform: scale(0.8, 0.8) translate(-50%, -100%);
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(1, 1) translate(-50%, -100%);
+            }
+        }
+
+        @keyframes @keyframe-zoom-out {
+            from {
+                opacity: 1;
+                transform: scale(1, 1) translate(-50%, -100%);
+            }
+
+            to {
+                opacity: 0;
+                transform: scale(0.8, 0.8) translate(-50%, -100%);
+            }
+        }
+
+        animation: @keyframe-zoom-in 0.3s forwards cubic-bezier(0.71, 1.7, 0.77, 1.24);
+    }
+
+    &[ethan-placement='top']&-exit {
+        background-color: red;
+    }
+
+    &[ethan-placement='bottom']&-enter {
+        background-color: black;
+    }
+
+    &[ethan-placement='bottom']&-exit {
+        background-color: black;
+    }
+}

@@ -22,46 +22,7 @@
     z-index: 1001;
     padding: 10px 0;
 
-    [ethan-placement='top'] {
-        background-color: red;
-    }
-
-    @keyframe-zoom-in: ~'@{popover-prefix}-kf-zoom-in';
-    @keyframe-zoom-out: ~'@{popover-prefix}-kf-zoom-out';
-
-    @keyframes @keyframe-zoom-in {
-        from {
-            opacity: 0;
-            // transform: scale(.8, .8);
-            .transformScale8();
-        }
-
-        to {
-            opacity: 1;
-            // transform: scale(1, 1);
-            .transformScale1();
-        }
-    }
-
-    @keyframes @keyframe-zoom-out {
-        from {
-            opacity: 1;
-            // transform: scale(1, 1);
-        }
-
-        to {
-            opacity: 0;
-            // transform: scale(.8, .8);
-        }
-    }
-
-    &-enter {
-        animation: @keyframe-zoom-in 0.3s forwards cubic-bezier(0.71, 1.7, 0.77, 1.24);
-    }
-
-    &-exit {
-        animation: @keyframe-zoom-out 0.3s forwards cubic-bezier(0.71, 1.7, 0.77, 1.24);
-    }
+    .popover-animation();
 
     .@{popover-prefix}-inner {
         background: #fff;
@@ -122,6 +83,8 @@
     &[ethan-placement='top'] {
         transform-origin: center bottom;
         transform: translate(-50%, -100%);
+
+        // .popover-animation('top');
 
         .@{popover-prefix}-arrow {
             left: 50%;
