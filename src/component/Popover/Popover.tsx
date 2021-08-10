@@ -134,6 +134,8 @@ class Popover extends Component<PopoverProps, PopoverState> {
 
         document.removeEventListener('mousedown', this.clickAway)
 
+        window.addEventListener('resize', this.handlePos)
+
         if (!this.container || !this.element) return
 
         if (this.container === document.body) {
@@ -267,6 +269,8 @@ class Popover extends Component<PopoverProps, PopoverState> {
         if (this.state.show && !force) return
 
         if (typeof this.props.visible !== 'boolean') document.addEventListener('mousedown', this.clickAway)
+
+        window.addEventListener('resize', this.handlePos)
 
         // 在受控的情况下 可能存在DOM的位置偏差 添加回调使位置正确
         requestAnimationFrame(() => {
