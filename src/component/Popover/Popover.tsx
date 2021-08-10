@@ -50,7 +50,6 @@ interface PoptipState {
     show: boolean
 }
 
-// TODO 处理受控visible情况
 class Poptip extends Component<PoptipProps, PoptipState> {
     static defaultProps = {
         trigger: 'hover',
@@ -135,11 +134,16 @@ class Poptip extends Component<PoptipProps, PoptipState> {
 
         document.removeEventListener('mousedown', this.clickAway)
 
-        if (this.element && this.container) {
+        if (!this.container || !this.element) return
+
+        if (this.container === document.body) {
             ReactDOM.unmountComponentAtNode(this.element.parentElement)
 
-            // TODO 此处默认是document.body
             this.container.removeChild(this.element)
+        } else {
+            ReactDOM.unmountComponentAtNode(this.container)
+
+            this.container.parentElement.removeChild(this.container)
         }
     }
 
@@ -185,6 +189,7 @@ class Poptip extends Component<PoptipProps, PoptipState> {
             // TODO
             child.setAttribute('style', ' position: absolute; top: 0px; left: 0px; width: 100% ')
 
+            // appendChild 返回 child  非container
             // TODO 在指定容器中 有时候会计算位置错误
             return container.appendChild(child)
         }
