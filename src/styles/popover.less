@@ -3,18 +3,6 @@
 
 @popover-prefix: ~'@{ethan-prefix}-popover';
 
-.transformScale8() {
-    div[ethan-placement='top'] {
-        transform: scale(0.8, 0.8) translate(-50%, -100%);
-    }
-}
-
-.transformScale1() {
-    &[ethan-placement='top'] {
-        transform: scale(1, 1) translate(-50%, -100%);
-    }
-}
-
 .@{popover-prefix} {
     font-size: 12px;
     line-height: 1.5;
@@ -81,10 +69,10 @@
     }
 
     &[ethan-placement='top'] {
-        transform-origin: center bottom;
+        // 由于设置了translate 所以transform-origin不是center bottom;
+        // 同理下面的placement 需要推算transform-origin
+        transform-origin: left;
         transform: translate(-50%, -100%);
-
-        // .popover-animation('top');
 
         .@{popover-prefix}-arrow {
             left: 50%;
@@ -127,7 +115,7 @@
     }
 
     &[ethan-placement='bottom'] {
-        transform-origin: center top;
+        transform-origin: left top;
         transform: translateX(-50%);
 
         .@{popover-prefix}-arrow {
@@ -170,7 +158,7 @@
     }
 
     &[ethan-placement='left'] {
-        transform-origin: right center;
+        transform-origin: right top;
         transform: translate(-100%, -50%);
 
         .@{popover-prefix}-arrow {
@@ -180,7 +168,7 @@
     }
 
     &[ethan-placement='left-bottom'] {
-        transform-origin: right bottom;
+        transform-origin: right top;
         transform: translate(-100%, -100%);
 
         .@{popover-prefix}-arrow {
@@ -215,7 +203,7 @@
     }
 
     &[ethan-placement='right'] {
-        transform-origin: left center;
+        transform-origin: left top;
         transform: translate(0, -50%);
 
         .@{popover-prefix}-arrow {
@@ -233,7 +221,7 @@
     }
 
     &[ethan-placement='right-bottom'] {
-        transform-origin: left bottom;
+        transform-origin: left top;
         transform: translateY(-100%);
 
         .@{popover-prefix}-arrow {

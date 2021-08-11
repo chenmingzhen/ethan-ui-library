@@ -327,7 +327,7 @@ class Popover extends Component<PopoverProps, PopoverState> {
 
                     this.dismissTimeout = setTimeout(() => {
                         this.element.style.display = 'none'
-                    }, 300)
+                    }, 250)
                 }
 
                 this.setState({ show })
