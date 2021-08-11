@@ -71,7 +71,20 @@
     &[ethan-placement='top'] {
         // 由于设置了translate 所以transform-origin不是center bottom;
         // 同理下面的placement 需要推算transform-origin
-        transform-origin: left;
+
+        // 配合getPosition理解
+
+        // 假设Popover的Children为Button Popover与Button同宽高
+        // 在没设置transform时  Popover经过getPosition的计算，
+        // Popover位于Button的第2,4象限
+        // 相当于Button与Popover重叠 Popover在Button的右边 且多出Button的一半
+        // 这时候 设置transform-origin使Popover的缩放点在Button的中心
+        // 从Button的中心开始缩放 
+        // 然后设置translate 使Popover位于Button的正上方
+        // 如果将transform-origin设为left 则会从Button的中心点缩放 缩放尺度更大
+        // transform-origin: left;
+        // 下面的设置将从Button的
+        transform-origin: left top;
         transform: translate(-50%, -100%);
 
         .@{popover-prefix}-arrow {
@@ -81,7 +94,7 @@
     }
 
     &[ethan-placement='top-right'] {
-        transform-origin: right bottom;
+        transform-origin: right top;
         transform: translateY(-100%);
 
         .@{popover-prefix}-arrow {
@@ -90,7 +103,7 @@
     }
 
     &[ethan-placement='top-left'] {
-        transform-origin: left bottom;
+        transform-origin: left top;
         transform: translateY(-100%);
 
         .@{popover-prefix}-arrow {
@@ -141,6 +154,8 @@
     }
 
     &[ethan-placement^='left'] {
+        padding: 0;
+
         .@{popover-prefix}-arrow {
             right: 3px;
             width: 9px;
@@ -158,7 +173,7 @@
     }
 
     &[ethan-placement='left'] {
-        transform-origin: right top;
+        transform-origin: left top;
         transform: translate(-100%, -50%);
 
         .@{popover-prefix}-arrow {
@@ -168,7 +183,7 @@
     }
 
     &[ethan-placement='left-bottom'] {
-        transform-origin: right top;
+        transform-origin: left top;
         transform: translate(-100%, -100%);
 
         .@{popover-prefix}-arrow {
@@ -177,7 +192,7 @@
     }
 
     &[ethan-placement='left-top'] {
-        transform-origin: right top;
+        transform-origin: left top;
         transform: translateX(-100%);
 
         .@{popover-prefix}-arrow {
@@ -186,6 +201,8 @@
     }
 
     &[ethan-placement^='right'] {
+        padding: 0;
+
         .@{popover-prefix}-arrow {
             left: 3px;
             width: 9px;

@@ -3,8 +3,14 @@ import { docScroll, docSize } from '@/utils/dom/document'
 const posKeys = ['left', 'top', 'bottom', 'right']
 
 // 需要样式中transform配合
+// 此处计算为Popover 或tooltip的children的位置
+// 因为不知道具体Popover的content width与height，所以在css中使用transform使Popover的内容偏移
+// 否则Popover的内容会与Chidlren在同一位置
 export const getPosition = (position, el, container = document.body) => {
     const rect = el.getBoundingClientRect()
+
+    // 浏览器滚动条宽度
+    const scrollWidth = container === document.body ? window.innerWidth - document.body.clientWidth : 0
 
     let containerRect = { top: 0, left: 0, bottom: 0, right: 0 }
 
@@ -30,7 +36,7 @@ export const getPosition = (position, el, container = document.body) => {
             pos.top = scrollTop + rect.top - containerRect.top
             break
         case 'top-right':
-            pos.right = (containerRect.right || docSize.width) - rect.right - scrollLeft
+            pos.right = (containerRect.right || docSize.width) - rect.right - scrollLeft - scrollWidth
             pos.top = scrollTop + rect.top - containerRect.top
             break
         case 'left-top':
@@ -66,7 +72,7 @@ export const getPosition = (position, el, container = document.body) => {
             pos.top = scrollTop + rect.top - containerRect.top + rect.height
             break
         case 'bottom-right':
-            pos.right = (containerRect.right || docSize.width) - rect.right - scrollLeft
+            pos.right = (containerRect.right || docSize.width) - rect.right - scrollLeft - scrollWidth
             pos.top = scrollTop + rect.top - containerRect.top + rect.height
             break
         case 'cover':
