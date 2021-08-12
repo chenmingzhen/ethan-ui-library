@@ -52,7 +52,7 @@
 
     @keyframe-right-top-zoom-out: ~'@{popover-prefix}-kf-right-top-zoom-out';
 
-    &[ethan-placement='top']&-enter {
+    &[data-placement='top']&-enter {
         // 由于设置了translate 所以transform-origin不是center bottom;
         // 同理下面的placement 需要推算transform-origin
 
@@ -71,7 +71,7 @@
         animation: @keyframe-top-zoom-in 0.25s forwards cubic-bezier(0.71, 1.7, 0.77, 1.24);
     }
 
-    &[ethan-placement='top']&-exit {
+    &[data-placement='top']&-exit {
         @keyframes @keyframe-top-zoom-out {
             from {
                 opacity: 1;
@@ -87,7 +87,7 @@
         animation: @keyframe-top-zoom-out 0.25s forwards cubic-bezier(0.71, 1.7, 0.77, 1.24);
     }
 
-    &[ethan-placement='bottom']&-enter {
+    &[data-placement='bottom']&-enter {
         @keyframes @keyframe-bottom-zoom-in {
             from {
                 opacity: 0;
@@ -103,7 +103,7 @@
         animation: @keyframe-bottom-zoom-in 0.25s forwards cubic-bezier(0.71, 1.7, 0.77, 1.24);
     }
 
-    &[ethan-placement='bottom']&-exit {
+    &[data-placement='bottom']&-exit {
         @keyframes @keyframe-bottom-zoom-out {
             from {
                 opacity: 1;
@@ -119,7 +119,7 @@
         animation: @keyframe-bottom-zoom-out 0.25s forwards cubic-bezier(0.71, 1.7, 0.77, 1.24);
     }
 
-    &[ethan-placement='left']&-enter {
+    &[data-placement='left']&-enter {
         @keyframes @keyframe-left-zoom-in {
             from {
                 opacity: 0;
@@ -135,7 +135,7 @@
         animation: @keyframe-left-zoom-in 0.25s forwards cubic-bezier(0.71, 1.7, 0.77, 1.24);
     }
 
-    &[ethan-placement='left']&-exit {
+    &[data-placement='left']&-exit {
         @keyframes @keyframe-left-zoom-out {
             from {
                 opacity: 1;
@@ -151,7 +151,7 @@
         animation: @keyframe-left-zoom-out 0.25s forwards cubic-bezier(0.71, 1.7, 0.77, 1.24);
     }
 
-    &[ethan-placement='right']&-enter {
+    &[data-placement='right']&-enter {
         @keyframes @keyframe-right-zoom-in {
             from {
                 opacity: 0;
@@ -167,7 +167,7 @@
         animation: @keyframe-right-zoom-in 0.25s forwards cubic-bezier(0.71, 1.7, 0.77, 1.24);
     }
 
-    &[ethan-placement='right']&-exit {
+    &[data-placement='right']&-exit {
         @keyframes @keyframe-right-zoom-out {
             from {
                 opacity: 1;
@@ -183,7 +183,7 @@
         animation: @keyframe-right-zoom-out 0.25s forwards cubic-bezier(0.71, 1.7, 0.77, 1.24);
     }
 
-    &[ethan-placement='bottom-left']&-enter {
+    &[data-placement='bottom-left']&-enter {
         @keyframes @keyframe-bottom-left-zoom-in {
             from {
                 opacity: 0;
@@ -199,7 +199,7 @@
         animation: @keyframe-bottom-left-zoom-in 0.25s forwards cubic-bezier(0.71, 1.7, 0.77, 1.24);
     }
 
-    &[ethan-placement='bottom-left']&-exit {
+    &[data-placement='bottom-left']&-exit {
         @keyframes @keyframe-bottom-left-zoom-out {
             from {
                 opacity: 1;
@@ -215,7 +215,7 @@
         animation: @keyframe-bottom-left-zoom-out 0.25s forwards cubic-bezier(0.71, 1.7, 0.77, 1.24);
     }
 
-    &[ethan-placement='bottom-right']&-enter {
+    &[data-placement='bottom-right']&-enter {
         @keyframes @keyframe-bottom-right-zoom-in {
             from {
                 opacity: 0;
@@ -231,7 +231,7 @@
         animation: @keyframe-bottom-right-zoom-in 0.25s forwards cubic-bezier(0.71, 1.7, 0.77, 1.24);
     }
 
-    &[ethan-placement='bottom-right']&-exit {
+    &[data-placement='bottom-right']&-exit {
         @keyframes @keyframe-bottom-right-zoom-out {
             from {
                 opacity: 1;
@@ -247,7 +247,7 @@
         animation: @keyframe-bottom-right-zoom-out 0.25s forwards cubic-bezier(0.71, 1.7, 0.77, 1.24);
     }
 
-    &[ethan-placement='top-left']&-enter {
+    &[data-placement='top-left']&-enter {
         @keyframes @keyframe-top-left-zoom-in {
             from {
                 opacity: 0;
@@ -263,7 +263,7 @@
         animation: @keyframe-top-left-zoom-in 0.25s forwards cubic-bezier(0.71, 1.7, 0.77, 1.24);
     }
 
-    &[ethan-placement='top-left']&-exit {
+    &[data-placement='top-left']&-exit {
         @keyframes @keyframe-top-left-zoom-out {
             from {
                 opacity: 1;
@@ -279,7 +279,7 @@
         animation: @keyframe-top-left-zoom-out 0.25s forwards cubic-bezier(0.71, 1.7, 0.77, 1.24);
     }
 
-    &[ethan-placement='top-right']&-enter {
+    &[data-placement='top-right']&-enter {
         @keyframes @keyframe-top-right-zoom-in {
             from {
                 opacity: 0;
@@ -295,7 +295,7 @@
         animation: @keyframe-top-right-zoom-in 0.25s forwards cubic-bezier(0.71, 1.7, 0.77, 1.24);
     }
 
-    &[ethan-placement='top-right']&-exit {
+    &[data-placement='top-right']&-exit {
         @keyframes @keyframe-top-right-zoom-out {
             from {
                 opacity: 1;
@@ -311,7 +311,7 @@
         animation: @keyframe-top-right-zoom-out 0.25s forwards cubic-bezier(0.71, 1.7, 0.77, 1.24);
     }
 
-    &[ethan-placement='left-bottom']&-enter {
+    &[data-placement='left-bottom']&-enter {
         @keyframes @keyframe-left-bottom-zoom-in {
             from {
                 opacity: 0;
@@ -327,7 +327,7 @@
         animation: @keyframe-left-bottom-zoom-in 0.25s forwards cubic-bezier(0.71, 1.7, 0.77, 1.24);
     }
 
-    &[ethan-placement='left-bottom']&-exit {
+    &[data-placement='left-bottom']&-exit {
         @keyframes @keyframe-left-bottom-zoom-out {
             from {
                 opacity: 1;
@@ -343,7 +343,7 @@
         animation: @keyframe-left-bottom-zoom-out 0.25s forwards cubic-bezier(0.71, 1.7, 0.77, 1.24);
     }
 
-    &[ethan-placement='left-top']&-enter {
+    &[data-placement='left-top']&-enter {
         @keyframes @keyframe-left-top-zoom-in {
             from {
                 opacity: 0;
@@ -359,7 +359,7 @@
         animation: @keyframe-left-top-zoom-in 0.25s forwards cubic-bezier(0.71, 1.7, 0.77, 1.24);
     }
 
-    &[ethan-placement='left-top']&-exit {
+    &[data-placement='left-top']&-exit {
         @keyframes @keyframe-left-top-zoom-out {
             from {
                 opacity: 1;
@@ -375,7 +375,7 @@
         animation: @keyframe-left-top-zoom-out 0.25s forwards cubic-bezier(0.71, 1.7, 0.77, 1.24);
     }
 
-    &[ethan-placement='right-bottom']&-enter {
+    &[data-placement='right-bottom']&-enter {
         @keyframes @keyframe-right-bottom-zoom-in {
             from {
                 opacity: 0;
@@ -391,7 +391,7 @@
         animation: @keyframe-right-bottom-zoom-in 0.25s forwards cubic-bezier(0.71, 1.7, 0.77, 1.24);
     }
 
-    &[ethan-placement='right-bottom']&-exit {
+    &[data-placement='right-bottom']&-exit {
         @keyframes @keyframe-right-bottom-zoom-out {
             from {
                 opacity: 1;
@@ -407,7 +407,7 @@
         animation: @keyframe-right-bottom-zoom-out 0.25s forwards cubic-bezier(0.71, 1.7, 0.77, 1.24);
     }
 
-    &[ethan-placement='right-top']&-enter {
+    &[data-placement='right-top']&-enter {
         @keyframes @keyframe-right-top-zoom-in {
             from {
                 opacity: 0;
@@ -423,7 +423,7 @@
         animation: @keyframe-right-top-zoom-in 0.25s forwards cubic-bezier(0.71, 1.7, 0.77, 1.24);
     }
 
-    &[ethan-placement='right-top']&-exit {
+    &[data-placement='right-top']&-exit {
         @keyframes @keyframe-right-top-zoom-out {
             from {
                 opacity: 1;

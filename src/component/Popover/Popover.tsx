@@ -255,7 +255,7 @@ class Popover extends Component<IPopoverProps, PopoverState> {
             this.element.style[k] = newStyle[k]
         })
 
-        this.element.setAttribute('ethan-placement', position)
+        this.element.setAttribute('data-placement', position)
     }
 
     // 控制显示 force表示defaultVisible为true，用于强制显示

@@ -52,7 +52,7 @@
         }
     }
 
-    &[ethan-placement^='top'] {
+    &[data-placement^='top'] {
         .@{popover-prefix}-arrow {
             bottom: 3px;
             height: 9px;
@@ -68,7 +68,7 @@
         }
     }
 
-    &[ethan-placement='top'] {
+    &[data-placement='top'] {
         // 由于设置了translate 所以transform-origin不是center bottom;
         // 同理下面的placement 需要推算transform-origin
 
@@ -93,7 +93,7 @@
         }
     }
 
-    &[ethan-placement='top-right'] {
+    &[data-placement='top-right'] {
         transform-origin: right top;
         transform: translateY(-100%);
 
@@ -102,7 +102,7 @@
         }
     }
 
-    &[ethan-placement='top-left'] {
+    &[data-placement='top-left'] {
         transform-origin: left top;
         transform: translateY(-100%);
 
@@ -111,7 +111,7 @@
         }
     }
 
-    &[ethan-placement^='bottom'] {
+    &[data-placement^='bottom'] {
         .@{popover-prefix}-arrow {
             top: 2px;
             height: 9px;
@@ -127,7 +127,7 @@
         }
     }
 
-    &[ethan-placement='bottom'] {
+    &[data-placement='bottom'] {
         transform-origin: left top;
         transform: translateX(-50%);
 
@@ -137,7 +137,7 @@
         }
     }
 
-    &[ethan-placement='bottom-left'] {
+    &[data-placement='bottom-left'] {
         transform-origin: left top;
 
         .@{popover-prefix}-arrow {
@@ -145,7 +145,7 @@
         }
     }
 
-    &[ethan-placement='bottom-right'] {
+    &[data-placement='bottom-right'] {
         transform-origin: right top;
 
         .@{popover-prefix}-arrow {
@@ -153,7 +153,7 @@
         }
     }
 
-    &[ethan-placement^='left'] {
+    &[data-placement^='left'] {
         padding: 0;
 
         .@{popover-prefix}-arrow {
@@ -172,7 +172,7 @@
         }
     }
 
-    &[ethan-placement='left'] {
+    &[data-placement='left'] {
         transform-origin: left top;
         transform: translate(-100%, -50%);
 
@@ -182,7 +182,7 @@
         }
     }
 
-    &[ethan-placement='left-bottom'] {
+    &[data-placement='left-bottom'] {
         transform-origin: left top;
         transform: translate(-100%, -100%);
 
@@ -191,7 +191,7 @@
         }
     }
 
-    &[ethan-placement='left-top'] {
+    &[data-placement='left-top'] {
         transform-origin: left top;
         transform: translateX(-100%);
 
@@ -200,7 +200,7 @@
         }
     }
 
-    &[ethan-placement^='right'] {
+    &[data-placement^='right'] {
         padding: 0;
 
         .@{popover-prefix}-arrow {
@@ -219,7 +219,7 @@
         }
     }
 
-    &[ethan-placement='right'] {
+    &[data-placement='right'] {
         transform-origin: left top;
         transform: translate(0, -50%);
 
@@ -229,7 +229,7 @@
         }
     }
 
-    &[ethan-placement='right-top'] {
+    &[data-placement='right-top'] {
         transform-origin: left top;
 
         .@{popover-prefix}-arrow {
@@ -237,7 +237,7 @@
         }
     }
 
-    &[ethan-placement='right-bottom'] {
+    &[data-placement='right-bottom'] {
         transform-origin: left top;
         transform: translateY(-100%);
 
