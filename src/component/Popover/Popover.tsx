@@ -6,12 +6,16 @@ import { getPositionStr, getPosition } from '@/utils/dom/popover'
 import { popoverClass } from '@/styles/index'
 import isDOMElement from '@/utils/dom/isDOMElement'
 
+export interface IPopoverProps extends PopoverProps {
+    isConfirmLoading?: boolean
+}
+
 export interface PopoverProps {
     placement?: string
 
     title?: React.ReactNode
 
-    content?: React.ReactNode
+    content?: React.ReactNode | ((hide: (e?: number) => void) => React.ReactNode)
 
     confirm?: boolean
 
@@ -39,8 +43,6 @@ export interface PopoverProps {
 
     mouseLeaveDelay?: number
 
-    chidlren?: React.ReactElement
-
     defaultVisible?: boolean
 
     getPopupContainer?: () => HTMLElement
@@ -50,7 +52,7 @@ interface PopoverState {
     show: boolean
 }
 
-class Popover extends Component<PopoverProps, PopoverState> {
+class Popover extends Component<IPopoverProps, PopoverState> {
     static defaultProps = {
         trigger: 'hover',
 
@@ -154,6 +156,8 @@ class Popover extends Component<PopoverProps, PopoverState> {
 
         const wrapChildren = !isDOMElement(children) ? wrapSpan(children) : children
 
+        const wrapContent = typeof content === 'function' ? content(this.handleHide) : content
+
         if (!this.container) {
             return [
                 <noscript ref={this.placeHolderRef} key="ns" />,
@@ -171,9 +175,9 @@ class Popover extends Component<PopoverProps, PopoverState> {
                     </div>
 
                     <div className={popoverClass('inner')}>
-                        <div className={popoverClass('title')}>{title}</div>
+                        {title && <div className={popoverClass('title')}>{title}</div>}
 
-                        <div className={popoverClass('inner-content')}>{content}</div>
+                        {wrapChildren && <div className={popoverClass('inner-content')}>{wrapContent}</div>}
                     </div>
                 </>,
                 this.element
@@ -302,6 +306,7 @@ class Popover extends Component<PopoverProps, PopoverState> {
         if (this.eventHandlerElement.contains(e.target)) return
         if (this.element.contains(e.target)) return
         if (getParent(e.target, popoverClass('_'))) return
+        if (this.props.isConfirmLoading) return
 
         this.handleHide(0)
     }
@@ -337,4 +342,4 @@ class Popover extends Component<PopoverProps, PopoverState> {
     }
 }
 
-export default Popover
+export default React.memo(Popover)

@@ -9,22 +9,21 @@ import { Button, Popover } from 'ethan/index'
 
 export default function() {
     return (
-        <Button>
-            {/* <Popover.Confirm
-        onCancel={() => {
-          console.log('cancel')
-        }}
-        onOk={() =>
-          new Promise(resolve => {
-            console.log('ok')
-            setTimeout(() => resolve(true), 2000)
-          })
-        }
-        text={{ ok: 'Yes', cancel: 'No' }}
-      >
-        Are you sure delete ?
-      </Popover.Confirm> */}
-            Delete
-        </Button>
+        <Popover.Confirm
+            onCancel={() => {
+                console.log('cancel')
+            }}
+            onOk={() =>
+                new Promise(resolve => {
+                    console.log('ok')
+                    setTimeout(() => resolve(true), 2000)
+                })
+            }
+            text={{ ok: 'Yes', cancel: 'No' }}
+            description="Are you sure delete?"
+            title="title"
+        >
+            <Button>Delete</Button>
+        </Popover.Confirm>
     )
 }
