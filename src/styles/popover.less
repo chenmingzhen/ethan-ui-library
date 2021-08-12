@@ -79,7 +79,7 @@
         // Popover位于Button的第2,4象限
         // 相当于Button与Popover重叠 Popover在Button的右边 且多出Button的一半
         // 这时候 设置transform-origin使Popover的缩放点在Button的中心
-        // 从Button的中心开始缩放 
+        // 从Button的中心开始缩放
         // 然后设置translate 使Popover位于Button的正上方
         // 如果将transform-origin设为left 则会从Button的中心点缩放 缩放尺度更大
         // transform-origin: left;
@@ -244,5 +244,30 @@
         .@{popover-prefix}-arrow {
             bottom: 10px;
         }
+    }
+
+    // ------------------------------confirm----------------------------------------
+
+    &-confirm {
+        .@{popover-prefix}-footer {
+            text-align: right;
+            margin-bottom: 4px;
+        }
+
+        .@{popover-prefix}-mention .@{popover-prefix}-alert {
+            background: transparent;
+            border: none;
+            color: @text-color;
+            box-shadow: none;
+            margin-bottom: 8px;
+            padding: 8px;
+            font-size: @font-size-base;
+        }
+    }
+
+    &-text {
+        display: inline-block;
+        max-width: @popover-text-max-width;
+        padding: @common-content-text-padding;
     }
 }
