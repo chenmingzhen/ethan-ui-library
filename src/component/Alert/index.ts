@@ -1,8 +1,10 @@
 import { MemoExoticComponent, ForwardRefExoticComponent, RefAttributes } from 'react'
 import Alert, { AlertInstance, AlertProps } from './alert'
-import Scroll from './scrollAlert'
+import Scroll, { ScrollAlertProps } from './scrollAlert'
 
-interface AlertComponent
+export { AlertInstance, AlertProps, ScrollAlertProps }
+
+export interface AlertComponent
     extends MemoExoticComponent<ForwardRefExoticComponent<AlertProps & RefAttributes<AlertInstance>>> {
     Scroll: typeof Scroll
 }

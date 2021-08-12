@@ -4,7 +4,7 @@ import { useList, useTimeoutFn, useUpdateEffect } from 'react-use'
 import { getRenderChildrenFromProps, cloneChildren } from './util'
 import Alert, { AlertInstance, AlertProps } from './alert'
 
-interface ScrollAlertProps extends AlertProps {
+export interface ScrollAlertProps extends AlertProps {
     scrollInterval?: number
 
     /** 关闭所有节点时触发的回调 */
