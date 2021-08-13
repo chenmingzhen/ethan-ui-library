@@ -93,6 +93,8 @@ export const getPosition = (position, el, container = document.body) => {
 export function getPositionStr(position, priorityDirection, parentElement: HTMLElement, container = document.body) {
     if (position) return position
 
+    if (!parentElement) return 'top'
+
     const rect = parentElement.getBoundingClientRect()
 
     const containerRect = container?.getBoundingClientRect()

@@ -17,14 +17,6 @@ export interface PopoverProps {
 
     content?: React.ReactNode | ((hide: (e?: number) => void) => React.ReactNode)
 
-    confirm?: boolean
-
-    dark?: boolean
-
-    color?: string
-
-    width?: number
-
     okText?: string
 
     cancelText?: string
@@ -158,31 +150,31 @@ class Popover extends Component<IPopoverProps, PopoverState> {
 
         const wrapContent = typeof content === 'function' ? content(this.handleHide) : content
 
-        if (!this.container) {
-            return [
-                <noscript ref={this.placeHolderRef} key="ns" />,
-                React.cloneElement(<>{wrapChildren}</>, { key: children?.key ?? 'children' }),
-            ]
-        }
-
-        return [
+        const elements = [
             <noscript ref={this.placeHolderRef} key="ns" />,
             React.cloneElement(<>{wrapChildren}</>, { key: children?.key ?? 'children' }),
-            ReactDOM.createPortal(
-                <>
-                    <div className={popoverClass('arrow')}>
-                        <div className={popoverClass('arrow-content')} />
-                    </div>
-
-                    <div className={popoverClass('inner')}>
-                        {title && <div className={popoverClass('title')}>{title}</div>}
-
-                        {wrapChildren && <div className={popoverClass('inner-content')}>{wrapContent}</div>}
-                    </div>
-                </>,
-                this.element
-            ),
         ]
+
+        if (this.container) {
+            elements.push(
+                ReactDOM.createPortal(
+                    <>
+                        <div className={popoverClass('arrow')}>
+                            <div className={popoverClass('arrow-content')} />
+                        </div>
+
+                        <div className={popoverClass('inner')}>
+                            {title && <div className={popoverClass('title')}>{title}</div>}
+
+                            {wrapChildren && <div className={popoverClass('inner-content')}>{wrapContent}</div>}
+                        </div>
+                    </>,
+                    this.element
+                )
+            )
+        }
+
+        return elements
     }
 
     getContainer = () => {
@@ -224,6 +216,7 @@ class Popover extends Component<IPopoverProps, PopoverState> {
 
         // remove hover handler
         this.element.removeEventListener('mouseenter', this.handleShow)
+
         this.element.removeEventListener('mouseleave', this.handleHide)
 
         // 受控不添加事件
@@ -231,12 +224,17 @@ class Popover extends Component<IPopoverProps, PopoverState> {
 
         if (trigger === 'hover') {
             this.eventHandlerElement.addEventListener('mouseenter', this.handleShow)
+
             this.eventHandlerElement.addEventListener('mouseleave', this.handleHide)
+
             this.element.addEventListener('mouseenter', this.handleShow)
+
             this.element.addEventListener('mouseleave', this.handleHide)
         } else {
             this.eventHandlerElement.addEventListener('click', this.handleShow)
+
             this.eventHandlerElement.removeEventListener('mouseenter', this.handleShow)
+
             this.eventHandlerElement.removeEventListener('mouseleave', this.handleHide)
         }
     }
@@ -244,8 +242,7 @@ class Popover extends Component<IPopoverProps, PopoverState> {
     handlePos = () => {
         const { placement, style } = this.props
 
-        const position =
-            placement ?? getPositionStr(placement, null, this.placeHolderRef.current.parentElement, this.container)
+        const position = getPositionStr(placement, null, this.placeHolderRef.current?.parentElement, this.container)
 
         const posStyle = getPosition(position, this.eventHandlerElement, this.container)
 
@@ -309,8 +306,11 @@ class Popover extends Component<IPopoverProps, PopoverState> {
 
     clickAway = e => {
         if (this.eventHandlerElement.contains(e.target)) return
+
         if (this.element.contains(e.target)) return
+
         if (getParent(e.target, popoverClass('_'))) return
+
         if (this.props.isConfirmLoading) return
 
         this.handleHide(0)
@@ -318,6 +318,7 @@ class Popover extends Component<IPopoverProps, PopoverState> {
 
     setShow(show) {
         const { onVisibleChange, mouseEnterDelay, mouseLeaveDelay, trigger } = this.props
+
         const delay = show ? mouseEnterDelay : mouseLeaveDelay
 
         this.delayTimeout = setTimeout(
