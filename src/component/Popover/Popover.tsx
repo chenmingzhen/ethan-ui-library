@@ -183,8 +183,17 @@ class Popover extends Component<IPopoverProps, PopoverState> {
         const container = getPopupContainer?.()
 
         if (container && isDOMElement(container)) {
+            // 如果container是body的话 Popover是绝对定位，可以相对body直接定位
+            // 需要注意的是 getBoundingClientRect的left top是会计算滚动条的滚动的
+            // 如果是自定义的容器 首先 不能保证自定义容器的定位是relative或absolute等
+            // 并且如果直接以自定义容器为Parent Parent是根据body（或其他）进行固定的
+            // 自定义容器中即使存在滚动条 也不会影响到Children的计算 因为自定义容器在定位上已经是固定了
+            // 这时候 需要添加一个额外的absolute容器在自定义容器里
+            // 当自定义容器出现滚动时 absolute容器的getBoundingClientRect会发生改变
+            // 此时Popover的位置是正确的
+            // 配合 getPosition top-right理解
             const child = document.createElement('div')
-            // TODO
+
             child.setAttribute('style', ' position: absolute; top: 0px; left: 0px; width: 100% ')
 
             // appendChild 返回 child  非container
