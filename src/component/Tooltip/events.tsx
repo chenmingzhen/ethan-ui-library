@@ -7,6 +7,9 @@ import { ToolTipProps } from './Tooltip'
 
 const divMap = new Map<string, { div: HTMLElement; arrow: HTMLElement; inner: HTMLElement }>()
 
+// 由于document的点击事件中 使用bind 使用此Map获取对应的事件
+const eventMap = new Map<string, () => void>()
+
 export function createDiv(getContainer?: () => HTMLElement) {
     const uuid = getUidStr()
 
@@ -51,8 +54,10 @@ export function getDiv(uuid) {
     return divMap.get(uuid)
 }
 
-function clickAway(uuid) {
+function clickDocument(uuid) {
     hide(uuid)
+
+    const clickAway = eventMap.get(uuid)
 
     document.removeEventListener('click', clickAway)
 }
@@ -93,6 +98,12 @@ export function show(props: ToolTipProps, uuid) {
 
     // 点击窗口 隐藏
     if (trigger === 'click') {
-        document.addEventListener('click', clickAway.bind(this, uuid))
+        const clickAway = () => {
+            clickDocument(uuid)
+        }
+
+        eventMap.set(uuid, clickAway)
+
+        document.addEventListener('click', clickAway)
     }
 }
