@@ -128,7 +128,7 @@ class Popover extends Component<IPopoverProps, PopoverState> {
 
         document.removeEventListener('mousedown', this.clickAway)
 
-        window.addEventListener('resize', this.handlePos)
+        window.removeEventListener('resize', this.handlePos)
 
         if (!this.container || !this.element) return
 
