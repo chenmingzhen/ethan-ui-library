@@ -270,7 +270,12 @@ class Popover extends Component<IPopoverProps, PopoverState> {
 
         this.handleInitDOM()
 
-        if (this.state.show && !force) return
+        if (this.state.show && !force) {
+            // 处理Click的类型 点击Children收缩
+            this.handleHide(0)
+
+            return
+        }
 
         if (typeof this.props.visible !== 'boolean') document.addEventListener('mousedown', this.clickAway)
 
