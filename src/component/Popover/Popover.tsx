@@ -220,8 +220,10 @@ class Popover extends Component<IPopoverProps, PopoverState> {
     bindEvents = () => {
         const { trigger, visible } = this.props
 
+        console.log(this.eventHandlerElement)
+
         // remove click handler
-        this.eventHandlerElement.removeEventListener('click', this.handleShow)
+        this.eventHandlerElement?.removeEventListener('click', this.handleShow)
 
         // remove hover handler
         this.element.removeEventListener('mouseenter', this.handleShow)
@@ -232,19 +234,19 @@ class Popover extends Component<IPopoverProps, PopoverState> {
         if (typeof visible === 'boolean') return
 
         if (trigger === 'hover') {
-            this.eventHandlerElement.addEventListener('mouseenter', this.handleShow)
+            this.eventHandlerElement?.addEventListener('mouseenter', this.handleShow)
 
-            this.eventHandlerElement.addEventListener('mouseleave', this.handleHide)
+            this.eventHandlerElement?.addEventListener('mouseleave', this.handleHide)
 
             this.element.addEventListener('mouseenter', this.handleShow)
 
             this.element.addEventListener('mouseleave', this.handleHide)
         } else {
-            this.eventHandlerElement.addEventListener('click', this.handleShow)
+            this.eventHandlerElement?.addEventListener('click', this.handleShow)
 
-            this.eventHandlerElement.removeEventListener('mouseenter', this.handleShow)
+            this.eventHandlerElement?.removeEventListener('mouseenter', this.handleShow)
 
-            this.eventHandlerElement.removeEventListener('mouseleave', this.handleHide)
+            this.eventHandlerElement?.removeEventListener('mouseleave', this.handleHide)
         }
     }
 
