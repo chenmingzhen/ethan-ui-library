@@ -12,7 +12,7 @@ interface Text {
 }
 
 export interface ConfirmProps extends PopoverProps {
-    okType?: ButtonProps['type']
+    buttonProps?: { ok?: ButtonProps; cancel: ButtonProps }
 
     /** 按钮文字 */
     text?: Text
@@ -29,7 +29,7 @@ export interface ConfirmProps extends PopoverProps {
 }
 
 const Confirm: React.FC<ConfirmProps> = props => {
-    const { okType, text, onOk, onCancel, type, children, description, ...other } = props
+    const { buttonProps = { ok: {}, cancel: {} }, text, onOk, onCancel, type, children, description, ...other } = props
 
     const [okLoading, setOkLoading] = useState(false)
 
@@ -40,11 +40,11 @@ const Confirm: React.FC<ConfirmProps> = props => {
 
         const callback = fn?.()
 
-        if (callback && typeof callback.then === 'function') {
+        if (callback && typeof callback.finally === 'function' && typeof callback.finally === 'function') {
             if (eventType === 'ok') {
                 setOkLoading(true)
 
-                callback.then(() => {
+                callback.finally(() => {
                     setOkLoading(false)
 
                     close()
@@ -52,7 +52,7 @@ const Confirm: React.FC<ConfirmProps> = props => {
             } else {
                 setCancelLoading(true)
 
-                callback.then(() => {
+                callback.finally(() => {
                     setCancelLoading(false)
 
                     close()
@@ -77,7 +77,8 @@ const Confirm: React.FC<ConfirmProps> = props => {
                         loading={cancelLoading}
                         size="small"
                         onClick={handleClick.bind(this, 'cancel', close)}
-                        disabled={okLoading}
+                        disabled={okLoading || cancelLoading}
+                        {...buttonProps?.cancel}
                     >
                         {getLocale('cancel', text)}
                     </Button>
@@ -86,6 +87,8 @@ const Confirm: React.FC<ConfirmProps> = props => {
                         size="small"
                         type="primary"
                         onClick={handleClick.bind(this, 'ok', close)}
+                        disabled={okLoading || cancelLoading}
+                        {...buttonProps?.ok}
                     >
                         {getLocale('ok', text)}
                     </Button>
