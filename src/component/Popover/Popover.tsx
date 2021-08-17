@@ -220,8 +220,6 @@ class Popover extends Component<IPopoverProps, PopoverState> {
     bindEvents = () => {
         const { trigger, visible } = this.props
 
-        console.log(this.eventHandlerElement)
-
         // remove click handler
         this.eventHandlerElement?.removeEventListener('click', this.handleShow)
 
