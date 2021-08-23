@@ -1,3 +1,4 @@
+// TODO 拆分type
 export default interface ModalProps {
     autoFocusButton?: boolean
     /* ModalBody拓展样式 */

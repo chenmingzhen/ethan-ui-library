@@ -2,13 +2,15 @@ import React from 'react'
 import Modal, { ModalExtendsProps } from './Modal'
 import { createModalMethod } from './events'
 
+export type ModalMethodType = ReturnType<typeof createModalMethod>
+
 export interface ModalComponent extends React.ComponentClass<ModalExtendsProps> {
-    success: ReturnType<typeof createModalMethod>
-    info: ReturnType<typeof createModalMethod>
-    warn: ReturnType<typeof createModalMethod>
-    error: ReturnType<typeof createModalMethod>
-    confirm: ReturnType<typeof createModalMethod>
-    show: ReturnType<typeof createModalMethod>
+    success: ModalMethodType
+    info: ModalMethodType
+    warn: ModalMethodType
+    error: ModalMethodType
+    confirm: ModalMethodType
+    show: ModalMethodType
 }
 
 const exportModal = (Modal as unknown) as ModalComponent
