@@ -1,7 +1,7 @@
 import { tagClass } from '@/styles'
 import { isDark } from '@/utils/color'
 import { wrapSpan } from '@/utils/dom/element'
-import { isEmpty, isPromise } from '@/utils/is'
+import { isPromise } from '@/utils/is'
 import React, { useState } from 'react'
 import Input from './Input'
 import icons from '../icons'
@@ -44,7 +44,7 @@ const Tag: React.FC<TagProps> = props => {
 
     const [inputVisible, setInputVisible] = useState(false)
 
-    const [value, setValue] = useState<string>()
+    const [value, setValue] = useState<string>('')
 
     const { dismiss, dispatchCallback, dispatchClosing } = useDismiss()
 
@@ -59,11 +59,13 @@ const Tag: React.FC<TagProps> = props => {
     function handleDismiss(e) {
         let callback
         // 如果传入值是布尔 非函数
+
         if (onClose === true) {
             dispatchClosing()
 
             return
         }
+
         if (typeof onClose === 'function') {
             callback = onClose(e)
         }
@@ -163,5 +165,7 @@ const Tag: React.FC<TagProps> = props => {
 Tag.defaultProps = {
     style: {},
 }
+
+Tag.displayName = 'EthanTag'
 
 export default React.memo(Tag)
