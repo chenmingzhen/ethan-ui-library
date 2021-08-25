@@ -1,203 +1,171 @@
-// @ts-nocheck
-import React from 'react'
-import PropTypes from 'prop-types'
-import { PureComponent } from '@/utils/component'
-import { getProps, defaultProps } from '@/utils/proptypes'
-import { wrapSpan } from '@/utils/dom/element'
-import { isPromise, isFunc, isString, isEmpty } from '@/utils/is'
-import { isDark } from '@/utils/color'
 import { tagClass } from '@/styles'
+import { isDark } from '@/utils/color'
+import { wrapSpan } from '@/utils/dom/element'
+import { isPromise } from '@/utils/is'
+import React, { useState } from 'react'
+import Input from './Input'
 import icons from '../icons'
 import Spin from '../Spin'
-import Input from './Input'
+import useDismiss, { Dismiss } from './hooks/useDismiss'
 
-const hideInput = Symbol('hideInput')
-const showInput = Symbol('showInput')
+export interface TagProps {
+    type?:
+        | 'primary'
+        | 'default'
+        | 'secondary'
+        | 'success'
+        | 'info'
+        | 'warning'
+        | 'error'
+        | 'danger'
+        | 'link'
+        | 'loading'
 
-class Tag extends PureComponent {
-    constructor(props) {
-        super(props)
+    children?: React.ReactNode
 
-        this.state = {
-            // 0 未关闭 1 关闭中 2 已关闭
-            dismiss: 0,
-            // tag input status
-            inputVisible: hideInput,
-            // Input的值
-            value: null,
-        }
+    onClick?(e: React.MouseEvent): void
 
-        this.dismiss = this.dismiss.bind(this)
-        this.handleClick = this.handleClick.bind(this)
-        this.handleClose = this.handleClose.bind(this)
-        this.renderClose = this.renderClose.bind(this)
-        this.closeTag = this.closeTag.bind(this)
-        this.toggleInputVisible = this.toggleInputVisible.bind(this)
-        this.inputBlur = this.inputBlur.bind(this)
-        this.inputChange = this.inputChange.bind(this)
+    /** 当 onClose 为空时，不显示关闭。如果需要关闭又不需要处理回调，设置为true即可 */
+    onClose?: boolean | ((e: React.MouseEvent) => void)
+
+    backgroundColor?: string
+    /** Tag编辑完成时触发该事件（children 必须为 string） */
+    onCompleted?(value: string): void
+
+    disabled?: boolean
+
+    className?: string
+
+    style?: React.CSSProperties
+}
+
+const Tag: React.FC<TagProps> = props => {
+    const { className, style, backgroundColor, onClose, disabled, onClick, children, type, onCompleted } = props
+
+    const [inputVisible, setInputVisible] = useState(false)
+
+    const [value, setValue] = useState<string>('')
+
+    const { dismiss, dispatchCallback, dispatchClosing } = useDismiss()
+
+    function handleClick(e: React.MouseEvent) {
+        if (disabled) return
+
+        if (onCompleted) setInputVisible(!inputVisible)
+
+        onClick?.(e)
     }
 
-    componentDidMount() {
-        const { children, onCompleted } = this.props
-        // 如果onCompleted不为空，可编辑，且children是string 将children设为value
-        if (onCompleted && isString(children) && !isEmpty(children)) {
-            this.setState({ value: children })
-        }
-    }
-
-    closeTag() {
-        this.setState({ dismiss: 2 })
-    }
-
-    /**
-     * 处理dismiss变化
-     * @param e
-     */
-    dismiss(e) {
-        const { onClose } = this.props
+    function handleDismiss(e) {
         let callback
         // 如果传入值是布尔 非函数
+
         if (onClose === true) {
-            this.closeTag()
+            dispatchClosing()
+
             return
         }
+
         if (typeof onClose === 'function') {
             callback = onClose(e)
         }
 
-        // 如果onClose的返回值是Promise 执行其中的then
         if (isPromise(callback)) {
-            this.setState({ dismiss: 1 })
-            callback.then(() => {
-                this.closeTag()
+            dispatchCallback()
+
+            callback.finally(() => {
+                dispatchClosing()
             })
+
             return
         }
+
+        // https://developer.mozilla.org/zh-CN/docs/Web/API/Event/defaultPrevented
         if (e.defaultPrevented) {
             return
         }
-        this.closeTag()
+
+        dispatchClosing()
     }
 
-    /**
-     * 点击Input框外时 默认算完成输入
-     * @param value
-     */
-    inputBlur(value) {
-        const { onCompleted } = this.props
-        // 执行onCompleted回调
-        if (isFunc(onCompleted)) onCompleted(value)
-        this.setState({ inputVisible: hideInput })
+    function handleClose(e) {
+        if (dismiss !== Dismiss.OPEN || disabled) return
+
+        handleDismiss(e)
     }
 
-    inputChange(value) {
-        this.setState({ value })
-    }
-
-    /**
-     * 控制Input的显示
-     */
-    toggleInputVisible() {
-        const { inputVisible, value } = this.state
-        const { onCompleted } = this.props
-
-        // 如果onCompleted不为空且value不为空
-        if (onCompleted && !isEmpty(value))
-            this.setState({ inputVisible: inputVisible === hideInput ? showInput : hideInput })
-    }
-
-    handleClick(e) {
-        const { onClick, disabled } = this.props
-        if (disabled) return
-
-        this.toggleInputVisible()
-
-        if (typeof onClick === 'function') {
-            onClick(e)
-        }
-    }
-
-    handleClose(e) {
-        const { disabled } = this.props
-        if (this.state.dismiss > 0 || disabled) return
-        this.dismiss(e)
-    }
-
-    // 渲染 关闭|关闭中
-    renderClose(dismiss) {
-        const { onClose } = this.props
+    function renderClose() {
         if (!onClose) return null
-        const closeClass = tagClass('close-icon')
-        const loadingClass = tagClass('close-loading')
-        if (dismiss === 0) {
+
+        if (dismiss === Dismiss.OPEN) {
             return (
-                <div className={closeClass} onClick={this.handleClose}>
+                <div className={tagClass('close-icon', disabled && 'disabled')} onClick={handleClose}>
                     {icons.Close}
                 </div>
             )
         }
-        return (
-            <div className={loadingClass}>
-                <Spin name="ring" size={10} />
-            </div>
-        )
-    }
 
-    render() {
-        const { dismiss, inputVisible, value } = this.state
-        if (dismiss === 2) return null
-
-        const { children, className, type, backgroundColor, onClose, disabled, onCompleted } = this.props
-
-        // onCompleted不为空且状态为showInput时 显示Input
-        if (onCompleted && inputVisible === showInput)
-            return <Input value={value} onBlur={this.inputBlur} onChange={this.inputChange} />
-
-        const childrenParsed = wrapSpan(children)
-        const { style } = this.props
-
-        let tagClassName = tagClass('_', disabled && 'disabled', type)
-        const inlineClassName = tagClass('inline')
-        const click = !onClose ? { onClick: this.handleClick } : {}
-        let tagStyle = style || {}
-
-        if (className) tagClassName += ` ${className}`
-        if (backgroundColor) {
-            tagStyle = {
-                color: isDark(backgroundColor) ? '#fff' : '#000',
-                backgroundColor,
-                borderColor: 'transparent',
-                ...style,
-            }
+        if (dismiss === Dismiss.CALLBACK) {
+            return (
+                <div className={tagClass('close-loading')}>
+                    <Spin name="ring" size={10} />
+                </div>
+            )
         }
-        return (
-            <div className={tagClassName} style={tagStyle} {...click}>
-                {/* 如果有onClose close渲染出来是div标签 添加一层包裹 */}
-                {onClose ? (
-                    <div onClick={this.handleClick} className={inlineClassName}>
-                        {childrenParsed}
-                    </div>
-                ) : (
-                    childrenParsed
-                )}
-                {this.renderClose(dismiss)}
-            </div>
-        )
-    }
-}
 
-Tag.propTypes = {
-    ...getProps(PropTypes, 'type'),
-    children: PropTypes.any,
-    onClick: PropTypes.func,
-    onClose: PropTypes.oneOfType([PropTypes.func, PropTypes.bool]),
-    backgroundColor: PropTypes.string,
-    onCompleted: PropTypes.func, // onCompleted 不为空时，可编辑
+        return null
+    }
+
+    if (dismiss === Dismiss.CLOSED) return null
+
+    function onInputBlur(newValue) {
+        onCompleted?.(newValue)
+
+        setInputVisible(false)
+    }
+
+    if (inputVisible) {
+        return <Input value={value} onBlur={onInputBlur} onChange={setValue} />
+    }
+
+    const wrapChildren = wrapSpan(children)
+
+    const tagClassName = tagClass(
+        '_',
+        disabled && 'disabled',
+        type,
+        className,
+        dismiss === Dismiss.CLOSING && 'closing'
+    )
+
+    const tagStyle = backgroundColor
+        ? {
+              color: isDark(backgroundColor) ? '#fff' : '#000',
+              backgroundColor,
+              borderColor: 'transparent',
+              ...style,
+          }
+        : undefined
+
+    return (
+        <div className={tagClassName} style={tagStyle}>
+            {onClose ? (
+                <div onClick={handleClick} className={tagClass('inline')}>
+                    {wrapChildren}
+                </div>
+            ) : (
+                wrapChildren
+            )}
+
+            {renderClose()}
+        </div>
+    )
 }
 
 Tag.defaultProps = {
-    ...defaultProps,
-    type: 'default',
+    style: {},
 }
 
-export default Tag
+Tag.displayName = 'EthanTag'
+
+export default React.memo(Tag)
