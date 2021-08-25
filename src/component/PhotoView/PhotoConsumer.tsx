@@ -6,7 +6,7 @@ import Context, { PhotoContext } from './context'
 export interface PhotoConsumerProps {
     src: string
     intro?: React.ReactNode
-    children?: React.ReactElement<any>
+    children?: React.ReactElement
 }
 
 /**
@@ -16,8 +16,10 @@ export interface PhotoConsumerProps {
  */
 
 const PhotoConsumer: React.FC<PhotoConsumerProps> = ({ src, intro, children }) => {
-    const photoContext = React.useContext<PhotoContext>(Context)
+    const { addItem, removeItem, onShow } = React.useContext<PhotoContext>(Context)
+
     const key = React.useMemo<string>(getUidStr, [])
+
     const [position, updatePosition] = React.useState<{
         clientX: number | undefined
         clientY: number | undefined
@@ -25,19 +27,21 @@ const PhotoConsumer: React.FC<PhotoConsumerProps> = ({ src, intro, children }) =
         clientX: undefined,
         clientY: undefined,
     })
+
     const photoTriggerRef = React.useRef<HTMLElement | null>(null)
 
     // 在挂载后 添加Item进Provider中的images中
     // 结束挂载之后 移除Item
     React.useEffect(() => {
-        photoContext.addItem({
+        addItem({
             key,
             src,
             originRef: photoTriggerRef.current,
             intro,
         })
+
         return () => {
-            photoContext.removeItem(key)
+            removeItem(key)
         }
     }, [])
 
@@ -49,42 +53,25 @@ const PhotoConsumer: React.FC<PhotoConsumerProps> = ({ src, intro, children }) =
             clientY,
         })
 
-        
-        if (children) {
-            // 如果children中存在此事件 如children为div 则回调数据
-            const { onTouchStart } = children.props
-            if (onTouchStart) {
-                onTouchStart(e)
-            }
-        }
+        // 如果children中存在此事件 如children为div 则回调数据
+        children?.props?.onTouchStart?.(e)
     }
 
     function handleTouchEnd(e) {
         const { clientX, clientY } = e.changedTouches[0]
 
+        // 点击类型
         if (position.clientX === clientX && position.clientY === clientY) {
-            photoContext.onShow(key)
+            onShow(key)
         }
 
-        if (children) {
-            const { onTouchEnd } = children.props
-           
-            if (onTouchEnd) {
-                onTouchEnd(e)
-            }
-        }
+        children?.props.onTouchEnd?.(e)
     }
 
     function handleClick(e) {
-        photoContext.onShow(key)
+        onShow(key)
 
-        if (children) {
-            const { onClick } = children.props
-
-            if (onClick) {
-                onClick(e)
-            }
-        }
+        children?.props.onClick?.(e)
     }
 
     if (children) {

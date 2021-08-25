@@ -2,7 +2,7 @@ import React from 'react'
 import { PureComponent } from '@/utils/component'
 import { photoViewClass } from '@/styles'
 import PhotoView from './PhotoView'
-import SlideWrap from './SlideWrap'
+import PhotoSliderPortal from './PhotoSliderPortal'
 import VisibleAnimationHandle from './VisibleAnimationHandle'
 import Icons from '../icons'
 import { isTouchDevice } from './utils'
@@ -28,7 +28,7 @@ interface PhotoSliderState {
     /* 偏移量 */
     translateX: number
     /* 图片当前的 index */
-    photoIndex: number
+    currentIndex: number
     /* 图片处于触摸的状态 */
     touched: boolean
     /* 该状态是否需要 transition */
@@ -59,9 +59,9 @@ export default class PhotoSlider extends PureComponent<PhotoSliderProps, PhotoSl
     }
 
     static getDerivedStateFromProps(nextProps, prevState) {
-        if (nextProps.index !== undefined && nextProps.index !== prevState.photoIndex) {
+        if (nextProps.index !== undefined && nextProps.index !== prevState.currentIndex) {
             return {
-                photoIndex: nextProps.index,
+                currentIndex: nextProps.index,
                 translateX: -(window.innerWidth + horizontalOffset) * nextProps.index,
             }
         }
@@ -73,7 +73,7 @@ export default class PhotoSlider extends PureComponent<PhotoSliderProps, PhotoSl
 
         this.state = {
             translateX: 0,
-            photoIndex: 0,
+            currentIndex: 0,
             touched: false,
             shouldTransition: true,
 
@@ -92,7 +92,7 @@ export default class PhotoSlider extends PureComponent<PhotoSliderProps, PhotoSl
         const { index = 0 } = this.props
         this.setState({
             translateX: index * -(window.innerWidth + horizontalOffset),
-            photoIndex: index,
+            currentIndex: index,
         })
         window.addEventListener('keydown', this.handleKeyDown)
     }
@@ -134,9 +134,9 @@ export default class PhotoSlider extends PureComponent<PhotoSliderProps, PhotoSl
 
     handleResize = () => {
         const { innerWidth } = window
-        this.setState(({ photoIndex }) => {
+        this.setState(({ currentIndex }) => {
             return {
-                translateX: -(innerWidth + horizontalOffset) * photoIndex,
+                translateX: -(innerWidth + horizontalOffset) * currentIndex,
                 lastClientX: undefined,
                 lastClientY: undefined,
                 shouldTransition: false,
@@ -145,9 +145,9 @@ export default class PhotoSlider extends PureComponent<PhotoSliderProps, PhotoSl
     }
 
     handleRotate = (rotating: number) => {
-        const { photoIndex, rotatingMap } = this.state
+        const { currentIndex, rotatingMap } = this.state
 
-        rotatingMap.set(photoIndex, rotating)
+        rotatingMap.set(currentIndex, rotating)
 
         this.setState({
             rotatingMap,
@@ -197,7 +197,7 @@ export default class PhotoSlider extends PureComponent<PhotoSliderProps, PhotoSl
     handleReachHorizontalMove = clientX => {
         const { innerWidth } = window
         const { images } = this.props
-        this.setState(({ lastClientX, translateX, photoIndex }) => {
+        this.setState(({ lastClientX, translateX, currentIndex }) => {
             if (lastClientX === undefined) {
                 return {
                     touched: true,
@@ -211,23 +211,23 @@ export default class PhotoSlider extends PureComponent<PhotoSliderProps, PhotoSl
 
             // 第一张和最后一张超出距离减半
             if (
-                (photoIndex === 0 && originOffsetClientX > 0) ||
-                (photoIndex === images.length - 1 && originOffsetClientX < 0)
+                (currentIndex === 0 && originOffsetClientX > 0) ||
+                (currentIndex === images.length - 1 && originOffsetClientX < 0)
             ) {
                 offsetClientX = originOffsetClientX / 2
             }
             return {
                 touched: true,
                 lastClientX,
-                translateX: -(innerWidth + horizontalOffset) * photoIndex + offsetClientX,
+                translateX: -(innerWidth + horizontalOffset) * currentIndex + offsetClientX,
                 shouldTransition: true,
             }
         })
     }
 
-    handleIndexChange = (photoIndex: number, shouldTransition = true) => {
+    handleIndexChange = (currentIndex: number, shouldTransition = true) => {
         const singlePageWidth = window.innerWidth + horizontalOffset
-        const translateX = -singlePageWidth * photoIndex
+        const translateX = -singlePageWidth * currentIndex
         const { onIndexChange } = this.props
 
         this.setState({
@@ -235,27 +235,27 @@ export default class PhotoSlider extends PureComponent<PhotoSliderProps, PhotoSl
             lastClientX: undefined,
             lastClientY: undefined,
             translateX,
-            photoIndex,
+            currentIndex,
             shouldTransition,
         })
 
         if (onIndexChange) {
-            onIndexChange(photoIndex)
+            onIndexChange(currentIndex)
         }
     }
 
     handlePrevious = (shouldTransition?: boolean) => {
-        const { photoIndex } = this.state
-        if (photoIndex > 0) {
-            this.handleIndexChange(photoIndex - 1, shouldTransition)
+        const { currentIndex } = this.state
+        if (currentIndex > 0) {
+            this.handleIndexChange(currentIndex - 1, shouldTransition)
         }
     }
 
     handleNext = (shouldTransition?: boolean) => {
         const { images } = this.props
-        const { photoIndex } = this.state
-        if (photoIndex < images.length - 1) {
-            this.handleIndexChange(photoIndex + 1, shouldTransition)
+        const { currentIndex } = this.state
+        if (currentIndex < images.length - 1) {
+            this.handleIndexChange(currentIndex + 1, shouldTransition)
         }
     }
 
@@ -269,26 +269,26 @@ export default class PhotoSlider extends PureComponent<PhotoSliderProps, PhotoSl
 
     handleReachUp = (clientX: number, clientY: number) => {
         const { images } = this.props
-        const { lastClientX = clientX, lastClientY = clientY, photoIndex, overlayVisible, canPullClose } = this.state
+        const { lastClientX = clientX, lastClientY = clientY, currentIndex, overlayVisible, canPullClose } = this.state
 
         const offsetClientX = clientX - lastClientX
         const offsetClientY = clientY - lastClientY
         let willClose = false
         // 下一张
-        if (offsetClientX < -maxMoveOffset && photoIndex < images.length - 1) {
-            this.handleIndexChange(photoIndex + 1)
+        if (offsetClientX < -maxMoveOffset && currentIndex < images.length - 1) {
+            this.handleIndexChange(currentIndex + 1)
             return
         }
         // 上一张
-        if (offsetClientX > maxMoveOffset && photoIndex > 0) {
-            this.handleIndexChange(photoIndex - 1)
+        if (offsetClientX > maxMoveOffset && currentIndex > 0) {
+            this.handleIndexChange(currentIndex - 1)
             return
         }
         const singlePageWidth = window.innerWidth + horizontalOffset
 
         // 当前偏移
-        const currentTranslateX = -singlePageWidth * photoIndex
-        const currentPhotoIndex = photoIndex
+        const currentTranslateX = -singlePageWidth * currentIndex
+        const currentPhotoIndex = currentIndex
 
         if (Math.abs(offsetClientY) > window.innerHeight * 0.14 && canPullClose) {
             willClose = true
@@ -297,7 +297,7 @@ export default class PhotoSlider extends PureComponent<PhotoSliderProps, PhotoSl
         this.setState({
             touched: false,
             translateX: currentTranslateX,
-            photoIndex: currentPhotoIndex,
+            currentIndex: currentPhotoIndex,
             lastClientX: undefined,
             lastClientY: undefined,
             backdropOpacity: defaultOpacity,
@@ -323,7 +323,7 @@ export default class PhotoSlider extends PureComponent<PhotoSliderProps, PhotoSl
         const {
             translateX,
             touched,
-            photoIndex,
+            currentIndex,
             backdropOpacity,
             lastBackdropOpacity,
             overlayVisible,
@@ -331,7 +331,7 @@ export default class PhotoSlider extends PureComponent<PhotoSliderProps, PhotoSl
             shouldTransition,
         } = this.state
         const imageLength = images.length
-        const currentImage = images.length ? images[photoIndex] : undefined
+        const currentImage = images.length ? images[currentIndex] : undefined
         const transform = `translate3d(${translateX}px, 0px, 0)`
         // Overlay
         const overlayIntro = currentImage && currentImage.intro
@@ -347,13 +347,13 @@ export default class PhotoSlider extends PureComponent<PhotoSliderProps, PhotoSl
                         // 覆盖物参数
                         const overlayParams: OverlayRenderProps = {
                             images,
-                            index: photoIndex,
+                            index: currentIndex,
                             visible,
                             onClose: this.handleClose,
                             onIndexChange: this.handleIndexChange,
                             overlayVisible: currentOverlayVisible,
                             onRotate: this.handleRotate,
-                            rotate: rotatingMap.get(photoIndex) || 0,
+                            rotate: rotatingMap.get(currentIndex) || 0,
                         }
 
                         const sliderWrapClassName = `${photoViewClass({
@@ -362,12 +362,13 @@ export default class PhotoSlider extends PureComponent<PhotoSliderProps, PhotoSl
                         })} ${className}`
 
                         return (
-                            <SlideWrap
+                            <PhotoSliderPortal
                                 className={sliderWrapClassName}
                                 role="dialog"
                                 id="PhotoView_Slider"
                                 onClick={e => e.stopPropagation()}
                             >
+                                {/* 背景 */}
                                 <div
                                     className={photoViewClass('photoSlider photoSlider-backdrop', {
                                         maskClassName,
@@ -379,13 +380,20 @@ export default class PhotoSlider extends PureComponent<PhotoSliderProps, PhotoSl
                                     }}
                                     onAnimationEnd={onShowAnimateEnd}
                                 />
+
                                 {bannerVisible && (
                                     <div className={photoViewClass('photoSlider-banner-wrap')}>
+                                        {/* 左 */}
                                         <div className={photoViewClass('photoSlider-counter')}>
-                                            {photoIndex + 1} / {imageLength}
+                                            {currentIndex + 1} / {imageLength}
                                         </div>
+
+                                        {/* 右 */}
                                         <div className={photoViewClass('photoSlider-banner-right')}>
+                                            {/* 右边自定义工具区 */}
                                             {toolbarRender && toolbarRender(overlayParams)}
+
+                                            {/* 关闭按钮 */}
                                             <div
                                                 onClick={this.handleClose}
                                                 className={photoViewClass('photoSlider-toolbar-icon')}
@@ -395,18 +403,20 @@ export default class PhotoSlider extends PureComponent<PhotoSliderProps, PhotoSl
                                         </div>
                                     </div>
                                 )}
+
                                 {images
                                     .slice(
                                         // 加载相邻三张
-                                        Math.max(photoIndex - 1, 0),
-                                        Math.min(photoIndex + 2, imageLength + 1)
+                                        Math.max(currentIndex - 1, 0),
+                                        Math.min(currentIndex + 2, imageLength + 1)
                                     )
-                                    .map((item: DataType, index) => {
-                                        // 截取之前的索引位置
-                                        const realIndex = photoIndex === 0 ? photoIndex + index : photoIndex - 1 + index
+                                    .map((item, index) => {
+                                        const realIndex =
+                                            currentIndex === 0 ? currentIndex + index : currentIndex - 1 + index
+
                                         return (
                                             <PhotoView
-                                                key={item.key || realIndex}
+                                                key={item.key}
                                                 src={item.src}
                                                 onReachMove={this.handleReachMove}
                                                 onReachUp={this.handleReachUp}
@@ -426,16 +436,17 @@ export default class PhotoSlider extends PureComponent<PhotoSliderProps, PhotoSl
                                                 loadingElement={loadingElement}
                                                 brokenElement={brokenElement}
                                                 onPhotoResize={this.handleResize}
-                                                isActive={photoIndex === realIndex}
+                                                isActive={currentIndex === realIndex}
                                                 showAnimateType={showAnimateType}
                                                 originRect={originRect}
                                                 rotate={rotatingMap.get(realIndex) || 0}
                                             />
                                         )
                                     })}
+
                                 {!isTouchDevice && bannerVisible && (
                                     <>
-                                        {photoIndex !== 0 && (
+                                        {currentIndex !== 0 && (
                                             <div
                                                 className={photoViewClass('photoSlider-angle-left')}
                                                 onClick={() => this.handlePrevious(false)}
@@ -443,7 +454,7 @@ export default class PhotoSlider extends PureComponent<PhotoSliderProps, PhotoSl
                                                 {AngleLeft}
                                             </div>
                                         )}
-                                        {photoIndex + 1 < imageLength && (
+                                        {currentIndex + 1 < imageLength && (
                                             <div
                                                 className={photoViewClass('photoSlider-angle-right')}
                                                 onClick={() => this.handleNext(false)}
@@ -453,11 +464,13 @@ export default class PhotoSlider extends PureComponent<PhotoSliderProps, PhotoSl
                                         )}
                                     </>
                                 )}
-                                {Boolean(introVisible && overlayIntro) && (
+
+                                {introVisible && overlayIntro && (
                                     <div className={photoViewClass('photoSlider-footer-wrap')}>{overlayIntro}</div>
                                 )}
+
                                 {overlayRender && overlayRender(overlayParams)}
-                            </SlideWrap>
+                            </PhotoSliderPortal>
                         )
                     }
                     return null

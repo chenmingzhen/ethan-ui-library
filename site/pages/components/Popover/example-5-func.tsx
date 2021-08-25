@@ -8,27 +8,27 @@ import React from 'react'
 import { Button, Popover, Message } from 'ethan/index'
 
 export default function() {
-  return (
-    <Button>
-      <Popover trigger="click">
-        {close => (
-          <div style={{ padding: 20 }}>
-            <div>Are you sure you want to close this panel?</div>
-            <div style={{ marginTop: 30, textAlign: 'right' }}>
-              <Button
-                size="small"
-                onClick={() => {
-                  close()
-                  Message.success('Popover panel closed.')
-                }}
-              >
-                close
-              </Button>
-            </div>
-          </div>
-        )}
-      </Popover>
-      Click me
-    </Button>
-  )
+    return (
+        <Popover
+            trigger="click"
+            content={close => (
+                <div style={{ padding: 20 }}>
+                    <div>Are you sure you want to close this panel?</div>
+                    <div style={{ marginTop: 30, textAlign: 'right' }}>
+                        <Button
+                            size="small"
+                            onClick={() => {
+                                close()
+                                Message.success('Popover panel closed.')
+                            }}
+                        >
+                            close
+                        </Button>
+                    </div>
+                </div>
+            )}
+        >
+            <Button>Click me</Button>
+        </Popover>
+    )
 }

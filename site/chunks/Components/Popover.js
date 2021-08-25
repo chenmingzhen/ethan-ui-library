@@ -44,16 +44,6 @@ const examples = [
     rawText: require('!raw-loader!doc/pages/components/Popover/example-10-container.tsx').default,
     },
     {
-    name: '11-disabledx',
-    title: locate(
-    '禁用元素 \n 当父元素被禁用，可以将 Popver 和禁用元素置于同一层级，并用元素将他们包裹',
-    'Disabled \n When the parent element is disabled, you can place the Popver and the disabled element in the same hierarchy and wrap them with the element'
-    ),
-    component: require('doc/pages/components/Popover/example-11-disabled.tsx').default,
-    // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Popover/example-11-disabled.tsx').default,
-    },
-    {
     name: '2-delayx',
     title: locate(
     '延迟 \n 可以设置展示延时和关闭延时',
@@ -102,36 +92,6 @@ const examples = [
     component: require('doc/pages/components/Popover/example-5-func.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
     rawText: require('!raw-loader!doc/pages/components/Popover/example-5-func.tsx').default,
-    },
-    {
-    name: '6-typex',
-    title: locate(
-    '样式 \n 内置四种样式',
-    'Type \n Four styles are built in.'
-    ),
-    component: require('doc/pages/components/Popover/example-6-type.tsx').default,
-    // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Popover/example-6-type.tsx').default,
-    },
-    {
-    name: '7-typex',
-    title: locate(
-    ' \n 如果内置样式不满足需求，可以通过 background 和 border 自定义样式',
-    ' \n Customize the style with background and border.'
-    ),
-    component: require('doc/pages/components/Popover/example-7-type.tsx').default,
-    // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Popover/example-7-type.tsx').default,
-    },
-    {
-    name: '9-eventx',
-    title: locate(
-    '事件 \n 提供了onOpen 和 onClose 事件',
-    'Events \n provider onOpen and onClose event'
-    ),
-    component: require('doc/pages/components/Popover/example-9-event.tsx').default,
-    // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Popover/example-9-event.tsx').default,
     },
 ]
 

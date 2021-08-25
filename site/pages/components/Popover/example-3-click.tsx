@@ -8,15 +8,18 @@ import React from 'react'
 import { Button, Popover, Card } from 'ethan/index'
 
 export default function() {
-  return (
-    <Button>
-      <Popover style={{ marginRight: 12 }} trigger="click">
-        <Card style={{ width: 300, border: 0, background: 'transparent' }}>
-          <Card.Header>Header</Card.Header>
-          <Card.Body style={{ height: 80 }}>Body</Card.Body>
-        </Card>
-      </Popover>
-      Click me
-    </Button>
-  )
+    return (
+        <Popover
+            style={{ marginRight: 12 }}
+            trigger="click"
+            content={
+                <Card style={{ width: 300, border: 0, background: 'transparent' }}>
+                    <Card.Header>Header</Card.Header>
+                    <Card.Body style={{ height: 80 }}>Body</Card.Body>
+                </Card>
+            }
+        >
+            <Button>Click me</Button>
+        </Popover>
+    )
 }

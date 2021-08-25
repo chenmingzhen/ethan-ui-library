@@ -75,8 +75,7 @@
         &-banner-right {
             display: flex;
             align-items: center;
-            height: 100%;
-            margin-right: 15px;
+            height: 100%;   
         }
 
         &-toolbar-icon {
@@ -87,6 +86,8 @@
                 cursor: pointer;
                 transition: opacity 0.2s linear;
                 fill: white;
+                width: 100%;
+                height: 44px;
 
                 &:hover {
                     opacity: 1;
@@ -244,6 +245,7 @@
 
 .@{photo-view-prefix}-photoSlider {
     &-clean {
+
         .@{photo-view-prefix}-photoSlider-banner-wrap,
         .@{photo-view-prefix}-photoSlider-angle-left,
         .@{photo-view-prefix}-photoSlider-angle-right,

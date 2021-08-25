@@ -61,7 +61,6 @@
         "Progress": "进度条",
         "Tooltip": "提示",
         "Tag": "标签",
-        "Loading": "顶部进度条",
-        "Poptip": "气泡提示框2.0"
+        "Loading": "顶部进度条"
     }
 }

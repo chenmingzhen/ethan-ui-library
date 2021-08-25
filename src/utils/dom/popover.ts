@@ -7,6 +7,8 @@ const posKeys = ['left', 'top', 'bottom', 'right']
 // 因为不知道具体Popover的content width与height，所以在css中使用transform使Popover的内容偏移
 // 否则Popover的内容会与Chidlren在同一位置
 export const getPosition = (position, el, container = document.body) => {
+    if (!el) return {}
+
     const rect = el.getBoundingClientRect()
 
     // 浏览器滚动条宽度
