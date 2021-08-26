@@ -1,8 +1,8 @@
 {
-  // 为IDEA代码提示 无实际意义
-  "extends": "./tsconfig.base.json",
-  "compilerOptions": {
-    "outDir": "/"
-  },
-  "exclude": ["node_modules", "ssh-client", "webpack", "scripts", "docs-pages", "publish", "site/chunks", "*.js"]
+    // 为IDEA代码提示 无实际意义
+    "extends": "./tsconfig.base.json",
+    "compilerOptions": {
+        "outDir": "/"
+    },
+    "exclude": ["node_modules", "ssh-client", "webpack", "docs-pages", "publish", "site/chunks", "*.js"]
 }

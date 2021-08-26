@@ -1,16 +1,19 @@
+/**
+ * @deprecated 项目已从js迁移到ts 详细配置看tsconfig.base.json
+ */
 {
-  "compilerOptions": {
-    "baseUrl": ".",
-    "paths": {
-      "@/*": ["src/*"],
-      "doc/*": ["site/*"],
-      "docs/*": ["./site/Components/*"],
-      "ethan/*": ["./src/*"]
+    "compilerOptions": {
+        "baseUrl": ".",
+        "paths": {
+            "@/*": ["src/*"],
+            "doc/*": ["site/*"],
+            "docs/*": ["./site/Components/*"],
+            "ethan/*": ["./src/*"]
+        },
+        "target": "ES6",
+        "allowSyntheticDefaultImports": true,
+        "module": "commonjs"
     },
-    "target": "ES6",
-    "allowSyntheticDefaultImports": true,
-    "module": "commonjs"
-  },
-  "include": ["src/**/*", "./site"],
-  "exclude": ["node_modules"]
+    "include": ["src/**/*", "./site"],
+    "exclude": ["node_modules"]
 }
