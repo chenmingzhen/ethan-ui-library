@@ -148,14 +148,8 @@ const Tag: React.FC<TagProps> = props => {
         : undefined
 
     return (
-        <div className={tagClassName} style={tagStyle}>
-            {onClose ? (
-                <div onClick={handleClick} className={tagClass('inline')}>
-                    {wrapChildren}
-                </div>
-            ) : (
-                wrapChildren
-            )}
+        <div className={tagClassName} style={tagStyle} onClick={handleClick}>
+            <div className={tagClass('inline')}>{wrapChildren}</div>
 
             {renderClose()}
         </div>

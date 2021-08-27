@@ -37,6 +37,10 @@ const TagInput: React.FC<TagInputProps> = ({ value, onBlur, onChange, onEnterPre
         onBlur?.(e.target.value, e)
     }
 
+    React.useEffect(() => {
+        inputRef.current.focus()
+    }, [])
+
     return (
         <input
             ref={inputRef}
