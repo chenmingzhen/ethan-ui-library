@@ -77,7 +77,7 @@ const Confirm: React.FC<ConfirmProps> = props => {
                         loading={cancelLoading}
                         size="small"
                         onClick={handleClick.bind(this, 'cancel', close)}
-                        disabled={okLoading || cancelLoading}
+                        disabled={okLoading}
                         {...buttonProps?.cancel}
                     >
                         {getLocale('cancel', text)}
@@ -87,7 +87,7 @@ const Confirm: React.FC<ConfirmProps> = props => {
                         size="small"
                         type="primary"
                         onClick={handleClick.bind(this, 'ok', close)}
-                        disabled={okLoading || cancelLoading}
+                        disabled={cancelLoading}
                         {...buttonProps?.ok}
                     >
                         {getLocale('ok', text)}

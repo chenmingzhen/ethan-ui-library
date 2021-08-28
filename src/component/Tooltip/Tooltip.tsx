@@ -63,8 +63,7 @@ const Tooltip: React.FC<ToolTipProps> = props => {
 
         const container = getContainer?.()
 
-        const newPosition =
-            position ?? getPositionStr(position, priorityDirection, container ?? nSRef.current.parentElement)
+        const newPosition = getPositionStr(position, priorityDirection, container ?? nSRef.current.parentElement)
 
         const formatPosition = newPosition.split('-')?.[0]
 

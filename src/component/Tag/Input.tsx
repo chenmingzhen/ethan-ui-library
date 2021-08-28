@@ -1,78 +1,66 @@
-// @ts-nocheck
-import React from 'react'
-import PropTypes from 'prop-types'
-import { PureComponent } from '@/utils/component'
+import React, { useRef } from 'react'
 import inputBorder from '@/hoc/inputBorder'
 import { tagClass } from '@/styles'
 
-class TagInput extends PureComponent {
-    constructor(props) {
-        super(props)
-        this.bindRef = this.bindRef.bind(this)
-        this.handleChange = this.handleChange.bind(this)
-        this.handleBlur = this.handleBlur.bind(this)
-        this.handleKeyUp = this.handleKeyUp.bind(this)
+export interface TagInputProps {
+    value?: string
+
+    onBlur?: (value: string, e: React.KeyboardEvent<HTMLInputElement> | React.FocusEvent<HTMLInputElement>) => void
+
+    onChange?: (value: string) => void
+
+    onKeyUp?: (e: React.KeyboardEvent<HTMLInputElement>) => void
+
+    onEnterPress?: (value: string, e: React.KeyboardEvent<HTMLInputElement>) => void
+
+    onFocus?: (e: React.FocusEvent<HTMLInputElement>) => void
+}
+
+const TagInput: React.FC<TagInputProps> = ({ value, onBlur, onChange, onEnterPress, onFocus, onKeyUp }) => {
+    const inputRef = useRef<HTMLInputElement>()
+
+    function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
+        onChange?.(e.target.value)
     }
 
-    componentDidMount() {
-        super.componentDidMount()
-        if (this.element) this.element.focus()
-    }
-
-    bindRef(el) {
-        this.element = el
-    }
-
-    handleChange(e) {
-        const { value } = e.target
-        const { onChange } = this.props
-        if (onChange) onChange(value)
-    }
-
-    /**
-     * 处理键盘抬上事件 回车事件
-     * @param e
-     */
-    handleKeyUp(e) {
-        const { onBlur, onKeyUp, onEnterPress } = this.props
+    function handleKeyUp(e: React.KeyboardEvent<HTMLInputElement>) {
         if (e.keyCode === 13) {
-            if (onEnterPress) onEnterPress(e.target.value, e)
-            else if (onBlur) onBlur(e.target.value, e)
+            onEnterPress?.(e.target.value, e)
+
+            onBlur?.(e.target.value, e)
         }
-        if (onKeyUp) onKeyUp(e)
+
+        onKeyUp?.(e)
     }
 
-    handleBlur(e) {
-        const { onBlur } = this.props
-        if (onBlur) onBlur(e.target.value, e)
+    function handleBlur(e: React.FocusEvent<HTMLInputElement>) {
+        onBlur?.(e.target.value, e)
     }
 
-    render() {
-        const { value, onFocus } = this.props
+    React.useEffect(() => {
+        inputRef.current.focus()
+    }, [])
 
-        return (
-            <input
-                ref={this.bindRef}
-                type="text"
-                value={value}
-                onFocus={onFocus}
-                onChange={this.handleChange}
-                onKeyUp={this.handleKeyUp}
-                onBlur={this.handleBlur}
-            />
-        )
-    }
+    return (
+        <input
+            ref={inputRef}
+            type="text"
+            value={value}
+            onFocus={onFocus}
+            onChange={handleChange}
+            onKeyUp={handleKeyUp}
+            onBlur={handleBlur}
+        />
+    )
 }
 
-TagInput.propTypes = {
-    value: PropTypes.string,
-    onBlur: PropTypes.func,
-    onChange: PropTypes.func,
-    onKeyUp: PropTypes.func,
-    onEnterPress: PropTypes.func,
-    onFocus: PropTypes.func,
-}
+const HocTagInput = inputBorder(
+    {
+        className: tagClass('input'),
+    },
+    TagInput
+) as React.FC<TagInputProps>
 
-export default inputBorder({
-    className: tagClass('input'),
-})(TagInput)
+HocTagInput.displayName = 'EthanTagInput'
+
+export default React.memo(HocTagInput)

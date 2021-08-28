@@ -7,14 +7,20 @@ const rootPath = path.resolve(__dirname, '../src')
 
 const componentsPath = path.join(rootPath, '/component')
 
+/**
+ * @todo finish form and table then remove de filter for them
+ */
+const ignoreComponents = ['List', 'DataList', 'Form', 'Table']
+
 const files = fs
   .readdirSync(componentsPath)
   // lstat获取文件信息（不解析符号链接）。
   .filter(n => fs.lstatSync(path.resolve(componentsPath, n)).isDirectory() && /^[A-Z]/.test(n))
-  // TODO finish form and table then remove de filter for them
-  .filter(v => v !== 'List' && v !== 'DataList' && v !== 'Form' && v !== 'Table')
+  .filter(v => !ignoreComponents.includes(v))
 
-const line = `// Created by scripts/src-index.js.
+const line = `/** Created by scripts/src-index.ts.  */
+/** Do not manually change. */
+/** Please run build-index to build index.ts */
 import './styles/normalize.less'
 
 export { setLocale } from './locale'
@@ -28,4 +34,4 @@ export { default as <%= name %> } from './component/<%= name %>'
 <% }) -%>`
 
 const text = ejs.render(line, { files, version: pack.version })
-fs.writeFileSync(`${rootPath}/index.js`, text)
+fs.writeFileSync(`${rootPath}/index.ts`, text)

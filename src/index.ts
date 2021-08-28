@@ -1,4 +1,6 @@
-// Created by scripts/src-index.js.
+/** Created by scripts/src-index.ts.  */
+/** Do not manually change. */
+/** Please run build-index to build index.ts */
 import './styles/normalize.less'
 
 export { setLocale } from './locale'

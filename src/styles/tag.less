@@ -11,90 +11,113 @@
 // -------------------------
 
 .@{tag-prefix} {
-  position: relative;
-  display: inline-block;
-  padding: @tag-padding-y @tag-padding-x;
-  margin: 0 @tag-space;
-  border: 1px solid transparent;
-  background: @tag-bg-color;
-  border-radius: @tag-border-radius;
-  color: @tag-color;
-  cursor: pointer;
-  font-size: @tag-font-size;
-  font-weight: @tag-font-weight;
-  line-height: 1.4;
-  transition: all 0.3s;
-
-  .@{tag-prefix}-inline {
+    position: relative;
     display: inline-block;
-    vertical-align: top;
-  }
-
-  &.@{tag-prefix}-disabled {
-    cursor: not-allowed;
-  }
-
-  &-input {
-    display: inline-block;
-    width: 100px;
-    height: @tag-input-height;
-    margin: 0 0 0 @tag-space;
+    padding: @tag-padding-y @tag-padding-x;
+    margin: 0 @tag-space;
+    border: 1px solid transparent;
+    background: @tag-bg-color;
+    border-radius: @tag-border-radius;
+    color: @tag-color;
     font-size: @tag-font-size;
-    vertical-align: middle;
+    font-weight: @tag-font-weight;
+    line-height: 1.4;
+    transition: all 0.3s;
 
-    input {
-      padding: @tag-input-padding-y @tag-input-padding-x;
+    @keyframe-zoom-out: ~'@{tag-prefix}-kf-zoom-out';
+
+    @keyframes @keyframe-zoom-out {
+        from {
+            transform: scale(1, 1);
+        }
+
+        30% {
+            transform: scale(1.2, 1.2);
+        }
+
+        to {
+            transform: scale(0, 0);
+        }
     }
-  }
 
-  .@{tag-prefix}-close-icon {
-    display: inline-block;
-    width: @tag-icon-width;
-    margin: 0 0 0 @tag-close-left;
-
-    &:hover svg {
-      fill: @tag-close-hover-color;
+    &-closing {
+        animation: @keyframe-zoom-out 0.3s forwards ease-in-out;
     }
 
-    svg {
-      fill: @tag-close-color;
-      position: absolute;
-      top: 50%;
-      width: @tag-icon-width;
-      transform: translateY(-50%);
+    &-inline {
+        display: inline-block;
+        vertical-align: top;
     }
-  }
 
-  .@{tag-prefix}-close-loading {
-    display: inline-block;
-    margin: 0 0 0 @tag-close-left;
-  }
+    &-disabled {
+        cursor: not-allowed;
+    }
 
-  &-default {
-    border-color: @tag-border-color;
-  }
+    &-input {
+        display: inline-block;
+        width: 100px;
+        height: @tag-input-height;
+        margin: 0 0 0 @tag-space;
+        font-size: @tag-font-size;
+        vertical-align: middle;
 
-  &-success {
-    .tag-variant(@tag-success-bg);
+        input {
+            padding: @tag-input-padding-y @tag-input-padding-x;
+        }
+    }
 
-    color: @tag-success-color;
-  }
+    &-close-icon {
+        display: inline-block;
+        width: @tag-icon-width;
+        margin: 0 0 0 @tag-close-left;
 
-  &-info {
-    .tag-variant(@tag-info-bg);
+        &:not(.@{tag-prefix}-disabled) {
+            cursor: pointer;
+        }
 
-    color: @tag-info-color;
-  }
+        &:hover svg {
+            fill: @tag-close-hover-color;
+        }
 
-  &-warning {
-    .tag-variant(@tag-warning-bg);
+        svg {
+            fill: @tag-close-color;
+            position: absolute;
+            top: 50%;
+            width: @tag-icon-width;
+            transform: translateY(-50%);
+        }
+    }
 
-    color: @tag-warning-color;
-  }
+    .@{tag-prefix}-close-loading {
+        display: inline-block;
+        margin: 0 0 0 @tag-close-left;
+    }
 
-  &-danger {
-    .tag-variant(@tag-danger-bg);
+    &-default {
+        border-color: @tag-border-color;
+    }
 
-    color: @tag-danger-color;
-  }
+    &-success {
+        .tag-variant(@tag-success-bg);
+
+        color: @tag-success-color;
+    }
+
+    &-info {
+        .tag-variant(@tag-info-bg);
+
+        color: @tag-info-color;
+    }
+
+    &-warning {
+        .tag-variant(@tag-warning-bg);
+
+        color: @tag-warning-color;
+    }
+
+    &-danger {
+        .tag-variant(@tag-danger-bg);
+
+        color: @tag-danger-color;
+    }
 }
