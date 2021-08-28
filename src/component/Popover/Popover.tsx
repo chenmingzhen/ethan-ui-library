@@ -130,6 +130,8 @@ class Popover extends Component<IPopoverProps, PopoverState> {
 
         window.removeEventListener('resize', this.handlePos)
 
+        this.removeTriggerEvent()
+
         if (!this.container || !this.element) return
 
         if (this.container === document.body) {
@@ -220,32 +222,32 @@ class Popover extends Component<IPopoverProps, PopoverState> {
     bindEvents = () => {
         const { trigger, visible } = this.props
 
-        // remove click handler
-        this.eventHandlerElement?.removeEventListener('click', this.handleShow)
-
-        // remove hover handler
-        this.element.removeEventListener('mouseenter', this.handleShow)
-
-        this.element.removeEventListener('mouseleave', this.handleHide)
-
         // 受控不添加事件
         if (typeof visible === 'boolean') return
+
+        this.removeTriggerEvent()
 
         if (trigger === 'hover') {
             this.eventHandlerElement?.addEventListener('mouseenter', this.handleShow)
 
             this.eventHandlerElement?.addEventListener('mouseleave', this.handleHide)
 
-            this.element.addEventListener('mouseenter', this.handleShow)
-
             this.element.addEventListener('mouseleave', this.handleHide)
         } else {
             this.eventHandlerElement?.addEventListener('click', this.handleShow)
-
-            this.eventHandlerElement?.removeEventListener('mouseenter', this.handleShow)
-
-            this.eventHandlerElement?.removeEventListener('mouseleave', this.handleHide)
         }
+    }
+
+    removeTriggerEvent = () => {
+        // remove click handler
+        this.eventHandlerElement?.removeEventListener('click', this.handleShow)
+
+        // remove hover handler
+        this.element.removeEventListener('mouseleave', this.handleHide)
+
+        this.eventHandlerElement?.removeEventListener('mouseenter', this.handleShow)
+
+        this.eventHandlerElement?.removeEventListener('mouseleave', this.handleHide)
     }
 
     handlePos = () => {
@@ -305,7 +307,11 @@ class Popover extends Component<IPopoverProps, PopoverState> {
         // 对于其他类型的事件来说，这个属性没有用。
 
         // 如果离开时的Dom还是在popover中 不处理
-        if (e && getParent(e.relatedTarget, popoverClass('_'))) return
+        if (e && getParent(e.relatedTarget, `.${popoverClass('_')}`)) {
+            console.log('return')
+            return
+        }
+
         if (this.delayTimeout) clearTimeout(this.delayTimeout)
 
         document.removeEventListener('mousedown', this.clickAway)
