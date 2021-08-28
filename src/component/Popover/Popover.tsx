@@ -307,10 +307,7 @@ class Popover extends Component<IPopoverProps, PopoverState> {
         // 对于其他类型的事件来说，这个属性没有用。
 
         // 如果离开时的Dom还是在popover中 不处理
-        if (e && getParent(e.relatedTarget, `.${popoverClass('_')}`)) {
-            console.log('return')
-            return
-        }
+        if (e && getParent(e.relatedTarget, `.${popoverClass('_')}`)) return
 
         if (this.delayTimeout) clearTimeout(this.delayTimeout)
 
@@ -331,7 +328,7 @@ class Popover extends Component<IPopoverProps, PopoverState> {
         this.handleHide(0)
     }
 
-    setShow(show) {
+    setShow = show => {
         const { onVisibleChange, mouseEnterDelay, mouseLeaveDelay, trigger } = this.props
 
         const delay = show ? mouseEnterDelay : mouseLeaveDelay
