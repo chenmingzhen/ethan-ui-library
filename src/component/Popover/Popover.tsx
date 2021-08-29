@@ -278,8 +278,8 @@ class Popover extends Component<IPopoverProps, PopoverState> {
 
         this.handleInitDOM()
 
-        if (this.state.show && !force) {
-            // 处理Click的类型 点击Children收缩
+        // 处理trigger click的类型 点击Children隐藏
+        if (this.state.show && !force && this.props.trigger === 'click') {
             this.handleHide(0)
 
             return
