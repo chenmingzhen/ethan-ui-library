@@ -47,6 +47,7 @@ import * as loadingLess from './loading.less'
 import * as badgeLess from './badge.less'
 import * as timeLineLess from './timeLine.less'
 import * as photoViewLess from './photoView.less'
+import * as swiperLess from './swiper.less'
 
 export const alertClass = genaration(alertLess, 'alert')
 export const avatarClass = genaration(avatarLess, 'avatar')
@@ -94,3 +95,4 @@ export const lazyloadClass = genaration(lazyloadLess, 'lazyload')
 export const loadingClass = genaration(loadingLess, 'loading')
 export const timeLineClass = genaration(timeLineLess, 'timeline')
 export const photoViewClass = genaration(photoViewLess, 'photoView')
+export const swiperClass = genaration(swiperLess, 'swiper')
