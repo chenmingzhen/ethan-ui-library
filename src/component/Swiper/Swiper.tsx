@@ -8,9 +8,9 @@ import { defaultRenderNextArrow, defaultRenderPrevArrow } from './util/defaultRe
 
 class Swiper extends PureComponent<SwiperProps, SwiperState> {
     static defaultProps = {
-        transitionDuration: 300,
-        autoplay: false,
-        autoplayInterval: 3000,
+        transitionDuration: 600,
+        autoplay: true,
+        autoplayInterval: 2000,
         dots: true,
         dotsColor: 'black',
         dotsSize: 'normal',
@@ -63,7 +63,7 @@ class Swiper extends PureComponent<SwiperProps, SwiperState> {
         super(props)
 
         this.state = {
-            currentIndex: props.defaultIndex ?? 0,
+            currentIndex: props.defaultIndex ?? 1,
         }
     }
 
@@ -76,15 +76,15 @@ class Swiper extends PureComponent<SwiperProps, SwiperState> {
         const { currentIndex } = this.state
         const prevIndex = prevState.currentIndex
 
-        // const isSilent = prevIndex > length - 1
+        const isSilent = prevIndex > length - 1
 
         if (prevIndex !== currentIndex) {
-            this.translate(currentIndex, false)
+            this.translate(currentIndex, isSilent)
         }
     }
 
     render = () => {
-        const { className, dots, arrows, arrowsType, children, renderNextArrow, renderPrevArrow } = this.props
+        const { className, dots, arrows, children, renderNextArrow, renderPrevArrow } = this.props
 
         const { currentIndex } = this.state
 
@@ -125,8 +125,6 @@ class Swiper extends PureComponent<SwiperProps, SwiperState> {
         const childrenCount = React.Children.count(children)
         const innerElements = this.swiperContainerRef.current.children
 
-        console.log(this.swiperWidth, innerElements.length)
-
         this.clearAutoplay()
 
         setStyle(this.swiperContainerRef.current, {
@@ -163,12 +161,13 @@ class Swiper extends PureComponent<SwiperProps, SwiperState> {
             this.timer = setTimeout(this.next, Number(autoplayInterval))
         }
 
-        setStyle(this.swiperRef.current, {
-            transform: `translateX(${translateDistance}px)`,
-            'transition-duration': `${realDuration}ms`,
+        setStyle(this.swiperContainerRef.current, {
+            transform: `translateX(${translateDistance}px) `,
+            transition: `all ${realDuration}ms ease-in-out`,
         })
 
-        if (currentIndex > length - 1 || currentIndex < 0) {
+        // TODO 考虑左方向
+        if (currentIndex > length - 1) {
             return this.resetPosition(currentIndex)
         }
 
