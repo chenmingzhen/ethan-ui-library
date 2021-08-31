@@ -22,6 +22,10 @@ export interface SwiperProps {
     renderNextArrow?: (onNext: () => void) => React.ReactNode
 }
 
-export interface SwiperState {
-    currentIndex: number
+export interface SwiperInstance {
+    onPrev(): void
+
+    onNext(): void
+
+    scrollTo(index: number): void
 }

@@ -12,4 +12,23 @@
         height: 100%;
         position: relative;
     }
+
+    &-left,
+    &-right {
+        width: 10px;
+        height: 10px;
+        cursor: pointer;
+        position: absolute;
+        z-index: 2;
+        top: 50%;
+        transform: translateY(-50%);
+    }
+
+    &-left {
+        left: 0;
+    }
+
+    &-right {
+        right: 0;
+    }
 }

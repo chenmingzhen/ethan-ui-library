@@ -1,51 +1,74 @@
-import { PureComponent } from '@/utils/component'
-import { setStyle } from '@/utils/dom/style'
-import React, { cloneElement } from 'react'
+import React, { useRef, useEffect, useMemo, cloneElement } from 'react'
 import classnames from 'classnames'
+import { usePrevious, useUpdateEffect } from 'react-use'
 import { swiperClass } from '@/styles'
-import { SwiperProps, SwiperState } from './type'
-import { defaultRenderNextArrow, defaultRenderPrevArrow } from './util/defaultRender'
+import { setStyle } from '@/utils/dom/style'
+import useSafeState from '@/hooks/useSafeState'
+import { SwiperInstance, SwiperProps } from './type'
+import icons from '../icons'
 
-class Swiper extends PureComponent<SwiperProps, SwiperState> {
-    static defaultProps = {
-        transitionDuration: 600,
-        autoplay: true,
-        autoplayInterval: 2000,
-        dots: true,
-        dotsColor: 'black',
-        dotsSize: 'normal',
-        arrows: false,
-        arrowsType: 'dark',
-        renderPrevArrow: defaultRenderPrevArrow,
-        renderNextArrow: defaultRenderNextArrow,
-    }
+const { AngleLeft, AngleRight } = icons
 
-    swiperRef = React.createRef<HTMLDivElement>()
+export const defaultRenderPrevArrow: SwiperProps['renderPrevArrow'] = onPrev => {
+    return (
+        <div className={swiperClass('left')} onClick={onPrev}>
+            {AngleLeft}
+        </div>
+    )
+}
 
-    swiperContainerRef = React.createRef<HTMLDivElement>()
+export const defaultRenderNextArrow: SwiperProps['renderNextArrow'] = onNext => {
+    return (
+        <div className={swiperClass('right')} onClick={onNext}>
+            {AngleRight}
+        </div>
+    )
+}
 
-    isTransition: boolean
+/** INIT=>TRANSLATE=>NEXT=>STATE=>EFFECT=>TRANSLATE */
 
-    isMouseIn: boolean
+const Swiper: React.ForwardRefRenderFunction<SwiperInstance, SwiperProps> = (props, ref) => {
+    const [currentIndex, setIndex] = useSafeState(1)
 
-    timer: NodeJS.Timeout
+    const prevIndex = usePrevious(currentIndex)
 
-    get clonedChildren() {
-        const { children } = this.props
+    const swiperRef = useRef<HTMLDivElement>()
 
-        const length = React.Children.count(children)
+    const swiperContainerRef = useRef<HTMLDivElement>()
 
-        if (length <= 1) return children
+    const isMouseIn = useRef(false)
 
-        // 复制第一个和最后一个实现无缝滚动
-        const clone = new Array(length + 2)
+    const isTransition = useRef(false)
+
+    const timer = useRef<NodeJS.Timeout>()
+
+    React.useImperativeHandle(ref, () => ({ onNext: next, onPrev: prev, scrollTo }))
+
+    const {
+        autoplay,
+        children,
+        transitionDuration,
+        onChange,
+        autoplayInterval,
+        className,
+        arrows,
+        renderNextArrow,
+        renderPrevArrow,
+    } = props
+
+    const childrenCount = useMemo(() => React.Children.count(children), [children])
+
+    const clonedChildren = useMemo(() => {
+        if (childrenCount <= 1) return children
+
+        const clone = new Array(childrenCount + 2)
 
         React.Children.forEach(children, (child, index) => {
             if (index === 0) {
-                clone[length + 1] = child
+                clone[childrenCount + 1] = child
             }
 
-            if (index === length - 1) {
+            if (index === childrenCount - 1) {
                 clone[0] = child
             }
 
@@ -53,82 +76,17 @@ class Swiper extends PureComponent<SwiperProps, SwiperState> {
         })
 
         return clone
-    }
+    }, [children])
 
-    get swiperWidth() {
-        return this.swiperRef.current.getBoundingClientRect().width
-    }
+    useEffect(() => {
+        const innerElements = swiperContainerRef.current.children
 
-    constructor(props: SwiperProps) {
-        super(props)
+        const swiperWidth = swiperRef.current?.getBoundingClientRect().width
 
-        this.state = {
-            currentIndex: props.defaultIndex ?? 1,
-        }
-    }
+        clearAutoplay()
 
-    componentDidMount = () => {
-        this.init()
-    }
-
-    componentDidUpdate = (prevProps: SwiperProps, prevState: SwiperState) => {
-        const length = React.Children.count(this.props.children)
-        const { currentIndex } = this.state
-        const prevIndex = prevState.currentIndex
-
-        const isSilent = prevIndex > length - 1
-
-        if (prevIndex !== currentIndex) {
-            this.translate(currentIndex, isSilent)
-        }
-    }
-
-    render = () => {
-        const { className, dots, arrows, children, renderNextArrow, renderPrevArrow } = this.props
-
-        const { currentIndex } = this.state
-
-        const childrenCount = React.Children.count(children)
-
-        return (
-            <div
-                className={classnames(className, swiperClass('_'))}
-                ref={this.swiperRef}
-                onMouseEnter={this.handleMouseEnter}
-                onMouseLeave={this.handleMouseLeave}
-            >
-                {arrows && childrenCount > 1 && renderPrevArrow(this.prev)}
-                {arrows && childrenCount > 1 && renderNextArrow(this.next)}
-
-                <div ref={this.swiperContainerRef} className={swiperClass('container')}>
-                    {React.Children.map(this.clonedChildren, (child: React.ReactElement, index: number) => {
-                        const { style: rawStyle, ...props } = child.props
-
-                        const style = Object.assign({}, rawStyle ?? {}, { float: 'left', height: '100%' })
-
-                        const key = child.key ?? index - 1
-
-                        return cloneElement(child, {
-                            key,
-                            style,
-                            ...props,
-                        })
-                    })}
-                </div>
-            </div>
-        )
-    }
-
-    private init = () => {
-        const { autoplay, children } = this.props
-        const { currentIndex } = this.state
-        const childrenCount = React.Children.count(children)
-        const innerElements = this.swiperContainerRef.current.children
-
-        this.clearAutoplay()
-
-        setStyle(this.swiperContainerRef.current, {
-            width: `${this.swiperWidth * innerElements.length}px`,
+        setStyle(swiperContainerRef.current, {
+            width: `${swiperWidth * innerElements.length}px`,
         })
 
         for (const item of innerElements) {
@@ -138,123 +96,137 @@ class Swiper extends PureComponent<SwiperProps, SwiperState> {
         }
 
         if (childrenCount > 1) {
-            autoplay && this.startAutoplay()
+            autoplay && startAutoplay()
 
-            this.translate(currentIndex, true)
+            // 重置到指定位置
+            translate(true)
         }
-    }
+    }, [])
 
-    private translate = (currentIndex: number, isSilent?: boolean) => {
-        const { autoplay, autoplayInterval, transitionDuration, onChange } = this.props
+    useUpdateEffect(() => {
+        translate(prevIndex === childrenCount)
+    }, [currentIndex])
 
-        const length = React.Children.count(this.props.children)
+    function translate(noDuration?: boolean) {
+        const swiperWidth = swiperRef.current?.getBoundingClientRect().width
 
-        const itemWidth = this.swiperWidth
+        const translateX = swiperWidth * -currentIndex
 
-        const translateDistance = itemWidth * -currentIndex
+        const realDuration = noDuration ? 0 : transitionDuration
 
-        const realDuration = isSilent ? 0 : transitionDuration
+        if (autoplay && !isMouseIn.current && timer.current) {
+            clearTimeout(timer.current)
 
-        if (autoplay && !this.isMouseIn && this.timer) {
-            clearTimeout(this.timer)
-
-            this.timer = setTimeout(this.next, Number(autoplayInterval))
+            timer.current = setTimeout(next, Number(autoplayInterval))
         }
 
-        setStyle(this.swiperContainerRef.current, {
-            transform: `translateX(${translateDistance}px) `,
+        setStyle(swiperContainerRef.current, {
+            transform: `translateX(${translateX}px) `,
             transition: `all ${realDuration}ms ease-in-out`,
         })
 
-        // TODO 考虑左方向
-        if (currentIndex > length - 1) {
-            return this.resetPosition(currentIndex)
+        if (currentIndex === childrenCount) {
+            resetPosition()
+
+            return
         }
 
-        // 等待动画结束之后将isSwiping置为false
         setTimeout(() => {
-            this.isTransition = false
+            isTransition.current = false
         }, realDuration)
 
         onChange?.(currentIndex)
     }
 
-    private handleMouseEnter = () => {
-        const { autoplay } = this.props
+    function prev() {
+        if (childrenCount === 1) return
 
-        this.isMouseIn = true
-
-        autoplay && this.clearAutoplay()
+        scrollTo(currentIndex - 1)
     }
 
-    private handleMouseLeave = () => {
-        const { autoplay } = this.props
+    function next() {
+        if (childrenCount === 1) return
 
-        this.isMouseIn = false
-
-        autoplay && this.startAutoplay()
+        scrollTo(currentIndex + 1)
     }
 
-    private clearAutoplay = () => {
-        if (this.timer) {
-            clearInterval(this.timer)
-        }
+    function scrollTo(index) {
+        if (index === currentIndex || isTransition.current) return
+
+        isTransition.current = true
+
+        setIndex(index)
     }
 
-    private startAutoplay = () => {
-        const { autoplayInterval } = this.props
-
-        this.timer = setTimeout(this.next, autoplayInterval)
-    }
-
-    private resetPosition = (currentIndex: number) => {
-        const { transitionDuration } = this.props
-        const length = React.Children.count(this.props.children)
-
+    function resetPosition() {
         if (currentIndex < 0) {
-            setTimeout(
-                () =>
-                    this.setState({
-                        currentIndex: length - 1,
-                    }),
-                transitionDuration
-            )
+            setTimeout(() => setIndex(childrenCount - 1), transitionDuration)
         } else {
-            setTimeout(
-                () =>
-                    this.setState({
-                        currentIndex: 0,
-                    }),
-                transitionDuration
-            )
+            setTimeout(() => setIndex(0), transitionDuration)
         }
     }
 
-    prev = () => {
-        const { currentIndex } = this.state
+    function handleMouseEnter() {
+        isMouseIn.current = true
 
-        this.scrollTo(currentIndex - 1)
+        autoplay && clearAutoplay()
     }
 
-    next = () => {
-        const { currentIndex } = this.state
+    function handleMouseLeave() {
+        isMouseIn.current = false
 
-        if (React.Children.count(this.props.children) === 1) {
-            return
+        autoplay && startAutoplay()
+    }
+
+    function clearAutoplay() {
+        if (timer.current) {
+            clearTimeout(timer.current)
         }
-
-        this.scrollTo(currentIndex + 1)
     }
 
-    scrollTo = (index: number) => {
-        const { currentIndex } = this.state
-
-        if (index === currentIndex || this.isTransition) return
-
-        this.isTransition = true
-
-        this.setState({ currentIndex: index })
+    function startAutoplay() {
+        timer.current = setTimeout(next, autoplayInterval)
     }
+
+    return (
+        <div
+            className={classnames(className, swiperClass('_'))}
+            ref={swiperRef}
+            onMouseEnter={handleMouseEnter}
+            onMouseLeave={handleMouseLeave}
+        >
+            {arrows && childrenCount > 1 && renderPrevArrow(prev)}
+            {arrows && childrenCount > 1 && renderNextArrow(next)}
+
+            <div ref={swiperContainerRef} className={swiperClass('container')}>
+                {React.Children.map(clonedChildren, (child: React.ReactElement, index: number) => {
+                    const { style: rawStyle, ...rest } = child.props
+
+                    const style = Object.assign({}, rawStyle ?? {}, { float: 'left', height: '100%' })
+
+                    const key = child.key ?? index - 1
+
+                    return cloneElement(child, {
+                        key,
+                        style,
+                        ...rest,
+                    })
+                })}
+            </div>
+        </div>
+    )
 }
 
-export default Swiper
+const ComputedSwiper = React.forwardRef(Swiper)
+
+ComputedSwiper.defaultProps = {
+    transitionDuration: 600,
+    autoplay: true,
+    autoplayInterval: 2000,
+    dots: true,
+    arrows: true,
+    renderPrevArrow: defaultRenderPrevArrow,
+    renderNextArrow: defaultRenderNextArrow,
+}
+
+export default React.memo(ComputedSwiper)
