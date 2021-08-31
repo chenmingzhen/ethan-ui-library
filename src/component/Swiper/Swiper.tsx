@@ -7,28 +7,21 @@ import useSafeState from '@/hooks/useSafeState'
 import { SwiperInstance, SwiperProps } from './type'
 import icons from '../icons'
 
+enum MouseIn {
+    OUTSIDE,
+    INNER,
+    LEFTARROW,
+    RIGHTARROW,
+}
+
 const { AngleLeft, AngleRight } = icons
-
-export const defaultRenderPrevArrow: SwiperProps['renderPrevArrow'] = onPrev => {
-    return (
-        <div className={swiperClass('left')} onClick={onPrev}>
-            {AngleLeft}
-        </div>
-    )
-}
-
-export const defaultRenderNextArrow: SwiperProps['renderNextArrow'] = onNext => {
-    return (
-        <div className={swiperClass('right')} onClick={onNext}>
-            {AngleRight}
-        </div>
-    )
-}
 
 /** INIT=>TRANSLATE=>NEXT=>STATE=>EFFECT=>TRANSLATE */
 
 const Swiper: React.ForwardRefRenderFunction<SwiperInstance, SwiperProps> = (props, ref) => {
     const [currentIndex, setIndex] = useSafeState(1)
+
+    const [mouseIn, setMouseIn] = useSafeState<MouseIn>(MouseIn.OUTSIDE)
 
     const prevIndex = usePrevious(currentIndex)
 
@@ -36,25 +29,13 @@ const Swiper: React.ForwardRefRenderFunction<SwiperInstance, SwiperProps> = (pro
 
     const swiperContainerRef = useRef<HTMLDivElement>()
 
-    const isMouseIn = useRef(false)
-
     const isTransition = useRef(false)
 
     const timer = useRef<NodeJS.Timeout>()
 
     React.useImperativeHandle(ref, () => ({ onNext: next, onPrev: prev, scrollTo }))
 
-    const {
-        autoplay,
-        children,
-        transitionDuration,
-        onChange,
-        autoplayInterval,
-        className,
-        arrows,
-        renderNextArrow,
-        renderPrevArrow,
-    } = props
+    const { autoplay, children, transitionDuration, onChange, autoplayInterval, className, arrows, renderArrow } = props
 
     const childrenCount = useMemo(() => React.Children.count(children), [children])
 
@@ -104,7 +85,7 @@ const Swiper: React.ForwardRefRenderFunction<SwiperInstance, SwiperProps> = (pro
     }, [])
 
     useUpdateEffect(() => {
-        translate(prevIndex === childrenCount)
+        translate(prevIndex === childrenCount + 1 || prevIndex === 0)
     }, [currentIndex])
 
     function translate(noDuration?: boolean) {
@@ -114,7 +95,7 @@ const Swiper: React.ForwardRefRenderFunction<SwiperInstance, SwiperProps> = (pro
 
         const realDuration = noDuration ? 0 : transitionDuration
 
-        if (autoplay && !isMouseIn.current && timer.current) {
+        if (autoplay && mouseIn === MouseIn.OUTSIDE && timer.current) {
             clearTimeout(timer.current)
 
             timer.current = setTimeout(next, Number(autoplayInterval))
@@ -125,7 +106,7 @@ const Swiper: React.ForwardRefRenderFunction<SwiperInstance, SwiperProps> = (pro
             transition: `all ${realDuration}ms ease-in-out`,
         })
 
-        if (currentIndex === childrenCount) {
+        if (currentIndex === childrenCount + 1 || currentIndex === 0) {
             resetPosition()
 
             return
@@ -138,13 +119,17 @@ const Swiper: React.ForwardRefRenderFunction<SwiperInstance, SwiperProps> = (pro
         onChange?.(currentIndex)
     }
 
-    function prev() {
+    function prev(e: React.MouseEvent) {
+        e.stopPropagation()
+
         if (childrenCount === 1) return
 
         scrollTo(currentIndex - 1)
     }
 
-    function next() {
+    function next(e: React.MouseEvent) {
+        e.stopPropagation()
+
         if (childrenCount === 1) return
 
         scrollTo(currentIndex + 1)
@@ -159,23 +144,35 @@ const Swiper: React.ForwardRefRenderFunction<SwiperInstance, SwiperProps> = (pro
     }
 
     function resetPosition() {
-        if (currentIndex < 0) {
-            setTimeout(() => setIndex(childrenCount - 1), transitionDuration)
+        if (currentIndex === 0) {
+            setTimeout(() => setIndex(childrenCount), transitionDuration)
         } else {
-            setTimeout(() => setIndex(0), transitionDuration)
+            setTimeout(() => setIndex(1), transitionDuration)
         }
     }
 
     function handleMouseEnter() {
-        isMouseIn.current = true
+        setMouseIn(MouseIn.INNER)
 
         autoplay && clearAutoplay()
     }
 
     function handleMouseLeave() {
-        isMouseIn.current = false
+        setMouseIn(MouseIn.OUTSIDE)
 
         autoplay && startAutoplay()
+    }
+
+    function handleMouseEnterLeftArrow() {
+        setMouseIn(MouseIn.LEFTARROW)
+    }
+
+    function handleMouseEnterRightArrow() {
+        setMouseIn(MouseIn.RIGHTARROW)
+    }
+
+    function handleMouseLeaveArrow() {
+        setMouseIn(MouseIn.INNER)
     }
 
     function clearAutoplay() {
@@ -188,6 +185,40 @@ const Swiper: React.ForwardRefRenderFunction<SwiperInstance, SwiperProps> = (pro
         timer.current = setTimeout(next, autoplayInterval)
     }
 
+    function buildArrow() {
+        if (!arrows && childrenCount <= 1) return
+
+        if (renderArrow) return renderArrow?.(prev, next)
+
+        const leftOpacity =
+            mouseIn === MouseIn.INNER || mouseIn === MouseIn.RIGHTARROW ? 0.2 : mouseIn === MouseIn.LEFTARROW ? 0.4 : 0
+        const rightOpacity =
+            mouseIn === MouseIn.INNER || mouseIn === MouseIn.LEFTARROW ? 0.2 : mouseIn === MouseIn.RIGHTARROW ? 0.4 : 0
+
+        return (
+            <>
+                <div
+                    className={swiperClass('left')}
+                    onClick={prev}
+                    onMouseEnter={handleMouseEnterLeftArrow}
+                    onMouseLeave={handleMouseLeaveArrow}
+                    style={{ opacity: leftOpacity }}
+                >
+                    {AngleLeft}
+                </div>
+                <div
+                    className={swiperClass('right')}
+                    onClick={next}
+                    onMouseEnter={handleMouseEnterRightArrow}
+                    onMouseLeave={handleMouseLeaveArrow}
+                    style={{ opacity: rightOpacity }}
+                >
+                    {AngleRight}
+                </div>
+            </>
+        )
+    }
+
     return (
         <div
             className={classnames(className, swiperClass('_'))}
@@ -195,8 +226,7 @@ const Swiper: React.ForwardRefRenderFunction<SwiperInstance, SwiperProps> = (pro
             onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}
         >
-            {arrows && childrenCount > 1 && renderPrevArrow(prev)}
-            {arrows && childrenCount > 1 && renderNextArrow(next)}
+            {buildArrow()}
 
             <div ref={swiperContainerRef} className={swiperClass('container')}>
                 {React.Children.map(clonedChildren, (child: React.ReactElement, index: number) => {
@@ -225,8 +255,6 @@ ComputedSwiper.defaultProps = {
     autoplayInterval: 2000,
     dots: true,
     arrows: true,
-    renderPrevArrow: defaultRenderPrevArrow,
-    renderNextArrow: defaultRenderNextArrow,
 }
 
 export default React.memo(ComputedSwiper)

@@ -1,3 +1,5 @@
+import React from 'react'
+
 export interface SwiperProps {
     defaultIndex?: number
 
@@ -17,15 +19,13 @@ export interface SwiperProps {
 
     children?: React.ReactNode
 
-    renderPrevArrow?: (onPrev: () => void) => React.ReactNode
-
-    renderNextArrow?: (onNext: () => void) => React.ReactNode
+    renderArrow?: (onPrev: (e: React.MouseEvent) => void, onNext: (e: React.MouseEvent) => void) => React.ReactNode
 }
 
 export interface SwiperInstance {
-    onPrev(): void
+    onPrev(e: React.MouseEvent): void
 
-    onNext(): void
+    onNext(e: React.MouseEvent): void
 
     scrollTo(index: number): void
 }

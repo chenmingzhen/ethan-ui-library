@@ -15,20 +15,34 @@
 
     &-left,
     &-right {
-        width: 10px;
-        height: 10px;
+        width: 35px;
+        height: 35px;
         cursor: pointer;
         position: absolute;
         z-index: 2;
         top: 50%;
         transform: translateY(-50%);
+        background-color: #000;
+        border-radius: 50%;
+        opacity: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        transition: opacity .2s ease-in;
+
+        & > svg {
+            fill: #fff;
+            width: 50%;
+            height: 50%;
+        }
+
     }
 
     &-left {
-        left: 0;
+        left: 2px;
     }
 
     &-right {
-        right: 0;
+        right: 2px;
     }
 }
