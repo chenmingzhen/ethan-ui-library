@@ -12,12 +12,10 @@ const style: React.CSSProperties = {
 
 export default () => {
     return (
-        <div style={{ height: 210, width: 900 }}>
-            <Swiper>
-                <div style={style}>1</div>
-                <div style={style}>2</div>
-                <div style={style}>3</div>
-            </Swiper>
-        </div>
+        <Swiper style={{ height: 210, width: 900 }}>
+            <div style={style}>1</div>
+            <div style={style}>2</div>
+            <div style={style}>3</div>
+        </Swiper>
     )
 }

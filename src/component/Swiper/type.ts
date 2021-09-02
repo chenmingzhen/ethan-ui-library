@@ -19,6 +19,8 @@ export interface SwiperProps {
 
     children?: React.ReactNode
 
+    style?: React.CSSProperties
+
     renderArrow?: (onPrev: (e: React.MouseEvent) => void, onNext: (e: React.MouseEvent) => void) => React.ReactNode
 }
 
@@ -26,6 +28,4 @@ export interface SwiperInstance {
     onPrev(e: React.MouseEvent): void
 
     onNext(e: React.MouseEvent): void
-
-    scrollTo(index: number): void
 }

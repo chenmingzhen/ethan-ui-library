@@ -6,6 +6,7 @@ import { setStyle } from '@/utils/dom/style'
 import useSafeState from '@/hooks/useSafeState'
 import { SwiperInstance, SwiperProps } from './type'
 import icons from '../icons'
+import SwiperDots from './SwiperDots'
 
 enum MouseIn {
     OUTSIDE,
@@ -33,9 +34,20 @@ const Swiper: React.ForwardRefRenderFunction<SwiperInstance, SwiperProps> = (pro
 
     const timer = useRef<NodeJS.Timeout>()
 
-    React.useImperativeHandle(ref, () => ({ onNext: next, onPrev: prev, scrollTo }))
+    React.useImperativeHandle(ref, () => ({ onNext: next, onPrev: prev }))
 
-    const { autoplay, children, transitionDuration, onChange, autoplayInterval, className, arrows, renderArrow } = props
+    const {
+        autoplay,
+        children,
+        dots,
+        transitionDuration,
+        onChange,
+        autoplayInterval,
+        className,
+        arrows,
+        renderArrow,
+        style,
+    } = props
 
     const childrenCount = useMemo(() => React.Children.count(children), [children])
 
@@ -116,11 +128,13 @@ const Swiper: React.ForwardRefRenderFunction<SwiperInstance, SwiperProps> = (pro
             isTransition.current = false
         }, realDuration)
 
-        onChange?.(currentIndex)
+        const realIndex = getRealIndex()
+
+        onChange?.(realIndex)
     }
 
     function prev(e: React.MouseEvent) {
-        e.stopPropagation()
+        e?.stopPropagation()
 
         if (childrenCount === 1) return
 
@@ -128,7 +142,7 @@ const Swiper: React.ForwardRefRenderFunction<SwiperInstance, SwiperProps> = (pro
     }
 
     function next(e: React.MouseEvent) {
-        e.stopPropagation()
+        e?.stopPropagation()
 
         if (childrenCount === 1) return
 
@@ -185,6 +199,14 @@ const Swiper: React.ForwardRefRenderFunction<SwiperInstance, SwiperProps> = (pro
         timer.current = setTimeout(next, autoplayInterval)
     }
 
+    function getRealIndex() {
+        if (currentIndex === 0) return childrenCount - 1
+
+        if (currentIndex === childrenCount + 1) return 0
+
+        return currentIndex - 1
+    }
+
     function buildArrow() {
         if (!arrows && childrenCount <= 1) return
 
@@ -225,6 +247,7 @@ const Swiper: React.ForwardRefRenderFunction<SwiperInstance, SwiperProps> = (pro
             ref={swiperRef}
             onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}
+            style={style}
         >
             {buildArrow()}
 
@@ -232,17 +255,21 @@ const Swiper: React.ForwardRefRenderFunction<SwiperInstance, SwiperProps> = (pro
                 {React.Children.map(clonedChildren, (child: React.ReactElement, index: number) => {
                     const { style: rawStyle, ...rest } = child.props
 
-                    const style = Object.assign({}, rawStyle ?? {}, { float: 'left', height: '100%' })
+                    const childStyle = Object.assign({}, rawStyle ?? {}, { float: 'left', height: '100%' })
 
                     const key = child.key ?? index - 1
 
                     return cloneElement(child, {
                         key,
-                        style,
+                        style: childStyle,
                         ...rest,
                     })
                 })}
             </div>
+
+            {dots && childrenCount > 1 && (
+                <SwiperDots items={children} realIndex={getRealIndex()} onDotsClick={setIndex} />
+            )}
         </div>
     )
 }
@@ -250,7 +277,7 @@ const Swiper: React.ForwardRefRenderFunction<SwiperInstance, SwiperProps> = (pro
 const ComputedSwiper = React.forwardRef(Swiper)
 
 ComputedSwiper.defaultProps = {
-    transitionDuration: 600,
+    transitionDuration: 450,
     autoplay: true,
     autoplayInterval: 2000,
     dots: true,

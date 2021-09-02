@@ -28,14 +28,13 @@
         display: flex;
         justify-content: center;
         align-items: center;
-        transition: opacity .2s ease-in;
+        transition: opacity 0.2s ease-in;
 
         & > svg {
             fill: #fff;
             width: 50%;
             height: 50%;
         }
-
     }
 
     &-left {
@@ -44,5 +43,37 @@
 
     &-right {
         right: 2px;
+    }
+
+    &-dots {
+        width: 100%;
+        text-align: center;
+        list-style: none;
+        z-index: 10;
+        position: absolute;
+        line-height: 1;
+        bottom: 10px;
+        left: 0;
+
+        li {
+            display: inline-block;
+            background: #fff;
+            width: 16px;
+            height: 3px;
+            margin: 0 3px;
+            opacity: 0.3;
+            border-radius: 1px;
+            transition: all 0.5s ease-in-out;
+            cursor: pointer;
+
+            &:hover {
+                opacity: 0.8;
+            }
+        }
+    }
+
+    &-active {
+        width: 25px !important;
+        opacity: 1 !important;
     }
 }
