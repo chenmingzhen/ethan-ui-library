@@ -1,4 +1,4 @@
-# Carousel *轮播*
+# Swiper *轮播2.0(无缝滚动)*
 
 <example />
 
@@ -6,9 +6,21 @@
 
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
-| animation | string | 'slide' | 动画效果，可选值为<br />slide - 横向滑动<br />slide-y - 垂直滑动<br />fade - 淡入淡出 |
+| transitionDuration | number | 450 | 过渡持续时间 |
 | className | string | 无 | 扩展className |
-| indicatorPosition | 'left' \| 'center' \| 'right' | 'center' | 指示标示位置 |
-| indicatorType | (current: number, moveTo: () => void) => ReactNode \| string | 'circle' | 指示标示样式，字符串可以是：\['circle', 'number', 'line']，函数则可以自定义样式: (current, moveTo) => (<Component /\>) |
-| interval | number | 0 | 动画间隔时间，为 0 时，不自动播放 |
-| style | object | 无 | 最外层扩展样式 |
+| autoPlay | boolean | true | 是否自动播放 |
+| autoplayInterval | number | 2000 | 滚动到下一张的时间 |
+| dots | boolean | true | 是否显示面板指示点 |
+| arrows | boolean | true | 是否显示箭头 |
+| style | React.CSSProperties | 无 | Swiper的拓展样式 |
+| onChange | (current: number) => void | 无 | 切换面板的回调 |
+| renderArrow | (onPrev: (e: React.MouseEvent) => void, onNext: (e: React.MouseEvent) => void) => React.ReactNode | 无 | 自定义箭头的渲染 |
+
+### 方法
+
+** *swiper的ref返回两个切换方法**
+
+| 名称 | 描述 | 
+| --- | --- | 
+| onPrev | 上一张 | 
+| onNext | 下一张 |

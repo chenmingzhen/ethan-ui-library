@@ -1,4 +1,4 @@
-# Carousel
+# Swiper *Carousel 2.0(Seamless rolling)*
 
 <example />
 
@@ -6,8 +6,21 @@
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
-| animation | string | 'slide' | animation effects, options: <br />slide - horizontal sliding<br />slide-y - vertical sliding<br />fade - fading |
-| className | string | none | extend className |
-| indicatorPosition | 'left' \| 'center' \| 'right'  | 'center' | the position of indicator |
-| indicatorType | (current: number, moveTo: () => void) => ReactNode \| string | 'circle' | the style of indicator, string options: \['circle', 'number', 'line'], using function for custom styles |
-| interval | number | 0 | the interval of animation, When it is not 0, play automatically |
+| transitionDuration | number | 450 | Transition duration |
+| className | string | none | Extend className |
+| autoPlay | boolean | true | auto play |
+| autoplayInterval | number | 2000 | scroll to the time of the next slide |
+| dots | boolean | true | whether to display panel indicator points |
+| arrows | boolean | true | whether to show arrows |
+| style | React.CSSProperties | none | swiper extends style |
+| onChange | (current: number) => void | none | switch panel callback |
+| renderArrow | (onPrev: (e: React.MouseEvent) => void, onNext: (e: React.MouseEvent) => void) => React.ReactNode | none | custom arrow rendering |
+
+### Method
+
+** *Swiper's ref returns two toggle methods**
+
+| name | description | 
+| --- | --- | 
+| onPrev | prev slide  | 
+| onNext | next slide |

@@ -1,8 +1,6 @@
 import React from 'react'
 
 export interface SwiperProps {
-    defaultIndex?: number
-
     className?: string
 
     transitionDuration?: number

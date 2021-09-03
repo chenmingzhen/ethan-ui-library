@@ -1,3 +1,9 @@
+/**
+ * cn - 基本用法
+ *    -- 基本用法
+ * en - Base
+ *    -- Base
+ */
 import React from 'react'
 import { Swiper } from 'ethan'
 
