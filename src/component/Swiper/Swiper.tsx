@@ -72,6 +72,22 @@ const Swiper: React.ForwardRefRenderFunction<SwiperInstance, SwiperProps> = (pro
     }, [children])
 
     useEffect(() => {
+        init()
+
+        window.addEventListener('resize', init)
+
+        return () => {
+            window.removeEventListener('resize', init)
+        }
+    }, [])
+
+    useUpdateEffect(() => {
+        translate(prevIndex === childrenCount + 1 || prevIndex === 0)
+    }, [currentIndex])
+
+    function init() {
+        setIndex(1)
+
         const innerElements = swiperContainerRef.current.children
 
         const swiperWidth = swiperRef.current?.getBoundingClientRect().width
@@ -94,11 +110,7 @@ const Swiper: React.ForwardRefRenderFunction<SwiperInstance, SwiperProps> = (pro
             // 重置到指定位置
             translate(true)
         }
-    }, [])
-
-    useUpdateEffect(() => {
-        translate(prevIndex === childrenCount + 1 || prevIndex === 0)
-    }, [currentIndex])
+    }
 
     function translate(noDuration?: boolean) {
         const swiperWidth = swiperRef.current?.getBoundingClientRect().width

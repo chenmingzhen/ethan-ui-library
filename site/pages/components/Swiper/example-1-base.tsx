@@ -18,7 +18,7 @@ const style: React.CSSProperties = {
 
 export default () => {
     return (
-        <Swiper style={{ height: 210, width: 900 }}>
+        <Swiper style={{ height: 210, width: '100%' }}>
             <div style={style}>1</div>
             <div style={style}>2</div>
             <div style={style}>3</div>
