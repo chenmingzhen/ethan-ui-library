@@ -179,6 +179,12 @@ const pages = [
         component: lazy(() => import(/* webpackChunkName: "Pagination" */ './Pagination')),
         },
             {
+        name: 'Swiper',
+        cn: '轮播2.0',
+        level: 2,
+        component: lazy(() => import(/* webpackChunkName: "Swiper" */ './Swiper')),
+        },
+            {
         name: 'Timeline',
         cn: '时间轴',
         level: 2,
