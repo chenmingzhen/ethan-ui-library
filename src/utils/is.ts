@@ -7,7 +7,6 @@ export const { isArray } = Array
 export const isObject = val => val && typeof val === 'object' && !isArray(val)
 export const isDate = val => val instanceof Date
 export const isFunc = f => typeof f === 'function'
-export const isNan = a => a !== a
 export const isString = s => typeof s === 'string'
 export const isError = val => val instanceof Error
 export const isRegexp = val => val instanceof RegExp
@@ -25,9 +24,11 @@ export const isBuffer = val => {
 
 export const isEmpty = val => {
     if (val == null) return true
-    if (isNan(val)) return true
+
     if (val.length !== undefined) return val.length === 0
+
     if (val instanceof Date) return false
+
     if (typeof val === 'object') return Object.keys(val).length === 0
 
     return false
@@ -53,11 +54,15 @@ export const isPercent = n => typeof n === 'string' && /\d{1,3}%$/.test(n)
 export const isInseparable = val =>
     Object(val) !== val || isFunc(val) || isDate(val) || isError(val) || isSet(val) || isMap(val) || isRegexp(val)
 
-export const isLink = (el: React.ReactElement<{ to?: any }>) => {
+export const isLink = (el: React.ReactElement<{ to?: string }>) => {
     if (!isValidElement(el)) return false
+
     if (!el.type) return false
+
     if (el.type === 'a') return true
-    if (el.props && el.props.to) return true
+
+    if (el?.props?.to) return true
+
     return false
 }
 
