@@ -1,134 +1,111 @@
-// @ts-nocheck
 import React from 'react'
-import PropTypes from 'prop-types'
 import classnames from 'classnames'
-import { Component } from '@/utils/component'
+import { PureComponent } from '@/utils/component'
 import { curry } from '@/utils/func'
-import Popover from '@/component/Popover'
+import Popover, { PopoverProps } from '@/component/Popover'
 import { buttonClass, inputClass, popoverClass } from '../styles'
+
+interface InputBorderProps {
+    autoFocus?: boolean
+
+    border?: boolean
+
+    className?: string
+
+    disabled?: boolean
+
+    error?: Error
+
+    onBlur?: (e: React.FocusEvent<HTMLInputElement>) => void
+
+    onFocus?: (e: React.FocusEvent<HTMLInputElement>) => void
+
+    size?: 'small' | 'default' | 'large'
+
+    style?: React.CSSProperties
+
+    tip?: React.ReactNode
+
+    width?: React.CSSProperties['width']
+
+    popoverProps?: PopoverProps
+}
+
+interface InputBorderState {
+    focus: boolean
+
+    mounted: boolean
+}
+
+interface Options {
+    tag?: keyof HTMLElementTagNameMap
+
+    isGroup?: boolean
+
+    overflow?: boolean
+
+    from?: keyof HTMLElementTagNameMap
+
+    className?: string | ((props: InputBorderProps) => string)
+
+    enterPress?: boolean
+}
 
 /**
  * inputBorder HOC 负责 input 的样式 tip信息
  */
 export default curry(
-    (options, Origin) =>
-        class extends Component {
-            static propTypes = {
-                autoFocus: PropTypes.bool,
-                border: PropTypes.bool,
-                className: PropTypes.string,
-                disabled: PropTypes.oneOfType([PropTypes.bool, PropTypes.func]),
-                error: PropTypes.object,
-                onBlur: PropTypes.func,
-                onFocus: PropTypes.func,
-                size: PropTypes.string,
-                style: PropTypes.object,
-                tip: PropTypes.any,
-                width: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
-                popover: PropTypes.oneOf(['top-left', 'top', 'top-right', 'bottom-left', 'bottom', 'bottom-right']),
-                popoverProps: PropTypes.object,
-            }
-
+    (options: Options, Origin) =>
+        class extends PureComponent<InputBorderProps, InputBorderState> {
             static defaultProps = {
                 border: true,
                 style: {},
                 popoverProps: {},
             }
 
+            el = React.createRef<HTMLElement>()
+
             constructor(props) {
                 super(props)
-                this.el = null
                 this.state = {
                     focus: props.autoFocus,
+                    mounted: false,
                 }
-                this.bindRef = this.bindRef.bind(this)
                 this.handleBlur = this.handleBlur.bind(this)
                 this.handleFocus = this.handleFocus.bind(this)
-                // this.enterPress = this.enterPress.bind(this)
             }
 
-            bindRef(el) {
-                this.el = el
+            componentDidMount() {
+                super.componentDidMount()
+
+                this.setState({ mounted: true })
             }
 
             handleBlur(event) {
+                if (!this.state.focus) return
+
                 this.setState({ focus: false })
-                const { onBlur } = this.props
-                if (onBlur) onBlur(event)
+
+                this.props?.onBlur?.(event)
             }
 
             handleFocus(event) {
+                if (this.state.focus) return
+
                 this.setState({ focus: true })
-                const { onFocus } = this.props
-                if (onFocus) onFocus(event)
-            }
 
-            /**
-             * 渲染错误信息或帮助等 由inputable检验传过来
-             * @param focus
-             * @returns {JSX.Element|null}
-             */
-            renderHelp(focus) {
-                const { error, tip, popover, popoverProps } = this.props
-                const classList = ['input-tip']
-                const position = popover || 'bottom-left'
-                let styles
-                if (popoverProps.style && popoverProps.style.width) {
-                    styles = popoverProps.style
-                } else {
-                    styles = { minWidth: 200, maxWidth: 400 }
-                    if (popoverProps.style) {
-                        Object.assign(styles, popoverProps.style)
-                    }
-                }
-
-                if (error && popover) {
-                    classList.push('input-error')
-                    return (
-                        <Popover
-                            getPopupContainer={() => this.el}
-                            {...popoverProps}
-                            visible
-                            style={styles}
-                            className={popoverClass(...classList)}
-                            position={position}
-                        >
-                            {error.message}
-                        </Popover>
-                    )
-                }
-
-                if (!tip || !focus) return null
-                return (
-                    <Popover
-                        getPopupContainer={() => this.el}
-                        {...popoverProps}
-                        visible
-                        style={styles}
-                        className={popoverClass(...classList)}
-                        position={position}
-                    >
-                        {tip}
-                    </Popover>
-                )
+                this.props?.onFocus?.(event)
             }
 
             render() {
-                const {
-                    className,
-                    border,
-                    size,
-                    tip,
-                    popover,
-                    width,
-                    style,
-                    error,
-                    popoverProps,
-                    ...other
-                } = this.props
+                const { className, border, size, tip, width, style, error, popoverProps, ...other } = this.props
+
                 const { focus } = this.state
-                const Tag = options.tag || 'label'
-                const newStyle = Object.assign({ width }, style)
+
+                const Tag = ((options.tag || 'label') as unknown) as React.ElementType
+
+                const tagStyle = Object.assign({ width }, style)
+
                 const newClassName = classnames(
                     inputClass(
                         '_',
@@ -136,11 +113,11 @@ export default curry(
                         other.disabled === true && 'disabled',
                         options.isGroup && 'group',
                         size,
-                        newStyle.width && 'inline',
+                        tagStyle.width && 'inline',
                         !border && 'no-border',
                         options.overflow && `overflow-${options.overflow}`,
                         error && 'invalid',
-                        popover && error && 'focus'
+                        popoverProps.placement && error && 'focus'
                     ),
                     buttonClass(
                         options.isGroup && 'group',
@@ -150,15 +127,45 @@ export default curry(
                     this.props.className
                 )
 
+                const popoverClassList = ['input-tip']
+
+                const placement = popoverProps.placement || 'bottom-left'
+
+                const popoverStyles =
+                    popoverProps.style && popoverProps.style.width
+                        ? popoverProps.style
+                        : popoverProps.style
+                        ? Object.assign({}, { minWidth: 200, maxWidth: 400 }, popoverProps.style)
+                        : { minWidth: 200, maxWidth: 400 }
+
+                const content = error?.message ?? tip
+
+                const popoverVisible = !!(error && popoverProps.placement) || !!(tip && focus)
+
+                if (error && popoverProps.placement) {
+                    popoverClassList.push('input-error')
+                }
+
                 return (
                     <Tag
-                        ref={this.bindRef}
+                        ref={this.el}
                         className={newClassName}
-                        style={newStyle}
+                        style={tagStyle}
                         tabIndex={options.enterPress ? '0' : undefined}
                     >
-                        <Origin {...other} size={size} onFocus={this.handleFocus} onBlur={this.handleBlur} />
-                        {this.renderHelp(focus)}
+                        {this.state.mounted && (
+                            <Popover
+                                getPopupContainer={() => this.el.current}
+                                {...popoverProps}
+                                visible={popoverVisible}
+                                style={popoverStyles}
+                                className={popoverClass(...popoverClassList)}
+                                placement={placement}
+                                content={content}
+                            >
+                                <Origin {...other} size={size} onFocus={this.handleFocus} onBlur={this.handleBlur} />
+                            </Popover>
+                        )}
                     </Tag>
                 )
             }

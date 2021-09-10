@@ -38,6 +38,8 @@ export interface PopoverProps {
     defaultVisible?: boolean
 
     getPopupContainer?: () => HTMLElement
+
+    className?: string
 }
 
 interface PopoverState {
@@ -101,6 +103,12 @@ class Popover extends Component<IPopoverProps, PopoverState> {
         super.componentDidMount()
 
         this.bindEvents()
+
+        const { className } = this.props
+
+        if (className) {
+            this.element.classList.add(className)
+        }
 
         if (this.state.show) {
             this.handleShow(null, true)
@@ -278,8 +286,8 @@ class Popover extends Component<IPopoverProps, PopoverState> {
 
         this.handleInitDOM()
 
-        // 处理trigger click的类型 点击Children隐藏
-        if (this.state.show && !force && this.props.trigger === 'click') {
+        if (this.state.show && !force) {
+            // 处理Click的类型 点击Children收缩
             this.handleHide(0)
 
             return
