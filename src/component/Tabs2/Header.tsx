@@ -5,6 +5,7 @@ import { TabsHeaderProps } from './type'
 import Button from '../Button'
 import Tab from './Tab'
 import icons from '../icons'
+import useHideTabs from './hooks/useHideTabs'
 
 // 点击Tab留出的空隙
 const REDUNDANT = 30
@@ -49,6 +50,8 @@ const Header: React.FC<TabsHeaderProps> = props => {
             window.removeEventListener('resize', resetNavPosition)
         }
     }, [innerPosition, isVertical, shape, currentActive])
+
+    const { hideTabs } = useHideTabs({ scrollElementRef, innerElementRef, tabs, isVertical, attribute })
 
     function resetNavPosition() {
         if (!navElementRef.current) return
@@ -110,8 +113,6 @@ const Header: React.FC<TabsHeaderProps> = props => {
         if (newAttribute + innerAttribute > scrollAttribute) newAttribute = scrollAttribute - innerAttribute
 
         setAttribute(newAttribute)
-
-        console.log(getVisibleIndex())
     }
 
     function moveToCenter(tabRect: DOMRect, last: boolean, first: boolean) {
@@ -135,40 +136,6 @@ const Header: React.FC<TabsHeaderProps> = props => {
 
             setAttribute(newAttribute)
         }
-    }
-
-    // TODO 获取可视区的索引
-    function getVisibleIndex() {
-        let startIndex = 0
-
-        let endIndex = 0
-
-        const pos = isVertical ? 'top' : 'left'
-
-        if (!attribute) {
-            startIndex = 0
-        } else {
-            for (let i = 0; i < tabs.length; i++) {
-                if (attribute < scrollElementRef.current?.children[i]?.[pos]) {
-                    startIndex = i
-
-                    break
-                }
-            }
-        }
-
-        for (let i = tabs.length; i > -1; i--) {
-            if (
-                innerElementRef.current.clientWidth + scrollElementRef.current?.children[startIndex]?.[pos] >
-                scrollElementRef.current?.children[i]?.[pos]
-            ) {
-                endIndex = i
-
-                break
-            }
-        }
-
-        return { startIndex, endIndex }
     }
 
     function buildNav() {
