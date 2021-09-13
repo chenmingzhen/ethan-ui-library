@@ -86,7 +86,6 @@ class Header extends PureComponent {
         const { isVertical } = this.props
         const positions = isVertical ? ['top', 'bottom'] : ['left', 'right']
         const rect = this.innerElement.getBoundingClientRect()
-
         // 比较Tab与容器的位置
         // marginLeft负数 左边
         if (tabRect[positions[0]] < rect[positions[0]]) {

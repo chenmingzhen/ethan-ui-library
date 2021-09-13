@@ -2,8 +2,9 @@ import React from 'react'
 
 export type Align = 'left' | 'right' | 'vertical-left' | 'vertical-right' | 'bottom'
 
-export type Shape = 'card' | 'line' | 'button' | 'bordered' | 'dash'
+export type Shape = 'card' | 'line' | 'button' | 'bordered' | 'dash' | 'normal'
 
+export type InnerPosition = 'left' | 'center' | 'right'
 export interface Tab {
     id: string | number
 
@@ -26,6 +27,8 @@ export interface Tab {
     border?: React.CSSProperties['border']
 
     color: React.CSSProperties['color']
+
+    navAnimation: boolean
 }
 
 export interface TabsHeaderProps {
@@ -44,6 +47,10 @@ export interface TabsHeaderProps {
     onCollapse?(): void
 
     border?: React.CSSProperties['border']
+
+    currentActive: string | number
+
+    innerPosition?: InnerPosition
 }
 
 export interface TabsProps {
@@ -76,6 +83,10 @@ export interface TabsProps {
     border?: React.CSSProperties['border']
 
     color?: React.CSSProperties['color']
+
+    navAnimation?: boolean
+
+    innerPosition?: InnerPosition
 }
 
 export interface TabsState {
@@ -109,4 +120,6 @@ export interface TabProps {
     align: Align
 
     isLast: boolean
+
+    navAnimation: boolean
 }
