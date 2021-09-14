@@ -1,10 +1,13 @@
 import React, { useEffect, useRef } from 'react'
 import useSafeState from '@/hooks/useSafeState'
 import { tabsClass } from '@/styles'
+import ReactDOM from 'react-dom'
+import { planeClass } from '@/styles/spin'
 import { TabsHeaderProps } from './type'
 import Button from '../Button'
 import Tab from './Tab'
 import icons from '../icons'
+import Dropdown from '../Dropdown'
 import useHideTabs from './hooks/useHideTabs'
 
 // 点击Tab留出的空隙
@@ -27,6 +30,7 @@ const Header: React.FC<TabsHeaderProps> = props => {
         currentActive,
         border,
         innerPosition,
+        rightOverflow,
     } = props
 
     const innerElementRef = useRef<HTMLDivElement>()
@@ -36,6 +40,8 @@ const Header: React.FC<TabsHeaderProps> = props => {
     const tabsWrapperElementRef = useRef<HTMLDivElement>()
 
     const navElementRef = useRef<HTMLDivElement>()
+
+    const tabMethodMap = useRef(new Map<number, Function>())
 
     useEffect(() => {
         setPosition()
@@ -52,6 +58,18 @@ const Header: React.FC<TabsHeaderProps> = props => {
     }, [innerPosition, isVertical, shape, currentActive])
 
     const { hideTabs } = useHideTabs({ scrollElementRef, innerElementRef, tabs, isVertical, attribute })
+
+    const dropDownData = hideTabs.map(tab => {
+        return {
+            content: tab.tab,
+            disabled: tab.disabled,
+            onClick() {
+                const method = tabMethodMap.current.get(tab.id)
+                console.log('1111', method)
+                method?.()
+            },
+        }
+    })
 
     function resetNavPosition() {
         if (!navElementRef.current) return
@@ -186,7 +204,14 @@ const Header: React.FC<TabsHeaderProps> = props => {
                     >
                         {tabs.map(({ tab, id, ...other }) => {
                             return (
-                                <Tab {...other} key={id} id={id} moveToCenter={moveToCenter} onClick={handleClick}>
+                                <Tab
+                                    {...other}
+                                    key={id}
+                                    id={id}
+                                    moveToCenter={moveToCenter}
+                                    onClick={handleClick}
+                                    tabMethodMap={tabMethodMap}
+                                >
                                     {tab}
                                 </Tab>
                             )
@@ -196,10 +221,27 @@ const Header: React.FC<TabsHeaderProps> = props => {
                     </div>
                 </div>
 
-                {overflow && (
+                {rightOverflow === 'scroll' && overflow && (
                     <div onClick={handleMove.bind(this, false)} className={tabsClass('scroll-next')}>
                         {isVertical ? icons.AngleRight : icons.AngleRight}
                     </div>
+                )}
+
+                {rightOverflow === 'more' && overflow && (
+                    <Dropdown
+                        data={dropDownData}
+                        absolute
+                        className={tabsClass('drop-down')}
+                        listClassName={tabsClass('drop-down-list')}
+                        animation={false}
+                        renderPlaceholder={(_, __, onClick) => {
+                            return (
+                                <div className={tabsClass('more')} onClick={onClick}>
+                                    {icons.Ellipsis}
+                                </div>
+                            )
+                        }}
+                    />
                 )}
             </div>
 

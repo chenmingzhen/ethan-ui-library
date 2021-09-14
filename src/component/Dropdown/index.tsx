@@ -7,12 +7,14 @@ import { getParent } from '@/utils/dom/element'
 import { dropdownClass } from '@/styles'
 import { docSize } from '@/utils/dom/document'
 import { getUidStr } from '@/utils/uid'
+import classnames from 'classnames'
 import Button from '../Button'
 import List from '../List'
 import Item from './Item'
 import absoluteList from '../List/AbsoluteList'
 import absoluteConsumer from '../Table/context'
 import Caret from '../icons/Caret'
+import { PLACEHOLDER } from '../Image/variable'
 
 // 执行顺序 constructor bindList
 
@@ -142,7 +144,7 @@ class Dropdown extends PureComponent {
     }
 
     renderButton(placeholder) {
-        const { type, outline, size, disabled, isSub } = this.props
+        const { type, outline, size, disabled, isSub, renderPlaceholder } = this.props
         const buttonClassName = dropdownClass('button', !placeholder && 'split-button')
         const spanClassName = dropdownClass('button-content')
         const caret = (
@@ -165,6 +167,10 @@ class Dropdown extends PureComponent {
             )
         }
 
+        if (renderPlaceholder) {
+            return renderPlaceholder(disabled, PLACEHOLDER, this.handleFocus)
+        }
+
         return (
             <Button
                 disabled={disabled}
@@ -182,7 +188,7 @@ class Dropdown extends PureComponent {
     }
 
     renderList(data, placeholder, position) {
-        const { width, onClick, columns, renderItem, absolute } = this.props
+        const { width, onClick, columns, renderItem, absolute, listClassName } = this.props
         if (!Array.isArray(data) || data.length === 0) return null
         const { DropdownList } = this
         return [
@@ -190,7 +196,7 @@ class Dropdown extends PureComponent {
                 absolute={absolute}
                 parentElement={this.element}
                 position={position}
-                className={dropdownClass('menu', columns > 1 && 'box-list')}
+                className={classnames(dropdownClass('menu', columns > 1 && 'box-list'), listClassName)}
                 style={{ width }}
                 key="list"
                 focus={this.state.show}
@@ -270,6 +276,8 @@ Dropdown.propTypes = {
     trigger: PropTypes.oneOf(['click', 'hover']),
     width: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
     animation: PropTypes.bool,
+    listClassName: PropTypes.string,
+    renderButton: PropTypes.func,
 }
 
 Dropdown.defaultProps = {

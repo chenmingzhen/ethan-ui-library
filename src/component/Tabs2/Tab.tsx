@@ -20,6 +20,7 @@ const Tab: React.FC<TabProps> = props => {
         moveToCenter,
         align,
         navAnimation,
+        tabMethodMap,
     } = props
 
     const uid = useRef(getUidStr()).current
@@ -77,6 +78,10 @@ const Tab: React.FC<TabProps> = props => {
 
         if (isActive) handleClick(true)
     }, [])
+
+    React.useEffect(() => {
+        tabMethodMap.current.set(id, handleClick)
+    }, [handleClick])
 
     if (children?.type?.isTabLink) {
         return React.cloneElement(children, { ...newProps })

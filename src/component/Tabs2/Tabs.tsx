@@ -15,6 +15,7 @@ class Tabs extends PureComponent<TabsProps, TabsState> {
         lazy: true,
         shape: 'normal',
         navAnimation: true,
+        rightOverflow: 'more',
     }
 
     get align(): { align: Align; isVertical: boolean } {
@@ -107,6 +108,7 @@ class Tabs extends PureComponent<TabsProps, TabsState> {
                 border={border}
                 currentActive={this.active}
                 innerPosition={innerPosition}
+                rightOverflow={this.props.rightOverflow}
             />
         )
     }
