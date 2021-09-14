@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react'
-import { Tab } from '../type'
+import React, { useState, useEffect, useRef, useMemo } from 'react'
+import { Tab, TabMoveMap } from '../type'
 
 interface UseHideTabsParams {
     tabs: Tab[]
@@ -17,6 +17,23 @@ const useHideTabs = (props: UseHideTabsParams) => {
     const [hideTabs, setTabs] = useState<Tab[]>([])
 
     const { tabs, isVertical, attribute, scrollElementRef, innerElementRef } = props
+
+    const tabMoveMap = useRef<TabMoveMap>(new Map())
+
+    // TODO 完善Dropdown后完善类型
+    const dropDownData = useMemo(() => {
+        return hideTabs.map(tab => {
+            return {
+                content: tab.tab,
+                disabled: tab.disabled,
+                onClick() {
+                    const method = tabMoveMap.current.get(tab.id)
+
+                    method?.()
+                },
+            }
+        })
+    }, [hideTabs])
 
     useEffect(() => {
         let startIndex = 0
@@ -70,7 +87,7 @@ const useHideTabs = (props: UseHideTabsParams) => {
         setTabs(newHideTabs)
     }, [attribute])
 
-    return { hideTabs }
+    return { dropDownData, tabMoveMap }
 }
 
 export default useHideTabs

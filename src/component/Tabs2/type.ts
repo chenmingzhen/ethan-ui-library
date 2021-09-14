@@ -4,9 +4,10 @@ export type Align = 'left' | 'right' | 'vertical-left' | 'vertical-right' | 'bot
 
 export type Shape = 'card' | 'line' | 'button' | 'bordered' | 'dash' | 'normal'
 
-export type InnerPosition = 'left' | 'center' | 'right'
+export type OverflowIcon = 'scroll' | 'more'
 
-export type RightOverflow = 'scroll' | 'more'
+export type TabMoveMap = Map<Tab['id'], () => void>
+
 export interface Tab {
     id: string | number
 
@@ -52,9 +53,7 @@ export interface TabsHeaderProps {
 
     currentActive: string | number
 
-    innerPosition?: InnerPosition
-
-    rightOverflow?: RightOverflow
+    overflowIcon?: OverflowIcon
 }
 
 export interface TabsProps {
@@ -90,9 +89,7 @@ export interface TabsProps {
 
     navAnimation?: boolean
 
-    innerPosition?: InnerPosition
-
-    rightOverflow?: RightOverflow
+    overflowIcon?: OverflowIcon
 }
 
 export interface TabsState {
@@ -127,5 +124,5 @@ export interface TabProps {
 
     isLast: boolean
 
-    navAnimation: boolean
+    tabMoveMap: React.RefObject<TabMoveMap>
 }

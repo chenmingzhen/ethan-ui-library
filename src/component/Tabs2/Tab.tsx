@@ -19,8 +19,7 @@ const Tab: React.FC<TabProps> = props => {
         id,
         moveToCenter,
         align,
-        navAnimation,
-        tabMethodMap,
+        tabMoveMap,
     } = props
 
     const uid = useRef(getUidStr()).current
@@ -49,7 +48,7 @@ const Tab: React.FC<TabProps> = props => {
         return style
     }, null)
 
-    function handleClick(init) {
+    function handleClick(init?: boolean | React.MouseEvent) {
         if (disabled) return
 
         if (init !== true) onClick(id, isActive)
@@ -80,7 +79,7 @@ const Tab: React.FC<TabProps> = props => {
     }, [])
 
     React.useEffect(() => {
-        tabMethodMap.current.set(id, handleClick)
+        tabMoveMap.current.set(id, handleClick)
     }, [handleClick])
 
     if (children?.type?.isTabLink) {

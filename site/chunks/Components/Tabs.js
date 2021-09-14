@@ -74,14 +74,44 @@ const examples = [
     rawText: require('!raw-loader!doc/pages/components/Tabs/example-05-extra.tsx').default,
     },
     {
-    name: '06-scrollx',
+    name: '06-alignx',
+    title: locate(
+    '对齐 \n 设置 align',
+    'Align \n set align'
+    ),
+    component: require('doc/pages/components/Tabs/example-06-align.tsx').default,
+    // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
+    rawText: require('!raw-loader!doc/pages/components/Tabs/example-06-align.tsx').default,
+    },
+    {
+    name: '07-scrollx',
     title: locate(
     '滚动 \n 超出长度时，会自动出现滚动按钮',
     'Scroll \n The slide button is displayed when the Tabs length exceeds the parent container'
     ),
-    component: require('doc/pages/components/Tabs/example-06-scroll.tsx').default,
+    component: require('doc/pages/components/Tabs/example-07-scroll.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Tabs/example-06-scroll.tsx').default,
+    rawText: require('!raw-loader!doc/pages/components/Tabs/example-07-scroll.tsx').default,
+    },
+    {
+    name: '08-scroll-morex',
+    title: locate(
+    ' \n 可设置不同的滚动图标',
+    ' \n Different scroll icons can be set'
+    ),
+    component: require('doc/pages/components/Tabs/example-08-scroll-more.tsx').default,
+    // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
+    rawText: require('!raw-loader!doc/pages/components/Tabs/example-08-scroll-more.tsx').default,
+    },
+    {
+    name: '09-scroll-verticalx',
+    title: locate(
+    ' \n 垂直方向滚动',
+    ' \n Vertical scroll'
+    ),
+    component: require('doc/pages/components/Tabs/example-09-scroll-vertical.tsx').default,
+    // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
+    rawText: require('!raw-loader!doc/pages/components/Tabs/example-09-scroll-vertical.tsx').default,
     },
 ]
 

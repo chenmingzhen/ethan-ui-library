@@ -7,9 +7,22 @@
 .@{tabs-prefix} {
     position: relative;
 
+    // :not(&-vertical) {
+    //     &-drop-down {
+    //         height: 100%;
+    //     }
+    // }
+
     &-drop-down {
-        height: 100%;
+        &:not(.@{tabs-prefix}-vertical) {
+            height: 100%;
+        }
+
+        &:is(.@{tabs-prefix}-vertical) {
+            width: 100%;
+        }
     }
+
 
     &-drop-down-list {
         max-height: 200px;
@@ -59,7 +72,7 @@
             transition: color @tabs-animation-duration-time;
         }
 
-        .@{tabs-prefix}-tab + .@{tabs-prefix}-tab {
+        .@{tabs-prefix}-tab+.@{tabs-prefix}-tab {
             margin-left: @tabs-link-spacing;
         }
 
@@ -67,7 +80,7 @@
             border: 1px solid #ddd;
             margin-bottom: 0;
 
-            & + .@{tabs-prefix}-tab-bordered {
+            &+.@{tabs-prefix}-tab-bordered {
                 margin-left: @tabs-button-spacing;
             }
 
@@ -178,7 +191,7 @@
         display: flex;
         justify-content: flex-start;
 
-        > .@{tabs-prefix}-header {
+        >.@{tabs-prefix}-header {
             flex-direction: column;
 
             .@{tabs-prefix}-inner {
@@ -188,7 +201,7 @@
                     display: block;
                 }
 
-                .@{tabs-prefix}-tab + .@{tabs-prefix}-tab {
+                .@{tabs-prefix}-tab+.@{tabs-prefix}-tab {
                     margin-top: @tabs-link-spacing;
                     margin-left: 0;
                 }
@@ -211,7 +224,7 @@
             }
         }
 
-        > .@{tabs-prefix}-panel {
+        >.@{tabs-prefix}-panel {
             flex: 1;
         }
     }
@@ -287,20 +300,9 @@
         .@{tabs-prefix}-active {
             color: @tabs-line-active-color;
 
-            // &:after {
-            //   bottom: 0;
-            //   left: 50%;
-            //   transform: translateX(-50%);
-            //   position: absolute;
-            //   width: 24px;
-            //   height: 3px;
-            //   border-radius: 3px;
-            //   background: @tabs-line-active-color;
-            //   content: ' ';
-            // }
         }
 
-        .@{tabs-prefix}-nav {
+        .@{tabs-prefix}-nav:not(.@{tabs-prefix}-vertical) {
             position: absolute;
             height: 3px;
             bottom: 0;
@@ -314,13 +316,7 @@
         .@{tabs-prefix}-active {
             color: @tabs-line-active-color;
 
-            // &:after {
-            //   position: absolute;
-            //   width: 100%;
-            //   height: 2px;
-            //   background: @tabs-line-active-color;
-            //   content: ' ';
-            // }
+
         }
 
         // line hover css
@@ -330,7 +326,7 @@
             }
         }
 
-        .@{tabs-prefix}-nav {
+        .@{tabs-prefix}-nav:not(.@{tabs-prefix}-vertical) {
             position: absolute;
             height: 2px;
             bottom: 0;
@@ -339,28 +335,23 @@
         }
     }
 
-    &-line:not(.@{tabs-prefix}-vertical) {
-        > .@{tabs-prefix}-header .@{tabs-prefix}-active:after {
-            bottom: 0;
-            left: 0;
+    &-line&-align-vertical-right,
+    &-line&-align-vertical-left {
+        &:is(.@{tabs-prefix}-align-vertical-right) .@{tabs-prefix}-nav {
+            left: 0
         }
-    }
 
-    &-line.@{tabs-prefix}-align-vertical-left {
-        > .@{tabs-prefix}-header .@{tabs-prefix}-active:after {
-            top: 0;
-            right: 0;
-            width: 2px;
-            height: 100%;
+        &:is(.@{tabs-prefix}-align-vertical-left) .@{tabs-prefix}-nav {
+            right: 0px
         }
-    }
 
-    &-line.@{tabs-prefix}-align-vertical-right {
-        > .@{tabs-prefix}-header .@{tabs-prefix}-active::after {
-            top: 0;
-            left: 0;
+        .@{tabs-prefix}-nav {
+            position: absolute;
             width: 2px;
-            height: 100%;
+            top: 0;
+            transition: transform 0.3s ease-in-out;
+            background: @tabs-line-active-color;
         }
+
     }
 }

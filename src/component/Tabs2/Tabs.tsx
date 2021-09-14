@@ -15,7 +15,7 @@ class Tabs extends PureComponent<TabsProps, TabsState> {
         lazy: true,
         shape: 'normal',
         navAnimation: true,
-        rightOverflow: 'more',
+        overflowIcon: 'scroll',
     }
 
     get align(): { align: Align; isVertical: boolean } {
@@ -52,16 +52,7 @@ class Tabs extends PureComponent<TabsProps, TabsState> {
     renderHeader = () => {
         const { align, isVertical } = this.align
 
-        const {
-            children,
-            shape,
-            collapsible,
-            tabBarExtraContent,
-            inactiveBackground,
-            color,
-            navAnimation,
-            innerPosition,
-        } = this.props
+        const { children, shape, collapsible, tabBarExtraContent, inactiveBackground, color, navAnimation } = this.props
 
         const tabs: Tab[] = []
 
@@ -107,8 +98,7 @@ class Tabs extends PureComponent<TabsProps, TabsState> {
                 tabBarExtraContent={tabBarExtraContent}
                 border={border}
                 currentActive={this.active}
-                innerPosition={innerPosition}
-                rightOverflow={this.props.rightOverflow}
+                overflowIcon={this.props.overflowIcon}
             />
         )
     }
@@ -126,6 +116,8 @@ class Tabs extends PureComponent<TabsProps, TabsState> {
         return (
             <div className={className} style={style}>
                 {align !== 'vertical-right' && align !== 'bottom' && this.renderHeader()}
+                panel
+                {(align === 'vertical-right' || align === 'bottom') && this.renderHeader()}
             </div>
         )
     }

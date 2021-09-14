@@ -1,9 +1,9 @@
-import React, { useEffect, useRef } from 'react'
+import React, { useEffect, useMemo, useRef } from 'react'
 import useSafeState from '@/hooks/useSafeState'
 import { tabsClass } from '@/styles'
 import ReactDOM from 'react-dom'
 import { planeClass } from '@/styles/spin'
-import { TabsHeaderProps } from './type'
+import { TabMoveMap, TabsHeaderProps } from './type'
 import Button from '../Button'
 import Tab from './Tab'
 import icons from '../icons'
@@ -29,8 +29,7 @@ const Header: React.FC<TabsHeaderProps> = props => {
         tabBarExtraContent,
         currentActive,
         border,
-        innerPosition,
-        rightOverflow,
+        overflowIcon,
     } = props
 
     const innerElementRef = useRef<HTMLDivElement>()
@@ -40,8 +39,6 @@ const Header: React.FC<TabsHeaderProps> = props => {
     const tabsWrapperElementRef = useRef<HTMLDivElement>()
 
     const navElementRef = useRef<HTMLDivElement>()
-
-    const tabMethodMap = useRef(new Map<number, Function>())
 
     useEffect(() => {
         setPosition()
@@ -55,22 +52,11 @@ const Header: React.FC<TabsHeaderProps> = props => {
         return () => {
             window.removeEventListener('resize', resetNavPosition)
         }
-    }, [innerPosition, isVertical, shape, currentActive])
+    }, [isVertical, shape, currentActive])
 
-    const { hideTabs } = useHideTabs({ scrollElementRef, innerElementRef, tabs, isVertical, attribute })
+    const { dropDownData, tabMoveMap } = useHideTabs({ scrollElementRef, innerElementRef, tabs, isVertical, attribute })
 
-    const dropDownData = hideTabs.map(tab => {
-        return {
-            content: tab.tab,
-            disabled: tab.disabled,
-            onClick() {
-                const method = tabMethodMap.current.get(tab.id)
-                console.log('1111', method)
-                method?.()
-            },
-        }
-    })
-
+    // TODO 不同方向切换时需要重制width height
     function resetNavPosition() {
         if (!navElementRef.current) return
 
@@ -82,18 +68,34 @@ const Header: React.FC<TabsHeaderProps> = props => {
 
         const bar = navElementRef.current
 
-        const itemOffsetWidth = itemElement.offsetWidth
+        if (isVertical) {
+            const itemOffsetHeight = itemElement.offsetHeight
 
-        const itemOffsetLeft = itemElement.offsetLeft
+            const itemOffsetTop = itemElement.offsetTop
 
-        if (shape === 'line') {
-            bar.style.width = `${itemOffsetWidth}px`
+            if (shape === 'line') {
+                bar.style.height = `${itemOffsetHeight}px`
 
-            bar.style.transform = `translate(${itemOffsetLeft}px,0px)`
+                bar.style.transform = `translate(0px,${itemOffsetTop}px)`
+            } else {
+                bar.style.height = `${itemOffsetHeight / 3}px`
+
+                bar.style.transform = `translate(0px,${itemOffsetTop + itemOffsetHeight / 3}px)`
+            }
         } else {
-            bar.style.width = `${itemOffsetWidth / 3}px`
+            const itemOffsetWidth = itemElement.offsetWidth
 
-            bar.style.transform = `translate(${itemOffsetLeft + itemOffsetWidth / 3}px,0px)`
+            const itemOffsetLeft = itemElement.offsetLeft
+
+            if (shape === 'line') {
+                bar.style.width = `${itemOffsetWidth}px`
+
+                bar.style.transform = `translate(${itemOffsetLeft}px,0px)`
+            } else {
+                bar.style.width = `${itemOffsetWidth / 3}px`
+
+                bar.style.transform = `translate(${itemOffsetLeft + itemOffsetWidth / 3}px,0px)`
+            }
         }
     }
 
@@ -159,7 +161,7 @@ const Header: React.FC<TabsHeaderProps> = props => {
     function buildNav() {
         if (shape !== 'line' && shape !== 'dash') return null
 
-        return <div ref={navElementRef} className={tabsClass('nav')} />
+        return <div ref={navElementRef} className={tabsClass('nav', isVertical && 'vertical')} />
     }
 
     if (shape === 'button') {
@@ -195,7 +197,7 @@ const Header: React.FC<TabsHeaderProps> = props => {
                 )}
 
                 {/* 容器 */}
-                <div ref={innerElementRef} className={tabsClass('inner')} style={{ textAlign: innerPosition }}>
+                <div ref={innerElementRef} className={tabsClass('inner')}>
                     {/* 实际内容 */}
                     <div
                         ref={scrollElementRef}
@@ -210,7 +212,7 @@ const Header: React.FC<TabsHeaderProps> = props => {
                                     id={id}
                                     moveToCenter={moveToCenter}
                                     onClick={handleClick}
-                                    tabMethodMap={tabMethodMap}
+                                    tabMoveMap={tabMoveMap}
                                 >
                                     {tab}
                                 </Tab>
@@ -221,13 +223,13 @@ const Header: React.FC<TabsHeaderProps> = props => {
                     </div>
                 </div>
 
-                {rightOverflow === 'scroll' && overflow && (
+                {overflowIcon === 'scroll' && overflow && (
                     <div onClick={handleMove.bind(this, false)} className={tabsClass('scroll-next')}>
                         {isVertical ? icons.AngleRight : icons.AngleRight}
                     </div>
                 )}
 
-                {rightOverflow === 'more' && overflow && (
+                {overflowIcon === 'more' && overflow && (
                     <Dropdown
                         data={dropDownData}
                         absolute
