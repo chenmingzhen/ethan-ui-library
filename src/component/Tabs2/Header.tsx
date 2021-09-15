@@ -54,7 +54,13 @@ const Header: React.FC<TabsHeaderProps> = props => {
         }
     }, [isVertical, shape, currentActive])
 
-    const { dropDownData, tabMoveMap } = useHideTabs({ scrollElementRef, innerElementRef, tabs, isVertical, attribute })
+    const { dropDownData, tabMoveMap } = useHideTabs({
+        scrollElementRef,
+        innerElementRef,
+        tabs,
+        isVertical,
+        attribute,
+    })
 
     // TODO 不同方向切换时需要重制width height
     function resetNavPosition() {
@@ -236,7 +242,7 @@ const Header: React.FC<TabsHeaderProps> = props => {
                         className={tabsClass('drop-down', isVertical && 'vt')}
                         listClassName={tabsClass('drop-down-list')}
                         animation={false}
-                        renderPlaceholder={(_, __, onClick) => {
+                        renderPlaceholder={(_, onClick) => {
                             return (
                                 <div className={tabsClass('more')} onClick={onClick}>
                                     {icons.Ellipsis}

@@ -14,7 +14,6 @@ import Item from './Item'
 import absoluteList from '../List/AbsoluteList'
 import absoluteConsumer from '../Table/context'
 import Caret from '../icons/Caret'
-import { PLACEHOLDER } from '../Image/variable'
 
 // 执行顺序 constructor bindList
 
@@ -168,7 +167,7 @@ class Dropdown extends PureComponent {
         }
 
         if (renderPlaceholder) {
-            return renderPlaceholder(disabled, PLACEHOLDER, this.handleFocus)
+            return renderPlaceholder(disabled, this.handleFocus)
         }
 
         return (
@@ -191,56 +190,58 @@ class Dropdown extends PureComponent {
         const { width, onClick, columns, renderItem, absolute, listClassName } = this.props
         if (!Array.isArray(data) || data.length === 0) return null
         const { DropdownList } = this
-        return [
-            <DropdownList
-                absolute={absolute}
-                parentElement={this.element}
-                position={position}
-                className={classnames(dropdownClass('menu', columns > 1 && 'box-list'), listClassName)}
-                style={{ width }}
-                key="list"
-                focus={this.state.show}
-                data-id={this.dropdownId}
-                fixed="min"
-            >
-                {data.map((d, index) => {
-                    const childPosition = positionMap[position]
-                    const itemClassName = dropdownClass(
-                        'item',
-                        !width && 'no-width',
-                        childPosition.indexOf('left') === 0 && 'item-left'
-                    )
-                    return d.children ? (
-                        <Dropdown
-                            style={{ width: '100%' }}
-                            data={d.children}
-                            disabled={d.disabled}
-                            placeholder={d.content}
-                            type="link"
-                            key={index}
-                            position={childPosition}
-                            btnColor
-                            onClick={onClick}
-                            renderItem={renderItem}
-                            trigger={this.getTrigger()}
-                            isSub
-                        />
-                    ) : (
-                        <Item
-                            data={d}
-                            key={index}
-                            onClick={d.onClick || onClick}
-                            itemClassName={itemClassName}
-                            renderItem={renderItem}
-                            columns={columns}
-                            width={width}
-                        />
-                    )
-                })}
-            </DropdownList>,
 
-            this.renderButton(placeholder),
-        ]
+        return (
+            <>
+                <DropdownList
+                    absolute={absolute}
+                    parentElement={this.element}
+                    position={position}
+                    className={classnames(dropdownClass('menu', columns > 1 && 'box-list'), listClassName)}
+                    style={{ width }}
+                    key="list"
+                    focus={this.state.show}
+                    data-id={this.dropdownId}
+                    fixed="min"
+                >
+                    {data.map((d, index) => {
+                        const childPosition = positionMap[position]
+                        const itemClassName = dropdownClass(
+                            'item',
+                            !width && 'no-width',
+                            childPosition.indexOf('left') === 0 && 'item-left'
+                        )
+                        return d.children ? (
+                            <Dropdown
+                                style={{ width: '100%' }}
+                                data={d.children}
+                                disabled={d.disabled}
+                                placeholder={d.content}
+                                type="link"
+                                key={index}
+                                position={childPosition}
+                                btnColor
+                                onClick={onClick}
+                                renderItem={renderItem}
+                                trigger={this.getTrigger()}
+                                isSub
+                            />
+                        ) : (
+                            <Item
+                                data={d}
+                                key={index}
+                                onClick={d.onClick || onClick}
+                                itemClassName={itemClassName}
+                                renderItem={renderItem}
+                                columns={columns}
+                                width={width}
+                            />
+                        )
+                    })}
+                </DropdownList>
+                {this.renderButton(placeholder)}
+            </>
+        )
     }
 
     render() {

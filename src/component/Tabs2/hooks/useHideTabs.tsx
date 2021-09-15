@@ -35,6 +35,8 @@ const useHideTabs = (props: UseHideTabsParams) => {
         })
     }, [hideTabs])
 
+    // TODO 考虑再添加overflow作为副作用的dep
+    // 因为overflow影响DOM的计算
     useEffect(() => {
         let startIndex = 0
 
@@ -63,11 +65,17 @@ const useHideTabs = (props: UseHideTabsParams) => {
 
             const startTabPos = scrollElementRef.current?.children[startIndex]?.getBoundingClientRect()
 
+            // 此处获取的innerDistance不正确 添加setTimeout后获取正确
+            // 由于在setPosition中设置了overflow副作用 会新增一个Icon的DOM位置30width
             const innerDistance = isVertical
                 ? innerElementRef.current?.offsetHeight
                 : innerElementRef.current?.offsetWidth
 
-            if (tabPos && startTabPos && startTabPos[pos] + innerDistance <= tabPos[pos]) {
+            // TODO 可能需要手动props获取自定义图标的宽高
+            // Icon的DOM位置30 width height
+            const offset = attribute > 0 ? 60 : 30
+
+            if (tabPos && startTabPos && startTabPos[pos] + innerDistance - offset <= tabPos[pos]) {
                 endIndex = i
 
                 break
@@ -77,7 +85,7 @@ const useHideTabs = (props: UseHideTabsParams) => {
         const newHideTabs = []
 
         tabs.forEach((tab, index) => {
-            if (index < startIndex || index > endIndex) {
+            if (index < startIndex || index > endIndex - 1) {
                 newHideTabs.push(tab)
             }
         })
