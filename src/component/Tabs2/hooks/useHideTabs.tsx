@@ -50,9 +50,7 @@ const useHideTabs = (props: UseHideTabsParams) => {
             for (let i = 0; i < tabs.length; i++) {
                 const tabPos = scrollElementRef.current?.children[i]?.getBoundingClientRect()
 
-                const offset = i !== 0 ? 30 * 2 : 0
-
-                if (tabPos && scrollPos && attribute + scrollPos[pos] < tabPos[pos] + offset) {
+                if (tabPos && scrollPos && attribute + scrollPos[pos] < tabPos[pos]) {
                     startIndex = i
 
                     break
@@ -65,11 +63,11 @@ const useHideTabs = (props: UseHideTabsParams) => {
 
             const startTabPos = scrollElementRef.current?.children[startIndex]?.getBoundingClientRect()
 
-            const innerWidth = innerElementRef.current?.offsetWidth
+            const innerDistance = isVertical
+                ? innerElementRef.current?.offsetHeight
+                : innerElementRef.current?.offsetWidth
 
-            const offset = i !== 0 ? 30 * 2 : 0
-
-            if (tabPos && startTabPos && startTabPos[pos] + innerWidth < tabPos[pos] + offset) {
+            if (tabPos && startTabPos && startTabPos[pos] + innerDistance <= tabPos[pos]) {
                 endIndex = i
 
                 break
