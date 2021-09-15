@@ -10,7 +10,7 @@
     position: relative;
 
     &-drop-down {
-        &:not(.@{tabs-prefix}-vt) {
+        &:not(.@{tabs-prefix}-vertical) {
             height: 100%;
 
             .@{tabs-prefix}-more {
@@ -20,7 +20,7 @@
             }
         }
 
-        &:is(.@{tabs-prefix}-vt) {
+        &:is(.@{tabs-prefix}-vertical) {
             width: 100%;
 
             .@{tabs-prefix}-more {
@@ -76,7 +76,7 @@
             transition: color @tabs-animation-duration-time;
         }
 
-        .@{tabs-prefix}-tab + .@{tabs-prefix}-tab {
+        .@{tabs-prefix}-tab+.@{tabs-prefix}-tab {
             margin-left: @tabs-link-spacing;
         }
 
@@ -84,7 +84,7 @@
             border: 1px solid #ddd;
             margin-bottom: 0;
 
-            & + .@{tabs-prefix}-tab-bordered {
+            &+.@{tabs-prefix}-tab-bordered {
                 margin-left: @tabs-button-spacing;
             }
 
@@ -195,7 +195,7 @@
         display: flex;
         justify-content: flex-start;
 
-        > .@{tabs-prefix}-header {
+        >.@{tabs-prefix}-header {
             flex-direction: column;
 
             .@{tabs-prefix}-inner {
@@ -205,7 +205,7 @@
                     display: block;
                 }
 
-                .@{tabs-prefix}-tab + .@{tabs-prefix}-tab {
+                .@{tabs-prefix}-tab+.@{tabs-prefix}-tab {
                     margin-top: @tabs-link-spacing;
                     margin-left: 0;
                 }
@@ -228,7 +228,7 @@
             }
         }
 
-        > .@{tabs-prefix}-panel {
+        >.@{tabs-prefix}-panel {
             flex: 1;
         }
     }
@@ -305,13 +305,17 @@
             color: @tabs-line-active-color;
         }
 
-        .@{tabs-prefix}-nav:not(.@{tabs-prefix}-vt) {
-            position: absolute;
-            height: 3px;
-            bottom: 0;
-            transition: transform 0.3s ease-in-out;
-            background: @tabs-line-active-color;
-            border-radius: 5px;
+        &:not(.@{tabs-prefix}-vertical) {
+
+            .@{tabs-prefix}-nav {
+                position: absolute;
+                height: 3px;
+                bottom: 0;
+                transition: transform 0.3s ease-in-out;
+                background: @tabs-line-active-color;
+                border-radius: 5px;
+            }
+
         }
     }
 
@@ -327,12 +331,14 @@
             }
         }
 
-        .@{tabs-prefix}-nav:not(.@{tabs-prefix}-vt) {
-            position: absolute;
-            height: 2px;
-            bottom: 0;
-            transition: transform 0.3s ease-in-out;
-            background: @tabs-line-active-color;
+        &:not(.@{tabs-prefix}-vertical) {
+            .@{tabs-prefix}-nav {
+                position: absolute;
+                height: 2px;
+                bottom: 0;
+                transition: transform 0.3s ease-in-out;
+                background: @tabs-line-active-color;
+            }
         }
     }
 

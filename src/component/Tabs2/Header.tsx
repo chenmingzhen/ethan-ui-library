@@ -167,7 +167,7 @@ const Header: React.FC<TabsHeaderProps> = props => {
     function buildNav() {
         if (shape !== 'line' && shape !== 'dash') return null
 
-        return <div ref={navElementRef} className={tabsClass('nav', isVertical && 'vt')} />
+        return <div ref={navElementRef} className={tabsClass('nav')} />
     }
 
     if (shape === 'button') {
@@ -239,7 +239,7 @@ const Header: React.FC<TabsHeaderProps> = props => {
                     <Dropdown
                         data={dropDownData}
                         absolute
-                        className={tabsClass('drop-down', isVertical && 'vt')}
+                        className={tabsClass('drop-down', isVertical && 'vertical')}
                         listClassName={tabsClass('drop-down-list')}
                         animation={false}
                         renderPlaceholder={(_, onClick) => {
