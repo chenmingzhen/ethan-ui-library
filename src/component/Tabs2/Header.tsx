@@ -1,9 +1,8 @@
-import React, { useEffect, useMemo, useRef } from 'react'
+import React, { useEffect, useRef } from 'react'
 import useSafeState from '@/hooks/useSafeState'
 import { tabsClass } from '@/styles'
-import ReactDOM from 'react-dom'
-import { planeClass } from '@/styles/spin'
-import { TabMoveMap, TabsHeaderProps } from './type'
+import { useUpdateEffect } from 'react-use'
+import { TabsHeaderProps } from './type'
 import Button from '../Button'
 import Tab from './Tab'
 import icons from '../icons'
@@ -40,6 +39,18 @@ const Header: React.FC<TabsHeaderProps> = props => {
 
     const navElementRef = useRef<HTMLDivElement>()
 
+    const navInitHW = useRef<{ height?: string; width?: string }>({})
+
+    useEffect(() => {
+        if (!navElementRef.current) return
+
+        const { height, width } = navElementRef.current.style
+
+        navInitHW.current.height = height
+
+        navInitHW.current.width = width
+    }, [shape])
+
     useEffect(() => {
         setPosition()
     }, [isVertical, attribute])
@@ -54,6 +65,10 @@ const Header: React.FC<TabsHeaderProps> = props => {
         }
     }, [isVertical, shape, currentActive])
 
+    useUpdateEffect(() => {
+        resetNavPosition(true)
+    }, [isVertical])
+
     const { dropDownData, tabMoveMap } = useHideTabs({
         scrollElementRef,
         innerElementRef,
@@ -63,7 +78,7 @@ const Header: React.FC<TabsHeaderProps> = props => {
     })
 
     // TODO 不同方向切换时需要重制width height
-    function resetNavPosition() {
+    function resetNavPosition(reset?: boolean | UIEvent) {
         if (!navElementRef.current) return
 
         if (shape !== 'line' && shape !== 'dash') return
@@ -73,6 +88,11 @@ const Header: React.FC<TabsHeaderProps> = props => {
         if (!itemElement) return
 
         const bar = navElementRef.current
+
+        if (reset) {
+            bar.style.height = navInitHW.current.height
+            bar.style.width = navInitHW.current.width
+        }
 
         if (isVertical) {
             const itemOffsetHeight = itemElement.offsetHeight
