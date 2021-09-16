@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react'
+import { useTimeoutFn } from 'react-use'
 import { Tab, TabMoveMap } from '../type'
 
 interface UseHideTabsParams {
@@ -35,9 +36,12 @@ const useHideTabs = (props: UseHideTabsParams) => {
         })
     }, [hideTabs])
 
-    // TODO 考虑再添加overflow作为副作用的dep
-    // 因为overflow影响DOM的计算
-    useEffect(() => {
+    const [, , run] = useTimeoutFn(throttle, 100)
+
+    // 考虑再添加overflow作为副作用的dep 因为overflow影响DOM的计算
+    useEffect(run, [attribute])
+
+    function throttle() {
         let startIndex = 0
 
         let endIndex = tabs.length - 1
@@ -91,7 +95,7 @@ const useHideTabs = (props: UseHideTabsParams) => {
         })
 
         setTabs(newHideTabs)
-    }, [attribute])
+    }
 
     return { dropDownData, tabMoveMap }
 }

@@ -2,6 +2,7 @@ import React, { useEffect, useRef } from 'react'
 import useSafeState from '@/hooks/useSafeState'
 import { tabsClass } from '@/styles'
 import { useUpdateEffect } from 'react-use'
+import normalizeWheel from '@/utils/dom/normalizeWheel'
 import { TabsHeaderProps } from './type'
 import Button from '../Button'
 import Tab from './Tab'
@@ -41,6 +42,8 @@ const Header: React.FC<TabsHeaderProps> = props => {
 
     const navInitHW = useRef<{ height?: string; width?: string }>({})
 
+    const hasBindWheel = useRef(false)
+
     useEffect(() => {
         if (!navElementRef.current) return
 
@@ -69,6 +72,28 @@ const Header: React.FC<TabsHeaderProps> = props => {
         resetNavPosition(true)
     }, [isVertical])
 
+    useEffect(() => {
+        function onWheel(e: WheelEvent) {
+            e.preventDefault()
+
+            const { pixelY } = normalizeWheel(e)
+
+            computedAttribute(pixelY)
+        }
+
+        if ((overflow || attribute > 0) && !hasBindWheel.current) {
+            innerElementRef.current.addEventListener('wheel', onWheel, { passive: false })
+
+            hasBindWheel.current = true
+
+            return () => {
+                innerElementRef.current.removeEventListener('wheel', onWheel)
+
+                hasBindWheel.current = false
+            }
+        }
+    }, [overflow, attribute])
+
     const { dropDownData, tabMoveMap } = useHideTabs({
         scrollElementRef,
         innerElementRef,
@@ -77,7 +102,21 @@ const Header: React.FC<TabsHeaderProps> = props => {
         attribute,
     })
 
-    // TODO 不同方向切换时需要重制width height
+    function computedAttribute(data) {
+        const innerAttribute = innerElementRef.current[`client${attributeString}`]
+
+        const scrollAttribute = scrollElementRef.current[`client${attributeString}`]
+
+        // 计算滑动距离
+        let newAttribute = attribute + data
+        // 距离超过左|顶
+        if (newAttribute < 0) newAttribute = 0
+        // 距离超过右|底
+        if (newAttribute + innerAttribute > scrollAttribute) newAttribute = scrollAttribute - innerAttribute
+
+        setAttribute(newAttribute)
+    }
+
     function resetNavPosition(reset?: boolean | UIEvent) {
         if (!navElementRef.current) return
 
@@ -149,16 +188,10 @@ const Header: React.FC<TabsHeaderProps> = props => {
 
     function handleMove(lt) {
         const innerAttribute = innerElementRef.current[`client${attributeString}`]
-        const scrollAttribute = scrollElementRef.current[`client${attributeString}`]
 
-        // 计算滑动距离
-        let newAttribute = attribute + (lt ? -innerAttribute : innerAttribute)
-        // 距离超过左|顶
-        if (newAttribute < 0) newAttribute = 0
-        // 距离超过右|底
-        if (newAttribute + innerAttribute > scrollAttribute) newAttribute = scrollAttribute - innerAttribute
+        const data = lt ? -innerAttribute : innerAttribute
 
-        setAttribute(newAttribute)
+        computedAttribute(data)
     }
 
     function moveToCenter(tabRect: DOMRect, last: boolean, first: boolean) {
