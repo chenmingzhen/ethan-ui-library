@@ -30,6 +30,7 @@ const Header: React.FC<TabsHeaderProps> = props => {
         currentActive,
         border,
         overflowIcon,
+        collapsed,
     } = props
 
     const innerElementRef = useRef<HTMLDivElement>()
@@ -100,6 +101,7 @@ const Header: React.FC<TabsHeaderProps> = props => {
         tabs,
         isVertical,
         attribute,
+        collapsible: !!onCollapse,
     })
 
     function computedAttribute(data) {
@@ -249,6 +251,12 @@ const Header: React.FC<TabsHeaderProps> = props => {
     return (
         <div className={tabsClass('header')}>
             <div ref={tabsWrapperElementRef} className={tabsClass('header-tabs')}>
+                {onCollapse && (
+                    <span className={tabsClass('indicator', collapsed && 'collapsed')} onClick={onCollapse}>
+                        {icons.AngleRight}
+                    </span>
+                )}
+
                 {attribute > 0 && (
                     <div onClick={handleMove.bind(this, true)} className={tabsClass('scroll-prev')}>
                         {icons.AngleLeft}

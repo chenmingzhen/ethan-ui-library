@@ -12,12 +12,14 @@ interface UseHideTabsParams {
     scrollElementRef: React.RefObject<HTMLDivElement>
 
     innerElementRef: React.RefObject<HTMLDivElement>
+
+    collapsible: boolean
 }
 
 const useHideTabs = (props: UseHideTabsParams) => {
     const [hideTabs, setTabs] = useState<Tab[]>([])
 
-    const { tabs, isVertical, attribute, scrollElementRef, innerElementRef } = props
+    const { tabs, isVertical, attribute, scrollElementRef, innerElementRef, collapsible } = props
 
     const tabMoveMap = useRef<TabMoveMap>(new Map())
 
@@ -77,7 +79,7 @@ const useHideTabs = (props: UseHideTabsParams) => {
 
             // TODO 可能需要手动props获取自定义图标的宽高
             // Icon的DOM位置30 width height
-            const offset = attribute > 0 ? 60 : 30
+            const offset = (attribute > 0 ? 60 : 30) + (collapsible ? 30 : 0)
 
             if (tabPos && startTabPos && startTabPos[pos] + innerDistance - offset <= tabPos[pos]) {
                 endIndex = i

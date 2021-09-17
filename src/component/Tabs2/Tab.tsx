@@ -82,10 +82,6 @@ const Tab: React.FC<TabProps> = props => {
         tabMoveMap.current.set(id, handleClick)
     }, [handleClick])
 
-    if (children?.type?.isTabLink) {
-        return React.cloneElement(children, { ...newProps })
-    }
-
     return <div {...newProps}>{children}</div>
 }
 

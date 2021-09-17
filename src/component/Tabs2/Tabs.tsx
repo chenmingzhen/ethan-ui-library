@@ -91,7 +91,7 @@ class Tabs extends PureComponent<TabsProps, TabsState> {
             <Header
                 isVertical={isVertical}
                 collapsed={this.state.collapsed}
-                onCollapse={undefined}
+                onCollapse={this.props.collapsible ? this.handleCollapse : undefined}
                 shape={shape}
                 onChange={this.handleChange}
                 tabs={tabs}
@@ -104,7 +104,7 @@ class Tabs extends PureComponent<TabsProps, TabsState> {
     }
 
     render = () => {
-        const { children, shape, style } = this.props
+        const { shape, style } = this.props
 
         const { align, isVertical } = this.align
 
@@ -128,6 +128,10 @@ class Tabs extends PureComponent<TabsProps, TabsState> {
         onChange?.(active)
 
         this.setState({ active })
+    }
+
+    handleCollapse = () => {
+        this.setState(prevState => ({ collapsed: !prevState.collapsed }))
     }
 }
 

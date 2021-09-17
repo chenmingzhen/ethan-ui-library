@@ -113,6 +113,16 @@ const examples = [
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
     rawText: require('!raw-loader!doc/pages/components/Tabs/example-09-scroll-vertical.tsx').default,
     },
+    {
+    name: '10-collapsiblex',
+    title: locate(
+    '展开 \n 设置 collapsible 为 true，会出现可展开图标，点击图标展开/折起内容。',
+    'Collapsible \n Set the collapsible property to true, will show the arrow icon. User can click icon to expand/collapse the content.'
+    ),
+    component: require('doc/pages/components/Tabs/example-10-collapsible.tsx').default,
+    // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
+    rawText: require('!raw-loader!doc/pages/components/Tabs/example-10-collapsible.tsx').default,
+    },
 ]
 
     const codes = undefined
