@@ -2,8 +2,9 @@ import React from 'react'
 import classnames from 'classnames'
 import { PureComponent } from '@/utils/component'
 import { tabsClass } from '@/styles'
-import { Tab, TabsProps, TabsState, Align } from './type'
+import { Tab, TabsProps, TabsState, Align, TabsPanelProps } from './type'
 import Header from './Header'
+import { ComputedPabelComponent } from './Panel'
 
 class Tabs extends PureComponent<TabsProps, TabsState> {
     static defaultProps = {
@@ -52,20 +53,16 @@ class Tabs extends PureComponent<TabsProps, TabsState> {
     renderHeader = () => {
         const { align, isVertical } = this.align
 
-        const { children, shape, collapsible, tabBarExtraContent, inactiveBackground, color, navAnimation } = this.props
+        const { children, shape, tabBarExtraContent, inactiveBackground, color, navAnimation } = this.props
 
         const tabs: Tab[] = []
 
         let { border } = this.props
 
-        React.Children.toArray(children).forEach((child: React.ReactElement<any>, i, { length }) => {
-            if (!child || !child.type) return
+        React.Children.toArray(children).forEach((child: React.ReactElement<TabsPanelProps>, i, { length }) => {
+            if (!child || !(child as any).type?.type?.IS_ETHAN_PANEL) return
 
-            const tab = child.type.isTabPanel ? child.props.tab : child.type.isTabLink ? child : undefined
-
-            if (!tab) return
-
-            const { id = i, background } = child.props
+            const { id = i, background, tab } = child.props
 
             let childBorder = child.props.border
 

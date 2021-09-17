@@ -13,7 +13,7 @@ export interface Tab {
 
     isActive: boolean
 
-    tab
+    tab: React.ReactNode
 
     isVertical: boolean
 
@@ -125,4 +125,32 @@ export interface TabProps {
     isLast: boolean
 
     tabMoveMap: React.RefObject<TabMoveMap>
+}
+
+export interface TabsPanelProps {
+    background?: string
+
+    className?: string
+
+    collapsed?: boolean
+
+    collapsible?: boolean
+
+    color?: string
+
+    children?: React.ReactNode
+
+    isActive?: boolean
+
+    style?: React.CSSProperties
+
+    lazy?: boolean
+
+    id?: string | number
+
+    tab: React.ReactNode
+
+    disabled?: boolean
+
+    border?: React.CSSProperties['border']
 }
