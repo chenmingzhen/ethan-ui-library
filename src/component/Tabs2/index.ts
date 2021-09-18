@@ -13,4 +13,4 @@ const ComputedTabs = (Tabs as unknown) as ComputedTabsComponent
 
 ComputedTabs.Panel = Panel
 
-export default Tabs
+export default ComputedTabs

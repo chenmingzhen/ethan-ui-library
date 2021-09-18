@@ -2,7 +2,7 @@ import React from 'react'
 
 export type Align = 'left' | 'right' | 'vertical-left' | 'vertical-right' | 'bottom'
 
-export type Shape = 'card' | 'line' | 'button' | 'bordered' | 'dash' | 'normal'
+export type Shape = 'card' | 'line' | 'button' | 'bordered' | 'dash'
 
 export type OverflowIcon = 'scroll' | 'more'
 
