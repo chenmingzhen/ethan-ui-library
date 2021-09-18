@@ -1,52 +1,41 @@
-// @ts-nocheck
-import React, { PureComponent } from 'react'
-import PropTypes from 'prop-types'
+import React, { useRef } from 'react'
 import classnames from 'classnames'
 import { tabsClass } from '@/styles'
 import List from '../List'
+import { TabsPanelProps } from './type'
+
+export interface ComputedPanelComponent extends React.MemoExoticComponent<React.FC<TabsPanelProps>> {
+    IS_ETHAN_PANEL: boolean
+}
 
 const CollapseList = List(['collapse'], 'fast')
 
-class Panel extends PureComponent {
-    constructor(props) {
-        super(props)
-        // 是否未触发过渲染
-        this.isPristine = true
-    }
+const Panel: React.FC<TabsPanelProps> = props => {
+    const { children, background, color, isActive, collapsible, collapsed, lazy } = props
 
-    render() {
-        const { children, background, color, isActive, collapsible, collapsed, lazy } = this.props
-        if (!isActive && this.isPristine && lazy) return null
-        this.isPristine = false
+    const hasRender = useRef(false)
 
-        const style = Object.assign({ background: background || '#fff', color }, this.props.style)
-        const className = classnames(tabsClass('panel', isActive && 'show'), this.props.className)
+    if (!isActive && !hasRender.current && lazy) return null
 
-        const result = (
-            <div style={style} className={className}>
-                {children}
-            </div>
-        )
+    hasRender.current = true
 
-        if (!collapsible) return result
+    const style = Object.assign({ background: background || '#fff', color }, props.style)
+    const className = classnames(tabsClass('panel', isActive && 'show'), props.className)
 
-        // 处理折叠情况
-        return <CollapseList show={!collapsed}>{result}</CollapseList>
-    }
+    const result = (
+        <div style={style} className={className}>
+            {children}
+        </div>
+    )
+
+    if (!collapsible) return result
+
+    // 处理折叠情况
+    return <CollapseList show={!collapsed}>{result}</CollapseList>
 }
 
-Panel.isTabPanel = true
+const ComputedPanel = (Panel as unknown) as ComputedPanelComponent
 
-Panel.propTypes = {
-    background: PropTypes.string,
-    className: PropTypes.string,
-    collapsed: PropTypes.bool,
-    collapsible: PropTypes.bool,
-    color: PropTypes.string,
-    children: PropTypes.any,
-    isActive: PropTypes.bool,
-    style: PropTypes.object,
-    lazy: PropTypes.bool,
-}
+ComputedPanel.IS_ETHAN_PANEL = true
 
-export default Panel
+export default React.memo(ComputedPanel)

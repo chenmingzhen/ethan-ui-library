@@ -5,22 +5,22 @@
  *    -- Set the collapsible property to true, will show the arrow icon. User can click icon to expand/collapse the content.
  */
 import React from 'react'
-import { Tabs2 } from 'ethan'
+import { Tabs } from 'ethan'
 
 const panelStyle = { padding: '12px 0' }
 
 export default function() {
     return (
-        <Tabs2 shape="line" collapsible>
-            <Tabs2.Panel style={panelStyle} tab="Home">
+        <Tabs shape="line" collapsible>
+            <Tabs.Panel style={panelStyle} tab="Home">
                 Content of Tab Pane 1
-            </Tabs2.Panel>
-            <Tabs2.Panel style={panelStyle} tab="Profile">
+            </Tabs.Panel>
+            <Tabs.Panel style={panelStyle} tab="Profile">
                 Content of Tab Pane 2
-            </Tabs2.Panel>
-            <Tabs2.Panel style={panelStyle} tab="Contact">
+            </Tabs.Panel>
+            <Tabs.Panel style={panelStyle} tab="Contact">
                 Content of Tab Pane 3
-            </Tabs2.Panel>
-        </Tabs2>
+            </Tabs.Panel>
+        </Tabs>
     )
 }

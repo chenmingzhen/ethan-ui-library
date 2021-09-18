@@ -1,107 +1,92 @@
-// @ts-nocheck
-import React, { PureComponent } from 'react'
-import PropTypes from 'prop-types'
+import React, { useRef, useMemo } from 'react'
 import classnames from 'classnames'
+import { getUidStr } from '@/utils/uid'
 import { tabsClass } from '@/styles'
-import { getUidStr, defer } from '@/utils/uid'
+import { TabProps } from './type'
 
-class Tab extends PureComponent {
-    constructor(props) {
-        super(props)
-        this.getActiveStyle = this.getActiveStyle.bind(this)
-        this.handleClick = this.handleClick.bind(this)
-        // 每个Tab的唯一标志
-        this.uid = `tab_unique_${getUidStr()}`
-    }
+const Tab: React.FC<TabProps> = props => {
+    const {
+        isActive,
+        background,
+        border,
+        color,
+        isVertical,
+        disabled,
+        children,
+        shape,
+        isLast,
+        onClick,
+        id,
+        moveToCenter,
+        align,
+        tabMoveMap,
+    } = props
 
-    componentDidMount() {
-        defer(() => {
-            if (this.props.isActive) this.handleClick(true)
-        })
-    }
+    const uid = useRef(getUidStr()).current
 
-    getActiveStyle() {
-        const { shape, align, background, color, border, isActive, isVertical } = this.props
+    const element = useRef<HTMLElement>()
 
+    const isBordered = shape === 'bordered'
+
+    const activeStyle = useMemo<React.CSSProperties>(() => {
         if (shape === 'line' || shape === 'dash') return {}
-
-        const style = { background, color }
 
         if (shape === 'bordered') return { background }
 
-        if (shape !== 'line' && !isVertical)
-            style.borderColor = `${border} ${border} ${isActive ? background : border} ${border}`
+        const style: React.CSSProperties = { background, color }
 
-        if (shape !== 'line' && align === 'vertical-left')
+        if (!isVertical) {
+            style.borderColor = `${border} ${border} ${isActive ? background : border} ${border}`
+        }
+
+        if (align === 'vertical-left')
             style.borderColor = `${border} ${isActive ? background : border}  ${border} ${border}`
 
-        if (shape !== 'line' && align === 'vertical-right')
+        if (align === 'vertical-right')
             style.borderColor = `${border} ${border} ${border} ${isActive ? background : border}`
 
         return style
-    }
+    }, null)
 
-    handleClick(init) {
-        const { onClick, id, isActive, disabled, last, moveToCenter } = this.props
+    function handleClick(init?: boolean | React.MouseEvent) {
         if (disabled) return
 
         if (init !== true) onClick(id, isActive)
-        if (!this.element) {
-            this.element = document.querySelector(`.${this.uid}`)
-        }
-        if (this.element && this.element.getBoundingClientRect) {
-            moveToCenter(this.element.getBoundingClientRect(), last, id === 0)
-        }
+
+        const domRect = element.current?.getBoundingClientRect?.()
+
+        domRect && moveToCenter(domRect, isLast, id === 0)
     }
 
-    render() {
-        const { isActive, disabled, children, shape } = this.props
-
-        // 获取Active的Style
-        const style = this.getActiveStyle()
-        const isBordered = shape === 'bordered'
-
-        const props = {
-            className: classnames(
-                tabsClass(
-                    'tab',
-                    isActive && (isBordered ? 'tab-bordered-active' : 'active'),
-                    disabled && 'disabled',
-                    isBordered && 'tab-bordered'
-                ),
-                this.uid
+    const newProps = {
+        className: classnames(
+            tabsClass(
+                'tab',
+                isActive && (isBordered ? 'tab-bordered-active' : 'active'),
+                disabled && 'disabled',
+                isBordered && 'tab-bordered'
             ),
-            onClick: this.handleClick,
-            style,
-        }
-
-        // 对Link做处理
-        if (children.type && children.type.isTabLink) {
-            return React.cloneElement(children, { ...props })
-        }
-
-        return <div {...props}>{children}</div>
+            uid
+        ),
+        onClick: handleClick,
+        style: activeStyle,
     }
-}
 
-Tab.propTypes = {
-    background: PropTypes.string,
-    border: PropTypes.string,
-    children: PropTypes.any,
-    color: PropTypes.string,
-    disabled: PropTypes.bool,
-    isVertical: PropTypes.bool,
-    id: PropTypes.any.isRequired,
-    isActive: PropTypes.bool.isRequired,
-    moveToCenter: PropTypes.func.isRequired,
-    onClick: PropTypes.func.isRequired,
-    shape: PropTypes.string,
-    align: PropTypes.oneOf(['left', 'right', 'vertical-left', 'vertical-right']),
-    last: PropTypes.bool,
+    React.useEffect(() => {
+        element.current = document.querySelector(`.${uid}`)
+
+        if (isActive) handleClick(true)
+    }, [])
+
+    React.useEffect(() => {
+        tabMoveMap.current.set(id, handleClick)
+    }, [handleClick])
+
+    return <div {...newProps}>{children}</div>
 }
 
 Tab.defaultProps = {
     border: 'transparent',
 }
 
-export default Tab
+export default React.memo(Tab)

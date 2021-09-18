@@ -1,10 +1,16 @@
+import React from 'react'
 import Tabs from './Tabs'
 import Panel from './Panel'
-import Link from './Link'
+import { TabsProps } from './type'
 
-Tabs.Panel = Panel
-Tabs.Link = Link
+export * from './type'
 
-Tabs.displayName = 'EthanTabs'
+export interface ComputedTabsComponent extends React.ClassicComponentClass<TabsProps> {
+    Panel: typeof Panel
+}
 
-export default Tabs
+const ComputedTabs = (Tabs as unknown) as ComputedTabsComponent
+
+ComputedTabs.Panel = Panel
+
+export default ComputedTabs

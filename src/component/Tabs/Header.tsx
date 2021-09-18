@@ -1,228 +1,324 @@
-// @ts-nocheck
-import React from 'react'
-import PropTypes from 'prop-types'
-import immer from 'immer'
-import { PureComponent } from '@/utils/component'
+import React, { useEffect, useRef } from 'react'
+import useSafeState from '@/hooks/useSafeState'
 import { tabsClass } from '@/styles'
+import { useUpdateEffect } from 'react-use'
+import normalizeWheel from '@/utils/dom/normalizeWheel'
+import { TabsHeaderProps } from './type'
 import Button from '../Button'
-import icons from '../icons'
 import Tab from './Tab'
+import icons from '../icons'
+import Dropdown from '../Dropdown'
+import useHideTabs from './hooks/useHideTabs'
 
+// 点击Tab留出的空隙
 const REDUNDANT = 30
-class Header extends PureComponent {
-    constructor(props) {
-        super(props)
 
-        this.state = {
-            attribute: 0,
-            overflow: false,
-            attributeString: '',
+const Header: React.FC<TabsHeaderProps> = props => {
+    const [attribute, setAttribute] = useSafeState(0)
+
+    const [overflow, setOverflow] = useSafeState(false)
+
+    const [attributeString, setAttributeString] = useSafeState('')
+
+    const {
+        isVertical,
+        onChange,
+        onCollapse,
+        shape,
+        tabs,
+        tabBarExtraContent,
+        currentActive,
+        border,
+        overflowIcon,
+        collapsed,
+    } = props
+
+    const innerElementRef = useRef<HTMLDivElement>()
+
+    const scrollElementRef = useRef<HTMLDivElement>()
+
+    const tabsWrapperElementRef = useRef<HTMLDivElement>()
+
+    const navElementRef = useRef<HTMLDivElement>()
+
+    const navInitHW = useRef<{ height?: string; width?: string }>({})
+
+    const hasBindWheel = useRef(false)
+
+    useEffect(() => {
+        if (!navElementRef.current) return
+
+        const { height, width } = navElementRef.current.style
+
+        navInitHW.current.height = height
+
+        navInitHW.current.width = width
+    }, [shape])
+
+    useEffect(() => {
+        setPosition()
+    }, [isVertical, attribute])
+
+    useEffect(resetNavPosition, [currentActive, shape, attribute])
+
+    useEffect(() => {
+        window.addEventListener('resize', resetNavPosition)
+
+        return () => {
+            window.removeEventListener('resize', resetNavPosition)
+        }
+    }, [isVertical, shape, currentActive])
+
+    useUpdateEffect(() => {
+        resetNavPosition(true)
+    }, [isVertical])
+
+    useEffect(() => {
+        function onWheel(e: WheelEvent) {
+            e.preventDefault()
+
+            const { pixelY } = normalizeWheel(e)
+
+            computedAttribute(pixelY)
         }
 
-        this.setPosition = this.setPosition.bind(this)
-        this.bindInner = this.bindElement.bind(this, 'innerElement')
-        this.bindWrapper = this.bindElement.bind(this, 'wrapperElement')
-        this.bindScroll = this.bindElement.bind(this, 'scrollElement')
-        this.renderTab = this.renderTab.bind(this)
-        this.handleClick = this.handleClick.bind(this)
-        this.handlePrevClick = this.handleMove.bind(this, true)
-        this.handleNextClick = this.handleMove.bind(this, false)
-        this.moveToCenter = this.moveToCenter.bind(this)
-        this.handleCollapse = this.handleCollapse.bind(this)
-    }
+        if ((overflow || attribute > 0) && !hasBindWheel.current) {
+            innerElementRef.current.addEventListener('wheel', onWheel, { passive: false })
 
-    componentDidMount() {
-        super.componentDidMount()
-        const { isVertical } = this.props
-        this.setPosition(isVertical)
-    }
+            hasBindWheel.current = true
 
-    componentDidUpdate() {
-        const { isVertical } = this.props
-        this.setPosition(isVertical)
-    }
+            return () => {
+                innerElementRef.current.removeEventListener('wheel', onWheel)
 
-    setPosition(isVertical) {
-        const attributeString = isVertical ? 'Height' : 'Width'
-        if (!this.innerElement) return
-        // 元素的宽||高
-        const innerAttribute = this.innerElement[`client${attributeString}`]
-        const scrollAttribute = this.scrollElement[`client${attributeString}`]
-        const { attribute: domAttribute } = this.state
-        this.setState({ overflow: scrollAttribute > domAttribute + innerAttribute, attributeString })
-    }
+                hasBindWheel.current = false
+            }
+        }
+    }, [overflow, attribute])
 
-    bindElement(name, el) {
-        this[name] = el
-    }
+    const { dropDownData, tabMoveMap } = useHideTabs({
+        scrollElementRef,
+        innerElementRef,
+        tabs,
+        isVertical,
+        attribute,
+        collapsible: !!onCollapse,
+    })
 
-    /**
-     * 左右按钮点击移动
-     * @param lt true 左边 false 右边
-     */
-    handleMove(lt) {
-        const { attributeString, attribute: a } = this.state
+    function computedAttribute(data) {
+        const innerAttribute = innerElementRef.current[`client${attributeString}`]
 
-        const innerAttribute = this.innerElement[`client${attributeString}`]
-        const scrollAttribute = this.scrollElement[`client${attributeString}`]
+        const scrollAttribute = scrollElementRef.current[`client${attributeString}`]
 
         // 计算滑动距离
-        let attribute = a + (lt ? -innerAttribute : innerAttribute)
+        let newAttribute = attribute + data
         // 距离超过左|顶
-        if (attribute < 0) attribute = 0
+        if (newAttribute < 0) newAttribute = 0
         // 距离超过右|底
-        if (attribute + innerAttribute > scrollAttribute) attribute = scrollAttribute - innerAttribute
+        if (newAttribute + innerAttribute > scrollAttribute) newAttribute = scrollAttribute - innerAttribute
 
-        this.setState({ attribute })
+        setAttribute(newAttribute)
     }
 
-    /**
-     * Tab被点击时顺带触发此事件 Tab回调执行
-     * @param tabRect
-     * @param last 是否是最后一个Tab
-     * @param first 是否是第一个Tab
-     */
-    moveToCenter(tabRect, last, first) {
-        const { isVertical } = this.props
+    function resetNavPosition(reset?: boolean | UIEvent) {
+        if (!navElementRef.current) return
+
+        if (shape !== 'line' && shape !== 'dash') return
+
+        const itemElement: HTMLElement = scrollElementRef.current.children[currentActive]
+
+        if (!itemElement) return
+
+        const bar = navElementRef.current
+
+        if (reset) {
+            bar.style.height = navInitHW.current.height
+            bar.style.width = navInitHW.current.width
+        }
+
+        if (isVertical) {
+            const itemOffsetHeight = itemElement.offsetHeight
+
+            const itemOffsetTop = itemElement.offsetTop
+
+            if (shape === 'line') {
+                bar.style.height = `${itemOffsetHeight}px`
+
+                bar.style.transform = `translate(0px,${itemOffsetTop}px)`
+            } else {
+                bar.style.height = `${itemOffsetHeight / 3}px`
+
+                bar.style.transform = `translate(0px,${itemOffsetTop + itemOffsetHeight / 3}px)`
+            }
+        } else {
+            const itemOffsetWidth = itemElement.offsetWidth
+
+            const itemOffsetLeft = itemElement.offsetLeft
+
+            if (shape === 'line') {
+                bar.style.width = `${itemOffsetWidth}px`
+
+                bar.style.transform = `translate(${itemOffsetLeft}px,0px)`
+            } else {
+                bar.style.width = `${itemOffsetWidth / 3}px`
+
+                bar.style.transform = `translate(${itemOffsetLeft + itemOffsetWidth / 3}px,0px)`
+            }
+        }
+    }
+
+    function setPosition() {
+        if (!innerElementRef.current) return
+
+        const newAttributeString = isVertical ? 'Height' : 'Width'
+
+        const innerAttribute = innerElementRef.current[`client${newAttributeString}`]
+
+        const scrollAttribute = scrollElementRef.current[`client${newAttributeString}`]
+
+        const newOverflow = scrollAttribute > attribute + innerAttribute
+
+        setOverflow(newOverflow)
+
+        setAttributeString(newAttributeString)
+    }
+
+    function handleClick(id: string | number, isActive: boolean) {
+        if (isActive) return
+
+        onChange?.(id)
+    }
+
+    function handleMove(lt) {
+        const innerAttribute = innerElementRef.current[`client${attributeString}`]
+
+        const data = lt ? -innerAttribute : innerAttribute
+
+        computedAttribute(data)
+    }
+
+    function moveToCenter(tabRect: DOMRect, last: boolean, first: boolean) {
         const positions = isVertical ? ['top', 'bottom'] : ['left', 'right']
-        const rect = this.innerElement.getBoundingClientRect()
+
+        const rect = innerElementRef.current.getBoundingClientRect()
         // 比较Tab与容器的位置
-        // marginLeft负数 左边
+
         if (tabRect[positions[0]] < rect[positions[0]]) {
-            // Tab 小于 容器 Tab在容器左或在容器上了
-            // 点击pre箭头触发
-            this.setState(
-                immer(draft => {
-                    console.log(draft.attribute)
-                    draft.attribute -= rect[positions[0]] - tabRect[positions[0]] + (first ? 0 : REDUNDANT)
-                    console.log(draft.attribute)
-                })
-            )
+            const newAttribute = attribute - (rect[positions[0]] - tabRect[positions[0]] + (first ? 0 : REDUNDANT))
+
+            setAttribute(newAttribute)
         } else if (tabRect[positions[1]] > rect[positions[1]]) {
-            // 点击next箭头触发
-            this.setState(
-                immer(draft => {
-                    draft.attribute +=
-                        tabRect[positions[1]] -
-                        rect[positions[1]] -
-                        (draft.attribute === 0 ? -30 : 0) +
-                        (last ? 0 : REDUNDANT)
-                })
-            )
+            const newAttribute =
+                attribute +
+                tabRect[positions[1]] -
+                rect[positions[1]] +
+                // 如果为没有偏差值 设置偏差值后 左边会出现箭头 需要加上箭头的宽度
+                (attribute === 0 ? 30 : 0) +
+                (last ? 0 : REDUNDANT)
+
+            setAttribute(newAttribute)
         }
     }
 
-    handleClick(id, isActive) {
-        if (!isActive) {
-            if (this.props.onChange) this.props.onChange(id)
-            this.ignoreNextCollapse = true
-            setTimeout(() => this.handleCollapse(false), 200)
-        }
+    function buildNav() {
+        if (shape !== 'line' && shape !== 'dash') return null
+
+        return <div ref={navElementRef} className={tabsClass('nav')} />
     }
 
-    /**
-     * 折叠处理
-     * @param e
-     */
-    handleCollapse(e) {
-        const { onCollapse, collapsed } = this.props
-        if (!onCollapse) return
-
-        if (typeof e === 'boolean') {
-            onCollapse(e)
-            return
-        }
-
-        if (this.ignoreNextCollapse) {
-            this.ignoreNextCollapse = false
-            return
-        }
-
-        onCollapse(!collapsed)
-    }
-
-    renderTab({ tab, id, ...other }) {
-        return (
-            <Tab {...other} key={id} id={id} moveToCenter={this.moveToCenter} onClick={this.handleClick}>
-                {tab}
-            </Tab>
-        )
-    }
-
-    renderButtons() {
-        const { onChange, tabs } = this.props
+    if (shape === 'button') {
         return (
             <Button.Group>
-                {tabs.map(tab => (
-                    <Button
-                        key={tab.id}
-                        onClick={tab.isActive ? undefined : onChange.bind(this, tab.id)}
-                        className={tabsClass(tab.isActive && 'button-active')}
-                        disabled={tab.disabled}
-                    >
-                        {tab.tab}
-                    </Button>
-                ))}
+                {tabs.map(({ id, isActive, disabled, tab }) => {
+                    return (
+                        <Button
+                            key={id}
+                            onClick={isActive ? undefined : onChange.bind(this, id)}
+                            className={tabsClass(isActive && 'button-active')}
+                            disabled={disabled}
+                        >
+                            {tab}
+                        </Button>
+                    )
+                })}
             </Button.Group>
         )
     }
 
-    renderTabs() {
-        const { border, onCollapse, collapsed, tabs, isVertical, tabBarExtraContent, tabBarStyle, shape } = this.props
-        const { attribute, overflow } = this.state
+    const position = isVertical ? 'Top' : 'Left'
 
-        const position = isVertical ? 'Top' : 'Left'
-        const showBorder = shape !== 'bordered' && shape !== 'dash'
+    const showBorder = shape !== 'bordered' && shape !== 'dash'
 
-        return (
-            <div onClick={this.handleCollapse} className={tabsClass('header')} style={tabBarStyle || {}}>
-                <div ref={this.bindWrapper} className={tabsClass('header-tabs')}>
-                    {onCollapse && (
-                        <span className={tabsClass('indicator', collapsed && 'collapsed')}>{icons.AngleRight}</span>
-                    )}
-                    {attribute > 0 && (
-                        <div onClick={this.handlePrevClick} className={tabsClass('scroll-prev')}>
-                            {icons.AngleLeft}
-                        </div>
-                    )}
-                    {/* 宽度容器 */}
-                    <div ref={this.bindInner} className={tabsClass('inner')}>
-                        {/* 实际内容 */}
-                        <div
-                            ref={this.bindScroll}
-                            style={{ [`margin${position}`]: -attribute }}
-                            className={tabsClass('scroll')}
-                        >
-                            {tabs.map(this.renderTab)}
-                        </div>
+    return (
+        <div className={tabsClass('header')}>
+            <div ref={tabsWrapperElementRef} className={tabsClass('header-tabs')}>
+                {onCollapse && (
+                    <span className={tabsClass('indicator', collapsed && 'collapsed')} onClick={onCollapse}>
+                        {icons.AngleRight}
+                    </span>
+                )}
+
+                {attribute > 0 && (
+                    <div onClick={handleMove.bind(this, true)} className={tabsClass('scroll-prev')}>
+                        {icons.AngleLeft}
                     </div>
-                    {overflow && (
-                        <div onClick={this.handleNextClick} className={tabsClass('scroll-next')}>
-                            {isVertical ? icons.AngleRight : icons.AngleRight}
-                        </div>
-                    )}
+                )}
+
+                {/* 容器 */}
+                <div ref={innerElementRef} className={tabsClass('inner')}>
+                    {/* 实际内容 */}
+                    <div
+                        ref={scrollElementRef}
+                        style={{ [`margin${position}`]: -attribute }}
+                        className={tabsClass('scroll')}
+                    >
+                        {tabs.map(({ tab, id, ...other }) => {
+                            return (
+                                <Tab
+                                    {...other}
+                                    key={id}
+                                    id={id}
+                                    moveToCenter={moveToCenter}
+                                    onClick={handleClick}
+                                    tabMoveMap={tabMoveMap}
+                                >
+                                    {tab}
+                                </Tab>
+                            )
+                        })}
+
+                        {buildNav()}
+                    </div>
                 </div>
-                {tabBarExtraContent && <div className={tabsClass('extra')}>{tabBarExtraContent}</div>}
-                {showBorder && <div style={{ borderColor: border }} className={tabsClass('hr')} />}
+
+                {overflowIcon === 'scroll' && overflow && (
+                    <div onClick={handleMove.bind(this, false)} className={tabsClass('scroll-next')}>
+                        {isVertical ? icons.AngleRight : icons.AngleRight}
+                    </div>
+                )}
+
+                {overflowIcon === 'more' && overflow && (
+                    <Dropdown
+                        data={dropDownData}
+                        absolute
+                        className={tabsClass('drop-down', isVertical && 'vertical')}
+                        listClassName={tabsClass('drop-down-list')}
+                        animation={false}
+                        renderPlaceholder={(_, onClick) => {
+                            return (
+                                <div className={tabsClass('more')} onClick={onClick}>
+                                    {icons.Ellipsis}
+                                </div>
+                            )
+                        }}
+                    />
+                )}
             </div>
-        )
-    }
 
-    render() {
-        return this.props.shape === 'button' ? this.renderButtons() : this.renderTabs()
-    }
+            {tabBarExtraContent && <div className={tabsClass('extra')}>{tabBarExtraContent}</div>}
+
+            {showBorder && <div style={{ borderColor: String(border) }} className={tabsClass('hr')} />}
+        </div>
+    )
 }
 
-Header.propTypes = {
-    border: PropTypes.string,
-    collapsed: PropTypes.bool,
-    isVertical: PropTypes.bool,
-    onChange: PropTypes.func,
-    onCollapse: PropTypes.func,
-    shape: PropTypes.string,
-    tabs: PropTypes.array,
-    tabBarExtraContent: PropTypes.oneOfType([PropTypes.string, PropTypes.element]),
-    tabBarStyle: PropTypes.object,
-}
-
-export default Header
+export default React.memo(Header)
