@@ -4,7 +4,7 @@ import { PureComponent } from '@/utils/component'
 import { tabsClass } from '@/styles'
 import { Tab, TabsProps, TabsState, Align, TabsPanelProps } from './type'
 import Header from './Header'
-import { ComputedPabelComponent } from './Panel'
+import { ComputedPanelComponent } from './Panel'
 
 class Tabs extends PureComponent<TabsProps, TabsState> {
     static defaultProps = {

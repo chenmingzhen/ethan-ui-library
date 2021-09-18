@@ -4,7 +4,7 @@ import { tabsClass } from '@/styles'
 import List from '../List'
 import { TabsPanelProps } from './type'
 
-export interface ComputedPabelComponent extends React.MemoExoticComponent<React.FC<TabsPanelProps>> {
+export interface ComputedPanelComponent extends React.MemoExoticComponent<React.FC<TabsPanelProps>> {
     IS_ETHAN_PANEL: boolean
 }
 
@@ -34,7 +34,7 @@ const Panel: React.FC<TabsPanelProps> = props => {
     return <CollapseList show={!collapsed}>{result}</CollapseList>
 }
 
-const ComputedPanel = (Panel as unknown) as ComputedPabelComponent
+const ComputedPanel = (Panel as unknown) as ComputedPanelComponent
 
 ComputedPanel.IS_ETHAN_PANEL = true
 
