@@ -30,8 +30,6 @@ export interface Tab {
     border?: React.CSSProperties['border']
 
     color: React.CSSProperties['color']
-
-    navAnimation: boolean
 }
 
 export interface TabsHeaderProps {
@@ -86,8 +84,6 @@ export interface TabsProps {
     border?: React.CSSProperties['border']
 
     color?: React.CSSProperties['color']
-
-    navAnimation?: boolean
 
     overflowIcon?: OverflowIcon
 }

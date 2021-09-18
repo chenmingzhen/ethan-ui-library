@@ -1,10 +1,10 @@
-import React from 'react'
+import React, { Children } from 'react'
 import classnames from 'classnames'
 import { PureComponent } from '@/utils/component'
 import { tabsClass } from '@/styles'
 import { Tab, TabsProps, TabsState, Align, TabsPanelProps } from './type'
 import Header from './Header'
-import { ComputedPanelComponent } from './Panel'
+import Panel from './Panel'
 
 class Tabs extends PureComponent<TabsProps, TabsState> {
     static defaultProps = {
@@ -15,7 +15,6 @@ class Tabs extends PureComponent<TabsProps, TabsState> {
         inactiveBackground: 'transparent',
         lazy: true,
         shape: 'normal',
-        navAnimation: true,
         overflowIcon: 'scroll',
     }
 
@@ -53,7 +52,7 @@ class Tabs extends PureComponent<TabsProps, TabsState> {
     renderHeader = () => {
         const { align, isVertical } = this.align
 
-        const { children, shape, tabBarExtraContent, inactiveBackground, color, navAnimation } = this.props
+        const { children, shape, tabBarExtraContent, inactiveBackground, color } = this.props
 
         const tabs: Tab[] = []
 
@@ -80,7 +79,6 @@ class Tabs extends PureComponent<TabsProps, TabsState> {
                 background: background || (this.active === id ? this.props.background : inactiveBackground),
                 border: childBorder,
                 color: child.props.color || (this.active === id ? color : undefined),
-                navAnimation,
             })
         })
 
@@ -100,8 +98,28 @@ class Tabs extends PureComponent<TabsProps, TabsState> {
         )
     }
 
+    renderPanel = (child, i) => {
+        if (!child?.type?.type?.IS_ETHAN_PANEL) return
+
+        const { collapsible, lazy } = this.props
+
+        const { id = i, ...other } = (child as React.ReactElement<TabsPanelProps>).props
+
+        return (
+            <Panel
+                {...other}
+                lazy={lazy}
+                collapsed={this.state.collapsed}
+                collapsible={collapsible}
+                id={id}
+                key={id}
+                isActive={this.active === id}
+            />
+        )
+    }
+
     render = () => {
-        const { shape, style } = this.props
+        const { shape, style, children } = this.props
 
         const { align, isVertical } = this.align
 
@@ -113,7 +131,7 @@ class Tabs extends PureComponent<TabsProps, TabsState> {
         return (
             <div className={className} style={style}>
                 {align !== 'vertical-right' && align !== 'bottom' && this.renderHeader()}
-                panel
+                {Children.toArray(children).map(this.renderPanel)}
                 {(align === 'vertical-right' || align === 'bottom') && this.renderHeader()}
             </div>
         )
