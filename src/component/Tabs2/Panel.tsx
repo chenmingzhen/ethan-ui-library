@@ -15,7 +15,7 @@ const Panel: React.FC<TabsPanelProps> = props => {
 
     const hasRender = useRef(false)
 
-    if (!isActive && !hasRender && lazy) return null
+    if (!isActive && !hasRender.current && lazy) return null
 
     hasRender.current = true
 
