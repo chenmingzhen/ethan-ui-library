@@ -76,22 +76,8 @@
             transition: color @tabs-animation-duration-time;
         }
 
-        .@{tabs-prefix}-tab+.@{tabs-prefix}-tab {
+        .@{tabs-prefix}-tab + .@{tabs-prefix}-tab {
             margin-left: @tabs-link-spacing;
-        }
-
-        .@{tabs-prefix}-tab-bordered {
-            border: 1px solid #ddd;
-            margin-bottom: 0;
-
-            &+.@{tabs-prefix}-tab-bordered {
-                margin-left: @tabs-button-spacing;
-            }
-
-            &-active {
-                border-bottom-color: transparent;
-                color: @colors-primary;
-            }
         }
 
         .@{tabs-prefix}-disabled {
@@ -109,6 +95,7 @@
             bottom: 0;
             width: 100%;
             border-bottom: solid 1px transparent;
+            border-color: #ddd;
         }
 
         .@{tabs-prefix}-extra {
@@ -195,7 +182,7 @@
         display: flex;
         justify-content: flex-start;
 
-        >.@{tabs-prefix}-header {
+        > .@{tabs-prefix}-header {
             flex-direction: column;
 
             .@{tabs-prefix}-inner {
@@ -205,7 +192,7 @@
                     display: block;
                 }
 
-                .@{tabs-prefix}-tab+.@{tabs-prefix}-tab {
+                .@{tabs-prefix}-tab + .@{tabs-prefix}-tab {
                     margin-top: @tabs-link-spacing;
                     margin-left: 0;
                 }
@@ -228,7 +215,7 @@
             }
         }
 
-        >.@{tabs-prefix}-panel {
+        > .@{tabs-prefix}-panel {
             flex: 1;
         }
     }
@@ -300,13 +287,30 @@
         }
     }
 
+    &-card {
+        .@{tabs-prefix}-tab {
+            border: 1px solid #f0f0f0;
+            margin-bottom: 0;
+            background: #fafafa;
+
+            & + .@{tabs-prefix}-tab {
+                margin-left: 2px;
+            }
+        }
+
+        .@{tabs-prefix}-active {
+            border-bottom-color: transparent;
+            color: @colors-primary;
+            background: white;
+        }
+    }
+
     &-dash {
         .@{tabs-prefix}-active {
             color: @tabs-line-active-color;
         }
 
         &:not(.@{tabs-prefix}-vertical) {
-
             .@{tabs-prefix}-nav {
                 position: absolute;
                 height: 3px;
@@ -315,7 +319,28 @@
                 background: @tabs-line-active-color;
                 border-radius: 5px;
             }
+        }
+    }
 
+    &-bordered {
+        .@{tabs-prefix}-tab:is(.@{tabs-prefix}-active) {
+            background-color: #fff;
+            color: #333;
+            border-color: #ddd;
+        }
+
+        &:not(.@{tabs-prefix}-vertical) {
+            .@{tabs-prefix}-tab:is(.@{tabs-prefix}-active) {
+                border-color: #ddd #ddd #fff #ddd;
+            }
+        }
+
+        &:is(.@{tabs-prefix}-align-vertical-left) {
+            border-color: #ddd #fff #ddd #ddd;
+        }
+
+        &:is(.@{tabs-prefix}-align-vertical-right) {
+            border-color: #ddd #ddd #fff #ddd;
         }
     }
 
@@ -324,7 +349,6 @@
             color: @tabs-line-active-color;
         }
 
-        // line hover css
         .@{tabs-prefix}-header {
             .@{tabs-prefix}-tab:hover:not(.@{tabs-prefix}-active) {
                 color: @primary-color-dark-btn-hover;

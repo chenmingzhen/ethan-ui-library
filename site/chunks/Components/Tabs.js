@@ -44,6 +44,16 @@ const examples = [
     rawText: require('!raw-loader!doc/pages/components/Tabs/example-03-shape-line.tsx').default,
     },
     {
+    name: '04-shape-borderedx',
+    title: locate(
+    ' \n 设置 shape 为 \'border\'，标签显示为',
+    ' \n The border type tabs.'
+    ),
+    component: require('doc/pages/components/Tabs/example-04-shape-bordered.tsx').default,
+    // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
+    rawText: require('!raw-loader!doc/pages/components/Tabs/example-04-shape-bordered.tsx').default,
+    },
+    {
     name: '04-shape-buttonx',
     title: locate(
     ' \n 设置 shape 为 \'button\'，标签显示为按钮',

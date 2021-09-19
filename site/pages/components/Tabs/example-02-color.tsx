@@ -8,6 +8,9 @@ import React from 'react'
 import { Tabs, FontAwesome } from 'ethan'
 
 const panelStyle = { padding: 15 }
+
+const activeTabStyle = { color: '#000000' }
+
 const contact = (
     <span>
         <FontAwesome name="user" />
@@ -18,19 +21,49 @@ const contact = (
 export default function() {
     return (
         <Tabs lazy={false}>
-            <Tabs.Panel border="transparent" color="#fff" background="#FE4365" style={panelStyle} tab="Home">
+            <Tabs.Panel
+                border="transparent"
+                background="#FE4365"
+                style={panelStyle}
+                activeTabStyle={activeTabStyle}
+                tab="Home"
+            >
                 Content of Tab Pane 1
             </Tabs.Panel>
-            <Tabs.Panel border="transparent" background="#FC9D9A" style={panelStyle} tab="Profile">
+            <Tabs.Panel
+                border="transparent"
+                background="#FC9D9A"
+                style={panelStyle}
+                activeTabStyle={activeTabStyle}
+                tab="Profile"
+            >
                 Content of Tab Pane 2
             </Tabs.Panel>
-            <Tabs.Panel border="transparent" background="#F9CDAD" style={panelStyle} tab={contact}>
+            <Tabs.Panel
+                border="transparent"
+                background="#F9CDAD"
+                style={panelStyle}
+                activeTabStyle={activeTabStyle}
+                tab={contact}
+            >
                 Content of Tab Pane 3
             </Tabs.Panel>
-            <Tabs.Panel border="transparent" background="#C8C8A9" style={panelStyle} tab="Setting">
+            <Tabs.Panel
+                border="transparent"
+                background="#C8C8A9"
+                style={panelStyle}
+                activeTabStyle={activeTabStyle}
+                tab="Setting"
+            >
                 Content of Tab Pane 4
             </Tabs.Panel>
-            <Tabs.Panel border="#b7eb8f" background="#f6ffed" style={panelStyle} tab="Message">
+            <Tabs.Panel
+                border="#b7eb8f"
+                background="#f6ffed"
+                style={panelStyle}
+                activeTabStyle={activeTabStyle}
+                tab="Message"
+            >
                 Content of Tab Pane 5
             </Tabs.Panel>
         </Tabs>

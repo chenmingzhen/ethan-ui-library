@@ -1,16 +1,13 @@
-import React, { useRef, useMemo } from 'react'
+import React, { useRef } from 'react'
 import classnames from 'classnames'
 import { getUidStr } from '@/utils/uid'
 import { tabsClass } from '@/styles'
+import { filterUndefined } from '@/utils/objects'
 import { TabProps } from './type'
 
 const Tab: React.FC<TabProps> = props => {
     const {
         isActive,
-        background,
-        border,
-        color,
-        isVertical,
         disabled,
         children,
         shape,
@@ -18,35 +15,19 @@ const Tab: React.FC<TabProps> = props => {
         onClick,
         id,
         moveToCenter,
-        align,
         tabMoveMap,
+        border,
+        background,
+        color,
+        align,
+        isVertical,
+        activeTabStyle = {},
+        tabStyle = {},
     } = props
 
     const uid = useRef(getUidStr()).current
 
     const element = useRef<HTMLElement>()
-
-    const isBordered = shape === 'bordered'
-
-    const activeStyle = useMemo<React.CSSProperties>(() => {
-        if (shape === 'line' || shape === 'dash') return {}
-
-        if (shape === 'bordered') return { background }
-
-        const style: React.CSSProperties = { background, color }
-
-        if (!isVertical) {
-            style.borderColor = `${border} ${border} ${isActive ? background : border} ${border}`
-        }
-
-        if (align === 'vertical-left')
-            style.borderColor = `${border} ${isActive ? background : border}  ${border} ${border}`
-
-        if (align === 'vertical-right')
-            style.borderColor = `${border} ${border} ${border} ${isActive ? background : border}`
-
-        return style
-    }, null)
 
     function handleClick(init?: boolean | React.MouseEvent) {
         if (disabled) return
@@ -58,18 +39,37 @@ const Tab: React.FC<TabProps> = props => {
         domRect && moveToCenter(domRect, isLast, id === 0)
     }
 
+    const computedStyle = () => {
+        const firstStyle = isActive ? { ...tabStyle, ...activeTabStyle } : tabStyle
+
+        if (shape === 'line' || shape === 'dash') return firstStyle
+
+        const style: React.CSSProperties = { background, color }
+
+        if (border) {
+            if (!isVertical) {
+                style.borderColor = `${border} ${border} ${isActive ? background ?? border : border} ${border}`
+            }
+
+            if (align === 'vertical-left')
+                style.borderColor = `${border} ${isActive ? background ?? border : border}  ${border} ${border}`
+
+            if (align === 'vertical-right')
+                style.borderColor = `${border} ${border} ${border} ${isActive ? background ?? border : border}`
+        }
+
+        const filterStyle = filterUndefined(style)
+
+        return { ...firstStyle, ...filterStyle }
+    }
+
     const newProps = {
         className: classnames(
-            tabsClass(
-                'tab',
-                isActive && (isBordered ? 'tab-bordered-active' : 'active'),
-                disabled && 'disabled',
-                isBordered && 'tab-bordered'
-            ),
+            tabsClass('tab', isActive && 'active', disabled && 'disabled', shape === 'card' && 'tab-card'),
             uid
         ),
         onClick: handleClick,
-        style: activeStyle,
+        style: computedStyle(),
     }
 
     React.useEffect(() => {
@@ -83,10 +83,6 @@ const Tab: React.FC<TabProps> = props => {
     }, [handleClick])
 
     return <div {...newProps}>{children}</div>
-}
-
-Tab.defaultProps = {
-    border: 'transparent',
 }
 
 export default React.memo(Tab)

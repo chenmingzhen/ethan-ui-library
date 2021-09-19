@@ -11,7 +11,7 @@ export interface ComputedPanelComponent extends React.MemoExoticComponent<React.
 const CollapseList = List(['collapse'], 'fast')
 
 const Panel: React.FC<TabsPanelProps> = props => {
-    const { children, background, color, isActive, collapsible, collapsed, lazy } = props
+    const { children, isActive, collapsible, collapsed, lazy, style, background, color } = props
 
     const hasRender = useRef(false)
 
@@ -19,11 +19,11 @@ const Panel: React.FC<TabsPanelProps> = props => {
 
     hasRender.current = true
 
-    const style = Object.assign({ background: background || '#fff', color }, props.style)
+    const newStyle = Object.assign({ background, color }, style)
     const className = classnames(tabsClass('panel', isActive && 'show'), props.className)
 
     const result = (
-        <div style={style} className={className}>
+        <div style={newStyle} className={className}>
             {children}
         </div>
     )

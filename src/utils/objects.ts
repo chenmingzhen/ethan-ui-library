@@ -45,7 +45,7 @@ export function pathGenerator(raw) {
         // array index
         const match = reg.exec(prop)
         // eslint-disable-next-line
-    if (match) prop = parseInt(match[1], 10)
+        if (match) prop = parseInt(match[1], 10)
 
         last = index + 1
         results.push([prop, index === -1 ? undefined : path.substring(last), mode])
@@ -210,4 +210,16 @@ export const deepHas = (target, path) => {
     }
 
     return true
+}
+
+export const filterUndefined = (obj: Object) => {
+    const newObj = {}
+
+    Object.keys(obj).forEach(key => {
+        if (obj[key] !== undefined) {
+            newObj[key] = obj[key]
+        }
+    })
+
+    return newObj
 }

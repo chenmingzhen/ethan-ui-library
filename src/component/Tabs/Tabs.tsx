@@ -8,13 +8,9 @@ import Panel from './Panel'
 
 class Tabs extends PureComponent<TabsProps, TabsState> {
     static defaultProps = {
-        background: '#fff',
-        border: '#ddd',
-        color: '#333',
         defaultCollapsed: false,
-        inactiveBackground: 'transparent',
         lazy: true,
-        shape: 'normal',
+        shape: 'card',
         overflowIcon: 'scroll',
     }
 
@@ -52,33 +48,36 @@ class Tabs extends PureComponent<TabsProps, TabsState> {
     renderHeader = () => {
         const { align, isVertical } = this.align
 
-        const { children, shape, tabBarExtraContent, inactiveBackground, color } = this.props
+        const { children, shape, tabBarExtraContent } = this.props
 
         const tabs: Tab[] = []
 
-        let { border } = this.props
+        let hrBorderColor
 
         React.Children.toArray(children).forEach((child: React.ReactElement<TabsPanelProps>, i, { length }) => {
             if (!child || !(child as any).type?.type?.IS_ETHAN_PANEL) return
 
-            const { id = i, background, tab } = child.props
+            const { id = i, tab, activeTabStyle, tabStyle, background } = child.props
 
-            let childBorder = child.props.border
+            const isActive = this.active === id
 
-            this.active === id ? (childBorder ? (border = childBorder) : (childBorder = border)) : null
+            const panelBorder = child.props.border
+
+            if (isActive) hrBorderColor = panelBorder
 
             tabs.push({
                 id,
-                isActive: this.active === id,
+                isActive,
                 tab,
                 isVertical,
                 align,
                 shape,
                 isLast: length - 1 === i,
                 disabled: child.props.disabled,
-                background: background || (this.active === id ? this.props.background : inactiveBackground),
-                border: childBorder,
-                color: child.props.color || (this.active === id ? color : undefined),
+                activeTabStyle,
+                tabStyle,
+                border: panelBorder,
+                background,
             })
         })
 
@@ -91,9 +90,9 @@ class Tabs extends PureComponent<TabsProps, TabsState> {
                 onChange={this.handleChange}
                 tabs={tabs}
                 tabBarExtraContent={tabBarExtraContent}
-                border={border}
                 currentActive={this.active}
                 overflowIcon={this.props.overflowIcon}
+                hrBorderColor={hrBorderColor}
             />
         )
     }

@@ -28,9 +28,9 @@ const Header: React.FC<TabsHeaderProps> = props => {
         tabs,
         tabBarExtraContent,
         currentActive,
-        border,
         overflowIcon,
         collapsed,
+        hrBorderColor,
     } = props
 
     const innerElementRef = useRef<HTMLDivElement>()
@@ -246,7 +246,7 @@ const Header: React.FC<TabsHeaderProps> = props => {
 
     const position = isVertical ? 'Top' : 'Left'
 
-    const showBorder = shape !== 'bordered' && shape !== 'dash'
+    const showBorder = shape !== 'dash'
 
     return (
         <div className={tabsClass('header')}>
@@ -316,7 +316,7 @@ const Header: React.FC<TabsHeaderProps> = props => {
 
             {tabBarExtraContent && <div className={tabsClass('extra')}>{tabBarExtraContent}</div>}
 
-            {showBorder && <div style={{ borderColor: String(border) }} className={tabsClass('hr')} />}
+            {showBorder && <div className={tabsClass('hr')} style={{ borderColor: hrBorderColor }} />}
         </div>
     )
 }

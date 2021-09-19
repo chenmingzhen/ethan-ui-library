@@ -25,11 +25,15 @@ export interface Tab {
 
     disabled: boolean
 
-    background?: React.CSSProperties['background']
+    tabStyle?: React.CSSProperties
 
-    border?: React.CSSProperties['border']
+    activeTabStyle?: React.CSSProperties
 
-    color: React.CSSProperties['color']
+    border?: string
+
+    background?: string
+
+    color?: string
 }
 
 export interface TabsHeaderProps {
@@ -47,11 +51,11 @@ export interface TabsHeaderProps {
 
     onCollapse?(): void
 
-    border?: React.CSSProperties['border']
-
     currentActive: string | number
 
     overflowIcon?: OverflowIcon
+
+    hrBorderColor?: string
 }
 
 export interface TabsProps {
@@ -77,14 +81,6 @@ export interface TabsProps {
 
     lazy?: boolean
 
-    background?: React.CSSProperties['background']
-
-    inactiveBackground?: React.CSSProperties['background']
-
-    border?: React.CSSProperties['border']
-
-    color?: React.CSSProperties['color']
-
     overflowIcon?: OverflowIcon
 }
 
@@ -94,13 +90,7 @@ export interface TabsState {
 }
 
 export interface TabProps {
-    background?: React.CSSProperties['background']
-
-    border?: React.CSSProperties['border']
-
-    color?: React.CSSProperties['color']
-
-    children: React.ReactElement
+    children: React.ReactNode
 
     disabled: boolean
 
@@ -121,18 +111,24 @@ export interface TabProps {
     isLast: boolean
 
     tabMoveMap: React.RefObject<TabMoveMap>
+
+    tabStyle?: React.CSSProperties
+
+    activeTabStyle?: React.CSSProperties
+
+    border?: string
+
+    background?: string
+
+    color?: string
 }
 
 export interface TabsPanelProps {
-    background?: string
-
     className?: string
 
     collapsed?: boolean
 
     collapsible?: boolean
-
-    color?: string
 
     children?: React.ReactNode
 
@@ -148,5 +144,13 @@ export interface TabsPanelProps {
 
     disabled?: boolean
 
-    border?: React.CSSProperties['border']
+    tabStyle?: React.CSSProperties
+
+    activeTabStyle?: React.CSSProperties
+
+    border?: string
+
+    background?: string
+
+    color?: string
 }
