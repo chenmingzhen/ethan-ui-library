@@ -61,6 +61,12 @@ const pages = [
         level: 2,
         component: lazy(() => import(/* webpackChunkName: "Sticky" */ './Sticky')),
         },
+            {
+        name: 'Tabs',
+        cn: '标签页',
+        level: 2,
+        component: lazy(() => import(/* webpackChunkName: "Tabs" */ './Tabs')),
+        },
                 'Form',
                 {
         name: 'Checkbox',

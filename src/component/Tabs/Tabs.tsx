@@ -1,32 +1,26 @@
-// @ts-nocheck
 import React, { Children } from 'react'
-import PropTypes from 'prop-types'
 import classnames from 'classnames'
 import { PureComponent } from '@/utils/component'
 import { tabsClass } from '@/styles'
+import { Tab, TabsProps, TabsState, Align, TabsPanelProps } from './type'
 import Header from './Header'
-import Wrapper from './Wrapper'
+import Panel from './Panel'
 
-class Tabs extends PureComponent {
-    constructor(props) {
-        super(props)
-
-        this.state = {
-            active: props.defaultActive || 0,
-            collapsed: props.defaultCollapsed,
-        }
-
-        this.getAlign = this.getAlign.bind(this)
-        this.handleChange = this.handleChange.bind(this)
-        this.handleCollapse = this.handleCollapse.bind(this)
-        this.renderContent = this.renderContent.bind(this)
+class Tabs extends PureComponent<TabsProps, TabsState> {
+    static defaultProps = {
+        defaultCollapsed: false,
+        lazy: true,
+        shape: 'card',
+        overflowIcon: 'scroll',
     }
 
-    getAlign() {
+    get align(): { align: Align; isVertical: boolean } {
         const { shape, collapsible, align } = this.props
-        const isVertical = align && align.indexOf('vertical') > -1
+        const isVertical = align?.indexOf('vertical') > -1
+
         if (shape === 'button' && isVertical) {
             console.warn("align vertical-* can't supported when shape is button")
+
             return { align: 'left', isVertical: false }
         }
 
@@ -38,157 +32,121 @@ class Tabs extends PureComponent {
         return { align, isVertical }
     }
 
-    /**
-     * 获取当前Active的Tab
-     * @returns {number|*}
-     */
-    getActive() {
-        // 如果Tabs的Active状态由prop控制，不由该UI层做处理
-        // Active由业务||封装组件处理
-        if ('active' in this.props) return this.props.active
-        return this.state.active
+    get active() {
+        return this.props?.active ?? this.state.active
     }
 
-    handleChange(active) {
-        const { onChange } = this.props
-        if (onChange) onChange(active)
-        this.setState({ active })
+    constructor(props) {
+        super(props)
+
+        this.state = {
+            active: props.defaultActive || 0,
+            collapsed: props.defaultCollapsed,
+        }
     }
 
-    handleCollapse(collapsed) {
-        this.setState({ collapsed })
-    }
+    renderHeader = () => {
+        const { align, isVertical } = this.align
 
-    /**
-     * 渲染头部
-     * @param align 位置
-     * @param isVertical 是否垂直
-     * @returns {JSX.Element}
-     */
-    renderHeader({ align, isVertical }) {
-        const { children, color, shape, tabBarStyle, inactiveBackground, collapsible, tabBarExtraContent } = this.props
-        const active = this.getActive()
-        const tabs = []
+        const { children, shape, tabBarExtraContent } = this.props
 
-        let { border } = this.props
-        Children.toArray(children).forEach((child, i, arr) => {
-            // 如果child不存在type Panel 或者Link  type: class Panel type:class Link
-            if (!child || !child.type) return
+        const tabs: Tab[] = []
 
-            let tab = null
-            if (child.type.isTabPanel) {
-                // 获取Tabs.Panel 的tab props
-                // eslint-disable-next-line prefer-destructuring
-                tab = child.props.tab
-            } else if (child.type.isTabLink) {
-                tab = child
-            } else return
+        let hrBorderColor
 
-            const { id = i, background } = child.props
-            let childBorder = child.props.border
+        React.Children.toArray(children).forEach((child: React.ReactElement<TabsPanelProps>, i, { length }) => {
+            if (!child || !(child as any).type?.type?.IS_ETHAN_PANEL) return
 
-            if (active === id) {
-                if (childBorder) border = childBorder
-                else childBorder = border
-            }
+            const { id = i, tab, activeTabStyle, tabStyle, background } = child.props
+
+            const isActive = this.active === id
+
+            const panelBorder = child.props.border
+
+            if (isActive) hrBorderColor = panelBorder
 
             tabs.push({
                 id,
-                isActive: active === id,
+                isActive,
                 tab,
                 isVertical,
                 align,
-                background: background || (active === id ? this.props.background : inactiveBackground),
-                border: childBorder,
-                color: child.props.color || (active === id ? color : undefined),
-                disabled: child.props.disabled,
                 shape,
-                last: arr.length - 1 === i,
+                isLast: length - 1 === i,
+                disabled: child.props.disabled,
+                activeTabStyle,
+                tabStyle,
+                border: panelBorder,
+                background,
             })
         })
 
         return (
             <Header
                 isVertical={isVertical}
-                border={border}
                 collapsed={this.state.collapsed}
-                onCollapse={collapsible ? this.handleCollapse : undefined}
+                onCollapse={this.props.collapsible ? this.handleCollapse : undefined}
                 shape={shape}
                 onChange={this.handleChange}
                 tabs={tabs}
                 tabBarExtraContent={tabBarExtraContent}
-                tabBarStyle={tabBarStyle}
+                currentActive={this.active}
+                overflowIcon={this.props.overflowIcon}
+                hrBorderColor={hrBorderColor}
             />
         )
     }
 
-    renderContent(child, i) {
-        // 剔除非Tab组件下的children
-        if (!(child && child.type && child.type.isTabPanel)) return null
+    renderPanel = (child, i) => {
+        if (!child?.type?.type?.IS_ETHAN_PANEL) return
 
         const { collapsible, lazy } = this.props
-        const { id = i, ...other } = child.props
+
+        const { id = i, ...other } = (child as React.ReactElement<TabsPanelProps>).props
 
         return (
-            <Wrapper
+            <Panel
                 {...other}
                 lazy={lazy}
                 collapsed={this.state.collapsed}
                 collapsible={collapsible}
                 id={id}
                 key={id}
-                active={this.getActive()}
+                isActive={this.active === id}
             />
         )
     }
 
-    render() {
-        const { children, shape, style } = this.props
-        const position = this.getAlign()
-        const { align, isVertical } = position
+    render = () => {
+        const { shape, style, children } = this.props
+
+        const { align, isVertical } = this.align
+
         const className = classnames(
             tabsClass('_', align && `align-${align}`, isVertical && 'vertical', shape),
             this.props.className
         )
 
-        // 分层渲染 根据align的位置渲染wrapper的内容
         return (
             <div className={className} style={style}>
-                {align !== 'vertical-right' && align !== 'bottom' && this.renderHeader(position)}
-                {Children.toArray(children).map(this.renderContent)}
-                {(align === 'vertical-right' || align === 'bottom') && this.renderHeader(position)}
+                {align !== 'vertical-right' && align !== 'bottom' && this.renderHeader()}
+                {Children.toArray(children).map(this.renderPanel)}
+                {(align === 'vertical-right' || align === 'bottom') && this.renderHeader()}
             </div>
         )
     }
-}
 
-Tabs.propTypes = {
-    active: PropTypes.any,
-    align: PropTypes.oneOf(['left', 'right', 'vertical-left', 'vertical-right', 'bottom']),
-    background: PropTypes.string, // 选中标签背景色
-    border: PropTypes.string, // 边框颜色
-    children: PropTypes.oneOfType([PropTypes.element, PropTypes.array]),
-    className: PropTypes.string,
-    collapsible: PropTypes.bool,
-    color: PropTypes.string,
-    defaultActive: PropTypes.any,
-    defaultCollapsed: PropTypes.bool,
-    inactiveBackground: PropTypes.string, // 未选中标签背景色
-    onChange: PropTypes.func,
-    shape: PropTypes.oneOf(['card', 'line', 'button', 'bordered', 'dash']),
-    style: PropTypes.object,
-    tabBarExtraContent: PropTypes.oneOfType([PropTypes.string, PropTypes.element]),
-    tabBarStyle: PropTypes.object, // tab bar 的样式对象
-    lazy: PropTypes.bool,
-}
+    handleChange = (active: number) => {
+        const { onChange } = this.props
 
-Tabs.defaultProps = {
-    background: '#fff',
-    border: '#ddd',
-    color: '#333',
-    defaultCollapsed: false,
-    inactiveBackground: 'transparent',
-    lazy: true,
+        onChange?.(active)
+
+        this.setState({ active })
+    }
+
+    handleCollapse = () => {
+        this.setState(prevState => ({ collapsed: !prevState.collapsed }))
+    }
 }
 
 export default Tabs

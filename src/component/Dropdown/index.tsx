@@ -7,6 +7,7 @@ import { getParent } from '@/utils/dom/element'
 import { dropdownClass } from '@/styles'
 import { docSize } from '@/utils/dom/document'
 import { getUidStr } from '@/utils/uid'
+import classnames from 'classnames'
 import Button from '../Button'
 import List from '../List'
 import Item from './Item'
@@ -142,7 +143,7 @@ class Dropdown extends PureComponent {
     }
 
     renderButton(placeholder) {
-        const { type, outline, size, disabled, isSub } = this.props
+        const { type, outline, size, disabled, isSub, renderPlaceholder } = this.props
         const buttonClassName = dropdownClass('button', !placeholder && 'split-button')
         const spanClassName = dropdownClass('button-content')
         const caret = (
@@ -165,6 +166,10 @@ class Dropdown extends PureComponent {
             )
         }
 
+        if (renderPlaceholder) {
+            return renderPlaceholder(disabled, this.handleFocus)
+        }
+
         return (
             <Button
                 disabled={disabled}
@@ -182,59 +187,61 @@ class Dropdown extends PureComponent {
     }
 
     renderList(data, placeholder, position) {
-        const { width, onClick, columns, renderItem, absolute } = this.props
+        const { width, onClick, columns, renderItem, absolute, listClassName } = this.props
         if (!Array.isArray(data) || data.length === 0) return null
         const { DropdownList } = this
-        return [
-            <DropdownList
-                absolute={absolute}
-                parentElement={this.element}
-                position={position}
-                className={dropdownClass('menu', columns > 1 && 'box-list')}
-                style={{ width }}
-                key="list"
-                focus={this.state.show}
-                data-id={this.dropdownId}
-                fixed="min"
-            >
-                {data.map((d, index) => {
-                    const childPosition = positionMap[position]
-                    const itemClassName = dropdownClass(
-                        'item',
-                        !width && 'no-width',
-                        childPosition.indexOf('left') === 0 && 'item-left'
-                    )
-                    return d.children ? (
-                        <Dropdown
-                            style={{ width: '100%' }}
-                            data={d.children}
-                            disabled={d.disabled}
-                            placeholder={d.content}
-                            type="link"
-                            key={index}
-                            position={childPosition}
-                            btnColor
-                            onClick={onClick}
-                            renderItem={renderItem}
-                            trigger={this.getTrigger()}
-                            isSub
-                        />
-                    ) : (
-                        <Item
-                            data={d}
-                            key={index}
-                            onClick={d.onClick || onClick}
-                            itemClassName={itemClassName}
-                            renderItem={renderItem}
-                            columns={columns}
-                            width={width}
-                        />
-                    )
-                })}
-            </DropdownList>,
 
-            this.renderButton(placeholder),
-        ]
+        return (
+            <>
+                <DropdownList
+                    absolute={absolute}
+                    parentElement={this.element}
+                    position={position}
+                    className={classnames(dropdownClass('menu', columns > 1 && 'box-list'), listClassName)}
+                    style={{ width }}
+                    key="list"
+                    focus={this.state.show}
+                    data-id={this.dropdownId}
+                    fixed="min"
+                >
+                    {data.map((d, index) => {
+                        const childPosition = positionMap[position]
+                        const itemClassName = dropdownClass(
+                            'item',
+                            !width && 'no-width',
+                            childPosition.indexOf('left') === 0 && 'item-left'
+                        )
+                        return d.children ? (
+                            <Dropdown
+                                style={{ width: '100%' }}
+                                data={d.children}
+                                disabled={d.disabled}
+                                placeholder={d.content}
+                                type="link"
+                                key={index}
+                                position={childPosition}
+                                btnColor
+                                onClick={onClick}
+                                renderItem={renderItem}
+                                trigger={this.getTrigger()}
+                                isSub
+                            />
+                        ) : (
+                            <Item
+                                data={d}
+                                key={index}
+                                onClick={d.onClick || onClick}
+                                itemClassName={itemClassName}
+                                renderItem={renderItem}
+                                columns={columns}
+                                width={width}
+                            />
+                        )
+                    })}
+                </DropdownList>
+                {this.renderButton(placeholder)}
+            </>
+        )
     }
 
     render() {
@@ -270,6 +277,8 @@ Dropdown.propTypes = {
     trigger: PropTypes.oneOf(['click', 'hover']),
     width: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
     animation: PropTypes.bool,
+    listClassName: PropTypes.string,
+    renderButton: PropTypes.func,
 }
 
 Dropdown.defaultProps = {

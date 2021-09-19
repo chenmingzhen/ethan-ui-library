@@ -22,7 +22,7 @@ const ButtonGroup: React.FC<ButtonGroupProps> = props => {
     return (
         <div className={className}>
             {Children.toArray(children).map((child: any) => {
-                if (child?.type?.displayName !== 'EthanButton') {
+                if (!child?.type?.IS_ETHAN_BUTTON) {
                     console.warn('please put the Button under ButtonGroup without others dom')
                     return null
                 }
