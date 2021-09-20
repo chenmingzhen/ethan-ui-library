@@ -133,6 +133,16 @@ const examples = [
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
     rawText: require('!raw-loader!doc/pages/components/Tabs/example-10-collapsible.tsx').default,
     },
+    {
+    name: '11-controlx',
+    title: locate(
+    '受控 \n 通过 active 和 onChange 可以控制标签状态',
+    'Controlled \n Set active and onChange property to control active state.'
+    ),
+    component: require('doc/pages/components/Tabs/example-11-control.tsx').default,
+    // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
+    rawText: require('!raw-loader!doc/pages/components/Tabs/example-11-control.tsx').default,
+    },
 ]
 
     const codes = undefined

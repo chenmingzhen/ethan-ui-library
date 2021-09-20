@@ -4,14 +4,22 @@ import { tabsClass } from '@/styles'
 import List from '../List'
 import { TabsPanelProps } from './type'
 
-export interface ComputedPanelComponent extends React.MemoExoticComponent<React.FC<TabsPanelProps>> {
+interface ITabsPanelProps extends TabsPanelProps {
+    collapsed?: boolean
+
+    collapsible?: boolean
+
+    lazy?: boolean
+}
+
+export interface ComputedPanelComponent extends React.MemoExoticComponent<React.FC<ITabsPanelProps>> {
     IS_ETHAN_PANEL: boolean
 }
 
 const CollapseList = List(['collapse'], 'fast')
 
-const Panel: React.FC<TabsPanelProps> = props => {
-    const { children, isActive, collapsible, collapsed, lazy, style, background, color } = props
+const Panel: React.FC<ITabsPanelProps> = props => {
+    const { children, isActive, collapsible, collapsed, lazy, style, background } = props
 
     const hasRender = useRef(false)
 
@@ -19,7 +27,7 @@ const Panel: React.FC<TabsPanelProps> = props => {
 
     hasRender.current = true
 
-    const newStyle = Object.assign({ background, color }, style)
+    const newStyle = Object.assign({ background }, style)
     const className = classnames(tabsClass('panel', isActive && 'show'), props.className)
 
     const result = (
