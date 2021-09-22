@@ -1,7 +1,7 @@
 // build CDN links way and css style
 
 const path = require('path')
-const merge = require('webpack-merge')
+const { merge } = require('webpack-merge')
 const config = require('../config')
 const common = require('./config.common')
 const cssConf = require('./utils/theme.css')
