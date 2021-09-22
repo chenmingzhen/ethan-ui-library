@@ -6,8 +6,7 @@
  */
 import React from 'react'
 import { Image } from 'ethan/index'
-
-const src = require('../../../images/1_b.jpg')
+import src from '../../../images/1_b.jpg'
 
 export default function() {
     return (

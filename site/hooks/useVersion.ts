@@ -23,8 +23,15 @@ const useVersion = () => {
 
   useEffect(() => {
     if (process.env.NODE_ENV === 'development') return
-    // ethan-ui-pages/ 目录下 与新增的images同级
-    fetch('../../../versions.json')
+    /**
+     * @deprecated  ethan-ui-pages/ 自己配置的目录下 与新增的images同级
+     * fetch('../../../versions.json')
+     */
+
+    /**
+     * github pages
+     */
+    fetch('../../versions.json')
       .then(ver => ver.json())
       .then(json => {
         const language = locate('cn', 'en')
