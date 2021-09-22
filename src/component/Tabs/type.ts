@@ -126,17 +126,11 @@ export interface TabProps {
 export interface TabsPanelProps {
     className?: string
 
-    collapsed?: boolean
-
-    collapsible?: boolean
-
     children?: React.ReactNode
 
     isActive?: boolean
 
     style?: React.CSSProperties
-
-    lazy?: boolean
 
     id?: string | number
 
@@ -151,6 +145,4 @@ export interface TabsPanelProps {
     border?: string
 
     background?: string
-
-    color?: string
 }

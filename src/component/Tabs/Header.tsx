@@ -124,7 +124,9 @@ const Header: React.FC<TabsHeaderProps> = props => {
 
         if (shape !== 'line' && shape !== 'dash') return
 
-        const itemElement: HTMLElement = scrollElementRef.current.children[currentActive]
+        const activeIndex = tabs.findIndex(({ id }) => id === currentActive)
+
+        const itemElement = scrollElementRef.current.children[activeIndex] as HTMLElement
 
         if (!itemElement) return
 
