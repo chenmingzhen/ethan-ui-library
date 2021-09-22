@@ -36,7 +36,6 @@
         "docs-build-clean": "ts-node scripts/docs-pages-clean.ts",
         "docs-build-chunk": "cross-env NODE_ENV=production node scripts/dev-site.js",
         "docs-build-js": "cross-env NODE_ENV=production webpack --config webpack/config.doc.js",
-        "docs-build-image": "ts-node scripts/docs-pages-image.ts",
         "docs-build-html": "ts-node scripts/build-html.ts",
         "docs-build": "npm-run-all docs-build-*",
         "upload-docs-pages": "ts-node ssh-client/upload-docs-pages.ts",
