@@ -31,7 +31,7 @@ const useVersion = () => {
     /**
      * github pages
      */
-    fetch('../../versions.json')
+    fetch('../../../versions.json')
       .then(ver => ver.json())
       .then(json => {
         const language = locate('cn', 'en')
