@@ -93,7 +93,7 @@ class Dropdown extends PureComponent {
     bindList() {
         const { animation } = this.props
         // 初始化List
-        const FadeList = List('fade', animation ? 'fast' : 0)
+        const FadeList = List(['fade'], animation ? 'fast' : 0)
         // 渲染绝对定位的List 如果设置absolute absoluteList内部渲染为绝对定位 否则内部渲染为普通的List
         // 注意这里的实现 看普通组件与高阶组件笔记
         this.DropdownList = absoluteList(({ focus, ...other }) => <FadeList show={focus} {...other} />)
