@@ -1,13 +1,17 @@
+import React from 'react'
+import ReactDOM from 'react-dom'
 import classnames from 'classnames'
 import { listClass } from '@/styles'
 import { Component } from '@/utils/component'
 import shallowEqual from '@/utils/shallowEqual'
-import { docScroll } from '@/utils/dom/document'
+import { docScroll, docSize } from '@/utils/dom/document'
+import { compose } from '@/utils/func'
+import { scrollConsumer } from '../Scroll/context'
 
 interface AbsoluteListProps {
     focus?: boolean
 
-    fixed?: boolean | string
+    fixed?: boolean | 'min'
 
     parentElement?: HTMLElement
 
@@ -34,7 +38,7 @@ interface AbsoluteListProps {
 
 interface AbsoluteListState {
     // 用于自动适应屏幕位置
-    overDoc: number
+    overDoc: boolean
 }
 
 let root: HTMLDivElement
@@ -55,7 +59,7 @@ function initRoot() {
     document.body.appendChild(root)
 }
 
-function generateAbsoluteList(List: React.ReactElement) {
+function generateAbsoluteList(List: React.FC<any>) {
     class AbsoluteList extends Component<AbsoluteListProps, AbsoluteListState> {
         lastStyle: React.CSSProperties = {}
 
@@ -65,55 +69,6 @@ function generateAbsoluteList(List: React.ReactElement) {
 
         adjustDoc = false
 
-        getPosition(rect: DOMRect) {
-            const { fixed } = this.props
-
-            let { position } = this.props
-
-            const style: React.CSSProperties = {
-                position: 'absolute',
-            }
-
-            if (fixed) {
-                const widthKey = fixed === 'min' ? 'minWidth' : 'width'
-
-                style[widthKey] = rect.width
-            }
-
-            if (dropdownPosition.includes(position)) {
-                position = position
-                    .split('-')
-                    .reverse()
-                    .join('-')
-            }
-            if (listPosition.includes(position)) {
-                style.left = rect.left + docScroll.left
-
-                if (position === 'drop-down') {
-                    style.top = rect.top + rect.height + docScroll.top
-                } else {
-                    style.bottom = -(rect.top + docScroll.top)
-                }
-            } else if (pickerPosition.includes(position)) {
-                const [h, v] = position.split('-')
-
-                if (h === 'left') {
-                    style.left = rect.left + docScroll.left
-                } else {
-                    style.left = rect.right + docScroll.left
-
-                    style.transform = 'translateX(-100%)'
-                }
-                if (v === 'bottom') {
-                    style.top = rect.bottom + docScroll.top + PICKER_V_MARGIN
-                } else {
-                    style.top = rect.top + docScroll.top - PICKER_V_MARGIN
-                    style.transform = style.transform ? 'translate(-100%, -100%)' : 'translateY(-100%)'
-                }
-            }
-            return style
-        }
-
         get style() {
             const { parentElement, scrollElement, focus } = this.props
 
@@ -121,12 +76,12 @@ function generateAbsoluteList(List: React.ReactElement) {
 
             if (!focus) return lazyResult
 
-            let style = {}
+            let style: React.CSSProperties = {}
 
             if (parentElement) {
                 const rect = parentElement.getBoundingClientRect()
 
-                const scrollRect: DOMRect = scrollElement ? scrollElement.getBoundingClientRect() : {}
+                const scrollRect = scrollElement ? scrollElement.getBoundingClientRect() : ({} as DOMRect)
 
                 if (
                     rect.bottom < scrollRect.top ||
@@ -149,6 +104,10 @@ function generateAbsoluteList(List: React.ReactElement) {
 
         constructor(props: AbsoluteListProps) {
             super(props)
+
+            this.state = {
+                overDoc: false,
+            }
 
             if (!props.absolute) return
 
@@ -183,9 +142,47 @@ function generateAbsoluteList(List: React.ReactElement) {
             } = this.props
 
             const className = classnames(listClass('absolute-wrapper'), rootClass, autoClass)
+
+            const { focus, style } = props.focus ? this.style : { style: this.lastStyle, focus: undefined }
+
+            this.element.className = className
+
+            const mergeStyle = Object.assign(
+                {},
+                style,
+                props.style,
+                this.state.overDoc ? { right: 0, left: 'auto' } : undefined
+            )
+
+            if (zIndex || typeof zIndex === 'number') mergeStyle.zIndex = zIndex
+
+            return ReactDOM.createPortal(
+                <List getRef={this.bindListRef} {...props} focus={focus} style={mergeStyle} />,
+                this.element
+            )
         }
 
-        renderList = () => {}
+        renderList = () => {
+            const {
+                parentElement,
+                absolute,
+                focus,
+                rootClass,
+                position,
+                scrollLeft,
+                scrollTop,
+                scrollElement,
+                style = {},
+                zIndex,
+                ...props
+            } = this.props
+
+            if (style?.zIndex) style.zIndex = zIndex
+
+            const mergeStyle = Object.assign({}, style, this.state.overDoc ? { right: 0, left: 'auto' } : undefined)
+
+            return <List getRef={this.bindListRef} {...props} focus={focus} style={mergeStyle} />
+        }
 
         resetPosition = () => {
             const { focus } = this.props
@@ -194,7 +191,7 @@ function generateAbsoluteList(List: React.ReactElement) {
 
             const pos = this.listEl.getBoundingClientRect()
 
-            const overDoc = pos.left + pos.width
+            const overDoc = pos.left + pos.width > docSize.width
 
             if (this.state.overDoc === overDoc) return
 
@@ -202,7 +199,64 @@ function generateAbsoluteList(List: React.ReactElement) {
 
             this.setState({ overDoc })
         }
+
+        getPosition = (rect: DOMRect): React.CSSProperties => {
+            const { fixed } = this.props
+
+            let { position } = this.props
+
+            const style: React.CSSProperties = {
+                position: 'absolute',
+            }
+
+            if (fixed) {
+                const widthKey = fixed === 'min' ? 'minWidth' : 'width'
+
+                style[widthKey] = rect.width
+            }
+
+            if (dropdownPosition.includes(position)) {
+                position = position
+                    .split('-')
+                    .reverse()
+                    .join('-')
+            }
+
+            if (listPosition.includes(position)) {
+                style.left = rect.left + docScroll.left
+
+                if (position === 'drop-down') {
+                    style.top = rect.top + rect.height + docScroll.top
+                } else {
+                    style.bottom = -(rect.top + docScroll.top)
+                }
+            } else if (pickerPosition.includes(position)) {
+                const [h, v] = position.split('-')
+
+                if (h === 'left') {
+                    style.left = rect.left + docScroll.left
+                } else {
+                    style.left = rect.right + docScroll.left
+
+                    style.transform = 'translateX(-100%)'
+                }
+
+                if (v === 'bottom') {
+                    style.top = rect.bottom + docScroll.top + PICKER_V_MARGIN
+                } else {
+                    style.top = rect.top + docScroll.top - PICKER_V_MARGIN
+                    style.transform = style.transform ? 'translate(-100%, -100%)' : 'translateY(-100%)'
+                }
+            }
+            return style
+        }
+
+        bindListRef = listEl => {
+            this.listEl = listEl
+        }
     }
+
+    return compose(scrollConsumer)(AbsoluteList)
 }
 
 export default generateAbsoluteList
