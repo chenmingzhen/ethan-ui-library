@@ -1,5 +1,5 @@
 // @ts-nocheck
-import React from 'react'
+import React, { ReactNode } from 'react'
 import PropTypes from 'prop-types'
 import { PureComponent } from '@/utils/component'
 import { defaultProps, getProps } from '@/utils/proptypes'
@@ -15,19 +15,46 @@ import absoluteList from '../List/AbsoluteList'
 import absoluteConsumer from '../Table/context'
 import Caret from '../icons/Caret'
 
-// 执行顺序 constructor bindList
+interface ComplicatedDropDownData {
+    content: ReactNode
 
-// Dropdown 伸展的显示位置
-const positionMap = {
-    'left-top': 'left-top',
-    'left-bottom': 'left-bottom',
-    'right-top': 'right-top',
-    'right-bottom': 'right-bottom',
-    'top-right': 'left-bottom',
-    'top-left': 'right-bottom',
-    'bottom-right': 'left-top',
-    'bottom-left': 'right-top',
-    auto: '',
+    onClick?(): void
+
+    target?: string
+
+    url?: string
+}
+
+type DropDownData = React.ReactNode | ComplicatedDropDownData
+export interface DropDownProps {
+    placeholder?: React.ReactNode
+
+    type?:
+        | 'primary'
+        | 'default'
+        | 'secondary'
+        | 'success'
+        | 'info'
+        | 'warning'
+        | 'error'
+        | 'danger'
+        | 'link'
+        | 'loading'
+
+    data: DropDownData[]
+
+    trigger?: 'hover' | 'click'
+
+    width?: number | string
+
+    animation?: boolean
+
+    listClassName?: string
+}
+
+interface IDropDownProps extends DropDownProps {
+    /** 内部使用 */
+    renderPlaceholder?(e: AnimationTimeline): ReactNode
 }
 
 class Dropdown extends PureComponent {
