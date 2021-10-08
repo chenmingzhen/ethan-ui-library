@@ -4,7 +4,7 @@ import { hidableClass } from '@/styles'
 import classnames from 'classnames'
 import { listClass } from '@/styles'
 
-interface ListProps extends React.DetailedHTMLProps<React.HTMLAttributes<HTMLDivElement>, HTMLDivElement> {
+export interface ListProps extends React.DetailedHTMLProps<React.HTMLAttributes<HTMLDivElement>, HTMLDivElement> {
     show: boolean
 
     height?: number
@@ -30,7 +30,9 @@ const transformDuration = (duration: string | number) => {
     return duration
 }
 
-export default function(type: string[], rawDuration: string | number, display = 'block') {
+type AnimationType = 'fade' | 'collapse' | 'scale-y'
+
+export default function buildList(type: AnimationType[], rawDuration: string | number, display = 'block') {
     const duration = transformDuration(rawDuration)
     const hasCollapse = type.indexOf('collapse') >= 0
     const needTransform = type.indexOf('scale-y') >= 0
@@ -41,9 +43,11 @@ export default function(type: string[], rawDuration: string | number, display = 
         const elRef = useRef<HTMLDivElement>()
 
         let animation = `animation-${duration}`
+
         if (!needTransform) {
             animation = `fade-${animation}`
         }
+
         const className = classnames(hidableClass('_', ...type, animation), props.className)
 
         const doShow = () => {
@@ -53,7 +57,7 @@ export default function(type: string[], rawDuration: string | number, display = 
             es.display = display
 
             // 由于先将display none转为可见形态 设置延时 将div添加show的属性 进而有transform
-            setTimeout(() => {
+            requestAnimationFrame(() => {
                 el.classList.add(hidableClass('show'))
             })
 

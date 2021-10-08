@@ -7,6 +7,7 @@ import shallowEqual from '@/utils/shallowEqual'
 import { docScroll, docSize } from '@/utils/dom/document'
 import { compose } from '@/utils/func'
 import { scrollConsumer } from '../Scroll/context'
+import { ListProps } from '.'
 
 interface AbsoluteListProps {
     focus?: boolean
@@ -34,6 +35,8 @@ interface AbsoluteListProps {
     autoClass?: string
 
     value?: any
+
+    className?: string
 }
 
 interface AbsoluteListState {
@@ -59,7 +62,11 @@ function initRoot() {
     document.body.appendChild(root)
 }
 
-function generateAbsoluteList(List: React.FC<any>) {
+interface GenerateAbsoluteListProps extends Omit<ListProps, 'show'> {
+    focus: boolean
+}
+
+function generateAbsoluteList(ListComponent: React.FC<GenerateAbsoluteListProps>) {
     class AbsoluteList extends Component<AbsoluteListProps, AbsoluteListState> {
         lastStyle: React.CSSProperties = {}
 
@@ -157,7 +164,7 @@ function generateAbsoluteList(List: React.FC<any>) {
             if (zIndex || typeof zIndex === 'number') mergeStyle.zIndex = zIndex
 
             return ReactDOM.createPortal(
-                <List getRef={this.bindListRef} {...props} focus={focus} style={mergeStyle} />,
+                <ListComponent getRef={this.bindListRef} {...props} focus={focus} style={mergeStyle} />,
                 this.element
             )
         }
@@ -181,7 +188,7 @@ function generateAbsoluteList(List: React.FC<any>) {
 
             const mergeStyle = Object.assign({}, style, this.state.overDoc ? { right: 0, left: 'auto' } : undefined)
 
-            return <List getRef={this.bindListRef} {...props} focus={focus} style={mergeStyle} />
+            return <ListComponent getRef={this.bindListRef} {...props} focus={focus} style={mergeStyle} />
         }
 
         resetPosition = () => {
@@ -256,7 +263,7 @@ function generateAbsoluteList(List: React.FC<any>) {
         }
     }
 
-    return compose(scrollConsumer)(AbsoluteList)
+    return compose(scrollConsumer)(AbsoluteList) as typeof AbsoluteList
 }
 
 export default generateAbsoluteList
