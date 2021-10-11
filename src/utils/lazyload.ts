@@ -99,15 +99,14 @@ export function addStack(obj) {
     return null
 }
 
-export function throttleWrapper(cb) {
+export function throttleWrapper(cb, delay = 80) {
     let timer = null
     return (...args) => {
-        const ctx = this
         if (!timer) {
             timer = setTimeout(() => {
-                cb.apply(ctx, args)
+                cb.apply(this, args)
                 timer = null
-            }, throttle)
+            }, delay)
         }
     }
 }

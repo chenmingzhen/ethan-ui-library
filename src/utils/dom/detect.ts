@@ -1,10 +1,6 @@
-// @ts-nocheck
-/* eslint-disable no-empty */
-// check support passive
 let supportPassive = false
 try {
     const opts = Object.defineProperty({}, 'passive', {
-        // eslint-disable-next-line getter-return
         get() {
             supportPassive = true
         },
