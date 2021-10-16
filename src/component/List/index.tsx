@@ -55,11 +55,18 @@ export default function buildList(type: AnimationType[], rawDuration: string | n
             const es = el.style
 
             es.display = display
-
             // 由于先将display none转为可见形态 设置延时 将div添加show的属性 进而有transform
-            requestAnimationFrame(() => {
+            setTimeout(() => {
                 el.classList.add(hidableClass('show'))
-            })
+
+                isShowing.current = true
+
+                if (!hasCollapse) {
+                    setTimeout(() => {
+                        isShowing.current = false
+                    }, duration)
+                }
+            }, 20)
 
             if (hasCollapse) {
                 setTimeout(() => {
@@ -93,6 +100,7 @@ export default function buildList(type: AnimationType[], rawDuration: string | n
 
             setTimeout(() => {
                 if (isShowing.current) return
+
                 el.style.display = 'none'
             }, duration)
         }

@@ -44,6 +44,10 @@ interface AbsoluteListState {
     overDoc: boolean
 }
 
+interface GenerateAbsoluteListProps extends Omit<ListProps, 'show'> {
+    focus: boolean
+}
+
 let root: HTMLDivElement
 
 const listPosition = ['drop-down', 'drop-up']
@@ -52,18 +56,12 @@ const pickerPosition = ['left-bottom', 'left-top', 'right-bottom', 'right-top']
 
 const dropdownPosition = ['bottom-left', 'bottom-right', 'top-left', 'top-right']
 
-const PICKER_V_MARGIN = 4
+const REDUNDANT = 4
 
 function initRoot() {
     root = document.createElement('div')
 
-    root.classList.add(listClass('root'))
-
     document.body.appendChild(root)
-}
-
-interface GenerateAbsoluteListProps extends Omit<ListProps, 'show'> {
-    focus: boolean
 }
 
 function generateAbsoluteList(ListComponent: React.FC<GenerateAbsoluteListProps>) {
@@ -90,6 +88,7 @@ function generateAbsoluteList(ListComponent: React.FC<GenerateAbsoluteListProps>
 
                 const scrollRect = scrollElement ? scrollElement.getBoundingClientRect() : ({} as DOMRect)
 
+                // parentElement被滚动元素遮挡 不计算位置
                 if (
                     rect.bottom < scrollRect.top ||
                     rect.top > scrollRect.bottom ||
@@ -194,15 +193,13 @@ function generateAbsoluteList(ListComponent: React.FC<GenerateAbsoluteListProps>
         resetPosition = () => {
             const { focus } = this.props
 
-            if (!focus || !this.listEl || this.adjustDoc) return
+            if (!focus || !this.listEl) return
 
             const pos = this.listEl.getBoundingClientRect()
 
             const overDoc = pos.left + pos.width > docSize.width
 
             if (this.state.overDoc === overDoc) return
-
-            this.adjustDoc = true
 
             this.setState({ overDoc })
         }
@@ -249,9 +246,10 @@ function generateAbsoluteList(ListComponent: React.FC<GenerateAbsoluteListProps>
                 }
 
                 if (v === 'bottom') {
-                    style.top = rect.bottom + docScroll.top + PICKER_V_MARGIN
+                    style.top = rect.bottom + docScroll.top + REDUNDANT
                 } else {
-                    style.top = rect.top + docScroll.top - PICKER_V_MARGIN
+                    style.top = rect.top + docScroll.top - REDUNDANT
+
                     style.transform = style.transform ? 'translate(-100%, -100%)' : 'translateY(-100%)'
                 }
             }

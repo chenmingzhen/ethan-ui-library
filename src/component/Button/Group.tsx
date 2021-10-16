@@ -22,11 +22,6 @@ const ButtonGroup: React.FC<ButtonGroupProps> = props => {
     return (
         <div className={className}>
             {Children.toArray(children).map((child: any) => {
-                if (!child?.type?.IS_ETHAN_BUTTON) {
-                    console.warn('please put the Button under ButtonGroup without others dom')
-                    return null
-                }
-
                 // 返回一个克隆值 与Group保持一致
                 return cloneElement(child, { size, outline, type })
             })}
