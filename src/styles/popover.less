@@ -270,4 +270,19 @@
         max-width: @popover-text-max-width;
         padding: @common-content-text-padding;
     }
+
+    // inputborder
+    &-input-error {
+        color: @form-feedback-invalid-color;
+
+        .@{popover-prefix}-arrow {
+            border-color: @state-danger-border;
+        }
+
+        .@{popover-prefix}-inner {
+            border: none;
+            // box-shadow: 0 2px 8px 0 @state-danger-border, 0 2px 8px rgba(0, 0, 0, 0.15);
+            box-shadow: 0 2px 8px 0 @state-danger-border;
+        }
+    }
 }
