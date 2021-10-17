@@ -49,6 +49,8 @@ interface Options {
     className?: string | ((props: InputBorderProps) => string)
 
     enterPress?: boolean
+
+    popover?: boolean
 }
 
 /**
@@ -78,7 +80,7 @@ export default curry(
             componentDidMount() {
                 super.componentDidMount()
 
-                this.setState({ mounted: true })
+                options.popover && this.setState({ mounted: true })
             }
 
             handleBlur(event) {
@@ -140,11 +142,15 @@ export default curry(
 
                 const content = error?.message ?? tip
 
-                const popoverVisible = !!(error && popoverProps.placement) || !!(tip && focus)
+                const popoverVisible = !!error || !!(tip && focus)
 
-                if (error && popoverProps.placement) {
+                if (error) {
                     popoverClassList.push('input-error')
                 }
+
+                const originComponent = (
+                    <Origin {...other} size={size} onFocus={this.handleFocus} onBlur={this.handleBlur} />
+                )
 
                 return (
                     <Tag
@@ -153,18 +159,24 @@ export default curry(
                         style={tagStyle}
                         tabIndex={options.enterPress ? '0' : undefined}
                     >
-                        {this.state.mounted && (
-                            <Popover
-                                getPopupContainer={() => this.el.current}
-                                {...popoverProps}
-                                visible={popoverVisible}
-                                style={popoverStyles}
-                                className={popoverClass(...popoverClassList)}
-                                placement={placement}
-                                content={content}
-                            >
-                                <Origin {...other} size={size} onFocus={this.handleFocus} onBlur={this.handleBlur} />
-                            </Popover>
+                        {options.popover ? (
+                            <>
+                                {this.state.mounted && (
+                                    <Popover
+                                        getPopupContainer={() => this.el.current}
+                                        {...popoverProps}
+                                        visible={popoverVisible}
+                                        style={popoverStyles}
+                                        className={popoverClass(...popoverClassList)}
+                                        placement={placement}
+                                        content={content}
+                                    >
+                                        {originComponent}
+                                    </Popover>
+                                )}
+                            </>
+                        ) : (
+                            originComponent
                         )}
                     </Tag>
                 )

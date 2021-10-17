@@ -1,4 +1,5 @@
 import React from 'react'
+import classnames from 'classnames'
 import { Component } from '@/utils/component'
 import ReactDOM from 'react-dom'
 import { getParent, wrapSpan } from '@/utils/dom/element'
@@ -104,19 +105,17 @@ class Popover extends Component<IPopoverProps, PopoverState> {
 
         this.bindEvents()
 
-        const { className } = this.props
-
-        if (className) {
-            this.element.classList.add(className)
-        }
-
         if (this.state.show) {
             this.handleShow(null, true)
         }
     }
 
-    componentDidUpdate(prevProps, prevState: PopoverState) {
+    componentDidUpdate(prevProps: PopoverProps, prevState: PopoverState) {
         const { visible } = this.props
+
+        if (this.props.className !== prevProps.className && this.element) {
+            this.element.className = classnames(popoverClass('_'), this.props.className)
+        }
 
         if (typeof visible === 'boolean') {
             const isSame = prevState.show === this.state.show
@@ -222,7 +221,7 @@ class Popover extends Component<IPopoverProps, PopoverState> {
 
             this.element.style.display = 'none'
 
-            this.element.className = popoverClass('_')
+            this.element.className = classnames(popoverClass('_'), this.props.className)
         }
     }
 
