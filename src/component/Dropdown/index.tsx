@@ -1,8 +1,5 @@
-// @ts-nocheck
-import React from 'react'
-import PropTypes from 'prop-types'
-import { PureComponent } from '@/utils/component'
-import { defaultProps, getProps } from '@/utils/proptypes'
+import React, { useRef } from 'react'
+import useSafeState from '@/hooks/useSafeState'
 import { getParent } from '@/utils/dom/element'
 import { dropdownClass } from '@/styles'
 import { docSize } from '@/utils/dom/document'
@@ -11,141 +8,126 @@ import classnames from 'classnames'
 import Button from '../Button'
 import List from '../List'
 import Item from './Item'
-import absoluteList from '../List/AbsoluteList'
+import generateAbsoluteList from '../List/AbsoluteList'
 import absoluteConsumer from '../Table/context'
 import Caret from '../icons/Caret'
+import Position from './enum/Position'
+import { ComplicatedDropDownData, IDropDownProps } from './type'
 
-// 执行顺序 constructor bindList
+function buildDropList(animation: boolean) {
+    const FadeList = List(['fade'], animation ? 'fast' : 0)
 
-// Dropdown 伸展的显示位置
-const positionMap = {
-    'left-top': 'left-top',
-    'left-bottom': 'left-bottom',
-    'right-top': 'right-top',
-    'right-bottom': 'right-bottom',
-    'top-right': 'left-bottom',
-    'top-left': 'right-bottom',
-    'bottom-right': 'left-top',
-    'bottom-left': 'right-top',
-    auto: '',
+    return generateAbsoluteList(({ focus, ...props }) => <FadeList show={focus} {...props} />)
 }
 
-class Dropdown extends PureComponent {
-    constructor(props) {
-        super(props)
+// TODO 矫正position的方向，顺带修改absoluteList的getPosition的判断
 
-        // 控制显示 传给List使用 非本组件使用
-        this.state = {
-            show: false,
-        }
+const Dropdown: React.FC<IDropDownProps> = props => {
+    const {
+        animation,
+        placeholder,
+        className,
+        style,
+        trigger,
+        data,
+        width,
+        onClick,
+        columns,
+        renderItem,
+        absolute,
+        listClassName,
+        isSub,
+        renderPlaceholder,
+        disabled,
+        buttonProps,
+    } = props
 
-        // 提示使用trigger=hover 替代hover=
-        if (props.hover !== undefined) {
-            console.warn('The "hover" property is not recommend, use trigger="hover" instead.')
-        }
+    const dropdownParentElement = useRef<HTMLDivElement>()
 
-        // 唯一的dropdownId
-        this.dropdownId = `dropdown_${getUidStr()}`
-        this.bindElement = this.bindElement.bind(this)
+    const dropdownId = useRef(getUidStr()).current
 
-        this.clickAway = this.clickAway.bind(this)
+    const DropdownList = useRef(buildDropList(animation)).current
 
-        this.handleFocus = this.handleFocus.bind(this)
-        this.handleHide = this.handleHide.bind(this)
-        this.handleMouseEnter = this.handleToggle.bind(this, true)
-        this.handleMouseLeave = this.handleToggle.bind(this, false)
+    const closeTimer = useRef<NodeJS.Timeout>()
 
-        this.renderList = this.renderList.bind(this)
+    function getPosition() {
+        let pos: string = props.position
 
-        // 绑定List
-        this.bindList()
-    }
+        if (pos !== 'auto') return pos
 
-    componentWillUnmount() {
-        super.componentWillUnmount()
-        this.toggleDocumentEvent(false)
-    }
-
-    getTrigger() {
-        if (this.props.hover === true) return 'hover'
-        return this.props.trigger
-    }
-
-    getPosition() {
-        let { position } = this.props
-        if (position !== 'auto') return position
-        if (!this.element) return 'bottom-left'
+        if (!dropdownParentElement.current) return 'bottom-left'
 
         // 如果position是auto 计算位置给出最合适的position
         const windowHeight = docSize.height
+
         const windowWidth = docSize.width
-        const rect = this.element.getBoundingClientRect()
-        position = rect.bottom > windowHeight / 2 ? 'top-' : 'bottom-'
-        position += rect.right > windowWidth / 2 ? 'right' : 'left'
 
-        return position
+        const rect = dropdownParentElement.current.getBoundingClientRect()
+
+        pos = rect.bottom > windowHeight / 2 ? 'top-' : 'bottom-'
+        pos += rect.right > windowWidth / 2 ? 'right' : 'left'
+
+        return pos as IDropDownProps['position']
     }
 
-    bindElement(el) {
-        this.element = el
-    }
+    const position = getPosition()
 
-    bindList() {
-        const { animation } = this.props
-        // 初始化List
-        const FadeList = List('fade', animation ? 'fast' : 0)
-        // 渲染绝对定位的List 如果设置absolute absoluteList内部渲染为绝对定位 否则内部渲染为普通的List
-        // 注意这里的实现 看普通组件与高阶组件笔记
-        this.DropdownList = absoluteList(({ focus, ...other }) => <FadeList show={focus} {...other} />)
-    }
+    const [show, setShow] = useSafeState(false)
 
-    toggleDocumentEvent(bind) {
-        const method = bind ? 'addEventListener' : 'removeEventListener'
-        document[method]('click', this.clickAway)
-    }
-
-    clickAway(e) {
-        const { absolute } = this.props
+    function clickAway(e: MouseEvent) {
         const el = getParent(e.target, 'a')
-        const onSelf = absolute
-            ? getParent(e.target, `[data-id=${this.dropdownId}]`)
-            : el === this.element || this.element.contains(el)
 
-        // 还有子菜单 点击后不隐藏
-        if (el && onSelf && el.getAttribute('data-role') === 'item') return
-        this.handleHide(0)
+        const onSelf = absolute
+            ? getParent(e.target, `[data-id=${dropdownId}]`)
+            : el === dropdownParentElement.current || dropdownParentElement.current?.contains(el)
+
+        if (el?.getAttribute('data-role') === 'item' && onSelf) return
+
+        handleHide(0)
     }
 
-    handleFocus() {
-        if (this.closeTimer) {
-            clearTimeout(this.closeTimer)
+    function toggleDocumentEvent(isBind: boolean) {
+        const method = isBind ? 'addEventListener' : 'removeEventListener'
+
+        document[method]('click', clickAway)
+    }
+
+    function handleFocus() {
+        if (closeTimer.current) {
+            clearTimeout(closeTimer.current)
         }
 
-        if (this.state.show) return
-        this.setState({
-            show: true,
-        })
+        if (show) return
 
-        this.toggleDocumentEvent(true)
+        setShow(true)
+
+        toggleDocumentEvent(true)
     }
 
-    handleHide(delay = 200) {
-        this.closeTimer = setTimeout(() => {
-            this.setState({ show: false })
-            this.toggleDocumentEvent(false)
+    function handleHide(delay = 200) {
+        closeTimer.current = setTimeout(() => {
+            setShow(false)
+
+            toggleDocumentEvent(false)
         }, delay)
     }
 
-    handleToggle(show) {
-        if (this.getTrigger() === 'click') return
-        if (show) this.handleFocus()
-        else this.handleHide()
+    function handleToggle(isShow: boolean) {
+        if (trigger === 'click') return
+
+        if (isShow) handleFocus()
+        else {
+            handleHide()
+        }
     }
 
-    renderButton(placeholder) {
-        const { type, outline, size, disabled, isSub, renderPlaceholder } = this.props
-        const buttonClassName = dropdownClass('button', !placeholder && 'split-button')
+    const cls = `${dropdownClass('_', position)} ${className ?? ''}`
+
+    function renderButton() {
+        const buttonClassName = dropdownClass('button')
+
         const spanClassName = dropdownClass('button-content')
+
         const caret = (
             <span className={dropdownClass('caret')}>
                 <Caret />
@@ -156,9 +138,9 @@ class Dropdown extends PureComponent {
             return (
                 <a
                     key="button"
-                    className={dropdownClass('button', 'item', this.state.show && 'active')}
+                    className={dropdownClass('button', 'item', show && 'active')}
                     data-role="item"
-                    onClick={this.handleFocus}
+                    onClick={handleFocus}
                 >
                     <span className={spanClassName}>{placeholder}</span>
                     {caret}
@@ -167,63 +149,49 @@ class Dropdown extends PureComponent {
         }
 
         if (renderPlaceholder) {
-            return renderPlaceholder(disabled, this.handleFocus)
+            return renderPlaceholder(disabled, handleFocus)
         }
 
         return (
-            <Button
-                disabled={disabled}
-                onClick={this.handleFocus}
-                outline={outline}
-                className={buttonClassName}
-                type={type}
-                size={size}
-                key="button"
-            >
+            <Button disabled={disabled} onClick={handleFocus} className={buttonClassName} key="button" {...buttonProps}>
                 <span className={spanClassName}>{placeholder}</span>
                 {caret}
             </Button>
         )
     }
 
-    renderList(data, placeholder, position) {
-        const { width, onClick, columns, renderItem, absolute, listClassName } = this.props
+    function renderList() {
         if (!Array.isArray(data) || data.length === 0) return null
-        const { DropdownList } = this
 
         return (
             <>
                 <DropdownList
                     absolute={absolute}
-                    parentElement={this.element}
+                    parentElement={dropdownParentElement.current}
                     position={position}
                     className={classnames(dropdownClass('menu', columns > 1 && 'box-list'), listClassName)}
                     style={{ width }}
                     key="list"
-                    focus={this.state.show}
-                    data-id={this.dropdownId}
+                    focus={show}
+                    data-id={dropdownId}
                     fixed="min"
                 >
-                    {data.map((d, index) => {
-                        const childPosition = positionMap[position]
-                        const itemClassName = dropdownClass(
-                            'item',
-                            !width && 'no-width',
-                            childPosition.indexOf('left') === 0 && 'item-left'
-                        )
+                    {data.map((d: ComplicatedDropDownData, index) => {
+                        const childPosition = Position[position]
+
+                        const itemClassName = dropdownClass('item', !width && 'no-width')
+
                         return d.children ? (
                             <Dropdown
                                 style={{ width: '100%' }}
                                 data={d.children}
                                 disabled={d.disabled}
                                 placeholder={d.content}
-                                type="link"
                                 key={index}
                                 position={childPosition}
-                                btnColor
                                 onClick={onClick}
                                 renderItem={renderItem}
-                                trigger={this.getTrigger()}
+                                trigger={trigger}
                                 isSub
                             />
                         ) : (
@@ -239,57 +207,33 @@ class Dropdown extends PureComponent {
                         )
                     })}
                 </DropdownList>
-                {this.renderButton(placeholder)}
+
+                {renderButton()}
             </>
         )
     }
 
-    render() {
-        const { data, className, style, placeholder } = this.props
-        const { show } = this.state
-        const position = this.getPosition()
-
-        // 这里的show&&'show'没有作用
-        let wrapClassName = dropdownClass('_', position, show && 'show', { 'split-dropdown': !placeholder })
-        if (className) wrapClassName += ` ${className}`
-
-        return (
-            <div
-                ref={this.bindElement}
-                className={wrapClassName}
-                style={style}
-                onMouseEnter={this.handleMouseEnter}
-                onMouseLeave={this.handleMouseLeave}
-            >
-                {this.renderList(data, placeholder, position)}
-            </div>
-        )
-    }
-}
-
-Dropdown.propTypes = {
-    ...getProps(PropTypes, 'placeholder', 'type'),
-    data: PropTypes.array.isRequired,
-    disabled: PropTypes.bool,
-    hover: PropTypes.bool,
-    isSub: PropTypes.bool,
-    position: PropTypes.string,
-    trigger: PropTypes.oneOf(['click', 'hover']),
-    width: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
-    animation: PropTypes.bool,
-    listClassName: PropTypes.string,
-    renderButton: PropTypes.func,
+    return (
+        <div
+            ref={dropdownParentElement}
+            className={cls}
+            style={style}
+            onMouseEnter={handleToggle.bind(this, true)}
+            onMouseLeave={handleToggle.bind(this, false)}
+        >
+            {renderList()}
+        </div>
+    )
 }
 
 Dropdown.defaultProps = {
-    ...defaultProps,
     disabled: false,
     data: [],
-    position: 'bottom-left',
     trigger: 'click',
     animation: true,
+    position: 'auto',
 }
 
 Dropdown.displayName = 'EthanDropdown'
 
-export default absoluteConsumer(Dropdown)
+export default absoluteConsumer(React.memo(Dropdown)) as typeof Dropdown

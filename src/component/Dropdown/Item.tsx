@@ -1,58 +1,40 @@
-// @ts-nocheck
 import React, { isValidElement, cloneElement } from 'react'
-import PropTypes from 'prop-types'
-import { getProps, defaultProps } from '@/utils/proptypes'
+import { ItemProps } from './type'
 
-class Item extends React.PureComponent {
-    constructor(props) {
-        super(props)
-        this.handleClick = this.handleClick.bind(this)
+const Item: React.FC<ItemProps> = ({ onClick, data, itemClassName, renderItem, width, columns }) => {
+    function handleClick() {
+        onClick?.(data)
     }
 
-    handleClick() {
-        if (!this.props.onClick) return
-        this.props.onClick(this.props.data)
+    const aWidth = width && columns ? (width - 2) / columns : undefined
+
+    const props = {
+        disabled: data.disabled,
+        onClick: handleClick,
+        className: itemClassName,
+        target: data.target,
+        style: aWidth ? { display: 'inline-block', width: aWidth } : null,
+        href: data.url ?? undefined,
     }
 
-    render() {
-        const { data, itemClassName, renderItem, width, columns } = this.props
-        const aWidth = width && columns ? (width - 2) / columns : undefined
+    let content
 
-        const props = {
-            disabled: data.disabled,
-            onClick: this.handleClick,
-            className: itemClassName,
-            target: data.target,
-            style: aWidth ? { display: 'inline-block', width: aWidth } : null,
-        }
-        if (data.url) props.href = data.url
-
-        let content
-        if (isValidElement(data)) {
-            content = data
-        } else {
-            content = typeof renderItem === 'string' ? data[renderItem] : renderItem(data)
-        }
-
-        if (isValidElement(content)) {
-            return cloneElement(content, Object.assign(props, content.props))
-        }
-        return <a {...props}>{content}</a>
+    if (isValidElement(data)) {
+        content = data
+    } else {
+        content = typeof renderItem === 'string' ? data[renderItem] : renderItem(data)
     }
-}
 
-Item.propTypes = {
-    ...getProps(PropTypes),
-    data: PropTypes.object,
-    onClick: PropTypes.func,
-    renderItem: PropTypes.oneOfType([PropTypes.string, PropTypes.func]),
-    columns: PropTypes.number,
+    if (isValidElement(content)) {
+        return cloneElement(content, Object.assign(props, content.props))
+    }
+
+    return <a {...props}>{content}</a>
 }
 
 Item.defaultProps = {
-    ...defaultProps,
     data: {},
     renderItem: 'content',
 }
 
-export default Item
+export default React.memo(Item)

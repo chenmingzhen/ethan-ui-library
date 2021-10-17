@@ -1,3 +1,4 @@
+import { ComplicatedDropDownData } from '@/component/Dropdown/type'
 import React, { useState, useEffect, useRef, useMemo } from 'react'
 import { useTimeoutFn } from 'react-use'
 import { Tab, TabMoveMap } from '../type'
@@ -23,8 +24,7 @@ const useHideTabs = (props: UseHideTabsParams) => {
 
     const tabMoveMap = useRef<TabMoveMap>(new Map())
 
-    // TODO 完善Dropdown后完善类型
-    const dropDownData = useMemo(() => {
+    const dropDownData: ComplicatedDropDownData[] = useMemo(() => {
         return hideTabs.map(tab => {
             return {
                 content: tab.tab,
@@ -38,12 +38,12 @@ const useHideTabs = (props: UseHideTabsParams) => {
         })
     }, [hideTabs])
 
-    const [, , run] = useTimeoutFn(throttle, 100)
+    const [, , run] = useTimeoutFn(computedTabs, 100)
 
     // 考虑再添加overflow作为副作用的dep 因为overflow影响DOM的计算
     useEffect(run, [attribute])
 
-    function throttle() {
+    function computedTabs() {
         let startIndex = 0
 
         let endIndex = tabs.length - 1
