@@ -56,7 +56,7 @@ export interface DropDownProps {
 
     onClick?(data): void
 
-    position:
+    position?:
         | 'right-top'
         | 'bottom-left'
         | 'bottom-right'
@@ -73,7 +73,7 @@ export interface DropDownProps {
 
     columns?: number
 
-    buttonProps?: ButtonProps
+    buttonProps?: Omit<ButtonProps, 'children'>
 }
 
 export interface IDropDownProps extends DropDownProps {

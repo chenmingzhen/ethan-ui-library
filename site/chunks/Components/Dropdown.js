@@ -66,8 +66,8 @@ const examples = [
     {
     name: '6-typex',
     title: locate(
-    '样式 \n 使用了和Button相同的 type 和 size 设置样式',
-    'type \n Style is set using the same type and size as Button.'
+    '样式 \n Button 样式',
+    'type \n Button style'
     ),
     component: require('doc/pages/components/Dropdown/example-6-type.tsx').default,
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
