@@ -1,56 +1,42 @@
-// @ts-nocheck
-import React from 'react'
-import PropTypes from 'prop-types'
-import { PureComponent } from '@/utils/component'
+import React, { useState, useEffect, useRef } from 'react'
 import { lazyloadClass } from '@/styles'
 import { addStack, removeStack } from '@/utils/lazyload'
 
-class Lazyload extends PureComponent {
-    constructor(props) {
-        super(props)
-        this.state = { ready: false }
+interface LazyLoadProps {
+    children?: React.ReactNode
 
-        this.placeholderRef = el => {
-            this.placeholder = el
-        }
-    }
+    placeholder?: React.ReactNode
 
-    componentDidMount() {
-        const { container, offset } = this.props
-        this.lazyId = addStack({
+    container?: HTMLElement
+
+    offset?: number
+}
+
+const LazyLoad: React.FC<LazyLoadProps> = ({ children, placeholder, container, offset = 0 }) => {
+    const [ready, setReady] = useState(false)
+
+    const placeholderRef = useRef<HTMLSpanElement>()
+
+    useEffect(() => {
+        const lazyId = addStack({
             offset,
             container,
-            element: this.placeholder,
-            render: () => this.setState({ ready: true }),
+            element: placeholderRef.current,
+            render: () => setReady(true),
         })
-    }
 
-    componentWillUnmount() {
-        removeStack(this.lazyId)
-    }
+        return () => {
+            removeStack(lazyId)
+        }
+    }, [])
 
-    render() {
-        const { ready } = this.state
-        const { children, placeholder } = this.props
+    if (ready) return <>{children}</>
 
-        if (ready) return children
-        return (
-            <span ref={this.placeholderRef} className={lazyloadClass('_')}>
-                {placeholder}
-            </span>
-        )
-    }
+    return (
+        <span ref={placeholderRef} className={lazyloadClass('_')}>
+            {placeholder}
+        </span>
+    )
 }
 
-Lazyload.propTypes = {
-    children: PropTypes.any,
-    placeholder: PropTypes.element,
-    container: PropTypes.oneOfType([PropTypes.element, PropTypes.object]),
-    offset: PropTypes.number,
-}
-
-Lazyload.defaultProps = {
-    offset: 0,
-}
-
-export default Lazyload
+export default React.memo(LazyLoad)
