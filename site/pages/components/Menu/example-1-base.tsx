@@ -8,84 +8,61 @@ import React from 'react'
 import { Menu } from 'ethan/index'
 
 const data = [
-  {
-    id: '1',
-    title: 'Navigation One',
-  },
-  {
-    id: '3',
-    title: 'Navigation Two',
-    onClick: true,
-    children: [
-      {
-        id: '4',
-        title: 'Option 1',
-      },
-      {
-        id: '5',
-        title: 'Option 2',
-      },
-    ],
-  },
-  {
-    id: '6',
-    title: 'Navigation Three',
-    onClick: () => console.log('only click'),
-    children: [
-      {
-        id: '7',
-        title: 'Option 3',
-      },
-      {
-        id: '8',
-        title: 'Option 4',
+    {
+        key: '1',
+        title: 'Navigation One',
+    },
+    {
+        key: '2',
+        title: 'Navigation Two',
         children: [
-          {
-            id: '9',
-            title: 'Optic 1',
-          },
-          {
-            id: '10',
-            title: 'Optic 2',
-          },
+            {
+                key: '3',
+                title: 'Option 1',
+            },
+            {
+                key: '4',
+                title: 'Option 2',
+            },
         ],
-      },
-    ],
-  },
-  {
-    id: '2',
-    title: 'Navigation Four',
-  },
+    },
+    {
+        key: '5',
+        title: 'Navigation Three',
+        onClick: () => console.log('only click'),
+        children: [
+            {
+                key: '6',
+                title: 'Option 3',
+            },
+            {
+                key: '7',
+                title: 'Option 4',
+                children: [
+                    {
+                        key: '8',
+                        title: 'Optic 1',
+                    },
+                    {
+                        key: '9',
+                        title: 'Optic 2',
+                    },
+                ],
+            },
+        ],
+    },
+    {
+        key: '10',
+        title: 'Navigation Four',
+    },
 ]
 
 export default class extends React.Component {
-  constructor(props) {
-    super(props)
-    this.state = {
-      active: '1',
+    constructor(props) {
+        super(props)
     }
-    this.handleClick = this.handleClick.bind(this)
-  }
 
-  handleClick(d) {
-    this.setState({
-      active: d.id,
-    })
-  }
-
-  checkActive = d => this.state.active === d.id
-
-  render() {
-    return (
-      <Menu
-        keygen="id"
-        data={data}
-        renderItem={d => d.title}
-        active={this.checkActive}
-        style={{ width: 256 }}
-        inlineIndent={24}
-        onClick={this.handleClick}
-      />
-    )
-  }
+    render() {
+        return <Menu keygen="id" data={data} style={{ width: 256 }} inlineIndent={24} />
+    }
 }

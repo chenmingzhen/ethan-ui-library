@@ -1,6 +1,6 @@
 // @ts-nocheck
-import Root from './Root'
+import Menu from './Root'
 
-Root.displayName = 'EthanMenu'
+Menu.displayName = 'EthanMenu'
 
-export default Root
+export default Menu

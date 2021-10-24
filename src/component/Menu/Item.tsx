@@ -1,22 +1,36 @@
-// @ts-nocheck
 import React, { cloneElement } from 'react'
-import PropTypes from 'prop-types'
 import classnames from 'classnames'
 import { PureComponent } from '@/utils/component'
-import { getKey, getUidStr } from '@/utils/uid'
 import { menuClass } from '@/styles'
 import { isLink } from '@/utils/is'
 import List from './List'
 import { consumer } from './context'
+import { BaseData, MenuItemProps } from './type'
 
-class Item extends PureComponent {
-    constructor(props) {
+interface MenuItemState {
+    open: boolean
+
+    isActive: boolean
+
+    isHighLight: boolean
+
+    inPath: boolean
+}
+
+class Item extends PureComponent<MenuItemProps, MenuItemState> {
+    element: HTMLLIElement
+
+    handleMouseEnter
+
+    handleMouseLeave
+
+    constructor(props: MenuItemProps) {
         super(props)
 
-        this.id = `${props.path},${getUidStr()}`
-        const key = this.getKey(props)
+        const { key } = props.data
+
         const [activeUpdate, openUpdate, inPathUpdate] = props.bindItem(
-            this.id,
+            key,
             this.update.bind(this),
             this.updateOpen.bind(this),
             this.updateInPath.bind(this)
@@ -24,41 +38,40 @@ class Item extends PureComponent {
 
         this.state = {
             open: openUpdate(key),
-            isActive: activeUpdate(this.id, props.data),
-            inPath: inPathUpdate(this.id),
+            isActive: activeUpdate(key),
+            inPath: inPathUpdate(key),
             isHighLight: false,
         }
 
-        this.bindElement = this.bindElement.bind(this)
-        this.handleClick = this.handleClick.bind(this)
-        this.handleSwitch = this.handleSwitch.bind(this)
         this.handleMouseEnter = this.handleToggle.bind(this, true)
         this.handleMouseLeave = this.handleToggle.bind(this, false)
-        this.renderLink = this.renderLink.bind(this)
     }
 
     componentWillUnmount() {
         super.componentWillUnmount()
-        this.props.unbindItem?.(this.id)
+
+        this.props.unbindItem?.(this.props.data.key)
+
         this.unbindDocumentEvent()
     }
 
-    getKey(props = this.props) {
-        return getKey(props.data, props.keygen, props.index)
+    getKey = () => {
+        return this.props.data.key ?? this.props.index
     }
 
-    bindElement(el) {
+    bindElement = el => {
         this.element = el
     }
 
-    unbindDocumentEvent() {
+    unbindDocumentEvent = () => {
         document.removeEventListener('click', this.handleMouseLeave)
     }
 
     // Root中updateActive时触发 check为Root的checkActive
-    update(check, activePath) {
-        const isActive = check(this.id, this.props.data)
-        const isHighLight = activePath && isActive ? activePath.indexOf(this.id) > -1 : false
+    update(check, activePath: Map<string | number, boolean>) {
+        const isActive = check(this.props.data.key)
+
+        const isHighLight = activePath && isActive ? activePath.has(this.props.data.key) : false
 
         this.setState({ isActive, isHighLight })
     }
@@ -66,99 +79,90 @@ class Item extends PureComponent {
     // Root中updateOpen时触发 check为Root的checkOpen
     updateOpen(check) {
         const isOpen = check(this.getKey())
+
         this.setState({ open: isOpen })
     }
 
     updateInPath(check) {
-        const inPath = check(this.id)
+        const inPath = check(this.props.data.key)
+
         this.setState({ inPath })
     }
 
-    handleToggle(open) {
-        const { toggleOpenKeys, toggleDuration } = this.props
+    handleToggle = open => {
+        const { toggleOpenKeys } = this.props
+
         const key = this.getKey()
 
-        if (this.toggleTimer) clearTimeout(this.toggleTimer)
         if (open) {
             toggleOpenKeys(key, true)
+
             document.addEventListener('click', this.handleMouseLeave)
         } else {
-            this.toggleTimer = setTimeout(() => {
-                toggleOpenKeys(key, false)
-            }, toggleDuration)
+            toggleOpenKeys(key, false)
+
             this.unbindDocumentEvent()
         }
     }
 
-    handleClick(e) {
+    handleClick = (e: React.MouseEvent) => {
         const { data, onClick, mode, toggleOpenKeys } = this.props
+
         if (data.disabled) return
 
-        if (mode === 'inline' && data.children && data.children.length) {
-            // 触发Root的toggleOpenKeys
+        if (mode === 'inline' && data?.children?.length) {
             toggleOpenKeys(this.getKey(), !this.state.open)
         }
 
         if (typeof data.onClick === 'function') {
-            data.onClick(this.id, data)
+            data.onClick(data)
         } else if (
-            (!data.children || data.children.length === 0 || data.onClick === true) &&
+            (!data.children || data?.children?.length === 0 || !!data.onClick) &&
             typeof onClick === 'function'
         ) {
-            onClick(this.id, data)
+            onClick(data.key, data)
         }
-        const isLeaf = ((data || {}).children || []).length === 0
+
+        const isLeaf = data?.children?.length === 0
+
+        // 阻止事件冒泡并且阻止该元素上同事件类型的监听器被触发
         if (!isLeaf) e.nativeEvent.stopImmediatePropagation()
     }
 
     /**
      * 自定义render的Click事件触发
      */
-    handleItemClick(clickMethod, e) {
-        clickMethod()
+    handleItemClick = (clickMethod, e) => {
+        clickMethod?.()
+
         this.handleClick(e)
     }
 
-    handleSwitch(e) {
+    handleSwitch = e => {
         const { renderItem, data } = this.props
-        const item = renderItem(data)
-        if (item.props && item.props.onClick) {
+
+        const item = renderItem?.(data) as React.ReactElement
+
+        if (item?.props?.onClick) {
             this.handleItemClick(item.props.onClick, e)
         } else {
             this.handleClick(e)
         }
     }
 
-    renderLink(data) {
-        const { linkKey } = this.props
-        if (!linkKey) return null
-        if (typeof linkKey === 'function') return linkKey(data)
-        return data[linkKey]
-    }
-
     render() {
-        const {
-            data,
-            renderItem,
-            mode,
-            keygen,
-            level,
-            onClick,
-            inlineIndent,
-            disabled,
-            toggleOpenKeys,
-            bottomLine,
-            topLine,
-            linkKey,
-            toggleDuration,
-        } = this.props
+        const { data, renderItem, mode, level, onClick, inlineIndent, toggleOpenKeys, bottomLine, topLine } = this.props
+
         const { open, isActive, isHighLight, inPath } = this.state
+
         const { children: dChildren } = data
+
         const children = dChildren || []
 
-        const isDisabled = typeof disabled === 'function' ? disabled(data) : disabled
+        const isDisabled = data.disabled
 
         let isUp = false
+
         if (mode === 'vertical-auto' && this.element) {
             isUp = this.element.getBoundingClientRect().bottom - topLine > (bottomLine - topLine) / 2
         }
@@ -174,8 +178,11 @@ class Item extends PureComponent {
             inPath && 'in-path'
         )
 
-        const style = {}
-        const events = {}
+        const style: React.CSSProperties = {}
+        const events: {
+            onMouseEnter?: React.MouseEventHandler<HTMLLIElement>
+            onMouseLeave?: React.MouseEventHandler<HTMLLIElement>
+        } = {}
 
         if (mode === 'inline') {
             style.paddingLeft = 20 + level * inlineIndent
@@ -184,66 +191,47 @@ class Item extends PureComponent {
             events.onMouseEnter = this.handleMouseEnter
             events.onMouseLeave = this.handleMouseLeave
         }
-        let item = renderItem(data)
-        const link = this.renderLink(data)
+
+        let item = renderItem?.(data) as React.ReactElement
+
         if (isLink(item)) {
             const mergeClass = classnames(menuClass('title'), item.props && item.props.className)
+
             const mergeStyle = Object.assign({}, style, item.props && item.props.style)
+
             item = cloneElement(item, { className: mergeClass, style: mergeStyle, onClick: this.handleSwitch })
         } else {
-            const props = {
+            const props: React.DetailedHTMLProps<React.AnchorHTMLAttributes<HTMLAnchorElement>, HTMLAnchorElement> = {
                 className: menuClass('title'),
                 style,
                 onClick: this.handleClick,
+                target: data.target,
             }
-            if (link) props.href = link
+
+            if (data.linkKey) props.href = data.linkKey
+
             item = <a {...props}>{item}</a>
         }
 
         return (
-            <li className={className} {...events} ref={this.bindElement}>
+            <li className={className} ref={this.bindElement} {...events}>
                 {item}
-                {/* 如果存在children 继续嵌套 */}
                 {children.length > 0 && (
                     <List
                         data={children}
-                        disabled={disabled}
                         renderItem={renderItem}
-                        keygen={keygen}
                         inlineIndent={mode === 'horizontal' ? 0 : inlineIndent}
                         mode={mode === 'horizontal' ? 'inline' : mode}
                         onClick={onClick}
-                        path={this.id}
+                        path={this.getKey()}
                         level={level + 1}
                         open={open}
                         toggleOpenKeys={toggleOpenKeys}
-                        linkKey={linkKey}
-                        toggleDuration={toggleDuration}
                     />
                 )}
             </li>
         )
     }
-}
-
-Item.propTypes = {
-    bindItem: PropTypes.func,
-    bottomLine: PropTypes.number,
-    topLine: PropTypes.number,
-    data: PropTypes.object,
-    disabled: PropTypes.oneOfType([PropTypes.func, PropTypes.bool]),
-    index: PropTypes.number,
-    inlineIndent: PropTypes.number,
-    level: PropTypes.number,
-    keygen: PropTypes.any,
-    mode: PropTypes.string,
-    onClick: PropTypes.func,
-    path: PropTypes.string,
-    renderItem: PropTypes.func,
-    toggleOpenKeys: PropTypes.func,
-    unbindItem: PropTypes.func,
-    linkKey: PropTypes.oneOfType([PropTypes.string, PropTypes.func]),
-    toggleDuration: PropTypes.number,
 }
 
 export default consumer(Item)

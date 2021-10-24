@@ -1,8 +1,8 @@
-// @ts-nocheck
 import React from 'react'
 import createReactContext from 'create-react-context'
+import { MenuContext } from './type'
 
-const context = createReactContext()
+const context = createReactContext<MenuContext>(null)
 
 const { Consumer } = context
 
