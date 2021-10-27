@@ -57,12 +57,13 @@ const data = [
     },
 ]
 
-export default class extends React.Component {
-    constructor(props) {
-        super(props)
-    }
-
-    render() {
-        return <Menu keygen="id" data={data} style={{ width: 256 }} inlineIndent={24} />
-    }
-}
+export default () => (
+    <Menu
+        keygen="id"
+        data={data}
+        style={{ width: 256 }}
+        inlineIndent={24}
+        defaultOpenKeys={['2']}
+        defaultActiveKey="1"
+    />
+)

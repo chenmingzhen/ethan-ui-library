@@ -15,34 +15,46 @@ export interface BaseData {
 
     target?: string
 
-    onClick?(data: BaseData): void
-
     children?: BaseData[]
 }
 
 export type Theme = 'light' | 'dark'
 
+export type UpdateActive = (activePath: string) => void
+
+export type UpdateOpen = () => void
+
+export type UpdateInPath = () => void
+
 export interface MenuContext {
     bindItem?: (
-        id: string | number,
-        updateActive: any,
-        updateOpen: any,
-        updateInPath: any
-    ) => ((id: string | number) => boolean)[]
-    unbindItem?: (id: string | number) => void
+        id: string,
+        key: string | number,
+        updateActive: UpdateActive,
+        updateOpen: UpdateOpen,
+        updateInPath: UpdateInPath
+    ) => void
+
+    unbindItem?: (id: string) => void
+
+    checkActive?: (id: string) => boolean
+
+    checkOpen?: (id: string) => boolean
+
+    checkInPath?: (id: string) => boolean
 }
 export interface MenuProps {
     style?: React.CSSProperties
 
     className?: string
 
-    // active?: ((data: BaseData) => string | number) | string | number
-
     data: BaseData[]
 
     disabled?: (data: BaseData) => boolean
 
-    defaultOpenKeys?: string[] | number[]
+    defaultActiveKey?: string | number
+
+    defaultOpenKeys?: (string | number)[]
 
     /** 展开的菜单(受控) */
     openKeys?: string[] | number[]

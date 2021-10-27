@@ -1,17 +1,14 @@
 import React from 'react'
 import classnames from 'classnames'
-import immer, { enableMapSet } from 'immer'
-import { getKey } from '@/utils/uid'
 import normalizeWheel from '@/utils/dom/normalizeWheel'
 import { menuClass } from '@/styles'
-import { isArray } from '@/utils/is'
+import { pull } from '@/utils/array'
+import { deepClone } from '@/utils/clone'
 import ScrollBar from '../Scroll/Bar'
 import List from './List'
 import { Provider } from './context'
-import { BaseData, MenuProps } from './type'
-import { getOption, keyToMap } from './util'
-
-enableMapSet()
+import { BaseData, MenuContext, MenuProps, UpdateActive, UpdateInPath, UpdateOpen } from './type'
+import { getOption } from './util'
 
 const modeDirection = {
     'vertical-auto': 'y',
@@ -26,15 +23,15 @@ interface IMenuProps extends MenuProps {
 }
 
 interface MenuState {
-    activeKey: string | number
+    activeKey?: string
 
-    scrollTop: number
+    scrollTop?: number
 
-    scrollLeft: number
+    scrollLeft?: number
 
-    openKeys: Map<number | string, boolean>
+    openKeys?: (number | string)[]
 
-    hasOpen: boolean
+    hasOpen?: boolean
 }
 
 class Menu extends React.PureComponent<IMenuProps, MenuState> {
@@ -58,15 +55,19 @@ class Menu extends React.PureComponent<IMenuProps, MenuState> {
         onClick: () => {},
 
         theme: 'light',
+
+        style: {},
     }
 
-    providerValue
+    providerValue: MenuContext
 
-    items = new Map()
+    itemsUpdateActiveCallback = new Map<string, UpdateActive>()
 
-    itemsOpen = new Map()
+    itemsUpdateOpenCallback = new Map<string, UpdateOpen>()
 
-    itemsInPath = new Map()
+    itemsUpdateInPathCallback = new Map<string, UpdateInPath>()
+
+    innerIdToOuterKeyMap = new Map<string, string | number>()
 
     container: HTMLDivElement
 
@@ -77,37 +78,59 @@ class Menu extends React.PureComponent<IMenuProps, MenuState> {
     hasToggled = false
 
     get openKeys() {
-        const { openKeys, defaultOpenKeys } = this.props
+        const { openKeys } = this.props
 
         if (openKeys) return openKeys
 
-        // 根据是否已经点击后来判断返回的OpenKeys
-        return this.hasToggled ? Array.from(this.state.openKeys.keys()) : defaultOpenKeys
+        return this.state.openKeys
     }
 
-    constructor(props) {
+    constructor(props: MenuProps) {
         super(props)
 
         this.state = {
-            // 目前所在的Key
-            activeKey: null,
+            activeKey: '',
             scrollTop: 0,
             scrollLeft: 0,
-            openKeys: keyToMap(props.defaultOpenKeys),
+            openKeys: [],
             hasOpen: false,
         }
 
-        // 关于绑定 每次刷新组件的时候，执行updateState，执行updateActive，其中在updateXXX中
-        // 对item itemsOpen itemsInPath的绑定进行执行，传递对应的check方法与状态给Item Item通过check方法进行判断 actived inPath
-        // 通过Context传递给Item
         this.providerValue = {
             bindItem: this.bindItem,
+
             unbindItem: this.unbindItem,
+
+            checkActive: this.checkActive,
+
+            checkInPath: this.checkInPath,
+
+            checkOpen: this.checkOpen,
         }
     }
 
     componentDidMount = () => {
-        this.updateState()
+        const outerKeys = this.props.defaultOpenKeys
+
+        const { defaultActiveKey } = this.props
+
+        const initKeys = []
+
+        let activeId = ''
+
+        for (const [id, key] of this.innerIdToOuterKeyMap) {
+            for (const outerKey of outerKeys) {
+                if (outerKey === key) {
+                    initKeys.push(id)
+                }
+
+                if (key === defaultActiveKey) {
+                    activeId = id
+                }
+            }
+        }
+
+        this.setState({ openKeys: initKeys, activeKey: activeId }, this.updateState)
     }
 
     componentDidUpdate = () => {
@@ -126,35 +149,36 @@ class Menu extends React.PureComponent<IMenuProps, MenuState> {
         this.rootElement = el?.querySelector?.(`.${menuClass('root')}`)
     }
 
-    bindItem = (id: string | number, updateActive, updateOpen, updateInPath) => {
-        this.items.set(id, updateActive)
+    bindItem = (id: string, key, updateActive: UpdateActive, updateOpen: UpdateOpen, updateInPath: UpdateInPath) => {
+        this.itemsUpdateActiveCallback.set(id, updateActive)
 
-        this.itemsOpen.set(id, updateOpen)
+        this.itemsUpdateOpenCallback.set(id, updateOpen)
 
-        this.itemsInPath.set(id, updateInPath)
+        this.itemsUpdateInPathCallback.set(id, updateInPath)
 
-        // Item的初始化State中使用
-        return [this.checkActive, this.checkOpen, this.checkInPath]
+        this.innerIdToOuterKeyMap.set(id, key)
     }
 
-    unbindItem(id: string | number) {
-        this.items.delete(id)
+    unbindItem(id: string) {
+        this.itemsUpdateActiveCallback.delete(id)
 
-        this.itemsOpen.delete(id)
+        this.itemsUpdateOpenCallback.delete(id)
 
-        this.itemsInPath.delete(id)
+        this.itemsUpdateInPathCallback.delete(id)
     }
 
-    checkActive = (id: string | number) => {
+    checkActive = (id: string) => {
         return id === this.state.activeKey
     }
 
-    checkOpen = (id: string | number) => {
-        return isArray(this.openKeys) ? this.openKeys.includes(id) : false
+    checkOpen = (id: string) => {
+        return this.openKeys?.includes(id)
     }
 
-    checkInPath = id => {
-        return this.itemsInPath.has(id)
+    checkInPath = (id: string) => {
+        const { activeKey } = this.state
+
+        return activeKey.indexOf(id) > -1
     }
 
     updateState = () => {
@@ -174,57 +198,51 @@ class Menu extends React.PureComponent<IMenuProps, MenuState> {
     }
 
     updateActive = () => {
-        for (const [, update] of this.items) {
-            update(this.checkActive, this.itemsInPath)
+        const { activeKey } = this.state
+
+        for (const [, update] of this.itemsUpdateActiveCallback) {
+            update(activeKey)
         }
     }
 
     updateOpen = () => {
-        const { data } = this.props
-
-        for (const [, update] of this.itemsOpen) {
-            update(this.checkOpen)
+        for (const [, update] of this.itemsUpdateOpenCallback) {
+            update()
         }
 
-        const hasOpen = this.openKeys.filter(key => data.find(it => it.key === key)).length > 0
+        const transformKeys = Array.from(this.innerIdToOuterKeyMap.values())
+
+        const hasOpen = this.openKeys.filter(key => transformKeys.find(it => it === key)).length > 0
 
         this.setState({ hasOpen })
     }
 
     updateInPath = () => {
-        for (const [, update] of this.itemsInPath) {
-            update(this.checkInPath)
+        for (const [, update] of this.itemsUpdateInPathCallback) {
+            update()
         }
     }
 
-    /**
-     * 设置打开的MenuKeys Item中调用
-     * @param id
-     * @param open
-     */
-    toggleOpenKeys = (id, open) => {
-        const newOpenKeys = immer(keyToMap(this.openKeys), draft => {
-            if (open) {
-                draft.set(id, true)
-            } else draft.delete(id)
-        })
+    toggleOpenKeys = id => {
+        const cloneOpenKeys = deepClone(this.openKeys)
+
+        const isExist = cloneOpenKeys.includes(id)
+
+        let newOpenKeys = cloneOpenKeys
+
+        if (isExist) {
+            newOpenKeys = pull(this.openKeys, id)
+        } else {
+            newOpenKeys.push(id)
+        }
 
         this.hasToggled = true
 
-        const keys = Array.from(newOpenKeys.keys())
+        const { onOpenChange } = this.props
 
-        const { openKeys, onOpenChange } = this.props
+        onOpenChange?.(newOpenKeys)
 
-        // 用户受控
-        if (openKeys) {
-            onOpenChange?.(keys)
-
-            return
-        }
-
-        this.setState({ openKeys: newOpenKeys, hasOpen: keys.length > 0 })
-
-        onOpenChange?.(keys)
+        this.setState({ openKeys: newOpenKeys, hasOpen: newOpenKeys.length > 0 })
     }
 
     handleWheel = e => {
@@ -236,11 +254,13 @@ class Menu extends React.PureComponent<IMenuProps, MenuState> {
 
         const size = this.container.getBoundingClientRect()[key]
 
-        this.wrapper[`scroll${pos}`] += wheel[`pixel${direction}`]
+        const scrollPos = `scroll${pos}` as keyof Pick<MenuState, 'scrollLeft' | 'scrollTop'>
 
-        const precent = this.wrapper[`scroll${pos}`] / size
+        this.wrapper[scrollPos] += wheel[`pixel${direction}`]
 
-        this.setState({ [`scroll${pos}`]: precent > 1 ? 1 : precent })
+        const percent = this.wrapper[scrollPos] / size
+
+        this.setState({ [scrollPos]: percent > 1 ? 1 : percent })
 
         e.preventDefault()
     }
@@ -248,29 +268,25 @@ class Menu extends React.PureComponent<IMenuProps, MenuState> {
     handleClick = (id, data) => {
         const { onClick } = this.props
 
-        // 目前所在的Key
         this.setState({ activeKey: id })
 
         onClick?.(data)
     }
 
-    handleScroll = (pos: 'Top' | 'Left', offset) => {
+    handleScroll = (pos: 'Top' | 'Left', offset: number) => {
         const sizeKey = pos === 'Top' ? 'height' : 'width'
 
         const size = this.container.getBoundingClientRect()[sizeKey]
 
         const scroll = this.rootElement.getBoundingClientRect()[sizeKey]
 
-        this.wrapper[`scroll${pos}`] = offset * (scroll - size)
+        const scrollPos = `scroll${pos}` as keyof Pick<MenuState, 'scrollLeft' | 'scrollTop'>
 
-        this.setState({ [`scroll${pos}`]: offset })
+        this.wrapper[scrollPos] = offset * (scroll - size)
+
+        this.setState({ [scrollPos]: offset })
     }
 
-    /**
-     * 自定义render
-     * @param data
-     * @returns {null|*}
-     */
     renderItem = (data: BaseData) => {
         const { renderItem } = this.props
 

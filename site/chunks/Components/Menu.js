@@ -23,6 +23,26 @@ const examples = [
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
     rawText: require('!raw-loader!doc/pages/components/Menu/example-1-base.tsx').default,
     },
+    {
+    name: '2-linkx',
+    title: locate(
+    '链接 \n 可以通过设置 linkKey 来渲染出对应的链接',
+    'link \n Can render the corresponding link by setting linkKey'
+    ),
+    component: require('doc/pages/components/Menu/example-2-link.tsx').default,
+    // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
+    rawText: require('!raw-loader!doc/pages/components/Menu/example-2-link.tsx').default,
+    },
+    {
+    name: '3-horizontalx',
+    title: locate(
+    '水平布局 \n 设置 mode 为 "horizontal"，显示为水平布局（子菜单在右侧弹出）',
+    'Horizontal \n Set mode to "horizontal" to display it as horizontal layout (submenu pops up on the right).'
+    ),
+    component: require('doc/pages/components/Menu/example-3-horizontal.tsx').default,
+    // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
+    rawText: require('!raw-loader!doc/pages/components/Menu/example-3-horizontal.tsx').default,
+    },
 ]
 
     const codes = undefined

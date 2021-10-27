@@ -37,7 +37,8 @@
             }
 
             &:hover {
-                color: @menu-highlight-color;
+                color: @menu-item-light-hover-color;
+                background-color: @menu-item-light-hover-bgc;
             }
         }
 
@@ -258,6 +259,13 @@
         }
     }
 
+    &-inline,
+    &-horizontal {
+        .@{menu-prefix}-in-path.@{menu-prefix}-has-children > a {
+            color: @colors-primary;
+        }
+    }
+
     &-dark {
         &,
         .@{menu-prefix}-list {
@@ -270,7 +278,8 @@
                 color: @menu-dark-item;
 
                 &:hover {
-                    color: #fff;
+                    color: @menu-item-dark-hover-color;
+                    background-color: @menu-item-dark-hover-bgc;
                 }
             }
         }

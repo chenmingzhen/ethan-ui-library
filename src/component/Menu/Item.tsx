@@ -3,9 +3,10 @@ import classnames from 'classnames'
 import { PureComponent } from '@/utils/component'
 import { menuClass } from '@/styles'
 import { isLink } from '@/utils/is'
+import { getUidStr } from '@/utils/uid'
 import List from './List'
 import { consumer } from './context'
-import { BaseData, MenuItemProps } from './type'
+import { MenuItemProps, UpdateActive, UpdateInPath, UpdateOpen } from './type'
 
 interface MenuItemState {
     open: boolean
@@ -20,6 +21,8 @@ interface MenuItemState {
 class Item extends PureComponent<MenuItemProps, MenuItemState> {
     element: HTMLLIElement
 
+    id: string
+
     handleMouseEnter
 
     handleMouseLeave
@@ -27,19 +30,16 @@ class Item extends PureComponent<MenuItemProps, MenuItemState> {
     constructor(props: MenuItemProps) {
         super(props)
 
-        const { key } = props.data
+        this.id = `${props.path},${getUidStr()}`
 
-        const [activeUpdate, openUpdate, inPathUpdate] = props.bindItem(
-            key,
-            this.update.bind(this),
-            this.updateOpen.bind(this),
-            this.updateInPath.bind(this)
-        )
+        props.bindItem(this.id, props.data.key, this.updateActive, this.updateOpen, this.updateInPath)
+
+        const { checkOpen, checkActive, checkInPath } = props
 
         this.state = {
-            open: openUpdate(key),
-            isActive: activeUpdate(key),
-            inPath: inPathUpdate(key),
+            open: checkOpen(this.id),
+            isActive: checkActive(this.id),
+            inPath: checkInPath(this.id),
             isHighLight: false,
         }
 
@@ -50,13 +50,9 @@ class Item extends PureComponent<MenuItemProps, MenuItemState> {
     componentWillUnmount() {
         super.componentWillUnmount()
 
-        this.props.unbindItem?.(this.props.data.key)
+        this.props.unbindItem?.(this.id)
 
         this.unbindDocumentEvent()
-    }
-
-    getKey = () => {
-        return this.props.data.key ?? this.props.index
     }
 
     bindElement = el => {
@@ -67,24 +63,28 @@ class Item extends PureComponent<MenuItemProps, MenuItemState> {
         document.removeEventListener('click', this.handleMouseLeave)
     }
 
-    // Root中updateActive时触发 check为Root的checkActive
-    update(check, activePath: Map<string | number, boolean>) {
-        const isActive = check(this.props.data.key)
+    updateActive: UpdateActive = (activePath: string) => {
+        const { checkActive } = this.props
 
-        const isHighLight = activePath && isActive ? activePath.has(this.props.data.key) : false
+        const isActive = checkActive(this.id)
+
+        const isHighLight = activePath && isActive ? activePath.indexOf(this.id) > -1 : false
 
         this.setState({ isActive, isHighLight })
     }
 
-    // Root中updateOpen时触发 check为Root的checkOpen
-    updateOpen(check) {
-        const isOpen = check(this.getKey())
+    updateOpen: UpdateOpen = () => {
+        const { checkOpen } = this.props
+
+        const isOpen = checkOpen(this.id)
 
         this.setState({ open: isOpen })
     }
 
-    updateInPath(check) {
-        const inPath = check(this.props.data.key)
+    updateInPath: UpdateInPath = () => {
+        const { checkInPath } = this.props
+
+        const inPath = checkInPath(this.id)
 
         this.setState({ inPath })
     }
@@ -92,14 +92,14 @@ class Item extends PureComponent<MenuItemProps, MenuItemState> {
     handleToggle = open => {
         const { toggleOpenKeys } = this.props
 
-        const key = this.getKey()
+        const { id } = this
 
         if (open) {
-            toggleOpenKeys(key, true)
+            toggleOpenKeys(id, true)
 
             document.addEventListener('click', this.handleMouseLeave)
         } else {
-            toggleOpenKeys(key, false)
+            toggleOpenKeys(id, false)
 
             this.unbindDocumentEvent()
         }
@@ -111,16 +111,11 @@ class Item extends PureComponent<MenuItemProps, MenuItemState> {
         if (data.disabled) return
 
         if (mode === 'inline' && data?.children?.length) {
-            toggleOpenKeys(this.getKey(), !this.state.open)
+            toggleOpenKeys(this.id, !this.state.open)
         }
 
-        if (typeof data.onClick === 'function') {
-            data.onClick(data)
-        } else if (
-            (!data.children || data?.children?.length === 0 || !!data.onClick) &&
-            typeof onClick === 'function'
-        ) {
-            onClick(data.key, data)
+        if (!data.children?.length) {
+            onClick?.(this.id, data)
         }
 
         const isLeaf = data?.children?.length === 0
@@ -129,25 +124,14 @@ class Item extends PureComponent<MenuItemProps, MenuItemState> {
         if (!isLeaf) e.nativeEvent.stopImmediatePropagation()
     }
 
-    /**
-     * 自定义render的Click事件触发
-     */
-    handleItemClick = (clickMethod, e) => {
-        clickMethod?.()
-
-        this.handleClick(e)
-    }
-
-    handleSwitch = e => {
+    handleIsLinkClick = e => {
         const { renderItem, data } = this.props
 
         const item = renderItem?.(data) as React.ReactElement
 
-        if (item?.props?.onClick) {
-            this.handleItemClick(item.props.onClick, e)
-        } else {
-            this.handleClick(e)
-        }
+        item?.props?.onClick?.()
+
+        this.handleClick(e)
     }
 
     render() {
@@ -199,7 +183,7 @@ class Item extends PureComponent<MenuItemProps, MenuItemState> {
 
             const mergeStyle = Object.assign({}, style, item.props && item.props.style)
 
-            item = cloneElement(item, { className: mergeClass, style: mergeStyle, onClick: this.handleSwitch })
+            item = cloneElement(item, { className: mergeClass, style: mergeStyle, onClick: this.handleIsLinkClick })
         } else {
             const props: React.DetailedHTMLProps<React.AnchorHTMLAttributes<HTMLAnchorElement>, HTMLAnchorElement> = {
                 className: menuClass('title'),
@@ -223,7 +207,7 @@ class Item extends PureComponent<MenuItemProps, MenuItemState> {
                         inlineIndent={mode === 'horizontal' ? 0 : inlineIndent}
                         mode={mode === 'horizontal' ? 'inline' : mode}
                         onClick={onClick}
-                        path={this.getKey()}
+                        path={this.id}
                         level={level + 1}
                         open={open}
                         toggleOpenKeys={toggleOpenKeys}
