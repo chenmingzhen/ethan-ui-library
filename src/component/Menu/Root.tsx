@@ -280,6 +280,8 @@ class Menu extends React.PureComponent<IMenuProps, MenuState> {
 
         this.wrapper[scrollPos] = offset * (scroll - size)
 
+        console.log(scroll, size)
+
         this.setState({ [scrollPos]: offset })
     }
 
@@ -311,7 +313,7 @@ class Menu extends React.PureComponent<IMenuProps, MenuState> {
                     length={width}
                     scrollLength={scrollWidth}
                     offset={this.state.scrollLeft}
-                    onScroll={this.handleScroll.bind('Top')}
+                    onScroll={this.handleScroll.bind(this, 'Left')}
                     direction="x"
                 />
             )
@@ -330,7 +332,7 @@ class Menu extends React.PureComponent<IMenuProps, MenuState> {
                 length={length}
                 scrollLength={scrollHeight}
                 offset={this.state.scrollTop}
-                onScroll={this.handleScroll.bind('Left')}
+                onScroll={this.handleScroll.bind(this, 'Top')}
             />
         )
     }

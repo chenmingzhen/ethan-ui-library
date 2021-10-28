@@ -53,7 +53,7 @@ class List extends PureComponent<IMenuListProps> {
             </ul>
         )
 
-        if (rootMode === 'horizontal') return innerUlElement
+        if (rootMode !== 'inline') return innerUlElement
 
         return (
             <AnimationHeight height={this.props.open ? 'auto' : 0} duration={200}>

@@ -157,7 +157,8 @@
         }
 
         &:hover .@{menu-prefix}-bar {
-            display: block;
+            // display: block;
+            opacity: 1;
         }
 
         & > .@{menu-prefix}-item {
@@ -201,10 +202,16 @@
     }
 
     &-bar {
-        display: none;
+        transition: opacity 0.2s ease-in-out;
+        // display: none;
+        opacity: 0;
     }
 
     &-vertical {
+        .@{menu-prefix}-list:not(.@{menu-prefix}-root) {
+            display: none;
+        }
+
         &.@{menu-prefix}-root {
             border-right: solid 1px @menu-border-color;
         }
@@ -214,7 +221,8 @@
         }
 
         &:hover .@{menu-prefix}-bar {
-            display: block;
+            opacity: 1;
+            // display: block;
         }
 
         &.@{menu-prefix}-scroll .@{menu-prefix}-wrapper {
@@ -226,6 +234,11 @@
 
         &.@{menu-prefix}-has-open .@{menu-prefix}-wrapper {
             width: 100vw;
+        }
+
+        .@{menu-prefix}-in-path.@{menu-prefix}-has-children > a {
+            background: @menu-item-active-bg;
+            color: @menu-item-active-color;
         }
 
         .@{menu-prefix}-root .@{menu-prefix}-list {

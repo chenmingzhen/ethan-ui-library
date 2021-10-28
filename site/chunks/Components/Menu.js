@@ -43,6 +43,16 @@ const examples = [
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
     rawText: require('!raw-loader!doc/pages/components/Menu/example-3-horizontal.tsx').default,
     },
+    {
+    name: '4-verticalx',
+    title: locate(
+    '垂直样式 \n 设置 mode 为 "vertical"，显示为垂直布局 \n 设置 mode 为 "vertical-auto" 可以自动选择弹出方向（上下）',
+    'Vertical \n Set mode to "vertical" to display it as vertical layout. \n set \'vertical-auto\' auto popup position'
+    ),
+    component: require('doc/pages/components/Menu/example-4-vertical.tsx').default,
+    // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
+    rawText: require('!raw-loader!doc/pages/components/Menu/example-4-vertical.tsx').default,
+    },
 ]
 
     const codes = undefined
