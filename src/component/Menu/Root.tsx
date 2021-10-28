@@ -78,7 +78,6 @@ class Menu extends React.PureComponent<IMenuProps, MenuState> {
     get openKeys() {
         const { openKeys } = this.props
 
-        // TODO 转化成内部的keys
         if (openKeys) return openKeys
 
         return this.state.openKeys
@@ -233,8 +232,11 @@ class Menu extends React.PureComponent<IMenuProps, MenuState> {
 
         const { onOpenChange } = this.props
 
-        // TODO 转化成外部的key
-        onOpenChange?.(newOpenKeys)
+        if (onOpenChange) {
+            const outerKeys = Array.from(this.innerIdToOuterKeyMap.values())
+
+            onOpenChange(outerKeys)
+        }
 
         this.setState({ openKeys: newOpenKeys, hasOpen: newOpenKeys.length > 0 })
     }

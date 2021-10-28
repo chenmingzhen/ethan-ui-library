@@ -31,6 +31,8 @@ class Item extends PureComponent<IMenuItemProps, MenuItemState> {
 
     handleMouseLeave
 
+    toggleTimer: NodeJS.Timeout
+
     constructor(props: IMenuItemProps) {
         super(props)
 
@@ -98,6 +100,8 @@ class Item extends PureComponent<IMenuItemProps, MenuItemState> {
 
         const { id } = this
 
+        if (this.toggleTimer) clearTimeout(this.toggleTimer)
+
         if (open) {
             toggleOpenKeys(id, true)
 
@@ -106,9 +110,11 @@ class Item extends PureComponent<IMenuItemProps, MenuItemState> {
             this.unbindDocumentEvent()
 
             // 延时使Root state值正确
-            setTimeout(() => {
+            this.toggleTimer = setTimeout(() => {
                 toggleOpenKeys(id, false)
-            }, 20)
+
+                this.toggleTimer = null
+            }, 230)
         }
     }
 
