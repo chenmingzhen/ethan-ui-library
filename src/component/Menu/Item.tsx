@@ -99,33 +99,37 @@ class Item extends PureComponent<IMenuItemProps, MenuItemState> {
         const { id } = this
 
         if (open) {
-            document.addEventListener('click', this.handleMouseLeave)
+            toggleOpenKeys(id, true)
 
-            toggleOpenKeys(id)
+            document.addEventListener('click', this.handleMouseLeave)
         } else {
             this.unbindDocumentEvent()
 
             // 延时使Root state值正确
             setTimeout(() => {
-                toggleOpenKeys(id)
-            }, 200)
+                toggleOpenKeys(id, false)
+            }, 20)
         }
     }
 
     handleClick = (e: React.MouseEvent) => {
-        const { data, onClick, toggleOpenKeys } = this.props
+        const { data, onClick, toggleOpenKeys, mode } = this.props
 
         if (data.disabled) return
 
-        toggleOpenKeys(this.id)
+        if (mode === 'inline' && data.children && data.children.length) {
+            toggleOpenKeys(this.id, !this.state.open)
+        }
 
         if (!data.children?.length) {
             onClick?.(this.id, data)
         }
 
-        const isLeaf = data?.children?.length === 0
+        const isLeaf = ((data || {}).children || []).length === 0
 
         // 阻止事件冒泡并且阻止该元素上同事件类型的监听器被触发
+        // 阻止剩下的事件处理程序被执行。
+        // 阻止document click的执行
         if (!isLeaf) e.nativeEvent.stopImmediatePropagation()
     }
 

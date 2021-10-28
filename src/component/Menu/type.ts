@@ -122,5 +122,5 @@ export interface MenuItemProps extends MenuContext {
 
     renderItem: (data: BaseData) => React.ReactNode
 
-    toggleOpenKeys: (id: string | number) => void
+    toggleOpenKeys: (id: string | number, open: boolean) => void
 }

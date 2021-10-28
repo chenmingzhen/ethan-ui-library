@@ -222,21 +222,18 @@ class Menu extends React.PureComponent<IMenuProps, MenuState> {
         }
     }
 
-    toggleOpenKeys = id => {
-        const cloneOpenKeys = deepClone(this.openKeys)
+    toggleOpenKeys = (id, open: boolean) => {
+        let newOpenKeys = deepClone(this.openKeys)
 
-        const isExist = cloneOpenKeys.includes(id)
-
-        let newOpenKeys = cloneOpenKeys
-
-        if (isExist) {
-            newOpenKeys = pull(cloneOpenKeys, id)
+        if (!open) {
+            newOpenKeys = pull(newOpenKeys, id)
         } else {
             newOpenKeys.push(id)
         }
 
         const { onOpenChange } = this.props
 
+        // TODO 转化成外部的key
         onOpenChange?.(newOpenKeys)
 
         this.setState({ openKeys: newOpenKeys, hasOpen: newOpenKeys.length > 0 })
