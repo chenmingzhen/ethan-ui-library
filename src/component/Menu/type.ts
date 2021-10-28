@@ -98,8 +98,6 @@ export interface MenuListProps {
 
     toggleOpenKeys: (id: string | number, open: boolean) => void
 
-    toggleDuration?: number
-
     open: boolean
 }
 
@@ -124,5 +122,5 @@ export interface MenuItemProps extends MenuContext {
 
     renderItem: (data: BaseData) => React.ReactNode
 
-    toggleOpenKeys: (id: string | number, open: boolean) => void
+    toggleOpenKeys: (id: string | number) => void
 }

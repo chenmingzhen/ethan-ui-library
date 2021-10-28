@@ -75,11 +75,10 @@ class Menu extends React.PureComponent<IMenuProps, MenuState> {
 
     rootElement: HTMLDivElement
 
-    hasToggled = false
-
     get openKeys() {
         const { openKeys } = this.props
 
+        // TODO 转化成内部的keys
         if (openKeys) return openKeys
 
         return this.state.openKeys
@@ -210,7 +209,7 @@ class Menu extends React.PureComponent<IMenuProps, MenuState> {
             update()
         }
 
-        const transformKeys = Array.from(this.innerIdToOuterKeyMap.values())
+        const transformKeys = Array.from(this.innerIdToOuterKeyMap.keys())
 
         const hasOpen = this.openKeys.filter(key => transformKeys.find(it => it === key)).length > 0
 
@@ -231,12 +230,10 @@ class Menu extends React.PureComponent<IMenuProps, MenuState> {
         let newOpenKeys = cloneOpenKeys
 
         if (isExist) {
-            newOpenKeys = pull(this.openKeys, id)
+            newOpenKeys = pull(cloneOpenKeys, id)
         } else {
             newOpenKeys.push(id)
         }
-
-        this.hasToggled = true
 
         const { onOpenChange } = this.props
 
@@ -391,6 +388,7 @@ class Menu extends React.PureComponent<IMenuProps, MenuState> {
                             toggleOpenKeys={this.toggleOpenKeys}
                             bottomLine={bottomLine}
                             topLine={topLine}
+                            rootMode={mode}
                         />
                     </Provider>
                 </div>

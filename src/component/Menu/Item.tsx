@@ -6,7 +6,7 @@ import { isLink } from '@/utils/is'
 import { getUidStr } from '@/utils/uid'
 import List from './List'
 import { consumer } from './context'
-import { MenuItemProps, UpdateActive, UpdateInPath, UpdateOpen } from './type'
+import { MenuItemProps, Mode, UpdateActive, UpdateInPath, UpdateOpen } from './type'
 
 interface MenuItemState {
     open: boolean
@@ -18,7 +18,11 @@ interface MenuItemState {
     inPath: boolean
 }
 
-class Item extends PureComponent<MenuItemProps, MenuItemState> {
+interface IMenuItemProps extends MenuItemProps {
+    rootMode: Mode
+}
+
+class Item extends PureComponent<IMenuItemProps, MenuItemState> {
     element: HTMLLIElement
 
     id: string
@@ -27,7 +31,7 @@ class Item extends PureComponent<MenuItemProps, MenuItemState> {
 
     handleMouseLeave
 
-    constructor(props: MenuItemProps) {
+    constructor(props: IMenuItemProps) {
         super(props)
 
         this.id = `${props.path},${getUidStr()}`
@@ -95,24 +99,25 @@ class Item extends PureComponent<MenuItemProps, MenuItemState> {
         const { id } = this
 
         if (open) {
-            toggleOpenKeys(id, true)
-
             document.addEventListener('click', this.handleMouseLeave)
-        } else {
-            toggleOpenKeys(id, false)
 
+            toggleOpenKeys(id)
+        } else {
             this.unbindDocumentEvent()
+
+            // 延时使Root state值正确
+            setTimeout(() => {
+                toggleOpenKeys(id)
+            }, 200)
         }
     }
 
     handleClick = (e: React.MouseEvent) => {
-        const { data, onClick, mode, toggleOpenKeys } = this.props
+        const { data, onClick, toggleOpenKeys } = this.props
 
         if (data.disabled) return
 
-        if (mode === 'inline' && data?.children?.length) {
-            toggleOpenKeys(this.id, !this.state.open)
-        }
+        toggleOpenKeys(this.id)
 
         if (!data.children?.length) {
             onClick?.(this.id, data)
@@ -135,7 +140,18 @@ class Item extends PureComponent<MenuItemProps, MenuItemState> {
     }
 
     render() {
-        const { data, renderItem, mode, level, onClick, inlineIndent, toggleOpenKeys, bottomLine, topLine } = this.props
+        const {
+            data,
+            renderItem,
+            mode,
+            level,
+            onClick,
+            inlineIndent,
+            toggleOpenKeys,
+            bottomLine,
+            topLine,
+            rootMode,
+        } = this.props
 
         const { open, isActive, isHighLight, inPath } = this.state
 
@@ -211,6 +227,7 @@ class Item extends PureComponent<MenuItemProps, MenuItemState> {
                         level={level + 1}
                         open={open}
                         toggleOpenKeys={toggleOpenKeys}
+                        rootMode={rootMode}
                     />
                 )}
             </li>
