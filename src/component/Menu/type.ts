@@ -9,8 +9,6 @@ export interface BaseData {
 
     disabled?: boolean
 
-    // linkKey?: React.ReactNode | ((data: BaseData) => React.ReactNode)
-
     linkKey?: string
 
     target?: string
