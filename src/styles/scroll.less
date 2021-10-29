@@ -44,12 +44,15 @@
             }
         }
 
-        &:hover,
-        &.@{scroll-prefix}-dragging {
-            // border-color: @scrollbar-hover-border;
-
+        &:hover {
             .@{scroll-prefix}-handle {
                 background: @scrollbar-hover-color;
+            }
+        }
+
+        &.@{scroll-prefix}-dragging {
+            .@{scroll-prefix}-handle {
+                background: @scrollbar-dragging-color;
             }
         }
 
