@@ -163,6 +163,8 @@ class Menu extends React.PureComponent<IMenuProps, MenuState> {
         this.itemsUpdateOpenCallback.delete(id)
 
         this.itemsUpdateInPathCallback.delete(id)
+
+        this.innerIdToOuterKeyMap.delete(id)
     }
 
     checkActive = (id: string) => {
@@ -279,8 +281,6 @@ class Menu extends React.PureComponent<IMenuProps, MenuState> {
         const scrollPos = `scroll${pos}` as keyof Pick<MenuState, 'scrollLeft' | 'scrollTop'>
 
         this.wrapper[scrollPos] = offset * (scroll - size)
-
-        console.log(scroll, size)
 
         this.setState({ [scrollPos]: offset })
     }
