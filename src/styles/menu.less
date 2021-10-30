@@ -43,6 +43,10 @@
         &.@{menu-prefix}-disabled a {
             color: @menu-disabled-color;
             cursor: not-allowed;
+
+            &:hover {
+                background: none;
+            }
         }
     }
 
@@ -295,6 +299,12 @@
                 &:hover {
                     color: @menu-item-dark-hover-color;
                     background-color: @menu-item-dark-hover-bgc;
+                }
+            }
+
+            &.@{menu-prefix}-disabled a {
+                &:hover {
+                    background: none;
                 }
             }
         }

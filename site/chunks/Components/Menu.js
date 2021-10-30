@@ -53,6 +53,16 @@ const examples = [
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
     rawText: require('!raw-loader!doc/pages/components/Menu/example-4-vertical.tsx').default,
     },
+    {
+    name: '5-disabledx',
+    title: locate(
+    '禁用菜单 \n 通过 disabled 属性可以禁用选项',
+    'Disabled \n Disable the option by the disabled property.'
+    ),
+    component: require('doc/pages/components/Menu/example-5-disabled.tsx').default,
+    // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
+    rawText: require('!raw-loader!doc/pages/components/Menu/example-5-disabled.tsx').default,
+    },
 ]
 
     const codes = undefined
