@@ -63,6 +63,26 @@ const examples = [
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
     rawText: require('!raw-loader!doc/pages/components/Menu/example-5-disabled.tsx').default,
     },
+    {
+    name: '6-itemRenderx',
+    title: locate(
+    '自定义渲染 \n 设置 renderItem 属性展现稍微复杂的内容',
+    'RenderItem \n Set the renderItem property to show format content.'
+    ),
+    component: require('doc/pages/components/Menu/example-6-itemRender.tsx').default,
+    // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
+    rawText: require('!raw-loader!doc/pages/components/Menu/example-6-itemRender.tsx').default,
+    },
+    {
+    name: '7-darkx',
+    title: locate(
+    '暗系主题 \n 内置了一个暗色的主题，通过 theme 使用',
+    'Dark theme \n The dark theme.'
+    ),
+    component: require('doc/pages/components/Menu/example-7-dark.tsx').default,
+    // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
+    rawText: require('!raw-loader!doc/pages/components/Menu/example-7-dark.tsx').default,
+    },
 ]
 
     const codes = undefined
