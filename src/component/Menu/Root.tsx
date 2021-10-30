@@ -75,6 +75,10 @@ class Menu extends React.PureComponent<IMenuProps, MenuState> {
 
     rootElement: HTMLDivElement
 
+    scrollTimer: NodeJS.Timeout
+
+    scrollCache = 0
+
     get openKeys() {
         const { openKeys } = this.props
 
@@ -243,6 +247,8 @@ class Menu extends React.PureComponent<IMenuProps, MenuState> {
         this.setState({ openKeys: newOpenKeys, hasOpen: newOpenKeys.length > 0 })
     }
 
+    handleSmoothScroll = () => {}
+
     handleWheel = e => {
         const { mode } = this.props
 
@@ -250,17 +256,52 @@ class Menu extends React.PureComponent<IMenuProps, MenuState> {
 
         const wheel = normalizeWheel(e)
 
-        const size = this.container.getBoundingClientRect()[key]
-
         const scrollPos = `scroll${pos}` as keyof Pick<MenuState, 'scrollLeft' | 'scrollTop'>
 
-        this.wrapper[scrollPos] += wheel[`pixel${direction}`]
+        const size = this.container.getBoundingClientRect()[key]
 
-        const percent = this.wrapper[scrollPos] / size
+        const rootSize = this.rootElement.getBoundingClientRect()[key]
 
-        this.setState({ [scrollPos]: percent > 1 ? 1 : percent })
+        const scrollSize = rootSize - size
+
+        const percent = (this.wrapper[scrollPos] + wheel[`pixel${direction}`]) / scrollSize
+
+        this.setState({ [scrollPos]: percent > 1 ? 1 : percent < 0 ? 0 : percent })
 
         e.preventDefault()
+
+        /** 平滑滚动计算 */
+
+        if (this.scrollTimer) clearInterval(this.scrollTimer)
+
+        this.scrollCache = wheel[`pixel${direction}`]
+
+        const { scrollCache } = this
+
+        const targetValue =
+            scrollCache > 0
+                ? Math.min(this.wrapper.scrollTop + scrollCache, scrollSize)
+                : Math.max(this.wrapper.scrollTop + scrollCache, 0)
+
+        this.scrollTimer = setInterval(() => {
+            if (this.wrapper.scrollTop === targetValue || !scrollCache) {
+                this.scrollCache = 0
+
+                clearInterval(this.scrollTimer)
+
+                this.scrollTimer = null
+
+                return
+            }
+
+            const computedValue = this.wrapper.scrollTop + scrollCache / 8
+
+            if (scrollCache > 0) {
+                this.wrapper.scrollTop = Math.min(computedValue, targetValue)
+            } else {
+                this.wrapper.scrollTop = Math.max(computedValue, targetValue)
+            }
+        }, 10)
     }
 
     handleClick = (id, data) => {

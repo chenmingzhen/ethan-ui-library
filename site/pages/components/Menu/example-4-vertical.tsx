@@ -12,11 +12,11 @@ import { Menu } from 'ethan/index'
 const data = [
     {
         key: '1',
-        title: 'Navigation One',
+        title: 'Navigation 1',
     },
     {
         key: '3',
-        title: 'Navigation Two',
+        title: 'Navigation 3',
         children: [
             {
                 key: '4',
@@ -99,6 +99,54 @@ const data = [
     {
         key: '33',
         title: 'Navigation 33',
+    },
+    {
+        key: '34',
+        title: 'Navigation 34',
+    },
+    {
+        key: '35',
+        title: 'Navigation 35',
+    },
+    {
+        key: '36',
+        title: 'Navigation 36',
+    },
+    {
+        key: '37',
+        title: 'Navigation 37',
+    },
+    {
+        key: '38',
+        title: 'Navigation 38',
+    },
+    {
+        key: '39',
+        title: 'Navigation 39',
+    },
+    {
+        key: '40',
+        title: 'Navigation 40',
+    },
+    {
+        key: '41',
+        title: 'Navigation 41',
+    },
+    {
+        key: '42',
+        title: 'Navigation 42',
+    },
+    {
+        key: '43',
+        title: 'Navigation 43',
+    },
+    {
+        key: '44',
+        title: 'Navigation 44',
+    },
+    {
+        key: '45',
+        title: 'Navigation 45',
     },
 ]
 
