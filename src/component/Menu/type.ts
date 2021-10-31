@@ -5,7 +5,7 @@ export type Mode = 'inline' | 'vertical' | 'horizontal' | 'vertical-auto'
 export interface BaseData {
     key: string | number
 
-    title: React.ReactNode
+    title?: React.ReactNode
 
     disabled?: boolean
 
