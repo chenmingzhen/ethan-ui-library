@@ -25,15 +25,13 @@ const handleThemeClick = data => {
 }
 
 const Header = () => {
-    const [currentPath, navs] = useNav()
+    const { initPath, navs, navMap } = useNav()
 
     const [version, versions] = useVersion()
 
     const handleNavClick = useCallback(nav => {
-        history.push(`${nav.path}`)
+        history.push(`${nav.key}`)
     }, [])
-
-    const checkActive = useCallback(d => currentPath === d.path, [currentPath])
 
     const handleLangClick = () => {
         const langs = findLangs()
@@ -53,13 +51,12 @@ const Header = () => {
             <div className={headerClass('nav')}>
                 <Menu
                     mode="horizontal"
-                    keygen="path"
                     data={navs}
-                    renderItem={d => (getLanguage() === 'zh-CN' ? d.cn : d.en)}
+                    renderItem={d => (getLanguage() === 'zh-CN' ? navMap[d.key].cn : navMap[d.key].en)}
                     onClick={handleNavClick}
                     inlineIndent={24}
                     style={{ background: 'transparent', border: 'none' }}
-                    active={checkActive}
+                    defaultActiveKey={initPath}
                 />
             </div>
             <div className={headerClass('right')}>
