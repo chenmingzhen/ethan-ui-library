@@ -2,7 +2,7 @@ import React from 'react'
 import classnames from 'classnames'
 import normalizeWheel from '@/utils/dom/normalizeWheel'
 import { menuClass } from '@/styles'
-import { pull } from '@/utils/array'
+import { getSameValue, pull } from '@/utils/array'
 import { deepClone } from '@/utils/clone'
 import ScrollBar from '../Scroll/Bar'
 import List from './List'
@@ -20,10 +20,6 @@ const modeDirection = {
     inline: 'y',
 }
 
-interface IMenuProps extends MenuProps {
-    level?: number
-}
-
 interface MenuState {
     activeKey?: string
 
@@ -36,21 +32,15 @@ interface MenuState {
     hasOpen?: boolean
 }
 
-class Menu extends React.PureComponent<IMenuProps, MenuState> {
+class Menu extends React.PureComponent<MenuProps, MenuState> {
     static defaultProps = {
         data: [],
 
-        disabled: d => d.disabled,
-
         level: 0,
-
-        keygen: 'id',
 
         mode: 'inline',
 
         inlineIndent: 24,
-
-        active: () => false,
 
         defaultOpenKeys: [],
 
@@ -80,6 +70,10 @@ class Menu extends React.PureComponent<IMenuProps, MenuState> {
     scrollTimer: NodeJS.Timeout
 
     scrollCache = 0
+
+    shouldBindWheel = false
+
+    hasBindWheel = false
 
     get openKeys() {
         const { openKeys } = this.props
@@ -136,131 +130,25 @@ class Menu extends React.PureComponent<IMenuProps, MenuState> {
 
         this.setState({ openKeys: initKeys, activeKey: activeId }, this.updateState)
 
-        this.container.addEventListener('wheel', this.handleWheel, { passive: false })
+        this.bindWheelEvent()
+
+        const sameKeys = getSameValue(Array.from(this.innerIdToOuterKeyMap.values()))
+
+        if (sameKeys.length) {
+            console.error(
+                `Ethan Menu get the same key:${sameKeys.join('')},please check your data and keep the data unique`
+            )
+        }
     }
 
     componentDidUpdate = () => {
         this.updateState()
+
+        this.bindWheelEvent()
     }
 
     componentWillUnmount = () => {
-        this.container.removeEventListener('wheel', this.handleWheel)
-    }
-
-    renderItem = (data: BaseData) => {
-        const { renderItem } = this.props
-
-        return renderItem?.(data) ?? data.title
-    }
-
-    renderScrollBar = () => {
-        if (!this.rootElement || !this.container) return null
-
-        const { mode } = this.props
-
-        const direction = modeDirection[mode]
-
-        if (!direction) return null
-
-        if (direction === 'x') {
-            const { width } = this.container.getBoundingClientRect()
-
-            const scrollWidth = this.rootElement.getBoundingClientRect().width
-            // 内容器未大于外容器 不渲染滚动条
-
-            if (scrollWidth <= width) return null
-
-            return (
-                <ScrollBar
-                    className={menuClass('bar')}
-                    length={width}
-                    scrollLength={scrollWidth}
-                    offset={this.state.scrollLeft}
-                    onScroll={this.handleScroll.bind(this, 'Left')}
-                    direction="x"
-                />
-            )
-        }
-
-        const length = this.container.getBoundingClientRect().height
-
-        const scrollHeight = this.rootElement.getBoundingClientRect().height
-
-        if (scrollHeight < length) return null
-
-        return (
-            <ScrollBar
-                className={menuClass('bar')}
-                forceHeight={length}
-                length={length}
-                scrollLength={scrollHeight}
-                offset={this.state.scrollTop}
-                onScroll={this.handleScroll.bind(this, 'Top')}
-            />
-        )
-    }
-
-    render() {
-        const { data, mode, style, theme, inlineIndent } = this.props
-
-        const isVertical = mode.indexOf('vertical') === 0
-
-        const showScroll = style.height || mode === 'horizontal'
-
-        const className = classnames(
-            menuClass(
-                '_',
-                isVertical ? 'vertical' : mode,
-                theme === 'dark' && 'dark',
-                showScroll && 'scroll',
-                this.state.hasOpen && 'has-open'
-            ),
-            this.props.className
-        )
-
-        const rootStyle: React.CSSProperties = {}
-
-        if (style.width && mode !== 'horizontal') rootStyle.width = style.width
-
-        let bottomLine = 0
-
-        let topLine = 0
-
-        if (this.container) {
-            const rect = this.container.getBoundingClientRect()
-
-            bottomLine = rect.bottom
-
-            topLine = rect.top
-        }
-
-        return (
-            <div className={className} ref={this.bindRootElement} style={style}>
-                <div className={menuClass('wrapper')}>
-                    <Provider value={this.providerValue}>
-                        <List
-                            className={menuClass('root')}
-                            data={data}
-                            inlineIndent={inlineIndent}
-                            level={0}
-                            mode={mode}
-                            onClick={this.handleClick}
-                            path=""
-                            renderItem={this.renderItem}
-                            open
-                            style={rootStyle}
-                            toggleOpenKeys={this.toggleOpenKeys}
-                            bottomLine={bottomLine}
-                            topLine={topLine}
-                            rootMode={mode}
-                            handleScrollPosUpdate={mode === 'inline' ? this.handleScrollPosUpdate : undefined}
-                        />
-                    </Provider>
-                </div>
-
-                {showScroll && this.renderScrollBar()}
-            </div>
-        )
+        this.hasBindWheel && this.container.removeEventListener('wheel', this.handleWheel)
     }
 
     bindRootElement = (el: HTMLDivElement) => {
@@ -289,6 +177,18 @@ class Menu extends React.PureComponent<IMenuProps, MenuState> {
         this.itemsUpdateInPathCallback.delete(id)
 
         this.innerIdToOuterKeyMap.delete(id)
+    }
+
+    bindWheelEvent = () => {
+        if (this.shouldBindWheel && !this.hasBindWheel) {
+            this.container.addEventListener('wheel', this.handleWheel, { passive: false })
+
+            this.hasBindWheel = true
+        } else if (!this.shouldBindWheel && this.hasBindWheel) {
+            this.container.removeEventListener('wheel', this.handleWheel)
+
+            this.hasBindWheel = false
+        }
     }
 
     handleScrollPosUpdate = () => {
@@ -440,6 +340,128 @@ class Menu extends React.PureComponent<IMenuProps, MenuState> {
         this.wrapper[scrollPos] = offset * (scroll - size)
 
         this.setState({ [scrollPos]: offset })
+    }
+
+    renderItem = (data: BaseData) => {
+        const { renderItem } = this.props
+
+        return renderItem?.(data) ?? data.title
+    }
+
+    renderScrollBar = () => {
+        this.shouldBindWheel = false
+
+        if (!this.rootElement || !this.container) return null
+
+        const { mode } = this.props
+
+        const direction = modeDirection[mode]
+
+        if (!direction) return null
+
+        if (direction === 'x') {
+            const { width } = this.container.getBoundingClientRect()
+
+            const scrollWidth = this.rootElement.getBoundingClientRect().width
+            // 内容器未大于外容器 不渲染滚动条
+
+            if (scrollWidth <= width) return null
+
+            this.shouldBindWheel = true
+
+            return (
+                <ScrollBar
+                    className={menuClass('bar')}
+                    length={width}
+                    scrollLength={scrollWidth}
+                    offset={this.state.scrollLeft}
+                    onScroll={this.handleScroll.bind(this, 'Left')}
+                    direction="x"
+                />
+            )
+        }
+
+        const length = this.container.getBoundingClientRect().height
+
+        const scrollHeight = this.rootElement.getBoundingClientRect().height
+
+        if (scrollHeight < length) return null
+
+        this.shouldBindWheel = true
+
+        return (
+            <ScrollBar
+                className={menuClass('bar')}
+                forceHeight={length}
+                length={length}
+                scrollLength={scrollHeight}
+                offset={this.state.scrollTop}
+                onScroll={this.handleScroll.bind(this, 'Top')}
+            />
+        )
+    }
+
+    render() {
+        const { data, mode, style, theme, inlineIndent } = this.props
+
+        const isVertical = mode.indexOf('vertical') === 0
+
+        const showScroll = style.height || mode === 'horizontal'
+
+        const className = classnames(
+            menuClass(
+                '_',
+                isVertical ? 'vertical' : mode,
+                theme === 'dark' && 'dark',
+                showScroll && 'scroll',
+                this.state.hasOpen && 'has-open'
+            ),
+            this.props.className
+        )
+
+        const rootStyle: React.CSSProperties = {}
+
+        if (style.width && mode !== 'horizontal') rootStyle.width = style.width
+
+        let bottomLine = 0
+
+        let topLine = 0
+
+        if (this.container) {
+            const rect = this.container.getBoundingClientRect()
+
+            bottomLine = rect.bottom
+
+            topLine = rect.top
+        }
+
+        return (
+            <div className={className} ref={this.bindRootElement} style={style}>
+                <div className={menuClass('wrapper')}>
+                    <Provider value={this.providerValue}>
+                        <List
+                            className={menuClass('root')}
+                            data={data}
+                            inlineIndent={inlineIndent}
+                            level={0}
+                            mode={mode}
+                            onClick={this.handleClick}
+                            path=""
+                            renderItem={this.renderItem}
+                            open
+                            style={rootStyle}
+                            toggleOpenKeys={this.toggleOpenKeys}
+                            bottomLine={bottomLine}
+                            topLine={topLine}
+                            rootMode={mode}
+                            handleScrollPosUpdate={mode === 'inline' ? this.handleScrollPosUpdate : undefined}
+                        />
+                    </Provider>
+                </div>
+
+                {showScroll && this.renderScrollBar()}
+            </div>
+        )
     }
 }
 

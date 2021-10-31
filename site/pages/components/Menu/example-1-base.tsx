@@ -58,7 +58,6 @@ const data = [
 
 export default () => (
     <Menu
-        keygen="id"
         data={data}
         style={{ width: 256 }}
         inlineIndent={24}
