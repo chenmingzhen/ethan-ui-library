@@ -143,189 +143,6 @@ class Menu extends React.PureComponent<IMenuProps, MenuState> {
         this.container.removeEventListener('wheel', this.handleWheel)
     }
 
-    bindRootElement = (el: HTMLDivElement) => {
-        this.container = el
-
-        this.wrapper = el?.querySelector?.(`.${menuClass('wrapper')}`)
-
-        this.rootElement = el?.querySelector?.(`.${menuClass('root')}`)
-    }
-
-    bindItem = (id: string, key, updateActive: UpdateActive, updateOpen: UpdateOpen, updateInPath: UpdateInPath) => {
-        this.itemsUpdateActiveCallback.set(id, updateActive)
-
-        this.itemsUpdateOpenCallback.set(id, updateOpen)
-
-        this.itemsUpdateInPathCallback.set(id, updateInPath)
-
-        this.innerIdToOuterKeyMap.set(id, key)
-    }
-
-    unbindItem(id: string) {
-        this.itemsUpdateActiveCallback.delete(id)
-
-        this.itemsUpdateOpenCallback.delete(id)
-
-        this.itemsUpdateInPathCallback.delete(id)
-
-        this.innerIdToOuterKeyMap.delete(id)
-    }
-
-    checkActive = (id: string) => {
-        return id === this.state.activeKey
-    }
-
-    checkOpen = (id: string) => {
-        return this.openKeys?.includes(id)
-    }
-
-    checkInPath = (id: string) => {
-        const { activeKey } = this.state
-
-        return activeKey.indexOf(id) > -1
-    }
-
-    updateState = () => {
-        const { mode } = this.props
-
-        this.updateActive()
-
-        this.updateOpen()
-
-        this.updateInPath()
-
-        if (!this.container) return
-
-        const bindMethod = mode !== 'inline' ? this.container.addEventListener : this.container.removeEventListener
-
-        bindMethod.call(this.container, 'wheel', this.handleWheel, { passive: false })
-    }
-
-    updateActive = () => {
-        const { activeKey } = this.state
-
-        for (const [, update] of this.itemsUpdateActiveCallback) {
-            update(activeKey)
-        }
-    }
-
-    updateOpen = () => {
-        for (const [, update] of this.itemsUpdateOpenCallback) {
-            update()
-        }
-
-        const transformKeys = Array.from(this.innerIdToOuterKeyMap.keys())
-
-        const hasOpen = this.openKeys.filter(key => transformKeys.find(it => it === key)).length > 0
-
-        this.setState({ hasOpen })
-    }
-
-    updateInPath = () => {
-        for (const [, update] of this.itemsUpdateInPathCallback) {
-            update()
-        }
-    }
-
-    toggleOpenKeys = (id, open: boolean) => {
-        let newOpenKeys = deepClone(this.openKeys)
-
-        if (!open) {
-            newOpenKeys = pull(newOpenKeys, id)
-        } else {
-            newOpenKeys.push(id)
-        }
-
-        const { onOpenChange } = this.props
-
-        if (onOpenChange) {
-            const outerKeys = Array.from(this.innerIdToOuterKeyMap.values())
-
-            onOpenChange(outerKeys)
-        }
-
-        this.setState({ openKeys: newOpenKeys, hasOpen: newOpenKeys.length > 0 })
-    }
-
-    handleSmoothScroll = () => {}
-
-    handleWheel = e => {
-        const { mode } = this.props
-
-        const { key, pos, direction } = getOption(mode)
-
-        const wheel = normalizeWheel(e)
-
-        const scrollPos = `scroll${pos}` as keyof Pick<MenuState, 'scrollLeft' | 'scrollTop'>
-
-        const size = this.container.getBoundingClientRect()[key]
-
-        const rootSize = this.rootElement.getBoundingClientRect()[key]
-
-        const scrollSize = rootSize - size
-
-        const percent = (this.wrapper[scrollPos] + wheel[`pixel${direction}`]) / scrollSize
-
-        this.setState({ [scrollPos]: percent > 1 ? 1 : percent < 0 ? 0 : percent })
-
-        e.preventDefault()
-
-        /** 平滑滚动计算 */
-
-        if (this.scrollTimer) clearInterval(this.scrollTimer)
-
-        this.scrollCache = wheel[`pixel${direction}`]
-
-        const { scrollCache } = this
-
-        const targetValue =
-            scrollCache > 0
-                ? Math.min(this.wrapper.scrollTop + scrollCache, scrollSize)
-                : Math.max(this.wrapper.scrollTop + scrollCache, 0)
-
-        this.scrollTimer = setInterval(() => {
-            if (this.wrapper.scrollTop === targetValue || !scrollCache) {
-                this.scrollCache = 0
-
-                clearInterval(this.scrollTimer)
-
-                this.scrollTimer = null
-
-                return
-            }
-
-            const computedValue = this.wrapper.scrollTop + scrollCache / 8
-
-            if (scrollCache > 0) {
-                this.wrapper.scrollTop = Math.min(computedValue, targetValue)
-            } else {
-                this.wrapper.scrollTop = Math.max(computedValue, targetValue)
-            }
-        }, 10)
-    }
-
-    handleClick = (id, data) => {
-        const { onClick } = this.props
-
-        this.setState({ activeKey: id })
-
-        onClick?.(data)
-    }
-
-    handleScroll = (pos: 'Top' | 'Left', offset: number) => {
-        const sizeKey = pos === 'Top' ? 'height' : 'width'
-
-        const size = this.container.getBoundingClientRect()[sizeKey]
-
-        const scroll = this.rootElement.getBoundingClientRect()[sizeKey]
-
-        const scrollPos = `scroll${pos}` as keyof Pick<MenuState, 'scrollLeft' | 'scrollTop'>
-
-        this.wrapper[scrollPos] = offset * (scroll - size)
-
-        this.setState({ [scrollPos]: offset })
-    }
-
     renderItem = (data: BaseData) => {
         const { renderItem } = this.props
 
@@ -438,6 +255,189 @@ class Menu extends React.PureComponent<IMenuProps, MenuState> {
                 {showScroll && this.renderScrollBar()}
             </div>
         )
+    }
+
+    bindRootElement = (el: HTMLDivElement) => {
+        this.container = el
+
+        this.wrapper = el?.querySelector?.(`.${menuClass('wrapper')}`)
+
+        this.rootElement = el?.querySelector?.(`.${menuClass('root')}`)
+    }
+
+    bindItem = (id: string, key, updateActive: UpdateActive, updateOpen: UpdateOpen, updateInPath: UpdateInPath) => {
+        this.itemsUpdateActiveCallback.set(id, updateActive)
+
+        this.itemsUpdateOpenCallback.set(id, updateOpen)
+
+        this.itemsUpdateInPathCallback.set(id, updateInPath)
+
+        this.innerIdToOuterKeyMap.set(id, key)
+    }
+
+    unbindItem(id: string) {
+        this.itemsUpdateActiveCallback.delete(id)
+
+        this.itemsUpdateOpenCallback.delete(id)
+
+        this.itemsUpdateInPathCallback.delete(id)
+
+        this.innerIdToOuterKeyMap.delete(id)
+    }
+
+    checkActive = (id: string) => {
+        return id === this.state.activeKey
+    }
+
+    checkOpen = (id: string) => {
+        return this.openKeys?.includes(id)
+    }
+
+    checkInPath = (id: string) => {
+        const { activeKey } = this.state
+
+        return activeKey.indexOf(id) > -1
+    }
+
+    updateState = () => {
+        const { mode } = this.props
+
+        this.updateActive()
+
+        this.updateOpen()
+
+        this.updateInPath()
+
+        if (!this.container) return
+
+        const bindMethod = mode !== 'inline' ? this.container.addEventListener : this.container.removeEventListener
+
+        bindMethod.call(this.container, 'wheel', this.handleWheel, { passive: false })
+    }
+
+    updateActive = () => {
+        const { activeKey } = this.state
+
+        for (const [, update] of this.itemsUpdateActiveCallback) {
+            update(activeKey)
+        }
+    }
+
+    updateOpen = () => {
+        for (const [, update] of this.itemsUpdateOpenCallback) {
+            update()
+        }
+
+        const transformKeys = Array.from(this.innerIdToOuterKeyMap.keys())
+
+        const hasOpen = this.openKeys.filter(key => transformKeys.find(it => it === key)).length > 0
+
+        this.setState({ hasOpen })
+    }
+
+    updateInPath = () => {
+        for (const [, update] of this.itemsUpdateInPathCallback) {
+            update()
+        }
+    }
+
+    toggleOpenKeys = (id, open: boolean) => {
+        let newOpenKeys = deepClone(this.openKeys)
+
+        if (!open) {
+            newOpenKeys = pull(newOpenKeys, id)
+        } else {
+            newOpenKeys.push(id)
+        }
+
+        const { onOpenChange } = this.props
+
+        if (onOpenChange) {
+            const outerKeys = Array.from(this.innerIdToOuterKeyMap.values())
+
+            onOpenChange(outerKeys)
+        }
+
+        this.setState({ openKeys: newOpenKeys, hasOpen: newOpenKeys.length > 0 })
+    }
+
+    handleWheel = e => {
+        const { mode } = this.props
+
+        const { key, pos } = getOption(mode)
+
+        const wheel = normalizeWheel(e)
+
+        const scrollPos = `scroll${pos}` as keyof Pick<MenuState, 'scrollLeft' | 'scrollTop'>
+
+        const size = this.container.getBoundingClientRect()[key]
+
+        const rootSize = this.rootElement.getBoundingClientRect()[key]
+
+        const scrollSize = rootSize - size
+
+        /** X方向值始终为0 同一使用Y direction */
+        const percent = (this.wrapper[scrollPos] + wheel.pixelY) / scrollSize
+
+        this.setState({ [scrollPos]: percent > 1 ? 1 : percent < 0 ? 0 : percent })
+
+        e.preventDefault()
+
+        /** 平滑滚动计算 */
+
+        if (this.scrollTimer) clearInterval(this.scrollTimer)
+
+        /** X方向值始终为0 同一使用Y direction */
+        this.scrollCache = wheel.pixelY
+
+        const { scrollCache } = this
+
+        const targetValue =
+            scrollCache > 0
+                ? Math.min(this.wrapper[scrollPos] + scrollCache, scrollSize)
+                : Math.max(this.wrapper[scrollPos] + scrollCache, 0)
+
+        this.scrollTimer = setInterval(() => {
+            if (this.wrapper[scrollPos] === targetValue || !scrollCache) {
+                this.scrollCache = 0
+
+                clearInterval(this.scrollTimer)
+
+                this.scrollTimer = null
+
+                return
+            }
+
+            const computedValue = this.wrapper[scrollPos] + scrollCache / 8
+
+            if (scrollCache > 0) {
+                this.wrapper[scrollPos] = Math.min(computedValue, targetValue)
+            } else {
+                this.wrapper[scrollPos] = Math.max(computedValue, targetValue)
+            }
+        }, 10)
+    }
+
+    handleClick = (id, data) => {
+        const { onClick } = this.props
+
+        this.setState({ activeKey: id })
+
+        onClick?.(data)
+    }
+
+    handleScroll = (pos: 'Top' | 'Left', offset: number) => {
+        const sizeKey = pos === 'Top' ? 'height' : 'width'
+
+        const size = this.container.getBoundingClientRect()[sizeKey]
+
+        const scroll = this.rootElement.getBoundingClientRect()[sizeKey]
+
+        const scrollPos = `scroll${pos}` as keyof Pick<MenuState, 'scrollLeft' | 'scrollTop'>
+
+        this.wrapper[scrollPos] = offset * (scroll - size)
+
+        this.setState({ [scrollPos]: offset })
     }
 }
 

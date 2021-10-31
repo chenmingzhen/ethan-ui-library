@@ -1,10 +1,12 @@
+/**
+ * @see https://github.com/facebookarchive/fixed-data-table/blob/master/src/vendor_upstream/dom/normalizeWheel.js
+ * @see https://developer.mozilla.org/zh-CN/docs/Web/API/Element/mousewheel_event
+ */
+
 const PIXEL_STEP = 10
 const LINE_HEIGHT = 40
 const PAGE_HEIGHT = 800
 const DELTA_LENGTH = 120
-
-// 规范滚轮事件
-// https://developer.mozilla.org/zh-CN/docs/Web/API/Element/mousewheel_event
 
 function normalizeWheel(event) {
     let sX = 0
