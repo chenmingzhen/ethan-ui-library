@@ -310,8 +310,6 @@ class Menu extends React.PureComponent<IMenuProps, MenuState> {
     }
 
     updateState = () => {
-        const { mode } = this.props
-
         this.updateActive()
 
         this.updateOpen()
