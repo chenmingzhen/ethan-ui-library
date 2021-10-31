@@ -61,7 +61,7 @@ export default () => (
     <Menu
         keygen="id"
         data={data}
-        style={{ width: 256, height: 100 }}
+        style={{ width: 256 }}
         inlineIndent={24}
         defaultOpenKeys={['2']}
         defaultActiveKey="1"
