@@ -13,8 +13,6 @@ interface MenuItemState {
 
     isActive: boolean
 
-    isHighLight: boolean
-
     inPath: boolean
 }
 
@@ -46,7 +44,6 @@ class Item extends PureComponent<IMenuItemProps, MenuItemState> {
             open: checkOpen(this.id),
             isActive: checkActive(this.id),
             inPath: checkInPath(this.id),
-            isHighLight: false,
         }
 
         this.handleMouseEnter = this.handleToggle.bind(this, true)
@@ -74,9 +71,7 @@ class Item extends PureComponent<IMenuItemProps, MenuItemState> {
 
         const isActive = checkActive(this.id)
 
-        const isHighLight = activePath && isActive ? activePath.indexOf(this.id) > -1 : false
-
-        this.setState({ isActive, isHighLight })
+        this.setState({ isActive })
     }
 
     updateOpen: UpdateOpen = () => {
@@ -163,7 +158,7 @@ class Item extends PureComponent<IMenuItemProps, MenuItemState> {
             rootMode,
         } = this.props
 
-        const { open, isActive, isHighLight, inPath } = this.state
+        const { open, isActive, inPath } = this.state
 
         const { children: dChildren } = data
 
@@ -184,7 +179,6 @@ class Item extends PureComponent<IMenuItemProps, MenuItemState> {
             isActive && 'active',
             open && 'open',
             isUp && 'open-up',
-            isHighLight && 'highlight',
             inPath && 'in-path'
         )
 

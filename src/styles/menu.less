@@ -71,10 +71,6 @@
         padding-right: 40px;
     }
 
-    &-highlight > &-title {
-        color: @menu-highlight-color;
-    }
-
     &-list {
         // display: none;
 
@@ -181,8 +177,7 @@
             display: inline-block;
         }
 
-        & > .@{menu-prefix}-active > a,
-        & > .@{menu-prefix}-highlight > a {
+        & > .@{menu-prefix}-active > a {
             position: relative;
             color: @menu-item-active-indicator;
 
@@ -345,8 +340,7 @@
                 }
             }
 
-            .@{menu-prefix}-active > a,
-            .@{menu-prefix}-highlight > a {
+            .@{menu-prefix}-active > a {
                 color: @menu-dark-active-color;
             }
         }
