@@ -114,21 +114,21 @@ class Menu extends React.PureComponent<MenuProps, MenuState> {
 
         const initKeys = []
 
-        let activeId = ''
+        let activeKey = ''
 
         for (const [id, key] of this.innerIdToOuterKeyMap) {
             for (const outerKey of outerKeys) {
                 if (outerKey === key) {
                     initKeys.push(id)
                 }
+            }
 
-                if (key === defaultActiveKey) {
-                    activeId = id
-                }
+            if (key === defaultActiveKey) {
+                activeKey = id
             }
         }
 
-        this.setState({ openKeys: initKeys, activeKey: activeId }, this.updateState)
+        this.setState({ openKeys: initKeys, activeKey }, this.updateState)
 
         this.bindWheelEvent()
 
