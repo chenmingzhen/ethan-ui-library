@@ -10,6 +10,14 @@ interface IMenuListProps extends MenuListProps {
 }
 
 class List extends PureComponent<IMenuListProps> {
+    componentDidUpdate(prevProps) {
+        if (this.props.open !== prevProps.open && this.props.rootMode === 'inline') {
+            setTimeout(() => {
+                this.props?.handleScrollPosUpdate?.()
+            }, 100)
+        }
+    }
+
     render() {
         const {
             data,
@@ -48,6 +56,7 @@ class List extends PureComponent<IMenuListProps> {
                         path={path}
                         toggleOpenKeys={toggleOpenKeys}
                         rootMode={rootMode}
+                        handleScrollPosUpdate={this.props.handleScrollPosUpdate}
                     />
                 ))}
             </ul>

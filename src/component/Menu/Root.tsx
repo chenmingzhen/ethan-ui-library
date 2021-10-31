@@ -16,6 +16,8 @@ const modeDirection = {
     vertical: 'y',
 
     horizontal: 'x',
+
+    inline: 'y',
 }
 
 interface IMenuProps extends MenuProps {
@@ -133,6 +135,8 @@ class Menu extends React.PureComponent<IMenuProps, MenuState> {
         }
 
         this.setState({ openKeys: initKeys, activeKey: activeId }, this.updateState)
+
+        this.container.addEventListener('wheel', this.handleWheel, { passive: false })
     }
 
     componentDidUpdate = () => {
@@ -163,6 +167,7 @@ class Menu extends React.PureComponent<IMenuProps, MenuState> {
 
             const scrollWidth = this.rootElement.getBoundingClientRect().width
             // 内容器未大于外容器 不渲染滚动条
+
             if (scrollWidth <= width) return null
 
             return (
@@ -200,7 +205,7 @@ class Menu extends React.PureComponent<IMenuProps, MenuState> {
 
         const isVertical = mode.indexOf('vertical') === 0
 
-        const showScroll = (style.height && isVertical) || mode === 'horizontal'
+        const showScroll = style.height || mode === 'horizontal'
 
         const className = classnames(
             menuClass(
@@ -248,6 +253,7 @@ class Menu extends React.PureComponent<IMenuProps, MenuState> {
                             bottomLine={bottomLine}
                             topLine={topLine}
                             rootMode={mode}
+                            handleScrollPosUpdate={mode === 'inline' ? this.handleScrollPosUpdate : undefined}
                         />
                     </Provider>
                 </div>
@@ -285,6 +291,10 @@ class Menu extends React.PureComponent<IMenuProps, MenuState> {
         this.innerIdToOuterKeyMap.delete(id)
     }
 
+    handleScrollPosUpdate = () => {
+        this.forceUpdate()
+    }
+
     checkActive = (id: string) => {
         return id === this.state.activeKey
     }
@@ -307,12 +317,6 @@ class Menu extends React.PureComponent<IMenuProps, MenuState> {
         this.updateOpen()
 
         this.updateInPath()
-
-        if (!this.container) return
-
-        const bindMethod = mode !== 'inline' ? this.container.addEventListener : this.container.removeEventListener
-
-        bindMethod.call(this.container, 'wheel', this.handleWheel, { passive: false })
     }
 
     updateActive = () => {

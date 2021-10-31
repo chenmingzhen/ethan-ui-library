@@ -150,4 +150,4 @@ const data = [
     },
 ]
 
-export default () => <Menu mode="vertical" data={data} style={{ width: 256, height: 300 }} inlineIndent={24} />
+export default () => <Menu mode="vertical-auto" data={data} style={{ width: 256, height: 300 }} inlineIndent={24} />

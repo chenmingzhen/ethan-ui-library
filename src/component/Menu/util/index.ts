@@ -5,15 +5,15 @@ interface GetOptionReturn {
 }
 
 export function getOption(mode): GetOptionReturn {
-    return mode.indexOf('vertical') === 0
+    return mode.indexOf('vertical') === 0 || mode === 'inline'
         ? {
-              key: 'height',
-              pos: 'Top',
-              direction: 'Y',
-          }
+            key: 'height',
+            pos: 'Top',
+            direction: 'Y',
+        }
         : {
-              key: 'width',
-              pos: 'Left',
-              direction: 'X',
-          }
+            key: 'width',
+            pos: 'Left',
+            direction: 'X',
+        }
 }

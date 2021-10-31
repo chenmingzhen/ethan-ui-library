@@ -238,6 +238,7 @@ class Item extends PureComponent<IMenuItemProps, MenuItemState> {
                         open={open}
                         toggleOpenKeys={toggleOpenKeys}
                         rootMode={rootMode}
+                        handleScrollPosUpdate={this.props.handleScrollPosUpdate}
                     />
                 )}
             </li>

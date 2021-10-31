@@ -97,6 +97,8 @@ export interface MenuListProps {
     toggleOpenKeys: (id: string | number, open: boolean) => void
 
     open: boolean
+
+    handleScrollPosUpdate?(): void
 }
 
 export interface MenuItemProps extends MenuContext {
@@ -121,4 +123,6 @@ export interface MenuItemProps extends MenuContext {
     renderItem: (data: BaseData) => React.ReactNode
 
     toggleOpenKeys: (id: string | number, open: boolean) => void
+
+    handleScrollPosUpdate?(): void
 }
