@@ -29,7 +29,6 @@ const data = [
     {
         key: '5',
         title: 'Navigation Three',
-        onClick: () => console.log('only click'),
         children: [
             {
                 key: '6',
@@ -65,5 +64,8 @@ export default () => (
         inlineIndent={24}
         defaultOpenKeys={['2']}
         defaultActiveKey="1"
+        onClick={item => {
+            console.log(item)
+        }}
     />
 )
