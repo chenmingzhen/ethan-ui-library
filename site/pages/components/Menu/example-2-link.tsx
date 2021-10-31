@@ -25,4 +25,4 @@ const data = [
     },
 ]
 
-export default () => <Menu keygen="id" data={data} style={{ width: 256 }} inlineIndent={24} />
+export default () => <Menu data={data} style={{ width: 256 }} inlineIndent={24} />
