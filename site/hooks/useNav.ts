@@ -1,30 +1,24 @@
-import { useState, useEffect } from 'react'
 import { useLocation } from 'react-router-dom'
-import history from '../Components/history'
 
-const navs = [
-  { path: '/index/', en: 'Home', cn: '首页' },
-  { path: '/components/Start', en: 'Components', cn: '组件' },
-]
+const navMap = {
+    '/index/': {
+        en: 'Home',
+        cn: '首页',
+    },
+    '/components/Start': {
+        en: 'Components',
+        cn: '组件',
+    },
+}
+
+const navs = [{ key: '/index/' }, { key: '/components/Start' }]
 
 const useNav = () => {
-  const [currentPath, setPath] = useState(navs[0].path)
+    const location = useLocation()
 
-  const location = useLocation()
+    const initPath = location.pathname.indexOf('/index/') !== -1 ? navs[0].key : navs[1].key
 
-  useEffect(() => {
-    setPath(location.pathname.indexOf('/index/') !== -1 ? navs[0].path : navs[1].path)
-
-    const unListen = history.listen(loc => {
-      setPath(loc.pathname.indexOf('/index/') !== -1 ? navs[0].path : navs[1].path)
-    })
-
-    return () => {
-      unListen()
-    }
-  }, [])
-
-  return [currentPath, navs]
+    return { initPath, navs, navMap }
 }
 
 export default useNav

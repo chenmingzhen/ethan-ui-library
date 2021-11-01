@@ -1,20 +1,27 @@
-// @ts-nocheck
 import React, { PureComponent } from 'react'
-import PropTypes from 'prop-types'
 import classnames from 'classnames'
-import { getKey } from '@/utils/uid'
 import { menuClass } from '@/styles'
-import ListHoc from '@/component/List'
+import AnimationHeight from '@/component/List/AnimationHeight'
 import Item from './Item'
+import { MenuListProps, Mode } from './type'
 
-// List > Item
+interface IMenuListProps extends MenuListProps {
+    rootMode: Mode
+}
 
-class List extends PureComponent {
+class List extends PureComponent<IMenuListProps> {
+    componentDidUpdate(prevProps) {
+        if (this.props.open !== prevProps.open && this.props.rootMode === 'inline') {
+            setTimeout(() => {
+                this.props?.handleScrollPosUpdate?.()
+            }, 100)
+        }
+    }
+
     render() {
         const {
             data,
             level,
-            keygen,
             mode,
             renderItem,
             style,
@@ -23,25 +30,23 @@ class List extends PureComponent {
             onClick,
             path,
             inlineIndent,
-            disabled,
             toggleOpenKeys,
-            linkKey,
-            toggleDuration,
+            rootMode,
         } = this.props
 
         const isVertical = mode.indexOf('vertical') === 0
+
         const className = classnames(menuClass('list', isVertical ? 'vertical' : mode), this.props.className)
 
-        return (
+        const innerUlElement = (
             <ul className={className} style={style}>
                 {data.map((d, i) => (
                     <Item
                         bottomLine={bottomLine}
                         topLine={topLine}
-                        disabled={disabled}
-                        key={getKey(d, keygen, i)}
+                        disabled={d.disabled}
+                        key={d.key ?? i}
                         index={i}
-                        keygen={keygen}
                         data={d}
                         renderItem={renderItem}
                         inlineIndent={inlineIndent}
@@ -50,32 +55,21 @@ class List extends PureComponent {
                         onClick={onClick}
                         path={path}
                         toggleOpenKeys={toggleOpenKeys}
-                        linkKey={linkKey}
-                        toggleDuration={toggleDuration}
+                        rootMode={rootMode}
+                        handleScrollPosUpdate={this.props.handleScrollPosUpdate}
                     />
                 ))}
             </ul>
         )
-    }
-}
 
-List.propTypes = {
-    bottomLine: PropTypes.number,
-    topLine: PropTypes.number,
-    className: PropTypes.string,
-    disabled: PropTypes.func,
-    inlineIndent: PropTypes.number,
-    keygen: PropTypes.any,
-    level: PropTypes.number,
-    data: PropTypes.array,
-    mode: PropTypes.string,
-    onClick: PropTypes.func,
-    path: PropTypes.string,
-    renderItem: PropTypes.func,
-    style: PropTypes.object,
-    toggleOpenKeys: PropTypes.func,
-    linkKey: PropTypes.oneOfType([PropTypes.string, PropTypes.func]),
-    toggleDuration: PropTypes.number,
+        if (rootMode !== 'inline') return innerUlElement
+
+        return (
+            <AnimationHeight height={this.props.open ? 'auto' : 0} duration={200}>
+                {innerUlElement}
+            </AnimationHeight>
+        )
+    }
 }
 
 export default List

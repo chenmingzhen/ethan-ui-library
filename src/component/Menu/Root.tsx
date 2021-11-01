@@ -1,296 +1,373 @@
-// @ts-nocheck
 import React from 'react'
-import PropTypes from 'prop-types'
 import classnames from 'classnames'
-import immer, { enableMapSet } from 'immer'
-import { getKey } from '@/utils/uid'
-import { defaultProps, getProps } from '@/utils/proptypes'
 import normalizeWheel from '@/utils/dom/normalizeWheel'
 import { menuClass } from '@/styles'
-import { isArray } from '@/utils/is'
+import { getSameValue, pull } from '@/utils/array'
+import { deepClone } from '@/utils/clone'
 import ScrollBar from '../Scroll/Bar'
 import List from './List'
 import { Provider } from './context'
-
-enableMapSet()
+import { BaseData, MenuContext, MenuProps, UpdateActive, UpdateInPath, UpdateOpen } from './type'
+import { getOption } from './util'
 
 const modeDirection = {
     'vertical-auto': 'y',
+
     vertical: 'y',
+
     horizontal: 'x',
+
+    inline: 'y',
 }
 
-const getOption = mode =>
-    mode.indexOf('vertical') === 0
-        ? {
-              key: 'height',
-            pos: 'Top',
-            direction: 'Y',
-        }
-        : {
-            key: 'width',
-            pos: 'Left',
-            direction: 'X',
-        }
+interface MenuState {
+    activeKey?: string
 
-// Array To Map
-function keyToMap(keys = [], value = true) {
-    const keyMap = new Map()
-    keys.forEach(v => {
-        keyMap.set(v, value)
-    })
-    return keyMap
+    scrollTop?: number
+
+    scrollLeft?: number
+
+    openKeys?: (number | string)[]
+
+    hasOpen?: boolean
 }
 
-class Root extends React.Component {
-    constructor(props) {
-        super(props)
+class Menu extends React.PureComponent<MenuProps, MenuState> {
+    static defaultProps = {
+        data: [],
 
-        this.state = {
-            // 目前所在的Key
-            activeKey: null,
-            scrollTop: 0,
-            scrollLeft: 0,
-            openKeys: keyToMap(props.defaultOpenKeys),
-        }
+        level: 0,
 
-        this.checkOpen = this.checkOpen.bind(this)
-        this.checkActive = this.checkActive.bind(this)
-        this.checkInPath = this.checkInPath.bind(this)
-        this.handleClick = this.handleClick.bind(this)
-        this.handleScrollLeft = this.handleScrollX.bind(this, 'Left')
-        this.handleScrollTop = this.handleScrollX.bind(this, 'Top')
+        mode: 'inline',
 
-        this.handleWheel = this.handleWheel.bind(this)
-        this.renderItem = this.renderItem.bind(this)
-        this.bindRootElement = this.bindRootElement.bind(this)
-        this.toggleOpenKeys = this.toggleOpenKeys.bind(this)
+        inlineIndent: 24,
 
-        // 关于绑定 每次刷新组件的时候，执行updateState，执行updateActive，其中在updateXXX中
-        // 对item itemsOpen itemsInPath的绑定进行执行，传递对应的check方法与状态给Item Item通过check方法进行判断 actived inPath
-        // 通过Context传递给Item
-        this.providerValue = {
-            bindItem: this.bindItem.bind(this),
-            unbindItem: this.unbindItem.bind(this),
-        }
+        defaultOpenKeys: [],
 
-        /**
-         * Item中进行绑定
-         * @type {{}}
-         */
-        this.items = {}
-        this.itemsOpen = {}
-        this.itemsInPath = {}
+        onClick: () => {},
+
+        theme: 'light',
+
+        style: {},
     }
 
-    componentDidMount() {
-        this.updateState()
-    }
+    providerValue: MenuContext
 
-    componentDidUpdate() {
-        this.updateState()
-    }
+    itemsUpdateActiveCallback = new Map<string, UpdateActive>()
 
-    componentWillUnmount() {
-        this.container.removeEventListener('wheel', this.handleWheel)
-    }
+    itemsUpdateOpenCallback = new Map<string, UpdateOpen>()
 
-    getOpenKeys() {
-        const { openKeys, defaultOpenKeys } = this.props
+    itemsUpdateInPathCallback = new Map<string, UpdateInPath>()
+
+    innerIdToOuterKeyMap = new Map<string, string | number>()
+
+    container: HTMLDivElement
+
+    wrapper: HTMLDivElement
+
+    rootElement: HTMLDivElement
+
+    scrollTimer: NodeJS.Timeout
+
+    scrollCache = 0
+
+    shouldBindWheel = false
+
+    hasBindWheel = false
+
+    get openKeys() {
+        const { openKeys } = this.props
 
         if (openKeys) return openKeys
 
-        // 根据是否已经点击后来判断返回的OpenKeys
-        return this.hasToggled ? Array.from(this.state.openKeys.keys()) : defaultOpenKeys
+        return this.state.openKeys
     }
 
-    bindRootElement(el) {
-        this.container = el
-        if (!el) return
-        this.wrapper = el.querySelector(`.${menuClass('wrapper')}`)
-        this.rootElement = el.querySelector(`.${menuClass('root')}`)
-    }
+    constructor(props: MenuProps) {
+        super(props)
 
-    /**
-     * Item中使用
-     * @param id
-     * @param updateActive
-     * @param updateOpen
-     * @param updateInPath
-     * @returns {((function(*, *=): (*|boolean))|(function(*=): boolean))[]}
-     */
-    bindItem(id, updateActive, updateOpen, updateInPath) {
-        this.items[id] = updateActive
-        this.itemsOpen[id] = updateOpen
-        this.itemsInPath[id] = updateInPath
-
-        // Item的初始化State中使用
-        return [this.checkActive, this.checkOpen, this.checkInPath]
-    }
-
-    unbindItem(id) {
-        delete this.items[id]
-        delete this.itemsOpen[id]
-        delete this.itemsInPath[id]
-    }
-
-    /**
-     * 是否为激活状态
-     * @param id
-     * @param data
-     * @returns {*|boolean}
-     */
-    checkActive(id, data) {
-        const { active } = this.props
-        const act = typeof active === 'function' ? active(data) : id === this.state.activeKey
-
-        if (act) this.state.activeKey = id
-        return act
-    }
-
-    checkOpen(id) {
-        const openKeys = this.getOpenKeys()
-
-        if (isArray(openKeys)) {
-            return openKeys.indexOf(id) > -1
+        this.state = {
+            activeKey: '',
+            scrollTop: 0,
+            scrollLeft: 0,
+            openKeys: [],
+            hasOpen: false,
         }
 
-        return false
+        this.providerValue = {
+            bindItem: this.bindItem,
+
+            unbindItem: this.unbindItem,
+
+            checkActive: this.checkActive,
+
+            checkInPath: this.checkInPath,
+
+            checkOpen: this.checkOpen,
+        }
     }
 
-    checkInPath(id) {
+    componentDidMount = () => {
+        const outerKeys = this.props.defaultOpenKeys
+
+        const { defaultActiveKey } = this.props
+
+        const initKeys = []
+
+        let activeKey = ''
+
+        for (const [id, key] of this.innerIdToOuterKeyMap) {
+            for (const outerKey of outerKeys) {
+                if (outerKey === key) {
+                    initKeys.push(id)
+                }
+            }
+
+            if (key === defaultActiveKey) {
+                activeKey = id
+            }
+        }
+
+        this.setState({ openKeys: initKeys, activeKey }, this.updateState)
+
+        this.bindWheelEvent()
+
+        const sameKeys = getSameValue(Array.from(this.innerIdToOuterKeyMap.values()))
+
+        if (sameKeys.length) {
+            console.error(
+                `Ethan Menu get the same key:${sameKeys.join('')},please check your data and keep the data unique`
+            )
+        }
+    }
+
+    componentDidUpdate = () => {
+        this.updateState()
+
+        this.bindWheelEvent()
+    }
+
+    componentWillUnmount = () => {
+        this.hasBindWheel && this.container.removeEventListener('wheel', this.handleWheel)
+    }
+
+    bindRootElement = (el: HTMLDivElement) => {
+        this.container = el
+
+        this.wrapper = el?.querySelector?.(`.${menuClass('wrapper')}`)
+
+        this.rootElement = el?.querySelector?.(`.${menuClass('root')}`)
+    }
+
+    bindItem = (id: string, key, updateActive: UpdateActive, updateOpen: UpdateOpen, updateInPath: UpdateInPath) => {
+        this.itemsUpdateActiveCallback.set(id, updateActive)
+
+        this.itemsUpdateOpenCallback.set(id, updateOpen)
+
+        this.itemsUpdateInPathCallback.set(id, updateInPath)
+
+        this.innerIdToOuterKeyMap.set(id, key)
+    }
+
+    unbindItem(id: string) {
+        this.itemsUpdateActiveCallback.delete(id)
+
+        this.itemsUpdateOpenCallback.delete(id)
+
+        this.itemsUpdateInPathCallback.delete(id)
+
+        this.innerIdToOuterKeyMap.delete(id)
+    }
+
+    bindWheelEvent = () => {
+        if (this.shouldBindWheel && !this.hasBindWheel) {
+            this.container.addEventListener('wheel', this.handleWheel, { passive: false })
+
+            this.hasBindWheel = true
+        } else if (!this.shouldBindWheel && this.hasBindWheel) {
+            this.container.removeEventListener('wheel', this.handleWheel)
+
+            this.hasBindWheel = false
+        }
+    }
+
+    handleScrollPosUpdate = () => {
+        this.forceUpdate()
+    }
+
+    checkActive = (id: string) => {
+        return id === this.state.activeKey
+    }
+
+    checkOpen = (id: string) => {
+        return this.openKeys?.includes(id)
+    }
+
+    checkInPath = (id: string) => {
         const { activeKey } = this.state
 
-        if (!activeKey || !id) return false
-        return activeKey.indexOf(id) >= 0
+        return activeKey.indexOf(id) > -1
     }
 
-    updateState() {
-        const { mode } = this.props
-
+    updateState = () => {
         this.updateActive()
+
         this.updateOpen()
+
         this.updateInPath()
-
-        if (!this.container) return
-        const bindMethod = mode !== 'inline' ? this.container.addEventListener : this.container.removeEventListener
-        bindMethod.call(this.container, 'wheel', this.handleWheel, { passive: false })
     }
 
-    updateActive() {
-        Object.keys(this.items).forEach(id => {
-            const update = this.items[id]
-            update(this.checkActive, this.state.activeKey)
-        })
-    }
+    updateActive = () => {
+        const { activeKey } = this.state
 
-    updateOpen() {
-        const { data, keygen } = this.props
-
-        Object.keys(this.itemsOpen).forEach(id => {
-            const update = this.itemsOpen[id]
-            update(this.checkOpen)
-        })
-
-        const hasOpen = this.getOpenKeys().filter(k => data.find((d, i) => getKey(d, keygen, i) === k)).length > 0
-
-        if (hasOpen !== this.state.hasOpen) {
-            this.setState({ hasOpen })
+        for (const [, update] of this.itemsUpdateActiveCallback) {
+            update(activeKey)
         }
     }
 
-    updateInPath() {
-        Object.keys(this.itemsInPath).forEach(id => {
-            const update = this.itemsInPath[id]
-            update(this.checkInPath)
-        })
-    }
-
-    /**
-     * 设置打开的MenuKeys Item中调用
-     * @param id
-     * @param open
-     */
-    toggleOpenKeys(id, open) {
-        const newOpenKeys = immer(keyToMap(this.getOpenKeys()), draft => {
-            if (open) {
-                draft.set(id, true)
-            } else draft.delete(id)
-        })
-
-        this.hasToggled = true
-
-        const keys = newOpenKeys.keys()
-        const { onOpenChange = () => {}, openKeys } = this.props
-
-        // 用户受控
-        if (openKeys) {
-            onOpenChange(keys)
-            return
+    updateOpen = () => {
+        for (const [, update] of this.itemsUpdateOpenCallback) {
+            update()
         }
 
-        this.setState({ openKeys: newOpenKeys, hasOpen: keys.length > 0 })
-        onOpenChange(keys)
+        const transformKeys = Array.from(this.innerIdToOuterKeyMap.keys())
+
+        const hasOpen = this.openKeys.filter(key => transformKeys.find(it => it === key)).length > 0
+
+        this.setState({ hasOpen })
     }
 
-    handleScrollX(pos, param) {
-        const sizeKey = pos === 'Top' ? 'height' : 'width'
-        const size = this.container.getBoundingClientRect()[sizeKey]
-        const scroll = this.rootElement.getBoundingClientRect()[sizeKey]
-
-        this.wrapper[`scroll${pos}`] = param * (scroll - size)
-        this.setState({ [`scroll${pos}`]: param })
+    updateInPath = () => {
+        for (const [, update] of this.itemsUpdateInPathCallback) {
+            update()
+        }
     }
 
-    handleWheel(e) {
+    toggleOpenKeys = (id, open: boolean) => {
+        let newOpenKeys = deepClone(this.openKeys)
+
+        if (!open) {
+            newOpenKeys = pull(newOpenKeys, id)
+        } else {
+            newOpenKeys.push(id)
+        }
+
+        const { onOpenChange } = this.props
+
+        if (onOpenChange) {
+            const outerKeys = Array.from(this.innerIdToOuterKeyMap.values())
+
+            onOpenChange(outerKeys)
+        }
+
+        this.setState({ openKeys: newOpenKeys, hasOpen: newOpenKeys.length > 0 })
+    }
+
+    handleWheel = e => {
         const { mode } = this.props
-        const { key, pos, direction } = getOption(mode)
+
+        const { key, pos } = getOption(mode)
+
         const wheel = normalizeWheel(e)
+
+        const scrollPos = `scroll${pos}` as keyof Pick<MenuState, 'scrollLeft' | 'scrollTop'>
+
         const size = this.container.getBoundingClientRect()[key]
 
-        this.wrapper[`scroll${pos}`] += wheel[`pixel${direction}`]
-        const precent = this.wrapper[`scroll${pos}`] / size
-        this.setState({ [`scroll${pos}`]: precent > 1 ? 1 : precent })
+        const rootSize = this.rootElement.getBoundingClientRect()[key]
+
+        const scrollSize = rootSize - size
+
+        /** X方向值始终为0 同一使用Y direction */
+        const percent = (this.wrapper[scrollPos] + wheel.pixelY) / scrollSize
+
+        this.setState({ [scrollPos]: percent > 1 ? 1 : percent < 0 ? 0 : percent })
 
         e.preventDefault()
+
+        /** 平滑滚动计算 */
+
+        if (this.scrollTimer) clearInterval(this.scrollTimer)
+
+        /** X方向值始终为0 同一使用Y direction */
+        this.scrollCache = wheel.pixelY
+
+        const { scrollCache } = this
+
+        const targetValue =
+            scrollCache > 0
+                ? Math.min(this.wrapper[scrollPos] + scrollCache, scrollSize)
+                : Math.max(this.wrapper[scrollPos] + scrollCache, 0)
+
+        this.scrollTimer = setInterval(() => {
+            if (this.wrapper[scrollPos] === targetValue || !scrollCache) {
+                this.scrollCache = 0
+
+                clearInterval(this.scrollTimer)
+
+                this.scrollTimer = null
+
+                return
+            }
+
+            const computedValue = this.wrapper[scrollPos] + scrollCache / 8
+
+            if (scrollCache > 0) {
+                this.wrapper[scrollPos] = Math.min(computedValue, targetValue)
+            } else {
+                this.wrapper[scrollPos] = Math.max(computedValue, targetValue)
+            }
+        }, 10)
     }
 
-    handleClick(id, data) {
+    handleClick = (id, data) => {
         const { onClick } = this.props
 
-        // 目前所在的Key
         this.setState({ activeKey: id })
 
-        if (onClick) onClick(data)
+        onClick?.(data)
     }
 
-    /**
-     * 自定义render
-     * @param data
-     * @returns {null|*}
-     */
-    renderItem(data) {
+    handleScroll = (pos: 'Top' | 'Left', offset: number) => {
+        const sizeKey = pos === 'Top' ? 'height' : 'width'
+
+        const size = this.container.getBoundingClientRect()[sizeKey]
+
+        const scroll = this.rootElement.getBoundingClientRect()[sizeKey]
+
+        const scrollPos = `scroll${pos}` as keyof Pick<MenuState, 'scrollLeft' | 'scrollTop'>
+
+        this.wrapper[scrollPos] = offset * (scroll - size)
+
+        this.setState({ [scrollPos]: offset })
+    }
+
+    renderItem = (data: BaseData) => {
         const { renderItem } = this.props
 
-        if (typeof renderItem === 'string') return data[renderItem]
-        if (typeof renderItem === 'function') return renderItem(data)
-
-        return null
+        return renderItem?.(data) ?? data.title
     }
 
-    renderScrollBar() {
+    renderScrollBar = () => {
+        this.shouldBindWheel = false
+
         if (!this.rootElement || !this.container) return null
 
         const { mode } = this.props
+
         const direction = modeDirection[mode]
 
         if (!direction) return null
 
         if (direction === 'x') {
             const { width } = this.container.getBoundingClientRect()
+
             const scrollWidth = this.rootElement.getBoundingClientRect().width
             // 内容器未大于外容器 不渲染滚动条
+
             if (scrollWidth <= width) return null
+
+            this.shouldBindWheel = true
 
             return (
                 <ScrollBar
@@ -298,15 +375,19 @@ class Root extends React.Component {
                     length={width}
                     scrollLength={scrollWidth}
                     offset={this.state.scrollLeft}
-                    onScroll={this.handleScrollLeft}
+                    onScroll={this.handleScroll.bind(this, 'Left')}
                     direction="x"
                 />
             )
         }
 
         const length = this.container.getBoundingClientRect().height
+
         const scrollHeight = this.rootElement.getBoundingClientRect().height
+
         if (scrollHeight < length) return null
+
+        this.shouldBindWheel = true
 
         return (
             <ScrollBar
@@ -315,15 +396,17 @@ class Root extends React.Component {
                 length={length}
                 scrollLength={scrollHeight}
                 offset={this.state.scrollTop}
-                onScroll={this.handleScrollTop}
+                onScroll={this.handleScroll.bind(this, 'Top')}
             />
         )
     }
 
     render() {
-        const { keygen, data, mode, style, theme, inlineIndent, linkKey, disabled, height, toggleDuration } = this.props
+        const { data, mode, style, theme, inlineIndent } = this.props
+
         const isVertical = mode.indexOf('vertical') === 0
-        const showScroll = ((style.height || height) && isVertical) || mode === 'horizontal'
+
+        const showScroll = style.height || mode === 'horizontal'
 
         const className = classnames(
             menuClass(
@@ -336,14 +419,19 @@ class Root extends React.Component {
             this.props.className
         )
 
-        const rootStyle = {}
+        const rootStyle: React.CSSProperties = {}
+
         if (style.width && mode !== 'horizontal') rootStyle.width = style.width
 
         let bottomLine = 0
+
         let topLine = 0
+
         if (this.container) {
             const rect = this.container.getBoundingClientRect()
+
             bottomLine = rect.bottom
+
             topLine = rect.top
         }
 
@@ -354,9 +442,7 @@ class Root extends React.Component {
                         <List
                             className={menuClass('root')}
                             data={data}
-                            disabled={disabled}
                             inlineIndent={inlineIndent}
-                            keygen={keygen}
                             level={0}
                             mode={mode}
                             onClick={this.handleClick}
@@ -367,8 +453,8 @@ class Root extends React.Component {
                             toggleOpenKeys={this.toggleOpenKeys}
                             bottomLine={bottomLine}
                             topLine={topLine}
-                            linkKey={linkKey}
-                            toggleDuration={toggleDuration}
+                            rootMode={mode}
+                            handleScrollPosUpdate={mode === 'inline' ? this.handleScrollPosUpdate : undefined}
                         />
                     </Provider>
                 </div>
@@ -379,34 +465,4 @@ class Root extends React.Component {
     }
 }
 
-Root.propTypes = {
-    ...getProps(PropTypes, 'style', 'keygen'),
-    active: PropTypes.func, // 验证是否激活,参数为对应的数据对象,返回true则代表该菜单激活
-    data: PropTypes.array, // 需要渲染成菜单的数据
-    defaultOpenKeys: PropTypes.array, // 初始展开的菜单;如果需要设置此值,则需要设置keygen,此值为一个包含key的数组
-    openKeys: PropTypes.array, // 展开的菜单(受控)
-    disabled: PropTypes.func,
-    inlineIndent: PropTypes.number, // 每一层缩进宽度
-    mode: PropTypes.oneOf(['inline', 'vertical', 'horizontal', 'vertical-auto']),
-    onClick: PropTypes.func,
-    renderItem: PropTypes.oneOfType([PropTypes.string, PropTypes.func]),
-    onOpenChange: PropTypes.func,
-    toggleDuration: PropTypes.number,
-}
-
-Root.defaultProps = {
-    ...defaultProps,
-    data: [],
-    disabled: d => d.disabled,
-    level: 0,
-    keygen: 'id',
-    mode: 'inline',
-    inlineIndent: 24,
-    active: () => false,
-    renderItem: 'title',
-    defaultOpenKeys: [],
-    onClick: () => true,
-    toggleDuration: 200,
-}
-
-export default Root
+export default Menu

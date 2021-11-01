@@ -1,18 +1,12 @@
 /**
- * cn - 自定义渲染
- *    -- 设置 renderItem 属性展现稍微复杂的内容
- * en - RenderItem
- *    -- Set the renderItem property to show format content.
+ * cn - 暗系主题
+ *    -- 内置了一个暗色的主题，通过 theme 使用
+ * en - Dark theme
+ *    -- The dark theme.
  */
 import React from 'react'
-import { Menu, FontAwesome } from 'ethan'
+import { Menu } from 'ethan/index'
 
-const Icons = {
-    1: <FontAwesome name="home" />,
-    3: <FontAwesome name="flag" />,
-    6: <FontAwesome name="tag" />,
-    2: <FontAwesome name="github" />,
-}
 const data = [
     {
         key: '1',
@@ -21,6 +15,7 @@ const data = [
     {
         key: '3',
         title: 'Navigation Two',
+        disabled: true,
         children: [
             {
                 key: '4',
@@ -46,6 +41,7 @@ const data = [
                 children: [
                     {
                         key: '9',
+                        disabled: true,
                         title: 'Optic 1',
                     },
                     {
@@ -62,25 +58,4 @@ const data = [
     },
 ]
 
-function renderItem(item) {
-    if (item.title.startsWith('Navigation')) {
-        return (
-            <span>
-                {Icons[item.key]} {item.title}
-            </span>
-        )
-    }
-    return item.title
-}
-
-export default () => (
-    <Menu
-        mode="inline"
-        data={data}
-        renderItem={renderItem}
-        style={{ width: 256 }}
-        inlineIndent={24}
-        defaultOpenKeys={['3']}
-        defaultActiveKey="1"
-    />
-)
+export default () => <Menu data={data} style={{ width: 256 }} theme="dark" />
