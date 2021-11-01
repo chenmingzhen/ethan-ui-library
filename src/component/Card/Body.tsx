@@ -1,10 +1,10 @@
 import React from 'react'
 import classnames from 'classnames'
 import { cardClass } from '@/styles'
-import List from '../List'
 import { context } from './context'
+import CollapseList from '../List/AnimationHeight'
 
-const CollapseList = List(['collapse'], 'fast')
+// const CollapseList = List(['collapse'], 'fast')
 
 interface CardBodyProps extends React.DetailedHTMLProps<React.HTMLAttributes<HTMLDivElement>, HTMLDivElement> {
     className?: string
@@ -24,7 +24,7 @@ const Body: React.FC<CardBodyProps> = ({ className, ...props }) => {
     const onClick = typeof collapsed === 'boolean' ? onCollapse : undefined
 
     return (
-        <CollapseList show={!collapsed}>
+        <CollapseList show={!collapsed} height={!collapsed ? 'auto' : 0} duration={240}>
             <div {...props} className={classnames(cardClass('body'), className)}>
                 {props.children}
                 {collapsible === 'bottom' && (
