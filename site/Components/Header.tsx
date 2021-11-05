@@ -4,7 +4,7 @@ import { Button, Dropdown, Menu } from '@/index'
 import themes from 'doc/enum/themes'
 import theme from 'doc/utils/theme'
 import useVersion from '../hooks/useVersion'
-import useNav from '../hooks/useNav'
+import useNav, { NavMenuData } from '../hooks/useNav'
 import Icon from '../icons/Icon'
 import { headerClass } from '../styles'
 import history from './history'
@@ -25,12 +25,12 @@ const handleThemeClick = data => {
 }
 
 const Header = () => {
-    const { initPath, navs, navMap } = useNav()
+    const { initPath, navs } = useNav()
 
     const [version, versions] = useVersion()
 
     const handleNavClick = useCallback(nav => {
-        history.push(`${nav.key}`)
+        history.push(`${nav.path}`)
     }, [])
 
     const handleLangClick = () => {
@@ -49,10 +49,10 @@ const Header = () => {
                 <Link to="/index/">Ethan</Link>
             </div>
             <div className={headerClass('nav')}>
-                <Menu
+                <Menu<NavMenuData>
                     mode="horizontal"
                     data={navs}
-                    renderItem={d => (getLanguage() === 'zh-CN' ? navMap[d.key].cn : navMap[d.key].en)}
+                    renderItem={d => (getLanguage() === 'zh-CN' ? d.cn : d.en)}
                     onClick={handleNavClick}
                     inlineIndent={24}
                     style={{ background: 'transparent', border: 'none' }}
