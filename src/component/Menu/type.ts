@@ -2,7 +2,7 @@ import React from 'react'
 
 export type Mode = 'inline' | 'vertical' | 'horizontal' | 'vertical-auto'
 
-export interface BaseData {
+export interface MenuBaseData {
     key: string | number
 
     title?: React.ReactNode
@@ -13,7 +13,7 @@ export interface BaseData {
 
     target?: string
 
-    children?: BaseData[]
+    children?: MenuBaseData[]
 }
 
 export type Theme = 'light' | 'dark'
@@ -41,14 +41,14 @@ export interface MenuContext {
 
     checkInPath?: (id: string) => boolean
 }
-export interface MenuProps {
+export interface MenuProps<T = MenuBaseData> {
     style?: React.CSSProperties
 
     className?: string
 
-    data: BaseData[]
+    data: T[]
 
-    disabled?: (data: BaseData) => boolean
+    disabled?: (data: T) => boolean
 
     defaultActiveKey?: string | number
 
@@ -62,9 +62,9 @@ export interface MenuProps {
 
     mode?: Mode
 
-    onClick?(data: BaseData): void
+    onClick?(data: T): void
 
-    renderItem?: (data: BaseData) => React.ReactNode
+    renderItem?: (data: T) => React.ReactNode
 
     onOpenChange?(keys: (string | number)[]): void
 
@@ -82,15 +82,15 @@ export interface MenuListProps {
 
     level?: number
 
-    data: BaseData[]
+    data: MenuBaseData[]
 
     mode?: Mode
 
-    onClick: (id: string | number, data: BaseData) => void
+    onClick: (id: string | number, data: MenuBaseData) => void
 
     path?: string | number
 
-    renderItem: (data: BaseData) => React.ReactNode
+    renderItem: (data: MenuBaseData) => React.ReactNode
 
     style?: React.CSSProperties
 
@@ -106,7 +106,7 @@ export interface MenuItemProps extends MenuContext {
 
     topLine?: number
 
-    data: BaseData
+    data: MenuBaseData
 
     index: number
 
@@ -116,11 +116,11 @@ export interface MenuItemProps extends MenuContext {
 
     mode: Mode
 
-    onClick: (id: string | number, data: BaseData) => void
+    onClick: (id: string | number, data: MenuBaseData) => void
 
     path?: string | number
 
-    renderItem: (data: BaseData) => React.ReactNode
+    renderItem: (data: MenuBaseData) => React.ReactNode
 
     toggleOpenKeys: (id: string | number, open: boolean) => void
 

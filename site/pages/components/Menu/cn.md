@@ -19,7 +19,7 @@
 | inlineIndent | number | 24 | 每一层缩进宽度 |
 | onOpenChange | (keys: (string\|number)[]) => void | 无 | 菜单展开/收起回调 |
 
-### Data
+### MenuBaseData
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
 | key | string \| number | 空 | 数据源唯一值，必填 |
@@ -27,7 +27,7 @@
 | disabled | boolean | false | 是否禁用选项 |
 | linkKey | string | 空 | 菜单的链接键值 |  
 | target | string | 空 | link的打开方式 | 
-| children | Data | 空 | Data的子项 | 
+| children | MenuBaseData | 空 | Data的子项 | 
 
 
 

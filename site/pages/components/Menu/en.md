@@ -17,7 +17,7 @@
 | inlineIndent | number | 24 | indent of each level |   
 | onOpenChange | (keys: (string\|number)[]) => void | none | menu open change callback |
 
-### Data
+### MenuBaseData
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
 | key | string \| number | none | Data source unique value.Required |
@@ -25,4 +25,4 @@
 | disabled | boolean | false | disabled |
 | linkKey | string | none | Menu item link href |  
 | target | string | none | Menu item link open way | 
-| children | Data | none | Data children | 
+| children | MenuBaseData | none | Data children | 

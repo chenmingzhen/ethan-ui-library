@@ -7,7 +7,7 @@ import { deepClone } from '@/utils/clone'
 import ScrollBar from '../Scroll/Bar'
 import List from './List'
 import { Provider } from './context'
-import { BaseData, MenuContext, MenuProps, UpdateActive, UpdateInPath, UpdateOpen } from './type'
+import { MenuBaseData, MenuContext, MenuProps, UpdateActive, UpdateInPath, UpdateOpen } from './type'
 import { getOption } from './util'
 
 const modeDirection = {
@@ -32,7 +32,7 @@ interface MenuState {
     hasOpen?: boolean
 }
 
-class Menu extends React.PureComponent<MenuProps, MenuState> {
+class Menu<T extends MenuBaseData> extends React.PureComponent<MenuProps<T>, MenuState> {
     static defaultProps = {
         data: [],
 
@@ -83,7 +83,7 @@ class Menu extends React.PureComponent<MenuProps, MenuState> {
         return this.state.openKeys
     }
 
-    constructor(props: MenuProps) {
+    constructor(props: MenuProps<T>) {
         super(props)
 
         this.state = {
@@ -342,7 +342,7 @@ class Menu extends React.PureComponent<MenuProps, MenuState> {
         this.setState({ [scrollPos]: offset })
     }
 
-    renderItem = (data: BaseData) => {
+    renderItem = (data: T) => {
         const { renderItem } = this.props
 
         return renderItem?.(data) ?? data.title

@@ -83,6 +83,16 @@ const examples = [
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
     rawText: require('!raw-loader!doc/pages/components/Menu/example-7-dark.tsx').default,
     },
+    {
+    name: '8-extraDatax',
+    title: locate(
+    '额外数据 \n 继承MenuBaseData拓展更多属性',
+    'Extra Data \n Extend more attributes by inheriting MenuBaseData.'
+    ),
+    component: require('doc/pages/components/Menu/example-8-extraData.tsx').default,
+    // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
+    rawText: require('!raw-loader!doc/pages/components/Menu/example-8-extraData.tsx').default,
+    },
 ]
 
     const codes = undefined
