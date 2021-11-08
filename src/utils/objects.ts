@@ -53,11 +53,24 @@ export function pathGenerator(raw) {
     return results
 }
 
+interface DeepMergeOptionsParams {
+    removeUndefined?: boolean
+
+    skipUndefined?: boolean
+
+    clone
+}
+
 // 深度合并对象 不包括数组
-export const deepMerge = (target = {}, source, { clone, removeUndefined, skipUndefined } = {}) => {
+export const deepMerge = <T = Record<string | number, any>, S = Record<string | number, any>>(
+    target: T = {},
+    source: S,
+    { clone, removeUndefined, skipUndefined }: DeepMergeOptionsParams = {}
+): T & S => {
     if (!isMergeable(source)) return source
 
     const dest = {}
+
     if (isMergeable(target)) {
         Object.keys(target).forEach(k => {
             dest[k] = clone ? deepMerge({}, target[k], clone) : target[k]
@@ -102,7 +115,7 @@ export const deepGet = (target, path, options = {}) => {
     return current
 }
 
-export const filterProps = (obj, props = []) => {
+export const filterProps = (obj, props: (p: Record<string, any>) => boolean | string[] = []) => {
     if (!isObject(obj)) return obj
 
     if (typeof props === 'function') {
