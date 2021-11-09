@@ -36,6 +36,7 @@ interface StickyState {
     scrollWidth?: number
 }
 
+/** 因存在指定目标target的需求 所以需要占位符与fixed position */
 class Sticky extends PureComponent<StickyProps, StickyState> {
     static defaultProps = {
         style: {},
@@ -43,8 +44,10 @@ class Sticky extends PureComponent<StickyProps, StickyState> {
 
     element = React.createRef<HTMLDivElement>()
 
+    /** 记录原始顶层div的宽度 因后面会对element的position进行操作，脱离文档流，当resize浏览器时，element无法获取最新的顶层容器宽度 */
     origin = React.createRef<HTMLDivElement>()
 
+    /** 当element悬浮时 占住原本element的位置 */
     placeholder = React.createRef<HTMLDivElement>()
 
     targetElement: HTMLDivElement
@@ -118,21 +121,22 @@ class Sticky extends PureComponent<StickyProps, StickyState> {
 
         const { mode, scrollWidth } = this.state
 
-        // children自身的位置信息
+        /** children自身的位置信息 */
         const selfRect = this.element.current.getBoundingClientRect().toJSON()
 
-        // 如果有设置父容器 获取父容器元素
+        /** 如果有设置父容器 获取父容器元素 */
         const scrollElement = this.targetElement || document.body
 
-        // 父容器元素的位置信息
+        /** 父容器元素的位置信息 */
+
         const scrollRect = scrollElement.getBoundingClientRect()
 
-        // placeholder的位置信息
+        /** placeholder的位置信息 */
         const placeholderRect = this.placeholder.current
             ? this.placeholder.current.getBoundingClientRect().toJSON()
             : null
 
-        // 视口高度
+        /** 视口高度 */
         const viewHeight = docSize.height
 
         if (this.origin.current) {
@@ -143,7 +147,7 @@ class Sticky extends PureComponent<StickyProps, StickyState> {
             if (placeholderRect) placeholderRect.width = width
         }
 
-        // 占位元素的style
+        /** 占位元素的style */
         const placeholderStyle = {
             width: selfRect.width,
             height: target && supportSticky ? 0 : selfRect.height,
@@ -153,14 +157,13 @@ class Sticky extends PureComponent<StickyProps, StickyState> {
 
         let placeholder
 
-        // sticky的Top
+        /** sticky的Top */
         let limitTop = top
 
-        // sticky的Bottom
+        /** sticky的Bottom */
         let limitBottom = viewHeight - bottom
 
-        // 如果有目标容器 非body
-        // 计算element在目标容器的top与bottom
+        /** 计算element在目标容器的top与bottom */
         if (this.targetElement) {
             limitTop += scrollRect.top
             limitBottom = scrollRect.bottom - bottom
@@ -168,32 +171,29 @@ class Sticky extends PureComponent<StickyProps, StickyState> {
 
         if (top !== undefined && mode !== 'bottom') {
             if (selfRect.top < limitTop) {
-                // 元素的Top到达限制的Top
+                /** 元素的Top到达限制的Top */
                 this.setState({ scrollWidth: scrollRect.width, mode: 'top' })
 
                 style = this.getStyle('top', top, selfRect.left, selfRect.width)
 
                 placeholder = placeholderStyle
             } else if (placeholderRect && selfRect.top < placeholderRect.top) {
-                // 同时设置top bottom时的处理
-                // 如 top 0 bottom 0
-                if (!(target && selfRect.top === limitTop)) {
-                    // 当前既不固Top 也不固Bottom
-                    // 处于漂浮状态 不设置占位
-                    // 处于漂浮或复位 执行这里
+                /** 处于漂浮状态 */
+
+                /** 后面条件处理同时设置top bottom时的处理 如 top 0 bottom 0 */
+                if (!target || selfRect.top !== limitTop) {
+                    /** 当前既不固Top 也不固Bottom */
+
+                    /** 处于漂浮状态 不设置占位 */
+                    /** 处于漂浮或复位 执行这里 */
                     this.setState({ mode: '' })
 
                     style = {}
 
                     placeholder = null
                 }
-            } else if (this.targetElement && placeholderRect) {
-                // 暂无作用
-                style = this.getStyle('top', top, selfRect.left, selfRect.width)
-
-                placeholder = placeholderStyle
             } else if (scrollWidth && placeholderRect && scrollWidth !== scrollRect.width) {
-                // 处理页面resize的情况
+                /** 处理页面resize的情况 */
                 this.setState({ scrollWidth: scrollRect.width, mode: 'top' })
 
                 style = this.getStyle('top', top, placeholderRect.left, placeholderRect.width)
@@ -218,10 +218,6 @@ class Sticky extends PureComponent<StickyProps, StickyState> {
                 style = {}
 
                 placeholder = null
-            } else if (this.targetElement && placeholderRect) {
-                style = this.getStyle('bottom', bottom, selfRect.left, selfRect.width)
-
-                placeholder = placeholderStyle
             } else if (scrollWidth && placeholderRect && scrollWidth !== scrollRect.width) {
                 this.setState({ scrollWidth: scrollRect.width, mode: 'bottom' })
 
