@@ -4,7 +4,6 @@ import { getParent } from '@/utils/dom/element'
 import { eventPassive } from '@/utils/dom/detect'
 import { cssSupport } from '@/utils/dom/element'
 import { docSize } from '@/utils/dom/document'
-import {} from 'lodash.debounce'
 import { throttleWrapper } from '@/utils/lazyload'
 
 const events = ['scroll', 'resize', 'pageshow', 'load']
