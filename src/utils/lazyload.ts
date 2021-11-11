@@ -145,16 +145,15 @@ export function addStack(obj: LazyParams) {
     return null
 }
 
-export const throttleWrapper = cb => {
+export function throttleWrapper(cb, delay = 80) {
     let timer = null
 
     return (...args) => {
         if (!timer) {
             timer = setTimeout(() => {
                 cb.apply(this, args)
-
                 timer = null
-            }, throttle)
+            }, delay)
         }
     }
 }
