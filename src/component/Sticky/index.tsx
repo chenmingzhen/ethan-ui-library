@@ -179,7 +179,7 @@ class Sticky extends PureComponent<StickyProps, StickyState> {
             } else if (placeholderRect && selfRect.top < placeholderRect.top) {
                 /** 处于漂浮状态 */
 
-                /** 后面条件处理同时设置top bottom时的处理 如 top 0 bottom 0 */
+                /** 后面条件处理在指定容器下，因为已经是sticky，向下滚动时一定是selfRect.top === limitTop */
                 if (!target || selfRect.top !== limitTop) {
                     /** 当前既不固Top 也不固Bottom */
 
