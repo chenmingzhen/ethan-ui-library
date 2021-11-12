@@ -33,7 +33,7 @@ export type OverlayRenderProps = {
     onRotate: (rotate: number) => void
 }
 
-export interface PhotoProviderBase {
+export interface PhotoViewGroupBase {
     /* 背景可点击关闭，默认 true */
     maskClosable?: boolean
     /* 图片点击可关闭，默认 false */

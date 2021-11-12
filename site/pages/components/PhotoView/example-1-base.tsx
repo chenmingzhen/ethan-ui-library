@@ -16,19 +16,7 @@ export default function() {
         <PhotoProvider>
             <div style={{ padding: '40px', display: 'flex', flexWrap: 'wrap', alignItems: 'center' }}>
                 {photoImages.map((item, index) => (
-                    <PhotoConsumer key={index} src={item} intro={item}>
-                        <div
-                            style={{
-                                marginLeft: '20px',
-                                marginBottom: '20px',
-                                width: '100px',
-                                height: '100px',
-                                cursor: 'pointer',
-                                background: `url('${item}') no-repeat center`,
-                                backgroundSize: 'cover',
-                            }}
-                        />
-                    </PhotoConsumer>
+                    <PhotoConsumer key={index} src={item} intro={item} />
                 ))}
             </div>
         </PhotoProvider>

@@ -1,13 +1,14 @@
+import { PureComponent } from '@/utils/component'
 import React from 'react'
 import Context, { AddItem } from './context'
 import PhotoSlider from './PhotoSlider'
-import { DataType, PhotoProviderBase } from './types'
+import { DataType, PhotoViewGroupBase } from './types'
 
-export interface PhotoProviderProps extends PhotoProviderBase {
+export interface PhotoViewGroupProps extends PhotoViewGroupBase {
     children: React.ReactNode
 }
 
-interface PhotoProviderState {
+interface PhotoViewGroupState {
     images: DataType[]
 
     visible: boolean
@@ -18,7 +19,7 @@ interface PhotoProviderState {
 /**
  * 装载图片组的容器 处理点击图片组内容时的动作 如打开Slider 增加Item 溢移除Item
  */
-export default class PhotoProvider extends React.Component<PhotoProviderProps, PhotoProviderState> {
+export default class PhotoViewGroup extends PureComponent<PhotoViewGroupProps, PhotoViewGroupState> {
     constructor(props) {
         super(props)
 

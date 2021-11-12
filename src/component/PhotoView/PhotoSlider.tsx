@@ -6,12 +6,12 @@ import PhotoSliderPortal from './PhotoSliderPortal'
 import VisibleAnimationHandle from './VisibleAnimationHandle'
 import Icons from '../icons'
 import { isTouchDevice } from './utils'
-import { DataType, PhotoProviderBase, OverlayRenderProps, ReachTypeEnum, ShowAnimateEnum } from './types'
+import { DataType, PhotoViewGroupBase, OverlayRenderProps, ReachTypeEnum, ShowAnimateEnum } from './types'
 import { defaultOpacity, horizontalOffset, maxMoveOffset } from './variables'
 
 const { Close, AngleLeft, AngleRight } = Icons
 
-export interface PhotoSliderProps extends PhotoProviderBase {
+export interface PhotoSliderProps extends PhotoViewGroupBase {
     /* 图片列表 */
     images: DataType[]
     /* 图片当前索引 */

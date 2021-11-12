@@ -1,5 +1,6 @@
 import React from 'react'
 import { getUidStr } from '@/utils/uid'
+import Image from '@/component/Image'
 import { isTouchDevice } from './utils'
 import Context, { PhotoContext } from './context'
 
@@ -76,7 +77,6 @@ const PhotoConsumer: React.FC<PhotoConsumerProps> = ({ src, intro, children }) =
 
     if (children) {
         // https://zh-hans.reactjs.org/docs/react-api.html#reactchildrenonly
-
         return React.Children.only(
             React.cloneElement(
                 children,
@@ -91,7 +91,18 @@ const PhotoConsumer: React.FC<PhotoConsumerProps> = ({ src, intro, children }) =
         )
     }
 
-    return null
+    return React.Children.only(
+        React.cloneElement(
+            <Image src={src} width={100} height={100} />,
+            isTouchDevice
+                ? {
+                      onTouchStart: handleTouchStart,
+                      onTouchEnd: handleTouchEnd,
+                      ref: photoTriggerRef,
+                  }
+                : { onClick: handleClick, ref: photoTriggerRef }
+        )
+    )
 }
 
 export default PhotoConsumer

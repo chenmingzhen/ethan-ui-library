@@ -1,6 +1,6 @@
 // https://github.com/MinJieLiu/react-photo-view
-import PhotoProvider from './PhotoProvider'
+import PhotoViewGroup from './PhotoProvider'
 import PhotoConsumer from './PhotoConsumer'
 import PhotoSlider from './PhotoSlider'
 
-export { PhotoProvider, PhotoConsumer, PhotoSlider }
+export { PhotoViewGroup as PhotoProvider, PhotoConsumer, PhotoSlider }
