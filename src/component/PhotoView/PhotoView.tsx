@@ -185,6 +185,7 @@ export default class PhotoView extends React.Component<IPhotoViewProps, typeof i
 
     onMove = (newClientX: number, newClientY: number, touchLength = 0) => {
         const { onReachMove, isActive, rotate } = this.props
+
         const {
             naturalWidth,
             x,
@@ -201,6 +202,7 @@ export default class PhotoView extends React.Component<IPhotoViewProps, typeof i
             touched,
             maskTouched,
         } = this.state
+
         if ((touched || maskTouched) && isActive) {
             let { width, height } = this.state
             // 若图片不是水平则调换属性
@@ -262,6 +264,9 @@ export default class PhotoView extends React.Component<IPhotoViewProps, typeof i
                     Math.min(endScale, Math.max(maxScale, naturalWidth / width)),
                     minScale - scaleBuffer
                 )
+
+                /** 没有放大的情况下 scale，endScale，toScale的值都为1 */
+                /** 当放大点击Esc时触发倍数缩放 */
                 this.setState({
                     lastTouchLength: touchLength,
                     reachState: currentReachState,
@@ -479,7 +484,7 @@ export default class PhotoView extends React.Component<IPhotoViewProps, typeof i
                         animateOut: loaded && showAnimateType === ShowAnimateEnum.Out,
                     })}
                     style={{
-                        transformOrigin: loaded ? getAnimateOrigin(originRect, 0, 0) : undefined,
+                        transformOrigin: loaded ? getAnimateOrigin(originRect) : undefined,
                     }}
                 >
                     <Photo

@@ -150,17 +150,26 @@ export const getPositionOnMoveOrScale = ({
  */
 export const getClosedEdge = (position: number, scale: number, size: number, innerSize: number): CloseEdgeEnum => {
     const currentWidth = size * scale
+
     // 图片超出的宽度
     const outOffsetX = (currentWidth - innerSize) / 2
+
+    /** 正常左右滑动 */
     if (currentWidth <= innerSize) {
         return CloseEdgeEnum.Small
     }
+
+    /** 放大模式下 向坐滑动到达触发边界 */
     if (position > 0 && outOffsetX - position <= 0) {
         return CloseEdgeEnum.Before
     }
+
+    /** 放大模式下 向右滑动到达触发边界 */
     if (position < 0 && outOffsetX + position <= 0) {
         return CloseEdgeEnum.After
     }
+
+    /** 放大模式下正常滑动 */
     return CloseEdgeEnum.Normal
 }
 
@@ -364,12 +373,12 @@ export const throttle = (func, wait: number) =>
  */
 export const isTouchDevice = typeof document !== 'undefined' && 'ontouchstart' in document.documentElement
 
-export const getAnimateOrigin = (originRect: OriginRectType, width: number, height: number): string | undefined => {
+export const getAnimateOrigin = (originRect: OriginRectType): string | undefined => {
     if (originRect) {
         const { innerWidth, innerHeight } = window
 
-        const xOrigin = (width - innerWidth) / 2 + originRect.clientX
-        const yOrigin = (height - innerHeight) / 2 + originRect.clientY
+        const xOrigin = -innerWidth / 2 + originRect.clientX
+        const yOrigin = -innerHeight / 2 + originRect.clientY
 
         return `${xOrigin}px ${yOrigin}px`
     }
