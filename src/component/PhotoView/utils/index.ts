@@ -107,7 +107,7 @@ interface PositionOnMoveOrScaleReturn {
 }
 
 /**
- * 获取移动或缩放之后的中心点
+ * 获取移动或缩放之后的中心点,默认窗口中心为图片的坐标原点
  */
 export const getPositionOnMoveOrScale = ({
     x,
@@ -128,9 +128,15 @@ export const getPositionOnMoveOrScale = ({
 
     // 放大偏移量
     const offsetScale = toScale / fromScale
+
+    // 上一偏移位置
+    const lastOriginX = (clientX - lastPositionX) * offsetScale
+    const lastOriginY = (clientY - lastPositionY) * offsetScale
+
     // 偏移位置
-    const originX = clientX - (clientX - lastPositionX) * offsetScale - centerClientX
-    const originY = clientY - (clientY - lastPositionY) * offsetScale - centerClientY
+    const originX = clientX - centerClientX - lastOriginX
+    const originY = clientY - centerClientY - lastOriginY
+
     return {
         x: originX + offsetX,
         y: originY + offsetY,
@@ -266,6 +272,8 @@ export const slideToPosition = ({
 
     const horizontalCloseEdge = getClosedEdge(planX, scale, width, innerWidth)
     const verticalCloseEdge = getClosedEdge(planY, scale, height, innerHeight)
+
+    /** 接触到边缘时，反方向反弹 */
 
     // x
     if (horizontalCloseEdge === CloseEdgeEnum.Small) {
