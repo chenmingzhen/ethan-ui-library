@@ -273,7 +273,7 @@ export const slideToPosition = ({
     const horizontalCloseEdge = getClosedEdge(planX, scale, width, innerWidth)
     const verticalCloseEdge = getClosedEdge(planY, scale, height, innerHeight)
 
-    /** 接触到边缘时，反方向反弹 */
+    /** 除Small 大图模式下 接触到边缘时，反方向反弹 */
 
     // x
     if (horizontalCloseEdge === CloseEdgeEnum.Small) {
@@ -292,7 +292,7 @@ export const slideToPosition = ({
         currentY = -outOffsetY
     }
 
-    // 时间过长
+    /** 放大模式下 未触发边界缓慢移动 */
     if (
         moveTime >= maxTouchTime &&
         horizontalCloseEdge === CloseEdgeEnum.Normal &&
@@ -303,6 +303,7 @@ export const slideToPosition = ({
             y,
         }
     }
+
     return {
         x: currentX,
         y: currentY,
