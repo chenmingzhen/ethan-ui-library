@@ -429,9 +429,8 @@ export default class PhotoView extends React.Component<IPhotoViewProps, typeof i
                           }),
                 },
                 () => {
-                    if (onReachUp) {
-                        onReachUp(newClientX, newClientY)
-                    }
+                    onReachUp(newClientX, newClientY)
+
                     // 触发 Tap 事件
                     if (!hasMove) {
                         if (touched && onPhotoTap) {
