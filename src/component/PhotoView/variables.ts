@@ -34,9 +34,9 @@ export const minScale = 1
 export const maxScale = 6
 
 /**
- * 滑动加速度
+ * 滑动加速度(设为1)
  */
-export const slideAcceleration = 0.005
+export const slideAcceleration = 1
 
 /**
  * 缩放弹性缓冲
