@@ -76,24 +76,24 @@ export default class PhotoSlider extends PureComponent<PhotoSliderProps, PhotoSl
             currentIndex: 0,
             touched: false,
             shouldTransition: true,
-
             lastClientX: undefined,
             lastClientY: undefined,
             backdropOpacity: defaultOpacity,
             lastBackdropOpacity: defaultOpacity,
             overlayVisible: true,
             canPullClose: true,
-
             rotatingMap: new Map<number, number>(),
         }
     }
 
     componentDidMount() {
         const { index = 0 } = this.props
+
         this.setState({
             translateX: index * -(window.innerWidth + horizontalOffset),
             currentIndex: index,
         })
+
         window.addEventListener('keydown', this.handleKeyDown)
     }
 
@@ -246,6 +246,7 @@ export default class PhotoSlider extends PureComponent<PhotoSliderProps, PhotoSl
 
     handlePrevious = (shouldTransition?: boolean) => {
         const { currentIndex } = this.state
+
         if (currentIndex > 0) {
             this.handleIndexChange(currentIndex - 1, shouldTransition)
         }
@@ -473,6 +474,7 @@ export default class PhotoSlider extends PureComponent<PhotoSliderProps, PhotoSl
                             </PhotoSliderPortal>
                         )
                     }
+
                     return null
                 }}
             </VisibleAnimationHandle>

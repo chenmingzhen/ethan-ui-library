@@ -16,7 +16,20 @@ export default function() {
         <PhotoProvider>
             <div style={{ padding: '40px', display: 'flex', flexWrap: 'wrap', alignItems: 'center' }}>
                 {photoImages.map((item, index) => (
-                    <PhotoConsumer key={index} src={item} intro={item} />
+                    <PhotoConsumer
+                        key={index}
+                        src={item}
+                        intro={item}
+                        imageProps={{
+                            width: 100,
+                            height: 100,
+                            fit: 'fill',
+                            style: {
+                                marginLeft: '20px',
+                                marginBottom: '20px',
+                            },
+                        }}
+                    />
                 ))}
             </div>
         </PhotoProvider>

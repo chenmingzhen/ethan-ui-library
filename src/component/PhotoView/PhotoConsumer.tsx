@@ -3,11 +3,16 @@ import { getUidStr } from '@/utils/uid'
 import Image from '@/component/Image'
 import { isTouchDevice } from './utils'
 import Context, { PhotoContext } from './context'
+import { ImageProps } from '../Image/Image'
 
 export interface PhotoConsumerProps {
     src: string
+
     intro?: React.ReactNode
+
     children?: React.ReactElement
+
+    imageProps?: Omit<ImageProps, 'src'>
 }
 
 /**
@@ -16,20 +21,17 @@ export interface PhotoConsumerProps {
  *
  */
 
-const PhotoConsumer: React.FC<PhotoConsumerProps> = ({ src, intro, children }) => {
+const PhotoConsumer: React.FC<PhotoConsumerProps> = ({ src, intro, children, imageProps }) => {
     const { addItem, removeItem, onShow } = React.useContext<PhotoContext>(Context)
 
-    const key = React.useMemo<string>(getUidStr, [])
+    const key = React.useRef(getUidStr()).current
 
     const [position, updatePosition] = React.useState<{
-        clientX: number | undefined
-        clientY: number | undefined
-    }>({
-        clientX: undefined,
-        clientY: undefined,
-    })
+        clientX?: number
+        clientY?: number
+    }>({})
 
-    const photoTriggerRef = React.useRef<HTMLElement | null>(null)
+    const photoTriggerRef = React.useRef<HTMLElement>()
 
     // 在挂载后 添加Item进Provider中的images中
     // 结束挂载之后 移除Item
@@ -91,18 +93,15 @@ const PhotoConsumer: React.FC<PhotoConsumerProps> = ({ src, intro, children }) =
         )
     }
 
-    return React.Children.only(
-        React.cloneElement(
-            <Image src={src} width={100} height={100} />,
-            isTouchDevice
-                ? {
-                      onTouchStart: handleTouchStart,
-                      onTouchEnd: handleTouchEnd,
-                      ref: photoTriggerRef,
-                  }
-                : { onClick: handleClick, ref: photoTriggerRef }
-        )
-    )
+    const props = isTouchDevice
+        ? {
+              onTouchStart: handleTouchStart,
+              onTouchEnd: handleTouchEnd,
+              ref: photoTriggerRef,
+          }
+        : { onClick: handleClick, ref: photoTriggerRef }
+
+    return <Image src={src} width={100} height={100} {...imageProps} {...props} />
 }
 
 export default PhotoConsumer
