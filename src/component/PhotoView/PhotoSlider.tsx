@@ -1,25 +1,26 @@
 import React from 'react'
 import { PureComponent } from '@/utils/component'
 import { photoViewClass } from '@/styles'
+import { deepClone } from '@/utils/clone'
 import PhotoView from './PhotoView'
 import PhotoSliderPortal from './PhotoSliderPortal'
 import VisibleAnimationHandle from './VisibleAnimationHandle'
 import Icons from '../icons'
 import { isTouchDevice } from './utils'
-import { DataType, PhotoViewGroupBase, OverlayRenderProps, ReachTypeEnum, ShowAnimateEnum } from './types'
+import { PhotoViewImageData, PhotoViewGroupBase, OverlayRenderProps, ReachTypeEnum, ShowAnimateEnum } from './types'
 import { defaultOpacity, horizontalOffset, maxMoveOffset } from './variables'
 
 const { Close, AngleLeft, AngleRight } = Icons
 
 export interface PhotoSliderProps extends PhotoViewGroupBase {
     /* 图片列表 */
-    images: DataType[]
+    images: PhotoViewImageData[]
     /* 图片当前索引 */
     index?: number
     /* 可见 */
     visible: boolean
     /* 关闭事件 */
-    onClose: (evt?: React.MouseEvent | React.TouchEvent) => void
+    onClose?: (evt?: React.MouseEvent | React.TouchEvent) => void
     /* 索引改变回调 */
     onIndexChange?: (index: number) => void
 }
@@ -105,7 +106,7 @@ export default class PhotoSlider extends PureComponent<PhotoSliderProps, PhotoSl
         const { onClose } = this.props
         const { backdropOpacity } = this.state
 
-        onClose(evt)
+        onClose?.(evt)
 
         this.setState({
             overlayVisible: true,
@@ -147,10 +148,12 @@ export default class PhotoSlider extends PureComponent<PhotoSliderProps, PhotoSl
     handleRotate = (rotating: number) => {
         const { currentIndex, rotatingMap } = this.state
 
-        rotatingMap.set(currentIndex, rotating)
+        const newMap = deepClone(rotatingMap)
+
+        newMap.set(currentIndex, rotating)
 
         this.setState({
-            rotatingMap,
+            rotatingMap: newMap,
         })
     }
 

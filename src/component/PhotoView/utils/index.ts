@@ -107,7 +107,7 @@ interface PositionOnMoveOrScaleReturn {
 }
 
 /**
- * 获取移动或缩放之后的中心点,默认窗口中心为图片的坐标原点
+ * 获取移动或缩放之后的中心点
  */
 export const getPositionOnMoveOrScale = ({
     x,

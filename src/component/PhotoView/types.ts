@@ -3,7 +3,7 @@ import React from 'react'
 /**
  * 图片 item 类型
  */
-export type DataType = {
+export type PhotoViewImageData = {
     // 唯一标识
     key?: string
     // 图片地址
@@ -16,7 +16,7 @@ export type DataType = {
 
 export type OverlayRenderProps = {
     // 图片列表
-    images: DataType[]
+    images: PhotoViewImageData[]
     // 图片当前索引
     index: number
     // 可见
@@ -108,7 +108,7 @@ export enum ShowAnimateEnum {
  */
 export type OriginRectType =
     | {
-          clientX: number
-          clientY: number
-      }
+        clientX: number
+        clientY: number
+    }
     | undefined
