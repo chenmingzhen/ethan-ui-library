@@ -1,85 +1,67 @@
 @import './variables.less';
 
 .doc-home {
-  display: flex;
-  width: 100vw;
-  height: 100vh;
-  padding-top: 60px;
-  margin-top: -60px;
-
-  &-left {
-    position: relative;
-    flex: 1;
-  }
-
-
-  &-content {
-    position: relative;
-    z-index: 10;
-    width: 100%;
     display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
-    font-size: 18px;
-    text-align: center;
+    width: 100vw;
+    height: 100vh;
 
-    @media (max-width: 979px) and (min-width: 600px) {
-      margin: 50% 30% 0 25%;
-      width: 80%;
+    &-left {
+        position: relative;
+        flex: 1;
     }
 
-    @media (max-width: 599px) and (min-width: 0px) {
-      margin: 80% 30% 0 45%;
-      width: 90%;
+    &-content {
+        position: relative;
+        z-index: 10;
+        width: 100%;
+        font-size: 18px;
+        text-align: center;
+        margin-top: 10%;
+
+        @media (max-width: 979px) and (min-width: 600px) {
+            margin: 50% 30% 0 25%;
+        }
+
+        @media (max-width: 599px) and (min-width: 0px) {
+            margin: 50% 15% 0 15%;
+            width: 90%;
+        }
+
+        h1 {
+            color: #005388;
+            font-size: 60px;
+        }
+
+        h2 {
+            color: #005388;
+            margin-top: 20px;
+            font-family: 'Futura';
+            font-weight: 300;
+            font-size: 34px;
+        }
     }
 
-    h1 {
-      color: #005388;
-      font-size: 60px;
+    &-right {
+        margin-left: 10px;
+
+        a {
+            color: #333;
+        }
     }
 
-    h2 {
-      color: #005388;
-      margin-top: 60px;
-      font-family: 'Futura';
-      font-weight: 300;
-      font-size: 34px;
+    &-github {
+        margin-left: 4px;
     }
-  }
 
-  &-buttons {
-    margin: 10px 0 180px;
-    @media (max-width: 979px) and (min-width: 0px) {
-      .so-button {
-        margin-bottom: 10px;
-      }
+    &-buttons {
+        margin-top: 30px;
     }
-  }
-
-  &-right {
-    margin-left: 10px;
-
-    a{
-      color: #333;
-    }
-  }
-
-  &-github{
-    margin-left: 4px;
-  }
 }
 
 table .table-bg-danger > td {
-  background: #fff1f0;
+    background: #fff1f0;
 }
 
 table .table-bg-success > td {
-  background: #f6ffed;
-}
-
-@media (max-width: 979px) and (min-width: 0px) {
-  .so-button {
-    margin-bottom: 10px;
-  }
+    background: #f6ffed;
 }
