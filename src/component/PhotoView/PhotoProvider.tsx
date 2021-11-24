@@ -1,5 +1,6 @@
 import { PureComponent } from '@/utils/component'
 import React from 'react'
+import immer from 'immer'
 import Context, { AddItem } from './context'
 import PhotoSlider from './PhotoSlider'
 import { DataType, PhotoViewGroupBase } from './types'
@@ -34,9 +35,11 @@ export default class PhotoViewGroup extends PureComponent<PhotoViewGroupProps, P
     }
 
     handleAddItem: AddItem = imageItem => {
-        this.setState(prev => ({
-            images: prev.images.concat(imageItem),
-        }))
+        this.setState(
+            immer(state => {
+                state.images.push(imageItem)
+            })
+        )
     }
 
     handleRemoveItem = (key: string) => {

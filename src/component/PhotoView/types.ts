@@ -69,10 +69,10 @@ export type PhotoTapFunction = (clientX: number, clientY: number) => void
  * 边缘超出状态
  */
 export enum CloseEdgeEnum {
-    Normal, // 正常滑动
-    Small, // 小于屏幕宽度
-    Before, // 抵触左边/上边
-    After, // 抵触右边/下边
+    Normal, // 正常滑动(放大模式)
+    Small, // 小于屏幕宽度(正常图缩放左右滑动)
+    Before, // 抵触左边/上边(放大模式)
+    After, // 抵触右边/下边(放大模式)
 }
 
 /**

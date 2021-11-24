@@ -1,7 +1,8 @@
-import React, { ReactNode, useRef, useImperativeHandle, ForwardRefRenderFunction } from 'react'
+import React, { ReactNode, useRef, ForwardRefRenderFunction } from 'react'
 import classnames from 'classnames'
 import { imageClass } from '@/styles'
 import Spin from '@/component/Spin'
+import { getUidStr } from '@/utils/uid'
 import showGallery from './events'
 import { PLACEHOLDER, SRC, ALT, ERROR } from './variable'
 import useImage from './hooks/useImage'
@@ -90,11 +91,11 @@ interface IImageProps extends ImageProps {
     onTouchEnd(e)
 }
 
-const Image: ForwardRefRenderFunction<any, IImageProps> = (props, ref) => {
+const Image: ForwardRefRenderFunction<HTMLAnchorElement | HTMLDivElement, IImageProps> = (props, ref) => {
     const {
         src,
         alt,
-        lazy = false,
+        lazy = true,
         container,
         shape,
         fit,
@@ -113,11 +114,9 @@ const Image: ForwardRefRenderFunction<any, IImageProps> = (props, ref) => {
         onTouchStart,
     } = props
 
-    const el = useRef<HTMLElement>()
+    const uuid = useRef(getUidStr()).current
 
-    useImperativeHandle(ref, () => ({ ...el.current }))
-
-    const { status } = useImage(lazy, src, alt, container, el)
+    const { status } = useImage(lazy, src, alt, container, uuid)
 
     const handleClick = (e: React.MouseEvent<HTMLElement, MouseEvent>) => {
         if (onClick) {
@@ -182,7 +181,6 @@ const Image: ForwardRefRenderFunction<any, IImageProps> = (props, ref) => {
     const Tag = href ? 'a' : 'div'
 
     const newProps = {
-        ref: el,
         onClick: handleClick,
         target: target === '_download' ? '_self' : target,
         download: target === '_download',
@@ -191,7 +189,7 @@ const Image: ForwardRefRenderFunction<any, IImageProps> = (props, ref) => {
     }
 
     return (
-        <Tag {...newProps} onTouchEnd={onTouchEnd} onTouchStart={onTouchStart}>
+        <Tag {...newProps} onTouchEnd={onTouchEnd} onTouchStart={onTouchStart} ref={ref as any} id={uuid}>
             {renderImage()}
         </Tag>
     )
