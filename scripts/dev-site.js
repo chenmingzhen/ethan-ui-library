@@ -21,6 +21,7 @@ let lastComponentText = null
 // 获取当前行的指定内容
 function getComment(text, key) {
     const index = text.indexOf(key)
+
     if (index >= 0) {
         return text.substr(index + key.length).trim()
     }
@@ -60,26 +61,26 @@ function getComponentPage(name, file) {
 
     const exampleNames = fs.readdirSync(pagePath).filter(n => n.indexOf('example-') === 0)
 
-    exampleNames.forEach(e => {
-        const text = fs.readFileSync(path.resolve(pagePath, e)).toString()
-        // 获取example内代码
+    exampleNames.forEach(exampleName => {
+        const text = fs.readFileSync(path.resolve(pagePath, exampleName)).toString()
+        // 获取example内注释说明
         const comment = /(^|\n|\r)\s*\/\*[\s\S]*?\*\/\s*(?:\r|\n|$)/.exec(text)
-        const exam = { path: e, cn: '', en: '' }
+        const exam = { path: exampleName, cn: '', en: '' }
 
         if (comment) {
             let langLabel = ''
 
             comment[0].split('\n').forEach(line => {
-                // line example当前行
-
-                // exam.cn 拼接描述与代码
                 // Demo：site/pages/components/Alert/example-1-base.js
                 // 获取当前中英文状态
+
+                // 标题
                 if (line.trim().indexOf('* cn -') >= 0) {
                     langLabel = 'cn'
                     exam.cn = getComment(line, '* cn -')
                     return
                 }
+
                 if (line.trim().indexOf('* en -') >= 0) {
                     langLabel = 'en'
                     exam.en = getComment(line, '* en -')
