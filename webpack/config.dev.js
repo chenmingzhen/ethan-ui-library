@@ -1,11 +1,15 @@
 const webpack = require('webpack')
-const {merge} = require('webpack-merge')
+const { merge } = require('webpack-merge')
 const config = require('../config')
 const common = require('./config.common')
 const cssConf = require('./utils/theme.css')
 
+/**
+ * @see http://gaearon.github.io/react-hot-loader/getstarted/
+ */
 function getEntry(entry) {
     const newEntry = {}
+
     Object.keys(entry).forEach(key => {
         newEntry[key] = [
             'react-hot-loader/patch',
@@ -14,6 +18,7 @@ function getEntry(entry) {
             entry[key],
         ]
     })
+
     return newEntry
 }
 
