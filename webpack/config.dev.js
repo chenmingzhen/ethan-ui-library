@@ -34,8 +34,13 @@ const cssConfig = config.themes.map(name =>
         hot: true,
         name,
         entry: [
+            /**
+             * @see https://github.com/webpack/webpack-dev-server/issues/658
+             * What's the difference between webpack/hot/dev-server and webpack/hot/only-dev-server
+             * */
             `webpack-dev-server/client?http://localhost:${config.dev.webpackPort}`,
             'webpack/hot/only-dev-server',
+            // 'webpack/hot/dev-server.js',
             // reset css file
             './src/styles/normalize.less',
             './src/styles/expose.ts',
@@ -49,7 +54,7 @@ const cssConfig = config.themes.map(name =>
         clean: false,
         // now filename is placeholder
         // next line has been removed
-        // filename: `__css_hot_loader.js`,
+        filename: `__css_hot_loader.js`,
         prefix: '',
     })
 )
