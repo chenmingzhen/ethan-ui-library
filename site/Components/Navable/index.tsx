@@ -23,7 +23,7 @@ interface NavProps {
     noNav?: boolean
 }
 
-const Navable = (Component: React.ComponentType<{ onHeadingSet: (heading: string[]) => void }>) => {
+const Navable = (Component: React.ComponentType<{ onHeadingSet: (heading: Heading[]) => void }>) => {
     const Nav: React.FC<NavProps> = ({ noNav }) => {
         const [active, setActive] = useState('')
 
