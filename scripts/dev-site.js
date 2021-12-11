@@ -156,15 +156,19 @@ function generateComponents(file = '') {
 }
 
 function init() {
-    const cp = path.resolve(chunkPath, './Components')
-
-    // 存在目录 删除
-    if (fs.existsSync(cp)) {
-        rimraf.sync(cp)
+    if (fs.existsSync(chunkPath)) {
+        rimraf.sync(chunkPath)
     }
 
-    // 生成文件夹
-    fs.mkdirSync(cp)
+    fs.mkdirSync(chunkPath)
+
+    const chunksComponentsPath = path.resolve(chunkPath, './Components')
+
+    if (fs.existsSync(chunksComponentsPath)) {
+        rimraf.sync(chunksComponentsPath)
+    }
+
+    fs.mkdirSync(chunksComponentsPath)
 
     generateComponents()
 
