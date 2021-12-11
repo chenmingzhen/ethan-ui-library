@@ -39,7 +39,6 @@ function getComponentPage(name, file) {
     }
 
     page = {
-        codes: [],
         examples: [],
         group: '',
         name,

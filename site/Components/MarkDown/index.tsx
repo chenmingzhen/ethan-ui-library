@@ -8,7 +8,6 @@ import CodeBlock from '../CodeBlock'
 import Example from '../Example'
 import Table from '../Table'
 
-const codeReg = /^<code name="([\w|-]+)" /
 const exampleReg = /^<example name="([\w|-]+)"/
 
 const createId = (level, str) => {
@@ -17,7 +16,7 @@ const createId = (level, str) => {
 }
 
 // apiTable example 最终汇入此组件
-function MarkDown({ onHeadingSet, codes, examples, source }) {
+function MarkDown({ onHeadingSet, examples, source }) {
     const [headings] = useState([])
     const [cache] = useState({})
 
@@ -31,19 +30,6 @@ function MarkDown({ onHeadingSet, codes, examples, source }) {
     // 填充header
     const appendHeading = heading => {
         headings.push(heading)
-    }
-
-    // TODO
-    const renderCode = name => {
-        const code = codes[name]
-        if (code) {
-            return [
-                <CodeBlock key="cb" value={code.text} />,
-                ...code.log.map((txt, i) => <Console key={i}>{txt}</Console>),
-            ]
-        }
-        console.error(`Code ${name} not existed`)
-        return null
     }
 
     const renderExamples = () => {
@@ -133,9 +119,6 @@ function MarkDown({ onHeadingSet, codes, examples, source }) {
                     if (example) return renderExample(example[1], prop.value.indexOf('noExpand') >= 0)
 
                     if (prop.value === '<br>' || prop.value === '<br />') return <br />
-
-                    const code = prop.value.match(codeReg)
-                    if (code) return renderCode(code[1])
 
                     return null
                 },
