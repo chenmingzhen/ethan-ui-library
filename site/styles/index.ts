@@ -1,10 +1,10 @@
-import classGenerate from '../utils/classname'
 import * as exampleLess from './example.less'
 import * as homeLess from './home.less'
 import * as mainLess from './index.less'
 import * as markDownLess from './markdown.less'
 import * as navLess from './nav.less'
 import * as headerless from './header.less'
+import classGenerate from '../utils/classnames'
 
 export const exampleClass = classGenerate(exampleLess, 'example')
 export const headerClass = classGenerate(headerless, 'header')
