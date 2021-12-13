@@ -1,14 +1,22 @@
-import React, { useState, useEffect } from 'react'
+import React from 'react'
 import ReactMarkDown from 'react-markdown'
 import { Link } from 'react-router-dom'
 import { getUidStr } from '@/utils/uid'
 import { markdownClass } from 'doc/styles'
+import { Heading } from 'doc/type'
 import locate from '../../utils/locate'
 import CodeBlock from '../CodeBlock'
 import Example from '../Example'
 import Table from '../Table'
 
-const codeReg = /^<code name="([\w|-]+)" /
+interface MarkdownProps {
+    onHeadingSet(headings: Heading[]): void
+
+    source
+
+    examples
+}
+
 const exampleReg = /^<example name="([\w|-]+)"/
 
 const createId = (level, str) => {
@@ -16,103 +24,74 @@ const createId = (level, str) => {
     return `${level}-${(str || '').replace(/[\W|-]/g, '-')}`
 }
 
-// apiTable example 最终汇入此组件
-function MarkDown({ onHeadingSet, codes, examples, source }) {
-    const [headings] = useState([])
-    const [cache] = useState({})
+function MarkDown({ onHeadingSet, examples, source }: MarkdownProps) {
+    const headings = React.useRef<Heading[]>([]).current
 
-    useEffect(() => {
-        // 执行Navable回调
-        if (onHeadingSet) {
-            onHeadingSet(headings)
-        }
+    React.useEffect(() => {
+        onHeadingSet?.(headings)
     }, [])
 
-    // 填充header
     const appendHeading = heading => {
         headings.push(heading)
     }
 
-    // TODO
-    const renderCode = name => {
-        const code = codes[name]
-        if (code) {
-            return [
-                <CodeBlock key="cb" value={code.text} />,
-                ...code.log.map((txt, i) => <Console key={i}>{txt}</Console>),
-            ]
-        }
-        console.error(`Code ${name} not existed`)
-        return null
-    }
-
     const renderExamples = () => {
-        if (cache.examples) return cache.examples
-
         if (!examples) return <div />
 
         const text = locate('示例', 'Example')
 
         const id = 'heading-example-h'
+
         appendHeading({
             id,
             level: 2,
             children: [text],
         })
 
-        cache.examples = [
+        const examplesComponents = [
             <h2 key="h" id={id}>
                 {text}
             </h2>,
             ...examples.map((prop, i) => {
                 if (/\d+-/.test(prop.name)) {
                     const sid = `heading-${prop.name}`
+
                     const [title] = prop.title.split('\n')
+
                     appendHeading({
                         id: sid,
                         level: 3,
                         children: [title],
                     })
+
                     return <Example key={i} id={sid} {...prop} />
                 }
                 return undefined
             }),
         ]
 
-        return cache.examples
+        return examplesComponents
     }
 
     const renderExample = name => {
-        const key = `example-${name}`
-        if (!cache[key]) {
-            const example = (examples || []).find(e => e.name === name)
-            if (!example) cache[key] = null
-            else cache[key] = <Example {...example} />
-        }
-        return cache[key]
+        const example = (examples || []).find(e => e.name === name)
+
+        if (!example) return null
+
+        return <Example {...example} />
     }
 
     const renderHeading = ({ level, children }) => {
-        const key = `${level}-${children[0]}`
-        const Tag = `h${level}`
+        const Tag = `h${level}` as 'h1' | 'h2' | 'h3'
 
-        if (typeof children[0] === 'object') {
-            return <Tag>{children}</Tag>
+        const id = `heading-${createId(level, children[0])}`
+
+        if (level === 2 || level === 3) {
+            appendHeading({ id, level, children })
         }
 
-        if (!cache[key]) {
-            const id = `heading-${createId(level, children[0])}`
-            if (level === 2 || level === 3) {
-                appendHeading({ id, level, children })
-            }
-            cache[key] = <Tag id={id}>{children}</Tag>
-        }
-
-        return cache[key]
+        return <Tag id={id}>{children}</Tag>
     }
-
-    // clear headings
-    // headings = []
 
     return (
         <ReactMarkDown
@@ -130,14 +109,10 @@ function MarkDown({ onHeadingSet, codes, examples, source }) {
                     if (prop.value === '<example />') return renderExamples()
 
                     const example = prop.value.match(exampleReg)
-                    if (example) return renderExample(example[1], prop.value.indexOf('noExpand') >= 0)
+
+                    if (example) return renderExample(example[1])
 
                     if (prop.value === '<br>' || prop.value === '<br />') return <br />
-
-                    const code = prop.value.match(codeReg)
-                    if (code) return renderCode(code[1])
-
-                    return null
                 },
                 // markdown table 渲染方式
                 table: Table,
