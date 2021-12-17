@@ -7,7 +7,7 @@ import { exampleClass } from 'doc/styles'
 interface CodeBlockProps {
     language?: string
 
-    onHighLight(height: number): void
+    onHighLight?(height: number): void
 
     value: string
 }
