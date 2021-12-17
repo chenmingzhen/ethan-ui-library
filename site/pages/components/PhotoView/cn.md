@@ -1,3 +1,3 @@
-# Pagination *分页*
+# PhotoView _图片预览_
 
 <example />

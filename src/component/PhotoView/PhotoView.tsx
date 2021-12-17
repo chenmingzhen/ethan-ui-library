@@ -139,6 +139,7 @@ export default class PhotoView extends React.Component<IPhotoViewProps, typeof i
 
     componentDidUpdate(prevProps: Readonly<IPhotoViewProps>) {
         const { rotate } = this.props
+
         if (rotate !== prevProps.rotate) {
             const { naturalWidth, naturalHeight } = this.state
             // eslint-disable-next-line react/no-did-update-set-state
@@ -213,15 +214,10 @@ export default class PhotoView extends React.Component<IPhotoViewProps, typeof i
             if (touchLength === 0 && this.initialTouchState === TouchStartEnum.Normal) {
                 const isStillX = Math.abs(newClientX - clientX) <= minStartTouchOffset
                 const isStillY = Math.abs(newClientY - clientY) <= minStartTouchOffset
+
                 // 初始移动距离不足
-                if (isStillX && isStillY) {
-                    // 方向记录上次移动距离，以便平滑过渡
-                    this.setState({
-                        lastMoveClientX: newClientX,
-                        lastMoveClientY: newClientY,
-                    })
-                    return
-                }
+                if (isStillX && isStillY) return
+
                 // 设置响应状态
                 this.initialTouchState = !isStillX
                     ? TouchStartEnum.X

@@ -3,4 +3,5 @@ declare module '*.less' {
     export default classes
 }
 
+declare module '*.jpg'
 declare module '*.md'

@@ -31,11 +31,12 @@ const lessLoader = (name, hot) => {
             },
         },
     ]
-    if (hot) loaders.splice(0, 0, { loader: 'css-hot-loader' })
+
+
     return loaders
 }
 
-module.exports = function({ name, hot, entry, output, clean, prefix = 'theme', mode = 'production' }) {
+module.exports = function({ name, hot, entry, output, clean, prefix = 'theme', mode = 'production', filename }) {
     const conf = {
         mode,
         optimization: {
@@ -51,6 +52,7 @@ module.exports = function({ name, hot, entry, output, clean, prefix = 'theme', m
         },
         output: {
             ...output,
+            filename,
         },
         module: {
             rules: [
@@ -78,6 +80,9 @@ module.exports = function({ name, hot, entry, output, clean, prefix = 'theme', m
             // localhost:3000/name.css
             new MiniCssExtractPlugin({
                 filename: prefix ? `${prefix}.${name}.css` : `${name}.css`,
+            }),
+            new webpack.ProvidePlugin({
+                process: 'process/browser',
             }),
         ],
     }

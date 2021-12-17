@@ -3,14 +3,14 @@ import React from 'react'
 import immer from 'immer'
 import Context, { AddItem } from './context'
 import PhotoSlider from './PhotoSlider'
-import { DataType, PhotoViewGroupBase } from './types'
+import { PhotoViewImageData, PhotoViewGroupBase } from './types'
 
 export interface PhotoViewGroupProps extends PhotoViewGroupBase {
     children: React.ReactNode
 }
 
 interface PhotoViewGroupState {
-    images: DataType[]
+    images: PhotoViewImageData[]
 
     visible: boolean
 

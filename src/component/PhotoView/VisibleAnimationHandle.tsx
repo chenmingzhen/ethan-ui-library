@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react'
-import { DataType, OriginRectType, ShowAnimateEnum } from './types'
+import { PhotoViewImageData, OriginRectType, ShowAnimateEnum } from './types'
 
 interface VisibleHandleProps {
     // Slider是否为可见状态
     visible: boolean
-    currentImage?: DataType
+    currentImage?: PhotoViewImageData
     children: ({
         photoVisible,
         showAnimateType,
