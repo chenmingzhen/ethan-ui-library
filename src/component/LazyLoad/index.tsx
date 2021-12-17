@@ -5,7 +5,7 @@ import { addStack, removeStack } from '@/utils/lazyload'
 interface LazyLoadProps {
     children?: React.ReactNode
 
-    placeholder?: React.ReactNode
+    placeholder?: React.ReactNode | JSX.Element
 
     container?: HTMLElement
 
