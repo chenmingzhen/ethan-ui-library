@@ -4,21 +4,32 @@ import Prism from 'prismjs'
 import 'prismjs/components/prism-jsx'
 import { exampleClass } from 'doc/styles'
 
-export default props => {
-  const { language = 'lang-jsx', onHighLight, value } = props
+interface CodeBlockProps {
+    language?: string
 
-  const elRef = useRef(null)
+    onHighLight?(height: number): void
 
-  useEffect(() => {
-    const el = elRef.current
-    Prism.highlightElement(el, false, () => {
-      if (onHighLight) onHighLight(el.offsetHeight)
-    })
-  }, [])
-
-  return (
-    <pre ref={elRef} className={classnames(language || 'lang-jsx', exampleClass('pre'))}>
-      <code>{value}</code>
-    </pre>
-  )
+    value: string
 }
+
+const CodeBlock: React.FC<CodeBlockProps> = props => {
+    const { language = 'lang-jsx', onHighLight, value } = props
+
+    const elRef = useRef<HTMLPreElement>(null)
+
+    useEffect(() => {
+        const el = elRef.current
+
+        Prism.highlightElement(el, false, () => {
+            if (onHighLight) onHighLight(el.offsetHeight)
+        })
+    }, [])
+
+    return (
+        <pre ref={elRef} className={classnames(language || 'lang-jsx', exampleClass('pre'))}>
+            <code>{value}</code>
+        </pre>
+    )
+}
+
+export default CodeBlock

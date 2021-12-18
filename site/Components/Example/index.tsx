@@ -1,105 +1,76 @@
-import React, { useState, useRef, useEffect, Fragment, createElement } from 'react'
-import PropTypes from 'prop-types'
+import React, { useState, useRef, createElement } from 'react'
 import { Lazyload, Spin } from 'ethan/index'
 import Icon from 'doc/icons/Icon'
-import history from 'docs/history'
 import { exampleClass } from 'doc/styles'
+import AnimationHeight from '@/component/List/AnimationHeight'
 import CodeBlock from '../CodeBlock'
 
-const placeholder = (
-  <div className={exampleClass('placeholder')}>
-    <Spin size="54px" name="four-dots" color="#53a0fd" />
-  </div>
-)
+interface ExampleProps {
+    component: React.ComponentType
 
-export default function Example({ component, id, name, rawText, title: propsTitle }) {
-  const codeblock = useRef(null)
-  const [showcode, setShowCode] = useState(false)
-  const [com] = useState(createElement(component))
-  const [codeHeight, setCodeHeight] = useState()
-  let [bottom] = useState()
+    id: string
 
-  // 正则去除文件非代码内容
-  const text = rawText.replace(/(^|\n|\r)\s*\/\*[\s\S]*?\*\/\s*(?:\r|\n|$)/, '').trim()
+    rawText: string
 
-  useEffect(() => {
-    if (!codeblock.current) return
+    title: string
+}
 
-    if (showcode) {
-      codeblock.current.style.height = `${codeHeight}px`
-    } else {
-      codeblock.current.style.height = `0`
+const Example: React.FC<ExampleProps> = ({ component, id, rawText = '', title: propsTitle }) => {
+    const [showCode, setShowCode] = useState(false)
+
+    const ExampleComponent = useRef(createElement(component)).current
+
+    // 正则去除文件非代码内容
+    const text = rawText.replace(/(^|\n|\r)\s*\/\*[\s\S]*?\*\/\s*(?:\r|\n|$)/, '').trim()
+
+    const [title, ...sub] = propsTitle.split('\n')
+
+    const toggleCode = () => {
+        setShowCode(!showCode)
     }
-  }, [showcode])
 
-  const setCodeBlockHeight = height => {
-    setCodeHeight(height)
-  }
+    return (
+        <>
+            {title && <h3 id={id}>{title}</h3>}
 
-  const toggleCode = isBottom => {
-    const showCode = !showcode
-    bottom = isBottom
-    setShowCode(showCode)
-  }
+            <Lazyload
+                placeholder={
+                    <div className={exampleClass('placeholder')}>
+                        <Spin size="54px" name="four-dots" color="#53a0fd" />
+                    </div>
+                }
+            >
+                <div className={exampleClass('_', showCode && 'showcode')}>
+                    <div className={exampleClass('body')}>{ExampleComponent}</div>
 
-  // isBottom  true 当前为展开模式
-  const renderCodeHandle = isBottom => (
-    <a className={exampleClass('toggle')} onClick={toggleCode.bind(null, isBottom)}>
-      <Icon name={showcode ? 'code-close' : 'code'} />
-    </a>
-  )
+                    {propsTitle.length > 0 && (
+                        <div className={exampleClass('desc')}>
+                            {sub.map((s, i) => (
+                                <div key={i} dangerouslySetInnerHTML={{ __html: s }} />
+                            ))}
 
-  let { search } = history.location
-  const examplePrefix = '?example='
-  if (search.indexOf(examplePrefix) === 0) {
-    search = search.replace(examplePrefix, '')
+                            <a className={exampleClass('toggle')} onClick={toggleCode}>
+                                <Icon name={showCode ? 'code-close' : 'code'} />
+                            </a>
+                        </div>
+                    )}
 
-    if (name.indexOf(search) < 0) return null
-  }
+                    <AnimationHeight
+                        height={showCode ? 'auto' : 0}
+                        easing="linear"
+                        className={exampleClass('code')}
+                        duration={240}
+                    >
+                        <CodeBlock value={text} />
 
-  // eslint-disable-next-line
-  let [title, ...sub] = propsTitle.split('\n')
-  if (title) title = title.trim()
-
-  return (
-    <Fragment>
-      {title && (
-        <h3 key="0" id={id}>
-          {title}
-        </h3>
-      )}
-
-      <Lazyload placeholder={placeholder}>
-        <div className={exampleClass('_', showcode && 'showcode')}>
-          {/* 实例组件 */}
-          {/* example-locale 也是下面渲染 com */}
-          <div className={exampleClass('body')}>{com}</div>
-          {propsTitle.length > 0 && (
-            <div className={exampleClass('desc')}>
-              {sub.map((s, i) => (
-                <div key={i} dangerouslySetInnerHTML={{ __html: s }} />
-              ))}
-              {renderCodeHandle(false)}
-            </div>
-          )}
-          <div ref={codeblock} className={exampleClass('code')}>
-            <CodeBlock onHighLight={setCodeBlockHeight} value={text} />
-            {renderCodeHandle(true)}
-          </div>
-        </div>
-      </Lazyload>
-    </Fragment>
-  )
+                        <a className={exampleClass('toggle')} onClick={toggleCode}>
+                            <Icon name={showCode ? 'code-close' : 'code'} />
+                        </a>
+                    </AnimationHeight>
+                </div>
+            </Lazyload>
+        </>
+    )
 }
 
-Example.propTypes = {
-  component: PropTypes.func.isRequired,
-  id: PropTypes.string,
-  name: PropTypes.string,
-  rawText: PropTypes.string,
-  title: PropTypes.string.isRequired,
-}
-
-Example.defaultProps = {
-  rawText: '',
-}
+export default React.memo(Example)
