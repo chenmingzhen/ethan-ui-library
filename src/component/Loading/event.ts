@@ -1,0 +1,147 @@
+import React from 'react'
+import ReactDOM from 'react-dom'
+import Loading from './loading'
+import { LineLoadingProps, LoadingInstance, FullScreenProps, LoadingFunc } from './type'
+
+let lineLoadingRef: React.RefObject<LoadingInstance>
+
+let fullScreenLoadingRef: React.RefObject<LoadingInstance>
+
+let lineTimer: NodeJS.Timeout = null
+
+let lineRoot: HTMLDivElement = null
+
+let fullScreenRoot: HTMLDivElement = null
+
+let cacheConfig = null
+
+function createLineDOMAndRender(callback, props?: LineLoadingProps) {
+    if (lineTimer) {
+        clearInterval(lineTimer)
+
+        lineTimer = null
+    }
+
+    if (!lineLoadingRef) {
+        lineLoadingRef = React.createRef()
+
+        // props会为空 需要手动update 设置值进去
+        const lineLoading = React.createElement(Loading, Object.assign({ props, ref: lineLoadingRef, visible: true }))
+
+        lineRoot = document.createElement('div')
+
+        document.body.appendChild(lineRoot)
+
+        ReactDOM.render(lineLoading, lineRoot, callback)
+
+        cacheConfig = null
+    }
+}
+
+function createFullScreenDOMAndRender(props?: FullScreenProps) {
+    if (!fullScreenLoadingRef) {
+        fullScreenLoadingRef = React.createRef()
+
+        const fullScreenLoading = React.createElement(
+            Loading,
+            Object.assign({ props, ref: fullScreenLoadingRef, visible: true })
+        )
+
+        fullScreenRoot = document.createElement('div')
+
+        document.body.appendChild(fullScreenRoot)
+
+        ReactDOM.render(fullScreenLoading, fullScreenRoot)
+    }
+}
+
+function dispatchLineLoading() {
+    const { updatePercent } = lineLoadingRef.current
+
+    lineTimer = setInterval(() => {
+        updatePercent(lastPercent => {
+            const percent = Math.min(Math.floor(Math.random() * +5) + lastPercent, 99)
+
+            return percent
+        })
+    }, 200)
+}
+
+const loadingFunc: LoadingFunc = {
+    fullScreen(props: FullScreenProps) {
+        createFullScreenDOMAndRender(props)
+
+        function config(configProps: FullScreenProps) {
+            const { updateFullScreenConfig } = fullScreenLoadingRef.current
+
+            updateFullScreenConfig(configProps)
+        }
+
+        function destroy() {
+            ReactDOM.unmountComponentAtNode(fullScreenRoot)
+
+            document.body.removeChild(fullScreenRoot)
+
+            fullScreenLoadingRef = null
+        }
+
+        return {
+            config,
+            destroy,
+        }
+    },
+
+    start(props: LineLoadingProps) {
+        const renderCallback = () => {
+            const { updateVisible } = lineLoadingRef.current
+
+            dispatchLineLoading()
+
+            updateVisible(true)
+        }
+
+        createLineDOMAndRender(renderCallback, cacheConfig || props)
+    },
+
+    finish() {
+        if (!lineLoadingRef?.current) return
+
+        if (lineTimer) {
+            clearInterval(lineTimer)
+
+            lineTimer = null
+        }
+
+        const { updatePercent, updateVisible } = lineLoadingRef.current
+
+        updatePercent(100)
+        updateVisible(true)
+    },
+
+    upload(percent: number) {
+        function renderCallback() {
+            const { updatePercent, updateVisible } = lineLoadingRef.current
+
+            ReactDOM.unstable_batchedUpdates(() => {
+                updatePercent(percent)
+                updateVisible(true)
+            })
+        }
+
+        createLineDOMAndRender(renderCallback)
+    },
+
+    config(props: LineLoadingProps) {
+        cacheConfig = props
+    },
+
+    destroy() {
+        if (lineRoot) {
+            ReactDOM.unmountComponentAtNode(lineRoot)
+        }
+
+        lineLoadingRef = null
+    },
+}
+
+export default loadingFunc
