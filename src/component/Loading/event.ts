@@ -26,15 +26,16 @@ function createLineDOMAndRender(callback, props?: LineLoadingProps) {
         lineLoadingRef = React.createRef()
 
         // props会为空 需要手动update 设置值进去
-        const lineLoading = React.createElement(Loading, Object.assign({ props, ref: lineLoadingRef, visible: true }))
+        const lineLoading = React.createElement(
+            Loading,
+            Object.assign({ ...props, ref: lineLoadingRef, visible: true })
+        )
 
         lineRoot = document.createElement('div')
 
         document.body.appendChild(lineRoot)
 
         ReactDOM.render(lineLoading, lineRoot, callback)
-
-        cacheConfig = null
     }
 }
 
@@ -91,7 +92,7 @@ const loadingFunc: LoadingFunc = {
         }
     },
 
-    start(props: LineLoadingProps) {
+    start(props?: LineLoadingProps) {
         const renderCallback = () => {
             const { updateVisible } = lineLoadingRef.current
 
@@ -119,7 +120,7 @@ const loadingFunc: LoadingFunc = {
     },
 
     upload(percent: number) {
-        function renderCallback() {
+        function batchUpdate() {
             const { updatePercent, updateVisible } = lineLoadingRef.current
 
             ReactDOM.unstable_batchedUpdates(() => {
@@ -128,7 +129,19 @@ const loadingFunc: LoadingFunc = {
             })
         }
 
-        createLineDOMAndRender(renderCallback)
+        if (!lineLoadingRef) {
+            const renderCallback = () => {
+                const { updatePercent } = lineLoadingRef.current
+
+                updatePercent(0)
+
+                setTimeout(batchUpdate)
+            }
+
+            createLineDOMAndRender(renderCallback)
+        } else {
+            batchUpdate()
+        }
     },
 
     config(props: LineLoadingProps) {

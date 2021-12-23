@@ -36,7 +36,7 @@ export interface LoadingFunc {
         config: (configProps: FullScreenProps) => void
         destroy: () => void
     }
-    start(props: LineLoadingProps): void
+    start(props?: LineLoadingProps): void
     finish(): void
     upload(percent: number): void
     config(props: LineLoadingProps): void
