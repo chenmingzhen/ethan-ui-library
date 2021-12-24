@@ -1,3 +1,4 @@
+import { isEmpty } from '@/utils/is'
 import React from 'react'
 import ReactDOM from 'react-dom'
 import Loading from './loading'
@@ -13,7 +14,7 @@ let lineRoot: HTMLDivElement = null
 
 let fullScreenRoot: HTMLDivElement = null
 
-let cacheConfig = null
+let cacheConfig = {}
 
 function createLineDOMAndRender(callback, props?: LineLoadingProps) {
     if (lineTimer) {
@@ -25,10 +26,12 @@ function createLineDOMAndRender(callback, props?: LineLoadingProps) {
     if (!lineLoadingRef) {
         lineLoadingRef = React.createRef()
 
+        const mergeProps = Object.assign({}, cacheConfig, props)
+
         // props会为空 需要手动update 设置值进去
         const lineLoading = React.createElement(
             Loading,
-            Object.assign({ ...props, ref: lineLoadingRef, visible: true })
+            Object.assign({ ...mergeProps, ref: lineLoadingRef, visible: true })
         )
 
         lineRoot = document.createElement('div')
@@ -45,7 +48,7 @@ function createFullScreenDOMAndRender(props?: FullScreenProps) {
 
         const fullScreenLoading = React.createElement(
             Loading,
-            Object.assign({ props, ref: fullScreenLoadingRef, visible: true })
+            Object.assign({ ...props, ref: fullScreenLoadingRef, visible: true })
         )
 
         fullScreenRoot = document.createElement('div')
@@ -61,7 +64,7 @@ function dispatchLineLoading() {
 
     lineTimer = setInterval(() => {
         updatePercent(lastPercent => {
-            const percent = Math.min(Math.floor(Math.random() * +5) + lastPercent, 99)
+            const percent = Math.min(Math.floor(Math.random() * +5) + lastPercent, 99.9)
 
             return percent
         })
@@ -69,7 +72,7 @@ function dispatchLineLoading() {
 }
 
 const loadingFunc: LoadingFunc = {
-    fullScreen(props: FullScreenProps) {
+    fullScreen(props?: FullScreenProps) {
         createFullScreenDOMAndRender(props)
 
         function config(configProps: FullScreenProps) {
@@ -101,7 +104,7 @@ const loadingFunc: LoadingFunc = {
             updateVisible(true)
         }
 
-        createLineDOMAndRender(renderCallback, cacheConfig || props)
+        createLineDOMAndRender(renderCallback, props)
     },
 
     finish() {
@@ -133,6 +136,7 @@ const loadingFunc: LoadingFunc = {
             const renderCallback = () => {
                 const { updatePercent } = lineLoadingRef.current
 
+                /** init animation,from zero to percent transition */
                 updatePercent(0)
 
                 setTimeout(batchUpdate)
@@ -140,12 +144,22 @@ const loadingFunc: LoadingFunc = {
 
             createLineDOMAndRender(renderCallback)
         } else {
+            const { updateLineConfig } = lineLoadingRef.current
+
+            if (!isEmpty(cacheConfig)) {
+                updateLineConfig(cacheConfig)
+            }
+
             batchUpdate()
         }
     },
 
     config(props: LineLoadingProps) {
         cacheConfig = props
+    },
+
+    clear() {
+        cacheConfig = {}
     },
 
     destroy() {

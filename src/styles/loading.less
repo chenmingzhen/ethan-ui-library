@@ -11,6 +11,12 @@
     bottom: 0;
     right: 0;
     background: rgba(255, 255, 255, 0.6);
+    opacity: 1;
+
+    &-fade {
+        transition: opacity 0.5s ease-in-out;
+        opacity: 0;
+    }
 
     &-spin {
         position: absolute;
@@ -20,7 +26,6 @@
 
     &-line {
         height: 100%;
-        //transition: width 0.2s ease-in-out;
         background-color: @colors-primary;
     }
 

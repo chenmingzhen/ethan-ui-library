@@ -1,21 +1,22 @@
-import React, { memo, useImperativeHandle, forwardRef, useCallback, useEffect, useRef } from 'react'
+import React, { memo, useImperativeHandle, forwardRef, useCallback, useEffect } from 'react'
 import { loadingClass } from '@/styles'
 import useSafeState from '@/hooks/useSafeState'
 import { usePrevious } from 'react-use'
 import Spin from '../Spin'
 import { FullScreenProps, ImmatureFullScreenProps, LineLoadingProps, LoadingInstance } from './type'
-import Transition from '../Transition'
 import event from './event'
 
 type LoadingProps = LineLoadingProps & ImmatureFullScreenProps
 
 const FULLSCREEN_STATE_LIST = ['type', 'text', 'size', 'color']
 
+const LINE_STATE_LIST = ['height', 'color']
+
 const Loading: React.ForwardRefRenderFunction<LoadingInstance, LoadingProps> = (props, ref) => {
     const [visible, updateVisible] = useSafeState(true)
     /** Top */
     const [percent, updatePercent] = useSafeState(props.percent || 0)
-    const height = props.height ?? 4
+    const [height, updateHeight] = useSafeState(props.height || 3)
     const [color, updateColor] = useSafeState(props.color || '#3399ff')
 
     /** FullScreen */
@@ -57,6 +58,28 @@ const Loading: React.ForwardRefRenderFunction<LoadingInstance, LoadingProps> = (
         })
     }, [])
 
+    const updateLineConfig = useCallback((config: LineLoadingProps) => {
+        Object.keys(config).forEach(stateName => {
+            const newState = config[stateName]
+
+            switch (stateName) {
+                case LINE_STATE_LIST[0]: {
+                    updateHeight(newState)
+
+                    break
+                }
+                case LINE_STATE_LIST[1]: {
+                    updateColor(newState)
+
+                    break
+                }
+
+                default:
+                    break
+            }
+        })
+    }, [])
+
     useEffect(() => {
         if (percent !== 100) {
             updateVisible(true)
@@ -71,21 +94,21 @@ const Loading: React.ForwardRefRenderFunction<LoadingInstance, LoadingProps> = (
         if (!visible) {
             setTimeout(() => {
                 event.destroy()
-            }, 300)
+            }, 500)
         }
     }, [visible])
 
-    useImperativeHandle(ref, () => ({ updateFullScreenConfig, updateVisible, updatePercent }))
+    useImperativeHandle(ref, () => ({ updateFullScreenConfig, updateLineConfig, updateVisible, updatePercent }))
 
     const animation = lastPercent < percent || !lastPercent
 
     const barStyle: React.CSSProperties | undefined =
-        type === 'line' ? { width: `${percent}%`, background: color } : undefined
+        type === 'line' ? { width: `${percent}%`, background: color, boxShadow: `0 0 10px 0 ${color}` } : undefined
 
     const wrapStyle: React.CSSProperties | undefined = type === 'line' ? { height: `${height}px` } : undefined
 
     return (
-        <Transition show={visible}>
+        <div className={loadingClass(!visible && 'fade')}>
             <div className={loadingClass('_')} style={wrapStyle}>
                 {type === 'line' ? (
                     <>
@@ -103,7 +126,7 @@ const Loading: React.ForwardRefRenderFunction<LoadingInstance, LoadingProps> = (
                     </div>
                 )}
             </div>
-        </Transition>
+        </div>
     )
 }
 

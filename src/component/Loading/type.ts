@@ -1,3 +1,4 @@
+import React from 'react'
 import { SpinProps } from '../Spin'
 
 export interface LoadingInstance {
@@ -5,7 +6,9 @@ export interface LoadingInstance {
 
     updatePercent: React.Dispatch<React.SetStateAction<number>>
 
-    updateFullScreenConfig
+    updateFullScreenConfig(config: FullScreenProps): void
+
+    updateLineConfig(config: LineLoadingProps): void
 }
 
 export interface LineLoadingProps {
@@ -20,18 +23,19 @@ export interface LineLoadingProps {
  *
  */
 export interface ImmatureFullScreenProps {
-    loadingText?: string
+    loadingText?: React.ReactNode
 
     size?: number
 
     type: 'line' | SpinProps['name']
 }
 
-export type FullScreenProps = ImmatureFullScreenProps & Pick<LineLoadingProps, 'color'> & { type: SpinProps['name'] }
+export type FullScreenProps = ImmatureFullScreenProps &
+    Partial<Pick<LineLoadingProps, 'color'>> & { type?: SpinProps['name'] }
 
 export interface LoadingFunc {
     fullScreen(
-        props: FullScreenProps
+        props?: FullScreenProps
     ): {
         config: (configProps: FullScreenProps) => void
         destroy: () => void
@@ -40,5 +44,6 @@ export interface LoadingFunc {
     finish(): void
     upload(percent: number): void
     config(props: LineLoadingProps): void
+    clear(): void
     destroy(): void
 }
