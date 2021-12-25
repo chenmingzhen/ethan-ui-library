@@ -15,7 +15,7 @@ export const TRANSFORMS = {
     webkitTransform: '-webkit-transform',
     OTransform: '-o-transform',
     msTransform: '-ms-transform',
-    MozTransform: '-moz-transform',
+    MozTransform: 'MozTransform',
     transform: 'transform',
 }
 

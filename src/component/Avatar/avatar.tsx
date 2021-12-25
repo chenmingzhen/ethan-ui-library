@@ -1,36 +1,31 @@
-// @ts-nocheck
-import React, { memo, useState, useRef } from 'react'
-import PropTypes from 'prop-types'
-import { useMount, useUpdateEffect, usePrevious } from 'react-use'
+import React, { memo, useState, useRef, useEffect } from 'react'
 import { FontAwesome } from '@/component/Icon'
 import { avatarClass } from '@/styles'
 import fitText from '@/component/Avatar/util'
 
-const NO_STYLE = {}
-
-const HIDDEN_STYLE = {
-    opacity: 0,
+export interface AvatarProps {
+    shape?: 'circle' | 'square'
+    size?: 'small' | 'large' | 'default' | number
+    icon?: string
+    src?: string
+    children?: string
+    bordered?: boolean
+    style?: React.CSSProperties
+    className?: string
 }
 
-const Avatar = props => {
+const Avatar: React.FC<AvatarProps> = props => {
     const [textScale, setTextScale] = useState(1)
     const [textReady, setTextReady] = useState(false)
 
-    const textNodeRef = useRef()
-    const avatarNodeRef = useRef()
+    const textNodeRef = useRef<HTMLSpanElement>()
+    const avatarNodeRef = useRef<HTMLSpanElement>()
 
     const { size, shape, src, icon, children, bordered, style } = props
     const useImage = !!src
     const useString = !!children
 
-    const prevChildren = usePrevious(children)
-
-    const className = avatarClass('_', props.className, {
-        large: size === 'large',
-        default: size === 'default',
-        small: size === 'small',
-        circle: shape === 'circle',
-        square: shape === 'square',
+    const className = avatarClass('_', props.className, shape, typeof size === 'string' ? size : '', {
         icon: !!icon,
         image: useImage,
         string: useString,
@@ -55,11 +50,14 @@ const Avatar = props => {
 
     const textNode = textNodeRef.current
 
-    let textStyle
+    let textStyle: React.CSSProperties
+
     if (!textReady || !textNode) {
-        textStyle = HIDDEN_STYLE
+        textStyle = {
+            opacity: 0,
+        }
     } else if (textScale === 1) {
-        textStyle = NO_STYLE
+        textStyle = {}
     } else {
         // 自适应大小
         const textTransformString = `scale(${textScale})`
@@ -84,25 +82,13 @@ const Avatar = props => {
               }
             : style
 
-    const updateTextScale = () => {
+    useEffect(() => {
         if (children) {
             const scale = fitText(avatarNodeRef.current, textNodeRef.current)
-
             setTextScale(scale)
             setTextReady(true)
         }
-    }
-
-    // ----------------------------------lifecycle--------------------------------------
-    useMount(() => {
-        updateTextScale()
-    })
-
-    useUpdateEffect(() => {
-        if (prevChildren !== children) {
-            updateTextScale()
-        }
-    })
+    }, [children])
 
     return (
         <span style={avatarStyle} className={className} ref={avatarNodeRef}>
@@ -117,17 +103,6 @@ Avatar.defaultProps = {
     shape: 'circle',
     size: 'default',
     bordered: false,
-}
-
-Avatar.propTypes = {
-    shape: PropTypes.oneOf(['circle', 'square']),
-    size: PropTypes.oneOfType([PropTypes.oneOf(['small', 'large', 'default', PropTypes.number]), PropTypes.number]),
-    icon: PropTypes.string,
-    src: PropTypes.string,
-    children: PropTypes.string,
-    bordered: PropTypes.bool,
-    style: PropTypes.object,
-    className: PropTypes.string,
 }
 
 export default memo(Avatar)
