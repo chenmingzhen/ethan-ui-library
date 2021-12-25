@@ -1,8 +1,8 @@
 /**
  * cn - 基本用法
- *    -- 开始加载,结束加载和错误加载
+ *    -- 开始加载,结束加载
  * en - Base
- *    -- Start loading , end loading and error Loading
+ *    -- Start loading and finish loading.
  */
 
 import React from 'react'

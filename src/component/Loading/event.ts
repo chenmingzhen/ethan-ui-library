@@ -2,7 +2,7 @@ import { isEmpty } from '@/utils/is'
 import React from 'react'
 import ReactDOM from 'react-dom'
 import Loading from './loading'
-import { LineLoadingProps, LoadingInstance, FullScreenProps, LoadingFunc } from './type'
+import { LineLoadingProps, LoadingInstance, FullScreenProps, LoadingFunction } from './type'
 
 let lineLoadingRef: React.RefObject<LoadingInstance>
 
@@ -71,7 +71,7 @@ function dispatchLineLoading() {
     }, 200)
 }
 
-const loadingFunc: LoadingFunc = {
+const loadingFunc: LoadingFunction = {
     fullScreen(props?: FullScreenProps) {
         createFullScreenDOMAndRender(props)
 

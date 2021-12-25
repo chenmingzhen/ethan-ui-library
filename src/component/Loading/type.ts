@@ -19,11 +19,8 @@ export interface LineLoadingProps {
     color?: string
 }
 
-/**
- *
- */
 export interface ImmatureFullScreenProps {
-    loadingText?: React.ReactNode
+    fallback?: React.ReactNode
 
     size?: number
 
@@ -33,13 +30,13 @@ export interface ImmatureFullScreenProps {
 export type FullScreenProps = ImmatureFullScreenProps &
     Partial<Pick<LineLoadingProps, 'color'>> & { type?: SpinProps['name'] }
 
-export interface LoadingFunc {
-    fullScreen(
-        props?: FullScreenProps
-    ): {
-        config: (configProps: FullScreenProps) => void
-        destroy: () => void
-    }
+export interface FullScreenFunction {
+    config: (configProps: FullScreenProps) => void
+    destroy: () => void
+}
+
+export interface LoadingFunction {
+    fullScreen(props?: FullScreenProps): FullScreenFunction
     start(props?: LineLoadingProps): void
     finish(): void
     upload(percent: number): void

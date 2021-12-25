@@ -8,7 +8,7 @@ import event from './event'
 
 type LoadingProps = LineLoadingProps & ImmatureFullScreenProps
 
-const FULLSCREEN_STATE_LIST = ['type', 'text', 'size', 'color']
+const FULLSCREEN_STATE_LIST = ['type', 'fallback', 'size', 'color']
 
 const LINE_STATE_LIST = ['height', 'color']
 
@@ -16,12 +16,12 @@ const Loading: React.ForwardRefRenderFunction<LoadingInstance, LoadingProps> = (
     const [visible, updateVisible] = useSafeState(true)
     /** Top */
     const [percent, updatePercent] = useSafeState(props.percent || 0)
-    const [height, updateHeight] = useSafeState(props.height || 3)
+    const [height, updateHeight] = useSafeState(props.height || 4)
     const [color, updateColor] = useSafeState(props.color || '#3399ff')
 
     /** FullScreen */
     const [type, updateType] = useSafeState(props.type || 'line')
-    const [text, updateText] = useSafeState(props.loadingText)
+    const [fallback, updateFallback] = useSafeState(props.fallback)
     const [size, updateSize] = useSafeState(props.size)
 
     const lastPercent = usePrevious(percent)
@@ -37,7 +37,7 @@ const Loading: React.ForwardRefRenderFunction<LoadingInstance, LoadingProps> = (
                     break
                 }
                 case FULLSCREEN_STATE_LIST[1]: {
-                    updateText(newState)
+                    updateFallback(newState)
 
                     break
                 }
@@ -122,7 +122,7 @@ const Loading: React.ForwardRefRenderFunction<LoadingInstance, LoadingProps> = (
                         <div>
                             <Spin size={size || 54} name={type || 'wave'} color={color} />
                         </div>
-                        {text && <div className={loadingClass('text')}>{text}</div>}
+                        {fallback && <div className={loadingClass('text')}>{fallback}</div>}
                     </div>
                 )}
             </div>
