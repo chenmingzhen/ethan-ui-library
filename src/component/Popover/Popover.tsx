@@ -367,4 +367,4 @@ class Popover extends Component<IPopoverProps, PopoverState> {
     }
 }
 
-export default React.memo(Popover)
+export default Popover

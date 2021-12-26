@@ -1,8 +1,8 @@
-import React, { MemoExoticComponent } from 'react'
+import React from 'react'
 import Popover, { PopoverProps } from './Popover'
 import Confirm, { ConfirmProps as PopoverConfirmProps } from './Confirm'
 
-export interface PopoverComponent extends MemoExoticComponent<React.FC<PopoverProps>> {
+export interface PopoverComponent extends React.ComponentClass<PopoverProps> {
     Confirm: typeof Confirm
 }
 
