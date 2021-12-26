@@ -1,11 +1,13 @@
-// @ts-nocheck
-import TimeLine from './TimeLine'
+import { MemoExoticComponent } from 'react'
+import TimeLine, { TimeLineProps } from './TimeLine'
 import TimeLineItem from './TimeLineItem'
 
-TimeLine.displayName = 'EthanTimeLine'
+export interface TimeLineComponent extends MemoExoticComponent<React.FC<TimeLineProps>> {
+    Item: typeof TimeLineItem
+}
 
-TimeLineItem.displayName = 'EthanTimeLineItem'
+const ComputedTimeLine = (TimeLine as unknown) as TimeLineComponent
 
-TimeLine.Item = TimeLineItem
+ComputedTimeLine.Item = TimeLineItem
 
-export default TimeLine
+export default ComputedTimeLine
