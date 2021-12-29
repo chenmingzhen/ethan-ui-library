@@ -1,34 +1,35 @@
-// @ts-nocheck
-import React, { memo, useMemo, useCallback } from 'react'
-import PropTypes from 'prop-types'
+import React, { memo } from 'react'
 import { stepsClass } from '@/styles'
+import kindOf from '@/utils/kindOf'
+import StepItem, { StepItemProps } from './StepItem'
 
-const Steps = props => {
+interface StepsProps {
+    current?: number
+    vertical?: boolean
+    mini?: boolean
+    status?: 'wait' | 'process' | 'finish' | 'error'
+    style?: React.CSSProperties
+}
+
+const Steps: React.FC<StepsProps> = props => {
     const { current, status, vertical, children, mini } = props
 
-    const filterChildren = useMemo(() => {
-        const newChildren = []
-        let hasErrorChild = false
+    function renderStep() {
+        const validChildren = React.Children.toArray(children).reduce(
+            (total: React.ReactElement<StepItemProps>[], child: React.ReactElement<StepItemProps>) => {
+                if (kindOf(child.type, StepItem)) {
+                    total.push(child)
+                }
 
-        React.Children.map(children, item => {
-            if (item.type.displayName === 'EthanStepItem') {
-                newChildren.push(item)
-                return
-            }
+                return total
+            },
+            []
+        )
 
-            hasErrorChild = true
-        })
+        const total = React.Children.count(validChildren)
 
-        if (hasErrorChild) console.error('Steps Component must be full of StepItem Component')
-
-        return newChildren
-    }, [children, current, mini, status, vertical])
-
-    const renderStep = useCallback(() => {
-        const total = React.Children.count(filterChildren)
-
-        return React.Children.map(filterChildren, (child, index) => {
-            const childProps = {}
+        return React.Children.map(validChildren, (child: React.ReactElement<StepItemProps>, index) => {
+            const childProps: StepItemProps = {}
 
             childProps.step = index + 1
             childProps.width = !vertical ? 100 / total : 0
@@ -43,9 +44,12 @@ const Steps = props => {
                 childProps.status = 'finish'
             }
 
-            return React.cloneElement(child, Object.assign({}, child.props, childProps))
+            return React.cloneElement(
+                child,
+                Object.assign({}, child.props, childProps, { key: `__STEPS__ITEM__${index}` })
+            )
         })
-    }, [children, current, mini, status, vertical])
+    }
 
     return (
         <div className={stepsClass('_', { vertical, mini })} style={props.style}>
@@ -57,13 +61,6 @@ const Steps = props => {
 Steps.defaultProps = {
     status: 'process',
     current: 0,
-}
-Steps.propTypes = {
-    current: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
-    vertical: PropTypes.bool,
-    mini: PropTypes.bool,
-    status: PropTypes.oneOf(['wait', 'process', 'finish', 'error']),
-    style: PropTypes.object,
 }
 
 export default memo(Steps)
