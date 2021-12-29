@@ -17,17 +17,20 @@ const TimeLine: React.FC<TimeLineProps> = ({ style, children, className }) => {
 
         let hasErrorType = false
 
-        const items = childArray.reduce((_, child: React.ReactElement, index, array) => {
-            const { type } = child
+        const items = childArray.reduce(
+            (array: React.ReactElement<TimeLineItemProps>[], child: React.ReactElement<TimeLineItemProps>, index) => {
+                const { type } = child
 
-            if (kindOf(type, TimeLineItem)) {
-                array.push(React.cloneElement(child, { key: `__TIMELINE__${index}` }))
-            } else {
-                hasErrorType = true
-            }
+                if (kindOf(type, TimeLineItem)) {
+                    array.push(React.cloneElement(child, { key: `__TIMELINE__${index}` }))
+                } else {
+                    hasErrorType = true
+                }
 
-            return array
-        }, [])
+                return array
+            },
+            []
+        )
 
         if (hasErrorType) {
             console.warn('Ethan Timeline children must all be TimelineItem')
