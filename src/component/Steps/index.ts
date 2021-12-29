@@ -1,11 +1,13 @@
-// @ts-nocheck
-import Steps from './Steps'
+import { MemoExoticComponent } from 'react'
+import Steps, { StepsProps } from './Steps'
 import StepItem from './StepItem'
 
-Steps.StepItem = StepItem
+export interface StepsComponents extends MemoExoticComponent<React.FC<StepsProps>> {
+    StepItem: typeof StepItem
+}
 
-StepItem.displayName = 'EthanStepItem'
+const ComputedSteps = (Steps as unknown) as StepsComponents
 
-Steps.displayName = 'EthanStep'
+ComputedSteps.StepItem = StepItem
 
-export default Steps
+export default ComputedSteps

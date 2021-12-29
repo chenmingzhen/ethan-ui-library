@@ -3,12 +3,13 @@ import { stepsClass } from '@/styles'
 import kindOf from '@/utils/kindOf'
 import StepItem, { StepItemProps } from './StepItem'
 
-interface StepsProps {
-    current?: number
+export interface StepsProps {
+    current?: number | string
     vertical?: boolean
     mini?: boolean
     status?: 'wait' | 'process' | 'finish' | 'error'
     style?: React.CSSProperties
+    children: React.ReactElement<StepItemProps>[]
 }
 
 const Steps: React.FC<StepsProps> = props => {
