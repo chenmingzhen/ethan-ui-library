@@ -105,4 +105,6 @@ Avatar.defaultProps = {
     bordered: false,
 }
 
+Avatar.displayName = 'EthanAvatar'
+
 export default memo(Avatar)
