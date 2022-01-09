@@ -285,6 +285,12 @@ class Menu<T extends MenuBaseData> extends React.PureComponent<MenuProps<T>, Men
 
         e.preventDefault()
 
+        this.wrapper[scrollPos] += wheel.pixelY
+
+        return
+
+        /** @TODO bug fix  */
+
         /** 平滑滚动计算 */
 
         if (this.scrollTimer) clearInterval(this.scrollTimer)
