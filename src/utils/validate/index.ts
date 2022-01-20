@@ -1,5 +1,5 @@
-// @ts-nocheck
 import Datum from '@/utils/Datum'
+import { InnerRuleExecuteResult, RuleRender } from '@/component/Rule/type/index'
 import { wrapFormError } from '../errors'
 import { substitute } from '../strings'
 import { flattenArray } from '../flat'
@@ -9,36 +9,30 @@ import required from './required'
 import typeOf from './type'
 import regTest from './regExp'
 
-/**
- *
- * @param rules 用户输入的rule
- * @param props 经过筛选后的string或number类型的props
- * @returns function(*=, *=, *=): (undefined)
- */
-function getRule(rules, props = {}) {
-    if (typeof rules === 'function') {
-        // 如果内置的检验的方法  执行该方法
-        if (rules.isInnerValidator) rules = rules()
-        else return rules
+function getRule(rule, props: Record<string, any> = {}): RuleRender | any {
+    let innerRuleExecuteResult: InnerRuleExecuteResult
+
+    if (typeof rule === 'function') {
+        /** 内置的检验的方法,执行方法获取message,tip等信息 */
+        if (rule.isInnerValidator) innerRuleExecuteResult = rule()
+        /** RuleRender */ else return rule
     }
 
+    /** @todo remove  */
     if (typeof props === 'string') props = { type: props }
 
-    // 从执行的require中获取message 等信息
-    // other中为内置的检测类型
-    const { type = props.type, message, regExp, func, ...other } = rules
+    // 执行内置检验方法获取的返回值
+    const { type = props.type, message, regExp, validator, ...other } = innerRuleExecuteResult
 
     props = Object.assign({}, props, other)
-    // 执行requiredMessage XXXMessage的方法 获取到message的信息
+
     props.message = typeof message === 'function' ? message(props) : substitute(message, props)
 
     // 返回自定义的规则校验方法,并在回调的props中添加message的属性
-    if (func) return (...args) => func(...args, props)
+    if (validator) return (val, formData, callback) => validator(val, formData, callback, props)
 
-    // 如果rules对象中包含require 返回执行require检验
     if (other.required) return required(props)
 
-    //
     if (regExp) return regTest(regExp, props)
 
     if (other.min !== undefined || other.max !== undefined) {
@@ -53,8 +47,10 @@ function getRule(rules, props = {}) {
     // 类型检测
     if (type) return typeOf(type, props.message)
 
-    const err = new Error(`Rule ${JSON.stringify(rules)} is not valid.`)
+    const err = new Error('Rule is not valid.Please check your rule constructor and rulesProps')
+
     console.error(err)
+
     throw err
 }
 

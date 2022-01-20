@@ -13,11 +13,7 @@ export function mergeOptions(options: Options = {}, ...args: Options[]) {
         return options
     }
 
-    // Object.keys(args).forEach(key => {
-    //     if (typeof options[key] !== 'function') {
-    //         args[key] = { func: args[key] }
-    //     }
-    // })
+    const arg = args.shift()
 
-    return mergeOptions(deepMerge(options, args[0]), ...args.splice(1))
+    return mergeOptions(deepMerge(options, arg), ...args)
 }
