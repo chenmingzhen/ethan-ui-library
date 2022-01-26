@@ -1,11 +1,23 @@
 export interface BaseOptions {
-    required?:
-        | {
-              message?: string
+    required?: RequiredOptions | true
+    min?: MinOptions
+    max?: MaxOptions
+}
 
-              tip?: string
-          }
-        | true
+export type RequiredOptions = {
+    message?: string
+
+    tip?: string
+}
+
+export type MinOptions = {
+    len: number
+    message?: string
+}
+
+export type MaxOptions = {
+    len: number
+    message?: string
 }
 
 export type BaseOptionKeys = keyof BaseOptions
@@ -14,6 +26,21 @@ export type Validator = {
     [key in string]?: (val: number, formData: string, callback, props) => void | Promise<void | Error>
 }
 
+export type RequiredFuncOutPut = {
+    message: (() => string) | string
+    tip?: string
+    required: true
+}
+
+export type LenFuncOutPut = {
+    message: string
+
+    len: number
+}
 export interface BaseOptionRuleOutput {
-    required: (message: string) => void | Promise<void | Error>
+    required: (message: string) => RequiredFuncOutPut
+
+    min: (message: string) => LenFuncOutPut
+
+    max: (message: string) => LenFuncOutPut
 }
