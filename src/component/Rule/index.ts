@@ -9,6 +9,7 @@ import {
     RequiredOptions,
     MinOptions,
     MaxOptions,
+    RegExpOptions,
 } from './type/index'
 import { createLengthMessage, mergeOptions } from './util'
 
@@ -55,10 +56,21 @@ function Rule<R extends Validator | BaseOptions>(propOptions?: R) {
         )
     }
 
+    function regExp(msg: string) {
+        const { message, regExp: optionRegExp } = (options.regExp as RegExpOptions) || {}
+
+        return deepMerge(
+            { message: getLocale('rules.reg') },
+            deepMerge({ message, regExp: optionRegExp }, { message: msg }, deepMergeOptions),
+            deepMergeOptions
+        )
+    }
+
     const rules = {
         required,
         min,
         max,
+        regExp,
     }
 
     Object.keys(rules).forEach(key => {
@@ -75,7 +87,7 @@ function Rule<R extends Validator | BaseOptions>(propOptions?: R) {
         })
     }
 
-    return rules as { [T in keyof R]: T extends BaseOptionKeys ? BaseOptionRuleOutput[T] : R[T] }
+    return rules as { [T in keyof Omit<R, BaseOptionKeys>]: R[T] } & BaseOptionRuleOutput
 }
 
 export default Rule

@@ -1,16 +1,14 @@
 import Datum from '@/utils/Datum'
-import { InnerRuleExecuteResult, RuleRender } from '@/component/Rule/type/index'
 import { wrapFormError } from '../errors'
 import { substitute } from '../strings'
 import { flattenArray } from '../flat'
 import range from './range'
 import rangeLength from './rangeLength'
 import required from './required'
-import typeOf from './type'
 import regTest from './regExp'
 
-function getRule(rule, props: Record<string, any> = {}): RuleRender | any {
-    let innerRuleExecuteResult: InnerRuleExecuteResult
+function getRule(rule, props: Record<string, any> = {}) {
+    let innerRuleExecuteResult
 
     if (typeof rule === 'function') {
         /** 内置的检验的方法,执行方法获取message,tip等信息 */
@@ -43,9 +41,6 @@ function getRule(rule, props: Record<string, any> = {}): RuleRender | any {
         // 长度检测
         return rangeLength(props)
     }
-
-    // 类型检测
-    if (type) return typeOf(type, props.message)
 
     const err = new Error('Rule is not valid.Please check your rule constructor and rulesProps')
 

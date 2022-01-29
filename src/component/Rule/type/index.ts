@@ -1,7 +1,8 @@
 export interface BaseOptions {
-    required?: RequiredOptions | true
+    required?: RequiredOptions
     min?: MinOptions
     max?: MaxOptions
+    regExp?: RegExpOptions
 }
 
 export type RequiredOptions = {
@@ -17,6 +18,11 @@ export type MinOptions = {
 
 export type MaxOptions = {
     len: number
+    message?: string
+}
+
+export type RegExpOptions = {
+    regExp: string | RegExp
     message?: string
 }
 
@@ -37,10 +43,19 @@ export type LenFuncOutPut = {
 
     len: number
 }
+
+export type RegExpFuncOutPut = {
+    message: string
+
+    regExp: string | RegExp
+}
+
 export interface BaseOptionRuleOutput {
     required: (message: string) => RequiredFuncOutPut
 
     min: (message: string) => LenFuncOutPut
 
     max: (message: string) => LenFuncOutPut
+
+    regExp: (message: string) => RegExpFuncOutPut
 }

@@ -11,31 +11,8 @@
 import React from 'react'
 import { Input, Rule } from 'ethan/index'
 
-const rules = new Rule([
-    {
-        required: true,
-    },
-    // {
-    //     validator(v, f, cb) {
-    //         console.log(v)
-
-    //         if (v) {
-    //             cb(new Error('错误'))
-    //         } else {
-    //             cb(true)
-    //         }
-    //     },
-    // },
-])
+const rules = Rule()
 
 export default function() {
-    return (
-        <Input
-            placeholder="email"
-            rules={[rules.validator, rules.required]}
-            tip="Email, required"
-            popover="top-left"
-            width={300}
-        />
-    )
+    return <Input placeholder="email" rules={[rules.required]} tip="Email, required" popover="top-left" width={300} />
 }
