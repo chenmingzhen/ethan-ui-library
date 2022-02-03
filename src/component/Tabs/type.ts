@@ -110,7 +110,7 @@ export interface TabProps {
 
     isLast: boolean
 
-    tabMoveMap: React.RefObject<TabMoveMap>
+    tabMoveMap: TabMoveMap
 
     tabStyle?: React.CSSProperties
 

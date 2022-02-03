@@ -79,7 +79,7 @@ const Tab: React.FC<TabProps> = props => {
     }, [])
 
     React.useEffect(() => {
-        tabMoveMap.current.set(id, handleClick)
+        tabMoveMap.set(id, handleClick)
     }, [handleClick])
 
     return <div {...newProps}>{children}</div>

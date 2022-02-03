@@ -22,7 +22,7 @@ const useHideTabs = (props: UseHideTabsParams) => {
 
     const { tabs, isVertical, attribute, scrollElementRef, innerElementRef, collapsible } = props
 
-    const tabMoveMap = useRef<TabMoveMap>(new Map())
+    const tabMoveMap = useRef<TabMoveMap>(new Map()).current
 
     const dropDownData: ComplicatedDropDownData[] = useMemo(() => {
         return hideTabs.map(tab => {
@@ -30,7 +30,7 @@ const useHideTabs = (props: UseHideTabsParams) => {
                 content: tab.tab,
                 disabled: tab.disabled,
                 onClick() {
-                    const method = tabMoveMap.current.get(tab.id)
+                    const method = tabMoveMap.get(tab.id)
 
                     method?.()
                 },
