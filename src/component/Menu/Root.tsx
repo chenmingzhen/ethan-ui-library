@@ -51,6 +51,8 @@ class Menu<T extends MenuBaseData> extends React.PureComponent<MenuProps<T>, Men
         style: {},
     }
 
+    static displayName = 'EthanMenu'
+
     providerValue: MenuContext
 
     itemsUpdateActiveCallback = new Map<string, UpdateActive>()
