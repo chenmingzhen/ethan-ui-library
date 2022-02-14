@@ -1,16 +1,15 @@
-// @ts-nocheck
-import React, { memo } from 'react'
+import React from 'react'
 import { paginationClass } from '@/styles'
 import Jumper from './Jumper'
 import Prev from './Prev'
 import Next from './Next'
 
-const Simple = props => (
+const Simple: React.FC = () => (
     <div className={paginationClass('links', 'section')}>
-        <Prev {...props} isSimple />
-        <Jumper {...props} isSimple size="small" />
-        <Next {...props} isSimple />
+        <Prev />
+        <Jumper size="small" />
+        <Next />
     </div>
 )
 
-export default memo(Simple)
+export default React.memo(Simple)

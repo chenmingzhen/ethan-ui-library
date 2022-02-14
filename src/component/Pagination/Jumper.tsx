@@ -1,44 +1,44 @@
-// @ts-nocheck
-import React, { memo, useCallback, useMemo, useRef } from 'react'
-import PropTypes from 'prop-types'
-import { useUpdate } from 'react-use'
+import React from 'react'
 import { paginationClass } from '@/styles'
 import Input from '../Input'
+import { JumperProps } from './type'
+import paginationContext from './context'
 
 const inputStyle = { width: 60, display: 'inline-block' }
 
-const Jumper = props => {
-    const { total, pageSize, onChange, current, text, size, isSimple } = props
-    const autoFocus = useRef(false)
-    const max = useMemo(() => Math.ceil(total / pageSize), [total, pageSize])
-    const update = useUpdate()
+const Jumper: React.FC<JumperProps> = props => {
+    const { total, pageSize, onChange, current, text, isSimple } = React.useContext(paginationContext)
 
-    const handleKeyDown = useCallback(
-        e => {
-            if (e.keyCode === 13) {
-                let tCurrent = parseInt(e.target.value, 10)
-                autoFocus.current = true
+    const [inputValue, updateInputValue] = React.useState(current)
 
-                // 无穷大
-                if (!Number.isFinite(tCurrent)) return
-                if (tCurrent < 1) tCurrent = 1
+    const { size } = props
 
-                if (tCurrent > max) tCurrent = max
+    const max = Math.ceil(total / pageSize)
 
-                if (tCurrent === current) {
-                    update()
-                }
+    React.useEffect(() => {
+        updateInputValue(current)
+    }, [current])
 
-                onChange(tCurrent)
-            }
-        },
-        [onChange, max, current]
-    )
+    function handleKeyDown(e) {
+        if (e.keyCode === 13) {
+            let newCurrent = parseInt(e.target.value, 10)
 
-    let txt = text.jumper ? text.jumper.split('{input}') : []
+            // 无穷大
+            if (!Number.isFinite(newCurrent)) return
+
+            if (newCurrent < 1) newCurrent = 1
+
+            if (newCurrent > max) newCurrent = max
+
+            onChange(newCurrent)
+        }
+    }
+
+    let txt: React.ReactNode[] = text.jumper ? text.jumper.split('{input}') : []
 
     if (isSimple) {
         const spanClass = paginationClass('simple-span')
+
         txt = [
             [],
             [
@@ -55,10 +55,11 @@ const Jumper = props => {
     return (
         <div className={paginationClass('section')}>
             {txt[0]}
+
             <Input
-                value={current}
-                autoFocus={autoFocus.current}
+                value={inputValue}
                 onKeyDown={handleKeyDown}
+                onChange={updateInputValue}
                 digits={0}
                 type="number"
                 style={inputStyle}
@@ -66,19 +67,10 @@ const Jumper = props => {
                 className={paginationClass(isSimple && 'simple-input')}
                 delay={400}
             />
+
             {txt[1]}
         </div>
     )
 }
 
-Jumper.propTypes = {
-    current: PropTypes.number.isRequired,
-    onChange: PropTypes.func.isRequired,
-    pageSize: PropTypes.number.isRequired,
-    text: PropTypes.object,
-    total: PropTypes.number.isRequired,
-    size: PropTypes.string,
-    isSimple: PropTypes.bool,
-}
-
-export default memo(Jumper)
+export default React.memo(Jumper)

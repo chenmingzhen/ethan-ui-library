@@ -1,19 +1,15 @@
-// @ts-nocheck
-import React, { memo, useCallback, useMemo } from 'react'
-import PropTypes from 'prop-types'
+import React from 'react'
 import { paginationClass } from '@/styles'
+import { ItemProps } from './type'
 
-const Item = props => {
-    const { page, onClick, children, isCurrent, disabled } = props
+const Item: React.FC<ItemProps> = props => {
+    const { onClick, page, isCurrent, children, disabled } = props
 
-    const handleClick = useCallback(() => {
+    function handleClick() {
         onClick(page)
-    }, [onClick, page])
+    }
 
-    const className = useMemo(() => paginationClass('item', props.className, isCurrent && 'current'), [
-        props.className,
-        isCurrent,
-    ])
+    const className = paginationClass('item', props.className, isCurrent && 'current')
 
     return (
         <a className={className} disabled={disabled || isCurrent} onMouseDown={handleClick}>
@@ -22,18 +18,4 @@ const Item = props => {
     )
 }
 
-Item.propTypes = {
-    children: PropTypes.any,
-    className: PropTypes.string,
-    disabled: PropTypes.bool,
-    isCurrent: PropTypes.bool,
-    onClick: PropTypes.func.isRequired,
-    page: PropTypes.number.isRequired,
-}
-
-Item.defaultProps = {
-    disabled: false,
-    isCurrent: false,
-}
-
-export default memo(Item)
+export default React.memo(Item)

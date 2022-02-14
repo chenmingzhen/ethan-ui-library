@@ -8,13 +8,13 @@ import React from 'react'
 import { Pagination } from 'ethan/index'
 
 export default function() {
-  return (
-    <div>
-      <Pagination size="small" total={1000} />
-      <br />
-      <Pagination total={1000} />
-      <br />
-      <Pagination size="large" total={1000} />
-    </div>
-  )
+    return (
+        <div>
+            <Pagination size="small" total={1000} />
+            <br />
+            <Pagination total={1000} />
+            <br />
+            <Pagination size="large" total={1000} />
+        </div>
+    )
 }
