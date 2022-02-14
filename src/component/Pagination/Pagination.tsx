@@ -10,7 +10,7 @@ import Jumper from './Jumper'
 import Simple from './Simple'
 
 const Pagination: React.FC<PaginationProps> = props => {
-    const { onChange, total, align, layouts, size, style, sizeListProps, pageSizeList, text } = props
+    const { onChange, total, align, layouts, size, style, sizeListProps, pageSizeList, text, disabled } = props
 
     const [current, updateCurrent] = useState(props.current || props.defaultCurrent)
 
@@ -40,7 +40,7 @@ const Pagination: React.FC<PaginationProps> = props => {
     const className = classnames(paginationClass('_', size, align), props.className)
 
     return (
-        <PaginationProvider value={{ current, pageSize, onChange: handleChange, total, text }}>
+        <PaginationProvider value={{ current, pageSize, onChange: handleChange, total, text, disabled }}>
             <div className={className} style={style}>
                 {layouts.map((layout, i) => {
                     switch (layout) {
