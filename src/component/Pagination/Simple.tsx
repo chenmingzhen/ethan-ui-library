@@ -6,9 +6,9 @@ import Next from './Next'
 
 const Simple: React.FC = () => (
     <div className={paginationClass('links', 'section')}>
-        <Prev />
-        <Jumper size="small" />
-        <Next />
+        <Prev isSimple />
+        <Jumper size="small" isSimple />
+        <Next isSimple />
     </div>
 )
 

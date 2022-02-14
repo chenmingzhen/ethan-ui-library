@@ -7,11 +7,11 @@ import paginationContext from './context'
 const inputStyle = { width: 60, display: 'inline-block' }
 
 const Jumper: React.FC<JumperProps> = props => {
-    const { total, pageSize, onChange, current, text, isSimple } = React.useContext(paginationContext)
+    const { total, pageSize, onChange, current, text } = React.useContext(paginationContext)
 
     const [inputValue, updateInputValue] = React.useState(current)
 
-    const { size } = props
+    const { size, isSimple } = props
 
     const max = Math.ceil(total / pageSize)
 
@@ -29,6 +29,11 @@ const Jumper: React.FC<JumperProps> = props => {
             if (newCurrent < 1) newCurrent = 1
 
             if (newCurrent > max) newCurrent = max
+
+            if (newCurrent === current) {
+                /** 当输入一个溢出max的值时，需要将Input的值设为max */
+                updateInputValue(newCurrent)
+            }
 
             onChange(newCurrent)
         }

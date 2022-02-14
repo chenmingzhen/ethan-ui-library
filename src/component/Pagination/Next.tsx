@@ -3,8 +3,8 @@ import icons from '../icons'
 import paginationContext from './context'
 import Item from './Item'
 
-const Next: React.FC = () => {
-    const { onChange, current, text, total, pageSize, disabled, isSimple } = useContext(paginationContext)
+const Next: React.FC<{ isSimple?: boolean }> = ({ isSimple }) => {
+    const { onChange, current, text, total, pageSize, disabled } = useContext(paginationContext)
 
     const max = Math.ceil(total / pageSize)
 

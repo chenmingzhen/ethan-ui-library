@@ -14,8 +14,6 @@ export interface BasePaginationProps {
     total: number
 
     text?: { prev?: string; next?: string; page?: string; jumper?: string }
-
-    isSimple?: boolean
 }
 
 export interface PaginationProps extends BasePaginationProps {
@@ -70,4 +68,6 @@ export interface PageSizeListProps {
 
 export interface JumperProps {
     size: Size
+
+    isSimple?: boolean
 }

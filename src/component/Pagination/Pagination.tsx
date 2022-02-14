@@ -63,7 +63,7 @@ const Pagination: React.FC<PaginationProps> = props => {
                             if (typeof layout === 'function') {
                                 return (
                                     <div key={i} className={paginationClass('section')}>
-                                        <span>{layout(props)}</span>
+                                        <span>{layout({ ...props, current, pageSize })}</span>
                                     </div>
                                 )
                             }

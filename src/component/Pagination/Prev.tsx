@@ -3,8 +3,8 @@ import icons from '../icons'
 import paginationContext from './context'
 import Item from './Item'
 
-const Prev: React.FC = () => {
-    const { onChange, current, text, disabled, isSimple } = React.useContext(paginationContext)
+const Prev: React.FC<{ isSimple?: boolean }> = ({ isSimple }) => {
+    const { onChange, current, text, disabled } = React.useContext(paginationContext)
 
     const prev = current - 1
 
