@@ -4,8 +4,16 @@ import { progressClass } from '@/styles'
 import analyzeColor from './analyzeColor'
 import { BaseProgressProps } from './type'
 
+/**
+ * defs: @see https://developer.mozilla.org/zh-CN/docs/Web/SVG/Element/defs
+ * stroke-dasharray:StrokeDashArray 描述Shape类型轮廓的虚线和间隔的样式，写法为StrokeDashArray="str"。str是虚线和间隙的值的集合，奇数项为虚线长度；偶数项为间隙长度。例如：StrokeDashArray="2,1",则表示虚线长度为2，间隔为1. StrokeDashArray="2" 则表示虚线和间隔都是2.
+ * @see https://developer.mozilla.org/zh-CN/docs/Web/SVG/Attribute/stroke-dasharray
+ * linearGradient:@see https://www.runoob.com/svg/svg-grad-linear.html
+ *
+ * */
+
 const Circle: React.FC<BaseProgressProps> = props => {
-    const { children, strokeWidth, type, color, size, value, background } = props
+    const { children, strokeWidth, type, color, size, value, background, strokeLinecap } = props
 
     const className = classnames(progressClass('circle', type), props.className)
 
@@ -50,7 +58,7 @@ const Circle: React.FC<BaseProgressProps> = props => {
                     fill="transparent"
                     style={{ stroke: objColor ? "url('#progress-linear')" : (color as string) }}
                     strokeDasharray={dasharray.join()}
-                    strokeLinecap="round"
+                    strokeLinecap={strokeLinecap}
                     strokeWidth={width}
                 />
             </svg>
@@ -60,6 +68,7 @@ const Circle: React.FC<BaseProgressProps> = props => {
 }
 
 Circle.defaultProps = {
+    strokeLinecap: 'round',
     strokeWidth: 8,
     size: 100,
 }

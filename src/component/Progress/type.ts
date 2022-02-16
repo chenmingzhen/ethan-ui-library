@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { SVGAttributes } from 'react'
 
 export interface ColorRange {
     from: string
@@ -32,8 +32,11 @@ export interface BaseProgressProps {
     style?: React.CSSProperties
 
     value?: number
+
+    /** @see https://developer.mozilla.org/zh-CN/docs/Web/SVG/Attribute/stroke-linecap */
+    strokeLinecap?: SVGAttributes<void>['strokeLinecap']
 }
 
 export interface ProgressProps extends BaseProgressProps {
-    shape: 'line' | 'circle'
+    shape?: 'line' | 'circle'
 }

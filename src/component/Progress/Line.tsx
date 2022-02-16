@@ -13,7 +13,7 @@ const Line: React.FC<ProgressProps> = props => {
     const className = classnames(progressClass('line', type, hasChildren && popup && 'line-popup'), props.className)
 
     const innerStyle: React.CSSProperties = {
-        width: `${(value / 100) * 100}%`,
+        width: `${value}%`,
         borderRadius: strokeWidth / 2,
     }
 
@@ -21,11 +21,14 @@ const Line: React.FC<ProgressProps> = props => {
         innerStyle.background = color
         innerStyle.backgroundSize = '1em 1em'
     } else if (typeof color === 'object') {
-        innerStyle.background = `linear-gradient(to right,${analyzeColor(color).reduce((p, v) => {
-            const col = `${v.color} ${v.pos}`
+        innerStyle.background = `linear-gradient(to right,${analyzeColor(color).reduce(
+            (accumulatedValue, currentValue) => {
+                const col = `${currentValue.color} ${currentValue.pos}`
 
-            return p ? `${p},${col}` : col
-        }, '')})`
+                return accumulatedValue ? `${accumulatedValue},${col}` : col
+            },
+            ''
+        )})`
     }
 
     return (

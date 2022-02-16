@@ -9,10 +9,11 @@ const analyzeColor = (color: ColorRange | ColorPercent) => {
     }
 
     return Object.keys(color)
-        .sort((a, b) => parseInt(a, 10) - parseInt(b, 10))
-        .reduce((p, v) => {
-            p.push({ pos: v, color: color[v] })
-            return p
+        .sort((prev, next) => parseInt(prev, 10) - parseInt(next, 10))
+        .reduce((accumulatedValue, currentValue) => {
+            accumulatedValue.push({ pos: currentValue, color: color[currentValue] })
+
+            return accumulatedValue
         }, [])
 }
 
