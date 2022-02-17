@@ -1,13 +1,32 @@
-// @ts-nocheck
-import React, { memo } from 'react'
-import PropTypes from 'prop-types'
+import React from 'react'
 import classnames from 'classnames'
-import { getProps, defaultProps } from '@/utils/proptypes'
 import { iconClass } from '@/styles'
 
-function Icon(props) {
+interface IconProps extends React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement> {
+    children?: React.ReactNode
+
+    prefix?: string
+
+    type?: 'default' | 'primary' | 'secondary' | 'success' | 'info' | 'warning' | 'danger'
+
+    name?: string
+
+    style?: React.CSSProperties
+
+    url: string
+
+    fontFamily?: string
+
+    fontSize?: string
+
+    ext?: string
+}
+
+const Icon: React.FC<IconProps> = props => {
     const { children, prefix, type, name, fontFamily, fontSize, ext, ...other } = props
+
     const className = classnames(iconClass('_', type), props.className, `${prefix}-${name}`)
+
     const style = Object.assign({}, { fontFamily, fontSize }, props.style)
 
     if (ext === 'js') {
@@ -29,22 +48,13 @@ function Icon(props) {
     )
 }
 
-Icon.propTypes = {
-    ...getProps(PropTypes, 'size', 'type'),
-    prefix: PropTypes.string,
-    name: PropTypes.string,
-    fontFamily: PropTypes.string,
-    fontSize: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
-}
-
 Icon.defaultProps = {
-    ...defaultProps,
     prefix: 'icon',
     fontFamily: 'iconfont',
     name: '',
     type: 'default',
 }
 
-Icon.displayName = 'EthanIcon'
+export default React.memo(Icon)
 
-export default memo(Icon)
+Icon.displayName = 'EthanIcon'
