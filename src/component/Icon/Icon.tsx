@@ -2,7 +2,7 @@ import React from 'react'
 import classnames from 'classnames'
 import { iconClass } from '@/styles'
 
-interface IconProps extends React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement> {
+export interface IconProps extends React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement> {
     children?: React.ReactNode
 
     prefix?: string
@@ -12,8 +12,6 @@ interface IconProps extends React.DetailedHTMLProps<React.HTMLAttributes<HTMLEle
     name?: string
 
     style?: React.CSSProperties
-
-    url: string
 
     fontFamily?: string
 

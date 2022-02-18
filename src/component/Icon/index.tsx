@@ -1,5 +1,9 @@
 import React from 'react'
-import Icon from './Icon'
+import Icon, { IconProps } from './Icon'
+
+interface EthanFC<T> extends React.FC<T> {
+    isEthanIcon: boolean
+}
 
 const links = {}
 const scripts = {}
@@ -31,7 +35,9 @@ function createIcon(url = '', fontFamily = 'iconfont', prefix = 'icon') {
         document.body.appendChild(script)
     }
 
-    const wrapperIcon = props => <Icon ext={ext} fontFamily={fontFamily} prefix={prefix} {...props} />
+    const wrapperIcon: EthanFC<IconProps> = props => (
+        <Icon ext={ext} fontFamily={fontFamily} prefix={prefix} {...props} />
+    )
 
     wrapperIcon.isEthanIcon = true
 
