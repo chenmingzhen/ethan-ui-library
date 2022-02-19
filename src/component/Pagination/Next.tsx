@@ -1,13 +1,15 @@
-// @ts-nocheck
-import React from 'react'
-import PropTypes from 'prop-types'
+import React, { useContext } from 'react'
 import icons from '../icons'
+import paginationContext from './context'
 import Item from './Item'
 
-function Next(props) {
-    const { onChange, current, text, total, pageSize, disabled, isSimple } = props
+const Next: React.FC<{ isSimple?: boolean }> = ({ isSimple }) => {
+    const { onChange, current, text, total, pageSize, disabled } = useContext(paginationContext)
+
     const max = Math.ceil(total / pageSize)
+
     const next = current + 1
+
     const className = text.next || isSimple ? 'no-border arrow' : 'arrow'
 
     return (
@@ -16,17 +18,5 @@ function Next(props) {
         </Item>
     )
 }
-
-Next.propTypes = {
-    current: PropTypes.number.isRequired,
-    disabled: PropTypes.bool,
-    onChange: PropTypes.func.isRequired,
-    pageSize: PropTypes.number.isRequired,
-    text: PropTypes.object,
-    total: PropTypes.number.isRequired,
-    isSimple: PropTypes.bool,
-}
-
-Next.displayName = 'EthanPaginationNext'
 
 export default React.memo(Next)

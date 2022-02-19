@@ -4,38 +4,44 @@
 @backTop-prefix: ~'@{ethan-prefix}-backTop';
 
 .@{backTop-prefix} {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-  z-index: @backTop-z-index;
-  position: fixed;
-  right: @backTop-right;
-  bottom: @backTop-bottom;
-  height: @backTop-height;
-  width: @backTop-width;
-  cursor: pointer;
-  display: block;
-  overflow: hidden;
-  border-radius: @backTop-radius;
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    z-index: @backTop-z-index;
+    position: fixed;
+    right: @backTop-right;
+    bottom: @backTop-bottom;
+    height: @backTop-height;
+    width: @backTop-width;
+    cursor: pointer;
+    display: block;
+    overflow: hidden;
+    border-radius: @backTop-radius;
+    transition: opacity 0.2s ease-in-out;
+    opacity: 0;
 
-  &-content {
-    opacity: @backTop-content-opacity;
-    height: @backTop-content-height;
-    transition: @backTop-content-transition;
-    // text-align: center;
-    // line-height: @backTop-content-line-height;
-    font-size: @backTop-up-fontSize;
-    background: @backTop-up-bg-color;
-    color: @backTop-up-color;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    &:hover {
-      opacity: 1;
+    &-visible {
+        opacity: 1;
     }
-  }
 
-  &-up {
-  }
+    &-content {
+        opacity: @backTop-content-opacity;
+        height: @backTop-content-height;
+        transition: @backTop-content-transition;
+        // text-align: center;
+        // line-height: @backTop-content-line-height;
+        font-size: @backTop-up-fontSize;
+        background: @backTop-up-bg-color;
+        color: @backTop-up-color;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        &:hover {
+            opacity: 1;
+        }
+    }
+
+    &-up {
+    }
 }

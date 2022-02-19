@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { isMergeable, isObject } from '@/utils/is'
 import { insertPoint } from './flat'
 
@@ -54,7 +53,19 @@ export function pathGenerator(raw) {
 }
 
 // 深度合并对象 不包括数组
-export const deepMerge = (target = {}, source, { clone, removeUndefined, skipUndefined } = {}) => {
+export const deepMerge = (
+    target = {},
+    source,
+    {
+        clone,
+        removeUndefined,
+        skipUndefined,
+    }: {
+        clone?: boolean
+        removeUndefined?: boolean
+        skipUndefined?: boolean
+    } = {}
+) => {
     if (!isMergeable(source)) return source
 
     const dest = {}

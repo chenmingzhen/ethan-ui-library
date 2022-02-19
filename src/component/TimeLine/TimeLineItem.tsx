@@ -1,10 +1,19 @@
-// @ts-nocheck
 import React from 'react'
-import PropTypes from 'prop-types'
 import { FontAwesome } from '@/component/Icon'
 import { timeLineClass } from '@/styles'
+import { PureComponent } from '@/utils/component'
 
-class TimeLineItem extends React.PureComponent {
+export interface TimeLineItemProps {
+    icon?: React.ReactNode
+
+    children: React.ReactNode
+
+    style?: React.CSSProperties
+}
+
+class TimeLineItem extends PureComponent<TimeLineItemProps> {
+    static displayName = 'EthanTimeLineItem'
+
     render() {
         const { icon: Icon, children, style } = this.props
 
@@ -15,10 +24,6 @@ class TimeLineItem extends React.PureComponent {
             </li>
         )
     }
-}
-
-TimeLineItem.propTypes = {
-    icon: PropTypes.element,
 }
 
 export default TimeLineItem

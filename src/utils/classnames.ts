@@ -4,6 +4,7 @@ import config from '../config'
 /** 创建样式类名 */
 export default (style, module, prefix = config.prefix) => (...args) => {
     const className = classnames(...args)
+
     if (!className) return ''
 
     const ns = `${prefix}${module ? `-${module}` : '-'}`
@@ -13,5 +14,6 @@ export default (style, module, prefix = config.prefix) => (...args) => {
     if (config.cssModule) {
         list = list.map(item => style[item] || item)
     }
+
     return list.join(' ')
 }

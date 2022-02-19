@@ -8,5 +8,5 @@ import React from 'react'
 import { Pagination } from 'ethan/index'
 
 export default function() {
-  return <Pagination defaultCurrent={10} total={1000} />
+    return <Pagination total={1000} defaultCurrent={10} />
 }

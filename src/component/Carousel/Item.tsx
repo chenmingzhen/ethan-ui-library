@@ -1,25 +1,25 @@
-// @ts-nocheck
-import React, { PureComponent } from 'react'
-import PropTypes from 'prop-types'
+import React from 'react'
 import classnames from 'classnames'
 import { carouselClass } from '@/styles'
 
-class Item extends PureComponent {
-    render() {
-        const { children, current, pre } = this.props
-        const className = classnames(
-            carouselClass('item', current && 'item-current', pre && 'item-pre'),
-            this.props.className
-        )
-        return <div className={className}>{children}</div>
-    }
+interface CarouselItemProps {
+    children: React.ReactNode
+
+    className?: string
+
+    isCurrent: boolean
+
+    isPrev: boolean
 }
 
-Item.propTypes = {
-    children: PropTypes.element,
-    className: PropTypes.string,
-    current: PropTypes.bool,
-    pre: PropTypes.bool,
+const CarouselItem: React.FC<CarouselItemProps> = ({ children, isCurrent, className, isPrev }) => {
+    return (
+        <div
+            className={classnames(carouselClass('item', isCurrent && 'item-current', isPrev && 'item-pre'), className)}
+        >
+            {children}
+        </div>
+    )
 }
 
-export default Item
+export default React.memo(CarouselItem)
