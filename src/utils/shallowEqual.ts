@@ -1,53 +1,57 @@
-// @ts-nocheck
 import deepEqual from 'deep-eql' // 深度比较值
+import { isEmpty } from './is'
+
+interface ShallowEqualOptions {
+    skip?: string[]
+
+    deep?: string[]
+}
 
 const { hasOwnProperty } = Object.prototype
 
 function is(x, y) {
-    if (x === y) {
-        return x !== 0 || y !== 0 || 1 / x === 1 / y
-    }
-    // eslint-disable-next-line no-self-compare
-    return x !== x && y !== y
+    return x === y
 }
 
 function getOption(options, key) {
     if (!options[key]) return []
+
     const val = options[key]
+
     return Array.isArray(val) ? val : [val]
 }
 
-/**
- * 浅比较(+选择性比较)
- * @param objA
- * @param objB
- * @param options skip 跳过比较的值 deep 需要深度比较的值
- * @returns {boolean}
+/** 浅比较(+选择性比较)
+ *  skip 跳过比较的值 deep 需要深度比较的值
  */
-export default function(objA, objB, options = {}) {
+export default function shallowEqual(
+    objA: Record<string, any>,
+    objB: Record<string, any>,
+    options: ShallowEqualOptions = {}
+) {
     if (is(objA, objB)) {
         return true
     }
 
-    if (typeof objA !== 'object' || objA === null || typeof objB !== 'object' || objB === null) {
+    if (typeof objA !== 'object' || isEmpty(objA) || typeof objB !== 'object' || isEmpty(objB)) {
         return false
     }
 
     const keysA = Object.keys(objA)
     const keysB = Object.keys(objB)
 
-    const skip = getOption(options, 'skip')
-    const deep = getOption(options, 'deep')
-
     if (keysA.length !== keysB.length) {
         return false
     }
 
-    keysA.sort((a, b) => deep.indexOf(a) - deep.indexOf(b))
+    const skip = getOption(options, 'skip')
+    const deep = getOption(options, 'deep')
 
-    // Test for A's keys different from B.
+    keysA.sort((prevKey, nextKey) => deep.indexOf(prevKey) - deep.indexOf(nextKey))
+
     for (let i = 0; i < keysA.length; i++) {
         const k = keysA[i]
+
         if (skip.includes(k)) continue
 
         // 固定A  比较B是否存在K 或者 A与B是否绝对相同

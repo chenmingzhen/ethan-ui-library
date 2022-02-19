@@ -11,7 +11,6 @@ CheckboxContainer.Group = compose(
     inputable,
     Datum.hoc({ bindProps: ['disabled', 'format', 'prediction', 'separator'] })
 )(Group)
-CheckboxContainer.Checkbox = Checkbox
 
 CheckboxContainer.displayName = 'EthanCheckbox'
 CheckboxContainer.Group.displayName = 'EthanCheckboxGroup'

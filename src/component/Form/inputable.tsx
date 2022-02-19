@@ -1,6 +1,4 @@
-// @ts-nocheck
 import React from 'react'
-import PropTypes from 'prop-types'
 import immer from 'immer'
 import { Component } from '@/utils/component'
 import { promiseAll, isSameError } from '@/utils/errors'
@@ -12,9 +10,62 @@ import { isArray } from '@/utils/is'
 import { FORCE_PASS, ERROR_TYPE, IGNORE_VALIDATE, errorSubscribe, IGNORE_BIND } from '@/utils/Datum/types'
 import { itemConsumer } from '@/component/Form/Item'
 import validate from '@/utils/validate'
+import Datum from '@/utils/Datum'
+import Form from '@/utils/Datum/Form'
+import List from '@/utils/Datum/List'
 import { formConsumer } from './formContext'
 import { loopConsumer } from './Loop'
 import { fieldSetConsumer } from './FieldSet'
+
+interface InputableProps {
+    beforeChange: Function
+
+    bind: any[]
+
+    bindInputToItem: Function
+
+    combineRules: Function
+
+    defaultValue: any
+
+    fieldSetValidate: any
+
+    forceChangeOnValueSet: boolean
+
+    formDatum: any
+
+    innerFormNamePath: string
+
+    loopContext: any
+
+    name: string | string[]
+
+    onChange: Function
+
+    onError: Function
+
+    onItemError: Function
+
+    popover: string
+
+    required: boolean
+
+    rules: any[] | string
+
+    type: string
+
+    unbindInputFromItem: Function
+
+    value: any
+
+    scuSkip: string[]
+}
+
+interface InputableState {
+    error: any
+
+    value: any
+}
 
 const types = ['formDatum', 'disabled', 'combineRules']
 
@@ -30,43 +81,30 @@ const tryValue = (val, def) => (val === undefined ? def : val)
 
 const beforeValueChange = curry((fn, value, datum) => {
     if (!fn) return value
-    const newValue = fn(value, datum)
-    return newValue === undefined ? value : newValue
+
+    return fn(value, datum) ?? value
 })
 
-// Origin先通过fieldSetConsumer,loopConsumer,itemConsumer,经过formConsumer(types)最终生成一个只差props的函数
-// 外界将props传进来 就是一个完整的HOC
 export default curry(Origin =>
     consumer(
-        class extends Component {
-            static propTypes = {
-                beforeChange: PropTypes.func,
-                bind: PropTypes.array,
-                bindInputToItem: PropTypes.func,
-                combineRules: PropTypes.func,
-                defaultValue: PropTypes.any,
-                fieldSetValidate: PropTypes.func,
-                forceChangeOnValueSet: PropTypes.bool,
-                formDatum: PropTypes.object,
-                innerFormNamePath: PropTypes.string,
-                loopContext: PropTypes.object,
-                name: PropTypes.oneOfType([PropTypes.string, PropTypes.array]),
-                onChange: PropTypes.func,
-                onError: PropTypes.func,
-                onItemError: PropTypes.func,
-                popover: PropTypes.string,
-                required: PropTypes.bool,
-                rules: PropTypes.oneOfType([PropTypes.array, PropTypes.string]),
-                type: PropTypes.string,
-                unbindInputFromItem: PropTypes.func,
-                value: PropTypes.any,
-                scuSkip: PropTypes.array,
-            }
+        class extends Component<InputableProps, InputableState> {
+            static propTypes = {}
 
             static defaultProps = {
                 rules: [],
+
                 scuSkip: ['onChange', 'rules'],
             }
+
+            itemName = getUidStr()
+
+            lastValue
+
+            datum: Form | List
+
+            customValidate
+
+            updateTimer: NodeJS.Timeout
 
             constructor(props) {
                 super(props)
@@ -75,26 +113,22 @@ export default curry(Origin =>
 
                 this.state = {
                     error: undefined,
+
                     value: props.value || defaultValue,
                 }
-
-                this.itemName = getUidStr()
-
-                this.handleChange = this.handleChange.bind(this)
-                this.handleUpdate = this.handleUpdate.bind(this)
-                this.handleDatumBind = this.handleDatumBind.bind(this)
-                this.handleError = this.handleError.bind(this)
-                this.validate = this.validate.bind(this)
-                this.validateHook = this.validateHook.bind(this)
 
                 this.lastValue = formDatum && name ? formDatum.get(name) || {} : {}
             }
 
-            componentDidMount() {
+            componentDidMount = () => {
                 super.componentDidMount()
 
                 const { formDatum, loopContext, name, defaultValue, bindInputToItem, popover } = this.props
 
+                /**
+                 * TODO formDatum
+                 * 不直接操作state
+                 */
                 if (formDatum && name) {
                     if (Array.isArray(name)) {
                         const dv = defaultValue || []
@@ -115,12 +149,17 @@ export default curry(Origin =>
             }
 
             shouldComponentUpdate(nextProps, nextState) {
-                const skip = [...(this.props.scuSkip || []), 'formDatum', 'loopContext']
                 const isFormDatum = this.props.formDatum && this.props.name
-                if (isFormDatum) skip.push('value')
-                const options = { skip, deep: ['data', 'defaultValue', 'datum', 'name', 'rule', 'style'] }
+
                 if (!isFormDatum && !shallowEqual(this.getValue(), nextState.value)) return true
 
+                const skip = [...(this.props.scuSkip || []), 'formDatum', 'loopContext']
+
+                if (isFormDatum) skip.push('value')
+
+                const options = { skip, deep: ['data', 'defaultValue', 'datum', 'name', 'rule', 'style'] }
+
+                /** TODO */
                 return !(shallowEqual(nextProps, this.props, options) && shallowEqual(nextState, this.state))
             }
 
@@ -129,6 +168,7 @@ export default curry(Origin =>
 
                 const { formDatum, name, loopContext, unbindInputFromItem } = this.props
 
+                /** TODO */
                 if (formDatum && name) {
                     formDatum.unbind(name, this.handleUpdate)
                     if (Array.isArray(name)) {
@@ -136,31 +176,42 @@ export default curry(Origin =>
                         formDatum.setError(this.errorName)
                     }
                 }
+
                 if (unbindInputFromItem && name) unbindInputFromItem(this.errorName)
+
                 if (loopContext) loopContext.unbind(this.validate)
             }
 
             get errorName() {
                 const { name } = this.props
+
                 return Array.isArray(name) ? name.join('|') : name
             }
 
-            getValue() {
+            /** 从formDatum中获取值或state的获取 */
+            getValue = () => {
                 const { formDatum, name, value, defaultValue } = this.props
+
+                /** @todo */
                 if (formDatum && name) {
                     if (Array.isArray(name)) {
                         const dv = defaultValue || []
+
                         return name.map((n, i) => tryValue(formDatum.get(n), dv[i]))
                     }
+
                     return tryValue(formDatum.get(name), defaultValue)
                 }
+
                 const hasValue = 'value' in this.props || 'checked' in this.props
-                // 非表单控制
+
+                // 非表单控制(前者为非受控值，后者为受控值)
                 return !hasValue && !formDatum ? this.state.value : value
             }
 
-            getError() {
+            getError = () => {
                 const { formDatum, name } = this.props
+
                 if (formDatum && name) {
                     return formDatum.getError(this.errorName)
                 }
@@ -172,8 +223,9 @@ export default curry(Origin =>
                 this.datum = datum
             }
 
-            handleError(error) {
+            handleError(error?: any) {
                 const { formDatum, name, onItemError, onError } = this.props
+
                 if (formDatum && name) {
                     if (!isSameError(error, formDatum.getError(this.errorName, true))) {
                         formDatum.setError(this.errorName, error, true)
@@ -183,61 +235,67 @@ export default curry(Origin =>
                 }
 
                 if (onError) onError(error)
+
                 if (onItemError && !name) onItemError(this.itemName, error)
             }
 
-            validateHook(customValidate) {
+            validateHook = customValidate => {
                 this.customValidate = customValidate
             }
 
-            /**
-             * 检验
-             * @param value
-             * @param data
-             * @param type
-             * @returns {Promise<*>|Promise<boolean>}
-             */
-            validate(value, data, type) {
+            /** @todo data类型  */
+            validate(value, data?: any, type?: string) {
                 const { name, formDatum, combineRules, bind } = this.props
+
                 const names = Array.isArray(name) ? name : [name]
 
-                const validates = []
+                const validateResults = []
+
                 const validateProps = filterProps(this.props, v => typeof v === 'string' || typeof v === 'number')
 
                 if (this.datum) {
-                    const datumValue = this.datum.formatValue(value)
+                    const datumValue =
+                        this.datum instanceof Datum.Form ? this.datum.formatValue(value) : this.datum.arrayValue(value)
+
                     value = this.datum.limit === 1 ? datumValue[0] : datumValue
+
                     validateProps.type = 'array'
                 }
 
                 if (type === FORCE_PASS || value === FORCE_PASS) {
                     this.handleError()
+
                     return Promise.resolve(true)
                 }
 
                 if (value === undefined || Array.isArray(name)) value = this.getValue()
-                if (!Array.isArray(name)) value = [value]
-                if (this.customValidate) validates.push(this.customValidate())
+
+                if (this.customValidate) validateResults.push(this.customValidate())
+
+                /** TODO */
                 if (formDatum && bind && type !== IGNORE_BIND) {
                     formDatum.validateFields(bind, IGNORE_BIND).catch(() => {})
                 }
+
                 if (!data && formDatum) data = formDatum.getValue()
 
+                /** @todo 不应该直接操作rules */
                 let { rules } = this.props
+
                 names.forEach((n, i) => {
                     // 如果为非表单 则names为[undefined]
                     if (formDatum && combineRules) {
                         rules = combineRules(n, rules)
                     }
 
-                    // Input rule 验证
                     if (isArray(rules) && rules.length > 0) {
-                        validates.push(validate(value[i], data, rules, validateProps))
+                        validateResults.push(validate(value[i], data, rules, validateProps))
                     }
                 })
+                /** ---------------------------------------------------------- */
 
                 // 根据每条检验规则的返回值 进行返回
-                return promiseAll(validates)
+                return promiseAll(validateResults)
                     .then(res => {
                         this.handleError(res === true ? undefined : res)
                         return res
@@ -248,29 +306,40 @@ export default curry(Origin =>
                     })
             }
 
-            // 子组件value改变 (datum管理value) 此处驱动更新
-            handleChange(value, ...args) {
+            /** 子组件value改变 (datum管理value) 此处驱动更新 */
+            handleChange = (value, ...args) => {
                 const { formDatum, name, fieldSetValidate, onChange } = this.props
+
                 const currentValue = this.getValue()
+
                 if (args.length === 0 && shallowEqual(value, currentValue)) {
                     return
                 }
 
                 const beforeChange = beforeValueChange(this.props.beforeChange)
+
+                /** TODO */
                 if (formDatum && name) {
                     value = beforeChange(value, formDatum)
+
                     formDatum.set(name, value)
+
                     formDatum.removeFormError(this.errorName)
                 } else {
                     value = beforeChange(value, null)
+
                     this.setState({ value })
+
+                    /** TODO  */
                     this.validate(value).catch(() => {})
                 }
 
-                if (onChange) onChange(value, ...args)
-                if (fieldSetValidate) fieldSetValidate(true)
+                onChange?.(value, ...args)
+
+                fieldSetValidate?.(true)
             }
 
+            /** @todo */
             handleUpdate(value, sn, type) {
                 if (type === ERROR_TYPE) {
                     if (!isSameError(value, this.state.error)) this.setState({ error: value })
@@ -281,10 +350,10 @@ export default curry(Origin =>
                 const newValue = !Array.isArray(name)
                     ? value
                     : immer(this.getValue(), draft => {
-                        name.forEach((n, i) => {
-                            if (n === sn) draft[i] = value
+                          name.forEach((n, i) => {
+                              if (n === sn) draft[i] = value
                           })
-                    })
+                      })
 
                 if (shallowEqual(newValue, this.lastValue)) return
                 this.lastValue = newValue
@@ -300,9 +369,10 @@ export default curry(Origin =>
 
                 if (type !== IGNORE_VALIDATE) {
                     if (this.updateTimer) clearTimeout(this.updateTimer)
+
                     this.updateTimer = setTimeout(() => {
                         this.validate(newValue, undefined, type).catch(() => {})
-                    })
+                    }, 0)
                 }
                 this.forceUpdate()
             }

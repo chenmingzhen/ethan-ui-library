@@ -1,5 +1,5 @@
 // @ts-nocheck
-import { isEmpty, isObject } from './is'
+import { isArray, isEmpty, isObject } from './is'
 import { deepClone } from './clone'
 
 export function insertPoint(name) {
@@ -58,20 +58,20 @@ export function unflatten(rawdata) {
 
     // eslint-disable-next-line
     Object.keys(data).sort().forEach((p) => {
-            const pathWithPoint = insertPoint(p)
-            cur = result
-            prop = ''
-            last = 0
-            do {
-                idx = pathWithPoint.indexOf('.', last)
-                temp = pathWithPoint.substring(last, idx !== -1 ? idx : undefined)
-                match = /^\[(\d+)\]$/.exec(temp)
-                cur = cur[prop] || (cur[prop] = match ? [] : {})
-                prop = match ? match[1] : temp
-                last = idx + 1
-            } while (idx >= 0)
-            cur[prop] = deepClone(data[p])
-        })
+        const pathWithPoint = insertPoint(p)
+        cur = result
+        prop = ''
+        last = 0
+        do {
+            idx = pathWithPoint.indexOf('.', last)
+            temp = pathWithPoint.substring(last, idx !== -1 ? idx : undefined)
+            match = /^\[(\d+)\]$/.exec(temp)
+            cur = cur[prop] || (cur[prop] = match ? [] : {})
+            prop = match ? match[1] : temp
+            last = idx + 1
+        } while (idx >= 0)
+        cur[prop] = deepClone(data[p])
+    })
     return result['']
 }
 
@@ -158,6 +158,12 @@ export const removeSthByName = (name, source) => {
         })
     }
 }
-
-export const flattenArray = arr1 =>
-    arr1.reduce((acc, val) => (Array.isArray(val) ? acc.concat(flattenArray(val)) : acc.concat(val)), [])
+export function flattenArray<T>(arr: T[]) {
+    return arr.reduce(
+        (previousValue, currentValue) =>
+            isArray(currentValue)
+                ? previousValue.concat(flattenArray(currentValue))
+                : previousValue.concat(currentValue),
+        []
+    )
+}

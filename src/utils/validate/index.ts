@@ -1,4 +1,3 @@
-// @ts-nocheck
 import Datum from '@/utils/Datum'
 import { wrapFormError } from '../errors'
 import { substitute } from '../strings'
@@ -10,12 +9,9 @@ import typeOf from './type'
 import regTest from './regExp'
 
 /**
- *
- * @param rules 用户输入的rule
- * @param props 经过筛选后的string或number类型的props
- * @returns function(*=, *=, *=): (undefined)
+ * 输入的rule 经过筛选后的string或number类型的props
  */
-function getRule(rules, props = {}) {
+function getRule(rules, props: Record<string | number, any> = {}) {
     if (typeof rules === 'function') {
         // 如果内置的检验的方法  执行该方法
         if (rules.isInnerValidator) rules = rules()
@@ -58,46 +54,45 @@ function getRule(rules, props = {}) {
     throw err
 }
 
+/** @todo 合并代码后补充rules的类型 */
 const validate = (value, formData, rules, props) =>
     new Promise((resolve, reject) => {
-        // 扁平化后 递归调用
+        /** 扁平化后 递归调用 */
         const $rules = flattenArray(rules)
+
         const rule = $rules.shift()
 
         if (rule === undefined) {
             resolve(true)
-            return
-        }
-        if (!rule) {
-            validate(value, formData, $rules, props).then(resolve, reject)
+
             return
         }
 
-        /**
-         * 检验结果结果回调
-         * @param result
-         */
-        const callback = result => {
+        function validateCallback(result: boolean | string) {
             if (result !== true) {
                 reject(wrapFormError(result))
+
                 return
             }
-            // 递归调用 直到rule===undefined resolve 递归结束
+
             validate(value, formData, $rules, props).then(resolve, reject)
         }
 
-        const fn = getRule(rule, props)
+        const validateFunction = getRule(rule, props)
+
         let val = value
-        if (fn === rule && (value instanceof Datum.List || value instanceof Datum.Form)) {
-            val = value.getValue()
+
+        /** TODO 什么情况传入Datum？ */
+        if (validateFunction === rule && (value instanceof Datum.List || value instanceof Datum.Form)) {
+            val = value.getOuterValue()
         }
 
         // 处理自定义规则校验与内置规则校验
-        const cb = fn(val, formData, callback)
+        const cb = validateFunction(val, formData, validateCallback)
 
         // 处理自定义规则校验 返回是Promise的情况
         if (cb && cb.then) {
-            cb.then(callback.bind(null, true)).catch(e => {
+            cb.then(validateCallback.bind(null, true)).catch(e => {
                 reject(wrapFormError(e))
             })
         }

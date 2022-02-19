@@ -5,7 +5,7 @@ import classnames from 'classnames'
 import { PureComponent } from '@/utils/component'
 import { getProps } from '@/utils/proptypes'
 import { getKey } from '@/utils/uid'
-import { CHANGE_TOPIC } from '@/utils/Datum/types'
+import { CHANGE_ACTION } from '@/utils/Datum/types'
 import { checkInputClass } from '@/styles'
 import Checkbox from './Checkbox'
 import { Provider } from './context'
@@ -21,12 +21,12 @@ class CheckboxGroup extends PureComponent {
 
     componentDidMount() {
         super.componentDidMount()
-        this.props.datum.subscribe(CHANGE_TOPIC, this.handleUpdate)
+        this.props.datum.subscribe(CHANGE_ACTION, this.handleUpdate)
     }
 
     componentWillUnmount() {
         super.componentWillUnmount()
-        this.props.datum.unsubscribe(CHANGE_TOPIC, this.handleUpdate)
+        this.props.datum.unsubscribe(CHANGE_ACTION, this.handleUpdate)
     }
 
     getContent(d) {

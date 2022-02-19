@@ -5,7 +5,7 @@ import classnames from 'classnames'
 import { useUpdate } from 'react-use'
 import { getProps } from '@/utils/proptypes'
 import { getKey } from '@/utils/uid'
-import { CHANGE_TOPIC } from '@/utils/Datum/types'
+import { CHANGE_ACTION } from '@/utils/Datum/types'
 import { checkInputClass } from '@/styles'
 import { Provider } from '../Checkbox/context'
 import Radio from './Radio'
@@ -16,9 +16,9 @@ function RadioGroup(props) {
     // ---------------------------lifecycle---------------------------
     useEffect(() => {
         // 订阅value改变时
-        props.datum.subscribe(CHANGE_TOPIC, update)
+        props.datum.subscribe(CHANGE_ACTION, update)
         return () => {
-            props.datum.unsubscribe(CHANGE_TOPIC, update)
+            props.datum.unsubscribe(CHANGE_ACTION, update)
         }
     }, [])
     // ----------------------------method------------------------------

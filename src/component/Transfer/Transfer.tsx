@@ -72,10 +72,10 @@ const Transfer = props => {
     // eslint-disable-next-line no-underscore-dangle
     const _selecteds = getSelected()
     // 从Datum中获取数据
-    const datumValues = datum.getValue()
+    const datumValues = datum.getOuterValue()
 
     if ('value' in props && datumValues !== props.value) {
-        props.datum.setValue(props.value)
+        props.datum.setInnerValue(props.value)
     }
 
     const sources = useMemo(() => data.filter(d => !datum.check(d)), [data, datumValues])

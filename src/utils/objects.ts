@@ -74,6 +74,7 @@ export const deepMerge = <T = Record<string | number, any>, S = Record<string | 
     if (isMergeable(target)) {
         Object.keys(target).forEach(k => {
             dest[k] = clone ? deepMerge({}, target[k], clone) : target[k]
+
             if (removeUndefined && dest[k] === undefined) delete dest[k]
         })
     }
@@ -83,7 +84,9 @@ export const deepMerge = <T = Record<string | number, any>, S = Record<string | 
             dest[k] = deepMerge(target[k], source[k], clone)
         } else {
             if (skipUndefined && source[k] === undefined) return
+
             dest[k] = deepMerge({}, source[k], clone)
+
             if (removeUndefined && dest[k] === undefined) delete dest[k]
         }
     })
@@ -115,8 +118,10 @@ export const deepGet = (target, path, options = {}) => {
     return current
 }
 
-export const filterProps = (obj, props: (p: Record<string, any>) => boolean | string[] = []) => {
+export function filterProps(obj, props: (p: Record<string, any>) => boolean | string[] = []): Record<string, any> {
     if (!isObject(obj)) return obj
+
+    const newProps = []
 
     if (typeof props === 'function') {
         const prediction = props
@@ -124,13 +129,13 @@ export const filterProps = (obj, props: (p: Record<string, any>) => boolean | st
         props = []
 
         Object.keys(obj).forEach(k => {
-            if (prediction(obj[k])) props.push(k)
+            if (prediction(obj[k])) newProps.push(k)
         })
     }
 
     const newObj = {}
 
-    props.forEach(k => {
+    newProps.forEach(k => {
         newObj[k] = obj[k]
     })
 
