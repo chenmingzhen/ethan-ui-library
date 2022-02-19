@@ -219,11 +219,11 @@ export default curry(Origin =>
                 return this.state.error
             }
 
-            handleDatumBind(datum) {
+            handleDatumBind = datum => {
                 this.datum = datum
             }
 
-            handleError(error?: any) {
+            handleError = (error?: any) => {
                 const { formDatum, name, onItemError, onError } = this.props
 
                 if (formDatum && name) {
@@ -244,7 +244,7 @@ export default curry(Origin =>
             }
 
             /** @todo data类型  */
-            validate(value, data?: any, type?: string) {
+            validate = (value, data?: any, type?: string) => {
                 const { name, formDatum, combineRules, bind } = this.props
 
                 const names = Array.isArray(name) ? name : [name]
@@ -340,7 +340,7 @@ export default curry(Origin =>
             }
 
             /** @todo */
-            handleUpdate(value, sn, type) {
+            handleUpdate = (value, sn, type) => {
                 if (type === ERROR_TYPE) {
                     if (!isSameError(value, this.state.error)) this.setState({ error: value })
                     return
