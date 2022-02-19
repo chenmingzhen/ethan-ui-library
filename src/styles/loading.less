@@ -4,34 +4,39 @@
 @loading-prefix: ~'@{ethan-prefix}-loading';
 
 .@{loading-prefix} {
-  position: fixed;
-  z-index: 1001;
-  left: 0;
-  top: 0;
-  bottom: 0;
-  right: 0;
-  background: rgba(255, 255, 255, 0.6);
+    position: fixed;
+    z-index: 1001;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    background: rgba(255, 255, 255, 0.6);
+    opacity: 1;
 
-  &-spin {
-    position: absolute;
-    top: 15px;
-    right: 15px;
-  }
+    &-fade {
+        transition: opacity 0.5s ease-in-out;
+        opacity: 0;
+    }
 
-  &-line {
-    height: 100%;
-    transition: width 0.2s ease-in-out;
-    background-color: @colors-primary;
-  }
+    &-spin {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+    }
 
-  &-error {
-    background-color: @colors-danger !important;
-  }
+    &-line {
+        height: 100%;
+        background-color: @colors-primary;
+    }
 
-  &-inner {
-    margin: -17.5px auto 0;
-    position: relative;
-    text-align: center;
-    top: 50%;
-  }
+    &-inner {
+        margin: -17.5px auto 0;
+        position: relative;
+        text-align: center;
+        top: 50%;
+    }
+
+    &-animation {
+        transition: width 0.2s ease-in-out;
+    }
 }

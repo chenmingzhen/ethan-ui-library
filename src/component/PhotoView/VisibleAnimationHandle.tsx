@@ -1,10 +1,10 @@
-import React from 'react'
-import { DataType, OriginRectType, ShowAnimateEnum } from './types'
+import React, { useState, useEffect } from 'react'
+import { PhotoViewImageData, OriginRectType, ShowAnimateEnum } from './types'
 
 interface VisibleHandleProps {
     // Slider是否为可见状态
     visible: boolean
-    currentImage?: DataType
+    currentImage?: PhotoViewImageData
     children: ({
         photoVisible,
         showAnimateType,
@@ -21,23 +21,25 @@ interface VisibleHandleProps {
 // 处理PhotoSlider的显示以及动画状态
 // 当传入是否可见visible时 开始执行记录节点位置 动画相关的副作用
 export default function VisibleAnimationHandle({ visible, currentImage, children }: VisibleHandleProps) {
-    const [photoVisible, updatePhotoVisible] = React.useState(visible)
-    const [showAnimateType, updateAnimateStatus] = React.useState<ShowAnimateEnum>(ShowAnimateEnum.None)
-    const [originRect, updateOriginRect] = React.useState<OriginRectType>()
+    const [photoVisible, setPhotoVisible] = useState(visible)
+
+    const [showAnimateType, setAnimateStatus] = useState<ShowAnimateEnum>(ShowAnimateEnum.None)
+
+    const [originRect, setOriginRect] = useState<OriginRectType>()
 
     function onShowAnimateEnd() {
-        updateAnimateStatus(ShowAnimateEnum.None)
+        setAnimateStatus(ShowAnimateEnum.None)
 
-        // Close
         if (showAnimateType === ShowAnimateEnum.Out) {
-            updatePhotoVisible(false)
+            setPhotoVisible(false)
         }
     }
 
-    React.useEffect(() => {
+    useEffect(() => {
         if (!currentImage) {
             return
         }
+
         const { originRef } = currentImage
 
         // https://www.w3school.com.cn/jsref/prop_node_nodetype.asp
@@ -46,19 +48,19 @@ export default function VisibleAnimationHandle({ visible, currentImage, children
             // 获取触发时装载元素的节点位置 即被Consumer包裹的最外层元素
             const { top, left, width, height } = originRef.getBoundingClientRect()
 
-            updateOriginRect({
+            setOriginRect({
                 clientX: left + width / 2,
                 clientY: top + height / 2,
             })
-        } else if (originRect && !originRef) {
-            updateOriginRect(undefined)
+        } else if (!originRef) {
+            setOriginRect(undefined)
         }
 
         if (visible) {
-            updateAnimateStatus(ShowAnimateEnum.In)
-            updatePhotoVisible(true)
+            setAnimateStatus(ShowAnimateEnum.In)
+            setPhotoVisible(true)
         } else {
-            updateAnimateStatus(ShowAnimateEnum.Out)
+            setAnimateStatus(ShowAnimateEnum.Out)
         }
     }, [visible])
 

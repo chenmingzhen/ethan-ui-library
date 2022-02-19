@@ -17,7 +17,7 @@
         "allowJs": true,
         "checkJs": true,
         "skipLibCheck": true,
-        "importHelpers": true,
+        // "importHelpers": true,
         "allowSyntheticDefaultImports": true,
         "forceConsistentCasingInFileNames": true,
         "noFallthroughCasesInSwitch": true,

@@ -2,7 +2,7 @@ import React from 'react'
 import classnames from 'classnames'
 import { PureComponent } from '@/utils/component'
 import { curry } from '@/utils/func'
-import Popover, { PopoverProps } from '@/component/Popover'
+import Popover, { PopoverProps } from '@/component/Popover/Popover'
 import { buttonClass, inputClass, popoverClass } from '../styles'
 
 interface InputBorderProps {
@@ -170,6 +170,7 @@ export default curry(
                                         className={popoverClass(...popoverClassList)}
                                         placement={placement}
                                         content={content}
+                                        innerAlwaysUpdate
                                     >
                                         {originComponent}
                                     </Popover>

@@ -1,4 +1,3 @@
-// @ts-nocheck
 const fitText = (containerNode, textNode) => {
     if (!containerNode || !textNode) {
         return 1

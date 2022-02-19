@@ -1,6 +1,4 @@
-import React, { Suspense, useEffect, useState } from 'react'
-import PropTypes from 'prop-types'
-import { useLocation } from 'react-router'
+import React, { Suspense, useEffect, useState, useRef } from 'react'
 import { Route, Switch, NavLink } from 'react-router-dom'
 import { Sticky } from 'ethan/index'
 import locate from 'doc/utils/locate'
@@ -8,114 +6,118 @@ import Loading from 'docs/Loading'
 import { mainClass } from 'doc/styles'
 import Icon from '../icons/Icon'
 
+interface Page {
+    name: string
+    cn: string
+    level: number
+    component: React.LazyExoticComponent<React.NamedExoticComponent>
+}
+
 const filters = ['Datum.Form', 'Datum.List']
 
-function getUrl(base, page) {
-  if (page.path === '') return base
-  return `${base}/${page.path || page.name}`
+function getUrl(base: string, page: Page) {
+    return `${base}/${page.name}`
 }
 
-export default function(pages) {
-  function Page(props) {
-    const base = props.match.url
-    const location = useLocation()
-    const { search } = location
+function PageHOC(pages: (Page | string)[]) {
+    function Page(props) {
+        const base = props.match.url
+        // 右下角汉堡菜单
+        const [hideMiniNav, updateMiniNav] = useState(window.innerWidth < 979)
 
-    if (search?.indexOf('?example=') === 0) search.replace('?example=', '')
+        const menuDOMRef = useRef<HTMLDivElement>()
 
-    // 右下角汉堡菜单
-    const [shownav, setShowNav] = useState(window.innerWidth < 979)
+        const toggleCode = () => {
+            if (window.innerWidth > 979) return
 
-    const toggleCode = () => {
-      if (window.innerWidth > 979) return
+            const menuElement = menuDOMRef.current
 
-      // 小屏下的处理
-      const el = document.querySelector('#-ethan-menu')
-      const showNav = !shownav
+            const isHide = !hideMiniNav
 
-      if (showNav) {
-        setShowNav(showNav)
-        setTimeout(() => {
-          if (el) el.style.display = 'none'
-        }, 400)
-      } else {
-        setTimeout(() => setShowNav(showNav), 16)
-        if (el) el.style.display = 'block'
-      }
+            updateMiniNav(isHide)
+
+            if (isHide) {
+                updateMiniNav(isHide)
+
+                setTimeout(() => {
+                    menuElement.style.display = 'none'
+                }, 400)
+            } else {
+                setTimeout(() => updateMiniNav(isHide), 16)
+
+                menuElement.style.display = 'block'
+            }
+        }
+
+        useEffect(() => {
+            const changeNav = () => {
+                updateMiniNav(window.innerWidth < 979)
+            }
+
+            window.addEventListener('resize', changeNav)
+
+            return () => window.removeEventListener('resize', changeNav)
+        }, [])
+
+        // <NavLink>是<Link>的一个特定版本，会在匹配上当前的url的时候给已经渲染的元素添加参数
+
+        /**
+         * tabIndex
+         * @see https://developer.mozilla.org/zh-CN/docs/Web/HTML/Global_attributes/tabindex
+         * */
+        return (
+            <>
+                <div tabIndex={-1} className={mainClass('nav-open-close')}>
+                    <Icon name={hideMiniNav ? 'Menu' : 'close'} onClick={toggleCode} />
+                </div>
+
+                <Sticky top={0} style={{ borderRight: '1px solid #e8e8e8' }}>
+                    <div ref={menuDOMRef} className={mainClass('menu', hideMiniNav && 'hidden')}>
+                        {pages
+                            .filter(page => typeof page !== 'string' && filters.indexOf(page.name) === -1)
+                            .map((page, index) =>
+                                /* 标题 */
+                                typeof page === 'string' ? (
+                                    <span key={index}>{page}</span>
+                                ) : (
+                                    <NavLink
+                                        className={mainClass(page.level === 2 && 'sub')}
+                                        activeClassName={mainClass('active')}
+                                        key={page.name}
+                                        to={getUrl(base, page)}
+                                        onClick={toggleCode}
+                                    >
+                                        <p>
+                                            {page.name}
+                                            <span style={{ margin: '0 0 0 6px' }}>{locate(page.cn)}</span>
+                                        </p>
+                                    </NavLink>
+                                )
+                            )}
+                    </div>
+                </Sticky>
+
+                <div className={mainClass('page')}>
+                    <Suspense fallback={<Loading />}>
+                        <Switch>
+                            {pages
+                                .filter(p => typeof p === 'object')
+                                .map((p: Page) => (
+                                    <Route
+                                        key={p.name}
+                                        path={getUrl(base, p)}
+                                        component={p.component}
+                                        onEnter={toggleCode}
+                                    />
+                                ))}
+                        </Switch>
+                    </Suspense>
+                </div>
+            </>
+        )
     }
 
-    useEffect(() => {
-      const changeNav = () => {
-        setShowNav(window.innerWidth < 979)
-      }
-
-      window.addEventListener('resize', changeNav)
-
-      return () => window.removeEventListener('resize', changeNav)
-    }, [])
-
-    // <NavLink>是<Link>的一个特定版本，会在匹配上当前的url的时候给已经渲染的元素添加参数
-
-    return (
-      <>
-        {/* 汉堡菜单 */}
-        <div tabIndex="-1" className={mainClass('nav-open-close')}>
-          <Icon name={shownav ? 'Menu' : 'close'} onClick={toggleCode} />
-        </div>
-
-        <Sticky top={0} style={{ borderRight: '1px solid #e8e8e8' }}>
-          <div id="-ethan-menu" className={mainClass('menu', shownav && 'hidden')}>
-            {pages
-              .filter(v => filters.indexOf(v.name) === -1)
-              .map((p, i) =>
-                /* 标题 */
-                typeof p === 'string' ? (
-                  // eslint-disable-next-line
-                  <label key={i}>{p}</label>
-                ) : (
-                  <NavLink
-                    className={mainClass(p.level === 2 && 'sub')}
-                    activeClassName={mainClass('active')}
-                    key={p.name}
-                    to={getUrl(base, p)}
-                    onClick={toggleCode}
-                  >
-                    <p>
-                      {p.name}
-                      <span style={{ margin: '0 0 0 6px' }}>{locate(p.cn)}</span>
-                    </p>
-                  </NavLink>
-                )
-              )}
-          </div>
-        </Sticky>
-
-        <div className={mainClass('page')}>
-          <Suspense fallback={<Loading />}>
-            <Switch>
-              {pages
-                .filter(p => typeof p === 'object')
-                .map(p => (
-                  <Route
-                    key={p.name + search}
-                    path={getUrl(base, p)}
-                    component={p.component}
-                    onEnter={() => {
-                      toggleCode.bind(null)
-                    }}
-                  />
-                ))}
-            </Switch>
-          </Suspense>
-        </div>
-      </>
-    )
-  }
-
-  Page.propTypes = {
-    history: PropTypes.object,
-    match: PropTypes.object.isRequired,
-  }
-
-  return Page
+    return React.memo(Page)
 }
+
+export default PageHOC

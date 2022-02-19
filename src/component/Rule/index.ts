@@ -1,91 +1,93 @@
-// @ts-nocheck
-import { deepMerge, objectValues } from '@/utils/objects'
-import { isObject } from '@/utils/is'
-import required from './required'
-import length from './length'
-import type from './type'
-import regExp from './regExp'
-
-export const RULE_TYPE = 'RULE_OBJECT'
-const innerType = ['email', 'integer', 'number', 'url', 'json', 'hex', 'rgb', 'ipv4']
+import { getLocale } from '@/locale'
+import { deepMerge } from '@/utils/objects'
+import { substitute } from '@/utils/strings'
+import {
+    BaseOptions,
+    Validator,
+    BaseOptionKeys,
+    BaseOptionRuleOutput,
+    RequiredOptions,
+    MinOptions,
+    MaxOptions,
+    RegExpOptions,
+} from './type/index'
+import { createLengthMessage, mergeOptions } from './util'
 
 /**
- * 合并自定义的检验规则
- * @param opts
- * @param args
- * @returns {{}}
+ * @see https://stackoverflow.com/questions/70815177/typescript-complex-type-inference/70827227#70827227
  */
-const mergeOptions = (opts = {}, ...args) => {
-    if (!isObject(opts)) {
-        console.error(new Error(`rules expect an object, got ${typeof options}`))
-        return {}
+function Rule<R extends Validator | BaseOptions>(propOptions?: R) {
+    const options = mergeOptions({}, propOptions) as R
+
+    const deepMergeOptions = { skipUndefined: true }
+
+    function required(msg: string) {
+        const { message, tip } = (options.required as RequiredOptions) || {}
+
+        return deepMerge(
+            {
+                required: true,
+                message: props => {
+                    return substitute(getLocale(`rules.required.${props.type === 'array' ? 'array' : 'string'}`), props)
+                },
+            },
+            deepMerge({ message, tip }, { message: msg }, deepMergeOptions),
+            deepMergeOptions
+        )
     }
 
-    if (args.length === 0) return opts
-    const arg = args.shift()
+    function min(msg: string) {
+        const { message, len } = (options.min as MinOptions) || {}
 
-    Object.keys(arg).forEach(k => {
-        // 如果传入的是非标准的格式 进行格式化
-        // 标准 isOneRule={isOne:{func:()=>{}}
-        // 非标准 isOneRule={isOne:()=>{}}
-        if (typeof arg[k] === 'function') arg[k] = { func: arg[k] }
-    })
-    return mergeOptions(deepMerge(opts, arg), ...args)
-}
+        return deepMerge(
+            { message: props => createLengthMessage('min', props) },
+            deepMerge({ message, min: len }, { message: msg }, deepMergeOptions),
+            deepMergeOptions
+        )
+    }
 
-export default function(...opts) {
-    const options = mergeOptions({}, ...opts)
+    function max(msg: string) {
+        const { message, len } = (options.max as MaxOptions) || {}
+
+        return deepMerge(
+            { message: props => createLengthMessage('max', props) },
+            deepMerge({ message, min: len }, { message: msg }, deepMergeOptions),
+            deepMergeOptions
+        )
+    }
+
+    function regExp(msg: string) {
+        const { message, regExp: optionRegExp } = (options.regExp as RegExpOptions) || {}
+
+        return deepMerge(
+            { message: getLocale('rules.reg') },
+            deepMerge({ message, regExp: optionRegExp }, { message: msg }, deepMergeOptions),
+            deepMergeOptions
+        )
+    }
 
     const rules = {
-        required: required(options.required), // 执行required方法 返回闭包方法 util/validate/index中执行
-        max: length('max', options.max),
-        min: length('min', options.min),
-        regExp: regExp(options.regExp),
-        type: t => type(t, options.type),
+        required,
+        min,
+        max,
+        regExp,
     }
 
-    rules.length = (min, max, msg) => [rules.min(min, msg), rules.max(max, msg)]
-    rules.range = (min, max, msg) => [rules.min(min, msg), rules.max(max, msg)]
-
-    // 对innerType规则进行声明 email等
-    innerType.forEach(k => {
-        // 如果构造时有传入type 则使用传入的消息
-        // 否则 使用默认的校验
-
-        // 如下
-
-        // <Input rules={[{ type: 'email', message: 'Please enter a valid email.' }]} popover="top" />
-
-        // const rule = Rule({
-        //   required: {
-        //     message: (props) => `The field ${props.title} is required.`
-        //   },
-        //   email: {
-        //     message: 'Email is invalid.'
-        //   }
-        // })
-        rules[k] = type(k, options[k] || options.type)
+    Object.keys(rules).forEach(key => {
+        rules[key].isInnerValidator = true
     })
 
-    // 原始的规则Key  require max min 等
-    const ruleKeys = Object.keys(rules)
+    const innerRuleKeys = Object.keys(rules)
 
-    Object.keys(options).forEach(k => {
-        if (!ruleKeys.includes(k)) {
-            // 用户自定义的规则
-            if (isObject(options[k])) {
-                // 返回一个方法 执行该方法可以得到包含自定义的规则方法，message,args的对象 validate的getRule中使用
-                rules[k] = args => Object.assign({}, options[k], { args })
-            } else {
-                console.error(new Error(`Rule ${k} is invalid, expect a function or an object.`))
+    if (propOptions) {
+        Object.keys(propOptions).forEach(key => {
+            if (!innerRuleKeys.includes(key) && typeof propOptions[key] === 'function') {
+                rules[key] = propOptions[key]
             }
-        }
-    })
+        })
+    }
 
-    objectValues(rules).forEach(rule => {
-        rule.isInnerValidator = true
-    })
-
-    rules.$$type = RULE_TYPE
-    return rules
+    return rules as { [T in keyof Omit<R, BaseOptionKeys>]: R[T] } & BaseOptionRuleOutput
 }
+
+export default Rule

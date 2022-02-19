@@ -3,7 +3,7 @@ import React from 'react'
 /**
  * 图片 item 类型
  */
-export type DataType = {
+export type PhotoViewImageData = {
     // 唯一标识
     key?: string
     // 图片地址
@@ -16,7 +16,7 @@ export type DataType = {
 
 export type OverlayRenderProps = {
     // 图片列表
-    images: DataType[]
+    images: PhotoViewImageData[]
     // 图片当前索引
     index: number
     // 可见
@@ -33,7 +33,7 @@ export type OverlayRenderProps = {
     onRotate: (rotate: number) => void
 }
 
-export interface PhotoProviderBase {
+export interface PhotoViewGroupBase {
     /* 背景可点击关闭，默认 true */
     maskClosable?: boolean
     /* 图片点击可关闭，默认 false */
@@ -69,10 +69,10 @@ export type PhotoTapFunction = (clientX: number, clientY: number) => void
  * 边缘超出状态
  */
 export enum CloseEdgeEnum {
-    Normal, // 正常滑动
-    Small, // 小于屏幕宽度
-    Before, // 抵触左边/上边
-    After, // 抵触右边/下边
+    Normal, // 正常滑动(放大模式)
+    Small, // 小于屏幕宽度(正常图缩放左右滑动)
+    Before, // 抵触左边/上边(放大模式)
+    After, // 抵触右边/下边(放大模式)
 }
 
 /**
@@ -108,7 +108,7 @@ export enum ShowAnimateEnum {
  */
 export type OriginRectType =
     | {
-          clientX: number
-          clientY: number
-      }
+        clientX: number
+        clientY: number
+    }
     | undefined

@@ -60,10 +60,13 @@ export function dispatchEvent(form, name, detail) {
 
 export function cssSupport(attr, value) {
     const element = document.createElement('div')
+
     if (attr in element.style) {
         element.style[attr] = value
+
         return element.style[attr] === value
     }
+
     return false
 }
 

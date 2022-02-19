@@ -25,7 +25,6 @@ export interface PhotoProps extends React.HTMLAttributes<null> {
     brokenElement?: JSX.Element
 }
 
-// TODO 添加懒加载
 const Photo: React.FC<PhotoProps> = ({
     src,
     loaded,

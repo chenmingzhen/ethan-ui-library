@@ -1,35 +1,32 @@
-// @ts-nocheck
 import React from 'react'
 import { ringClass, planeClass, pulseClass } from '@/styles/spin'
 import Spin from './Spin'
+import { formatSize } from './util'
+import { SpinProps } from '.'
 
-function formatSize(size) {
-    const ss = /^(\d+)([%|\w]*)$/.exec(size)
-    return {
-        value: parseFloat(ss[1]),
-        unit: ss[2] || 'px',
-    }
-}
+export function Ring(props: SpinProps) {
+    const { value, unit } = formatSize(props.size)
 
-export function Ring(obj) {
-    const { value, unit } = formatSize(obj.size)
     const style = {
         borderWidth: value / 10 + unit,
-        borderTopColor: obj.color,
+        borderTopColor: props.color,
     }
-    return <Spin {...obj} style={style} spinClass={ringClass} />
+
+    return <Spin {...props} style={style} spinClass={ringClass} />
 }
 
-export function Plane(obj) {
+export function Plane(props: SpinProps) {
     const style = {
-        backgroundColor: obj.color,
+        backgroundColor: props.color,
     }
-    return <Spin {...obj} style={style} spinClass={planeClass} />
+
+    return <Spin {...props} style={style} spinClass={planeClass} />
 }
 
-export function Pulse(obj) {
+export function Pulse(props: SpinProps) {
     const style = {
-        backgroundColor: obj.color,
+        backgroundColor: props.color,
     }
-    return <Spin {...obj} style={style} spinClass={pulseClass} />
+
+    return <Spin {...props} style={style} spinClass={pulseClass} />
 }

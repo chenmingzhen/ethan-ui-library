@@ -10,11 +10,11 @@ import { Pagination } from 'ethan/index'
 const info = ({ total }) => `Total ${total}`
 
 export default function() {
-  return (
-    <div>
-      <Pagination align="center" total={100} layout={['links', info]} />
-      <br />
-      <Pagination align="right" total={100} layout={[info, 'links']} />
-    </div>
-  )
+    return (
+        <div>
+            <Pagination align="center" total={100} layouts={['links', info]} />
+            <br />
+            <Pagination align="right" total={100} layouts={[info, 'links']} />
+        </div>
+    )
 }

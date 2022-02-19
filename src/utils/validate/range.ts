@@ -1,4 +1,3 @@
-// @ts-nocheck
 import nullable from './nullable'
 
 export default options =>

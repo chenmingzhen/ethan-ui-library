@@ -128,9 +128,15 @@ export const getPositionOnMoveOrScale = ({
 
     // 放大偏移量
     const offsetScale = toScale / fromScale
+
+    // 上一偏移位置
+    const lastOriginX = (clientX - lastPositionX) * offsetScale
+    const lastOriginY = (clientY - lastPositionY) * offsetScale
+
     // 偏移位置
-    const originX = clientX - (clientX - lastPositionX) * offsetScale - centerClientX
-    const originY = clientY - (clientY - lastPositionY) * offsetScale - centerClientY
+    const originX = clientX - centerClientX - lastOriginX
+    const originY = clientY - centerClientY - lastOriginY
+
     return {
         x: originX + offsetX,
         y: originY + offsetY,
@@ -150,17 +156,26 @@ export const getPositionOnMoveOrScale = ({
  */
 export const getClosedEdge = (position: number, scale: number, size: number, innerSize: number): CloseEdgeEnum => {
     const currentWidth = size * scale
+
     // 图片超出的宽度
     const outOffsetX = (currentWidth - innerSize) / 2
+
+    /** 正常左右滑动 */
     if (currentWidth <= innerSize) {
         return CloseEdgeEnum.Small
     }
+
+    /** 放大模式下 向坐滑动到达触发边界 */
     if (position > 0 && outOffsetX - position <= 0) {
         return CloseEdgeEnum.Before
     }
+
+    /** 放大模式下 向右滑动到达触发边界 */
     if (position < 0 && outOffsetX + position <= 0) {
         return CloseEdgeEnum.After
     }
+
+    /** 放大模式下正常滑动 */
     return CloseEdgeEnum.Normal
 }
 
@@ -258,6 +273,8 @@ export const slideToPosition = ({
     const horizontalCloseEdge = getClosedEdge(planX, scale, width, innerWidth)
     const verticalCloseEdge = getClosedEdge(planY, scale, height, innerHeight)
 
+    /** 除Small 大图模式下 接触到边缘时，反方向反弹 */
+
     // x
     if (horizontalCloseEdge === CloseEdgeEnum.Small) {
         currentX = 0
@@ -275,7 +292,7 @@ export const slideToPosition = ({
         currentY = -outOffsetY
     }
 
-    // 时间过长
+    /** 放大模式下 未触发边界缓慢移动 */
     if (
         moveTime >= maxTouchTime &&
         horizontalCloseEdge === CloseEdgeEnum.Normal &&
@@ -286,6 +303,7 @@ export const slideToPosition = ({
             y,
         }
     }
+
     return {
         x: currentX,
         y: currentY,
@@ -364,12 +382,12 @@ export const throttle = (func, wait: number) =>
  */
 export const isTouchDevice = typeof document !== 'undefined' && 'ontouchstart' in document.documentElement
 
-export const getAnimateOrigin = (originRect: OriginRectType, width: number, height: number): string | undefined => {
+export const getAnimateOrigin = (originRect: OriginRectType): string | undefined => {
     if (originRect) {
         const { innerWidth, innerHeight } = window
 
-        const xOrigin = (width - innerWidth) / 2 + originRect.clientX
-        const yOrigin = (height - innerHeight) / 2 + originRect.clientY
+        const xOrigin = -innerWidth / 2 + originRect.clientX
+        const yOrigin = -innerHeight / 2 + originRect.clientY
 
         return `${xOrigin}px ${yOrigin}px`
     }

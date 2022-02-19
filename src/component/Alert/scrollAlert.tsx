@@ -18,7 +18,7 @@ export interface ScrollAlertProps extends AlertProps {
 
 const ScrollAlert: React.FC<ScrollAlertProps> = ({ scrollInterval = 5000, children, onClose, className, ...rest }) => {
     const { items: i, renderItems: ri } = useMemo(() => getRenderChildrenFromProps(children), [])
-    const [activeIndex, setActived] = useState(0)
+    const [activeIndex, setActive] = useState(0)
     const [containerHeight, setHeight] = useState(0)
     const [transitionDuration, setDuration] = useState(0)
     const [items, { set: setItems }] = useList(i)
@@ -32,7 +32,7 @@ const ScrollAlert: React.FC<ScrollAlertProps> = ({ scrollInterval = 5000, childr
     // 重置节点为0
     const resetChildren = useCallback(() => {
         setDuration(0)
-        setActived(0)
+        setActive(0)
     }, [])
 
     // 节点滚动事件
@@ -44,7 +44,7 @@ const ScrollAlert: React.FC<ScrollAlertProps> = ({ scrollInterval = 5000, childr
         const index = activeIndex + 1
 
         setDuration(600)
-        setActived(index)
+        setActive(index)
 
         // 滚动到最后一个节点时，重置为初始位置
         if (index === length - 1) {

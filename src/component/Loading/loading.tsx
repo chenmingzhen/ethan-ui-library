@@ -1,80 +1,118 @@
-// @ts-nocheck
-import React, { useMemo, memo, useState, useImperativeHandle, forwardRef, useCallback } from 'react'
+import React, { memo, useImperativeHandle, forwardRef, useCallback, useEffect } from 'react'
 import { loadingClass } from '@/styles'
-import { isObject } from '@/utils/is'
-import Transition from '../Transition'
+import useSafeState from '@/hooks/useSafeState'
+import { usePrevious } from 'react-use'
 import Spin from '../Spin'
+import { FullScreenProps, ImmatureFullScreenProps, LineLoadingProps, LoadingInstance } from './type'
+import event from './event'
 
-const Loading = (props, ref) => {
-    const [visible, setVisible] = useState(true)
-    const [percent, setPercent] = useState(props.percent ? props.percent : 0)
-    const [height, setHeight] = useState(props.height ? props.height : 4)
-    const [color, setColor] = useState(props.color || '#3399ff')
-    const [type, setType] = useState(props.type)
-    const [error, setError] = useState(props.error)
-    const [loadingText, setLoadingText] = useState(props.loadingText)
-    const [size, setSize] = useState(props.size)
+type LoadingProps = LineLoadingProps & ImmatureFullScreenProps
 
-    const barClassName = useMemo(() => loadingClass('line', error && 'error'), [error])
-    const barStyle = useMemo(() => {
-        const style = {}
+const FULLSCREEN_STATE_LIST = ['type', 'fallback', 'size', 'color']
 
-        if (type === 'line') {
-            style.width = `${percent}%`
-            style.background = color
-        }
+const LINE_STATE_LIST = ['height', 'color']
 
-        return style
-    }, [type, color, percent])
+const Loading: React.ForwardRefRenderFunction<LoadingInstance, LoadingProps> = (props, ref) => {
+    const [visible, updateVisible] = useSafeState(true)
+    /** Top */
+    const [percent, updatePercent] = useSafeState(props.percent || 0)
+    const [height, updateHeight] = useSafeState(props.height || 4)
+    const [color, updateColor] = useSafeState(props.color || '#3399ff')
 
-    const wrapStyle = useMemo(() => (type === 'line' ? { height: `${height}px` } : {}), [type, height])
+    /** FullScreen */
+    const [type, updateType] = useSafeState(props.type || 'line')
+    const [fallback, updateFallback] = useSafeState(props.fallback)
+    const [size, updateSize] = useSafeState(props.size)
 
-    const update = useCallback(params => {
-        if (!params || !isObject(params)) return
+    const lastPercent = usePrevious(percent)
 
-        // eslint-disable-next-line no-shadow
-        const { percent, visible, error, type, loadingText, color, size } = params
+    const updateFullScreenConfig = useCallback((config: FullScreenProps) => {
+        Object.keys(config).forEach(stateName => {
+            const newState = config[stateName]
 
-        Object.keys(params).forEach(it => {
-            switch (it) {
-                case 'percent':
-                    setPercent(percent)
+            switch (stateName) {
+                case FULLSCREEN_STATE_LIST[0]: {
+                    updateType(newState)
+
                     break
-                case 'visible':
-                    setVisible(visible)
+                }
+                case FULLSCREEN_STATE_LIST[1]: {
+                    updateFallback(newState)
+
                     break
-                case 'error':
-                    setError(error)
+                }
+                case FULLSCREEN_STATE_LIST[2]: {
+                    updateSize(newState)
+
                     break
-                case 'type':
-                    setType(type)
+                }
+                case FULLSCREEN_STATE_LIST[3]: {
+                    updateColor(newState)
+
                     break
-                case 'loadingText':
-                    setLoadingText(loadingText)
-                    break
-                case 'color':
-                    color && setColor(color)
-                    break
-                case 'height':
-                    setHeight(height)
-                    break
-                case 'size':
-                    setSize(size)
-                    break
+                }
+
                 default:
                     break
             }
         })
     }, [])
 
-    useImperativeHandle(ref, () => ({ update, type, percent }))
+    const updateLineConfig = useCallback((config: LineLoadingProps) => {
+        Object.keys(config).forEach(stateName => {
+            const newState = config[stateName]
+
+            switch (stateName) {
+                case LINE_STATE_LIST[0]: {
+                    updateHeight(newState)
+
+                    break
+                }
+                case LINE_STATE_LIST[1]: {
+                    updateColor(newState)
+
+                    break
+                }
+
+                default:
+                    break
+            }
+        })
+    }, [])
+
+    useEffect(() => {
+        if (percent !== 100) {
+            updateVisible(true)
+        } else {
+            setTimeout(() => {
+                updateVisible(false)
+            }, 200)
+        }
+    }, [percent])
+
+    useEffect(() => {
+        if (!visible) {
+            setTimeout(() => {
+                event.destroy()
+            }, 500)
+        }
+    }, [visible])
+
+    useImperativeHandle(ref, () => ({ updateFullScreenConfig, updateLineConfig, updateVisible, updatePercent }))
+
+    const animation = lastPercent < percent || !lastPercent
+
+    const barStyle: React.CSSProperties | undefined =
+        type === 'line' ? { width: `${percent}%`, background: color, boxShadow: `0 0 10px 0 ${color}` } : undefined
+
+    const wrapStyle: React.CSSProperties | undefined = type === 'line' ? { height: `${height}px` } : undefined
 
     return (
-        <Transition show={visible}>
+        <div className={loadingClass(!visible && 'fade')}>
             <div className={loadingClass('_')} style={wrapStyle}>
                 {type === 'line' ? (
                     <>
-                        <div className={barClassName} style={barStyle} />
+                        <div className={loadingClass('line', animation && 'animation')} style={barStyle} />
                         <div className={loadingClass('spin')}>
                             <Spin name="ring" color={color} size={24} />
                         </div>
@@ -84,13 +122,12 @@ const Loading = (props, ref) => {
                         <div>
                             <Spin size={size || 54} name={type || 'wave'} color={color} />
                         </div>
-                        {loadingText && <div className={loadingClass('text')}>{loadingText}</div>}
+                        {fallback && <div className={loadingClass('text')}>{fallback}</div>}
                     </div>
                 )}
             </div>
-        </Transition>
+        </div>
     )
 }
 
-// forwardRef was not support defaultProps and propTypes
 export default memo(forwardRef(Loading))
