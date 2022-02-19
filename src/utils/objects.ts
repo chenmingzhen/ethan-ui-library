@@ -28,7 +28,7 @@ export function pathGenerator(raw) {
     const pathModeValues = objectValues(PATH_MODE)
     let index = 0
     let last = 0
-    let prop:: any = ''
+    let prop: any = ''
     const results = []
     while (index >= 0) {
         index = path.indexOf('.', last)

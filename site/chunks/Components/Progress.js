@@ -4,7 +4,6 @@
 import React from 'react'
 import navable from 'docs/Navable'
 import MarkDown from 'docs/MarkDown'
-
 import locate from 'doc/utils/locate'
 
 import cn from 'doc/pages/components/Progress/cn.md'
@@ -95,8 +94,6 @@ const examples = [
     },
 ]
 
-    const codes = undefined
-
 export default navable(props => (
-<MarkDown {...props} codes={codes} source={source} examples={examples} />
+<MarkDown {...props} source={source} examples={examples} />
 ))
