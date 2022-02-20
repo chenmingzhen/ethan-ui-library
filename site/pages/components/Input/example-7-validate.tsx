@@ -14,5 +14,13 @@ import { Input, Rule } from 'ethan/index'
 const rules = Rule()
 
 export default function() {
-    return <Input placeholder="email" rules={[rules.required]} tip="Email, required" popover="top-left" width={300} />
+    return (
+        <Input
+            placeholder="email"
+            rules={[rules.required]}
+            tip="Email, required"
+            popoverProps={{ placement: 'top-left' }}
+            width={300}
+        />
+    )
 }

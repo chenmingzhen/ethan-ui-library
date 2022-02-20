@@ -8,5 +8,5 @@ import React from 'react'
 import { Input } from 'ethan/index'
 
 export default function() {
-  return <Input clearable placeholder="input something" />
+    return <Input clearable placeholder="input something" />
 }

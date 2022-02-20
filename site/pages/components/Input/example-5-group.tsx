@@ -10,39 +10,39 @@ import { Input, Button, FontAwesome } from 'ethan/index'
 const style = { width: 300, marginBottom: 12 }
 
 export default function() {
-  return (
-    <div>
-      <Input.Group style={style}>
-        <FontAwesome name="user" />
-        <Input placeholder="first name" />
-        -
-        <Input placeholder="last name" />
-      </Input.Group>
+    return (
+        <div>
+            <Input.Group style={style}>
+                <FontAwesome name="user" />
+                <Input placeholder="first name" />
+                -
+                <Input placeholder="last name" />
+            </Input.Group>
 
-      <Input.Group style={style}>
-        <Input placeholder="search text" />
-        <Button text>
-          <FontAwesome name="search" />
-        </Button>
-      </Input.Group>
+            <Input.Group style={style}>
+                <Input placeholder="search text" />
+                <Button text>
+                    <FontAwesome name="search" />
+                </Button>
+            </Input.Group>
 
-      <Input.Group style={style}>
-        <Input style={{ flex: 1 }} placeholder="flex 1" />
-        <Input style={{ flex: 3 }} placeholder="flex 3" />
-      </Input.Group>
+            <Input.Group style={style}>
+                <Input style={{ flex: 1 }} placeholder="flex 1" />
+                <Input style={{ flex: 3 }} placeholder="flex 3" />
+            </Input.Group>
 
-      <Input.Group style={style}>
-        <Input placeholder="search text" />
-        <Button type="primary">Search</Button>
-      </Input.Group>
+            <Input.Group style={style}>
+                <Input placeholder="search text" />
+                <Button type="primary">Search</Button>
+            </Input.Group>
 
-      <Input.Group size="small" style={style}>
-        <b>
-          <FontAwesome name="envelope" />
-        </b>
-        <Input placeholder="email" />
-        <b>.com</b>
-      </Input.Group>
-    </div>
-  )
+            <Input.Group size="small" style={style}>
+                <b>
+                    <FontAwesome name="envelope" />
+                </b>
+                <Input placeholder="email" />
+                <b>.com</b>
+            </Input.Group>
+        </div>
+    )
 }

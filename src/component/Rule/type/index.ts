@@ -59,3 +59,5 @@ export interface BaseOptionRuleOutput {
 
     regExp: (message: string) => RegExpFuncOutPut
 }
+
+export type Rule = Validator[keyof Validator] | BaseOptionRuleOutput[keyof BaseOptionRuleOutput]

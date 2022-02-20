@@ -107,6 +107,7 @@
         "jsx-a11y/no-noninteractive-element-interactions": 0,
         "no-inner-declarations": 0,
         "@typescript-eslint/no-explicit-any": 0,
+        "@typescript-eslint/space-before-function-paren": 0,
         // Temp rule
         "@typescript-eslint/ban-types": 0,
         "react/jsx-wrap-multilines": 0
