@@ -8,9 +8,6 @@ interface ScrollBarProps {
 
     className?: string
 
-    /** 当scrollHeight小于Wheel div的高度时 强制滚动bar容器的高度为scrollHeight的高度 */
-    forceHeight?: number
-
     /** 容器长度 */
     length: number
 
@@ -152,14 +149,14 @@ class ScrollBar extends PureComponent<ScrollBarProps, ScrollBarState> {
     }
 
     render = () => {
-        const { direction, length, scrollLength, offset, forceHeight } = this.props
+        const { direction, length, scrollLength, offset } = this.props
 
         const { dragging } = this.state
 
         const show = scrollLength > length
 
         const className = classnames(
-            scrollClass('bar', direction, show && 'show', dragging && 'dragging', !forceHeight && 'padding-y'),
+            scrollClass('bar', direction, show && 'show', dragging && 'dragging'),
             this.props.className
         )
 
@@ -174,11 +171,17 @@ class ScrollBar extends PureComponent<ScrollBarProps, ScrollBarState> {
 
                     if (scrollLength > 0) {
                         if (direction === 'x') {
+                            /** (length / scrollLength) * 100 * (handle-container width|height) = barLength */
+
                             style.width = `${(length / scrollLength) * 100}%`
+
+                            // style.width = `${barLength}px`
 
                             style.left = value
                         } else {
                             style.height = `${(length / scrollLength) * 100}%`
+
+                            // style.height = `${barLength}px`
 
                             style.top = value
                         }
@@ -186,8 +189,8 @@ class ScrollBar extends PureComponent<ScrollBarProps, ScrollBarState> {
 
                     return (
                         <div
+                            // id="handle-container"
                             className={className}
-                            style={{ height: forceHeight }}
                             onMouseDown={show ? this.handleBgClick : undefined}
                         >
                             <div

@@ -400,7 +400,6 @@ class Menu<T extends MenuBaseData> extends React.PureComponent<MenuProps<T>, Men
         return (
             <ScrollBar
                 className={menuClass('bar')}
-                forceHeight={length}
                 length={length}
                 scrollLength={scrollHeight}
                 offset={this.state.scrollTop}
