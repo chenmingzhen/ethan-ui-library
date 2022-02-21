@@ -1,6 +1,7 @@
 import classnames from 'classnames'
 import config from '../config'
 
+/** 创建样式类名 */
 export default (style, module, prefix = config.prefix) => (...args) => {
     const className = classnames(...args)
 

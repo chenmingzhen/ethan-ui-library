@@ -113,6 +113,8 @@ function MarkDown({ onHeadingSet, examples, source }: MarkdownProps) {
                     if (example) return renderExample(example[1])
 
                     if (prop.value === '<br>' || prop.value === '<br />') return <br />
+
+                    return null
                 },
                 // markdown table 渲染方式
                 table: Table,
