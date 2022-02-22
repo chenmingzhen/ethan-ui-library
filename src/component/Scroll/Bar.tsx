@@ -160,6 +160,11 @@ class ScrollBar extends PureComponent<ScrollBarProps, ScrollBarState> {
             this.props.className
         )
 
+        /** FixedLengthHandler中callback的barLength与(length / scrollLength) * 100 * (handleContainer width|height)相同 */
+        /** length为容器的长度，scrollLength为滚动容器的长度，length/scrollLength得到Bar的百分比长度（下称Radio） */
+        /** 使用Radio*容器的长度length就可以得到具体的长度值，也就是barLength */
+        /** 但是bar样式不直接使用barLength px,使用Radio % 两者是等价的 */
+        /** handleContainer与上层的div一样宽高，即handleContainer的width或height等于传入的length */
         return (
             <FixedLengthHandler length={length} scrollLength={scrollLength}>
                 {({ barLength }) => {
@@ -171,17 +176,15 @@ class ScrollBar extends PureComponent<ScrollBarProps, ScrollBarState> {
 
                     if (scrollLength > 0) {
                         if (direction === 'x') {
-                            /** (length / scrollLength) * 100 * (handle-container width|height) = barLength */
-
-                            style.width = `${(length / scrollLength) * 100}%`
-
+                            // 使用比例而非实际的px
+                            // (length / scrollLength) * 100 * (handleContainer width|height)=barLength,handleContainer width|height=length
                             // style.width = `${barLength}px`
+                            style.width = `${(length / scrollLength) * 100}%`
 
                             style.left = value
                         } else {
-                            style.height = `${(length / scrollLength) * 100}%`
-
                             // style.height = `${barLength}px`
+                            style.height = `${(length / scrollLength) * 100}%`
 
                             style.top = value
                         }
@@ -189,7 +192,7 @@ class ScrollBar extends PureComponent<ScrollBarProps, ScrollBarState> {
 
                     return (
                         <div
-                            // id="handle-container"
+                            // id="handleContainer"
                             className={className}
                             onMouseDown={show ? this.handleBgClick : undefined}
                         >
