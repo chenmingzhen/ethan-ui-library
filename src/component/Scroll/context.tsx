@@ -1,8 +1,7 @@
 import React from 'react'
-import createReactContext from 'create-react-context'
 import { ScrollContext } from './type'
 
-const context = createReactContext<ScrollContext>(undefined)
+const context = React.createContext<ScrollContext>(undefined)
 
 const { Consumer } = context
 
