@@ -1,51 +1,51 @@
-// @ts-nocheck
 import React from 'react'
-import PropTypes from 'prop-types'
 import { PureComponent } from '@/utils/component'
 import Scroll from './Scroll'
+import { ScrollHandlerProps } from './type'
 
-export default class extends PureComponent {
-    static propTypes = {
-        onScroll: PropTypes.func,
-        // 滚动方向
-        scroll: PropTypes.oneOf(['x', 'y', 'both', '']),
-        // left的偏差值 0.1 0.2
-        scrollLeft: PropTypes.number,
-        // top的偏差值 0.1 0.2
-        scrollTop: PropTypes.number,
-    }
+interface ScrollHandlerState {
+    left: number
+    top: number
+}
 
-    static defaultProps = {
+export default class extends PureComponent<ScrollHandlerProps, ScrollHandlerState> {
+    static defaultProps: ScrollHandlerProps = {
         scroll: 'both',
+        onScroll() {},
     }
 
     constructor(props) {
         super(props)
-        this.state = {
-            left: props.scrollLeft || 0,
-            top: props.scrollTop || 0,
-        }
 
-        this.handleScroll = this.handleScroll.bind(this)
+        const { scrollLeft, scrollTop } = props
+
+        this.state = {
+            left: scrollLeft || 0,
+            top: scrollTop || 0,
+        }
     }
 
     get scrollX() {
         const { scroll } = this.props
+
         return scroll === 'x' || scroll === 'both'
     }
 
     get scrollY() {
         const { scroll } = this.props
+
         return scroll === 'y' || scroll === 'both'
     }
 
     getRect() {
         const left = this.props.scrollLeft === undefined ? this.state.left : this.props.scrollLeft
+
         const top = this.props.scrollTop === undefined ? this.state.top : this.props.scrollTop
+
         return { left, top }
     }
 
-    handleScroll(x, y, ...others) {
+    handleScroll: ScrollHandlerProps['onScroll'] = (x, y, ...others) => {
         const left = this.scrollX ? x : 0
         const top = this.scrollY ? y : 0
 
