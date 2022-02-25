@@ -1,8 +1,7 @@
-// @ts-nocheck
 import React from 'react'
-import createReactContext from 'create-react-context'
+import { CheckHandlerContext } from './type'
 
-const context = createReactContext()
+const context = React.createContext<CheckHandlerContext>(undefined)
 
 export const { Provider } = context
 

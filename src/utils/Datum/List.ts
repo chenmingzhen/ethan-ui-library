@@ -1,13 +1,16 @@
 import shallowEqual from '@/utils/shallowEqual'
 import { CHANGE_ACTION, INIT_ACTION } from './types'
 
-/**
- * TODO value需要指定泛型T
- */
-interface ListProps {
+interface ListProps<T = any> {
     format?: string | (() => any)
 
-    onChange?(): void
+    /**
+     *
+     * @param items 当前List的中值
+     * @param data  引起变化的值
+     * @param unknown
+     */
+    onChange?(items: T[], data: T, unknown: true): void
 
     separator?: string
 
@@ -27,7 +30,7 @@ interface ListProps {
  * 事件派发
  * 值存储
  */
-export default class {
+export default class List<T = any> {
     distinct?: boolean
 
     limit?: number
@@ -59,7 +62,7 @@ export default class {
     /** 缓存outerValue */
     $cachedValue: any
 
-    constructor(args: ListProps = {}) {
+    constructor(args: ListProps<T> = {}) {
         const { format, onChange, separator, value, prediction, distinct, disabled, limit } = args
 
         this.distinct = distinct
@@ -205,7 +208,7 @@ export default class {
     }
 
     // hoc=》setValue=》本类set=》本类add
-    add(data, _?: any, childrenKey?: string, unshift?: boolean) {
+    add(data: T | T[], _?: any, childrenKey?: string, unshift?: boolean) {
         if (data === undefined || data === null) return
 
         if (this.limit === 1) this.$values = []
@@ -299,7 +302,7 @@ export default class {
         return value === this.format(data)
     }
 
-    remove(value, _, childrenKey) {
+    remove(value, _?, childrenKey?) {
         if (!value) return
 
         let raws = Array.isArray(value) ? value : [value]

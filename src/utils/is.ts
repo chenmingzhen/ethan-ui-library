@@ -81,4 +81,4 @@ export const isLink = (el: React.ReactElement<{ to?: string }>) => {
     return false
 }
 
-export const isEnterPress = e => e.keyCode === 13
+export const isEnterPress = (e: React.KeyboardEvent) => e.keyCode === 13

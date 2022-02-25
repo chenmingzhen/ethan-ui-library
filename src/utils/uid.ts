@@ -12,18 +12,18 @@ export function getUidStr() {
     return getUid().toString(36)
 }
 
-function $getKey(d, gen, index) {
-    if (gen === true) return d
+function $getKey<T = any>(data: T, keygen, index: number) {
+    if (keygen === true) return data
 
-    if (typeof gen === 'string') return d[gen]
+    if (typeof keygen === 'string') return data[keygen]
 
-    if (typeof gen === 'function') return gen(d, index)
+    if (typeof keygen === 'function') return keygen(data, index)
 
     return index
 }
 
-export function getKey(...args: [any, any, any]) {
-    const key = $getKey(...args)
+export function getKey<T = any>(data: T, keygen, index: number) {
+    const key = $getKey<T>(data, keygen, index)
 
     if (typeof key !== 'string' && typeof key !== 'number') {
         console.error(new Error(`keygen result expect a string or a number, get '${typeof key}'`))

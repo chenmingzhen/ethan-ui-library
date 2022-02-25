@@ -107,6 +107,7 @@
         "no-inner-declarations": 0,
         "@typescript-eslint/no-explicit-any": 0,
         // Temp rule
-        "@typescript-eslint/ban-types": 0
+        "@typescript-eslint/ban-types": 0,
+        "react/no-did-update-set-state": 0
     }
 }
