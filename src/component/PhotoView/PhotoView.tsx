@@ -75,9 +75,9 @@ const initialState = {
     // 破碎状态
     broken: false,
 
-    // 图片 X 偏移量
+    // 图片 X 偏移量 (仅在放大模式下或y轴移动中产生)
     x: 0,
-    // 图片 y 偏移量
+    // 图片 y 偏移量(仅在放大模式下或y轴移动中产生)
     y: 0,
     // 图片缩放程度
     scale: 1,
@@ -139,6 +139,7 @@ export default class PhotoView extends React.Component<IPhotoViewProps, typeof i
 
     componentDidUpdate(prevProps: Readonly<IPhotoViewProps>) {
         const { rotate } = this.props
+
         if (rotate !== prevProps.rotate) {
             const { naturalWidth, naturalHeight } = this.state
             // eslint-disable-next-line react/no-did-update-set-state
@@ -185,6 +186,7 @@ export default class PhotoView extends React.Component<IPhotoViewProps, typeof i
 
     onMove = (newClientX: number, newClientY: number, touchLength = 0) => {
         const { onReachMove, isActive, rotate } = this.props
+
         const {
             naturalWidth,
             x,
@@ -201,6 +203,7 @@ export default class PhotoView extends React.Component<IPhotoViewProps, typeof i
             touched,
             maskTouched,
         } = this.state
+
         if ((touched || maskTouched) && isActive) {
             let { width, height } = this.state
             // 若图片不是水平则调换属性
@@ -211,15 +214,10 @@ export default class PhotoView extends React.Component<IPhotoViewProps, typeof i
             if (touchLength === 0 && this.initialTouchState === TouchStartEnum.Normal) {
                 const isStillX = Math.abs(newClientX - clientX) <= minStartTouchOffset
                 const isStillY = Math.abs(newClientY - clientY) <= minStartTouchOffset
+
                 // 初始移动距离不足
-                if (isStillX && isStillY) {
-                    // 方向记录上次移动距离，以便平滑过渡
-                    this.setState({
-                        lastMoveClientX: newClientX,
-                        lastMoveClientY: newClientY,
-                    })
-                    return
-                }
+                if (isStillX && isStillY) return
+
                 // 设置响应状态
                 this.initialTouchState = !isStillX
                     ? TouchStartEnum.X
@@ -236,6 +234,7 @@ export default class PhotoView extends React.Component<IPhotoViewProps, typeof i
                 // 边缘超出状态
                 const horizontalCloseEdge = getClosedEdge(offsetX + lastX, scale, width, window.innerWidth)
                 const verticalCloseEdge = getClosedEdge(offsetY + lastY, scale, height, window.innerHeight)
+
                 // 边缘触发检测
                 currentReachState = getReachType({
                     initialTouchState: this.initialTouchState,
@@ -262,6 +261,9 @@ export default class PhotoView extends React.Component<IPhotoViewProps, typeof i
                     Math.min(endScale, Math.max(maxScale, naturalWidth / width)),
                     minScale - scaleBuffer
                 )
+
+                /** 没有放大的情况下 scale，endScale，toScale的值都为1 */
+                /** 当放大点击Esc时触发倍数缩放 */
                 this.setState({
                     lastTouchLength: touchLength,
                     reachState: currentReachState,
@@ -423,9 +425,8 @@ export default class PhotoView extends React.Component<IPhotoViewProps, typeof i
                           }),
                 },
                 () => {
-                    if (onReachUp) {
-                        onReachUp(newClientX, newClientY)
-                    }
+                    onReachUp(newClientX, newClientY)
+
                     // 触发 Tap 事件
                     if (!hasMove) {
                         if (touched && onPhotoTap) {
@@ -464,6 +465,7 @@ export default class PhotoView extends React.Component<IPhotoViewProps, typeof i
         } = this.props
         const { width, height, loaded, x, y, scale, touched, broken } = this.state
 
+        /** 水平移动时 由Slider参数移动 */
         const transform = `translate3d(${x}px, ${y}px, 0) scale(${scale}) rotate(${rotate}deg)`
 
         return (
@@ -479,7 +481,7 @@ export default class PhotoView extends React.Component<IPhotoViewProps, typeof i
                         animateOut: loaded && showAnimateType === ShowAnimateEnum.Out,
                     })}
                     style={{
-                        transformOrigin: loaded ? getAnimateOrigin(originRect, 0, 0) : undefined,
+                        transformOrigin: loaded ? getAnimateOrigin(originRect) : undefined,
                     }}
                 >
                     <Photo

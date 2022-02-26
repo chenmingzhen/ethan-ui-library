@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { deepMerge, deepGet } from '@/utils/objects'
 import config from '../config'
 import cn from './zh-CN'
@@ -14,8 +13,10 @@ export function setLocale(arg) {
     }
 }
 
-export function getLocale(name, def) {
+export function getLocale(name?: string, def?: Record<string, any>) {
     if (!name) return locale
+
     if (def && def[name]) return def[name]
+
     return deepGet(locale, name)
 }

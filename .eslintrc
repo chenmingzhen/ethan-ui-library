@@ -33,6 +33,7 @@
         "@typescript-eslint/comma-dangle": 0,
         "@typescript-eslint/no-unused-expressions": 0,
         "@typescript-eslint/no-use-before-define": 0,
+        "@typescript-eslint/no-var-requires": 0,
         "react/jsx-indent-props": [2, 4],
         "consistent-return": 0,
         "react/static-property-placement": 0,
@@ -106,8 +107,10 @@
         "jsx-a11y/no-noninteractive-element-interactions": 0,
         "no-inner-declarations": 0,
         "@typescript-eslint/no-explicit-any": 0,
+        "@typescript-eslint/space-before-function-paren": 0,
         // Temp rule
         "@typescript-eslint/ban-types": 0,
-        "react/no-did-update-set-state": 0
+        "react/no-did-update-set-state": 0,
+        "react/jsx-wrap-multilines": 0
     }
 }

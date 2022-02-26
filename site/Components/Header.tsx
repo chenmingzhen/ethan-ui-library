@@ -35,11 +35,12 @@ const Header = () => {
 
     const handleLangClick = () => {
         const langs = findLangs()
+
         const href = window.location.href.replace(`/${langs[0]}`, `/${langs[1]}`)
 
         setItem(STORAGE_KEY, langs[2])
 
-        window.location = href
+        window.location = (href as unknown) as Location
     }
 
     return (

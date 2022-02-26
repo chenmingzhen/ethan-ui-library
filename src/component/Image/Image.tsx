@@ -1,7 +1,8 @@
-import React, { ReactNode, useRef } from 'react'
+import React, { ReactNode, useRef, ForwardRefRenderFunction } from 'react'
 import classnames from 'classnames'
 import { imageClass } from '@/styles'
 import Spin from '@/component/Spin'
+import { getUidStr } from '@/utils/uid'
 import showGallery from './events'
 import { PLACEHOLDER, SRC, ALT, ERROR } from './variable'
 import useImage from './hooks/useImage'
@@ -84,11 +85,17 @@ export interface ImageProps {
     loadingColor?: string
 }
 
-const Image: React.FC<ImageProps> = props => {
+interface IImageProps extends ImageProps {
+    onTouchStart(e)
+
+    onTouchEnd(e)
+}
+
+const Image: ForwardRefRenderFunction<HTMLAnchorElement | HTMLDivElement, IImageProps> = (props, ref) => {
     const {
         src,
         alt,
-        lazy = false,
+        lazy = true,
         container,
         shape,
         fit,
@@ -103,10 +110,13 @@ const Image: React.FC<ImageProps> = props => {
         placeholder,
         loadingColor: color,
         loadingName: name,
+        onTouchEnd,
+        onTouchStart,
     } = props
 
-    const el = useRef<any>()
-    const { status } = useImage(lazy, src, alt, container, el)
+    const uuid = useRef(getUidStr()).current
+
+    const { status } = useImage(lazy, src, alt, container, uuid)
 
     const handleClick = (e: React.MouseEvent<HTMLElement, MouseEvent>) => {
         if (onClick) {
@@ -167,9 +177,10 @@ const Image: React.FC<ImageProps> = props => {
     }
 
     const className = classnames(imageClass('_', shape, fit), props.className)
+
     const Tag = href ? 'a' : 'div'
+
     const newProps = {
-        ref: el,
         onClick: handleClick,
         target: target === '_download' ? '_self' : target,
         download: target === '_download',
@@ -177,9 +188,13 @@ const Image: React.FC<ImageProps> = props => {
         style: Object.assign({}, style, { width, paddingBottom: height }),
     }
 
-    return <Tag {...newProps}>{renderImage()}</Tag>
+    return (
+        <Tag {...newProps} onTouchEnd={onTouchEnd} onTouchStart={onTouchStart} ref={ref as any} id={uuid}>
+            {renderImage()}
+        </Tag>
+    )
 }
 
 Image.displayName = 'EthanImage'
 
-export default React.memo(Image)
+export default React.memo(React.forwardRef(Image))

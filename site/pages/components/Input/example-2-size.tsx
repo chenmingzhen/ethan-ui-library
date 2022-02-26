@@ -10,11 +10,11 @@ import { Input } from 'ethan/index'
 const style = { width: 120, marginRight: 12 }
 
 export default function() {
-  return (
-    <div>
-      <Input size="small" style={style} placeholder="small size" />
-      <Input style={style} placeholder="default size" />
-      <Input size="large" style={style} placeholder="large size" />
-    </div>
-  )
+    return (
+        <div>
+            <Input size="small" style={style} placeholder="small size" />
+            <Input style={style} placeholder="default size" />
+            <Input size="large" style={style} placeholder="large size" />
+        </div>
+    )
 }

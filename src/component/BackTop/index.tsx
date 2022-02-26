@@ -1,26 +1,35 @@
-// @ts-nocheck
-import React, { useRef, useState, memo } from 'react'
-import PropTypes from 'prop-types'
+import React, { useRef, memo, useEffect } from 'react'
 import { backTopClass } from '@/styles'
 import { FontAwesome } from '@/component/Icon'
-import Transition from '@/component/Transition'
-import { useUnmount } from 'react-use'
-import Transfer from './transfer'
+import useSafeState from '@/hooks/useSafeState'
+import ReactDOM from 'react-dom'
 
-const BackTop = props => {
-    const [visible, setVisible] = useState(false)
-    const backTopTimer = useRef()
-    const isUnmount = useRef(false)
+export interface BackTopProps {
+    right?: number
+
+    bottom?: number
+
+    height?: number
+
+    children?: React.ReactNode
+
+    onClick?(e?: React.MouseEvent<HTMLElement, MouseEvent>): void
+}
+
+function isBackTopVisible(limitHeight) {
+    const top = document.body.scrollTop || document.documentElement.scrollTop || window.scrollY
+
+    return top >= limitHeight
+}
+
+const BackTop: React.FC<BackTopProps> = props => {
+    const [visible, setVisible] = useSafeState(isBackTopVisible(props.height))
+    const backTopTimer = useRef<NodeJS.Timeout>()
+    const container = useRef<HTMLDivElement>(document.createElement('div')).current
     const { right, bottom } = props
 
-    const onScroll = () => {
-        const top = document.body.scrollTop || document.documentElement.scrollTop || window.scrollY
-        const newVisible = top >= props.height
-        !isUnmount.current && setVisible(newVisible)
-    }
-
-    const onClick = () => {
-        props.onClick && props.onClick()
+    const onClick = e => {
+        props.onClick?.(e)
 
         if (backTopTimer.current) {
             clearInterval(backTopTimer.current)
@@ -30,52 +39,50 @@ const BackTop = props => {
 
         backTopTimer.current = setInterval(() => {
             const oTop = document.body.scrollTop || document.documentElement.scrollTop || window.scrollY
+
             if (oTop > 0) {
                 document.documentElement.scrollTop = oTop - height
                 document.body.scrollTop = document.documentElement.scrollTop
-
-                if (window.setScroll) window.setScroll(-height)
             } else {
                 clearInterval(backTopTimer.current)
             }
-
-            // if (height <= 15) height = 15
-            // else height -= 1
         }, 10)
     }
 
     const style = { right: `${right}px`, bottom: `${bottom}px` }
 
-    useUnmount(() => {
-        isUnmount.current = true
-        if (backTopTimer.current) clearInterval(backTopTimer.current)
-    })
+    useEffect(() => {
+        const onScroll = () => {
+            setVisible(isBackTopVisible(props.height))
+        }
 
-    return (
-        <Transfer onScroll={onScroll}>
-            <Transition show={visible}>
-                <div className={backTopClass('_')} onClick={onClick} style={style}>
-                    {props.children ? (
-                        props.children
-                    ) : (
-                        <div className={backTopClass('content')}>
-                            <FontAwesome name="angle-double-up" />
-                        </div>
-                    )}
+        document.body.appendChild(container)
+
+        window.addEventListener('scroll', onScroll)
+
+        return () => {
+            window.removeEventListener('scroll', onScroll)
+
+            if (backTopTimer.current) clearInterval(backTopTimer.current)
+        }
+    }, [props.height])
+
+    return ReactDOM.createPortal(
+        <div className={backTopClass('_', visible && 'visible')} onClick={onClick} style={style}>
+            {props.children ? (
+                props.children
+            ) : (
+                <div className={backTopClass('content')}>
+                    <FontAwesome name="angle-double-up" />
                 </div>
-            </Transition>
-        </Transfer>
+            )}
+        </div>,
+        container
     )
 }
 
 BackTop.defaultProps = {
     height: 100,
-}
-BackTop.propTypes = {
-    onClick: PropTypes.func,
-    height: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
-    right: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
-    bottom: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
 }
 
 BackTop.displayName = 'EthanBackTop'

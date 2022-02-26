@@ -51,6 +51,8 @@ class Menu<T extends MenuBaseData> extends React.PureComponent<MenuProps<T>, Men
         style: {},
     }
 
+    static displayName = 'EthanMenu'
+
     providerValue: MenuContext
 
     itemsUpdateActiveCallback = new Map<string, UpdateActive>()
@@ -284,6 +286,12 @@ class Menu<T extends MenuBaseData> extends React.PureComponent<MenuProps<T>, Men
         this.setState({ [scrollPos]: percent > 1 ? 1 : percent < 0 ? 0 : percent })
 
         e.preventDefault()
+
+        this.wrapper[scrollPos] += wheel.pixelY
+
+        return
+
+        /** @TODO bug fix  */
 
         /** 平滑滚动计算 */
 

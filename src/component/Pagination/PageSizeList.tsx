@@ -1,20 +1,19 @@
-// @ts-nocheck
-import React, { memo, useCallback } from 'react'
-import PropTypes from 'prop-types'
+import React from 'react'
 import { paginationClass } from '@/styles'
 import Select from '../Select'
+import paginationContext from './context'
+import { PageSizeListProps } from './type'
 
-const PageSizeList = props => {
-    const { current, onChange, pageSize, pageSizeList, text, disabled, size, sizeListProps = {} } = props
+const PageSizeList: React.FC<PageSizeListProps> = props => {
+    const { current, onChange, pageSize, text, disabled } = React.useContext(paginationContext)
 
-    const handleChange = useCallback(
-        tPageSize => {
-            const start = (current - 1) * pageSize + 1
+    const { pageSizeList, size, sizeListProps } = props
 
-            onChange(Math.ceil(start / tPageSize), tPageSize)
-        },
-        [current, onChange, pageSize]
-    )
+    function handleChange(newPageSize) {
+        const start = (current - 1) * pageSize + 1
+
+        onChange(Math.ceil(start / newPageSize), newPageSize)
+    }
 
     return (
         <Select
@@ -33,19 +32,9 @@ const PageSizeList = props => {
     )
 }
 
-PageSizeList.propTypes = {
-    current: PropTypes.number.isRequired,
-    disabled: PropTypes.bool,
-    onChange: PropTypes.func.isRequired,
-    pageSize: PropTypes.number.isRequired,
-    pageSizeList: PropTypes.array,
-    text: PropTypes.object.isRequired,
-    size: PropTypes.string,
-    sizeListProps: PropTypes.object,
-}
-
 PageSizeList.defaultProps = {
     pageSizeList: [10, 20, 30, 50, 100],
+    sizeListProps: {},
 }
 
-export default memo(PageSizeList)
+export default React.memo(PageSizeList)

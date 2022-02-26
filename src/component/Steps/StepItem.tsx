@@ -1,21 +1,29 @@
-// @ts-nocheck
-import React, { useEffect, useState, useMemo, useCallback } from 'react'
-import PropTypes from 'prop-types'
+import React, { useEffect, useState, useCallback } from 'react'
 import { stepsClass } from '@/styles'
 import { FontAwesome } from '@/component/Icon'
+import kindOf from '@/utils/kindOf'
+import BaseIcon from '../Icon'
 
-const StepItem = props => {
+export interface StepItemProps {
+    step?: number
+    width?: number
+    height?: number
+    title?: string
+    description?: string
+    status?: 'wait' | 'process' | 'finish' | 'error'
+    icon?: React.ReactElement
+    onClick?: (index: number) => void
+    index?: number
+}
+
+const StepItem: React.FC<StepItemProps> = props => {
     const { icon: Icon, title, description, step, status, width, height, onClick, index } = props
-    const [showCustomIcon, setShowCustomIcon] = useState(Icon && Icon.type && Icon.type.displayName === 'EthanIcon')
+    const [showCustomIcon, setShowCustomIcon] = useState(Icon && kindOf(Icon.type, BaseIcon))
 
-    const style = useMemo(() => {
-        const computed = {}
-
-        width ? (computed.width = `${width}%`) : null
-        height ? (computed.height = `${height}%`) : null
-
-        return computed
-    }, [width, height])
+    const style: React.CSSProperties = {
+        width: width ? `${width}%` : undefined,
+        height: height ? `${height}%` : undefined,
+    }
 
     const handleClick = useCallback(() => {
         onClick?.(index)
@@ -32,7 +40,7 @@ const StepItem = props => {
             return
         }
 
-        setShowCustomIcon(true)
+        setShowCustomIcon(Icon && kindOf(Icon?.type, BaseIcon))
     }, [Icon])
 
     return (
@@ -60,18 +68,6 @@ const StepItem = props => {
 
 StepItem.defaultProps = {
     status: 'wait',
-}
-
-StepItem.propTypes = {
-    step: PropTypes.number,
-    width: PropTypes.number,
-    height: PropTypes.number,
-    title: PropTypes.string,
-    description: PropTypes.string,
-    status: PropTypes.oneOf(['wait', 'process', 'finish', 'error']),
-    icon: PropTypes.element,
-    onClick: PropTypes.func,
-    index: PropTypes.number,
 }
 
 export default React.memo(StepItem)

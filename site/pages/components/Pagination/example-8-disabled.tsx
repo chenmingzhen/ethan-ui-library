@@ -8,5 +8,5 @@ import React from 'react'
 import { Pagination } from 'ethan/index'
 
 export default function() {
-  return <Pagination disabled defaultCurrent={10} layout={['links', 'list']} total={1000} />
+    return <Pagination disabled layouts={['links', 'list']} total={1000} />
 }

@@ -9,16 +9,16 @@ import { Pagination } from 'ethan/index'
 
 const info = ({ total }) => `total ${total}`
 
-export default function() {
-  return (
-    <Pagination
-      total={128}
-      pageSize={50}
-      text={{
-        jumper: 'Go to {input}',
-      }}
-      onChange={(...args) => console.log(args)}
-      layout={['links', 'list', info, 'jumper']}
-    />
-  )
+export default function () {
+    return (
+        <Pagination
+            total={128}
+            pageSize={50}
+            text={{
+                jumper: 'Go to {input}',
+            }}
+            onChange={(...args) => console.log(args)}
+            layouts={['links', 'list', info, 'jumper']}
+        />
+    )
 }

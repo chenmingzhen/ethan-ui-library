@@ -9,6 +9,8 @@ import isDOMElement from '@/utils/dom/isDOMElement'
 
 export interface IPopoverProps extends PopoverProps {
     isConfirmLoading?: boolean
+
+    innerAlwaysUpdate?: boolean
 }
 
 export interface PopoverProps {
@@ -87,7 +89,7 @@ class Popover extends Component<IPopoverProps, PopoverState> {
     }
 
     shouldComponentUpdate = (nextProps, nextState) => {
-        if (this.state.show === true || nextState.show === true) return true
+        if (this.state.show === true || nextState.show === true || this.props.innerAlwaysUpdate) return true
 
         return false
     }
@@ -367,4 +369,4 @@ class Popover extends Component<IPopoverProps, PopoverState> {
     }
 }
 
-export default React.memo(Popover)
+export default Popover

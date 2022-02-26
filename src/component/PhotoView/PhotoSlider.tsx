@@ -1,25 +1,26 @@
 import React from 'react'
 import { PureComponent } from '@/utils/component'
 import { photoViewClass } from '@/styles'
+import { deepClone } from '@/utils/clone'
 import PhotoView from './PhotoView'
 import PhotoSliderPortal from './PhotoSliderPortal'
 import VisibleAnimationHandle from './VisibleAnimationHandle'
 import Icons from '../icons'
 import { isTouchDevice } from './utils'
-import { DataType, PhotoProviderBase, OverlayRenderProps, ReachTypeEnum, ShowAnimateEnum } from './types'
+import { PhotoViewImageData, PhotoViewGroupBase, OverlayRenderProps, ReachTypeEnum, ShowAnimateEnum } from './types'
 import { defaultOpacity, horizontalOffset, maxMoveOffset } from './variables'
 
 const { Close, AngleLeft, AngleRight } = Icons
 
-export interface PhotoSliderProps extends PhotoProviderBase {
+export interface PhotoSliderProps extends PhotoViewGroupBase {
     /* 图片列表 */
-    images: DataType[]
+    images: PhotoViewImageData[]
     /* 图片当前索引 */
     index?: number
     /* 可见 */
     visible: boolean
     /* 关闭事件 */
-    onClose: (evt?: React.MouseEvent | React.TouchEvent) => void
+    onClose?: (evt?: React.MouseEvent | React.TouchEvent) => void
     /* 索引改变回调 */
     onIndexChange?: (index: number) => void
 }
@@ -76,24 +77,24 @@ export default class PhotoSlider extends PureComponent<PhotoSliderProps, PhotoSl
             currentIndex: 0,
             touched: false,
             shouldTransition: true,
-
             lastClientX: undefined,
             lastClientY: undefined,
             backdropOpacity: defaultOpacity,
             lastBackdropOpacity: defaultOpacity,
             overlayVisible: true,
             canPullClose: true,
-
             rotatingMap: new Map<number, number>(),
         }
     }
 
     componentDidMount() {
         const { index = 0 } = this.props
+
         this.setState({
             translateX: index * -(window.innerWidth + horizontalOffset),
             currentIndex: index,
         })
+
         window.addEventListener('keydown', this.handleKeyDown)
     }
 
@@ -105,7 +106,7 @@ export default class PhotoSlider extends PureComponent<PhotoSliderProps, PhotoSl
         const { onClose } = this.props
         const { backdropOpacity } = this.state
 
-        onClose(evt)
+        onClose?.(evt)
 
         this.setState({
             overlayVisible: true,
@@ -147,10 +148,12 @@ export default class PhotoSlider extends PureComponent<PhotoSliderProps, PhotoSl
     handleRotate = (rotating: number) => {
         const { currentIndex, rotatingMap } = this.state
 
-        rotatingMap.set(currentIndex, rotating)
+        const newMap = deepClone(rotatingMap)
+
+        newMap.set(currentIndex, rotating)
 
         this.setState({
-            rotatingMap,
+            rotatingMap: newMap,
         })
     }
 
@@ -183,8 +186,11 @@ export default class PhotoSlider extends PureComponent<PhotoSliderProps, PhotoSl
                     canPullClose: true,
                 }
             }
+
             const offsetClientY = Math.abs(clientY - lastClientY)
+
             const opacity = Math.max(Math.min(defaultOpacity, defaultOpacity - offsetClientY / 100 / 4), 0)
+
             return {
                 touched: true,
                 lastClientY,
@@ -206,6 +212,8 @@ export default class PhotoSlider extends PureComponent<PhotoSliderProps, PhotoSl
                     shouldTransition: true,
                 }
             }
+
+            /** 往左拉动 originOffsetClientX为正数 */
             const originOffsetClientX = clientX - lastClientX
             let offsetClientX = originOffsetClientX
 
@@ -246,6 +254,7 @@ export default class PhotoSlider extends PureComponent<PhotoSliderProps, PhotoSl
 
     handlePrevious = (shouldTransition?: boolean) => {
         const { currentIndex } = this.state
+
         if (currentIndex > 0) {
             this.handleIndexChange(currentIndex - 1, shouldTransition)
         }
@@ -425,6 +434,7 @@ export default class PhotoSlider extends PureComponent<PhotoSliderProps, PhotoSl
                                                 viewClassName={viewClassName}
                                                 className={imageClassName}
                                                 style={{
+                                                    /** 每个PhotoView设置对应的Left，通过Transform的改变去驱动位置的更新 */
                                                     left: `${(innerWidth + horizontalOffset) * realIndex}px`,
                                                     WebkitTransform: transform,
                                                     transform,
@@ -473,6 +483,7 @@ export default class PhotoSlider extends PureComponent<PhotoSliderProps, PhotoSl
                             </PhotoSliderPortal>
                         )
                     }
+
                     return null
                 }}
             </VisibleAnimationHandle>

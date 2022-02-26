@@ -9,18 +9,18 @@ import React from 'react'
 import { Loading, Button } from 'ethan/index'
 
 export default () => {
-  const useLoading = React.useCallback(type => {
-    Loading.start(type, 'Loading')
+    const globalLoading = React.useCallback(type => {
+        const { destroy } = Loading.fullScreen({ type, fallback: <span>loading...</span> })
 
-    setTimeout(() => {
-      Loading.finish()
-    }, 2000)
-  }, [])
-  return (
-    <div>
-      <Button onClick={() => useLoading('wave')}>wave</Button>
-      <Button onClick={() => useLoading('chasing-ring')}>chasing-ring</Button>
-      <Button onClick={() => useLoading('plane')}>scale-circle</Button>
-    </div>
-  )
+        setTimeout(() => {
+            destroy()
+        }, 3000)
+    }, [])
+    return (
+        <div>
+            <Button onClick={() => globalLoading('wave')}>wave</Button>
+            <Button onClick={() => globalLoading('chasing-ring')}>chasing-ring</Button>
+            <Button onClick={() => globalLoading('plane')}>scale-circle</Button>
+        </div>
+    )
 }

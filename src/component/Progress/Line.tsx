@@ -1,15 +1,19 @@
-// @ts-nocheck
 import React from 'react'
-import PropTypes from 'prop-types'
 import classnames from 'classnames'
 import { progressClass } from '@/styles'
 import analyzeColor from './analyzeColor'
+import { ProgressProps } from './type'
+import Popup from './Popup'
 
-const Line = ({ children, strokeWidth, type, value, color, style, background, className }) => {
-    const ClassName = classnames(progressClass('line', type), className)
+const Line: React.FC<ProgressProps> = props => {
+    const { children, strokeWidth, type, value, color, style, background, popup } = props
 
-    const innerStyle = {
-        width: `${(value / 100) * 100}%`,
+    const hasChildren = children !== undefined
+
+    const className = classnames(progressClass('line', type, hasChildren && popup && 'line-popup'), props.className)
+
+    const innerStyle: React.CSSProperties = {
+        width: `${value}%`,
         borderRadius: strokeWidth / 2,
     }
 
@@ -17,41 +21,37 @@ const Line = ({ children, strokeWidth, type, value, color, style, background, cl
         innerStyle.background = color
         innerStyle.backgroundSize = '1em 1em'
     } else if (typeof color === 'object') {
-        innerStyle.background = `linear-gradient(to right,${analyzeColor(color).reduce((p, v) => {
-            const col = `${v.color} ${v.pos}`
+        innerStyle.background = `linear-gradient(to right,${analyzeColor(color).reduce(
+            (accumulatedValue, currentValue) => {
+                const col = `${currentValue.color} ${currentValue.pos}`
 
-            // ""?console.log(1):console.log(2) output:2
-
-            return p ? `${p},${col}` : col
-        }, '')})`
+                return accumulatedValue ? `${accumulatedValue},${col}` : col
+            },
+            ''
+        )})`
     }
 
     return (
-        <div className={ClassName} style={style}>
+        <div className={className} style={style}>
             <div
                 className={progressClass('background')}
                 style={{ height: strokeWidth, background, borderRadius: strokeWidth / 2 }}
             >
                 <div className={progressClass('front')} style={innerStyle} />
             </div>
-            {children !== undefined && <div className={progressClass('content')}>{children}</div>}
+
+            {hasChildren &&
+                (popup ? (
+                    <Popup value={value}>{children}</Popup>
+                ) : (
+                    <div className={progressClass('content')}>{children}</div>
+                ))}
         </div>
     )
-}
-
-Line.propTypes = {
-    background: PropTypes.string,
-    children: PropTypes.any,
-    className: PropTypes.string,
-    color: PropTypes.oneOfType([PropTypes.string, PropTypes.object]),
-    strokeWidth: PropTypes.number,
-    style: PropTypes.object,
-    type: PropTypes.oneOf(['success', 'info', 'warning', 'error', 'danger']),
-    value: PropTypes.number,
 }
 
 Line.defaultProps = {
     strokeWidth: 8,
 }
 
-export default Line
+export default React.memo(Line)

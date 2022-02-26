@@ -4,7 +4,6 @@
 import React from 'react'
 import navable from 'docs/Navable'
 import MarkDown from 'docs/MarkDown'
-
 import locate from 'doc/utils/locate'
 
 import cn from 'doc/pages/components/Progress/cn.md'
@@ -83,10 +82,18 @@ const examples = [
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
     rawText: require('!raw-loader!doc/pages/components/Progress/example-6-animation.tsx').default,
     },
+    {
+    name: '7-popupx',
+    title: locate(
+    '弹出展示 \n 设置 popup 属性后，children 会通过弹出框展示',
+    'Popup \n After setting the popup property, children will be displayed through a popup box'
+    ),
+    component: require('doc/pages/components/Progress/example-7-popup.tsx').default,
+    // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
+    rawText: require('!raw-loader!doc/pages/components/Progress/example-7-popup.tsx').default,
+    },
 ]
 
-    const codes = undefined
-
 export default navable(props => (
-<MarkDown {...props} codes={codes} source={source} examples={examples} />
+<MarkDown {...props} source={source} examples={examples} />
 ))

@@ -2,17 +2,25 @@ import React from 'react'
 import classnames from 'classnames'
 import { PureComponent } from '@/utils/component'
 import { curry } from '@/utils/func'
-import Popover, { PopoverProps } from '@/component/Popover'
+import Popover, { PopoverProps } from '@/component/Popover/Popover'
 import { buttonClass, inputClass, popoverClass } from '../styles'
 
-interface InputBorderProps {
+export interface InputBorderProps {
+    disabled?: boolean
+
+    tip?: React.ReactNode
+
+    popoverProps?: Omit<PopoverProps, 'children'>
+
+    size?: 'small' | 'default' | 'large'
+}
+
+interface IInputBorderProps extends InputBorderProps {
     autoFocus?: boolean
 
     border?: boolean
 
     className?: string
-
-    disabled?: boolean
 
     error?: Error
 
@@ -20,15 +28,9 @@ interface InputBorderProps {
 
     onFocus?: (e: React.FocusEvent<HTMLInputElement>) => void
 
-    size?: 'small' | 'default' | 'large'
-
     style?: React.CSSProperties
 
-    tip?: React.ReactNode
-
     width?: React.CSSProperties['width']
-
-    popoverProps?: PopoverProps
 }
 
 interface InputBorderState {
@@ -46,7 +48,7 @@ interface Options {
 
     from?: keyof HTMLElementTagNameMap
 
-    className?: string | ((props: InputBorderProps) => string)
+    className?: string | ((props: IInputBorderProps) => string)
 
     enterPress?: boolean
 
@@ -58,7 +60,7 @@ interface Options {
  */
 export default curry(
     (options: Options, Origin) =>
-        class extends PureComponent<InputBorderProps, InputBorderState> {
+        class extends PureComponent<IInputBorderProps, InputBorderState> {
             static defaultProps = {
                 border: true,
                 style: {},
@@ -170,6 +172,7 @@ export default curry(
                                         className={popoverClass(...popoverClassList)}
                                         placement={placement}
                                         content={content}
+                                        innerAlwaysUpdate
                                     >
                                         {originComponent}
                                     </Popover>

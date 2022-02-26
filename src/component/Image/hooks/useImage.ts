@@ -7,7 +7,7 @@ const useImage = (
     src: string | null,
     alt: string | null,
     container: string | null,
-    el: RefObject<HTMLElement>
+    elId: string
 ) => {
     const [status, setStatus] = useState<StatusType>(PLACEHOLDER)
     const image = useRef<HTMLImageElement>()
@@ -31,7 +31,7 @@ const useImage = (
         } else {
             lazyId.current = addStack({
                 offset: typeof lazy === 'number' ? lazy : 0,
-                element: el.current,
+                element: document.getElementById(elId),
                 render: markToRender,
                 container: typeof container === 'string' ? document.querySelector(container) : container,
             })

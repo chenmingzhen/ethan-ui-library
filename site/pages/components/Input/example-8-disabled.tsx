@@ -10,15 +10,15 @@ import { Input } from 'ethan/index'
 const style = { width: 300, marginBottom: 12 }
 
 export default function() {
-  return (
-    <div>
-      <Input.Group disabled style={style}>
-        <Input placeholder="first name" />
-        -
-        <Input placeholder="last name" />
-      </Input.Group>
+    return (
+        <div>
+            <Input.Group disabled style={style}>
+                <Input placeholder="first name" />
+                -
+                <Input placeholder="last name" />
+            </Input.Group>
 
-      <Input disabled style={style} placeholder="disabled input" />
-    </div>
-  )
+            <Input disabled style={style} placeholder="disabled input" />
+        </div>
+    )
 }

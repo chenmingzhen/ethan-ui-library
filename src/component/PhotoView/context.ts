@@ -1,9 +1,9 @@
 import { createContext } from 'react'
-import { DataType } from './types'
+import { PhotoViewImageData } from './types'
 
 export type OnShow = (key?: string) => void
 
-export type AddItem = ({ key, src, originRef, intro }: DataType) => void
+export type AddItem = ({ key, src, originRef, intro }: PhotoViewImageData) => void
 
 export type RemoveItem = (key?: string) => void
 
@@ -15,4 +15,4 @@ export interface PhotoContext {
     removeItem: RemoveItem
 }
 
-export default createContext<PhotoContext>({ onShow() {}, addItem() {}, removeItem() {} })
+export default createContext<PhotoContext>({ onShow() { }, addItem() { }, removeItem() { } })

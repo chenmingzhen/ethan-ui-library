@@ -16,8 +16,13 @@ import List from '@/utils/Datum/List'
 import { formConsumer } from './formContext'
 import { loopConsumer } from './Loop'
 import { fieldSetConsumer } from './FieldSet'
+import { Rule } from '../Rule/type'
 
-interface InputableProps {
+export interface InputAbleProps {
+    rules?: Rule[]
+}
+
+interface IInputableProps extends InputAbleProps {
     beforeChange: Function
 
     bind: any[]
@@ -46,11 +51,10 @@ interface InputableProps {
 
     onItemError: Function
 
+    /** @todo */
     popover: string
 
     required: boolean
-
-    rules: any[] | string
 
     type: string
 
@@ -87,7 +91,7 @@ const beforeValueChange = curry((fn, value, datum) => {
 
 export default curry(Origin =>
     consumer(
-        class extends Component<InputableProps, InputableState> {
+        class extends Component<IInputableProps, InputableState> {
             static propTypes = {}
 
             static defaultProps = {

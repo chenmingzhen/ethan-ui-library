@@ -4,7 +4,6 @@
 import React from 'react'
 import navable from 'docs/Navable'
 import MarkDown from 'docs/MarkDown'
-<% if (codes.length > 0) { -%>import log from 'doc/utils/log'<% } %>
 import locate from 'doc/utils/locate'
 
 import cn from 'doc/pages/components/<%= name %>/cn.md'
@@ -27,27 +26,6 @@ const examples = [
 <% }) -%>
 ]
 
-<% if (codes.length > 0) { -%>
-    log.start()
-    <% codes.forEach(function (code, i) { -%>
-        log.setType('<%= code %>')
-        require('doc/pages/components/<%= name %>/code-<%= code %>.js')
-    <% }) -%>
-
-    const logs = log.end()
-
-    const codes = {
-    <% codes.forEach(function (code, i) { -%>
-        '<%= code %>': {
-        text: require('!raw-loader!doc/pages/components/<%= name %>/code-<%= code %>.js'),
-        log: logs['<%= code %>'],
-        },
-    <% }) -%>
-    }
-<% } else { -%>
-    const codes = undefined
-<% } -%>
-
 export default navable(props => (
-<MarkDown {...props} codes={codes} source={source} examples={examples} />
+<MarkDown {...props} source={source} examples={examples} />
 ))
