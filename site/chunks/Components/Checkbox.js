@@ -103,16 +103,6 @@ const examples = [
     // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
     rawText: require('!raw-loader!doc/pages/components/Checkbox/example-10-disabled.tsx').default,
     },
-    {
-    name: '11-inputx',
-    title: locate(
-    '带输入 \n 设置 inputable 属性可以显示输入框，返回值为输入框内容',
-    'Inputable \n Set the inputable property to true can show the input box and the return value is the value of the input box.'
-    ),
-    component: require('doc/pages/components/Checkbox/example-11-input.tsx').default,
-    // webpack静态资源内联raw-loader, Example中使用，代码内容从此处通过正则筛选
-    rawText: require('!raw-loader!doc/pages/components/Checkbox/example-11-input.tsx').default,
-    },
 ]
 
     const codes = undefined

@@ -8,11 +8,11 @@ import React from 'react'
 import { Checkbox } from 'ethan/index'
 
 export default function() {
-  return (
-    <div>
-      <Checkbox checked={false}>not checked</Checkbox>
-      <Checkbox checked>checked</Checkbox>
-      <Checkbox checked="indeterminate">indeterminate</Checkbox>
-    </div>
-  )
+    return (
+        <div>
+            <Checkbox checked={false}>not checked</Checkbox>
+            <Checkbox checked>checked</Checkbox>
+            <Checkbox checked="indeterminate">indeterminate</Checkbox>
+        </div>
+    )
 }

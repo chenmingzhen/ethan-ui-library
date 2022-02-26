@@ -4,8 +4,9 @@ import InputAble from '../Form/inputable'
 import Checkbox from './Checkbox'
 import Group from './Group'
 import { consumer } from './context'
+import { CheckboxComponent } from './type'
 
-const CheckboxContainer = compose(InputAble, consumer)(Checkbox)
+const CheckboxContainer = compose(InputAble, consumer)(Checkbox) as CheckboxComponent
 
 CheckboxContainer.Group = compose(
     InputAble,
@@ -13,6 +14,6 @@ CheckboxContainer.Group = compose(
 )(Group)
 
 CheckboxContainer.displayName = 'EthanCheckbox'
-CheckboxContainer.Group.displayName = 'EthanCheckboxGroup'
+CheckboxContainer.Group.displayName = ''
 
 export default CheckboxContainer

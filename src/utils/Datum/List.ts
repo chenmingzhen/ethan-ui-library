@@ -1,8 +1,10 @@
 import shallowEqual from '@/utils/shallowEqual'
 import { CHANGE_ACTION, INIT_ACTION } from './types'
 
-interface ListProps<T = any> {
-    format?: string | (() => any)
+type FormatInfer<T> = T extends Record<string, any> ? keyof T : T extends string | number ? never : (data: T) => string
+
+export interface DatumListProps<T> {
+    format?: FormatInfer<T>
 
     /**
      *
@@ -30,14 +32,14 @@ interface ListProps<T = any> {
  * 事件派发
  * 值存储
  */
-export default class List<T = any> {
+export default class List<T = string> {
     distinct?: boolean
 
     limit?: number
 
     separator?: string
 
-    format: (value) => any
+    format: (value) => string
 
     $events = {}
 
@@ -62,7 +64,7 @@ export default class List<T = any> {
     /** 缓存outerValue */
     $cachedValue: any
 
-    constructor(args: ListProps<T> = {}) {
+    constructor(args: DatumListProps<T> = {}) {
         const { format, onChange, separator, value, prediction, distinct, disabled, limit } = args
 
         this.distinct = distinct

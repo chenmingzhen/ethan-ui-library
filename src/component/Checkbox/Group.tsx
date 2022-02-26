@@ -13,6 +13,8 @@ class CheckboxGroup<T> extends PureComponent<ICheckboxGroupProps<T>> {
         renderItem: d => d,
     }
 
+    static displayName = 'EthanCheckboxGroup'
+
     componentDidMount() {
         super.componentDidMount()
 

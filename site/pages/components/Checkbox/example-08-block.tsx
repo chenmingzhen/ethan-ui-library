@@ -8,24 +8,23 @@ import React from 'react'
 import { Checkbox } from 'ethan/index'
 
 const data = [
-  { id: 1, color: 'red' },
-  { id: 2, color: 'orange' },
-  { id: 3, color: 'yellow' },
-  { id: 4, color: 'green' },
-  { id: 5, color: 'cyan' },
-  { id: 6, color: 'blue' },
-  { id: 7, color: 'violet' },
+    { id: 1, color: 'red' },
+    { id: 2, color: 'orange' },
+    { id: 3, color: 'yellow' },
+    { id: 4, color: 'green' },
+    { id: 5, color: 'cyan' },
+    { id: 6, color: 'blue' },
+    { id: 7, color: 'violet' },
 ]
 
 export default function() {
-  return (
-    <Checkbox.Group
-      keygen="id"
-      block
-      data={data}
-      datum={{ format: 'color' }}
-      defaultValue={['blue', 'cyan']}
-      renderItem="color"
-    />
-  )
+    return (
+        <Checkbox.Group<{ id: number; color: string }>
+            keygen="id"
+            block
+            data={data}
+            defaultValue={['blue', 'cyan']}
+            renderItem="color"
+        />
+    )
 }
