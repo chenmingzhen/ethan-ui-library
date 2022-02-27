@@ -1,10 +1,16 @@
 import shallowEqual from '@/utils/shallowEqual'
 import { CHANGE_ACTION, INIT_ACTION } from './types'
 
-type FormatInfer<T> = T extends Record<string, any> ? keyof T : T extends string | number ? never : (data: T) => string
+export type FormatInfer<T> = T extends Record<string, any>
+    ? keyof T
+    : T extends string | number
+    ? never
+    : (data: T) => string
 
-export interface DatumListProps<T> {
-    format?: FormatInfer<T>
+export type OnChangeItemInfer<D, F> = F extends D ? D : F
+
+export interface DatumListProps<Data = any, FormatResult = Data> {
+    format?: FormatInfer<Data>
 
     /**
      *
@@ -12,10 +18,11 @@ export interface DatumListProps<T> {
      * @param data  引起变化的值
      * @param unknown
      */
-    onChange?(items: T[], data: T, unknown: true): void
+    onChange?(items: OnChangeItemInfer<Data, FormatResult>[], data: Data, unknown: true): void
 
     separator?: string
 
+    /** 继承覆写此属性 */
     value?: any
 
     prediction?(value: any, raw: any): any

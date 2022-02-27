@@ -14,6 +14,5 @@ CheckboxContainer.Group = compose(
 )(Group)
 
 CheckboxContainer.displayName = 'EthanCheckbox'
-CheckboxContainer.Group.displayName = ''
 
 export default CheckboxContainer

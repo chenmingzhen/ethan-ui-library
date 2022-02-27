@@ -6,9 +6,9 @@ import { CHANGE_ACTION } from '@/utils/Datum/types'
 import { checkInputClass } from '@/styles'
 import Checkbox from './Checkbox'
 import { Provider } from './context'
-import { CheckItemProps, ICheckboxGroupProps } from './type'
+import { CheckItemProps, ICheckboxGroupProps, DefaultDataRecord } from './type'
 
-class CheckboxGroup<T> extends PureComponent<ICheckboxGroupProps<T>> {
+class CheckboxGroup<D = DefaultDataRecord, FD = D> extends PureComponent<ICheckboxGroupProps<D, FD>> {
     static defaultProps = {
         renderItem: d => d,
     }
@@ -27,7 +27,7 @@ class CheckboxGroup<T> extends PureComponent<ICheckboxGroupProps<T>> {
         this.props.datum.unsubscribe(CHANGE_ACTION, this.handleUpdate)
     }
 
-    getContent = (data: T) => {
+    getContent = (data: D) => {
         const { renderItem } = this.props
 
         if (typeof renderItem === 'string') {
@@ -44,7 +44,7 @@ class CheckboxGroup<T> extends PureComponent<ICheckboxGroupProps<T>> {
         this.forceUpdate()
     }
 
-    handleClick = (_: T, checked: boolean, index: number) => {
+    handleClick = (_: D, checked: boolean, index: number) => {
         const { data, datum } = this.props
 
         if (checked) {
@@ -87,8 +87,8 @@ class CheckboxGroup<T> extends PureComponent<ICheckboxGroupProps<T>> {
                     <Checkbox
                         checked={datum.check(d)}
                         disabled={datum.disabled(d)}
-                        key={getKey<T>(d, keygen, i)}
-                        htmlValue={i}
+                        key={getKey<D>(d, keygen, i)}
+                        // htmlValue={i}
                         index={i}
                         onChange={this.handleClick}
                     >
