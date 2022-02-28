@@ -25,11 +25,12 @@ export default class extends Component {
 
     render() {
         return (
-            <Checkbox.Group<{ id: number; color: string }>
+            <Checkbox.Group<{ id: number; color: string }, string>
                 keygen="id"
                 data={data}
                 format="color"
                 renderItem={this.renderItem}
+                defaultValue={['red']}
             />
         )
     }

@@ -4,18 +4,19 @@ import React from 'react'
 
 export type CheckType = 'radio' | 'switch' | 'checkbox'
 
-export interface CheckHandlerContext<HV = any> {
-    onGroupCallback?: (htmlValue: HV, checked: boolean) => void
+export interface CheckHandlerContext<V = any> {
+    onGroupCallback?: (value: V, checked: boolean) => void
 
-    checked?: (htmlValue: HV) => boolean
+    checked: (value: V) => boolean
 }
 
-export interface CheckItemProps<HV = any, V = HV> extends Omit<CheckHandlerContext, 'checked'> {
-    checked?: boolean | 'indeterminate' | CheckHandlerContext<HV>['checked']
-    /** 选中时返回值 */
-    htmlValue?: HV
+type Checked = boolean | 'indeterminate'
+
+export interface CheckItemProps<V = any> extends Omit<CheckHandlerContext<V>, 'checked'> {
+    checked?: Checked | CheckHandlerContext<V>['checked']
+    defaultChecked?: Checked
     value?: V
-    onChange?: (value: any, checked?: boolean, index?: number) => void
+    onChange?: (checked?: boolean) => void
     onClick?: (e: React.MouseEvent<HTMLInputElement>) => void
     size?: 'small' | 'default' | 'large'
     /** Switch中用到 */
@@ -27,6 +28,8 @@ export interface CheckItemProps<HV = any, V = HV> extends Omit<CheckHandlerConte
 
 export interface ICheckedItemProps extends CheckItemProps {
     index?: number
+
+    internalOnChange?: (value, index: number) => void
 }
 
 export interface CheckItemState {
@@ -38,8 +41,8 @@ export type DefaultDataRecord = { label: React.ReactNode; value: string | number
 export type Value<D, FormatResult> = FormatResult extends D ? D[] : FormatResult[]
 
 export interface CheckboxGroupProps<
-    D extends Record<string, any> | string = DefaultDataRecord,
-    FormatResult extends Record<string, any> | string = D
+    D extends Record<string, any> | string | number = DefaultDataRecord,
+    FormatResult extends Record<string, any> | string | number = D
 > extends Pick<DatumListProps<D, FormatResult>, 'format' | 'onChange' | 'prediction' | 'disabled'> {
     /** 垂直布局 */
     block?: boolean
@@ -54,17 +57,17 @@ export interface CheckboxGroupProps<
 
 /** FR显式说明format生成的结果类型 */
 export interface ICheckboxGroupProps<
-    D extends Record<string, any> | string = DefaultDataRecord,
-    FormatResult extends Record<string, any> | string = D
+    D extends Record<string, any> | string | number = DefaultDataRecord,
+    FormatResult extends Record<string, any> | string | number = D
 > extends CheckboxGroupProps<D, FormatResult> {
     /** 设计缺陷:此处是内部使用必选的，不对外暴露 */
     datum?: List<D>
 }
 
-export interface CheckboxComponent<HV = any, V = HV> extends React.ComponentClass<CheckItemProps<HV, V>> {
+export interface CheckboxComponent<V = any> extends React.ComponentClass<CheckItemProps<V>> {
     Group<
-        D extends Record<string, any> | string = DefaultDataRecord,
-        FormatResult extends Record<string, any> | string = D
+        D extends Record<string, any> | string | number = DefaultDataRecord,
+        FormatResult extends Record<string, any> | string | number = D
     >(
         props: ICheckboxGroupProps<D, FormatResult>
     ): React.ReactElement<ICheckboxGroupProps<D, FormatResult>, any>

@@ -19,9 +19,9 @@ const data = [
 
 export default function() {
     return (
-        <Checkbox.Group keygen="id" defaultValue={[3, 5]}>
+        <Checkbox.Group defaultValue={[1, 2]}>
             {data.map(d => (
-                <Checkbox key={d.id} htmlValue={d.id}>
+                <Checkbox key={d.id} value={d.id}>
                     {d.color}
                 </Checkbox>
             ))}

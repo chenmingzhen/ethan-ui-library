@@ -25,11 +25,11 @@ export interface DatumListProps<Data = any, FormatResult = Data> {
     /** 继承覆写此属性 */
     value?: any
 
-    prediction?(value: any, raw: any): any
+    prediction?(formatValue: FormatResult, raw: Data): boolean
 
     distinct?: boolean
 
-    disabled?: boolean | ((...args) => boolean)
+    disabled?: boolean | ((value: Data) => boolean)
 
     limit?: number
 }

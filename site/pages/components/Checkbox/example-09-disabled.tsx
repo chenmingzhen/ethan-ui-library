@@ -9,10 +9,10 @@ import { Checkbox } from 'ethan/index'
 
 const data = ['red', 'orange', 'yellow', 'green', 'cyan', 'blue', 'violet']
 
-export default function () {
+export default function() {
     return (
         <div>
-            <Checkbox.Group disabled keygen data={data} defaultValue={['blue', 'cyan']} renderItem={d => d} />
+            <Checkbox.Group disabled keygen data={data} defaultValue={['blue', 'cyan']} />
             <br />
             <Checkbox disabled checked={false}>
                 not checked

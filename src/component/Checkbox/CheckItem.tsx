@@ -9,8 +9,8 @@ import { ICheckedItemProps, CheckItemState, CheckType } from './type'
 export default function(type: CheckType) {
     return class extends PureComponent<ICheckedItemProps, CheckItemState> {
         static defaultProps: ICheckedItemProps = {
-            htmlValue: true,
             content: [],
+            defaultChecked: false,
         }
 
         id = getUidStr()
@@ -21,29 +21,18 @@ export default function(type: CheckType) {
             super(props)
 
             this.state = {
-                checked: props.checked,
-            }
-        }
-
-        componentDidUpdate(prevProps) {
-            const { checked, value, htmlValue } = this.props
-
-            /** Group中item的value发生改变 */
-            if (prevProps.value !== value && checked === undefined) {
-                this.setState({ checked: value === htmlValue })
+                checked: props.checked ?? props.defaultChecked,
             }
         }
 
         getChecked = () => {
-            const { checked, value, htmlValue } = this.props
+            const { checked, value } = this.props
 
-            if (typeof checked === 'function') return checked(htmlValue)
+            /** Group WrapperChildren */
+            if (typeof checked === 'function') return checked(value)
 
             /** 受控 */
             if (checked !== undefined) return checked
-
-            /** 初始checked的判断 */
-            if (this.state.checked === undefined) return value === htmlValue
 
             return this.state.checked
         }
@@ -63,7 +52,9 @@ export default function(type: CheckType) {
         }
 
         handleChange = (checked: boolean) => {
-            const { onChange, onGroupCallback, index } = this.props
+            const { onChange, onGroupCallback, index, value, internalOnChange, disabled } = this.props
+
+            if (disabled) return
 
             this.setState({ checked }, () => this.labelElement.focus())
 
@@ -73,11 +64,11 @@ export default function(type: CheckType) {
                 return
             }
 
-            if (onGroupCallback) onGroupCallback(this.props.htmlValue, checked)
+            if (onGroupCallback) onGroupCallback(value, checked)
 
-            const value = checked ? this.props.htmlValue : undefined
+            if (onChange) onChange(checked)
 
-            if (onChange) onChange(value, checked, index)
+            if (internalOnChange) internalOnChange(checked, index)
         }
 
         render() {

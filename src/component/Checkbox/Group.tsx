@@ -44,7 +44,7 @@ class CheckboxGroup<D = DefaultDataRecord, FD = D> extends PureComponent<ICheckb
         this.forceUpdate()
     }
 
-    handleClick = (_: D, checked: boolean, index: number) => {
+    handleClick = (checked: boolean, index: number) => {
         const { data, datum } = this.props
 
         if (checked) {
@@ -88,9 +88,8 @@ class CheckboxGroup<D = DefaultDataRecord, FD = D> extends PureComponent<ICheckb
                         checked={datum.check(d)}
                         disabled={datum.disabled(d)}
                         key={getKey<D>(d, keygen, i)}
-                        // htmlValue={i}
                         index={i}
-                        onChange={this.handleClick}
+                        internalOnChange={this.handleClick}
                     >
                         {this.getContent(d)}
                     </Checkbox>

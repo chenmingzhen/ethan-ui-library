@@ -19,12 +19,14 @@ const data = [
 
 export default function() {
     return (
-        <Checkbox.Group<{ id: number; color: string }>
+        <Checkbox.Group<{ id: number; color: string }, string>
+            data={data}
+            format="color"
             keygen="id"
             block
-            data={data}
             defaultValue={['blue', 'cyan']}
             renderItem="color"
+            onChange={console.log}
         />
     )
 }
