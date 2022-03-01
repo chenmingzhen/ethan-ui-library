@@ -6,9 +6,9 @@ import { CHANGE_ACTION } from '@/utils/Datum/types'
 import { checkInputClass } from '@/styles'
 import Checkbox from './Checkbox'
 import { Provider } from './context'
-import { CheckItemProps, ICheckboxGroupProps, DefaultDataRecord } from './type'
+import { CheckItemProps, ICheckboxGroupProps, CheckItemGroupDefaultDataRecord } from './type'
 
-class CheckboxGroup<D = DefaultDataRecord, FD = D> extends PureComponent<ICheckboxGroupProps<D, FD>> {
+class CheckboxGroup<D = CheckItemGroupDefaultDataRecord, FD = D> extends PureComponent<ICheckboxGroupProps<D, FD>> {
     static defaultProps = {
         renderItem: d => d,
     }
