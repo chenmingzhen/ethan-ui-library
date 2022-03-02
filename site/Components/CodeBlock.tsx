@@ -5,6 +5,7 @@ import 'prismjs/components/prism-jsx'
 import { exampleClass } from 'doc/styles'
 
 interface CodeBlockProps {
+    /** md文件中代码块注明的语言类型 */
     language?: string
 
     onHighLight?(height: number): void
