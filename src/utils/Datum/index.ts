@@ -1,9 +1,9 @@
 import Form from './Form'
 import List from './List'
-import hoc from './Hoc'
+import Hoc from './Hoc'
 
 export default {
     Form,
     List,
-    hoc,
+    Hoc,
 }

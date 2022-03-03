@@ -20,7 +20,7 @@ const SelectContainer = compose(
     inputable,
     inputBorder({ className: selectClass('_'), tag: 'div' }),
     limitWrap,
-    Datum.hoc({ bindProps: ['disabled', 'limit', 'format', 'prediction', 'separator'], pure: false }),
+    Datum.Hoc({ bindProps: ['disabled', 'limit', 'format', 'prediction', 'separator'], pure: false }),
     filter,
     group,
     absolute

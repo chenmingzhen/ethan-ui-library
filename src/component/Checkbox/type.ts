@@ -36,6 +36,8 @@ export interface CheckItemState {
     checked: boolean
 }
 
+export type CheckboxProps<V = any> = Omit<CheckItemProps<V>, 'content' | 'size'>
+
 export type CheckItemGroupDefaultDataRecord = { label: React.ReactNode; value: string | number }
 
 export type CheckItemGroupBaseData = Record<string, any> | string | number
@@ -66,7 +68,7 @@ export interface ICheckboxGroupProps<
     datum?: List<Data>
 }
 
-export interface CheckboxComponent<V = any> extends React.ComponentClass<CheckItemProps<V>> {
+export interface CheckboxComponent<V = any> extends React.ComponentClass<CheckboxProps<V>> {
     Group<
         Data extends CheckItemGroupBaseData = CheckItemGroupDefaultDataRecord,
         FormatResult extends CheckItemGroupBaseData = Data

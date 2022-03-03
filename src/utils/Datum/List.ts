@@ -65,7 +65,7 @@ export default class List<T = string> {
 
     disabled: (...args) => boolean
 
-    /** InnerValues */
+    /** InnerValues 内部直接操作的源，不引起更新，由value的变化驱动更新 */
     $values: any
 
     /** 缓存outerValue */
@@ -103,7 +103,7 @@ export default class List<T = string> {
         return this.$values
     }
 
-    // 暴露外部设置values
+    /** 暴露外部设置values 触发更新 */
     set values(values) {
         this.$values = values
 
