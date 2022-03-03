@@ -10,5 +10,5 @@ import { Radio } from 'ethan'
 const data = ['red', 'orange', 'yellow']
 
 export default function() {
-  return <Radio.Group button="outline" keygen data={data} defaultValue="red" />
+    return <Radio.Group button="outline" data={data} defaultValue="red" />
 }

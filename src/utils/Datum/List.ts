@@ -13,12 +13,16 @@ export interface DatumListProps<Data = any, FormatResult = Data> {
     format?: FormatInfer<Data>
 
     /**
-     *
+     * 部分需要继承复写此属性
      * @param items 当前List的中值
      * @param data  引起变化的值
      * @param unknown
      */
-    onChange?(items: OnChangeItemInfer<Data, FormatResult>[], data: Data, unknown: true): void
+    onChange?(
+        items: OnChangeItemInfer<Data, FormatResult>[] | OnChangeItemInfer<Data, FormatResult>,
+        data: Data,
+        checked: boolean
+    ): void
 
     separator?: string
 

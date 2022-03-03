@@ -42,7 +42,7 @@ export type CheckItemGroupDefaultDataRecord = { label: React.ReactNode; value: s
 
 export type CheckItemGroupBaseData = Record<string, any> | string | number
 
-export type Value<Data, FormatData> = FormatData extends Data ? Data[] : FormatData[]
+export type CheckItemValue<Data, FormatData> = FormatData extends Data ? Data : FormatData
 
 export interface CheckboxGroupProps<
     Data extends CheckItemGroupBaseData = CheckItemGroupDefaultDataRecord,
@@ -55,8 +55,8 @@ export interface CheckboxGroupProps<
     className?: string
     keygen?: KeyGen<Data>
     children?: React.ReactNode
-    defaultValue?: Value<Data, FormatData>
-    value?: Value<Data, FormatData>
+    defaultValue?: CheckItemValue<Data, FormatData>[]
+    value?: CheckItemValue<Data, FormatData>[]
 }
 
 /** FR显式说明format生成的结果类型 */

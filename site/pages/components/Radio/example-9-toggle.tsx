@@ -10,19 +10,20 @@ import { Radio } from 'ethan'
 const data = ['red', 'orange', 'yellow', 'green', 'cyan', 'blue', 'violet']
 
 export default function() {
-  const [current, setCurrent] = React.useState('red')
-  return (
-    <Radio.Group keygen value={current} onChange={c => setCurrent(c)}>
-      {data.map(d => (
-        <span
-          key={d}
-          onClick={() => {
-            if (current === d) setTimeout(() => setCurrent(undefined))
-          }}
-        >
-          <Radio htmlValue={d}>{d}</Radio>
-        </span>
-      ))}
-    </Radio.Group>
-  )
+    const [current, setCurrent] = React.useState('red')
+
+    return (
+        <Radio.Group keygen value={current} onChange={c => setCurrent(c)}>
+            {data.map(d => (
+                <span
+                    key={d}
+                    onClick={() => {
+                        if (current === d) setTimeout(() => setCurrent(undefined))
+                    }}
+                >
+                    <Radio value={d}>{d}</Radio>
+                </span>
+            ))}
+        </Radio.Group>
+    )
 }
