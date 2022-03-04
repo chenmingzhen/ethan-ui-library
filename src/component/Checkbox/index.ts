@@ -1,18 +1,18 @@
-// @ts-nocheck
 import { compose } from '@/utils/func'
 import Datum from '@/utils/Datum'
-import inputable from '../Form/inputable'
+import InputAble from '../Form/inputable'
 import Checkbox from './Checkbox'
 import Group from './Group'
 import { consumer } from './context'
+import { CheckboxComponent } from './type'
 
-const CheckboxContainer = compose(inputable, consumer)(Checkbox)
+const CheckboxContainer = compose(InputAble, consumer)(Checkbox) as CheckboxComponent
+
 CheckboxContainer.Group = compose(
-    inputable,
+    InputAble,
     Datum.hoc({ bindProps: ['disabled', 'format', 'prediction', 'separator'] })
 )(Group)
 
 CheckboxContainer.displayName = 'EthanCheckbox'
-CheckboxContainer.Group.displayName = 'EthanCheckboxGroup'
 
 export default CheckboxContainer

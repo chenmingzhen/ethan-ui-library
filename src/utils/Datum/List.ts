@@ -1,23 +1,35 @@
 import shallowEqual from '@/utils/shallowEqual'
 import { CHANGE_ACTION, INIT_ACTION } from './types'
 
-/**
- * TODO value需要指定泛型T
- */
-interface ListProps {
-    format?: string | (() => any)
+export type FormatInfer<T> = T extends Record<string, any>
+    ? keyof T
+    : T extends string | number
+    ? never
+    : (data: T) => string
 
-    onChange?(): void
+export type OnChangeItemInfer<D, F> = F extends D ? D : F
+
+export interface DatumListProps<Data = any, FormatResult = Data> {
+    format?: FormatInfer<Data>
+
+    /**
+     *
+     * @param items 当前List的中值
+     * @param data  引起变化的值
+     * @param unknown
+     */
+    onChange?(items: OnChangeItemInfer<Data, FormatResult>[], data: Data, unknown: true): void
 
     separator?: string
 
+    /** 继承覆写此属性 */
     value?: any
 
-    prediction?(value: any, raw: any): any
+    prediction?(formatValue: FormatResult, raw: Data): boolean
 
     distinct?: boolean
 
-    disabled?: boolean | ((...args) => boolean)
+    disabled?: boolean | ((value: Data) => boolean)
 
     limit?: number
 }
@@ -27,14 +39,14 @@ interface ListProps {
  * 事件派发
  * 值存储
  */
-export default class {
+export default class List<T = string> {
     distinct?: boolean
 
     limit?: number
 
     separator?: string
 
-    format: (value) => any
+    format: (value) => string
 
     $events = {}
 
@@ -59,7 +71,7 @@ export default class {
     /** 缓存outerValue */
     $cachedValue: any
 
-    constructor(args: ListProps = {}) {
+    constructor(args: DatumListProps<T> = {}) {
         const { format, onChange, separator, value, prediction, distinct, disabled, limit } = args
 
         this.distinct = distinct
@@ -205,7 +217,7 @@ export default class {
     }
 
     // hoc=》setValue=》本类set=》本类add
-    add(data, _?: any, childrenKey?: string, unshift?: boolean) {
+    add(data: T | T[], _?: any, childrenKey?: string, unshift?: boolean) {
         if (data === undefined || data === null) return
 
         if (this.limit === 1) this.$values = []
@@ -299,7 +311,7 @@ export default class {
         return value === this.format(data)
     }
 
-    remove(value, _, childrenKey) {
+    remove(value, _?, childrenKey?) {
         if (!value) return
 
         let raws = Array.isArray(value) ? value : [value]

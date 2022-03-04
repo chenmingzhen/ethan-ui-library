@@ -1,41 +1,28 @@
-// @ts-nocheck
-import React, { PureComponent } from 'react'
-import PropTypes from 'prop-types'
+import React from 'react'
 import Input from './Input'
+import { InputPasswordProps } from './type'
 
-class Password extends PureComponent {
-    constructor(props) {
-        super(props)
-        this.handleChange = this.handleChange.bind(this)
-    }
+const Password: React.FC<InputPasswordProps> = props => {
+    const { point, value, onChange, ...others } = props
 
-    handleChange(val) {
-        const { value, point } = this.props
+    function handleChange(val: string) {
         const newValue = []
+
         val.split('').forEach((v, i) => {
             newValue.push(v === point ? value[i] : v)
         })
 
-        this.props.onChange(newValue.join(''))
+        onChange(newValue.join(''))
     }
 
-    render() {
-        const { point, ...others } = this.props
+    const hiddenValue = Array.from({ length: value.length }, () => point).join('')
 
-        const value = Array.from({ length: this.props.value.length }, () => point).join('')
-        return <Input {...others} type="text" value={value} onChange={this.handleChange} />
-    }
+    return <Input {...others} type="text" value={hiddenValue} onChange={handleChange} />
 }
 
-Password.propTypes = {
-    onChange: PropTypes.func,
-    point: PropTypes.string,
-    value: PropTypes.string,
-}
+export default React.memo(Password)
 
 Password.defaultProps = {
     value: '',
     point: '•',
 }
-
-export default Password

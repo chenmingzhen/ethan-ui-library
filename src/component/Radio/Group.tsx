@@ -76,7 +76,7 @@ function RadioGroup(props) {
     if (data === undefined) {
         return (
             <div className={className}>
-                <Provider value={{ onRawChange: handleRawChange, checked: datum.check.bind(datum) }}>
+                <Provider value={{ onGroupCallback: handleRawChange, checked: datum.check.bind(datum) }}>
                     {children}
                 </Provider>
             </div>

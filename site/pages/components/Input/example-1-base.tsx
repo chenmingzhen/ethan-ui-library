@@ -10,5 +10,5 @@ import React from 'react'
 import { Input } from 'ethan/index'
 
 export default function() {
-  return <Input placeholder="input something" />
+    return <Input placeholder="input something" />
 }

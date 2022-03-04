@@ -28,7 +28,7 @@ export function pathGenerator(raw) {
     const pathModeValues = objectValues(PATH_MODE)
     let index = 0
     let last = 0
-    let prop = ''
+    let prop: any = ''
     const results = []
     while (index >= 0) {
         index = path.indexOf('.', last)
@@ -60,10 +60,8 @@ interface DeepMergeOptionsParams {
     clone
 }
 
-/**
- * @todo clone params
- * @deprecated 深度合并对象 不包括数组
- */
+// 深度合并对象 不包括数组
+/** @todo */
 export const deepMerge = (
     target = {},
     source,
@@ -104,7 +102,7 @@ export const deepMerge = (
     return dest
 }
 
-export const deepGet = (target, path, options = {}) => {
+export const deepGet = (target, path, options: any = {}) => {
     if (!isObject(target)) throw new Error('Target must be an object.')
     if (typeof path !== 'string') throw new Error('Path must be a string.')
 
@@ -136,8 +134,6 @@ export function filterProps(obj, props: (p: Record<string, any>) => boolean | st
     if (typeof props === 'function') {
         const prediction = props
 
-        props = []
-
         Object.keys(obj).forEach(k => {
             if (prediction(obj[k])) newProps.push(k)
         })
@@ -152,7 +148,7 @@ export function filterProps(obj, props: (p: Record<string, any>) => boolean | st
     return newObj
 }
 
-export const deepSet = (target, path, value, options = {}) => {
+export const deepSet = (target, path, value, options: any = {}) => {
     if (!isObject(target)) throw new Error('Target must be an object.')
     if (typeof path !== 'string') throw new Error('Path must be a string.')
 

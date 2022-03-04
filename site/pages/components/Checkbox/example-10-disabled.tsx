@@ -7,12 +7,41 @@
 import React from 'react'
 import { Checkbox } from 'ethan/index'
 
-const data = ['red', 'orange', 'yellow', 'green', 'cyan', 'blue', 'violet']
+const baseData = ['red', 'orange', 'yellow', 'green', 'cyan', 'blue', 'violet']
+
+const ComplexData = [
+    { value: 1, label: 'red' },
+    { value: 2, label: 'orange' },
+    { value: 3, label: 'yellow' },
+    { value: 4, label: 'green' },
+    { value: 5, label: 'cyan' },
+    { value: 6, label: 'blue' },
+    { value: 7, label: 'violet' },
+]
 
 export default function() {
-  return (
-    <div>
-      <Checkbox.Group data={data} disabled={d => d === 'yellow'} keygen value={['blue']} renderItem={d => d} />
-    </div>
-  )
+    return (
+        <div>
+            <div>
+                <Checkbox.Group
+                    data={baseData}
+                    disabled={d => d === 'yellow'}
+                    keygen
+                    value={['blue']}
+                    renderItem={d => d}
+                />
+            </div>
+
+            <div>
+                <Checkbox.Group
+                    data={ComplexData}
+                    disabled={d => d.label === 'yellow'}
+                    keygen="value"
+                    format="label"
+                    value={['blue']}
+                    renderItem="label"
+                />
+            </div>
+        </div>
+    )
 }

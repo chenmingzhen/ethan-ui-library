@@ -1,46 +1,60 @@
-// @ts-nocheck
 import React, { PureComponent } from 'react'
-import PropTypes from 'prop-types'
 import { inputClass } from '@/styles'
 import icons from '../icons'
 import Input from './Input'
+import { InputNumberProps } from './type'
 
-class Number extends PureComponent {
-    constructor(props) {
-        super(props)
-
-        this.handleBlur = this.handleBlur.bind(this)
-        this.handleChange = this.handleChange.bind(this)
-        this.handleAddClick = this.handleCalc.bind(this, props.step)
-        this.handleSubClick = this.handleCalc.bind(this, -props.step)
-        this.handleMouseUp = this.handleMouseUp.bind(this)
-        this.handleKeyDown = this.handleKeyDown.bind(this)
-        this.handleKeyUp = this.handleKeyUp.bind(this)
+class Number extends PureComponent<InputNumberProps> {
+    static defaultProps: InputNumberProps = {
+        step: 1,
+        allowNull: false,
+        hideArrow: false,
     }
+
+    hold: boolean
+
+    keyPressTimeOut: NodeJS.Timeout
 
     componentWillUnmount() {
         this.hold = false
+
         if (this.keyPressTimeOut) clearTimeout(this.keyPressTimeOut)
     }
 
-    handleChange(value, check, isEmpty) {
+    handleAddClick = () => {
+        this.handleCalc(this.props.step)
+    }
+
+    handleSubClick = () => {
+        this.handleCalc(-this.props.step)
+    }
+
+    handleChange = (value: string | number, check?: boolean, isEmpty?: boolean) => {
+        const { onChange, digits, step } = this.props
+
         if (isEmpty) {
-            this.props.onChange(value)
+            onChange(value)
+
             return
         }
 
+        /** 处于手动输入状态 */
         if (!check) {
-            if (new RegExp('^-?\\d*\\.?\\d*$').test(value)) {
-                this.props.onChange(value)
+            if (new RegExp('^-?\\d*\\.?\\d*$').test(value as string)) {
+                onChange(value)
             }
             return
         }
 
-        if (typeof this.props.digits === 'number') {
-            value = parseFloat(value.toFixed(this.props.digits))
+        value = value as number
+
+        if (typeof digits === 'number') {
+            value = parseFloat(value.toFixed(digits))
         } else {
-            const stepStr = this.props.step.toString()
+            const stepStr = step.toString()
+
             const dot = stepStr.lastIndexOf('.')
+
             if (dot >= 0) value = parseFloat(value.toFixed(stepStr.length - dot))
         }
 
@@ -50,78 +64,80 @@ class Number extends PureComponent {
         if (min !== undefined && value < min) value = min
 
         if (value !== this.props.value) {
-            this.props.onChange(value)
+            onChange(value)
         }
     }
 
-    handleBlur(e) {
+    handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
         let value = parseFloat(e.target.value)
+
         // for the empty
         if (e.target.value === '' && this.props.allowNull) {
             value = null
         }
+
         // eslint-disable-next-line no-restricted-globals
         if (isNaN(value)) value = 0
+
         this.handleChange(value, true, value === null)
+
         this.props.onBlur(e)
     }
 
-    changeValue(mod) {
+    changeValue = (mod: number) => {
         if (this.props.disabled) return
-        let val = this.props.value
-        if (val === 0) val = '0'
-        let value = parseFloat(`${val || ''}`.replace(/,/g, ''))
+
+        let value = parseFloat(`${String(this.props.value) || ''}`.replace(/,/g, ''))
+
         // eslint-disable-next-line
         if (isNaN(value)) value = 0
+
         this.handleChange(value + mod, true)
     }
 
-    longPress(mod) {
+    longPress = mod => {
         if (!this.hold) return
+
         setTimeout(() => {
             this.changeValue(mod)
+
             this.longPress(mod)
         }, 50)
     }
 
-    handleKeyDown(e) {
+    handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
         const { step } = this.props
-        this.hold = true
+
         if (e.keyCode !== 38 && e.keyCode !== 40) return
+
         e.preventDefault()
+
         const mod = e.keyCode === 38 ? step : -step
+
         this.changeValue(mod)
-        if (this.keyPressTimeOut) clearTimeout(this.keyPressTimeOut)
-        this.keyPressTimeOut = setTimeout(() => {
-            this.longPress(mod)
-        }, 600)
     }
 
-    handleCalc(mod) {
-        const { onMouseDown } = this.props
-        if (onMouseDown) onMouseDown()
+    handleCalc = mod => {
         this.hold = true
+
         this.changeValue(mod)
+
         this.keyPressTimeOut = setTimeout(() => {
             this.longPress(mod)
         }, 1000)
     }
 
-    handleKeyUp() {
+    handleMouseUp = () => {
         this.hold = false
+
         if (this.keyPressTimeOut) clearTimeout(this.keyPressTimeOut)
     }
 
-    handleMouseUp() {
-        const { onMouseUp } = this.props
-        if (onMouseUp) onMouseUp()
-        this.hold = false
-        if (this.keyPressTimeOut) clearTimeout(this.keyPressTimeOut)
-    }
-
-    renderArrowGroup() {
+    renderArrowGroup = () => {
         const { hideArrow } = this.props
+
         if (hideArrow) return []
+
         return [
             <a
                 key="up"
@@ -137,7 +153,6 @@ class Number extends PureComponent {
 
             <a
                 key="down"
-                // do not need the tab to focus
                 tabIndex={-1}
                 className={inputClass('number-down')}
                 onMouseDown={this.handleSubClick}
@@ -149,8 +164,9 @@ class Number extends PureComponent {
         ]
     }
 
-    render() {
+    render = () => {
         const { onChange, allowNull, hideArrow, ...other } = this.props
+
         return [
             <Input
                 key="input"
@@ -158,34 +174,12 @@ class Number extends PureComponent {
                 className={inputClass({ number: !hideArrow })}
                 onChange={this.handleChange}
                 onKeyDown={this.handleKeyDown}
-                onKeyUp={this.handleKeyUp}
                 onBlur={this.handleBlur}
                 type="number"
             />,
             ...this.renderArrowGroup(),
         ]
     }
-}
-
-Number.propTypes = {
-    disabled: PropTypes.bool,
-    min: PropTypes.number,
-    max: PropTypes.number,
-    onMouseDown: PropTypes.func,
-    onMouseUp: PropTypes.func,
-    onBlur: PropTypes.func.isRequired,
-    onChange: PropTypes.func.isRequired,
-    step: PropTypes.number,
-    digits: PropTypes.number,
-    allowNull: PropTypes.bool,
-    hideArrow: PropTypes.bool,
-    value: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
-}
-
-Number.defaultProps = {
-    step: 1,
-    allowNull: false,
-    hideArrow: false,
 }
 
 export default Number

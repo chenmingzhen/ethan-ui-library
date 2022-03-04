@@ -20,7 +20,6 @@
 | type | string | 'text' | 同原生 input 标签的 type |
 | value | string \| number | 无 | defaultValue 和 value 可以同时设置，defaultValue 会被value覆盖<br />在Form中，value会被表单接管，value无效 |
 | clearable | () => void \| boolean | 无 | 可点击清空图标删除输入框内容，为函数式表示清空回调 |
-| coin | boolean | false | 以千位分隔符展示,仅当type为number时有效 |
 | info | (value: string) => string \| number | 无 | 提示信息 |
 | popoverProps | object | 无 | 校验弹框接受的属性，具体属性参考Popover组件说明 |
 | maxLength | number | 无 | 可输入最大长度 |
@@ -37,5 +36,4 @@
 | digits | number | 无 | 数值的精度 |
 | allowNull | boolean | false | 允许空值 |
 | hideArrow | boolean | false | 是否展示增减按钮 |
-| coin | boolean | false | 以千位分隔符展示 | 
 

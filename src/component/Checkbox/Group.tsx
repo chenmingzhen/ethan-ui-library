@@ -1,62 +1,62 @@
-// @ts-nocheck
 import React from 'react'
-import PropTypes from 'prop-types'
 import classnames from 'classnames'
 import { PureComponent } from '@/utils/component'
-import { getProps } from '@/utils/proptypes'
 import { getKey } from '@/utils/uid'
 import { CHANGE_ACTION } from '@/utils/Datum/types'
 import { checkInputClass } from '@/styles'
 import Checkbox from './Checkbox'
 import { Provider } from './context'
+import { CheckItemProps, ICheckboxGroupProps, CheckItemGroupDefaultDataRecord } from './type'
 
-class CheckboxGroup extends PureComponent {
-    constructor(props) {
-        super(props)
-
-        this.handleClick = this.handleClick.bind(this)
-        this.handleUpdate = this.handleUpdate.bind(this)
-        this.handleRawChange = this.handleRawChange.bind(this)
+class CheckboxGroup<D = CheckItemGroupDefaultDataRecord, FD = D> extends PureComponent<ICheckboxGroupProps<D, FD>> {
+    static defaultProps = {
+        renderItem: d => d,
     }
+
+    static displayName = 'EthanCheckboxGroup'
 
     componentDidMount() {
         super.componentDidMount()
+
         this.props.datum.subscribe(CHANGE_ACTION, this.handleUpdate)
     }
 
     componentWillUnmount() {
         super.componentWillUnmount()
+
         this.props.datum.unsubscribe(CHANGE_ACTION, this.handleUpdate)
     }
 
-    getContent(d) {
+    getContent = (data: D) => {
         const { renderItem } = this.props
+
         if (typeof renderItem === 'string') {
-            return d[renderItem]
+            return data[renderItem]
         }
         if (typeof renderItem === 'function') {
-            return renderItem(d)
+            return renderItem(data)
         }
 
         return ''
     }
 
-    handleUpdate() {
+    handleUpdate = () => {
         this.forceUpdate()
     }
 
-    handleClick(val, checked, index) {
+    handleClick = (checked: boolean, index: number) => {
         const { data, datum } = this.props
+
         if (checked) {
-            // 添加到数据组中
             datum.add(data[index])
         } else {
             datum.remove(data[index])
         }
     }
 
-    handleRawChange(value, checked) {
+    handleGroupCallback: CheckItemProps['onGroupCallback'] = (value, checked) => {
         const { datum } = this.props
+
         if (checked) {
             datum.add(value)
         } else {
@@ -69,27 +69,27 @@ class CheckboxGroup extends PureComponent {
 
         const className = classnames(checkInputClass('group', block && 'block'), this.props.className)
 
+        /** 通过wrapperChildren的形式 */
         if (data === undefined) {
             return (
                 <div className={className}>
-                    <Provider value={{ onRawChange: this.handleRawChange, checked: datum.check.bind(datum) }}>
+                    <Provider value={{ onGroupCallback: this.handleGroupCallback, checked: datum.check.bind(datum) }}>
                         {children}
                     </Provider>
                 </div>
             )
         }
 
-        // 根据数据组 判断是否数据是否被选中
+        /** 通过data的形式 */
         return (
             <div className={className}>
                 {data.map((d, i) => (
                     <Checkbox
                         checked={datum.check(d)}
                         disabled={datum.disabled(d)}
-                        key={getKey(d, keygen, i)}
-                        htmlValue={i}
+                        key={getKey<D>(d, keygen, i)}
                         index={i}
-                        onChange={this.handleClick}
+                        internalOnChange={this.handleClick}
                     >
                         {this.getContent(d)}
                     </Checkbox>
@@ -98,19 +98,6 @@ class CheckboxGroup extends PureComponent {
             </div>
         )
     }
-}
-
-CheckboxGroup.propTypes = {
-    // keygen 生成每一项key的辅助方法
-    ...getProps(PropTypes, 'children', 'keygen'),
-    block: PropTypes.bool,
-    data: PropTypes.array,
-    datum: PropTypes.object.isRequired,
-    renderItem: PropTypes.oneOfType([PropTypes.string, PropTypes.func]),
-}
-
-CheckboxGroup.defaultProps = {
-    renderItem: d => d,
 }
 
 export default CheckboxGroup

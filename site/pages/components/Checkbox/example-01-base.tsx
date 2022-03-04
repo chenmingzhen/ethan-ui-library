@@ -8,5 +8,5 @@ import React from 'react'
 import { Checkbox } from 'ethan/index'
 
 export default function() {
-  return <Checkbox>Checkbox</Checkbox>
+    return <Checkbox>Checkbox</Checkbox>
 }
