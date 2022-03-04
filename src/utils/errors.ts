@@ -1,6 +1,7 @@
-// @ts-nocheck
 export class FormError extends Error {
-    constructor(message, name, value) {
+    value: any
+
+    constructor(message: string, name?: string, value?: any) {
         super()
         this.message = message
         this.name = name
@@ -12,24 +13,20 @@ export const wrapFormError = error => {
     if (error instanceof Error) {
         return new FormError(error.message)
     }
+
     if (Array.isArray(error)) {
         return error.map(wrapFormError)
     }
+
     return error
 }
 
-/**
- * Promise.All可以接收一个空数组
- * Promise.all([]).then(data=>{console.log(data)}) output:[]
- * @param ops
- * @param isForm
- * @returns {Promise<unknown>}
- */
 export const promiseAll = (ops, isForm = true) =>
     new Promise((resolve, reject) => {
         Promise.all(ops)
             .then(res => {
                 const error = res.find(r => r !== true)
+
                 if (error) reject(error)
                 else resolve(true)
             })
@@ -40,8 +37,10 @@ export const promiseAll = (ops, isForm = true) =>
 
 export const isSameError = (a, b) => {
     if (a === b) return true
+
     if (a instanceof Error && b instanceof Error) {
         return a.message === b.message
     }
+
     return a === b
 }

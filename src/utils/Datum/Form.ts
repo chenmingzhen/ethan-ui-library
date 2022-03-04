@@ -11,7 +11,7 @@ import {
     changeSubscribe,
     VALIDATE_TOPIC,
     RESET_TOPIC,
-    CHANGE_TOPIC,
+    CHANGE_ACTION,
     FORCE_PASS,
     ERROR_TYPE,
     IGNORE_VALIDATE,
@@ -78,7 +78,7 @@ export default class {
 
         if ((value !== null && typeof value === 'object') || pub) this.publishValue(name, FORCE_PASS)
 
-        this.dispatch(CHANGE_TOPIC)
+        this.dispatch(CHANGE_ACTION)
         this.handleChange()
     }
 
@@ -94,7 +94,7 @@ export default class {
             }
         })
 
-        this.dispatch(CHANGE_TOPIC)
+        this.dispatch(CHANGE_ACTION)
         this.handleChange()
     }
 
@@ -216,7 +216,7 @@ export default class {
                 })
 
             // for flow
-            this.dispatch(CHANGE_TOPIC)
+            this.dispatch(CHANGE_ACTION)
         })
     }
 
@@ -228,7 +228,7 @@ export default class {
         if (value !== undefined && this.get(name) == null) {
             this.set(name, value, true)
             this.dispatch(changeSubscribe(name))
-            this.dispatch(CHANGE_TOPIC)
+            this.dispatch(CHANGE_ACTION)
         }
 
         if (value) this.$defaultValues[name] = fastClone(value)

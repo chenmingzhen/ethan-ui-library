@@ -52,7 +52,18 @@ export function pathGenerator(raw) {
     return results
 }
 
-// 深度合并对象 不包括数组
+interface DeepMergeOptionsParams {
+    removeUndefined?: boolean
+
+    skipUndefined?: boolean
+
+    clone
+}
+
+/**
+ * @todo clone params
+ * @deprecated 深度合并对象 不包括数组
+ */
 export const deepMerge = (
     target = {},
     source,
@@ -69,9 +80,11 @@ export const deepMerge = (
     if (!isMergeable(source)) return source
 
     const dest = {}
+
     if (isMergeable(target)) {
         Object.keys(target).forEach(k => {
             dest[k] = clone ? deepMerge({}, target[k], clone) : target[k]
+
             if (removeUndefined && dest[k] === undefined) delete dest[k]
         })
     }
@@ -81,7 +94,9 @@ export const deepMerge = (
             dest[k] = deepMerge(target[k], source[k], clone)
         } else {
             if (skipUndefined && source[k] === undefined) return
+
             dest[k] = deepMerge({}, source[k], clone)
+
             if (removeUndefined && dest[k] === undefined) delete dest[k]
         }
     })
@@ -113,8 +128,10 @@ export const deepGet = (target, path, options = {}) => {
     return current
 }
 
-export const filterProps = (obj, props = []) => {
+export function filterProps(obj, props: (p: Record<string, any>) => boolean | string[] = []): Record<string, any> {
     if (!isObject(obj)) return obj
+
+    const newProps = []
 
     if (typeof props === 'function') {
         const prediction = props
@@ -122,13 +139,13 @@ export const filterProps = (obj, props = []) => {
         props = []
 
         Object.keys(obj).forEach(k => {
-            if (prediction(obj[k])) props.push(k)
+            if (prediction(obj[k])) newProps.push(k)
         })
     }
 
     const newObj = {}
 
-    props.forEach(k => {
+    newProps.forEach(k => {
         newObj[k] = obj[k]
     })
 
