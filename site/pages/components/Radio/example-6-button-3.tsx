@@ -10,11 +10,11 @@ import { Radio } from 'ethan'
 const data = ['red', 'orange', 'yellow']
 
 export default function() {
-  return (
-    <div>
-      <Radio.Group size="small" button keygen data={data} defaultValue="red" />
-      <Radio.Group keygen button data={data} defaultValue="red" />
-      <Radio.Group size="large" button keygen data={data} defaultValue="red" />
-    </div>
-  )
+    return (
+        <div>
+            <Radio.Group size="small" button data={data} defaultValue="red" />
+            <Radio.Group button data={data} defaultValue="red" />
+            <Radio.Group size="large" button data={data} defaultValue="red" />
+        </div>
+    )
 }

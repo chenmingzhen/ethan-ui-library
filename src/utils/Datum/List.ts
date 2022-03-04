@@ -13,12 +13,16 @@ export interface DatumListProps<Data = any, FormatResult = Data> {
     format?: FormatInfer<Data>
 
     /**
-     *
+     * 部分需要继承复写此属性
      * @param items 当前List的中值
      * @param data  引起变化的值
      * @param unknown
      */
-    onChange?(items: OnChangeItemInfer<Data, FormatResult>[], data: Data, unknown: true): void
+    onChange?(
+        items: OnChangeItemInfer<Data, FormatResult>[] | OnChangeItemInfer<Data, FormatResult>,
+        data: Data,
+        checked: boolean
+    ): void
 
     separator?: string
 
@@ -65,7 +69,7 @@ export default class List<T = string> {
 
     disabled: (...args) => boolean
 
-    /** InnerValues */
+    /** InnerValues 内部直接操作的源，不引起更新，由value的变化驱动更新 */
     $values: any
 
     /** 缓存outerValue */
@@ -103,7 +107,7 @@ export default class List<T = string> {
         return this.$values
     }
 
-    // 暴露外部设置values
+    /** 暴露外部设置values 触发更新 */
     set values(values) {
         this.$values = values
 

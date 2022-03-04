@@ -7,7 +7,7 @@ import inputable from '../Form/inputable'
 
 const exportTransfer = compose(
     inputable,
-    Datum.hoc({ bindProps: ['disabled', 'limit', 'format', 'prediction', 'separator'] })
+    Datum.Hoc({ bindProps: ['disabled', 'limit', 'format', 'prediction', 'separator'] })
 )(Transfer)
 
 exportTransfer.displayName = 'EthanTransfer'

@@ -10,7 +10,7 @@ const CheckboxContainer = compose(InputAble, consumer)(Checkbox) as CheckboxComp
 
 CheckboxContainer.Group = compose(
     InputAble,
-    Datum.hoc({ bindProps: ['disabled', 'format', 'prediction', 'separator'] })
+    Datum.Hoc({ bindProps: ['disabled', 'format', 'prediction', 'separator'] })
 )(Group)
 
 CheckboxContainer.displayName = 'EthanCheckbox'

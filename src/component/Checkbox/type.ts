@@ -36,11 +36,13 @@ export interface CheckItemState {
     checked: boolean
 }
 
+export type CheckboxProps<V = any> = Omit<CheckItemProps<V>, 'content' | 'size'>
+
 export type CheckItemGroupDefaultDataRecord = { label: React.ReactNode; value: string | number }
 
 export type CheckItemGroupBaseData = Record<string, any> | string | number
 
-export type Value<Data, FormatData> = FormatData extends Data ? Data[] : FormatData[]
+export type CheckItemValue<Data, FormatData> = FormatData extends Data ? Data : FormatData
 
 export interface CheckboxGroupProps<
     Data extends CheckItemGroupBaseData = CheckItemGroupDefaultDataRecord,
@@ -53,8 +55,8 @@ export interface CheckboxGroupProps<
     className?: string
     keygen?: KeyGen<Data>
     children?: React.ReactNode
-    defaultValue?: Value<Data, FormatData>
-    value?: Value<Data, FormatData>
+    defaultValue?: CheckItemValue<Data, FormatData>[]
+    value?: CheckItemValue<Data, FormatData>[]
 }
 
 /** FR显式说明format生成的结果类型 */
@@ -66,7 +68,7 @@ export interface ICheckboxGroupProps<
     datum?: List<Data>
 }
 
-export interface CheckboxComponent<V = any> extends React.ComponentClass<CheckItemProps<V>> {
+export interface CheckboxComponent<V = any> extends React.ComponentClass<CheckboxProps<V>> {
     Group<
         Data extends CheckItemGroupBaseData = CheckItemGroupDefaultDataRecord,
         FormatResult extends CheckItemGroupBaseData = Data
