@@ -1,7 +1,6 @@
-// @ts-nocheck
 import { toPrecision } from '@/utils/numbers'
 
-export function valueToPer(value, scale) {
+export function valueToPer(value: number, scale: number[]) {
     const range = scale.length - 1
     let ps = 0
     scale.forEach((s, i) => {
@@ -24,7 +23,7 @@ export function valueToPer(value, scale) {
  * @param step 步长
  * @returns {*}
  */
-export function perToValue(per, scale, step = 1) {
+export function perToValue(per: number, scale: number[], step = 1) {
     // ❗❗❗ 范围值数组长度-1
     const range = scale.length - 1
 
@@ -40,7 +39,7 @@ export function perToValue(per, scale, step = 1) {
 
     // 上限
     const max = scale[ps + 1]
-    // max-min之间的数量值
+    // max-min之间的标数量值
     const count = (max - min) / step
     //  特征值周期
     const sper = (per - ps / range) * range

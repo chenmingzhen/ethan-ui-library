@@ -1,17 +1,14 @@
-// @ts-nocheck
-import React, { memo, useMemo } from 'react'
-import PropTypes from 'prop-types'
+import React, { memo } from 'react'
 import draggable from '@/hoc/draggable'
 import { sliderClass } from '@/styles'
+import { IndicatorProps } from './type'
 
-const Indicator = props => {
-    const event = useMemo(() => (props.disabled ? undefined : props.onDragStart), [props.disabled, props.onDragStart])
-    return <div onMouseDown={event} className={sliderClass('indicator')} />
-}
+const Indicator: React.FC<IndicatorProps> = props => {
+    const { disabled, onDragStart } = props
 
-Indicator.propTypes = {
-    disabled: PropTypes.bool,
-    onDragStart: PropTypes.func.isRequired,
+    const onMouseDown = disabled ? undefined : onDragStart
+
+    return <div onMouseDown={onMouseDown} className={sliderClass('indicator')} />
 }
 
 export default draggable(memo(Indicator))
