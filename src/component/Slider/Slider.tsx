@@ -17,7 +17,7 @@ export default class Slider extends PureComponent<SliderProps, SliderState> {
 
         this.state = {
             dragging: false,
-            length: valueToPer(props.value, props.scale),
+            lengthPercent: valueToPer(props.value, props.scale),
         }
     }
 
@@ -29,34 +29,34 @@ export default class Slider extends PureComponent<SliderProps, SliderState> {
         const { length } = scale
 
         if (prevProps.value !== value || (!dragging && prevProps.scale[length - 1] !== scale[length - 1])) {
-            this.setState({ length: valueToPer(value, scale) })
+            this.setState({ lengthPercent: valueToPer(value, scale) })
         }
     }
 
     handleDrag = (mx: number, my: number) => {
         const { scale, onDrag, value, vertical, onIncrease, min, max } = this.props
 
-        const { length } = this.state
+        const { lengthPercent } = this.state
 
-        const m = vertical ? my / this.parentElement.clientHeight : mx / this.parentElement.clientWidth
+        const movePercent = vertical ? my / this.parentElement.clientHeight : mx / this.parentElement.clientWidth
 
-        const newMin = min ? valueToPer(min, scale) : 0
-        const newMax = max ? valueToPer(max, scale) : 1
+        const minPercent = min ? valueToPer(min, scale) : 0
+        const maxPercent = max ? valueToPer(max, scale) : 1
 
         /** y轴向下为正 */
-        let newLength = length + (vertical ? -m : m)
+        let newLengthPercent = lengthPercent + (vertical ? -movePercent : movePercent)
 
-        const needIncrease = newLength > 1
+        const needIncrease = newLengthPercent > 1
 
-        if (newLength < newMin) newLength = newMin
-        if (newLength > newMax) newLength = newMax
+        if (newLengthPercent < minPercent) newLengthPercent = minPercent
+        if (newLengthPercent > maxPercent) newLengthPercent = maxPercent
 
-        const newValue = this.lengthToValue(newLength)
+        const newValue = this.lengthPercentToValue(newLengthPercent)
 
         if (needIncrease && onIncrease) onIncrease(newValue)
 
         this.setState({
-            length: newLength,
+            lengthPercent: newLengthPercent,
             dragging: true,
         })
 
@@ -66,21 +66,12 @@ export default class Slider extends PureComponent<SliderProps, SliderState> {
     }
 
     handleDragEnd = () => {
-        const { scale, onChange, index } = this.props
-
-        const { length } = this.state
-
-        const value = this.lengthToValue(length)
-
         this.setState({
-            length: valueToPer(value, scale),
             dragging: false,
         })
-
-        onChange(index, value)
     }
 
-    lengthToValue = (length: number) => {
+    lengthPercentToValue = (length: number) => {
         const { scale, step } = this.props
 
         return perToValue(length, scale, step)
@@ -89,13 +80,13 @@ export default class Slider extends PureComponent<SliderProps, SliderState> {
     renderResult = () => {
         const { autoHide, formatValue } = this.props
 
-        const { dragging, length } = this.state
+        const { dragging, lengthPercent } = this.state
 
         if (!formatValue) return null
 
         const className = sliderClass('result', (!autoHide || dragging) && 'show')
 
-        const value = formatValue(this.lengthToValue(length))
+        const value = formatValue(this.lengthPercentToValue(lengthPercent))
 
         return <div className={className}>{value}</div>
     }
@@ -103,11 +94,11 @@ export default class Slider extends PureComponent<SliderProps, SliderState> {
     render() {
         const { index, disabled, vertical } = this.props
 
-        let { length } = this.state
+        let { lengthPercent } = this.state
 
-        if (index === 1) length = 1 - length
+        if (index === 1) lengthPercent = 1 - lengthPercent
 
-        const style = { [vertical ? 'height' : 'width']: `${length * 100}%` }
+        const style = { [vertical ? 'height' : 'width']: `${lengthPercent * 100}%` }
 
         const className = sliderClass(
             'bar',

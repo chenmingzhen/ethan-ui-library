@@ -8,5 +8,5 @@ import React from 'react'
 import { Slider } from 'ethan'
 
 export default function() {
-  return <Slider defaultValue={4} step={1} formatValue={false} formatScale={false} />
+    return <Slider defaultValue={4} step={1} formatValue={false} formatScale={false} />
 }

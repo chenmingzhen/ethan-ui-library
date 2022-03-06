@@ -5,5 +5,5 @@ export function range(end: number, start = 0) {
 }
 
 export function toPrecision(num: number, precision = 12) {
-    return +parseFloat(num.toPrecision(precision))
+    return parseFloat(num.toPrecision(precision))
 }

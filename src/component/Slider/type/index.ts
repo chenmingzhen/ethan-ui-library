@@ -21,6 +21,7 @@ export interface SliderContainerProps {
     style?: React.CSSProperties
     /** 拖动超过最大值事件 */
     onIncrease?: (value: number) => void
+    defaultValue?: number | number[]
 }
 
 export interface ISliderContainerProps extends SliderContainerProps {
@@ -37,7 +38,7 @@ export interface SliderProps extends Omit<ISliderContainerProps, 'value' | 'form
 
 export interface SliderState {
     dragging: boolean
-    length: number
+    lengthPercent: number
 }
 
 /** @todo 合并代码时补充类型 */

@@ -8,21 +8,21 @@ import React from 'react'
 import { Slider, Input } from 'ethan'
 
 const container = {
-  display: 'flex',
-  alignItems: 'center',
+    display: 'flex',
+    alignItems: 'center',
 }
 
 const slider = {
-  flex: 1,
-  marginRight: 28,
+    flex: 1,
+    marginRight: 28,
 }
 
 export default function() {
-  const [value, setValue] = React.useState(50)
-  return (
-    <div style={container}>
-      <Slider value={value} onChange={n => setValue(n)} style={slider} />
-      <Input.Number width={100} value={value} onChange={n => setValue(n)} />
-    </div>
-  )
+    const [value, setValue] = React.useState(50)
+    return (
+        <div style={container}>
+            <Slider value={value} onChange={(n: number) => setValue(n)} style={slider} />
+            <Input.Number width={100} value={value} onChange={(n: number) => setValue(n)} />
+        </div>
+    )
 }

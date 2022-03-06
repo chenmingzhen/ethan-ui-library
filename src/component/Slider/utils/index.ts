@@ -18,21 +18,21 @@ export function valueToPer(value: number, scale: number[]) {
 
 /**
  * 百分比 => 真实值
- * @param per 百分比
+ * @param percent 百分比
  * @param scale 范围
  * @param step 步长
  * @returns {*}
  */
-export function perToValue(per: number, scale: number[], step = 1) {
+export function perToValue(percent: number, scale: number[], step = 1) {
     // ❗❗❗ 范围值数组长度-1
     const range = scale.length - 1
 
-    if (step === 0) return scale[Math.round(per * range)]
+    if (step === 0) return scale[Math.round(percent * range)]
 
-    if (per >= 1) return scale[range]
+    if (percent >= 1) return scale[range]
 
-    // 整数百分比值转化成整数值
-    const ps = Math.floor(per * range)
+    // 获取当前percent所在的区间下标
+    const ps = Math.floor(percent * range)
 
     // 下限
     const min = scale[ps]
@@ -42,7 +42,7 @@ export function perToValue(per: number, scale: number[], step = 1) {
     // max-min之间的标数量值
     const count = (max - min) / step
     //  特征值周期
-    const sper = (per - ps / range) * range
+    const sper = (percent - ps / range) * range
 
     return toPrecision(min + Math.round(sper * count) * step)
 }
