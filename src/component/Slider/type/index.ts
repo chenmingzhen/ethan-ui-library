@@ -1,3 +1,4 @@
+import { DraggableProps } from '@/hoc/draggable'
 import React from 'react'
 
 export interface SliderContainerProps {
@@ -41,8 +42,7 @@ export interface SliderState {
     lengthPercent: number
 }
 
-/** @todo 合并代码时补充类型 */
-export interface IndicatorProps {
+export interface IndicatorProps extends Omit<DraggableProps, 'onDragStart'> {
     disabled?: SliderContainerProps['disabled']
 
     onDragStart: React.MouseEventHandler<HTMLDivElement>
