@@ -9,15 +9,13 @@
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
 | defaultValue | string \| number | - | Default value |
-| delay | number | 400 | User input triggers the onChange and to check interval, unit: ms.|
 | name | string | none | The name of Form which access data |
 | onChange | (value: string) => void | - | The callback function when the value is changing |
 | onEnterPress | (value: string) => void | - | The callback function for enter key |
 | placeholder | string | - | Same as the native input tag |
-| popover | 'top-left' \| 'top' \| 'top-right' \| 'bottom-left' \| 'bottom' \| 'bottom-right' | none | The position where the text pop up |
 | size | 'large' \| 'default' \| 'small' | 'default' | size of input |
 | style | object | - | Container element style |
-| tip | ReactNode | none | Prompt information |
+| tip | ReactNode\|(value:string)=>ReactNode | none | Prompt information |
 | trim | boolean | false | When trim is true, blank characters are automatically deleted when lose focus。 |
 | type | string | 'text' | Same as the type of the native input tag |
 | value | string \| number | - | The defaultValue and value can be set at the same time and defaultValue will be overridden by value<br />In the Form, the value will be taken over by the form and the value will lose efficacy. |
