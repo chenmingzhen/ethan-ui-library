@@ -8,5 +8,5 @@ import React from 'react'
 import { Textarea } from 'ethan'
 
 export default function() {
-  return <Textarea rows={6} placeholder="input something" />
+    return <Textarea rows={6} placeholder="input something" />
 }

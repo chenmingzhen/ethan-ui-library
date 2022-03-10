@@ -47,7 +47,6 @@ export interface InputGroupProps extends InputBorderProps {
 export type IInputGroupProps = Omit<InputGroupProps, 'className'>
 
 export interface IInputProps extends InputProps {
-    forceChange?(value: InputProps['value'])
     htmlName?: string
 }
 

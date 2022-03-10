@@ -21,7 +21,7 @@
 | value | string \| number | - | The defaultValue and value can be set at the same time and defaultValue will be overridden by value<br />In the Form, the value will be taken over by the form and the value will lose efficacy. |
 | clearable | () => void \| boolean | false | Remove content of the input when clicking the clear icon, clear event function |
 | info | (value: string) => string \| number | - | Infomation |
-| popoverProps | object | none | Vilidate popup properties, specific properties refer to Popover component description |
+| popoverProps | object | none | Validate popup properties, specific properties refer to Popover component description |
 | maxLength | number | none | input max length |
 
 ### Input.Number

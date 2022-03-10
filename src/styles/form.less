@@ -159,6 +159,21 @@
         .input-focus();
     }
 
+    &-showCount {
+        width: 100%;
+        display: inline-block;
+
+        &::after {
+            position: absolute;
+            right: 0;
+            bottom: -20px;
+            color: #00000073;
+            white-space: nowrap;
+            content: attr(data-count);
+            pointer-events: none;
+        }
+    }
+
     position: relative;
     display: flex;
     width: 100%;

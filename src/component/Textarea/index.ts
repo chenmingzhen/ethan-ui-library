@@ -1,15 +1,17 @@
-// @ts-nocheck
 import { compose } from '@/utils/func'
-import delay from '@/hoc/delay'
 import trim from '@/hoc/trim'
 import inputBorder from '@/hoc/inputBorder'
+import React from 'react'
 import inputable from '../Form/inputable'
-import Component from './Textarea'
+import Textarea from './Textarea'
+import { TextareaProps } from './type'
 
-const input = compose(inputable, inputBorder({}), delay(400), trim)
+const TextareaComponent = compose(
+    inputable,
+    inputBorder({ tag: 'div', popover: true }),
+    trim
+)(Textarea) as React.MemoExoticComponent<React.FC<TextareaProps>>
 
-const Textarea = input(Component)
+TextareaComponent.displayName = 'EthanTextarea'
 
-Textarea.displayName = 'EthanTextarea'
-
-export default Textarea
+export default TextareaComponent

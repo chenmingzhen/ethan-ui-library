@@ -35,6 +35,8 @@ export const isBuffer = val => {
 export const isEmpty = val => {
     if (val === null) return true
 
+    if (val === undefined) return true
+
     if (val.length !== undefined) return val.length === 0
 
     if (val instanceof Date) return false
