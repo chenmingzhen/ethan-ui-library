@@ -8,16 +8,15 @@ import React from 'react'
 import { Rate, FontAwesome } from 'ethan'
 
 const star = <FontAwesome name="star" />
-const StarRate = Rate(star, star)
 
 export default function() {
-  return (
-    <div>
-      <StarRate size={14} />
-      <br />
-      <StarRate size={20} />
-      <br />
-      <StarRate size={40} />
-    </div>
-  )
+    return (
+        <div>
+            <Rate size={8} background={star} front={star} />
+            <br />
+            <Rate size={20} background={star} front={star} />
+            <br />
+            <Rate size={40} background={star} front={star} />
+        </div>
+    )
 }

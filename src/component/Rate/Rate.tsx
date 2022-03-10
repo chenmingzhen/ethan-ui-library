@@ -1,196 +1,209 @@
-// @ts-nocheck
-import React, { useCallback, useMemo, useRef, useState } from 'react'
-import PropTypes from 'prop-types'
+import React from 'react'
 import classnames from 'classnames'
 import { range } from '@/utils/numbers'
 import { getParent } from '@/utils/dom/element'
-import { getProps, defaultProps } from '@/utils/proptypes'
 import { rateClass } from '@/styles'
+import { PureComponent } from '@/utils/component'
+import { RateProps, RateState } from './type'
 
 const MIN_SIZE = 12
 
-const Rate = props => {
-    const [hover, setHover] = useState(0)
-    const [highlight, setHighlight] = useState(-1)
-    const highlightTimer = useRef()
-    // -------------------------method and computed-------------------------
-    const computedStyle = useMemo(() => {
-        const { size } = props
-        if (!size) return undefined
-        const parsed = Math.max(MIN_SIZE, parseFloat(size))
-        return { width: parsed, fontSize: parsed }
-    }, [props.size])
+export default class Rate extends PureComponent<RateProps, RateState> {
+    static defaultProps: RateProps = {
+        repeat: true,
+        max: 5,
+        size: 20,
+        text: [],
+        value: 0,
+    }
 
-    const computedValue = useMemo(() => (hover === 0 ? props.value : hover), [hover, props.value])
+    static displayName = 'EthanRate'
 
-    const getScale = useCallback(() => {
-        const { size } = props
+    highlightTimer: NodeJS.Timeout
+
+    get scale() {
+        const { size } = this.props
+
         if (size >= MIN_SIZE) return undefined
+
         return {
             transform: `scale(${size / MIN_SIZE})`,
         }
-    }, [props.size])
+    }
 
-    const getIcon = useCallback(
-        (icons, i, isBg) => {
-            const { repeat, allowHalf } = props
-            const value = computedValue
-            const remain = value - i
+    get computedValue() {
+        const { value } = this.props
 
-            let icon
-            if (!Array.isArray(icons)) {
-                icon = icons
-            } else {
-                icon = icons[repeat ? value - 1 : i]
-                if (!icon) icon = icons[icons.length - 1]
-            }
+        const { hover } = this.state
 
-            // 非half
-            if (remain <= 0 || remain >= 1 || isBg) return icon
+        return hover === 0 ? value : hover
+    }
 
-            // 对half处理
-            // half的情况remain是0.5
-            const style = { width: `${remain * 100}%`, display: 'block', overflow: 'hidden', fontSize: 'inherit' }
-            return (
-                <span style={style} className={allowHalf && rateClass('allow-half')}>
-                    {icon}
-                </span>
-            )
-        },
-        [computedValue, props.repeat, props.allowHalf]
-    )
+    get InnerStyle() {
+        const { size } = this.props
 
-    const renderBackground = useCallback(() => {
-        const { background, max, disabled, allowHalf } = props
+        if (!size) return undefined
 
+        const parsed = Math.max(MIN_SIZE, size)
+
+        return { width: parsed, fontSize: parsed }
+    }
+
+    constructor(props) {
+        super(props)
+
+        this.state = {
+            hover: 0,
+            highlight: 0,
+        }
+    }
+
+    handleClick = (value: number, e: React.MouseEvent<HTMLSpanElement>) => {
+        const { clearable, allowHalf, onChange } = this.props
+
+        if (allowHalf && getParent(e.target, `.${rateClass('allow-half')}`)) {
+            value -= 0.5
+        }
+
+        if (clearable && this.props.value === value) {
+            value = 0
+
+            this.setState({ hover: 0 })
+        }
+
+        onChange(value)
+
+        this.setState({ highlight: value })
+
+        // 高亮动画
+        if (this.highlightTimer) {
+            clearTimeout(this.highlightTimer)
+
+            this.highlightTimer = null
+        }
+
+        this.highlightTimer = setTimeout(() => {
+            this.setState({ highlight: 0 })
+        }, 300)
+    }
+
+    handleMove = (hover: number, e: React.MouseEvent) => {
+        const { x, width } = (e.target as HTMLElement).getBoundingClientRect()
+
+        const value = hover - (x + width / 2 > e.clientX ? 0.5 : 0)
+
+        this.setState({ hover: value })
+    }
+
+    handleHover = (hover: number) => {
+        this.setState({ hover })
+    }
+
+    buildIcon = (icons: React.ReactNode | React.ReactNode[], i: number, isBg = false) => {
+        const { repeat, allowHalf } = this.props
+
+        const remain = this.computedValue - i
+
+        let icon
+
+        if (!Array.isArray(icons)) {
+            icon = icons
+        } else {
+            icon = icons[repeat ? this.computedValue - 1 : i]
+
+            if (!icon) icon = icons[icons.length - 1]
+        }
+
+        if (remain <= 0 || remain >= 1 || isBg) return icon
+
+        /** 半选remain是0.5 */
+        const style = { width: `${remain * 100}%`, display: 'block', overflow: 'hidden', fontSize: 'inherit' }
+
+        /** 半选 */
         return (
-            <div className={rateClass('background')}>
-                {range(max).map(v => (
-                    <span
-                        key={v}
-                        style={Object.assign(
-                            { visibility: !allowHalf && !disabled && computedValue > v ? 'hidden' : 'visible' },
-                            computedStyle
-                        )}
-                    >
-                        {getIcon(background, v, true)}
-                    </span>
-                ))}
-            </div>
+            <span style={style} className={allowHalf && rateClass('allow-half')}>
+                {icon}
+            </span>
         )
-    }, [computedStyle, computedValue, props])
+    }
 
-    const renderStatic = useCallback(() => {
-        const { front, value, max, text } = props
-        const style = computedStyle
+    renderRate = () => {
+        const { front, max, text, allowHalf } = this.props
 
-        return (
-            <div className={rateClass('static')}>
-                {range(max).map(v => (
-                    <span key={v} style={style}>
-                        {value > v && getIcon(front, v)}
-                    </span>
-                ))}
-                <span className={rateClass('text')}>{text[Math.ceil(value) - 1]}</span>
-            </div>
-        )
-    }, [computedStyle, props.front, props.value, props.max, props.text])
-
-    const handleClick = useCallback(
-        (...args) => {
-            let value = args[0]
-            const e = args[1]
-            const { clearable, allowHalf } = props
-            if (allowHalf && getParent(e.target, `.${rateClass('allow-half')}`)) {
-                value -= 0.5
-            }
-            if (clearable && props.value === value) {
-                value = 0
-                setHover(0)
-            }
-            props.onChange(value)
-            setHighlight(value)
-
-            // 高亮动画
-            if (highlightTimer.current) clearTimeout(highlightTimer.current)
-            highlightTimer.current = setTimeout(() => {
-                setHighlight(-1)
-            }, 300)
-        },
-        [props.clearable, props.allowHalf, props.onChange, highlightTimer.current]
-    )
-
-    const handleHover = useCallback(
-        _hover => {
-            setHover(_hover)
-        },
-        [hover]
-    )
-
-    const handleMove = useCallback((_hover, e) => {
-        const { x, width } = e.target.getBoundingClientRect()
-
-        setHover(_hover - (x + width / 2 > e.clientX ? 0.5 : 0))
-    }, [])
-
-    const renderRate = useCallback(() => {
-        const { front, max, text, allowHalf } = props
-        const value = computedValue
-        const style = computedStyle
+        const { highlight } = this.state
 
         return (
             <div className={rateClass('front')}>
                 {range(max).map(v => (
                     <span
                         key={v}
-                        onClick={handleClick.bind(this, v + 1)}
-                        onMouseLeave={handleHover.bind(this, 0)}
-                        onMouseMove={allowHalf ? handleMove.bind(this, v + 1) : undefined}
-                        onMouseEnter={!allowHalf ? handleHover.bind(this, v + 1) : undefined}
-                        style={style}
+                        onClick={this.handleClick.bind(this, v + 1)}
+                        onMouseLeave={this.handleHover.bind(this, 0)}
+                        onMouseMove={allowHalf ? this.handleMove.bind(this, v + 1) : undefined}
+                        onMouseEnter={!allowHalf ? this.handleHover.bind(this, v + 1) : undefined}
+                        style={this.InnerStyle}
                     >
-                        {value > v ? getIcon(front, v) : <span>&nbsp;</span>}
+                        {this.computedValue > v ? this.buildIcon(front, v) : <span>&nbsp;</span>}
                         {/* 点击后的动画 */}
-                        {highlight === v + 1 && <i className={rateClass('highlight')}>{getIcon(front, v)}</i>}
+                        {highlight === v + 1 && <i className={rateClass('highlight')}>{this.buildIcon(front, v)}</i>}
+                    </span>
+                ))}
+                <span className={rateClass('text')}>{text[Math.ceil(this.computedValue) - 1]}</span>
+            </div>
+        )
+    }
+
+    renderStatic = () => {
+        const { front, value, max, text } = this.props
+
+        return (
+            <div className={rateClass('static')}>
+                {range(max).map(v => (
+                    <span key={v} style={this.InnerStyle}>
+                        {value > v && this.buildIcon(front, v)}
                     </span>
                 ))}
                 <span className={rateClass('text')}>{text[Math.ceil(value) - 1]}</span>
             </div>
         )
-    }, [props, computedValue, computedStyle])
-    // -------------------------render--------------------------
-    const className = classnames(rateClass('_', props.className))
-    const ms = Object.assign({}, props.style, getScale())
+    }
 
-    return (
-        <div className={className} style={ms}>
-            {renderBackground()}
-            {props.disabled ? renderStatic() : renderRate()}
-        </div>
-    )
+    renderBackground = () => {
+        const { background, max, disabled, allowHalf } = this.props
+
+        return (
+            <div className={rateClass('background')}>
+                {range(max).map(v => {
+                    const style = Object.assign(
+                        {
+                            visibility: !allowHalf && !disabled && this.computedValue > v ? 'hidden' : 'visible',
+                        },
+                        this.InnerStyle
+                    ) as React.CSSProperties
+
+                    return (
+                        <span key={v} style={style}>
+                            {this.buildIcon(background, v, true)}
+                        </span>
+                    )
+                })}
+            </div>
+        )
+    }
+
+    render() {
+        const { disabled } = this.props
+
+        const className = classnames(rateClass('_', this.props.className))
+
+        const style = Object.assign({}, this.props.style, this.scale)
+
+        return (
+            <div className={className} style={style}>
+                {this.renderBackground()}
+
+                {disabled ? this.renderStatic() : this.renderRate()}
+            </div>
+        )
+    }
 }
-
-Rate.propTypes = {
-    ...getProps(PropTypes, 'disabled', 'type'),
-    background: PropTypes.oneOfType([PropTypes.element, PropTypes.array]),
-    clearable: PropTypes.bool,
-    repeat: PropTypes.bool,
-    front: PropTypes.oneOfType([PropTypes.element, PropTypes.array]),
-    max: PropTypes.number,
-    onChange: PropTypes.func.isRequired,
-    size: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
-    text: PropTypes.array,
-    value: PropTypes.number,
-    allowHalf: PropTypes.bool,
-}
-
-Rate.defaultProps = {
-    ...defaultProps,
-    repeat: true,
-    max: 5,
-    size: 20,
-    text: [],
-    value: 0,
-}
-
-export default Rate

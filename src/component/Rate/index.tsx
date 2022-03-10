@@ -1,12 +1,8 @@
-// @ts-nocheck
 import React from 'react'
-import Component from './Rate'
+import Rate from './Rate'
 import inputable from '../Form/inputable'
+import { RateProps, RateState } from './type'
 
-export default (background, front, opts = {}) => {
-    const Rate = inputable(props => (
-        <Component {...opts} {...props} background={background} front={front || background} />
-    ))
-    Rate.displayName = 'EthanRate'
-    return Rate
-}
+const RateComponent = inputable(Rate) as React.ComponentClass<RateProps, RateState>
+
+export default RateComponent

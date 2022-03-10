@@ -8,8 +8,7 @@ import React from 'react'
 import { Rate, FontAwesome } from 'ethan'
 
 const star = <FontAwesome name="star" />
-const StarRate = Rate(star, star)
 
 export default function() {
-  return <StarRate value={3.6} disabled />
+    return <Rate value={3.6} disabled background={star} front={star} />
 }
