@@ -8,10 +8,10 @@
 
 | Property     | Type             | Default | Description                                                                                |
 | ------------ | ---------------- | ------- | ------------------------------------------------------------------------------------------ |
-| defaultValue | number           |         | Default value                                                                              |
+| defaultValue | number           |   -      | Default value                                                                              |
 | disabled     | bool             | false   | read-only                                                                                  |
 | max          | number           | 5       | The maximum value of the option, integer                                                   |
-| onChange     | function(d)      |         | The callback function when the value is changing                                           |
+| onChange     | (value: number) => void      |     -    | The callback function when the value is changing                                           |
 | repeat       | bool             | true    | When repeat is true, display item is a copy of the item corresponding to the current value |
 | size         | number \| string | 20      | the size of the icon                                                                       |
 | value        | number           | 0       |                                                                                            |

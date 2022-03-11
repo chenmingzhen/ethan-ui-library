@@ -7,7 +7,6 @@ export interface RateProps {
     repeat?: boolean
     front?: React.ReactNode | React.ReactNode[]
     max?: number
-    /** @todo */
     onChange?: (value: number) => void
     size?: number
     text?: React.ReactNode | React.ReactNode[]
