@@ -21,6 +21,8 @@ export default class Rate extends PureComponent<RateProps, RateState> {
 
     highlightTimer: NodeJS.Timeout
 
+    mouseInContainer = false
+
     get scale() {
         const { size } = this.props
 
@@ -58,7 +60,7 @@ export default class Rate extends PureComponent<RateProps, RateState> {
         }
     }
 
-    handleClick = (value: number, e: React.MouseEvent<HTMLSpanElement>) => {
+    handleRateClick = (value: number, e: React.MouseEvent<HTMLSpanElement>) => {
         const { clearable, allowHalf, onChange } = this.props
 
         if (allowHalf && getParent(e.target, `.${rateClass('allow-half')}`)) {
@@ -99,6 +101,16 @@ export default class Rate extends PureComponent<RateProps, RateState> {
         this.setState({ hover })
     }
 
+    handleMouseInContainer = () => {
+        this.mouseInContainer = true
+    }
+
+    handleMouseOutContainer = () => {
+        this.mouseInContainer = false
+
+        this.setState({ hover: 0 })
+    }
+
     buildIcon = (icons: React.ReactNode | React.ReactNode[], i: number, isBg = false) => {
         const { repeat, allowHalf } = this.props
 
@@ -137,8 +149,7 @@ export default class Rate extends PureComponent<RateProps, RateState> {
                 {range(max).map(v => (
                     <span
                         key={v}
-                        onClick={this.handleClick.bind(this, v + 1)}
-                        onMouseLeave={this.handleHover.bind(this, 0)}
+                        onClick={this.handleRateClick.bind(this, v + 1)}
                         onMouseMove={allowHalf ? this.handleMove.bind(this, v + 1) : undefined}
                         onMouseEnter={!allowHalf ? this.handleHover.bind(this, v + 1) : undefined}
                         style={this.InnerStyle}
@@ -199,7 +210,12 @@ export default class Rate extends PureComponent<RateProps, RateState> {
         const style = Object.assign({}, this.props.style, this.scale)
 
         return (
-            <div className={className} style={style}>
+            <div
+                className={className}
+                style={style}
+                onMouseEnter={this.handleMouseInContainer}
+                onMouseLeave={this.handleMouseOutContainer}
+            >
                 {this.renderBackground()}
 
                 {disabled ? this.renderStatic() : this.renderRate()}
