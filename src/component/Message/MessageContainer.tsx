@@ -50,6 +50,7 @@ const MessageContainer: React.ForwardRefRenderFunction<MessageContainerInstance,
 
         return styles
     }
+
     return (
         <>
             {messages.map(({ id, type, content, dismiss, h, title, className, position }) => (

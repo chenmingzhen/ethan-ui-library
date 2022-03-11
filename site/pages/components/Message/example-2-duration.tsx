@@ -9,13 +9,13 @@ import React from 'react'
 import { Button, Message } from 'ethan/index'
 
 const s10 = () => Message.info('This message will close after 10 seconds.', 10)
-const s0 = () => Message.error('This message will not close utill click the close icon.', 0)
+const s0 = () => Message.error('This message will not close util click the close icon.', 0)
 
 export default function() {
-  return (
-    <div>
-      <Button onClick={s10}>Duration 10 s.</Button>
-      <Button onClick={s0}>Manually close</Button>
-    </div>
-  )
+    return (
+        <div>
+            <Button onClick={s10}>Duration 10 s.</Button>
+            <Button onClick={s0}>Manually close</Button>
+        </div>
+    )
 }

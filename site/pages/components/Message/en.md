@@ -37,7 +37,9 @@ Message.closeAll() // Close all messages(With Animation)
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
-| onClose | function | none | The callback function when the message is closed. |
+| onClose | function | - | The callback function when the message is closed. |
 | position | string | 'top' | The position where the message display, options: \['top', 'middle', 'top-left', 'top-right', 'bottom-left', 'bottom-right'] |
 | title | string | | title |
-| className | string | none | class name |
+| className | string | - | Class name |
+| id | React.Key | - | Unique key |
+

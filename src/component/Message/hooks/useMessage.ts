@@ -1,30 +1,63 @@
 import { getUidStr } from '@/utils/uid'
 import useImmerGetSet from '@/hooks/useImmerGetSet'
+import React, { useRef } from 'react'
 import Message from '../type'
 
 const useMessage = (onDestroy?: () => void) => {
     const [getMessages, setMessages] = useImmerGetSet<Message[]>([])
 
-    function addMessage(msg: Message): () => void {
-        const id = getUidStr()
+    /** 如果addMessage中存在duration 使用Map存储timeout，执行Update操作时存在duration option时，取消清空之前的duration effect */
+    const durationTimerMap = useRef(new Map<React.Key, NodeJS.Timeout>()).current
 
-        setMessages(draft => {
-            draft.push(Object.assign({ id }, msg))
-        })
-
-        // message退场时间
-        if (msg.duration > 0) {
-            setTimeout(() => {
+    function dispatchDismiss(id: React.Key, duration: number) {
+        if (duration > 0) {
+            const timeout = setTimeout(() => {
                 setMessages(draft => {
                     draft.forEach(m => {
                         if (m.id === id) {
-                            // 执行callbackcloseMessageForAnimation
                             m.dismiss = true
                         }
                     })
                 })
-            }, msg.duration * 1000)
+
+                durationTimerMap.delete(id)
+            }, duration * 1000)
+
+            durationTimerMap.set(id, timeout)
         }
+    }
+
+    function addMessage(options: Message): () => void {
+        const id = options.id || getUidStr()
+
+        const messages = getMessages()
+
+        const hasIdMessageIndex = messages.findIndex(message => message.id === id)
+
+        /** 存在Key 直接修改Props更新Message */
+        if (hasIdMessageIndex > -1) {
+            if (durationTimerMap.has(id)) {
+                clearTimeout(durationTimerMap.get(id))
+
+                durationTimerMap.delete(id)
+            }
+
+            setMessages(draft => {
+                const origin = draft[hasIdMessageIndex]
+
+                draft[hasIdMessageIndex] = { ...origin, ...options }
+            })
+
+            dispatchDismiss(id, options.duration)
+
+            return
+        }
+
+        setMessages(draft => {
+            draft.push(Object.assign(options, { id }))
+        })
+
+        dispatchDismiss(id, options.duration)
 
         return manualCloseMsg.bind(this, id)
     }
@@ -42,8 +75,7 @@ const useMessage = (onDestroy?: () => void) => {
     }
 
     // 根据alert的动画处理回调函数 手动处理动画
-    function closeMessageForAnimation(...args) {
-        const [id, duration, msgHeight] = args
+    function closeMessageForAnimation(id, duration, msgHeight) {
         if (!duration) {
             this.removeMessage(id)
             return

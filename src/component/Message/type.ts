@@ -1,7 +1,8 @@
+import React from 'react'
 import { AlertType } from '../Alert/alert'
 
 export default interface Message {
-    id?: string
+    id?: React.Key
 
     /**
      * message 类型

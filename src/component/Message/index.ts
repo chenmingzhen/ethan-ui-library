@@ -25,11 +25,20 @@ export interface MessageOption {
      * Message额外className
      */
     className?: string
+
+    /** 唯一键ID，可通过此ID更新message的内容 */
+    id?: React.Key
+
+    type?: AlertType
 }
 
 // 构造函数
-const create = (type: AlertType) => (content: React.ReactNode, duration = 3, options: MessageOption = {}) => {
-    const { onClose, position = 'top', title, className = '' } = options
+const create = (type: AlertType) => (
+    content: React.ReactNode,
+    duration = 3,
+    options: MessageOption = { position: 'top', className: '' }
+) => {
+    const { position = 'top' } = options
 
     const find = ['top', 'middle', 'top-left', 'top-right', 'bottom-left', 'bottom-right'].indexOf(position)
 
@@ -44,12 +53,9 @@ const create = (type: AlertType) => (content: React.ReactNode, duration = 3, opt
     getComponent(position).then(messager => {
         callback = messager.addMessage({
             content,
-            duration,
             type,
-            onClose,
-            title,
-            className,
-            position,
+            duration,
+            ...options,
         })
     })
 
@@ -69,7 +75,7 @@ export default {
     danger: create('danger'),
     error: create('danger'),
     loading: create('loading'),
-    close: (position: Pick<MessageOption, 'position'>) => {
+    close: (position?: Pick<MessageOption, 'position'>) => {
         if (position) destroy(position)
         else {
             ;['top', 'middle', 'top-left', 'top-right', 'bottom-left', 'bottom-right'].forEach(c => {
@@ -77,7 +83,7 @@ export default {
             })
         }
     },
-    closeAll: (position: Pick<MessageOption, 'position'>) => {
+    closeAll: (position?: Pick<MessageOption, 'position'>) => {
         closeWithAnimation(position)
     },
 }

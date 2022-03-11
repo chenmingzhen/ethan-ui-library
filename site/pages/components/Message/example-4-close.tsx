@@ -8,13 +8,13 @@ import React from 'react'
 import { Button, Message } from 'ethan/index'
 
 export default function() {
-  const close = () => {
-    Message.warn('Close this message will display another message.', 0, {
-      onClose: () => {
-        Message.info('You can close the message now.')
-      },
-    })
-  }
+    const close = () => {
+        Message.warn('Close this message will display another message.', 0, {
+            onClose: () => {
+                Message.info('You can close the message now.')
+            },
+        })
+    }
 
-  return <Button onClick={close}>Close callback</Button>
+    return <Button onClick={close}>Close callback</Button>
 }
