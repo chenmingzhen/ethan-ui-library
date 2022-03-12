@@ -1,6 +1,6 @@
 /**
  * cn - 手动关闭
- *    -- Message 会返回一个关闭函数，调用它来关闭当前 Messsage
+ *    -- Message 会返回一个关闭函数，调用它来关闭当前 Message
  * en - Close
  *    -- Message return close func
  */

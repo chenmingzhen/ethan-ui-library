@@ -13,9 +13,9 @@ Display message about operational feedback.
 
 Message provides a set of methods for global calls
 
-Message.show(content, \[duration], \[options]) // No icon, pure message display
+Message.show(content, \[duration], \[options]) **No icon, pure message display**
 
-Message.info(content, \[duration], \[options])  // With basic style and icon
+Message.info(content, \[duration], \[options])  **With basic style and icon**
 
 Message.success(content, \[duration], \[options])
 
@@ -23,9 +23,9 @@ Message.warn(content, \[duration], \[options])
 
 Message.error(content, \[duration], \[options])
 
-Message.close() // Close all messages
+Message.close() **Close all Messages** 
 
-Message.closeAll() // Close all messages(With Animation)
+Message.closeAll() **Close all Messages With Animation**
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
@@ -42,4 +42,5 @@ Message.closeAll() // Close all messages(With Animation)
 | title | string | | title |
 | className | string | - | Class name |
 | id | React.Key | - | Unique key |
+| closeable | boolean | false | Closeable |
 

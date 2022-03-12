@@ -13,9 +13,9 @@
 
 Message 提供了一组方法供全局调用
 
-Message.show(content, \[duration], \[options])  // 不带有icon，纯 Message 展示
+Message.show(content, \[duration], \[options])  **不带有icon，纯 Message 展示**
 
-Message.info(content, \[duration], \[options])    // 带有基础样式和icon
+Message.info(content, \[duration], \[options])  **带有基础样式和icon**
 
 Message.success(content, \[duration], \[options])
 
@@ -23,9 +23,9 @@ Message.warn(content, \[duration], \[options])
 
 Message.error(content, \[duration], \[options])
 
-Message.close() // 关闭所有消息
+Message.close() **关闭所有Message**
 
-Message.closeAll() // 关闭所有消息(带动画)
+Message.closeAll() **关闭所有Message（带动画）**
 
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
@@ -42,4 +42,5 @@ Message.closeAll() // 关闭所有消息(带动画)
 | title | string | - | 标题文字 |
 | className | string | - | 类名 |
 | id | React.Key | - | 唯一Key值 |
+| closeable | boolean | false | 是否可关闭 |
 

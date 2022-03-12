@@ -1,6 +1,6 @@
 import React from 'react'
 import { messageClass } from '@/styles'
-import Alert from '../Alert'
+import Alert from '../Alert/alert'
 import useMessage from './hooks/useMessage'
 import Message from './type'
 
@@ -53,7 +53,7 @@ const MessageContainer: React.ForwardRefRenderFunction<MessageContainerInstance,
 
     return (
         <>
-            {messages.map(({ id, type, content, dismiss, h, title, className, position }) => (
+            {messages.map(({ id, type, content, dismiss, h, title, className, position, closeable }) => (
                 <div
                     key={id}
                     className={`${handleClassName(position, dismiss)} ${className}`}
@@ -62,12 +62,14 @@ const MessageContainer: React.ForwardRefRenderFunction<MessageContainerInstance,
                     <Alert
                         /* 自行处理动画效果 */
                         outAnimation
-                        onClose={closeMessageForAnimation.bind(this, id)}
+                        onClose={closeable}
+                        internalOnClose={closeMessageForAnimation.bind(this, id)}
                         className={messageClass('msg')}
                         dismiss={dismiss}
                         icon
                         iconSize={title ? 20 : 14}
                         type={type}
+                        duration={200}
                     >
                         {title && <h3>{title}</h3>}
                         {content}

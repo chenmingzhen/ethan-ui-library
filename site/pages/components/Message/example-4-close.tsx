@@ -1,8 +1,8 @@
 /**
  * cn - 关闭回调
- *    -- 通过第三个参数[options]的 onClose 属性处理消息关闭回调。以下用例将在 Message 关闭后弹出新的 Message。
+ *    -- 通过第三个参数[options]的 onClose 属性处理消息关闭回调,设置closeable可显示关闭按钮。
  * en - Close
- *    -- Set onClose to handle close event.
+ *    -- Set onClose to handle close event. Set closeable to show close icon
  */
 import React from 'react'
 import { Button, Message } from 'ethan/index'
@@ -13,6 +13,7 @@ export default function() {
             onClose: () => {
                 Message.info('You can close the message now.')
             },
+            closeable: true,
         })
     }
 

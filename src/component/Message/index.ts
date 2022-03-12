@@ -1,42 +1,12 @@
 import { AlertType } from '@/component/Alert/alert'
 import React from 'react'
 import { destroy, getComponent, closeWithAnimation } from './messager'
+import { MessageOption } from './type'
 
-/**
- * 对外暴露的API
- */
-export interface MessageOption {
-    /**
-     * 关闭Message的回调
-     */
-    onClose?(): void
-
-    /**
-     * Message的位置
-     */
-    position?: 'top' | 'middle' | 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right'
-
-    /**
-     * Message标题
-     */
-    title?: string | number
-
-    /**
-     * Message额外className
-     */
-    className?: string
-
-    /** 唯一键ID，可通过此ID更新message的内容 */
-    id?: React.Key
-
-    type?: AlertType
-}
-
-// 构造函数
 const create = (type: AlertType) => (
     content: React.ReactNode,
     duration = 3,
-    options: MessageOption = { position: 'top', className: '' }
+    options: MessageOption = { position: 'top', className: '', closeable: false }
 ) => {
     const { position = 'top' } = options
 

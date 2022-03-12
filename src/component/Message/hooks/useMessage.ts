@@ -75,12 +75,7 @@ const useMessage = (onDestroy?: () => void) => {
     }
 
     // 根据alert的动画处理回调函数 手动处理动画
-    function closeMessageForAnimation(id, duration, msgHeight) {
-        if (!duration) {
-            this.removeMessage(id)
-            return
-        }
-
+    function closeMessageForAnimation(id: React.Key, transitionDuration: number, msgHeight: number) {
         setMessages(draft => {
             draft.forEach(m => {
                 if (m.id === id) {
@@ -94,7 +89,7 @@ const useMessage = (onDestroy?: () => void) => {
         // 动画执行完毕 移除message
         setTimeout(() => {
             removeMessage(id)
-        }, duration)
+        }, transitionDuration)
     }
 
     function removeMessage(id) {
