@@ -1,4 +1,4 @@
-import { useRef, useState, useEffect, RefObject } from 'react'
+import { useRef, useState, useEffect } from 'react'
 import { addStack, removeStack } from '@/utils/lazyload'
 import { PLACEHOLDER, SRC, ALT, ERROR, StatusType } from '../variable'
 
