@@ -1,16 +1,11 @@
 import { useState, useCallback, useEffect, RefObject } from 'react'
+import { IAlertProps } from '../alert'
 
-interface UseDismissProps {
-    onClose?(t?: number, h?: number): void
-
-    duration: number
-
-    outAnimation?: boolean
-
+interface UseDismissProps extends Pick<IAlertProps, 'onClose' | 'duration' | 'outAnimation' | 'internalOnClose'> {
     el: RefObject<HTMLDivElement>
 }
 
-const useDismiss = ({ onClose, el, duration, outAnimation }: UseDismissProps) => {
+const useDismiss = ({ onClose, el, duration, outAnimation, internalOnClose }: UseDismissProps) => {
     /* 0:normal 1:running closed 2:running closed over */
     const [dismiss, setDismiss] = useState(0)
 
@@ -23,14 +18,11 @@ const useDismiss = ({ onClose, el, duration, outAnimation }: UseDismissProps) =>
     const handleClose = useCallback(() => {
         if (dismiss > 0) return
 
-        // outer animation
-        // 参数传回去 本组件不处理动画 由上容器设置动画效果
-        if (outAnimation) {
-            if (typeof onClose === 'function') {
-                onClose(duration, el.current.offsetHeight)
+        // Message动画
+        if (outAnimation && internalOnClose) {
+            internalOnClose(duration, el.current.offsetHeight)
 
-                return
-            }
+            return
         }
 
         if (duration > 0) {

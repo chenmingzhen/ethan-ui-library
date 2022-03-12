@@ -4,7 +4,7 @@ import { alertClass } from '@/styles'
 import { AlertType } from '../alert'
 import icons from '../../icons'
 
-interface useRenderParams {
+interface UseRenderParams {
     closeItem?: React.ReactNode
 
     icon?: boolean | Element
@@ -16,7 +16,7 @@ interface useRenderParams {
     handleClose(): void
 }
 
-const useRender = ({ handleClose, closeItem, icon, type, iconSize }: useRenderParams) => {
+const useRender = ({ handleClose, closeItem, icon, type, iconSize }: UseRenderParams) => {
     const renderIcon = useMemo(() => {
         if (typeof icon === 'boolean' && icon) {
             icon = icons[capitalize(type)]
