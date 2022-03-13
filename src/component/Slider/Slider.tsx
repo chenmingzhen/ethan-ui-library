@@ -1,130 +1,125 @@
-// @ts-nocheck
-import React, { useState, useEffect, useCallback, useRef, memo } from 'react'
-import PropTypes from 'prop-types'
+import React from 'react'
 import { sliderClass } from '@/styles'
-import { usePrevious } from 'react-use'
+import { PureComponent } from '@/utils/component'
 import { perToValue, valueToPer } from './utils'
 import Indicator from './Indicator'
+import { SliderProps, SliderState } from './type'
 
-const Slider = props => {
-    const [dragging, setDragging] = useState(false)
-    const [length, setLength] = useState(() => valueToPer(props.value, props.scale))
-    const parentElement = useRef()
-    const prevProps = usePrevious(props)
+export default class Slider extends PureComponent<SliderProps, SliderState> {
+    parentElement: HTMLElement
 
-    // ---------------------------sideEffect-----------------------------------------------
-    // didUpdate
-    useEffect(() => {
-        const len = props.scale.length
+    static defaultProps = {
+        formatValue: v => v,
+    }
 
-        if (!prevProps) return
+    constructor(props) {
+        super(props)
 
-        if (prevProps.value !== props.value || (!dragging && prevProps.scale[len - 1] !== props.scale[len - 1])) {
-            setLength(valueToPer(props.value, props.scale))
+        this.state = {
+            dragging: false,
+            lengthPercent: valueToPer(props.value, props.scale),
         }
-    }, [props.value, props.scale, dragging, prevProps])
+    }
 
-    // ---------------------------method and computed--------------------------------------
-    const bindElement = useCallback(el => {
-        if (el) parentElement.current = el.parentElement
-    }, [])
+    componentDidUpdate(prevProps) {
+        const { scale, value } = this.props
 
-    const lengthToValue = useCallback(
-        _length => {
-            const { scale, step } = props
-            return perToValue(_length, scale, step)
-        },
-        [props.scale, props.step]
-    )
+        const { dragging } = this.state
 
-    const handleDrag = useCallback(
-        (mx, my) => {
-            const { scale, onDrag, value, vertical, onIncrease } = props
+        const { length } = scale
 
-            const m = vertical ? my / parentElement.current.clientHeight : mx / parentElement.current.clientWidth
+        if (prevProps.value !== value || (!dragging && prevProps.scale[length - 1] !== scale[length - 1])) {
+            this.setState({ lengthPercent: valueToPer(value, scale) })
+        }
+    }
 
-            const min = props.min ? valueToPer(props.min, scale) : 0
-            const max = props.max ? valueToPer(props.max, scale) : 1
+    handleDrag = (mx: number, my: number) => {
+        const { scale, onDrag, value, vertical, onIncrease, min, max } = this.props
 
-            // y轴向下为正
-            let newLength = length + (vertical ? -m : m)
+        const { lengthPercent } = this.state
 
-            const needIncrease = newLength > 1
+        const movePercent = vertical ? my / this.parentElement.clientHeight : mx / this.parentElement.clientWidth
 
-            if (newLength < min) newLength = min
-            if (newLength > max) newLength = max
+        const minPercent = min ? valueToPer(min, scale) : 0
+        const maxPercent = max ? valueToPer(max, scale) : 1
 
-            if (needIncrease && onIncrease) onIncrease()
+        /** y轴向下为正 */
+        let newLengthPercent = lengthPercent + (vertical ? -movePercent : movePercent)
 
-            setLength(newLength)
-            setDragging(true)
+        const needIncrease = newLengthPercent > 1
 
-            if (onDrag) {
-                const newValue = lengthToValue(newLength)
-                if (newValue !== value) onDrag(newValue)
-            }
-        },
-        [props.scale, props.onDrag, props.value, props.vertical, props.onIncrease, length, parentElement.current]
-    )
+        if (newLengthPercent < minPercent) newLengthPercent = minPercent
+        if (newLengthPercent > maxPercent) newLengthPercent = maxPercent
 
-    const handleDragEnd = useCallback(() => {
-        const value = lengthToValue(length)
+        const newValue = this.lengthPercentToValue(newLengthPercent)
 
-        setLength(valueToPer(value, props.scale))
-        setDragging(false)
+        if (needIncrease && onIncrease) onIncrease(newValue)
 
-        props.onChange(props.index, value)
-    }, [length, props.scale, props.onChange, props.index])
+        this.setState({
+            lengthPercent: newLengthPercent,
+            dragging: true,
+        })
 
-    const renderResult = useCallback(() => {
-        const { autoHide, formatValue } = props
+        if (onDrag) {
+            if (newValue !== value) onDrag(newValue)
+        }
+    }
+
+    handleDragEnd = () => {
+        this.setState({
+            dragging: false,
+        })
+    }
+
+    lengthPercentToValue = (length: number) => {
+        const { scale, step } = this.props
+
+        return perToValue(length, scale, step)
+    }
+
+    renderResult = () => {
+        const { autoHide, formatValue } = this.props
+
+        const { dragging, lengthPercent } = this.state
+
         if (!formatValue) return null
 
         const className = sliderClass('result', (!autoHide || dragging) && 'show')
-        const value = formatValue(lengthToValue(length))
+
+        const value = formatValue(this.lengthPercentToValue(lengthPercent))
 
         return <div className={className}>{value}</div>
-    }, [props.autoHide, props.formatValue, dragging, length])
+    }
 
-    // -------------------------------------render-------------------------------------------
-    const { index, disabled, vertical } = props
-    let newLength = length
+    render() {
+        const { index, disabled, vertical } = this.props
 
-    if (index === 1) newLength = 1 - newLength
-    const style = { [vertical ? 'height' : 'width']: `${newLength * 100}%` }
-    const className = sliderClass(
-        'bar',
-        vertical && (index === 1 ? 'top' : 'bottom'),
-        !vertical && index === 1 && 'right'
-    )
+        let { lengthPercent } = this.state
 
-    return (
-        <div ref={bindElement} style={style} className={className}>
-            {renderResult()}
-            <div className={sliderClass('bar-bg')} />
-            <Indicator disabled={disabled} onDrag={handleDrag} onDragEnd={handleDragEnd} />
-        </div>
-    )
+        if (index === 1) lengthPercent = 1 - lengthPercent
+
+        const style = { [vertical ? 'height' : 'width']: `${lengthPercent * 100}%` }
+
+        const className = sliderClass(
+            'bar',
+            vertical && (index === 1 ? 'top' : 'bottom'),
+            !vertical && index === 1 && 'right'
+        )
+
+        return (
+            <div
+                ref={el => {
+                    this.parentElement = el?.parentElement
+                }}
+                style={style}
+                className={className}
+            >
+                {this.renderResult()}
+
+                <div className={sliderClass('bar-bg')} />
+
+                <Indicator disabled={disabled} onDrag={this.handleDrag} onDragEnd={this.handleDragEnd} />
+            </div>
+        )
+    }
 }
-
-Slider.propTypes = {
-    autoHide: PropTypes.bool,
-    disabled: PropTypes.bool,
-    formatValue: PropTypes.oneOfType([PropTypes.func, PropTypes.bool]),
-    index: PropTypes.number.isRequired,
-    min: PropTypes.number,
-    max: PropTypes.number,
-    onChange: PropTypes.func.isRequired,
-    onDrag: PropTypes.func,
-    scale: PropTypes.array.isRequired,
-    step: PropTypes.number,
-    value: PropTypes.number.isRequired,
-    vertical: PropTypes.bool.isRequired,
-    onIncrease: PropTypes.func,
-}
-
-Slider.defaultProps = {
-    formatValue: v => v,
-}
-
-export default memo(Slider)

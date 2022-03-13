@@ -8,5 +8,5 @@ import React from 'react'
 import { Slider } from 'ethan'
 
 export default function() {
-  return <Slider range disabled defaultValue={[25, 75]} />
+    return <Slider range disabled defaultValue={[25, 75]} />
 }

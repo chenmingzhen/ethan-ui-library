@@ -8,5 +8,5 @@ import React from 'react'
 import { Slider } from 'ethan'
 
 export default function() {
-  return <Slider scale={[0, 50, 100, 250, 500, 1000]} />
+    return <Slider scale={[0, 50, 100, 250, 500, 1000]} />
 }
