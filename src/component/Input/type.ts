@@ -1,19 +1,20 @@
 import { InputBorderProps } from '@/hoc/inputBorder'
+import { TrimProps } from '@/hoc/trim'
 import React from 'react'
 import { InputAbleProps } from '../Form/inputable'
-import { PopoverProps } from '../Popover'
 
 export interface InputProps<Value = string | number>
     extends Omit<
             React.InputHTMLAttributes<HTMLInputElement>,
             'size' | 'prefix' | 'type' | 'value' | 'onChange' | 'defaultValue'
         >,
-        InputAbleProps {
+        InputAbleProps,
+        TrimProps,
+        InputBorderProps {
     className?: string
     clearable?: boolean | (() => void)
     defaultValue?: Value
     digits?: number
-    info?: number | ((value: Value) => string)
     maxLength?: number
     name?: string
     onChange?: (value: Value) => void
@@ -24,11 +25,6 @@ export interface InputProps<Value = string | number>
     type?: HTMLInputElement['type']
     value?: Value
     forwardedRef?: React.MutableRefObject<HTMLInputElement>
-    /** InputBorder */
-    tip?: React.ReactNode
-    popoverProps?: Omit<PopoverProps, 'children'>
-    /** Trim */
-    trim?: boolean
 }
 
 export interface InputNumberProps extends InputProps {
@@ -48,10 +44,9 @@ export interface InputGroupProps extends InputBorderProps {
     className?: string
 }
 
-export type IInputGrounpProps = Omit<InputGroupProps, 'className'>
+export type IInputGroupProps = Omit<InputGroupProps, 'className'>
 
 export interface IInputProps extends InputProps {
-    forceChange?(value: InputProps['value'])
     htmlName?: string
 }
 

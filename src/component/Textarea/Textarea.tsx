@@ -1,155 +1,98 @@
-// @ts-nocheck
-import React, { useState, useCallback, useEffect, useRef, memo } from 'react'
-import PropTypes from 'prop-types'
+import React, { useState, useCallback, useEffect, useRef } from 'react'
 import { inputClass } from '@/styles'
 import cleanProps from '@/utils/cleanProps'
+import { TextareaProps } from './type'
 
-function Textarea(props) {
+const Textarea: React.FC<TextareaProps> = props => {
     const [height, setHeight] = useState(0)
-    const shadow = useRef()
-    // 上一个props值
-    const prevPropsRef = useRef()
-    const prevProps = prevPropsRef.current
-    // ----------------------lifeCycle---------------------
-    useEffect(() => {
-        if (props.autosize) textareaResize()
-    }, [])
 
-    useEffect(() => () => {
-        if (props.autosize && prevProps && prevProps.value !== props.value) textareaResize(props.value)
+    const shadowElement = useRef<HTMLTextAreaElement>()
 
-        // 记录上一个props值
-        prevPropsRef.current = props
-    })
-    // ---------------------method-------------------------
-    const defaultInfo = useCallback(
-        value => {
-            if (!value || value.length === 0) return null
-
-            const { info } = props
-            const text = `${value.length} / ${info}`
-
-            if (value.length <= info) return text
-
-            return new Error(text)
-        },
-        [props.info]
-    )
-
-    const renderInfo = useCallback(() => {
-        const { info } = props
-        const notNumber = typeof info !== 'number'
-
-        if (typeof info !== 'function' && notNumber) return null
-        const textInfo = notNumber ? info : defaultInfo
-        const res = textInfo(props.value)
-
-        if (!res) return null
-
-        const isError = res instanceof Error
-        const text = isError ? res.message : res
-
-        return (
-            <div
-                key="info"
-                style={{ minWidth: 'auto' }}
-                className={inputClass('bottom-right', isError ? 'error' : 'tip')}
-            >
-                {text}
-            </div>
-        )
-    }, [props.info, props.value, defaultInfo])
+    const { value, autoSize, onChange, onEnterPress, onBlur, maxHeight, showCount, resize, ...otherProps } = props
 
     const textareaResize = useCallback(
-        value => {
-            if (value || value === '') shadow.current.value = value
-            const nHeight = shadow.current ? shadow.current.scrollHeight : 0
-            setHeight(nHeight)
+        (newValue?: string) => {
+            if (newValue || newValue === '') shadowElement.current.value = newValue
+
+            const newHeight = shadowElement.current ? shadowElement.current.scrollHeight : 0
+
+            setHeight(newHeight)
         },
-        [height, shadow.current]
+        [height]
     )
 
     const handleChange = useCallback(
-        e => {
-            props.onChange(e.target.value)
+        (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+            const newValue = e.target.value
 
-            if (props.autosize) {
-                textareaResize(e.target.value)
-            }
+            if (onChange) onChange(newValue)
+
+            if (autoSize) textareaResize(newValue)
         },
-        [props.autosize, props.onChange]
+        [autoSize]
     )
 
     const handleKeyUp = useCallback(
-        e => {
-            const { onEnterPress } = props
+        (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
             if (e.keyCode === 13 && onEnterPress) {
-                onEnterPress(e.target.value, e)
+                onEnterPress((e.target as any).value, e)
             }
         },
-        [props.onEnterPress]
+        [onEnterPress]
     )
 
     const handleBlur = useCallback(
-        e => {
-            const { value } = e.target
-            const { forceChange, onBlur } = props
+        (e: React.FocusEvent<HTMLTextAreaElement>) => {
             if (onBlur) onBlur(e)
-            forceChange(value)
         },
-        [props.forceChange, props.onBlur]
+        [onBlur]
     )
 
-    const bindShadow = el => {
-        shadow.current = el
-    }
+    useEffect(() => {
+        if (autoSize) {
+            textareaResize()
+        }
+    }, [value])
 
-    // --------------------render-------------------------
-    const { autosize, onChange, maxHeight, info, onEnterPress, resize, ...otherProps } = props
-    const value = props.value == null ? '' : props.value
-    const nHeight = height || 'auto'
-    const className = autosize ? inputClass('auto-size') : inputClass(resize && 'textarea-resize')
-    const ts = [
-        <textarea
-            {...cleanProps(otherProps)}
-            key="t"
-            value={value}
-            className={className}
-            style={{ height: nHeight, maxHeight, overflow: 'auto' }}
-            onChange={handleChange}
-            onKeyUp={handleKeyUp}
-            onBlur={handleBlur}
-        />,
-        renderInfo(),
-    ]
+    const newHeight = height || 'auto'
 
-    // 占位 如果autoSize存在 这个textarea固定高度 然后内容超过的时候 出现scrollHeight 这时的scrollHeight就是上面真正textarea的高度
-    if (autosize) {
-        ts.push(
+    const className = inputClass(autoSize && 'auto-size', !autoSize && resize && 'textarea-resize')
+
+    const info = React.useMemo(() => {
+        if (!showCount) return
+
+        if (props.maxLength) {
+            return `${value?.length || 0}/${props.maxLength}`
+        }
+
+        return `${value?.length || 0}`
+    }, [showCount, value])
+
+    const children = (
+        <>
             <textarea
-                key="s"
-                ref={bindShadow}
-                className={inputClass('shadow')}
-                rows={props.rows}
-                defaultValue={value}
+                {...cleanProps(otherProps)}
+                value={value}
+                className={className}
+                style={{ height: newHeight, maxHeight, overflow: 'auto' }}
+                onChange={handleChange}
+                onKeyUp={handleKeyUp}
+                onBlur={handleBlur}
             />
-        )
-    }
 
-    return ts
-}
+            {autoSize && (
+                <textarea ref={shadowElement} className={inputClass('shadow')} rows={props.rows} defaultValue={value} />
+            )}
+        </>
+    )
 
-Textarea.propTypes = {
-    autosize: PropTypes.bool,
-    forceChange: PropTypes.func,
-    info: PropTypes.oneOfType([PropTypes.func, PropTypes.number]),
-    maxHeight: PropTypes.number,
-    onBlur: PropTypes.func,
-    onChange: PropTypes.func.isRequired,
-    onEnterPress: PropTypes.func,
-    rows: PropTypes.number,
-    value: PropTypes.string,
-    resize: PropTypes.bool,
+    return showCount ? (
+        <span className={inputClass(showCount && 'showCount')} data-count={info}>
+            {children}
+        </span>
+    ) : (
+        children
+    )
 }
 
 Textarea.defaultProps = {
@@ -157,4 +100,4 @@ Textarea.defaultProps = {
     resize: false,
 }
 
-export default memo(Textarea)
+export default React.memo(Textarea)

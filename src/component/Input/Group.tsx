@@ -1,7 +1,7 @@
 import React, { Children, cloneElement } from 'react'
-import { IInputGrounpProps } from './type'
+import { IInputGroupProps } from './type'
 
-const Group: React.FC<IInputGrounpProps> = props => {
+const Group: React.FC<IInputGroupProps> = props => {
     const { children, style, ...other } = props
 
     return (

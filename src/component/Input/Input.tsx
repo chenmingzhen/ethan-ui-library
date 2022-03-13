@@ -94,56 +94,9 @@ class Input extends PureComponent<IInputProps> {
     }
 
     handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
-        const { value } = e.target
-
-        const { forceChange, onBlur } = this.props
+        const { onBlur } = this.props
 
         if (onBlur) onBlur(e)
-
-        if (this.invalidNumber(value)) return
-
-        if (forceChange) forceChange(value)
-    }
-
-    defaultInfo = value => {
-        if (!value || value.length === 0) return null
-
-        const { info } = this.props
-
-        const text = `${value.length} / ${info}`
-
-        if (value.length <= info) return text
-
-        // 超过字数限制 返回错误 后面捕获
-        return new Error(text)
-    }
-
-    renderInfo = () => {
-        const { info } = this.props
-
-        const notNumber = typeof info !== 'number'
-
-        if (typeof info !== 'function' && notNumber) return null
-
-        const textInfo = notNumber ? info : this.defaultInfo
-
-        const res = textInfo(this.props.value)
-
-        if (!res) return null
-
-        const isError = res instanceof Error
-
-        const text = isError ? res.message : res
-
-        return (
-            <div
-                key="info"
-                style={{ minWidth: 'auto' }}
-                className={inputClass('bottom-right', isError ? 'error' : 'tip')}
-            >
-                {text}
-            </div>
-        )
     }
 
     render() {
@@ -154,7 +107,6 @@ class Input extends PureComponent<IInputProps> {
             className,
             clearable,
             htmlName,
-            forceChange,
             onEnterPress,
             forwardedRef,
             ...other
@@ -186,7 +138,6 @@ class Input extends PureComponent<IInputProps> {
                     <div className={inputClass('clear')} />
                 </div>
             ),
-            this.renderInfo(),
         ]
     }
 }

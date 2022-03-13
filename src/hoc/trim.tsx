@@ -1,15 +1,18 @@
 import React, { PureComponent } from 'react'
 import config from '../config'
 
-interface TrimProps {
+export interface TrimProps {
+    trim?: boolean
+}
+
+export interface ITrimProps extends TrimProps {
     onBlur: (e: React.FocusEvent<HTMLInputElement>) => void
     onChange: (value: string) => void
-    trim?: boolean
     value?: string | number
 }
 
 export default Origin =>
-    class extends PureComponent<TrimProps> {
+    class extends PureComponent<ITrimProps> {
         get trim() {
             const { trim } = this.props
 

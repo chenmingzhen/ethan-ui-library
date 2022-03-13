@@ -3,19 +3,20 @@ import classnames from 'classnames'
 import { PureComponent } from '@/utils/component'
 import { curry } from '@/utils/func'
 import Popover, { PopoverProps } from '@/component/Popover/Popover'
+import { isEmpty } from '@/utils/is'
 import { buttonClass, inputClass, popoverClass } from '../styles'
 
 export interface InputBorderProps {
     disabled?: boolean
 
-    tip?: React.ReactNode
+    tip?: React.ReactNode | ((value: string) => React.ReactNode)
 
     popoverProps?: Omit<PopoverProps, 'children'>
-
-    size?: 'small' | 'default' | 'large'
 }
 
 interface IInputBorderProps extends InputBorderProps {
+    value: any
+
     autoFocus?: boolean
 
     border?: boolean
@@ -31,6 +32,8 @@ interface IInputBorderProps extends InputBorderProps {
     style?: React.CSSProperties
 
     width?: React.CSSProperties['width']
+
+    size?: 'small' | 'default' | 'large'
 }
 
 interface InputBorderState {
@@ -69,14 +72,15 @@ export default curry(
 
             el = React.createRef<HTMLElement>()
 
+            /** 缓存内容，避免在popover消失前，内容为空，影响观感 */
+            cacheContent = null
+
             constructor(props) {
                 super(props)
                 this.state = {
                     focus: props.autoFocus,
                     mounted: false,
                 }
-                this.handleBlur = this.handleBlur.bind(this)
-                this.handleFocus = this.handleFocus.bind(this)
             }
 
             componentDidMount() {
@@ -85,7 +89,7 @@ export default curry(
                 options.popover && this.setState({ mounted: true })
             }
 
-            handleBlur(event) {
+            handleBlur = event => {
                 if (!this.state.focus) return
 
                 this.setState({ focus: false })
@@ -93,12 +97,34 @@ export default curry(
                 this.props?.onBlur?.(event)
             }
 
-            handleFocus(event) {
+            handleFocus = event => {
                 if (this.state.focus) return
 
                 this.setState({ focus: true })
 
                 this.props?.onFocus?.(event)
+            }
+
+            buildContent = () => {
+                const { error, tip } = this.props
+
+                const content =
+                    error?.message ??
+                    (typeof tip === 'function' ? (!isEmpty(this.props.value) ? tip(this.props.value) : null) : tip)
+
+                if (!this.cacheContent) this.cacheContent = content
+
+                return content
+            }
+
+            handleVisibleChange = visible => {
+                const { onVisibleChange } = this.props.popoverProps
+
+                if (onVisibleChange) onVisibleChange(visible)
+
+                if (!visible) {
+                    this.cacheContent = null
+                }
             }
 
             render() {
@@ -142,9 +168,9 @@ export default curry(
                         ? Object.assign({}, { minWidth: 200, maxWidth: 400 }, popoverProps.style)
                         : { minWidth: 200, maxWidth: 400 }
 
-                const content = error?.message ?? tip
+                const content = this.buildContent()
 
-                const popoverVisible = !!error || !!(tip && focus)
+                const popoverVisible = !!error || !!(content && focus)
 
                 if (error) {
                     popoverClassList.push('input-error')
@@ -171,7 +197,8 @@ export default curry(
                                         style={popoverStyles}
                                         className={popoverClass(...popoverClassList)}
                                         placement={placement}
-                                        content={content}
+                                        content={content || this.cacheContent}
+                                        onVisibleChange={this.handleVisibleChange}
                                         innerAlwaysUpdate
                                     >
                                         {originComponent}
