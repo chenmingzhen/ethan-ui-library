@@ -1,15 +1,4 @@
-export interface DefaultRequestParams {
-    url: string
-    name: string
-    file: File
-    onStart: (file: File) => void
-    onProgress: XMLHttpRequest['onprogress']
-    onLoad(e: EventTarget): void
-    onError: XMLHttpRequest['onerror']
-    withCredentials: XMLHttpRequest['withCredentials']
-    params?: Record<string | number, string | Blob>
-    headers?: Record<string | number, string>
-}
+import { RequestParams } from '../type'
 
 export const UPLOADING = 1
 export const SUCCESS = 2
@@ -27,8 +16,19 @@ const createCORSRequest = (method, url) => {
     return xhr
 }
 
-function defaultRequest(props: DefaultRequestParams) {
-    const { url, name, file, onProgress, onLoad, onError, withCredentials, params = {}, headers = {}, onStart } = props
+function defaultRequest(options: RequestParams) {
+    const {
+        url,
+        name,
+        file,
+        onProgress,
+        onLoad,
+        onError,
+        withCredentials,
+        params = {},
+        headers = {},
+        onStart,
+    } = options
 
     if (!url) {
         console.error(new Error(`action is required, but its value is ${url}`))
@@ -50,9 +50,9 @@ function defaultRequest(props: DefaultRequestParams) {
 
     if (onProgress) xhr.upload.addEventListener('progress', onProgress, false)
 
-    xhr.onload = e => onLoad(e.currentTarget)
+    xhr.onload = e => onLoad(e.currentTarget as XMLHttpRequest)
 
-    xhr.onerror = onError
+    xhr.onerror = onError as any
 
     Object.keys(headers).forEach(k => {
         xhr.setRequestHeader(k, headers[k])

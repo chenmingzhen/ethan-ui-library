@@ -3,7 +3,7 @@ import React, { memo, useCallback, useState } from 'react'
 import PropTypes from 'prop-types'
 import classnames from 'classnames'
 import { uploadClass } from '@/styles'
-import fileAccept from '@/utils/accept'
+import fileAccept from '@/component/Upload/utils/accept'
 
 const Drop = props => {
     const [drop, setDrop] = useState(false)

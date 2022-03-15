@@ -3,7 +3,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { PureComponent } from '@/utils/component'
 import { uploadClass } from '@/styles'
-import attrAccept from '@/utils/accept'
+import attrAccept from '@/component/Upload/utils/accept'
 import Drop from './Drop'
 
 class Dragger extends PureComponent {

@@ -1,8 +1,7 @@
-// @ts-nocheck
-import React from 'react'
-import createReactContext from 'create-react-context'
+import React, { createContext } from 'react'
 
-const context = createReactContext()
+const context = createContext(undefined)
+
 export const { Provider } = context
 
 export const consumer = Origin => props => (
