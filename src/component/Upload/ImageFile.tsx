@@ -1,13 +1,13 @@
-// @ts-nocheck
 import React, { memo } from 'react'
-import PropTypes from 'prop-types'
 import { uploadClass } from '@/styles'
 import Progress from '../Progress'
 import Image from '../Image'
 import { ERROR } from './utils/request'
+import { ImageFileProps } from './type'
 
-const ImageFile = props => {
+const ImageFile: React.FC<ImageFileProps> = props => {
     const { process, status, style, data, message, onRemove, id } = props
+
     const className = uploadClass('image-item', status === ERROR && 'error')
 
     const handleRemove = () => {
@@ -33,16 +33,6 @@ const ImageFile = props => {
             </div>
         </div>
     )
-}
-
-ImageFile.propTypes = {
-    id: PropTypes.string,
-    message: PropTypes.string,
-    onRemove: PropTypes.func,
-    process: PropTypes.number,
-    status: PropTypes.number,
-    style: PropTypes.object,
-    data: PropTypes.string,
 }
 
 export default memo(ImageFile)
