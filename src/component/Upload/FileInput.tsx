@@ -1,13 +1,9 @@
 import React, { useCallback, useRef, memo, useImperativeHandle } from 'react'
-import { UploadProps } from './type'
-
-const inputStyle = { display: 'none' }
+import { FileInputProps } from './type'
 
 export interface FileInputInstance {
     click(): void
 }
-
-type FileInputProps = Pick<UploadProps, 'accept' | 'multiple' | 'onChange'>
 
 const FileInput: React.ForwardRefRenderFunction<FileInputInstance, FileInputProps> = (props, ref) => {
     const inputRef = useRef<HTMLInputElement>()
@@ -33,7 +29,14 @@ const FileInput: React.ForwardRefRenderFunction<FileInputInstance, FileInputProp
     const { accept, onChange, multiple } = props
 
     return (
-        <input ref={inputRef} accept={accept} multiple={multiple} onChange={onChange} style={inputStyle} type="file" />
+        <input
+            ref={inputRef}
+            accept={accept}
+            multiple={multiple}
+            onChange={onChange}
+            style={{ display: 'none' }}
+            type="file"
+        />
     )
 }
 

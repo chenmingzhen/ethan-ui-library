@@ -31,8 +31,7 @@ const VALIDATOR_ITEMS = [
 ]
 
 class Upload extends PureComponent<IUploadProps, UploadState> {
-    static defaultProps = {
-        cors: false,
+    static defaultProps: IUploadProps = {
         limit: 100,
         recoverAble: false,
         validator: {},
@@ -40,6 +39,8 @@ class Upload extends PureComponent<IUploadProps, UploadState> {
         withCredentials: false,
         showUploadList: true,
         validatorHandle: true,
+        onProgress: true,
+        renderResult: result => result,
     }
 
     static displayName = 'EthanUpload'
@@ -122,7 +123,7 @@ class Upload extends PureComponent<IUploadProps, UploadState> {
         let message = xhr.statusText
 
         /** @todo 这个onError与onHttpError重复 */
-        if (onError) message = onError(xhr, file)
+        if (onError) message = onError(xhr, file) || message
 
         if (onHttpError) message = onHttpError(xhr, file) || message
 
@@ -134,7 +135,7 @@ class Upload extends PureComponent<IUploadProps, UploadState> {
         )
     }
 
-    uploadFile = (id: string, file: File, data?: string | ArrayBuffer) => {
+    uploadFile = (id: string, file: File, data?: string) => {
         const { onSuccess, name, htmlName, params, withCredentials, headers, request, onProgress, onStart } = this.props
 
         const req = request || defaultRequest
@@ -224,13 +225,12 @@ class Upload extends PureComponent<IUploadProps, UploadState> {
         return req(options)
     }
 
-    /** @todo */
-    addFile = e => {
+    addFile = (e: React.ChangeEvent<HTMLInputElement> | { fromDragger: boolean; files: File[] }) => {
         const { beforeUpload, value, limit, filesFilter } = this.props
 
-        let fileList = e.fromDragger && e.files ? e.files : e.target.files
+        let fileList = 'fromDragger' in e && 'files' in e ? e.files : e.target.files
 
-        if (filesFilter) fileList = filesFilter(Array.from(fileList))
+        if (filesFilter) fileList = Array.from(fileList).filter(filesFilter)
 
         const addLength = limit - value.length - Object.keys(this.state.files).length
 
@@ -255,6 +255,7 @@ class Upload extends PureComponent<IUploadProps, UploadState> {
 
             const error = this.useValidator(blob)
 
+            /** beforeUpload的异步setState在外层setState files后执行 */
             if (error instanceof Error) {
                 if (!this.validatorHandle(error, file.blob)) {
                     delete files[id]
@@ -319,20 +320,18 @@ class Upload extends PureComponent<IUploadProps, UploadState> {
         this.fileInput.current.click()
     }
 
-    removeValue = (index: number) => {
+    handleRemoveValue = (index: number) => {
         const { recoverAble, disabled } = this.props
 
         if (disabled) return
 
-        this.setState(
-            immer(draft => {
-                draft.recycle.push(this.props.value[index])
-
-                if (typeof recoverAble === 'number' && draft.recycle.length > recoverAble) {
-                    draft.recycle.shift()
-                }
-            })
-        )
+        if (recoverAble) {
+            this.setState(
+                immer(draft => {
+                    draft.recycle.push(this.props.value[index])
+                })
+            )
+        }
 
         const value = immer(this.props.value, draft => {
             draft.splice(index, 1)
@@ -364,7 +363,7 @@ class Upload extends PureComponent<IUploadProps, UploadState> {
     }
 
     handleReplace = (files: File[], index) => {
-        this.removeValue(index)
+        this.handleRemoveValue(index)
 
         setTimeout(() => {
             this.addFile({ files, fromDragger: true })
@@ -372,7 +371,7 @@ class Upload extends PureComponent<IUploadProps, UploadState> {
     }
 
     /** value为onSuccess的的return */
-    recoverValue = (index: number, value: any) => {
+    handleRecoverValue = (index: number, value: any) => {
         const { disabled } = this.props
 
         if (disabled) return
@@ -409,11 +408,11 @@ class Upload extends PureComponent<IUploadProps, UploadState> {
 
         return (
             <Drop
-                drop={drop}
                 accept={accept}
                 disabled={disabled}
                 onDrop={this.handleFileDrop}
                 multiple={multiple || limit > 1}
+                drop={drop}
             >
                 <span className={uploadClass('handle')} onClick={this.handleAddClick}>
                     <Provider value={dragProps}>{children}</Provider>
@@ -453,7 +452,7 @@ class Upload extends PureComponent<IUploadProps, UploadState> {
                     <CustomResult
                         value={value}
                         files={files}
-                        onValueRemove={this.removeValue}
+                        onValueRemove={this.handleRemoveValue}
                         onFileRemove={this.removeFile}
                     />
                 </div>
@@ -468,6 +467,7 @@ class Upload extends PureComponent<IUploadProps, UploadState> {
             <div className={className} style={style}>
                 {!imageStyle && this.renderHandle()}
 
+                {/* Success */}
                 {showUploadList &&
                     value.map((v, i) => (
                         <Drop
@@ -475,7 +475,6 @@ class Upload extends PureComponent<IUploadProps, UploadState> {
                             multiple={false}
                             key={i}
                             accept={accept}
-                            // 附带信息 下标
                             dropData={i}
                             disabled={disabled}
                             onDrop={this.handleReplace}
@@ -487,7 +486,7 @@ class Upload extends PureComponent<IUploadProps, UploadState> {
                                 index={i}
                                 style={imageStyle}
                                 renderResult={renderResult}
-                                onRemove={this.removeValue}
+                                onRemove={this.handleRemoveValue}
                             />
                         </Drop>
                     ))}
@@ -508,10 +507,10 @@ class Upload extends PureComponent<IUploadProps, UploadState> {
                             values={recycle}
                             index={i}
                             renderResult={renderResult}
-                            recoverAble={!!recoverAble}
                             showRecover={recoverAble && limit > value.length}
-                            onRecover={this.recoverValue}
+                            onRecover={this.handleRecoverValue}
                             style={imageStyle}
+                            recoverAble
                         />
                     ))}
             </div>

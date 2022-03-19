@@ -1,11 +1,10 @@
-// @ts-nocheck
 import React, { memo } from 'react'
-import PropTypes from 'prop-types'
 import { uploadClass } from '@/styles'
 import icons from '../icons'
 import Image from '../Image'
+import { ResultProps } from './type'
 
-const ImageResult = props => {
+const ImageResult: React.FC<ResultProps> = props => {
     const {
         value,
         renderResult,
@@ -28,7 +27,8 @@ const ImageResult = props => {
     }
 
     const className = uploadClass('image-item', 'image-result', recoverAble && 'to-be-delete')
-    const url = renderResult(value)
+
+    const url = renderResult(value) as string
 
     return (
         <div style={style} className={className}>
@@ -52,26 +52,9 @@ const ImageResult = props => {
                 </a>
             )}
 
-            {onRemove && <span className={uploadClass('delete')} onClick={handleRemove} />}
+            <span className={uploadClass('delete')} onClick={handleRemove} />
         </div>
     )
-}
-
-ImageResult.propTypes = {
-    index: PropTypes.number,
-    onRemove: PropTypes.func,
-    onRecover: PropTypes.func,
-    recoverAble: PropTypes.bool,
-    renderResult: PropTypes.func,
-    showRecover: PropTypes.bool,
-    style: PropTypes.object,
-    value: PropTypes.any,
-    renderContent: PropTypes.func,
-    values: PropTypes.array,
-}
-
-ImageResult.defaultProps = {
-    renderResult: a => a,
 }
 
 export default memo(ImageResult)

@@ -1,3 +1,4 @@
+import { ButtonProps } from '@/component/Button'
 import React from 'react'
 
 export interface DefaultUploadValue {
@@ -20,12 +21,11 @@ export interface UploadProps<SuccessData extends any = DefaultUploadValue> {
     name?: string
     onChange?: (value: SuccessData[]) => void
     onProgress?: ((file: InternalFile) => void) | boolean
-    onSuccess?: (value: any, file: File, data: string | ArrayBuffer, xhr: XMLHttpRequest) => SuccessData
-    onError?: (xhr: XMLHttpRequest, file: File) => string
+    onSuccess?: (value: any, file: File, data: string, xhr: XMLHttpRequest) => SuccessData
+    onError?: (xhr: XMLHttpRequest, file: File) => string | void
     onHttpError?: (xhr: XMLHttpRequest, file: File) => string
     params?: Record<any, any>
     recoverAble?: boolean
-    renderResult?: (data) => React.ReactNode
     request?: (options: RequestParams) => XMLHttpRequest
     value?: SuccessData[]
     defaultValue?: SuccessData[]
@@ -36,40 +36,40 @@ export interface UploadProps<SuccessData extends any = DefaultUploadValue> {
     showUploadList?: boolean
     /** todo */
     validator?: any
-    validatorHandle?: (error: any, file: File) => boolean | boolean
+    validatorHandle?: boolean | ((error: Error, file: File) => boolean)
     disabled?: boolean
-    renderContent?: (res, value, index, values) => React.ReactNode
+    renderContent?: (res: string, value: SuccessData, index: number, values: SuccessData[]) => React.ReactNode
+    renderResult?: (data: SuccessData) => React.ReactNode
     drop?: boolean
     /** 文件选中后的筛选 */
-    filesFilter?: (fileList: File[]) => boolean
+    filesFilter?: (fileList: File) => boolean
     onErrorRemove?: (xhr: XMLHttpRequest, file: File, internalFile?: InternalFile) => void
     forceAccept?: string
 }
 
 export interface IUploadProps extends UploadProps {
+    /** @todo  如果返回false与reject 应该阻止上传，例如antd的Form中 */
     beforeUpload?: (blob: File, f) => Promise<InternalFile>
-    // todo
     imageStyle?: React.CSSProperties
-    validateHook?: Function
+    validateHook?: (hooks) => void
     customResult?: React.ElementType
     webkitdirectory?: boolean | string
 }
 
 export interface InternalFile {
-    name: string
-    process: number
-    status: number
-    blob: File
+    name?: string
+    process?: number
+    status?: number
+    blob?: File
     message?: string
     xhr?: XMLHttpRequest
-    /** todo */
-    data?: any
+    data?: string
 }
 
 export interface UploadState {
-    files: Record<string | number, InternalFile>
-    /** 回收的下标值List */
-    recycle?: number[]
+    files: Record<string, InternalFile>
+    /** 回收的value List */
+    recycle?: any[]
 }
 
 export interface RequestParams {
@@ -84,4 +84,63 @@ export interface RequestParams {
     withCredentials: XMLHttpRequest['withCredentials']
     params?: Record<string | number, string | Blob>
     headers?: Record<string | number, string>
+}
+
+export interface UploadContext extends Pick<UploadProps, 'multiple' | 'accept' | 'disabled' | 'limit'> {
+    addFile
+}
+
+export interface DropProps extends Pick<UploadProps, 'disabled' | 'accept' | 'multiple'> {
+    onDrop(files: File[], dropData?: number): void
+    className?: string
+    dropData?: number
+    children?: React.ReactNode
+    drop: boolean
+}
+
+export interface FileInputProps extends Pick<UploadProps, 'accept' | 'multiple'> {
+    onChange: React.ChangeEventHandler<HTMLInputElement>
+}
+
+export type AddFileFromDraggerHandler = (e: { fromDragger?: boolean; files?: File[] }) => void
+
+export interface FileProps extends InternalFile {
+    id: string
+
+    onRemove(id: string): void
+
+    style?: React.CSSProperties
+}
+
+export interface ImageFileProps extends Omit<FileProps, 'style'> {
+    style: React.CSSProperties
+}
+
+export interface ResultProps extends Pick<IUploadProps, 'renderContent' | 'renderResult'> {
+    index: number
+    onRemove?: (index: number) => void
+    onRecover?: (index: number, value: any) => void
+    recoverAble?: boolean
+    showRecover?: boolean
+    value: any
+    [rest: string]: any
+}
+
+export interface ImageUploadProps extends Pick<UploadProps, 'accept' | 'recoverAble' | 'disabled' | 'validator'> {
+    height?: number
+    width?: number
+}
+
+export interface ImageUploadState {
+    urlInvalid: boolean
+}
+
+export interface UploadProgressProps extends UploadProps, Pick<ButtonProps, 'type'> {
+    loading?: React.ReactNode
+    placeholder?: React.ReactNode
+    className?: string
+}
+
+export interface UploadProgressState {
+    progress: number
 }

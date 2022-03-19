@@ -1,6 +1,7 @@
 import React, { createContext } from 'react'
+import { UploadContext } from './type'
 
-const context = createContext(undefined)
+const context = createContext<UploadContext>(undefined)
 
 export const { Provider } = context
 

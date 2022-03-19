@@ -1,60 +1,85 @@
-// @ts-nocheck
 import React, { PureComponent } from 'react'
-import PropTypes from 'prop-types'
 import immer from 'immer'
 import { uploadClass } from '@/styles'
 import { getLocale } from '@/locale'
 import Upload from './Upload'
 import { ERROR } from './utils/request'
+import { ImageUploadProps, ImageUploadState } from './type'
 
-// Upload Image
-class Image extends PureComponent {
+class Image extends PureComponent<ImageUploadProps, ImageUploadState> {
+    timer: NodeJS.Timeout
+
+    static defaultProps: ImageUploadProps = {
+        accept: 'image/*',
+        height: 80,
+        validator: {},
+        width: 80,
+    }
+
     constructor(props) {
         super(props)
-        this.beforeUpload = this.beforeUpload.bind(this)
-        this.handleMouseDown = this.handleMouseDown.bind(this)
-        this.handleKeyDown = this.handleKeyDown.bind(this)
+
         this.state = {
             urlInvalid: false,
         }
-        this.timeout = null
     }
 
-    beforeUpload(blob, validatorHandle) {
+    componentDidUpdate() {
+        if (this.state.urlInvalid) {
+            clearTimeout(this.timer)
+
+            this.timer = setTimeout(() => {
+                this.setState({ urlInvalid: false })
+            }, 3000)
+        }
+    }
+
+    beforeUpload = (blob: File, validatorHandle: (error: Error, file: File) => boolean) => {
         return new Promise((resolve, reject) => {
             const { imageSize } = this.props.validator
-            const file = {}
+
+            const file: any = {}
             // FileReader 对象允许Web应用程序异步读取存储在用户计算机上的文件（或原始数据缓冲区）的内容，使用 File 或 Blob 对象指定要读取的文件或数据。
             // https://developer.mozilla.org/zh-CN/docs/Web/API/FileReader
             const reader = new FileReader()
 
             reader.onload = e => {
                 const data = e.target.result
+
                 file.data = data
 
                 const image = new window.Image()
+
                 image.onerror = () => {
                     this.setState(
                         immer(draft => {
                             draft.urlInvalid = true
                         })
                     )
+
                     reject()
                 }
+
                 image.onload = () => {
                     if (!imageSize) {
                         resolve(file)
                         return
                     }
+
                     const res = imageSize(image)
+
                     if (res instanceof Error) {
                         if (!validatorHandle(res, blob)) reject()
+
                         file.status = ERROR
+
                         file.message = res.message
                     }
+
                     resolve(file)
                 }
-                image.src = data
+
+                image.src = data as string
             }
 
             // FileReader.readAsDataURL()
@@ -63,26 +88,19 @@ class Image extends PureComponent {
         })
     }
 
-    handleKeyDown(e) {
+    handleKeyDown = e => {
         this.setState({ urlInvalid: false })
-        if (e.keyCode === 13) e.target.click()
-    }
 
-    handleMouseDown() {
-        this.setState({ urlInvalid: false })
+        if (e.keyCode === 13) e.target.click()
     }
 
     render() {
         const { children, width, height, ...others } = this.props
+
         const { urlInvalid } = this.state
-        if (urlInvalid) {
-            clearTimeout(this.timeout)
-            this.timeout = setTimeout(() => {
-                this.setState({ urlInvalid: false })
-            }, 3000)
-        }
 
         const style = { width, height }
+
         const content = children || <div className={uploadClass('indicator', urlInvalid && 'url-invalid-indicator')} />
 
         return (
@@ -91,7 +109,6 @@ class Image extends PureComponent {
                     tabIndex={this.props.disabled ? -1 : 0}
                     style={style}
                     onKeyDown={this.handleKeyDown}
-                    onMouseDown={this.handleMouseDown}
                     className={uploadClass(
                         'image-plus',
                         'image-item',
@@ -109,26 +126,6 @@ class Image extends PureComponent {
             </Upload>
         )
     }
-}
-
-Image.propTypes = {
-    accept: PropTypes.string,
-    children: PropTypes.any,
-    height: PropTypes.number,
-    recoverAble: PropTypes.bool,
-    validator: PropTypes.shape({
-        imageSize: PropTypes.func,
-        size: PropTypes.func,
-    }),
-    width: PropTypes.number,
-    disabled: PropTypes.bool,
-}
-
-Image.defaultProps = {
-    accept: 'image/*',
-    height: 80,
-    validator: {},
-    width: 80,
 }
 
 export default Image
