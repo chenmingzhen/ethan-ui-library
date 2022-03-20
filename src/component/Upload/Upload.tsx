@@ -14,7 +14,6 @@ import ImageResult from './ImageResult'
 import Result from './Result'
 import defaultRequest, { ERROR, UPLOADING } from './utils/request'
 import Drop from './Drop'
-import { Provider } from './context'
 import FileInput, { FileInputInstance } from './FileInput'
 import InternalFileComponent from './File'
 
@@ -58,6 +57,12 @@ class Upload extends PureComponent<IUploadProps, UploadState> {
         props.validateHook(this.validate)
     }
 
+    get accept() {
+        const { accept, forceAccept } = this.props
+
+        return forceAccept || accept
+    }
+
     validate = () => {
         const { files } = this.state
 
@@ -69,9 +74,11 @@ class Upload extends PureComponent<IUploadProps, UploadState> {
     }
 
     useValidator = (blob: File) => {
-        const { validator, accept, forceAccept } = this.props
+        const { validator, forceAccept } = this.props
 
         const { files } = this.state
+
+        const { accept } = this
 
         let error = null
 
@@ -391,20 +398,14 @@ class Upload extends PureComponent<IUploadProps, UploadState> {
 
     /** 上传按钮或上传图片占位 */
     renderHandle = () => {
-        const { limit, value, children, accept, multiple, disabled, drop } = this.props
+        const { limit, value, children, multiple, disabled, drop } = this.props
+
+        const { accept } = this
 
         const count = value.length + Object.keys(this.state.files).length
 
         /** 超过限制 不显示上传 */
         if (limit > 0 && limit <= count) return null
-
-        const dragProps = {
-            multiple,
-            addFile: this.addFile,
-            accept,
-            disabled,
-            limit,
-        }
 
         return (
             <Drop
@@ -415,7 +416,7 @@ class Upload extends PureComponent<IUploadProps, UploadState> {
                 drop={drop}
             >
                 <span className={uploadClass('handle')} onClick={this.handleAddClick}>
-                    <Provider value={dragProps}>{children}</Provider>
+                    {children}
                     <FileInput accept={accept} ref={this.fileInput} multiple={multiple} onChange={this.addFile} />
                 </span>
             </Drop>
@@ -431,12 +432,12 @@ class Upload extends PureComponent<IUploadProps, UploadState> {
             imageStyle,
             recoverAble,
             showUploadList,
-            customResult: CustomResult,
             disabled,
             renderContent,
-            accept,
             drop,
         } = this.props
+
+        const { accept } = this
 
         const { files, recycle } = this.state
 
@@ -444,20 +445,6 @@ class Upload extends PureComponent<IUploadProps, UploadState> {
             uploadClass('_', disabled && 'disabled', showUploadList === false && 'hide-list'),
             this.props.className
         )
-
-        if (CustomResult) {
-            return (
-                <div className={className} style={style}>
-                    {this.renderHandle()}
-                    <CustomResult
-                        value={value}
-                        files={files}
-                        onValueRemove={this.handleRemoveValue}
-                        onFileRemove={this.removeFile}
-                    />
-                </div>
-            )
-        }
 
         const FileComponent = imageStyle ? ImageFile : InternalFileComponent
 

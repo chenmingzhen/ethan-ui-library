@@ -4,17 +4,19 @@ import { uploadClass } from '@/styles'
 import { getLocale } from '@/locale'
 import Upload from './Upload'
 import { ERROR } from './utils/request'
-import { ImageUploadProps, ImageUploadState } from './type'
+import { UploadImageProps, UploadImageState } from './type'
 
-class Image extends PureComponent<ImageUploadProps, ImageUploadState> {
+class Image extends PureComponent<UploadImageProps, UploadImageState> {
     timer: NodeJS.Timeout
 
-    static defaultProps: ImageUploadProps = {
+    static defaultProps: UploadImageProps = {
         accept: 'image/*',
         height: 80,
         validator: {},
         width: 80,
     }
+
+    static displayName = 'EthanImageUpload'
 
     constructor(props) {
         super(props)

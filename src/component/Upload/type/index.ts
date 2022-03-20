@@ -7,7 +7,7 @@ export interface DefaultUploadValue {
     url?: string
 }
 
-export interface UploadProps<SuccessData extends any = DefaultUploadValue> {
+export interface UploadProps<SuccessData extends any | DefaultUploadValue = any> {
     accept?: string
     action?: string | ((file: File) => string)
     children?: React.ReactNode
@@ -126,12 +126,12 @@ export interface ResultProps extends Pick<IUploadProps, 'renderContent' | 'rende
     [rest: string]: any
 }
 
-export interface ImageUploadProps extends Pick<UploadProps, 'accept' | 'recoverAble' | 'disabled' | 'validator'> {
+export interface UploadImageProps extends UploadProps {
     height?: number
     width?: number
 }
 
-export interface ImageUploadState {
+export interface UploadImageState {
     urlInvalid: boolean
 }
 
@@ -143,4 +143,13 @@ export interface UploadProgressProps extends UploadProps, Pick<ButtonProps, 'typ
 
 export interface UploadProgressState {
     progress: number
+}
+
+export type ImageUploadComponent = React.ComponentClass<UploadImageProps>
+
+export type UploadProgressComponent = React.ComponentClass<UploadProgressProps>
+
+export interface UploadComponent extends React.ComponentClass<UploadProps> {
+    Image: ImageUploadComponent
+    Button: UploadProgressComponent
 }

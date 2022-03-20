@@ -12,6 +12,8 @@ class Progress extends PureComponent<UploadProgressProps, UploadProgressState> {
         type: 'primary',
     }
 
+    static displayName = 'EthanButtonUpload'
+
     constructor(props) {
         super(props)
 
