@@ -58,8 +58,6 @@ function defaultRequest(options: RequestParams) {
         xhr.setRequestHeader(k, headers[k])
     })
 
-    if (onStart) onStart(file)
-
     xhr.send(data)
 
     return xhr

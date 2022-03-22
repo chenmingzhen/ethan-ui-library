@@ -8,11 +8,12 @@ import React, { createRef } from 'react'
 import attrAccept from '@/component/Upload/utils/accept'
 import { getLocale } from '@/locale'
 import immer from 'immer'
-import { InternalFile, IUploadProps, RequestParams, UploadState } from './type'
+import { deepClone } from '@/utils/clone'
+import { BeforeUploadFileType, EthanFile, IUploadProps, RequestParams, UploadState } from './type'
 import ImageFile from './ImageFile'
 import ImageResult from './ImageResult'
 import Result from './Result'
-import defaultRequest, { ERROR, UPLOADING } from './utils/request'
+import defaultRequest, { ERROR, SUCCESS, UPLOADING } from './utils/request'
 import Drop from './Drop'
 import FileInput, { FileInputInstance } from './FileInput'
 import InternalFileComponent from './File'
@@ -51,16 +52,11 @@ class Upload extends PureComponent<IUploadProps, UploadState> {
 
         this.state = {
             files: {},
+            fileList: [],
             recycle: [],
         }
 
         props.validateHook(this.validate)
-    }
-
-    get accept() {
-        const { accept, forceAccept } = this.props
-
-        return forceAccept || accept
     }
 
     validate = () => {
@@ -74,22 +70,18 @@ class Upload extends PureComponent<IUploadProps, UploadState> {
     }
 
     useValidator = (blob: File) => {
-        const { validator, forceAccept } = this.props
+        const { validator, accept } = this.props
 
         const { files } = this.state
-
-        const { accept } = this
 
         let error = null
 
         let i = 0
 
-        if (forceAccept) {
-            const acceptRes = attrAccept(blob, accept)
+        const acceptRes = attrAccept(blob, accept)
 
-            /** accept不符合 */
-            if (!acceptRes) return new Error(getLocale('invalidAccept'))
-        }
+        /** accept不符合 */
+        if (!acceptRes) return new Error(getLocale('invalidAccept'))
 
         while (VALIDATOR_ITEMS[i]) {
             const item = VALIDATOR_ITEMS[i]
@@ -124,195 +116,171 @@ class Upload extends PureComponent<IUploadProps, UploadState> {
         return ''
     }
 
-    handleError = (id: string, xhr: XMLHttpRequest, file: File) => {
-        const { onError, onHttpError } = this.props
+    /** onChange callback dispatcher */
+    updateFileListState(id: React.Key, updateProps: EthanFile, callback?: (file: EthanFile) => void) {
+        const { onChange } = this.props
 
-        let message = xhr.statusText
+        const index = this.state.fileList.findIndex(stateFile => stateFile.id === id)
 
-        /** @todo 这个onError与onHttpError重复 */
-        if (onError) message = onError(xhr, file) || message
+        if (index === -1) return
 
-        if (onHttpError) message = onHttpError(xhr, file) || message
+        console.log('update:', this.state.fileList, this.state.fileList[index])
 
         this.setState(
-            immer(draft => {
-                draft.files[id].status = ERROR
-                draft.files[id].message = message
-            })
+            immer(
+                state => {
+                    const clone = deepClone(state.fileList)
+
+                    clone[index] = Object.assign({}, clone[index], updateProps)
+
+                    return {
+                        ...state,
+                        fileList: clone,
+                    }
+                },
+                () => {
+                    const changeFileIndex = this.state.fileList.findIndex(stateFile => stateFile.id === id)
+
+                    if (!changeFileIndex) return
+
+                    const changeFile = this.state.fileList[changeFileIndex]
+
+                    onChange(this.state.fileList, changeFile)
+
+                    if (!callback) return
+
+                    callback(changeFile)
+                }
+            )
         )
     }
 
-    uploadFile = (id: string, file: File, data?: string) => {
-        const { onSuccess, name, htmlName, params, withCredentials, headers, request, onProgress, onStart } = this.props
+    handleError = (id: React.Key) => {
+        const index = this.state.fileList.findIndex(stateFile => stateFile.id === id)
+
+        if (index === -1) return
+
+        const { xhr } = this.state.fileList[index]
+
+        const message = xhr.statusText
+
+        this.updateFileListState(id, { status: ERROR, message })
+    }
+
+    uploadFile = (ethanFile: EthanFile) => {
+        const { blob: file, id } = ethanFile
+
+        const uploadFileIndex = this.state.fileList.findIndex(stateFile => stateFile.id === id)
+
+        if (uploadFileIndex === -1) return
+
+        const { onSuccess, name, params, withCredentials, headers, request, onProgress, onStart } = this.props
 
         const req = request || defaultRequest
 
-        let throttle = false
-
         const options: RequestParams = {
             url: this.getAction(file),
-            name: htmlName || name,
+            name,
             params,
             withCredentials,
             file,
             headers,
             onStart,
             onSuccess,
-            onProgress: (e, msg) => {
+            onProgress: e => {
                 const percent = (e.loaded / e.total) * 100
 
-                if (throttle) return
-
-                throttle = true
-
-                setTimeout(() => {
-                    throttle = false
-                }, 16)
-
-                if (this.state.files[id]) {
-                    this.setState(
-                        immer(draft => {
-                            draft.files[id].process = percent
-
-                            if (msg) draft.files[id].message = msg
-                        }),
-                        // expose the file progress to Upload.Button
-                        () => {
-                            if (typeof onProgress === 'function') {
-                                onProgress(this.state.files[id])
-                            }
-                        }
-                    )
+                const handleProgressButtonCallback = (callbackEthanFile: EthanFile) => {
+                    if (typeof onProgress === 'function') {
+                        onProgress(callbackEthanFile)
+                    }
                 }
+
+                this.updateFileListState(id, { process: percent }, handleProgressButtonCallback)
             },
             onLoad: xhr => {
-                /** http 1223 is apparently a bug in IE */
                 if (!/^2/.test(String(xhr.status))) {
-                    this.handleError(id, xhr, file)
+                    this.handleError(id)
 
                     return
                 }
 
-                let value = xhr.responseText || xhr.response
-
-                if (onSuccess) {
-                    value = onSuccess(value, file, data, xhr)
-                }
-
-                if (value instanceof Error) {
-                    this.setState(
-                        immer(draft => {
-                            draft.files[id].status = ERROR
-                            draft.files[id].name = file.name
-                            draft.files[id].message = value.message
-                        })
-                    )
-                } else {
-                    this.setState(
-                        immer(draft => {
-                            delete draft.files[id]
-                        })
-                    )
-
-                    const values = immer(this.props.value, draft => {
-                        draft.push(value)
-                    })
-
-                    this.props.onChange(values)
-                }
+                this.updateFileListState(id, { status: SUCCESS })
             },
 
-            onError: xhr => this.handleError(id, xhr, file),
+            onError: () => this.handleError(id),
         }
 
-        if (!onProgress) {
-            delete options.onProgress
+        const xhr = req(options)
+
+        if (onStart) onStart(file)
+
+        this.setState(
+            immer(draft => {
+                draft.fileList[uploadFileIndex].xhr = xhr
+            })
+        )
+    }
+
+    processFile = async (originFile: File): Promise<EthanFile> => {
+        const { beforeUpload } = this.props
+
+        let transformedFile: BeforeUploadFileType | void = originFile
+
+        const id = getUidStr()
+
+        if (beforeUpload) {
+            try {
+                transformedFile = await beforeUpload(originFile)
+            } catch {
+                transformedFile = false
+            }
+
+            if (transformedFile === false) {
+                return {
+                    id,
+                    blob: originFile,
+                    name: originFile.name,
+                    status: -1,
+                }
+            }
         }
 
-        return req(options)
+        return {
+            id,
+            ...transformedFile,
+        }
     }
 
     addFile = (e: React.ChangeEvent<HTMLInputElement> | { fromDragger: boolean; files: File[] }) => {
-        const { beforeUpload, value, limit, filesFilter } = this.props
+        const { value, limit } = this.props
 
-        let fileList = 'fromDragger' in e && 'files' in e ? e.files : e.target.files
+        const { fileList } = this.state
 
-        if (filesFilter) fileList = Array.from(fileList).filter(filesFilter)
+        const originFileList = Array.from('fromDragger' in e && 'files' in e ? e.files : e.target.files) as File[]
 
-        const addLength = limit - value.length - Object.keys(this.state.files).length
+        const addLength = limit - value.length - fileList.length
 
         if (addLength <= 0) return
 
-        // eslint-disable-next-line
-        const files = { ...this.state.files }
+        const processFileListPromises = originFileList.slice(0, addLength).map(this.processFile)
 
-        range(Math.min(fileList.length, addLength)).forEach((_, i) => {
-            const blob = fileList[i]
+        Promise.all(processFileListPromises).then(processFileList => {
+            const newFileList = [...fileList, ...processFileList]
 
-            const id = getUidStr()
+            this.setState(
+                {
+                    fileList: newFileList,
+                },
+                () => {
+                    const pendingPostFileList = processFileList.filter(file => file.status !== -1)
 
-            const file: InternalFile = {
-                name: blob.name,
-                process: -1,
-                status: UPLOADING,
-                blob,
-            }
-
-            files[id] = file
-
-            const error = this.useValidator(blob)
-
-            /** beforeUpload的异步setState在外层setState files后执行 */
-            if (error instanceof Error) {
-                if (!this.validatorHandle(error, file.blob)) {
-                    delete files[id]
-
-                    return
-                }
-
-                file.message = error.message
-
-                file.status = ERROR
-
-                if (beforeUpload) {
-                    beforeUpload(blob, this.validatorHandle)
-                        .then(args => {
-                            this.setState(
-                                immer(draft => {
-                                    draft.files[id] = Object.assign({}, draft.files[id], args)
-                                })
-                            )
-                        })
-                        .catch(() => true)
-                }
-
-                return
-            }
-
-            if (beforeUpload) {
-                beforeUpload(blob, this.validatorHandle)
-                    .then(args => {
-                        if (args.status !== ERROR) files[id].xhr = this.uploadFile(id, blob, args.data)
-
-                        this.setState(
-                            immer(draft => {
-                                draft.files[id] = Object.assign({}, draft.files[id], args)
-                            })
-                        )
+                    pendingPostFileList.forEach(processFile => {
+                        this.uploadFile(processFile)
                     })
-                    .catch(() => {
-                        this.setState(
-                            immer(draft => {
-                                delete draft.files[id]
-                            })
-                        )
-                    })
-            } else {
-                files[id].xhr = this.uploadFile(id, blob)
-            }
+                }
+            )
         })
-
-        this.setState({ files })
     }
 
     handleFileDrop = (files: File[]) => {
@@ -398,9 +366,7 @@ class Upload extends PureComponent<IUploadProps, UploadState> {
 
     /** 上传按钮或上传图片占位 */
     renderHandle = () => {
-        const { limit, value, children, multiple, disabled, drop } = this.props
-
-        const { accept } = this
+        const { limit, value, children, multiple, disabled, drop, accept } = this.props
 
         const count = value.length + Object.keys(this.state.files).length
 
@@ -435,11 +401,10 @@ class Upload extends PureComponent<IUploadProps, UploadState> {
             disabled,
             renderContent,
             drop,
+            accept,
         } = this.props
 
-        const { accept } = this
-
-        const { files, recycle } = this.state
+        const { files, recycle, fileList } = this.state
 
         const className = classnames(
             uploadClass('_', disabled && 'disabled', showUploadList === false && 'hide-list'),
@@ -449,55 +414,19 @@ class Upload extends PureComponent<IUploadProps, UploadState> {
         const FileComponent = imageStyle ? ImageFile : InternalFileComponent
 
         const ResultComponent = imageStyle ? ImageResult : Result
-
+        console.log(this.state.fileList)
         return (
             <div className={className} style={style}>
                 {!imageStyle && this.renderHandle()}
 
-                {/* Success */}
                 {showUploadList &&
-                    value.map((v, i) => (
-                        <Drop
-                            drop={drop}
-                            multiple={false}
-                            key={i}
-                            accept={accept}
-                            dropData={i}
-                            disabled={disabled}
-                            onDrop={this.handleReplace}
-                        >
-                            <ResultComponent
-                                renderContent={renderContent}
-                                value={v}
-                                values={value}
-                                index={i}
-                                style={imageStyle}
-                                renderResult={renderResult}
-                                onRemove={this.handleRemoveValue}
-                            />
-                        </Drop>
-                    ))}
-
-                {showUploadList &&
-                    Object.keys(files).map(id => (
-                        <FileComponent {...files[id]} key={id} id={id} style={imageStyle} onRemove={this.removeFile} />
-                    ))}
-
-                {imageStyle && this.renderHandle()}
-
-                {recoverAble &&
-                    recycle.map((v, i) => (
-                        <ResultComponent
-                            renderContent={renderContent}
-                            key={i}
-                            value={v}
-                            values={recycle}
-                            index={i}
-                            renderResult={renderResult}
-                            showRecover={recoverAble && limit > value.length}
-                            onRecover={this.handleRecoverValue}
+                    fileList.map(file => (
+                        <FileComponent
+                            {...file}
+                            key={file.id}
+                            id={file.id}
                             style={imageStyle}
-                            recoverAble
+                            onRemove={this.removeFile}
                         />
                     ))}
             </div>

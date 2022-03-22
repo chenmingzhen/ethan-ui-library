@@ -20,7 +20,7 @@ export interface UploadProps<SuccessData extends any | DefaultUploadValue = any>
     multiple?: boolean
     name?: string
     onChange?: (value: SuccessData[]) => void
-    onProgress?: ((file: InternalFile) => void) | boolean
+    onProgress?: ((file: EthanFile) => void) | boolean
     onSuccess?: (value: any, file: File, data: string, xhr: XMLHttpRequest) => SuccessData
     onError?: (xhr: XMLHttpRequest, file: File) => string | void
     onHttpError?: (xhr: XMLHttpRequest, file: File) => string
@@ -43,20 +43,21 @@ export interface UploadProps<SuccessData extends any | DefaultUploadValue = any>
     drop?: boolean
     /** 文件选中后的筛选 */
     filesFilter?: (fileList: File) => boolean
-    onErrorRemove?: (xhr: XMLHttpRequest, file: File, internalFile?: InternalFile) => void
+    onErrorRemove?: (xhr: XMLHttpRequest, file: File, internalFile?: EthanFile) => void
     forceAccept?: string
 }
 
 export interface IUploadProps extends UploadProps {
     /** @todo  如果返回false与reject 应该阻止上传，例如antd的Form中 */
-    beforeUpload?: (blob: File, f) => Promise<InternalFile>
+    beforeUpload?: (blob: File, f) => Promise<EthanFile>
     imageStyle?: React.CSSProperties
     validateHook?: (hooks) => void
     customResult?: React.ElementType
     webkitdirectory?: boolean | string
 }
 
-export interface InternalFile {
+export interface EthanFile {
+    id?: React.Key
     name?: string
     process?: number
     status?: number
@@ -67,8 +68,8 @@ export interface InternalFile {
 }
 
 export interface UploadState {
-    files: Record<string, InternalFile>
-    /** 回收的value List */
+    files: Record<string, EthanFile>
+    fileList: EthanFile[]
     recycle?: any[]
 }
 
@@ -104,7 +105,7 @@ export interface FileInputProps extends Pick<UploadProps, 'accept' | 'multiple'>
 
 export type AddFileFromDraggerHandler = (e: { fromDragger?: boolean; files?: File[] }) => void
 
-export interface FileProps extends InternalFile {
+export interface FileProps extends EthanFile {
     id: string
 
     onRemove(id: string): void
@@ -153,3 +154,5 @@ export interface UploadComponent extends React.ComponentClass<UploadProps> {
     Image: ImageUploadComponent
     Button: UploadProgressComponent
 }
+
+export type BeforeUploadFileType = EthanFile | boolean
