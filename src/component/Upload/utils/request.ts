@@ -1,8 +1,10 @@
 import { RequestParams } from '../type'
 
-export const UPLOADING = 1
-export const SUCCESS = 2
-export const ERROR = 3
+export const UPLOADING = 'UPLOADING'
+export const SUCCESS = 'SUCCESS'
+export const ERROR = 'ERROR'
+export const REMOVED = 'REMOVED'
+export const MANUAL = 'MANUAL'
 
 const createCORSRequest = (method, url) => {
     let xhr = new XMLHttpRequest()
@@ -17,18 +19,7 @@ const createCORSRequest = (method, url) => {
 }
 
 function defaultRequest(options: RequestParams) {
-    const {
-        url,
-        name,
-        file,
-        onProgress,
-        onLoad,
-        onError,
-        withCredentials,
-        params = {},
-        headers = {},
-        onStart,
-    } = options
+    const { url, name, file, onProgress, onLoad, onError, withCredentials, params = {}, headers = {} } = options
 
     if (!url) {
         console.error(new Error(`action is required, but its value is ${url}`))

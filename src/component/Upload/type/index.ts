@@ -60,7 +60,7 @@ export interface EthanFile {
     id?: React.Key
     name?: string
     process?: number
-    status?: number
+    status?: 'UPLOADING' | 'SUCCESS' | 'ERROR' | 'REMOVED' | 'MANUAL'
     blob?: File
     message?: string
     xhr?: XMLHttpRequest
@@ -155,4 +155,4 @@ export interface UploadComponent extends React.ComponentClass<UploadProps> {
     Button: UploadProgressComponent
 }
 
-export type BeforeUploadFileType = EthanFile | boolean
+export type BeforeUploadFileType = File | boolean
