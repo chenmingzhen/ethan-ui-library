@@ -124,7 +124,7 @@ const Image: ForwardRefRenderFunction<HTMLAnchorElement | HTMLDivElement, IImage
             return
         }
 
-        if (href && target === '_modal') {
+        if (target === '_modal') {
             e.preventDefault()
             showGallery({ thumb: src, src: href || src, key: 'key' })
         }
