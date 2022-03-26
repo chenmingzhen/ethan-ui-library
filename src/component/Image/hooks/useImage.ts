@@ -1,5 +1,6 @@
-import { useRef, useState, useEffect } from 'react'
+import { useRef, useEffect } from 'react'
 import { addStack, removeStack } from '@/utils/lazyload'
+import useSafeState from '@/hooks/useSafeState'
 import { PLACEHOLDER, SRC, ALT, ERROR, StatusType } from '../variable'
 
 const useImage = (
@@ -9,7 +10,7 @@ const useImage = (
     container: string | null,
     elId: string
 ) => {
-    const [status, setStatus] = useState<StatusType>(PLACEHOLDER)
+    const [status, setStatus] = useSafeState<StatusType>(PLACEHOLDER)
     const image = useRef<HTMLImageElement>()
     const lazyId = useRef<string>()
 
