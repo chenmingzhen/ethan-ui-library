@@ -60,4 +60,5 @@ export default {
     selected: 'selected',
     search: 'search',
     urlInvalidMsg: 'Picture format is incorrect, please upload again',
+    uploadFail: 'Upload Fail',
 }

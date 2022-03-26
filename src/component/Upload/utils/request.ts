@@ -1,10 +1,17 @@
 import { RequestParams } from '../type'
 
+/** 上传中 */
 export const UPLOADING = 'UPLOADING'
+/** 上传成功 */
 export const SUCCESS = 'SUCCESS'
+/** 上传错误 */
 export const ERROR = 'ERROR'
+/** 文件被移除 */
 export const REMOVED = 'REMOVED'
+/** 手动上传 */
 export const MANUAL = 'MANUAL'
+/** 等待执行任何动作 */
+export const PENDING = 'PENDING'
 
 const createCORSRequest = (method, url) => {
     let xhr = new XMLHttpRequest()

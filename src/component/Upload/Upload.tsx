@@ -9,9 +9,7 @@ import { getLocale } from '@/locale'
 import immer from 'immer'
 import { BeforeUploadFileType, EthanFile, IUploadProps, RequestParams, UploadState } from './type'
 import ImageFile from './ImageFile'
-import ImageResult from './ImageResult'
-import Result from './Result'
-import defaultRequest, { ERROR, MANUAL, SUCCESS, UPLOADING } from './utils/request'
+import defaultRequest, { ERROR, MANUAL, PENDING, REMOVED, SUCCESS, UPLOADING } from './utils/request'
 import Drop from './Drop'
 import FileInput, { FileInputInstance } from './FileInput'
 import InternalFileComponent from './File'
@@ -21,8 +19,10 @@ enum UpdateFileListStateAction {
     UPDATE = 'UPDATE',
     /** 移除指定的File */
     REMOVE = 'REMOVE',
-    /** 移除指定的File，但保留在缓存区 */
+    /** 恢复文件 */
     RECOVER = 'RECOVER',
+    /** 缓存指定文件，但状态为REMOVED */
+    CACHE = 'CACHE',
 }
 
 interface UpdateFileListStateParams {
@@ -33,15 +33,15 @@ interface UpdateFileListStateParams {
 }
 
 const VALIDATOR_ITEMS = [
-    { key: 'size', param: blob => blob.size },
+    { key: 'size', params: (file: File) => file.size },
     {
         key: 'ext',
-        param: blob => {
-            const exts = blob.name.split('.')
+        params: (file: File) => {
+            const exts = file.name.split('.')
             return exts[exts.length - 1]
         },
     },
-    { key: 'customValidator', param: blob => blob },
+    { key: 'customValidator', params: (file: File) => file },
 ]
 
 class Upload extends PureComponent<IUploadProps, UploadState> {
@@ -52,9 +52,7 @@ class Upload extends PureComponent<IUploadProps, UploadState> {
         value: [],
         withCredentials: false,
         showUploadList: true,
-        validatorHandle: true,
         onProgress: true,
-        renderResult: result => result,
     }
 
     static displayName = 'EthanUpload'
@@ -67,19 +65,15 @@ class Upload extends PureComponent<IUploadProps, UploadState> {
         super(props)
 
         this.state = {
-            files: {},
             fileList: [],
-            recycle: [],
         }
 
         props.validateHook(this.validate)
     }
 
     validate = () => {
-        const { files } = this.state
-
         return new Promise((resolve, reject) => {
-            if (Object.keys(files).length > 0) reject(new FormError(''))
+            if (this.state.fileList.length > 0) reject(new FormError(''))
 
             resolve(true)
         })
@@ -88,7 +82,7 @@ class Upload extends PureComponent<IUploadProps, UploadState> {
     useValidator = (blob: File) => {
         const { validator, accept } = this.props
 
-        const { files } = this.state
+        const { fileList } = this.state
 
         let error = null
 
@@ -102,8 +96,12 @@ class Upload extends PureComponent<IUploadProps, UploadState> {
         while (VALIDATOR_ITEMS[i]) {
             const item = VALIDATOR_ITEMS[i]
 
-            if (typeof validator[item.key] === 'function') {
-                error = validator[item.key](item.param(blob), files)
+            const validatorFunc = validator[item.key]
+
+            if (typeof validatorFunc === 'function') {
+                const params = item.params(blob)
+
+                error = validatorFunc(params, fileList)
 
                 if (error instanceof Error) return error
             }
@@ -112,14 +110,6 @@ class Upload extends PureComponent<IUploadProps, UploadState> {
         }
 
         return null
-    }
-
-    validatorHandle = (error: Error, file: File) => {
-        const { validatorHandle } = this.props
-
-        if (typeof validatorHandle === 'function') return validatorHandle(error, file)
-
-        return validatorHandle
     }
 
     getAction = (file: File) => {
@@ -141,7 +131,7 @@ class Upload extends PureComponent<IUploadProps, UploadState> {
         if (index === -1) return
 
         /** for onChange callback params */
-        let cacheRemoveFile
+        let cacheRemoveFile: EthanFile
 
         this.setState(
             immer(draft => {
@@ -154,11 +144,29 @@ class Upload extends PureComponent<IUploadProps, UploadState> {
                         break
                     }
 
-                    case UpdateFileListStateAction.REMOVE:
-                    case UpdateFileListStateAction.RECOVER: {
+                    case UpdateFileListStateAction.REMOVE: {
                         const deleteFileList = fileList.splice(index, 1)
 
-                        cacheRemoveFile = Object.assign({}, deleteFileList[0])
+                        cacheRemoveFile = Object.assign({}, deleteFileList[0], { status: REMOVED })
+
+                        break
+                    }
+
+                    case UpdateFileListStateAction.RECOVER: {
+                        const originStatus = fileList[index].status
+
+                        const mergeStatus = originStatus === MANUAL ? MANUAL : SUCCESS
+
+                        /** 恢复到已成功状态 */
+                        fileList[index] = Object.assign({}, fileList[index], { status: mergeStatus })
+
+                        break
+                    }
+
+                    case UpdateFileListStateAction.CACHE: {
+                        fileList[index] = Object.assign({}, fileList[index], { status: REMOVED })
+
+                        cacheRemoveFile = fileList[index]
 
                         break
                     }
@@ -198,9 +206,11 @@ class Upload extends PureComponent<IUploadProps, UploadState> {
 
         if (index === -1) return
 
+        const { onError } = this.props
+
         const { xhr } = this.state.fileList[index]
 
-        const message = xhr.statusText
+        const message = onError?.(xhr) || xhr.statusText || getLocale('uploadFail')
 
         this.updateFileListState({
             id,
@@ -216,7 +226,7 @@ class Upload extends PureComponent<IUploadProps, UploadState> {
 
         if (uploadFileIndex === -1) return
 
-        const { onSuccess, name, params, withCredentials, headers, request, onProgress, onStart } = this.props
+        const { name, params, withCredentials, headers, request, onProgress } = this.props
 
         const req = request || defaultRequest
 
@@ -227,8 +237,6 @@ class Upload extends PureComponent<IUploadProps, UploadState> {
             withCredentials,
             file,
             headers,
-            onStart,
-            onSuccess,
             onProgress: e => {
                 const percent = (e.loaded / e.total) * 100
 
@@ -264,8 +272,6 @@ class Upload extends PureComponent<IUploadProps, UploadState> {
 
         const xhr = req(options)
 
-        if (onStart) onStart(file)
-
         this.setState(
             immer(draft => {
                 draft.fileList[uploadFileIndex].xhr = xhr
@@ -276,40 +282,67 @@ class Upload extends PureComponent<IUploadProps, UploadState> {
     processFile = async (originFile: File): Promise<EthanFile> => {
         const { beforeUpload } = this.props
 
-        let transformedFile: BeforeUploadFileType | void = originFile
+        let transformedFile: BeforeUploadFileType = originFile
 
         const id = getUidStr()
+
+        const error = this.useValidator(originFile)
+
+        const hasError = error instanceof Error
 
         if (beforeUpload) {
             try {
                 transformedFile = await beforeUpload(originFile)
             } catch {
-                transformedFile = false
+                // transformedFile = false
             }
 
-            if (transformedFile === false) {
+            /** 手动上传 */
+            if ((transformedFile as EthanFile)?.status === MANUAL) {
                 return {
                     id,
                     blob: originFile,
                     name: originFile.name,
-                    status: -1,
+                    status: hasError ? ERROR : MANUAL,
+                    message: error?.message,
+                    ...transformedFile,
                 }
+            }
+        }
+
+        /** 无执行过beforeUpload处理的文件 */
+        if (transformedFile instanceof File) {
+            return {
+                id,
+                blob: transformedFile,
+                name: transformedFile.name,
+                status: hasError ? ERROR : PENDING,
+                message: error?.message,
             }
         }
 
         return {
             id,
-            blob: transformedFile,
-            name: transformedFile.name,
+            status: hasError ? ERROR : PENDING,
+            message: error?.message,
+            blob: originFile,
+            /** 经过BeforeUpload处理的File有可能有状态与message，需要覆盖默认状态 */
+            ...transformedFile,
         }
     }
 
-    addFile = (e: React.ChangeEvent<HTMLInputElement> | { fromDragger: boolean; files: File[] }) => {
+    handleFileInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const { files } = e.target
+
+        this.addFile({ files })
+    }
+
+    addFile = (data: { files: File[] | FileList; spliceIndex?: number }) => {
         const { limit } = this.props
 
         const { fileList } = this.state
 
-        const originFileList = Array.from('fromDragger' in e && 'files' in e ? e.files : e.target.files) as File[]
+        const originFileList = Array.from(data.files)
 
         const addLength = limit - fileList.length
 
@@ -318,14 +351,24 @@ class Upload extends PureComponent<IUploadProps, UploadState> {
         const processFileListPromises = originFileList.slice(0, addLength).map(this.processFile)
 
         Promise.all(processFileListPromises).then(processFileList => {
-            const newFileList = [...fileList, ...processFileList]
+            const newFileList = [...fileList]
+
+            const { spliceIndex } = data
+
+            if (spliceIndex === undefined) {
+                newFileList.push(...processFileList)
+            } else {
+                newFileList.splice(spliceIndex, 0, ...processFileList)
+            }
 
             this.setState(
                 {
                     fileList: newFileList,
                 },
                 () => {
-                    const pendingPostFileList = processFileList.filter(file => file.status !== MANUAL)
+                    const pendingPostFileList = processFileList.filter(
+                        file => ![MANUAL, ERROR, SUCCESS].includes(file.status)
+                    )
 
                     pendingPostFileList.forEach(processFile => {
                         this.uploadFile(processFile)
@@ -336,7 +379,7 @@ class Upload extends PureComponent<IUploadProps, UploadState> {
     }
 
     handleFileDrop = (files: File[]) => {
-        this.addFile({ files, fromDragger: true })
+        this.addFile({ files })
     }
 
     handleAddClick = () => {
@@ -347,27 +390,7 @@ class Upload extends PureComponent<IUploadProps, UploadState> {
         this.fileInput.current.click()
     }
 
-    handleRemoveValue = (index: number) => {
-        const { recoverAble, disabled } = this.props
-
-        if (disabled) return
-
-        if (recoverAble) {
-            this.setState(
-                immer(draft => {
-                    draft.recycle.push(this.props.value[index])
-                })
-            )
-        }
-
-        const value = immer(this.props.value, draft => {
-            draft.splice(index, 1)
-        })
-
-        this.props.onChange(value)
-    }
-
-    handleRemoveFile = (id: string) => {
+    handleRemoveFile = (id: React.Key) => {
         const { disabled, recoverAble } = this.props
 
         if (disabled) return
@@ -381,37 +404,56 @@ class Upload extends PureComponent<IUploadProps, UploadState> {
         /** 如果该请求已被发出，XMLHttpRequest.abort() 方法将终止该请求。 */
         if (file.xhr && file.xhr.abort) file.xhr.abort()
 
+        const { status } = file
+
+        let action: UpdateFileListStateAction
+
+        switch (status) {
+            case PENDING:
+            case ERROR:
+            case UPLOADING:
+                action = UpdateFileListStateAction.REMOVE
+                break
+            case SUCCESS:
+            case MANUAL:
+                if (recoverAble) {
+                    action = UpdateFileListStateAction.CACHE
+                } else {
+                    action = UpdateFileListStateAction.REMOVE
+                }
+                break
+
+            default:
+                break
+        }
+
         this.updateFileListState({
             id,
-            action: recoverAble ? UpdateFileListStateAction.RECOVER : UpdateFileListStateAction.REMOVE,
+            action,
         })
     }
 
-    handleReplace = (files: File[], index) => {
-        this.handleRemoveValue(index)
+    handleReplace = (files: File[], position: number) => {
+        const positionFile = this.state.fileList[position]
+
+        if (!positionFile) return
+
+        this.handleRemoveFile(positionFile.id)
 
         setTimeout(() => {
-            this.addFile({ files, fromDragger: true })
+            this.addFile({ files, spliceIndex: position })
         })
     }
 
-    /** value为onSuccess的的return */
-    handleRecoverValue = (index: number, value: any) => {
+    handleRecoverValue = (id: string) => {
         const { disabled } = this.props
 
         if (disabled) return
 
-        this.props.onChange(
-            immer(this.props.value, draft => {
-                draft.push(value)
-            })
-        )
-
-        this.setState(
-            immer(draft => {
-                draft.recycle.splice(index, 1)
-            })
-        )
+        this.updateFileListState({
+            id,
+            action: UpdateFileListStateAction.RECOVER,
+        })
     }
 
     renderHandle = () => {
@@ -431,28 +473,21 @@ class Upload extends PureComponent<IUploadProps, UploadState> {
             >
                 <span className={uploadClass('handle')} onClick={this.handleAddClick}>
                     {children}
-                    <FileInput accept={accept} ref={this.fileInput} multiple={multiple} onChange={this.addFile} />
+                    <FileInput
+                        accept={accept}
+                        ref={this.fileInput}
+                        multiple={multiple}
+                        onChange={this.handleFileInputChange}
+                    />
                 </span>
             </Drop>
         )
     }
 
     render = () => {
-        const {
-            limit,
-            value,
-            renderResult,
-            style,
-            imageStyle,
-            showUploadList,
-            disabled,
-            renderContent,
-            drop,
-            accept,
-            recoverAble,
-        } = this.props
+        const { style, imageStyle, showUploadList, disabled, renderContent, drop, accept, recoverAble } = this.props
 
-        const { files, recycle, fileList } = this.state
+        const { fileList } = this.state
 
         const className = classnames(
             uploadClass('_', disabled && 'disabled', showUploadList === false && 'hide-list'),
@@ -461,21 +496,21 @@ class Upload extends PureComponent<IUploadProps, UploadState> {
 
         const FileComponent = imageStyle ? ImageFile : InternalFileComponent
 
-        const ResultComponent = imageStyle ? ImageResult : Result
-
         return (
             <div className={className} style={style}>
                 {!imageStyle && this.renderHandle()}
 
                 {showUploadList &&
                     fileList.map((file, i) => {
-                        const mergeDrop = drop && file.status !== 1
+                        const mergeDrop = drop && file.status !== UPLOADING
+
+                        const showRecover = recoverAble && file.status === REMOVED
 
                         return (
                             <Drop
                                 drop={mergeDrop}
                                 multiple={false}
-                                key={i}
+                                key={file.id}
                                 accept={accept}
                                 dropData={i}
                                 disabled={disabled}
@@ -483,16 +518,19 @@ class Upload extends PureComponent<IUploadProps, UploadState> {
                             >
                                 <FileComponent
                                     {...file}
+                                    file={file}
                                     key={file.id}
                                     style={imageStyle}
                                     onRemove={this.handleRemoveFile}
+                                    onRecover={this.handleRecoverValue}
                                     renderContent={renderContent}
-                                    renderResult={renderResult}
-                                    recoverAble={recoverAble}
+                                    showRecover={showRecover}
                                 />
                             </Drop>
                         )
                     })}
+
+                {imageStyle && this.renderHandle()}
             </div>
         )
     }

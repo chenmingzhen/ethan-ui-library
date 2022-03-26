@@ -12,7 +12,7 @@ const Drop: React.FC<DropProps> = props => {
         (e: React.DragEvent<HTMLSpanElement>) => {
             const { files } = e.dataTransfer
 
-            const filter = accept ? Array.prototype.filter.call(files, f => fileAccept(f, accept)) : files
+            const filter = accept ? Array.prototype.filter.call(files, file => fileAccept(file, accept)) : files
 
             if (!filter || filter.length === 0) return
 

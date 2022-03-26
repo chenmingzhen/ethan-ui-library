@@ -3,8 +3,8 @@ import immer from 'immer'
 import { uploadClass } from '@/styles'
 import { getLocale } from '@/locale'
 import Upload from './Upload'
-import { ERROR } from './utils/request'
-import { UploadImageProps, UploadImageState } from './type'
+import { ERROR, PENDING } from './utils/request'
+import { BeforeUploadFileType, EthanFile, UploadImageProps, UploadImageState } from './type'
 
 class Image extends PureComponent<UploadImageProps, UploadImageState> {
     timer: NodeJS.Timeout
@@ -36,17 +36,40 @@ class Image extends PureComponent<UploadImageProps, UploadImageState> {
         }
     }
 
-    beforeUpload = (blob: File, validatorHandle: (error: Error, file: File) => boolean) => {
+    beforeUpload = async (blob: File): Promise<EthanFile> => {
+        const { beforeUpload } = this.props
+
+        let transformedFile: BeforeUploadFileType = blob
+
+        if (beforeUpload) {
+            try {
+                transformedFile = await beforeUpload(blob)
+            } catch (error) {
+                return {
+                    blob,
+                    status: ERROR,
+                    message: error?.message,
+                }
+            }
+        }
+
         return new Promise((resolve, reject) => {
             const { imageSize } = this.props.validator
 
-            const file: any = {}
-            // FileReader 对象允许Web应用程序异步读取存储在用户计算机上的文件（或原始数据缓冲区）的内容，使用 File 或 Blob 对象指定要读取的文件或数据。
-            // https://developer.mozilla.org/zh-CN/docs/Web/API/FileReader
+            const file: EthanFile = { status: PENDING }
+
+            let transformProps: EthanFile = {}
+
+            /** 处理过后的文件 */
+            if (transformedFile !== false && !(transformedFile instanceof File)) {
+                transformProps = { ...transformedFile }
+            }
+
+            /** @see https://developer.mozilla.org/zh-CN/docs/Web/API/FileReader */
             const reader = new FileReader()
 
             reader.onload = e => {
-                const data = e.target.result
+                const data = e.target.result as string
 
                 file.data = data
 
@@ -62,30 +85,33 @@ class Image extends PureComponent<UploadImageProps, UploadImageState> {
                     reject()
                 }
 
+                /** Props的beforeUpload的result覆盖掉内部处理的result */
                 image.onload = () => {
                     if (!imageSize) {
-                        resolve(file)
+                        const processFile = Object.assign({}, file, transformProps)
+
+                        resolve(processFile)
+
                         return
                     }
 
                     const res = imageSize(image)
 
                     if (res instanceof Error) {
-                        if (!validatorHandle(res, blob)) reject()
-
                         file.status = ERROR
 
                         file.message = res.message
                     }
 
-                    resolve(file)
+                    const processFile = Object.assign({}, file, transformProps)
+
+                    resolve(processFile)
                 }
 
-                image.src = data as string
+                image.src = data
             }
 
-            // FileReader.readAsDataURL()
-            // https://developer.mozilla.org/zh-CN/docs/Web/API/FileReader/readAsDataURL
+            /** @see https://developer.mozilla.org/zh-CN/docs/Web/API/FileReader/readAsDataURL */
             reader.readAsDataURL(blob)
         })
     }

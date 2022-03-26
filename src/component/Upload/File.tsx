@@ -2,22 +2,27 @@ import React, { memo, useCallback } from 'react'
 import { uploadClass } from '@/styles'
 import Progress from '../Progress'
 import icons from '../icons'
-import { ERROR, UPLOADING } from './utils/request'
+import { ERROR, UPLOADING, REMOVED } from './utils/request'
 import { FileProps } from './type'
 import Spin from '../Spin'
 
 const File: React.FC<FileProps> = props => {
-    const { id, message, name, onRemove, process, status, showRecover, onRecover } = props
+    const { id, message, name, onRemove, process, status, showRecover, onRecover, renderContent, file } = props
 
     const handleRemove = useCallback(() => {
         onRemove(id)
     }, [onRemove, id])
 
-    const handleRecover = () => {
-        onRecover(index, value)
-    }
+    const handleRecover = useCallback(() => {
+        onRecover(id)
+    }, [id, onRecover])
 
-    const className = uploadClass('view-file', status === ERROR && 'error')
+    const className = uploadClass('view-file', showRecover && 'to-be-delete', {
+        removed: status === REMOVED,
+        error: status === ERROR,
+    })
+
+    const content = renderContent?.(file) || name
 
     return (
         <div className={className}>
@@ -27,13 +32,15 @@ const File: React.FC<FileProps> = props => {
                         <Spin size={10} name="ring" />
                     </span>
                 )}
-                {name}
+                {content}
                 {message && <span>({message}) </span>}
             </div>
 
-            <a className={uploadClass('delete')} onClick={handleRemove}>
-                {icons.Close}
-            </a>
+            {status !== REMOVED && !showRecover && (
+                <a className={uploadClass('delete')} onClick={handleRemove}>
+                    {icons.Close}
+                </a>
+            )}
 
             {status === UPLOADING && (
                 <Progress

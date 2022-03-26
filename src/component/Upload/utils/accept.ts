@@ -1,4 +1,3 @@
-/** todo */
 const attrAccept = (file: File, accept: string) => {
     if (file && accept) {
         const acceptedFilesArray = accept.split(',')
