@@ -59,6 +59,9 @@ class Upload extends PureComponent<IUploadProps, UploadState> {
 
     fileInput = createRef<FileInputInstance>()
 
+    /** 由于addFile中使用setState callback，所以只有callback完成时才接受 */
+    propsOnChangeLock = true
+
     constructor(props: IUploadProps) {
         super(props)
 
@@ -261,7 +264,10 @@ class Upload extends PureComponent<IUploadProps, UploadState> {
         this.setState(
             immer(draft => {
                 draft.fileList[uploadFileIndex].xhr = xhr
-            })
+            }),
+            () => {
+                this.propsOnChangeLock = false
+            }
         )
     }
 
@@ -346,6 +352,8 @@ class Upload extends PureComponent<IUploadProps, UploadState> {
             } else {
                 newFileList.splice(spliceIndex, 0, ...processFileList)
             }
+
+            this.propsOnChangeLock = true
 
             this.setState(
                 {
@@ -440,6 +448,13 @@ class Upload extends PureComponent<IUploadProps, UploadState> {
         })
     }
 
+    componentDidUpdate() {
+        /** 受控处理 */
+        if (!this.propsOnChangeLock) {
+            this.setState({ fileList: this.props.value })
+        }
+    }
+
     renderHandle = () => {
         const { limit, children, multiple, disabled, drop, accept } = this.props
 
@@ -479,8 +494,6 @@ class Upload extends PureComponent<IUploadProps, UploadState> {
         )
 
         const FileComponent = imageStyle ? ImageFile : InternalFileComponent
-
-        console.log(this.props, this.state)
 
         return (
             <div className={className} style={style}>
