@@ -28,7 +28,6 @@ enum UpdateFileListStateAction {
 interface UpdateFileListStateParams {
     id: React.Key
     updateProps?: EthanFile
-    effect?: (file: EthanFile) => void
     action: UpdateFileListStateAction
 }
 
@@ -52,7 +51,6 @@ class Upload extends PureComponent<IUploadProps, UploadState> {
         value: [],
         withCredentials: false,
         showUploadList: true,
-        onProgress: true,
     }
 
     static displayName = 'EthanUpload'
@@ -123,7 +121,7 @@ class Upload extends PureComponent<IUploadProps, UploadState> {
     }
 
     /** onChange callback dispatcher */
-    updateFileListState({ id, updateProps, effect, action }: UpdateFileListStateParams) {
+    updateFileListState({ id, updateProps, action }: UpdateFileListStateParams) {
         const { onChange } = this.props
 
         const index = this.state.fileList.findIndex(stateFile => stateFile.id === id)
@@ -193,10 +191,6 @@ class Upload extends PureComponent<IUploadProps, UploadState> {
                 if (!changeFile) return
 
                 onChange(this.state.fileList, changeFile)
-
-                if (!effect) return
-
-                effect(changeFile)
             }
         )
     }
@@ -226,7 +220,7 @@ class Upload extends PureComponent<IUploadProps, UploadState> {
 
         if (uploadFileIndex === -1) return
 
-        const { name, params, withCredentials, headers, request, onProgress } = this.props
+        const { name, params, withCredentials, headers, request } = this.props
 
         const req = request || defaultRequest
 
@@ -240,16 +234,9 @@ class Upload extends PureComponent<IUploadProps, UploadState> {
             onProgress: e => {
                 const percent = (e.loaded / e.total) * 100
 
-                const handleProgressButtonCallback = (callbackEthanFile: EthanFile) => {
-                    if (typeof onProgress === 'function') {
-                        onProgress(callbackEthanFile)
-                    }
-                }
-
                 this.updateFileListState({
                     id,
                     updateProps: { process: percent, status: UPLOADING },
-                    effect: handleProgressButtonCallback,
                     action: UpdateFileListStateAction.UPDATE,
                 })
             },
@@ -266,7 +253,6 @@ class Upload extends PureComponent<IUploadProps, UploadState> {
                     action: UpdateFileListStateAction.UPDATE,
                 })
             },
-
             onError: () => this.handleError(id),
         }
 
@@ -366,9 +352,7 @@ class Upload extends PureComponent<IUploadProps, UploadState> {
                     fileList: newFileList,
                 },
                 () => {
-                    const pendingPostFileList = processFileList.filter(
-                        file => ![MANUAL, ERROR, SUCCESS].includes(file.status)
-                    )
+                    const pendingPostFileList = processFileList.filter(file => file.status === PENDING)
 
                     pendingPostFileList.forEach(processFile => {
                         this.uploadFile(processFile)
@@ -495,6 +479,8 @@ class Upload extends PureComponent<IUploadProps, UploadState> {
         )
 
         const FileComponent = imageStyle ? ImageFile : InternalFileComponent
+
+        console.log(this.props, this.state)
 
         return (
             <div className={className} style={style}>
