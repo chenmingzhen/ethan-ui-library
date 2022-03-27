@@ -1,33 +1,61 @@
 /**
  * cn - 校验
- *    -- 通过 validator.imageSize 校验图片长宽，本例为 200px * 100px
+ *    -- 通过 validator 校验文件
  * en - Validator
- *    -- Set validator.imageSize to validate the width and height of the image.
+ *    -- Set validator to validate the file.
  */
 import React from 'react'
-import { Upload,FontAwesome } from 'ethan/index'
+import { Upload, FontAwesome, Button } from 'ethan'
 
 export default function() {
-  return (
-    <Upload.Image
-      action="/upload/"
-      accept="image/*"
-      name="file"
-      onSuccess={(res, file, data) => ({ data })}
-      width={200}
-      height={100}
-      limit={1}
-      renderResult={f => f.data}
-      validator={{
-        imageSize: img => (img.width !== 200 || img.height !== 100 ? new Error('only allow 200px * 100px') : undefined),
-        ext: ext => (['jpg', 'png'].includes(ext) ? undefined : new Error('File extension must be jpg or png')),
-      }}
-    >
-      <div style={{ margin: 'auto', color: '#999', textAlign: 'center' }}>
-        <FontAwesome name="cloud-upload " /> Upload Image
-        <br />
-        Allow size 200 * 100
-      </div>
-    </Upload.Image>
-  )
+    return (
+        <div>
+            <Upload
+                action="/upload/"
+                accept="image/*"
+                multiple
+                name="file"
+                style={{ width: 300, marginBottom: 80 }}
+                validator={{
+                    size: s => (s > 10240 ? new Error('max file size is 10KB') : undefined),
+                }}
+            >
+                <Button>
+                    <FontAwesome name="cloud-upload" /> Upload file
+                </Button>
+            </Upload>
+
+            <Upload.Image
+                action="/upload/"
+                accept="image/*"
+                name="file"
+                width={200}
+                height={100}
+                limit={1}
+                style={{ width: 300, marginBottom: 80 }}
+                validator={{
+                    imageSize: img =>
+                        img.width !== 200 || img.height !== 100 ? new Error('only allow 200px * 100px') : undefined,
+                    ext: ext =>
+                        ['jpg', 'png'].includes(ext) ? undefined : new Error('File extension must be jpg or png'),
+                }}
+            >
+                <div style={{ margin: 'auto', color: '#999', textAlign: 'center' }}>
+                    <FontAwesome name="cloud-upload " /> Upload Image
+                    <br />
+                    Allow size 200 * 100
+                </div>
+            </Upload.Image>
+
+            <Upload.Image
+                action="//jsonplaceholder.typicode.com/posts"
+                accept="image/*"
+                multiple
+                name="file"
+                validator={{
+                    size: s => (s > 10240 ? new Error('max file size is 10KB') : undefined),
+                }}
+            />
+        </div>
+    )
 }

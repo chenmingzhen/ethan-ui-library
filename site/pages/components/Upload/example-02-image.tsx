@@ -8,18 +8,5 @@ import React from 'react'
 import { Upload } from 'ethan/index'
 
 export default function() {
-  return (
-    <Upload.Image
-      drop
-      action="/upload/"
-      accept="image/*"
-      name="file"
-      onSuccess={(res, file, data) => ({ data })}
-      renderResult={f => f.data}
-      limit={3}
-      onStart={f => console.log(f)}
-      width={300}
-      height={300}
-    />
-  )
+    return <Upload.Image drop action="/upload/" accept="image/*" name="file" limit={3} width={300} height={300} />
 }
