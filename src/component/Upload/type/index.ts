@@ -45,11 +45,13 @@ export interface IUploadProps extends UploadProps {
     customResult?: React.ElementType
 }
 
+export type UploadFileStatus = 'UPLOADING' | 'SUCCESS' | 'ERROR' | 'REMOVED' | 'MANUAL' | 'PENDING'
+
 export interface EthanFile {
     id?: UploadKey
     name?: string
     process?: number
-    status?: 'UPLOADING' | 'SUCCESS' | 'ERROR' | 'REMOVED' | 'MANUAL' | 'PENDING'
+    status?: UploadFileStatus
     blob?: File
     message?: string
     xhr?: XMLHttpRequest

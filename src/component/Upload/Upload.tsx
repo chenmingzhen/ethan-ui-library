@@ -13,6 +13,7 @@ import defaultRequest, { ERROR, MANUAL, PENDING, REMOVED, SUCCESS, UPLOADING } f
 import Drop from './Drop'
 import FileInput, { FileInputInstance } from './FileInput'
 import InternalFileComponent from './File'
+import { doMergeStatus } from './utils'
 
 enum UpdateFileListStateAction {
     /** 更新Props */
@@ -295,9 +296,9 @@ class Upload extends PureComponent<IUploadProps, UploadState> {
                     id,
                     blob: originFile,
                     name: originFile.name,
-                    status: hasError ? ERROR : MANUAL,
                     message: error?.message,
                     ...transformedFile,
+                    status: doMergeStatus(hasError, MANUAL),
                 }
             }
         }
@@ -308,18 +309,18 @@ class Upload extends PureComponent<IUploadProps, UploadState> {
                 id,
                 blob: transformedFile,
                 name: transformedFile.name,
-                status: hasError ? ERROR : PENDING,
+                status: doMergeStatus(hasError, PENDING),
                 message: error?.message,
             }
         }
 
         return {
             id,
-            status: hasError ? ERROR : PENDING,
             message: error?.message,
             blob: originFile,
             /** 经过BeforeUpload处理的File有可能有状态与message，需要覆盖默认状态 */
             ...transformedFile,
+            status: doMergeStatus(hasError, PENDING, transformedFile?.status),
         }
     }
 
