@@ -70,7 +70,7 @@ export interface RequestParams {
     onError: (xhr: XMLHttpRequest) => void
     onLoad(xhr: XMLHttpRequest): void
     withCredentials: XMLHttpRequest['withCredentials']
-    params?: Record<string | number, string | Blob>
+    params?: Record<string | number, any> | ((file: File) => Record<string | number, any>)
     headers?: Record<string | number, string>
 }
 

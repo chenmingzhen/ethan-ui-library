@@ -1,3 +1,4 @@
+import { isObject } from '@/utils/is'
 import { RequestParams } from '../type'
 
 /** 上传中 */
@@ -36,9 +37,15 @@ function defaultRequest(options: RequestParams) {
 
     const data = new FormData()
 
-    Object.keys(params).forEach(k => {
-        data.append(k, params[k])
-    })
+    const processParams = isObject(params) ? params : (params as (file: File) => Record<string | number, any>)?.(file)
+
+    if (isObject(processParams)) {
+        Object.keys(processParams).forEach(k => {
+            data.append(k, params[k])
+        })
+    } else {
+        console.error(`Expect params is object.But got ${typeof processParams}`)
+    }
 
     data.append(name, file)
 
