@@ -29,7 +29,7 @@ enum UpdateFileListStateAction {
 interface UpdateFileListStateParams {
     id: React.Key
     updateProps?: EthanFile
-    action: UpdateFileListStateAction
+    action?: UpdateFileListStateAction
 }
 
 const VALIDATOR_ITEMS = [
@@ -60,14 +60,14 @@ class Upload extends PureComponent<IUploadProps, UploadState> {
 
     fileInput = createRef<FileInputInstance>()
 
-    /** 由于addFile中使用setState callback，所以只有callback完成时才接受 */
+    /** 由于addFile中使用setState callback，所以只有callback完成时才接受Props的受控 */
     propsOnChangeLock = true
 
     constructor(props: IUploadProps) {
         super(props)
 
         this.state = {
-            fileList: [],
+            fileList: props.value || [],
         }
 
         props.validateHook(this.validate)
@@ -135,6 +135,8 @@ class Upload extends PureComponent<IUploadProps, UploadState> {
         /** for onChange callback params */
         let cacheRemoveFile: EthanFile
 
+        this.propsOnChangeLock = false
+
         this.setState(
             immer(draft => {
                 const fileList = [...draft.fileList]
@@ -174,6 +176,8 @@ class Upload extends PureComponent<IUploadProps, UploadState> {
                     }
 
                     default:
+                        fileList[index] = Object.assign({}, fileList[index])
+
                         break
                 }
 
@@ -265,8 +269,18 @@ class Upload extends PureComponent<IUploadProps, UploadState> {
         this.setState(
             immer(draft => {
                 draft.fileList[uploadFileIndex].xhr = xhr
+
+                /** 没有action将status设置为Error */
+                if (xhr === undefined) {
+                    this.updateFileListState({
+                        id,
+                        updateProps: { status: ERROR },
+                        action: UpdateFileListStateAction.UPDATE,
+                    })
+                }
             }),
             () => {
+                /** 等待fileList的基本状态初始完成后，允许Props的受控 */
                 this.propsOnChangeLock = false
             }
         )
@@ -361,11 +375,24 @@ class Upload extends PureComponent<IUploadProps, UploadState> {
                     fileList: newFileList,
                 },
                 () => {
-                    const pendingPostFileList = processFileList.filter(file => file.status === PENDING)
+                    const pendingPostFileList: EthanFile[] = []
 
-                    pendingPostFileList.forEach(processFile => {
-                        this.uploadFile(processFile)
+                    const holdFileList: EthanFile[] = []
+
+                    processFileList.forEach(file => {
+                        if (file.status === PENDING) {
+                            pendingPostFileList.push(file)
+                        } else {
+                            holdFileList.push(file)
+                        }
                     })
+
+                    /** 非PENDING的文件无执行post，所以没有执行onChange的callback。非PENDING的初始状态在此执行onChange callback */
+                    holdFileList.forEach(({ id }) => {
+                        this.updateFileListState({ id })
+                    })
+
+                    pendingPostFileList.forEach(this.uploadFile)
                 }
             )
         })
