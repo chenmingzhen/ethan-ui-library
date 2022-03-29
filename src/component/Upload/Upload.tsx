@@ -7,7 +7,7 @@ import React, { createRef } from 'react'
 import attrAccept from '@/component/Upload/utils/accept'
 import { getLocale } from '@/locale'
 import immer from 'immer'
-import { BeforeUploadFileType, EthanFile, IUploadProps, RequestParams, UploadState } from './type'
+import { BeforeUploadFileType, EthanFile, IUploadProps, RequestOptions, UploadState } from './type'
 import ImageFile from './ImageFile'
 import defaultRequest, { ERROR, MANUAL, PENDING, REMOVED, SUCCESS, UPLOADING } from './utils/request'
 import Drop from './Drop'
@@ -232,7 +232,7 @@ class Upload extends PureComponent<IUploadProps, UploadState> {
 
         const req = request || defaultRequest
 
-        const options: RequestParams = {
+        const options: RequestOptions = {
             url: this.getAction(file),
             name,
             params,

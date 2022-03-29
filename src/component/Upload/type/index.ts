@@ -25,7 +25,7 @@ export interface UploadProps {
     onError?: (xhr: XMLHttpRequest) => string
     params?: Record<any, any>
     recoverAble?: boolean
-    request?: (options: RequestParams) => XMLHttpRequest
+    request?: (options: RequestOptions) => XMLHttpRequest
     value?: EthanFile[]
     defaultValue?: EthanFile[]
     style?: React.CSSProperties
@@ -62,7 +62,7 @@ export interface UploadState {
     fileList: EthanFile[]
 }
 
-export interface RequestParams {
+export interface RequestOptions {
     url: string
     name: string
     file: File

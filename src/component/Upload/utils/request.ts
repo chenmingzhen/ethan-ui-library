@@ -1,5 +1,5 @@
 import { isObject } from '@/utils/is'
-import { RequestParams } from '../type'
+import { RequestOptions } from '../type'
 
 /** 上传中 */
 export const UPLOADING = 'UPLOADING'
@@ -26,7 +26,7 @@ const createCORSRequest = (method, url) => {
     return xhr
 }
 
-function defaultRequest(options: RequestParams) {
+function defaultRequest(options: RequestOptions) {
     const { url, name, file, onProgress, onLoad, onError, withCredentials, params = {}, headers = {} } = options
 
     if (!url) {
