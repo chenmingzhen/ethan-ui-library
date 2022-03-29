@@ -8,33 +8,25 @@ import React from 'react'
 import { Upload, Button, FontAwesome } from 'ethan/index'
 
 const request = options => {
-  const { file, onLoad, onError, onProgress } = options
-  const xhr = new XMLHttpRequest()
-  xhr.open('post', '/upload/')
+    const { file, onLoad, onProgress } = options
+    const xhr = new XMLHttpRequest()
+    xhr.open('post', '/upload/')
 
-  const data = new FormData()
-  data.append('test', file)
-  xhr.upload.onprogress = onProgress
-  xhr.onload = () => onLoad(xhr)
-  xhr.onerror = () => onError({ statusText: 'error message' })
-  xhr.send(data)
+    const data = new FormData()
+    data.append('file', file)
+    xhr.upload.onprogress = onProgress
+    xhr.onload = () => onLoad(xhr)
+    xhr.send(data)
 
-  return xhr
+    return xhr
 }
 
 export default function() {
-  return (
-    <Upload
-      accept="image/*"
-      onSuccess={(res, file) => ({ name: `upload ${file.name}` })}
-      limit={3}
-      style={{ width: 300 }}
-      request={request}
-      renderResult={d => d.name}
-    >
-      <Button>
-        <FontAwesome name="cloud-upload" /> Upload file
-      </Button>
-    </Upload>
-  )
+    return (
+        <Upload accept="image/*" limit={3} style={{ width: 300 }} request={request}>
+            <Button>
+                <FontAwesome name="cloud-upload" /> Upload file
+            </Button>
+        </Upload>
+    )
 }

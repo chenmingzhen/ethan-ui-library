@@ -1,48 +1,72 @@
-// @ts-nocheck
-import React, { memo } from 'react'
-import PropTypes from 'prop-types'
+import React, { memo, useCallback } from 'react'
 import { uploadClass } from '@/styles'
 import Progress from '../Progress'
 import Image from '../Image'
-import { ERROR } from './utils/request'
+import { ERROR, REMOVED, UPLOADING } from './utils/request'
+import { ImageFileProps } from './type'
+import icons from '../icons'
 
-const ImageFile = props => {
-    const { process, status, style, data, message, onRemove, id } = props
-    const className = uploadClass('image-item', status === ERROR && 'error')
+const ImageFile: React.FC<ImageFileProps> = props => {
+    const { process, status, style, data, message, onRemove, id, file, showRecover, onRecover, renderContent } = props
 
-    const handleRemove = () => {
+    const className = uploadClass('image-item', showRecover && 'to-be-delete', {
+        removed: status === REMOVED,
+        error: status === ERROR,
+    })
+
+    const handleRemove = useCallback(() => {
         onRemove(id)
+    }, [onRemove, id])
+
+    const handleRecover = useCallback(() => {
+        onRecover(id)
+    }, [onRecover, id])
+
+    function buildContent() {
+        const content = renderContent?.(file)
+
+        if (content) return content
+
+        if (data)
+            return (
+                <Image
+                    src={data}
+                    target="_modal"
+                    fit="center"
+                    width="auto"
+                    height={0}
+                    className={uploadClass('image-bg')}
+                />
+            )
     }
 
     return (
         <div style={style} className={className}>
-            {data && <Image src={data} fit="center" width="auto" height={0} className={uploadClass('image-bg')} />}
+            {buildContent()}
 
             {message && <div className={uploadClass('message')}>{message}</div>}
 
-            <span className={uploadClass('delete')} onClick={handleRemove} />
+            {showRecover && (
+                <a className={uploadClass('recover')} onClick={handleRecover}>
+                    {icons.Recovery}
+                </a>
+            )}
 
-            <div className={uploadClass('progress-bg')}>
-                <Progress
-                    className={uploadClass('progress')}
-                    color="#f2f2f2"
-                    background="rgba(0,0,0,0.5)"
-                    value={process}
-                    strokeWidth={2}
-                />
-            </div>
+            {status !== REMOVED && !showRecover && <span className={uploadClass('delete')} onClick={handleRemove} />}
+
+            {status === UPLOADING && (
+                <div className={uploadClass('progress-bg')}>
+                    <Progress
+                        className={uploadClass('progress')}
+                        color="#f2f2f2"
+                        background="rgba(0,0,0,0.5)"
+                        value={process}
+                        strokeWidth={2}
+                    />
+                </div>
+            )}
         </div>
     )
-}
-
-ImageFile.propTypes = {
-    id: PropTypes.string,
-    message: PropTypes.string,
-    onRemove: PropTypes.func,
-    process: PropTypes.number,
-    status: PropTypes.number,
-    style: PropTypes.object,
-    data: PropTypes.string,
 }
 
 export default memo(ImageFile)

@@ -1,4 +1,3 @@
-// @ts-nocheck
 export default {
     weekdayValues: {
         narrow: ['一', '二', '三', '四', '五', '六', '日'],
@@ -47,4 +46,5 @@ export default {
     selected: '项',
     search: '搜索',
     urlInvalidMsg: '图片格式不正确，请重新上传',
+    uploadFail: '上传失败',
 }

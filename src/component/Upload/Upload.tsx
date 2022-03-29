@@ -1,561 +1,566 @@
-// @ts-nocheck
-import React from 'react'
-import PropTypes from 'prop-types'
-import classnames from 'classnames'
-import immer from 'immer'
-import { PureComponent } from '@/utils/component'
-import { getUidStr } from '@/utils/uid'
-import { FormError } from '@/utils/errors'
 import { uploadClass } from '@/styles'
-import attrAccept from '@/utils/accept'
+import { PureComponent } from '@/utils/component'
+import { FormError } from '@/utils/errors'
+import { getUidStr } from '@/utils/uid'
+import classnames from 'classnames'
+import React, { createRef } from 'react'
+import attrAccept from '@/component/Upload/utils/accept'
 import { getLocale } from '@/locale'
-import defaultRequest, { ERROR, UPLOADING } from './utils/request'
-import FileInput from './FileInput'
-import File from './File'
+import immer from 'immer'
+import { BeforeUploadFileType, EthanFile, IUploadProps, RequestOptions, UploadState } from './type'
 import ImageFile from './ImageFile'
-import Result from './Result'
-import ImageResult from './ImageResult'
-import { Provider } from './context'
+import defaultRequest, { ERROR, MANUAL, PENDING, REMOVED, SUCCESS, UPLOADING } from './utils/request'
 import Drop from './Drop'
-import acceptHOC from './accept'
+import FileInput, { FileInputInstance } from './FileInput'
+import InternalFileComponent from './File'
+import { doMergeStatus } from './utils'
 
-const VALIDATORITEMS = [
-    // 大小检验
-    { key: 'size', param: blob => blob.size },
-    // 拓展名
+enum UpdateFileListStateAction {
+    /** 更新Props */
+    UPDATE = 'UPDATE',
+    /** 移除指定的File */
+    REMOVE = 'REMOVE',
+    /** 恢复文件 */
+    RECOVER = 'RECOVER',
+    /** 缓存指定文件，但状态为REMOVED */
+    CACHE = 'CACHE',
+}
+
+interface UpdateFileListStateParams {
+    id: React.Key
+    updateProps?: EthanFile
+    action?: UpdateFileListStateAction
+}
+
+const VALIDATOR_ITEMS = [
+    { key: 'size', params: (file: File) => file.size },
     {
         key: 'ext',
-        param: blob => {
-            const exts = blob.name.split('.')
+        params: (file: File) => {
+            const exts = file.name.split('.')
             return exts[exts.length - 1]
         },
     },
-    { key: 'customValidator', param: blob => blob },
+    { key: 'customValidator', params: (file: File) => file },
 ]
 
-class Upload extends PureComponent {
-    constructor(props) {
+class Upload extends PureComponent<IUploadProps, UploadState> {
+    static defaultProps: IUploadProps = {
+        limit: 100,
+        recoverAble: false,
+        validator: {},
+        value: [],
+        withCredentials: false,
+        showUploadList: true,
+    }
+
+    static displayName = 'EthanUpload'
+
+    recoverPositionMap = new Map<React.Key, number>()
+
+    fileInput = createRef<FileInputInstance>()
+
+    /** 由于addFile中使用setState callback，所以只有callback完成时才接受Props的受控 */
+    propsOnChangeLock = true
+
+    constructor(props: IUploadProps) {
         super(props)
 
         this.state = {
-            files: {},
-            recycle: [],
+            fileList: props.value || [],
         }
 
-        this.addFile = this.addFile.bind(this)
-        this.bindElement = this.bindElement.bind(this)
-        this.handleAddClick = this.handleAddClick.bind(this)
-        this.removeFile = this.removeFile.bind(this)
-        this.removeValue = this.removeValue.bind(this)
-        this.recoverValue = this.recoverValue.bind(this)
-        this.validatorHandle = this.validatorHandle.bind(this)
-        this.useValidator = this.useValidator.bind(this)
-        this.handleFileDrop = this.handleFileDrop.bind(this)
-        this.handleReplace = this.handleReplace.bind(this)
-
-        props.validateHook(this.validate.bind(this))
+        props.validateHook(this.validate)
     }
 
-    // 获取上传的地址
-    getAction(file) {
-        const { action } = this.props
-        if (typeof action === 'string') return action
-        if (typeof action === 'function') return action(file)
-        return ''
-    }
-
-    // 自定义的错误处理
-    validatorHandle(error, file) {
-        const { validatorHandle: vth } = this.props
-
-        if (typeof vth === 'function') return vth(error, file)
-
-        return vth
-    }
-
-    bindElement(input) {
-        this.input = input
-    }
-
-    handleAddClick() {
-        const { disabled } = this.props
-        if (disabled) return
-        this.input.click()
-    }
-
-    validate() {
-        const { files } = this.state
+    validate = () => {
         return new Promise((resolve, reject) => {
-            if (Object.keys(files).length > 0) reject(new FormError(''))
+            if (this.state.fileList.length > 0) reject(new FormError(''))
+
             resolve(true)
         })
     }
 
-    // 移除正在上传或上传失败的文件
-    removeFile(id) {
-        const { onErrorRemove } = this.props
-        const file = this.state.files[id]
+    useValidator = (blob: File) => {
+        const { validator, accept } = this.props
 
-        if (file) {
-            // 如果该请求已被发出，XMLHttpRequest.abort() 方法将终止该请求。
-            if (file.xhr && file.xhr.abort) file.xhr.abort()
-            this.setState(
-                immer(draft => {
-                    delete draft.files[id]
-                }),
-                () => {
-                    if (file.status === ERROR && onErrorRemove) {
-                        onErrorRemove(file.xhr, file.blob, file)
-                    }
-                }
-            )
-        }
-    }
+        const { fileList } = this.state
 
-    // 移除上传成功的文件
-    removeValue(index) {
-        const { recoverAble, disabled } = this.props
-
-        if (disabled) return
-
-        this.setState(
-            immer(draft => {
-                draft.recycle.push(this.props.value[index])
-
-                // 可恢复文件数量的下限数 低于值 删除头部的信息
-                if (typeof recoverAble === 'number' && draft.recycle.length > recoverAble) {
-                    draft.recycle.shift()
-                }
-            })
-        )
-
-        const value = immer(this.props.value, draft => {
-            draft.splice(index, 1)
-        })
-        this.props.onChange(value)
-    }
-
-    // 从删除中恢复
-    recoverValue(index, value) {
-        const { disabled } = this.props
-        if (disabled) return
-        this.props.onChange(
-            immer(this.props.value, draft => {
-                draft.push(value)
-            })
-        )
-        this.setState(
-            immer(draft => {
-                draft.recycle.splice(index, 1)
-            })
-        )
-    }
-
-    useValidator(blob) {
-        const { validator, accept, forceAccept } = this.props
-        const { files } = this.state
         let error = null
+
         let i = 0
 
-        if (forceAccept) {
-            const acceptRes = attrAccept(blob, accept)
-            // 不符合简要校验规则 抛出异常
-            if (!acceptRes) return new Error(getLocale('invalidAccept'))
-        }
+        const acceptRes = attrAccept(blob, accept)
 
-        while (VALIDATORITEMS[i]) {
-            // 自定义的规则检验
-            const item = VALIDATORITEMS[i]
-            if (typeof validator[item.key] === 'function') {
-                error = validator[item.key](item.param(blob), files)
+        /** accept不符合 */
+        if (!acceptRes) return new Error(getLocale('invalidAccept'))
+
+        while (VALIDATOR_ITEMS[i]) {
+            const item = VALIDATOR_ITEMS[i]
+
+            const validatorFunc = validator[item.key]
+
+            if (typeof validatorFunc === 'function') {
+                const params = item.params(blob)
+
+                error = validatorFunc(params, fileList)
+
                 if (error instanceof Error) return error
             }
+
             i += 1
         }
 
         return null
     }
 
-    addFile(e) {
-        const { beforeUpload, value, limit, filesFilter } = this.props
-        // eslint-disable-next-line
-    const files = { ...this.state.files }
+    getAction = (file: File) => {
+        const { action } = this.props
 
-        let fileList = e.fromDragger && e.files ? e.files : e.target.files
+        if (typeof action === 'string') return action
 
-        if (filesFilter) fileList = filesFilter(Array.from(fileList))
+        if (typeof action === 'function') return action(file)
 
-        const addLength = limit - value.length - Object.keys(this.state.files).length
-
-        if (addLength <= 0) return
-
-        Array.from({ length: Math.min(fileList.length, addLength) }).forEach((_, i) => {
-            const blob = fileList[i]
-            const id = getUidStr()
-            const file = {
-                name: blob.name,
-                process: -1,
-                status: UPLOADING,
-                blob,
-            }
-
-            files[id] = file
-            const error = this.useValidator(blob)
-
-            if (error instanceof Error) {
-                if (!this.validatorHandle(error, file.blob)) {
-                    delete files[id]
-                    return
-                }
-
-                file.message = error.message
-                file.status = ERROR
-
-                if (beforeUpload) {
-                    beforeUpload(blob, this.validatorHandle)
-                        .then(args => {
-                            this.setState(
-                                immer(draft => {
-                                    draft.files[id] = Object.assign({}, draft.files[id], args)
-                                })
-                            )
-                        })
-                        .catch(() => true)
-                }
-
-                return
-            }
-
-            if (beforeUpload) {
-                beforeUpload(blob, this.validatorHandle)
-                    .then(args => {
-                        if (args.status !== ERROR) files[id].xhr = this.uploadFile(id, blob, args.data)
-
-                        this.setState(
-                            immer(draft => {
-                                draft.files[id] = Object.assign({}, draft.files[id], args)
-                            })
-                        )
-                    })
-                    .catch(() => {
-                        this.setState(
-                            immer(draft => {
-                                delete draft.files[id]
-                            })
-                        )
-                    })
-            } else {
-                files[id].xhr = this.uploadFile(id, blob)
-            }
-        })
-
-        this.setState({ files })
+        return ''
     }
 
-    // 上传文件处理
-    uploadFile(id, file, data) {
-        const {
-            onSuccess,
-            name,
-            htmlName,
-            cors,
-            params,
-            withCredentials,
-            headers,
-            request,
-            onProgress,
-            onStart,
-        } = this.props
+    /** onChange callback dispatcher */
+    updateFileListState({ id, updateProps, action }: UpdateFileListStateParams) {
+        const { onChange } = this.props
+
+        const index = this.state.fileList.findIndex(stateFile => stateFile.id === id)
+
+        if (index === -1) return
+
+        /** for onChange callback params */
+        let cacheRemoveFile: EthanFile
+
+        this.propsOnChangeLock = false
+
+        this.setState(
+            immer(draft => {
+                const fileList = [...draft.fileList]
+
+                switch (action) {
+                    case UpdateFileListStateAction.UPDATE: {
+                        fileList[index] = Object.assign({}, fileList[index], updateProps)
+
+                        break
+                    }
+
+                    case UpdateFileListStateAction.REMOVE: {
+                        const deleteFileList = fileList.splice(index, 1)
+
+                        cacheRemoveFile = Object.assign({}, deleteFileList[0], { status: REMOVED })
+
+                        break
+                    }
+
+                    case UpdateFileListStateAction.RECOVER: {
+                        const originStatus = fileList[index].status
+
+                        const mergeStatus = originStatus === MANUAL ? MANUAL : SUCCESS
+
+                        /** 恢复到已成功状态 */
+                        fileList[index] = Object.assign({}, fileList[index], { status: mergeStatus })
+
+                        break
+                    }
+
+                    case UpdateFileListStateAction.CACHE: {
+                        fileList[index] = Object.assign({}, fileList[index], { status: REMOVED })
+
+                        cacheRemoveFile = fileList[index]
+
+                        break
+                    }
+
+                    default:
+                        fileList[index] = Object.assign({}, fileList[index])
+
+                        break
+                }
+
+                draft.fileList = fileList
+            }),
+            () => {
+                let changeFile = cacheRemoveFile
+
+                if (action === UpdateFileListStateAction.REMOVE && cacheRemoveFile) {
+                    changeFile = cacheRemoveFile
+                } else {
+                    const changeFileIndex = this.state.fileList.findIndex(stateFile => stateFile.id === id)
+
+                    if (changeFileIndex !== -1) {
+                        changeFile = this.state.fileList[changeFileIndex]
+                    }
+                }
+
+                if (!changeFile) return
+
+                onChange(this.state.fileList, changeFile)
+            }
+        )
+    }
+
+    handleError = (id: React.Key) => {
+        const index = this.state.fileList.findIndex(stateFile => stateFile.id === id)
+
+        if (index === -1) return
+
+        const { onError } = this.props
+
+        const { xhr } = this.state.fileList[index]
+
+        const message = onError?.(xhr) || xhr.statusText || getLocale('uploadFail')
+
+        this.updateFileListState({
+            id,
+            updateProps: { status: ERROR, message },
+            action: UpdateFileListStateAction.UPDATE,
+        })
+    }
+
+    uploadFile = (ethanFile: EthanFile) => {
+        const { blob: file, id } = ethanFile
+
+        const uploadFileIndex = this.state.fileList.findIndex(stateFile => stateFile.id === id)
+
+        if (uploadFileIndex === -1) return
+
+        const { name, params, withCredentials, headers, request } = this.props
 
         const req = request || defaultRequest
-        let throttle = false
 
-        const options = {
+        const options: RequestOptions = {
             url: this.getAction(file),
-            name: htmlName || name,
-            cors,
+            name,
             params,
             withCredentials,
             file,
             headers,
-            onStart,
-            onProgress: (e, msg) => {
-                const percent = typeof e.percent === 'number' ? e.percent : (e.loaded / e.total) * 100
-                if (throttle) return
-                throttle = true
-                setTimeout(() => {
-                    throttle = false
-                }, 16)
+            onProgress: e => {
+                const percent = (e.loaded / e.total) * 100
 
-                if (this.state.files[id]) {
-                    this.setState(
-                        immer(draft => {
-                            draft.files[id].process = percent
-                            if (msg) draft.files[id].message = msg
-                        }),
-                        // expose the file progress to Upload.Button
-                        () => {
-                            if (typeof onProgress === 'function') {
-                                onProgress(this.state.files[id])
-                            }
-                        }
-                    )
-                }
+                this.updateFileListState({
+                    id,
+                    updateProps: { process: percent, status: UPLOADING },
+                    action: UpdateFileListStateAction.UPDATE,
+                })
             },
-            onSuccess,
-            // 请求完成执行
             onLoad: xhr => {
-                if (!/^2|1223/.test(xhr.status)) {
-                    // 非200类状态码 处理异常
-                    this.handleError(id, xhr, file)
+                if (!/^2/.test(String(xhr.status))) {
+                    this.handleError(id)
+
                     return
                 }
 
-                let value = xhr.responseText || xhr.response
-                if (onSuccess) {
-                    value = onSuccess(value, file, data, xhr)
-                }
-
-                if (value instanceof Error) {
-                    this.setState(
-                        immer(draft => {
-                            draft.files[id].status = ERROR
-                            draft.files[id].name = file.name
-                            draft.files[id].message = value.message
-                        })
-                    )
-                } else {
-                    this.setState(
-                        immer(draft => {
-                            delete draft.files[id]
-                        })
-                    )
-                    // add value
-                    const values = immer(this.props.value, draft => {
-                        draft.push(value)
-                    })
-                    this.props.onChange(values)
-                }
+                this.updateFileListState({
+                    id,
+                    updateProps: { status: SUCCESS },
+                    action: UpdateFileListStateAction.UPDATE,
+                })
             },
-
-            onError: xhr => this.handleError(id, xhr, file),
+            onError: () => this.handleError(id),
         }
 
-        if (onProgress === false || onProgress === null) {
-            delete options.onProgress
-        }
-
-        return req(options)
-    }
-
-    handleFileDrop(files) {
-        this.addFile({ files, fromDragger: true })
-    }
-
-    // Drop 替代与原来的文件
-    handleReplace(files, index) {
-        this.removeValue(index)
-        setTimeout(() => {
-            this.addFile({ files, fromDragger: true })
-        })
-    }
-
-    // 处理传输过程中的异常
-    handleError(id, xhr, file) {
-        const { onError, onHttpError } = this.props
-
-        let message = xhr.statusText
-        if (onError) message = onError(xhr, file)
-        if (onHttpError) message = onHttpError(xhr, file) || message
+        const xhr = req(options)
 
         this.setState(
             immer(draft => {
-                draft.files[id].status = ERROR
-                draft.files[id].message = message
-            })
+                draft.fileList[uploadFileIndex].xhr = xhr
+
+                /** 没有action将status设置为Error */
+                if (xhr === undefined) {
+                    this.updateFileListState({
+                        id,
+                        updateProps: { status: ERROR },
+                        action: UpdateFileListStateAction.UPDATE,
+                    })
+                }
+            }),
+            () => {
+                /** 等待fileList的基本状态初始完成后，允许Props的受控 */
+                this.propsOnChangeLock = false
+            }
         )
     }
 
-    // 上传按钮 或 上传图片占位 handle
-    renderHandle() {
-        const { limit, value, children, accept, multiple, disabled, webkitdirectory, drop } = this.props
-        const count = value.length + Object.keys(this.state.files).length
-        // 超过限制 不显示上传
-        if (limit > 0 && limit <= count) return null
+    processFile = async (originFile: File): Promise<EthanFile> => {
+        const { beforeUpload } = this.props
 
-        const dragProps = {
-            multiple,
-            addFile: this.addFile,
-            accept,
-            disabled,
-            limit,
+        let transformedFile: BeforeUploadFileType = originFile
+
+        const id = getUidStr()
+
+        const error = this.useValidator(originFile)
+
+        const hasError = error instanceof Error
+
+        if (beforeUpload) {
+            try {
+                transformedFile = await beforeUpload(originFile)
+            } catch {
+                // transformedFile = false
+            }
+
+            /** 手动上传 */
+            if ((transformedFile as EthanFile)?.status === MANUAL) {
+                return {
+                    id,
+                    blob: originFile,
+                    name: originFile.name,
+                    message: error?.message,
+                    ...transformedFile,
+                    status: doMergeStatus(hasError, MANUAL),
+                }
+            }
         }
+
+        /** 无执行过beforeUpload处理的文件 */
+        if (transformedFile instanceof File) {
+            return {
+                id,
+                blob: transformedFile,
+                name: transformedFile.name,
+                status: doMergeStatus(hasError, PENDING),
+                message: error?.message,
+            }
+        }
+
+        return {
+            id,
+            message: error?.message,
+            blob: originFile,
+            /** 经过BeforeUpload处理的File有可能有状态与message，需要覆盖默认状态 */
+            ...transformedFile,
+            status: doMergeStatus(hasError, PENDING, transformedFile?.status),
+        }
+    }
+
+    handleFileInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const { files } = e.target
+
+        this.addFile({ files })
+    }
+
+    addFile = (data: { files: File[] | FileList; spliceIndex?: number }) => {
+        const { limit } = this.props
+
+        const { fileList } = this.state
+
+        const originFileList = Array.from(data.files)
+
+        const addLength = limit - fileList.length
+
+        if (addLength <= 0) return
+
+        const processFileListPromises = originFileList.slice(0, addLength).map(this.processFile)
+
+        Promise.all(processFileListPromises).then(processFileList => {
+            const newFileList = [...fileList]
+
+            const { spliceIndex } = data
+
+            if (spliceIndex === undefined) {
+                newFileList.push(...processFileList)
+            } else {
+                newFileList.splice(spliceIndex, 0, ...processFileList)
+            }
+
+            this.propsOnChangeLock = true
+
+            this.setState(
+                {
+                    fileList: newFileList,
+                },
+                () => {
+                    const pendingPostFileList: EthanFile[] = []
+
+                    const holdFileList: EthanFile[] = []
+
+                    processFileList.forEach(file => {
+                        if (file.status === PENDING) {
+                            pendingPostFileList.push(file)
+                        } else {
+                            holdFileList.push(file)
+                        }
+                    })
+
+                    /** 非PENDING的文件无执行post，所以没有执行onChange的callback。非PENDING的初始状态在此执行onChange callback */
+                    holdFileList.forEach(({ id }) => {
+                        this.updateFileListState({ id })
+                    })
+
+                    pendingPostFileList.forEach(this.uploadFile)
+                }
+            )
+        })
+    }
+
+    handleFileDrop = (files: File[]) => {
+        this.addFile({ files })
+    }
+
+    handleAddClick = () => {
+        const { disabled } = this.props
+
+        if (disabled) return
+
+        this.fileInput.current.click()
+    }
+
+    handleRemoveFile = (id: React.Key) => {
+        const { disabled, recoverAble } = this.props
+
+        if (disabled) return
+
+        const fileIndex = this.state.fileList.findIndex(file => file.id === id)
+
+        if (fileIndex === -1) return
+
+        const file = this.state.fileList[fileIndex]
+
+        /** 如果该请求已被发出，XMLHttpRequest.abort() 方法将终止该请求。 */
+        if (file.xhr && file.xhr.abort) file.xhr.abort()
+
+        const { status } = file
+
+        let action: UpdateFileListStateAction
+
+        switch (status) {
+            case PENDING:
+            case ERROR:
+            case UPLOADING:
+                action = UpdateFileListStateAction.REMOVE
+                break
+            case SUCCESS:
+            case MANUAL:
+                if (recoverAble) {
+                    action = UpdateFileListStateAction.CACHE
+                } else {
+                    action = UpdateFileListStateAction.REMOVE
+                }
+                break
+
+            default:
+                break
+        }
+
+        this.updateFileListState({
+            id,
+            action,
+        })
+    }
+
+    handleReplace = (files: File[], position: number) => {
+        const positionFile = this.state.fileList[position]
+
+        if (!positionFile) return
+
+        this.handleRemoveFile(positionFile.id)
+
+        setTimeout(() => {
+            this.addFile({ files, spliceIndex: position })
+        })
+    }
+
+    handleRecoverValue = (id: string) => {
+        const { disabled } = this.props
+
+        if (disabled) return
+
+        this.updateFileListState({
+            id,
+            action: UpdateFileListStateAction.RECOVER,
+        })
+    }
+
+    componentDidUpdate() {
+        /** 受控处理 */
+        if (!this.propsOnChangeLock) {
+            this.setState({ fileList: this.props.value })
+        }
+    }
+
+    renderHandle = () => {
+        const { limit, children, multiple, disabled, drop, accept } = this.props
+
+        const count = this.state.fileList.length
+
+        if (limit > 0 && limit <= count) return null
 
         return (
             <Drop
-                drop={drop}
                 accept={accept}
                 disabled={disabled}
                 onDrop={this.handleFileDrop}
                 multiple={multiple || limit > 1}
+                drop={drop}
             >
                 <span className={uploadClass('handle')} onClick={this.handleAddClick}>
-                    <Provider value={dragProps}>{children}</Provider>
+                    {children}
                     <FileInput
-                        webkitdirectory={webkitdirectory}
                         accept={accept}
-                        ref={this.bindElement}
+                        ref={this.fileInput}
                         multiple={multiple}
-                        onChange={this.addFile}
+                        onChange={this.handleFileInputChange}
                     />
                 </span>
             </Drop>
         )
     }
 
-    render() {
-        const {
-            limit,
-            value,
-            renderResult,
-            style,
-            imageStyle,
-            recoverAble,
-            showUploadList,
-            customResult: CustomResult,
-            disabled,
-            renderContent,
-            accept,
-            drop,
-        } = this.props
-        const { files, recycle } = this.state
+    render = () => {
+        const { style, imageStyle, showUploadList, disabled, renderContent, drop, accept, recoverAble } = this.props
+
+        const { fileList } = this.state
+
         const className = classnames(
             uploadClass('_', disabled && 'disabled', showUploadList === false && 'hide-list'),
             this.props.className
         )
 
-        // 判断是否为Image或者File
-        const FileComponent = imageStyle ? ImageFile : File
-        const ResultComponent = imageStyle ? ImageResult : Result
-
-        if (CustomResult) {
-            return (
-                <div className={className} style={style}>
-                    {this.renderHandle()}
-                    <CustomResult
-                        value={value}
-                        files={files}
-                        onValueRemove={this.removeValue}
-                        onFileRemove={this.removeFile}
-                    />
-                </div>
-            )
-        }
+        const FileComponent = imageStyle ? ImageFile : InternalFileComponent
 
         return (
             <div className={className} style={style}>
                 {!imageStyle && this.renderHandle()}
 
                 {showUploadList &&
-                    value.map((v, i) => (
-                        <Drop
-                            drop={drop}
-                            multiple={false}
-                            key={i}
-                            accept={accept}
-                            // 附带信息 下标
-                            dropData={i}
-                            disabled={disabled}
-                            onDrop={this.handleReplace}
-                        >
-                            <ResultComponent
-                                renderContent={renderContent}
-                                value={v}
-                                values={value}
-                                index={i}
-                                style={imageStyle}
-                                renderResult={renderResult}
-                                onRemove={this.removeValue}
-                            />
-                        </Drop>
-                    ))}
+                    fileList.map((file, i) => {
+                        const mergeDrop = drop && file.status !== UPLOADING
 
-                {showUploadList &&
-                    Object.keys(files).map(id => (
-                        <FileComponent {...files[id]} key={id} id={id} style={imageStyle} onRemove={this.removeFile} />
-                    ))}
+                        const showRecover = recoverAble && file.status === REMOVED
+
+                        return (
+                            <Drop
+                                drop={mergeDrop}
+                                multiple={false}
+                                key={file.id}
+                                accept={accept}
+                                dropData={i}
+                                disabled={disabled}
+                                onDrop={this.handleReplace}
+                            >
+                                <FileComponent
+                                    {...file}
+                                    file={file}
+                                    key={file.id}
+                                    style={imageStyle}
+                                    onRemove={this.handleRemoveFile}
+                                    onRecover={this.handleRecoverValue}
+                                    renderContent={renderContent}
+                                    showRecover={showRecover}
+                                />
+                            </Drop>
+                        )
+                    })}
 
                 {imageStyle && this.renderHandle()}
-
-                {recoverAble &&
-                    recycle.map((v, i) => (
-                        <ResultComponent
-                            renderContent={renderContent}
-                            key={i}
-                            value={v}
-                            values={recycle}
-                            index={i}
-                            renderResult={renderResult}
-                            recoverAble={!!recoverAble}
-                            showRecover={recoverAble && limit > value.length}
-                            onRecover={this.recoverValue}
-                            style={imageStyle}
-                        />
-                    ))}
             </div>
         )
     }
 }
 
-Upload.propTypes = {
-    accept: PropTypes.string,
-    action: PropTypes.oneOfType([PropTypes.string, PropTypes.func]),
-    beforeUpload: PropTypes.func,
-    children: PropTypes.any,
-    className: PropTypes.string,
-    cors: PropTypes.bool,
-    imageStyle: PropTypes.object,
-    headers: PropTypes.object,
-    htmlName: PropTypes.string,
-    limit: PropTypes.number,
-    multiple: PropTypes.bool,
-    name: PropTypes.string,
-    onChange: PropTypes.func,
-    onProgress: PropTypes.oneOfType([PropTypes.bool, PropTypes.func]),
-    onSuccess: PropTypes.func,
-    onError: PropTypes.func,
-    onHttpError: PropTypes.func,
-    params: PropTypes.object,
-    recoverAble: PropTypes.oneOfType([PropTypes.bool, PropTypes.number]),
-    renderResult: PropTypes.func,
-    request: PropTypes.func,
-    validateHook: PropTypes.func,
-    validator: PropTypes.object,
-    value: PropTypes.array,
-    customResult: PropTypes.oneOfType([PropTypes.element, PropTypes.func]),
-    style: PropTypes.object,
-    withCredentials: PropTypes.bool,
-    onStart: PropTypes.func,
-    showUploadList: PropTypes.bool,
-    validatorHandle: PropTypes.oneOfType([PropTypes.bool, PropTypes.func]),
-    disabled: PropTypes.bool,
-    webkitdirectory: PropTypes.oneOfType([PropTypes.bool, PropTypes.string]),
-    renderContent: PropTypes.func,
-    drop: PropTypes.bool,
-    filesFilter: PropTypes.func,
-    onErrorRemove: PropTypes.func,
-    forceAccept: PropTypes.bool,
-}
-
-Upload.defaultProps = {
-    cors: false,
-    limit: 100,
-    recoverAble: false,
-    validator: {},
-    value: [],
-    withCredentials: false,
-    showUploadList: true,
-    validatorHandle: true,
-}
-
-export default acceptHOC(Upload)
+export default Upload

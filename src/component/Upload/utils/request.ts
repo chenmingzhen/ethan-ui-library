@@ -1,65 +1,71 @@
-// @ts-nocheck
-export const UPLOADING = 1
-export const SUCCESS = 2
-export const ERROR = 3
+import { isObject } from '@/utils/is'
+import { RequestOptions } from '../type'
+
+/** 上传中 */
+export const UPLOADING = 'UPLOADING'
+/** 上传成功 */
+export const SUCCESS = 'SUCCESS'
+/** 上传错误 */
+export const ERROR = 'ERROR'
+/** 文件被移除 */
+export const REMOVED = 'REMOVED'
+/** 手动上传 */
+export const MANUAL = 'MANUAL'
+/** 等待执行任何动作 */
+export const PENDING = 'PENDING'
 
 const createCORSRequest = (method, url) => {
     let xhr = new XMLHttpRequest()
 
     if ('withCredentials' in xhr) {
         xhr.open(method, url, true)
-    } else if (typeof XDomainRequest !== 'undefined') {
-        // 兼容IE
-
-        xhr = new XDomainRequest()
-        xhr.open(method, url)
     } else {
         xhr = null
     }
+
     return xhr
 }
 
-// 默认上传request方法
-export default args => {
-    const {
-        url,
-        name,
-        cors,
-        file,
-        onProgress,
-        onLoad,
-        onError,
-        withCredentials,
-        params = {},
-        headers = {},
-        onStart,
-    } = args
+function defaultRequest(options: RequestOptions) {
+    const { url, name, file, onProgress, onLoad, onError, withCredentials, params = {}, headers = {} } = options
 
     if (!url) {
         console.error(new Error(`action is required, but its value is ${url}`))
+
         return undefined
     }
 
     const data = new FormData()
-    Object.keys(params).forEach(k => {
-        data.append(k, params[k])
-    })
+
+    const processParams = isObject(params) ? params : (params as (file: File) => Record<string | number, any>)?.(file)
+
+    if (isObject(processParams)) {
+        Object.keys(processParams).forEach(k => {
+            data.append(k, params[k])
+        })
+    } else {
+        console.error(`Expect params is object.But got ${typeof processParams}`)
+    }
 
     data.append(name, file)
 
-    const xhr = createCORSRequest('post', url, cors)
+    const xhr = createCORSRequest('post', url)
+
     xhr.withCredentials = withCredentials
+
     if (onProgress) xhr.upload.addEventListener('progress', onProgress, false)
-    xhr.onload = e => onLoad(e.currentTarget)
-    xhr.onerror = onError
+
+    xhr.onload = e => onLoad(e.currentTarget as XMLHttpRequest)
+
+    xhr.onerror = onError as any
 
     Object.keys(headers).forEach(k => {
         xhr.setRequestHeader(k, headers[k])
     })
 
-    if (onStart) onStart(file)
-
     xhr.send(data)
 
     return xhr
 }
+
+export default defaultRequest

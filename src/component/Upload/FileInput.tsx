@@ -1,27 +1,32 @@
-// @ts-nocheck
 import React, { useCallback, useRef, memo, useImperativeHandle } from 'react'
+import { FileInputProps } from './type'
 
-const inputStyle = { display: 'none' }
+export interface FileInputInstance {
+    click(): void
+}
 
-const FileInput = (props, ref) => {
-    const inputRef = useRef()
+const FileInput: React.ForwardRefRenderFunction<FileInputInstance, FileInputProps> = (props, ref) => {
+    const inputRef = useRef<HTMLInputElement>()
+
     const locked = useRef(false)
 
     const click = useCallback(() => {
         if (locked.current) return
+
         locked.current = true
 
         inputRef.current.value = ''
+
         inputRef.current.click()
 
         setTimeout(() => {
             locked.current = false
         }, 1000)
-    }, [inputRef.current, locked.current])
+    }, [])
 
     useImperativeHandle(ref, () => ({ click }))
 
-    const { accept, onChange, multiple, webkitdirectory } = props
+    const { accept, onChange, multiple } = props
 
     return (
         <input
@@ -29,9 +34,7 @@ const FileInput = (props, ref) => {
             accept={accept}
             multiple={multiple}
             onChange={onChange}
-            style={inputStyle}
-            // for chrome
-            webkitdirectory={webkitdirectory}
+            style={{ display: 'none' }}
             type="file"
         />
     )

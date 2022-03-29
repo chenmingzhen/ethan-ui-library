@@ -57,6 +57,7 @@ if (!fs.existsSync('temp')) {
 }
 
 // 不使用中间件的保存位置配置 自行读入文件
+/** upload.single的中name要与表单的一致 */
 const upload = multer({})
 router.post('/upload/', upload.single('file'), async ctx => {
     fs.writeFileSync(`temp/${ctx.req.file.originalname}`, ctx.req.file.buffer)
@@ -81,7 +82,7 @@ router.get(config.dev.scriptPath, async (ctx, next) => {
             url: `http://localhost:${config.dev.webpackPort}/${url}`,
             method: 'GET',
         }
-        
+
         if (url.endsWith('.css')) {
             ctx.set('Content-Type', 'text/css; charset=utf-8')
         }
