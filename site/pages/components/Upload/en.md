@@ -11,6 +11,7 @@
 | accept | string | - | The type of the upload file, same as the standard,See details [accept](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/file#accept)  |
 | action | string\|(file:File)=>string | - | The address for uploading |
 | children | ReactNode | required | Upload placeholder |
+| beforeUpload | (file:File)=>EthanFile | - | Before upload handler |
 | className | string | - | Extend className |
 | defaultValue | EthanFile[] | -  | default value |
 | headers | object | - | Request headers |

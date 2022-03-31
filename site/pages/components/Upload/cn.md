@@ -11,6 +11,7 @@
 | accept | string | - | 上传文件类型, 和标准一致, 详见[accept](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/file#accept) |
 | action | string\|(file:File)=>string | - | 上传地址 |
 | children | ReactNode | 必填 | 上传占位内容 |
+| beforeUpload | (file:File)=>EthanFile | - | 上传前处理 |
 | className | string | - | 扩展className |
 | defaultValue | EthanFile[] | - | 默认值 |
 | headers | object | - | 请求头部信息 |
