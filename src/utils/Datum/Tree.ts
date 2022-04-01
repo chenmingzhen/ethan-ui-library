@@ -1,9 +1,26 @@
-// @ts-nocheck
+import { CheckboxProps } from '@/component/Checkbox/type'
+import React from 'react'
+
+interface TreeDatumOptions {
+    /** 数据源 */
+    data: any
+    /** 当前选中的值 */
+    value: any
+
+    keygen: ((data: any, parentKey: string) => string) | string
+
+    mode: number
+
+    disabled: boolean | (() => boolean)
+
+    childrenKey: string
+}
+
 export const CheckedMode = {
     // 只返回全选数据，包含父节点和子节点
     Full: 0,
 
-    // 返回全部选择字节点和部分选中的父节点
+    // 返回全部选择子节点和部分选中的父节点
     Half: 1,
 
     // 只返回选中子节点
@@ -13,9 +30,43 @@ export const CheckedMode = {
     Shallow: 3,
 }
 
+interface PathMapValue {
+    path: React.Key[]
+
+    children: React.Key[]
+
+    isDisabled: boolean
+
+    indexPath: number[]
+
+    index: number
+}
+
 export default class {
-    constructor(options = {}) {
-        const { data, value, keygen, mode, disabled, childrenKey = 'children' } = options
+    keygen: ((data: any, parentKey: string) => string) | string
+
+    mode: number
+
+    valueMap = new Map()
+
+    events = {}
+
+    disabled: boolean | ((data: any, index: number) => boolean)
+
+    childrenKey: string
+
+    value: any
+
+    cachedValue: any
+
+    pathMap: Map<React.Key, PathMapValue> = new Map()
+
+    dataMap: Map<React.Key, any> = new Map()
+
+    data: any
+
+    constructor(options: TreeDatumOptions) {
+        const { data, value, keygen, mode, disabled, childrenKey = 'children' } = options || {}
 
         this.keygen = keygen
         this.mode = mode
@@ -24,13 +75,98 @@ export default class {
         this.disabled = disabled || (() => false)
         this.childrenKey = childrenKey
 
-        // value 当前选中的值
-        this.setValue(value)
-        // data 数据源
         this.setData(data)
+        this.setValue(value)
     }
 
-    bind(id, update) {
+    initValue(ids?: React.Key[], forceCheck?: number) {
+        if (!this.data || !this.value) return undefined
+
+        if (!ids) {
+            ids = []
+
+            this.pathMap.forEach((val, id) => {
+                /** 根节点 */
+                if (val.path.length === 0) ids.push(id)
+            })
+        }
+
+        /** 0:不选中 1:选中 2:indeterminate选中 */
+        let checked
+        ids.forEach(id => {
+            const { children } = this.pathMap.get(id)
+
+            if (forceCheck) {
+                this.setValueMap(id, 1)
+
+                this.initValue(children, forceCheck)
+
+                return
+            }
+
+            let childChecked = this.value.indexOf(id) >= 0 ? 1 : 0
+
+            /** Half模式下有部分选中的情况，不能force */
+            if (childChecked === 1 && this.mode !== CheckedMode.Half) {
+                this.initValue(children, 1)
+            } else if (children.length > 0) {
+                childChecked = this.initValue(children)
+            } else {
+                childChecked = this.value.indexOf(id) >= 0 ? 1 : 0
+            }
+
+            this.setValueMap(id, childChecked)
+
+            if (checked === undefined) checked = childChecked
+            else if (checked !== childChecked) checked = 2
+        })
+
+        return checked
+    }
+
+    initData(data: any[], path, levelDisabled?: boolean, index = []) {
+        // 当前层次的ids
+        const ids = []
+
+        data.forEach((d, i) => {
+            const id = this.getKey(d, path[path.length - 1], i)
+
+            if (this.dataMap.get(id)) {
+                console.warn(`There is already a key "${id}" exists. The key must be unique.`)
+            }
+
+            this.dataMap.set(id, d)
+
+            /** 上层为disabled则所有子节点为disabled，否则根据函数判断 */
+            let isDisabled = levelDisabled
+
+            if (!isDisabled && typeof this.disabled === 'function') {
+                isDisabled = this.disabled(d, i)
+            }
+
+            const indexPath = [...index, i]
+
+            ids.push(id)
+
+            let children = []
+
+            if (Array.isArray(d[this.childrenKey])) {
+                children = this.initData(d[this.childrenKey], [...path, id], isDisabled, indexPath)
+            }
+
+            this.pathMap.set(id, {
+                children,
+                path,
+                isDisabled,
+                indexPath,
+                index: i,
+            })
+        })
+
+        return ids
+    }
+
+    bind(id: string | number, update: () => void) {
         this.events[id] = update
     }
 
@@ -40,13 +176,15 @@ export default class {
 
     setValue(value) {
         this.value = value
-        if (value && value !== this.cachedValue) {
+
+        if (this.value && this.value !== this.cachedValue) {
             this.initValue()
         }
     }
 
     getValue() {
         const value = []
+
         this.valueMap.forEach((checked, id) => {
             switch (this.mode) {
                 case CheckedMode.Full:
@@ -73,19 +211,17 @@ export default class {
                 default:
             }
         })
+
         this.cachedValue = value
+
         return value
     }
 
-    /**
-     * 根据id设置当前节点value  是否选中
-     * @param id
-     * @param checked
-     */
     setValueMap(id, checked) {
         this.valueMap.set(id, checked)
+
         const update = this.events[id]
-        // 状态改变的回调 bind中绑定
+
         if (update) update()
     }
 
@@ -123,7 +259,9 @@ export default class {
 
     isDisabled(id) {
         const node = this.pathMap.get(id)
+
         if (node) return node.isDisabled
+
         return false
     }
 
@@ -141,125 +279,31 @@ export default class {
 
     getChecked(id) {
         const value = this.get(id)
-        let checked = value === 1
+
+        let checked: CheckboxProps['checked'] = value === 1
+
         if (value === 2) checked = 'indeterminate'
+
         return checked
     }
 
-    /**
-     * 为每一个dataItem生成key值
-     * @param data
-     * @param id
-     * @param index
-     * @returns {string|*}
-     */
     getKey(data, id = '', index) {
         if (typeof this.keygen === 'function') return this.keygen(data, id)
+
         if (this.keygen) return data[this.keygen]
+
         return id + (id ? ',' : '') + index
     }
 
-    // 更新最初由这里发起
-    initValue(ids, forceCheck) {
-        if (!this.data || !this.value) return undefined
-
-        if (!ids) {
-            // 第一次进来
-            ids = []
-            this.pathMap.forEach((val, id) => {
-                // 根层次
-                if (val.path.length === 0) ids.push(id)
-            })
-        }
-
-        let checked
-        ids.forEach(id => {
-            const { children } = this.pathMap.get(id)
-
-            if (forceCheck) {
-                this.setValueMap(id, 1)
-                this.initValue(children, forceCheck)
-                return
-            }
-
-            let childChecked = this.value.indexOf(id) >= 0 ? 1 : 0
-
-            if (childChecked === 1 && this.mode !== CheckedMode.Half) {
-                this.initValue(children, 1)
-            } else if (children.length > 0) {
-                childChecked = this.initValue(children)
-            } else {
-                childChecked = this.value.indexOf(id) >= 0 ? 1 : 0
-            }
-
-            this.setValueMap(id, childChecked)
-
-            if (checked === undefined) checked = childChecked
-            // 暂无作用
-            else if (checked !== childChecked) checked = 2
-        })
-
-        return checked
-    }
-
-    /**
-     * 初始化数据源
-     * @param data
-     * @param path tree的path，根据id向下 id索引
-     * @param disabled
-     * @param index
-     * @returns {[]} 当前层次的ids
-     */
-    initData(data, path, disabled, index = []) {
-        // 当前层次的ids
-        const ids = []
-
-        data.forEach((d, i) => {
-            const id = this.getKey(d, path[path.length - 1], i)
-
-            if (this.dataMap.get(id)) {
-                // 重复key警告
-                console.warn(`There is already a key "${id}" exists. The key must be unique.`)
-            }
-            this.dataMap.set(id, d)
-
-            let isDisabled = disabled
-            if (!isDisabled && typeof this.disabled === 'function') {
-                isDisabled = this.disabled(d, i)
-            }
-
-            // data的idPath索引
-            const indexPath = [...index, i]
-            ids.push(id)
-
-            let children = []
-            if (Array.isArray(d[this.childrenKey])) {
-                children = this.initData(d[this.childrenKey], [...path, id], isDisabled, indexPath)
-            }
-
-            this.pathMap.set(id, {
-                children,
-                path,
-                isDisabled,
-                indexPath,
-                index: i,
-            })
-        })
-        return ids
-    }
-
     setData(data) {
-        const prevValue = this.value || []
-        this.cachedValue = []
-        this.pathMap = new Map()
-        // key:id value:dataItem 数据源id映射
-        this.dataMap = new Map()
-        this.data = data
-
         if (!data) return
 
+        this.pathMap = new Map()
+
+        this.dataMap = new Map()
+
+        this.data = data
+
         this.initData(data, [])
-        this.initValue()
-        this.setValue(prevValue)
     }
 }
