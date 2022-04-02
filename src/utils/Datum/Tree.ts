@@ -49,7 +49,7 @@ export default class {
 
     valueMap = new Map()
 
-    events = {}
+    events = new Map<React.Key, () => void>()
 
     disabled: boolean | ((data: any, index: number) => boolean)
 
@@ -71,7 +71,6 @@ export default class {
         this.keygen = keygen
         this.mode = mode
         this.valueMap = new Map()
-        this.events = {}
         this.disabled = disabled || (() => false)
         this.childrenKey = childrenKey
 
@@ -167,11 +166,11 @@ export default class {
     }
 
     bind(id: string | number, update: () => void) {
-        this.events[id] = update
+        this.events.set(id, update)
     }
 
     unbind(id) {
-        delete this.events[id]
+        this.events.delete(id)
     }
 
     setValue(value) {
@@ -185,6 +184,17 @@ export default class {
     getValue() {
         const value = []
 
+        /** 子节点为选中状态，parent节点一定为选中或indeterminate */
+        const isParentChecked = (id: React.Key) => {
+            const { path } = this.pathMap.get(id)
+
+            const parentId = path[path.length - 1]
+
+            if (!parentId) return false
+
+            return this.valueMap.get(parentId) === 1
+        }
+
         this.valueMap.forEach((checked, id) => {
             switch (this.mode) {
                 case CheckedMode.Full:
@@ -194,17 +204,12 @@ export default class {
                     if (checked >= 1) value.push(id)
                     break
                 case CheckedMode.Child:
-                    // TODO
                     if (checked === 1 && this.pathMap.get(id).children.length === 0) value.push(id)
                     break
                 case CheckedMode.Shallow:
                     if (checked === 1) {
-                        const parentChecked = (() => {
-                            const { path } = this.pathMap.get(id)
-                            const pid = path[path.length - 1]
-                            if (!pid) return false
-                            return this.valueMap.get(pid) === 1
-                        })()
+                        const parentChecked = isParentChecked(id)
+
                         if (!parentChecked) value.push(id)
                     }
                     break
@@ -220,39 +225,37 @@ export default class {
     setValueMap(id, checked) {
         this.valueMap.set(id, checked)
 
-        const update = this.events[id]
+        const update = this.events.get(id)
 
         if (update) update()
     }
 
-    set(id, checked, direction) {
-        // self
+    /** asc:向上方向查找 desc:向下方向查找 */
+    /** 点击的节点没有direction，会向上和向下操作 */
+    set(id: React.Key, checked: number, direction?: 'asc' | 'desc') {
+        /** 点击的节点 */
         if (!this.isDisabled(id)) this.setValueMap(id, checked)
 
         const { path, children } = this.pathMap.get(id)
 
-        // asc 上升 desc下降
-
-        // children
-        // 或点击根节点
         if (direction !== 'asc') {
             children.forEach(cid => {
                 this.set(cid, checked, 'desc')
             })
         }
 
-        // parent
-        // 不处理根节点 即第一层
         if (direction !== 'desc' && path.length > 0) {
             const parentId = path[path.length - 1]
+
             let parentChecked = checked
-            // 设置父节点是否为indeterminate
+
+            /** 设置父节点是否为indeterminate */
             this.pathMap.get(parentId).children.forEach(cid => {
-                // 父节点存在子节点为选择 设为indeterminate
                 if (parentChecked !== this.valueMap.get(cid)) {
                     parentChecked = 2
                 }
             })
+
             this.set(parentId, parentChecked, 'asc')
         }
     }
