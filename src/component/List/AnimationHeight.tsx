@@ -3,7 +3,8 @@ import { PureComponent } from '@/utils/component'
 import { runInNextFrame } from '@/utils/nextFrame'
 import React from 'react'
 
-export interface AnimationHeightProps {
+export interface AnimationHeightProps
+    extends React.DetailedHTMLProps<React.HTMLAttributes<HTMLDivElement>, HTMLDivElement> {
     height: number | string
 
     show?: boolean
@@ -17,6 +18,8 @@ export interface AnimationHeightProps {
     style?: React.CSSProperties
 
     overflow: 'hidden' | 'scroll' | 'auto'
+
+    forwardedRef?: (div: HTMLDivElement) => void
 }
 
 function applyHeight(el: HTMLDivElement, height: number | string) {
@@ -39,9 +42,15 @@ class AnimationHeight extends PureComponent<AnimationHeightProps> {
 
     timer: NodeJS.Timeout
 
+    forwardedRef(el: HTMLDivElement) {
+        if (this.props.forwardedRef) this.props.forwardedRef(el)
+    }
+
     componentDidMount = () => {
         const { show, height, duration } = this.props
         const el = this.ref.current
+
+        this.forwardedRef(el)
 
         if (show && height === 'auto') {
             runInNextFrame(() => {
@@ -114,11 +123,12 @@ class AnimationHeight extends PureComponent<AnimationHeightProps> {
     }
 
     render = () => {
-        const { duration, className, style, easing, overflow, children } = this.props
+        const { duration, className, style, easing, overflow, children, show, forwardedRef, ...other } = this.props
 
         return (
             <div
                 ref={this.ref}
+                {...other}
                 className={className}
                 style={{
                     ...style,
