@@ -1,46 +1,36 @@
-// @ts-nocheck
-import React, { PureComponent } from 'react'
-import PropTypes from 'prop-types'
+import React from 'react'
 import classnames from 'classnames'
 import { treeClass } from '@/styles'
 import { empty } from '@/utils/func'
+import { PureComponent } from '@/utils/component'
 import Node from './Node'
+import { TreeListProps } from './type'
 
-class List extends PureComponent {
-    constructor(props) {
-        super(props)
+class List extends PureComponent<TreeListProps> {
+    hasExpanded = false
 
-        this.bindLines = this.bindElement.bind(this, 'lines')
-        this.bindElement = this.bindElement.bind(this, 'element')
-        this.renderNode = this.renderNode.bind(this)
+    static defaultProps = {
+        id: '',
+        line: true,
+        className: treeClass('children'),
     }
 
-    getKey(data, index) {
+    getKey = (data, index) => {
         const { id, keygen } = this.props
+
         if (typeof keygen === 'function') return keygen(data, id)
+
         if (keygen) return data[keygen]
+
         return id + (id ? ',' : '') + index
     }
 
-    bindElement(name, el) {
-        this[name] = el
-    }
-
-    renderNode(child, index) {
+    renderNode = (child, index) => {
         const { data, isRoot, expanded, keygen, line, className, style, ...other } = this.props
+
         const id = this.getKey(child, index)
-        return (
-            <Node
-                {...other}
-                data={child}
-                id={id}
-                index={index}
-                key={id}
-                line={line}
-                keygen={keygen}
-                listComponent={List}
-            />
-        )
+
+        return <Node {...other} data={child} id={id} index={index} key={id} keygen={keygen} listComponent={List} />
     }
 
     render() {
@@ -54,7 +44,6 @@ class List extends PureComponent {
         return (
             <div
                 className={classnames(className, childrenClassName)}
-                ref={this.bindElement}
                 onDrop={empty}
                 onDragOver={empty}
                 style={newStyle}
@@ -63,25 +52,6 @@ class List extends PureComponent {
             </div>
         )
     }
-}
-
-List.propTypes = {
-    className: PropTypes.string,
-    data: PropTypes.array,
-    expanded: PropTypes.bool,
-    id: PropTypes.any,
-    isRoot: PropTypes.bool,
-    keygen: PropTypes.oneOfType([PropTypes.string, PropTypes.func]).isRequired,
-    line: PropTypes.bool,
-    setLine: PropTypes.func,
-    style: PropTypes.object,
-    childrenClassName: PropTypes.string,
-}
-
-List.defaultProps = {
-    id: '',
-    line: true,
-    className: treeClass('children'),
 }
 
 export default List

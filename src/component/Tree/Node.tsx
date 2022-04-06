@@ -1,35 +1,42 @@
-// @ts-nocheck
 import React, { createElement } from 'react'
-import PropTypes from 'prop-types'
 import classnames from 'classnames'
 import { PureComponent } from '@/utils/component'
-import { getProps } from '@/utils/proptypes'
 import { treeClass } from '@/styles'
+import { runInNextFrame } from '@/utils/nextFrame'
 import Content from './Content'
+import { TreeNodeProps, TreeNodeState } from './type'
 
-// 用于移动时暂存信息的div以及移动时占移动位
 const placeElement = document.createElement('div')
 placeElement.className = treeClass('drag-place')
+
 const innerPlaceElement = document.createElement('div')
 placeElement.appendChild(innerPlaceElement)
 
 let isDragging = false
 
-class Node extends PureComponent {
+class Node extends PureComponent<TreeNodeProps, TreeNodeState> {
+    element: HTMLDivElement
+
+    dragImage: HTMLImageElement
+
+    get isLeaf() {
+        const { childrenKey, data, loader } = this.props
+        const { fetching } = this.state
+        const children = data[childrenKey]
+
+        if (children && children.length > 0) return false
+        if (Array.isArray(children) || children === null) return true
+        if (fetching && !children) return false
+        if (loader && !fetching) return false
+
+        return true
+    }
+
     constructor(props) {
         super(props)
 
-        // 执行
-        const { active, expanded } = props.bindNode(props.id, this.update.bind(this))
+        const { active, expanded } = props.bindNode(props.id, this.update)
         this.state = { active, expanded, fetching: false }
-
-        this.bindElement = this.bindElement.bind(this)
-        this.handleToggle = this.handleToggle.bind(this)
-        this.handleDragStart = this.handleDragStart.bind(this)
-        this.handleDragOver = this.handleDragOver.bind(this)
-        this.handleDragEnd = this.handleDragEnd.bind(this)
-        this.setFetching = this.setFetching.bind(this)
-        this.isLeaf = this.isLeaf.bind(this)
     }
 
     componentWillUnmount() {
@@ -37,66 +44,47 @@ class Node extends PureComponent {
         this.props.unbindNode(this.props.id)
     }
 
-    setFetching(fetching) {
+    setFetching = fetching => {
         this.setState({ fetching })
     }
 
-    update(key, value) {
-        if (this.state[key] !== value) this.setState({ [key]: value })
+    update = (key: keyof TreeNodeState & string, value: boolean) => {
+        if (this.state[key] !== value) this.setState(({ [key]: value } as unknown) as TreeNodeState)
     }
 
-    bindElement(el) {
+    bindElement = el => {
         this.element = el
     }
 
-    isLeaf() {
-        const { childrenKey, data, loader } = this.props
-        const { fetching } = this.state
-        const children = data[childrenKey]
-        if (children && children.length > 0) return false
-        if (Array.isArray(children) || children === null) return true
-
-        if (fetching && !children) return false
-        if (loader && !fetching) return false
-
-        return true
-    }
-
-    handleToggle() {
+    handleToggle = () => {
         const { id, onToggle } = this.props
         // eslint-disable-next-line
-    const expanded = !this.state.expanded
+        const expanded = !this.state.expanded
+
         this.setState({ expanded })
+
         if (onToggle) onToggle(id, expanded)
     }
 
-    /**
-     * 开始拖动 复制节点 隐藏原节点
-     * @param event
-     */
-    handleDragStart(event) {
-        const { dragImageSelector, dragImageStyle, data } = this.props
+    handleDragStart: React.DragEventHandler<HTMLDivElement> = evt => {
         if (isDragging) return
+
         isDragging = true
 
-        // DataTransfer 对象用于保存拖动并放下（drag and drop）过程中的数据
-        // https://developer.mozilla.org/zh-CN/docs/Web/API/DataTransfer
-        event.dataTransfer.effectAllowed = 'copyMove'
-        event.dataTransfer.setData('text/plain', this.props.id)
+        const { dragImageSelector, dragImageStyle, data, id } = this.props
+
+        /** DataTransfer 对象用于保存拖动并放下（drag and drop）过程中的数据 */
+        /** @see https://developer.mozilla.org/zh-CN/docs/Web/API/DataTransfer */
+        evt.dataTransfer.effectAllowed = 'copyMove'
+        evt.dataTransfer.setData('text/plain', String(id))
 
         const element = document.querySelector(dragImageSelector(data))
-
         const dragImage = element || this.element.querySelector(`.${treeClass('content')}`)
         const rect = dragImage.getBoundingClientRect()
-        // 原生复制节点
+
         this.dragImage = dragImage.cloneNode(true)
+
         document.body.appendChild(this.dragImage)
-        this.dragImage.style.position = 'absolute'
-        this.dragImage.style.top = '-1000px'
-        this.dragImage.style.left = '-1000px'
-        this.dragImage.style.width = `${rect.width}px`
-        this.dragImage.style.background = '#fff'
-        this.dragImage.style.boxShadow = '0 0 5px 0 rgba(0, 0, 0, 0.1)'
 
         if (dragImageStyle) {
             Object.keys(dragImageStyle).forEach(k => {
@@ -104,62 +92,53 @@ class Node extends PureComponent {
             })
         }
 
-        // 设置自定义的拖动图像。
-        event.dataTransfer.setDragImage(this.dragImage, event.clientX - rect.left, event.clientY - rect.top)
+        evt.dataTransfer.setDragImage(this.dragImage, evt.clientX - rect.left, evt.clientY - rect.top)
 
-        setTimeout(() => {
-            // 拖拽过程隐藏
+        runInNextFrame(() => {
             this.element.style.display = 'none'
-        }, 0)
+        })
     }
 
-    /**
-     * 在另一对象中拖动时执行
-     * @param e
-     */
-    handleDragOver(e) {
+    handleDragOver: React.DragEventHandler<HTMLDivElement> = evt => {
         if (!isDragging) return
 
-        const { dragHoverExpand } = this.props
+        const { dragHoverExpand, id } = this.props
 
-        // 设置拖动过程要展开
         if (dragHoverExpand && !this.state.expanded) this.handleToggle()
 
-        // 获取当前拖动的元素的节点
-        const hover = this.element
-        const rect = hover.getBoundingClientRect()
-        // 获取拖动划过的元素的高度
-        const clientHeight = e.target.getBoundingClientRect().height || 20
-        const hoverMiddleY = (rect.bottom - rect.top) / 2
-
-        const hoverClientY = e.clientY - rect.top
+        const hoverElement = this.element
+        const hoverElementRect = hoverElement.getBoundingClientRect()
+        const dragElementClientHeight = (evt.target as HTMLElement).getBoundingClientRect().height || 20
+        const hoverElementMiddleY = (hoverElementRect.bottom - hoverElementRect.top) / 2
+        const hoverElementClientY = evt.clientY - hoverElementRect.top
 
         let position = this.props.index
+
         innerPlaceElement.style.height = '0px'
-        // 计算插入到e的前面或后面
-        if (hoverClientY < hoverMiddleY + clientHeight * 0.2) {
-            // 占位
-            hover.parentNode.insertBefore(placeElement, hover)
-            if (hoverClientY > clientHeight * 0.3) {
+
+        if (hoverElementClientY < hoverElementMiddleY + dragElementClientHeight * 0.2) {
+            hoverElement.parentNode.insertBefore(placeElement, hoverElement)
+
+            if (hoverElementClientY > dragElementClientHeight * 0.3) {
                 position = -1
-                innerPlaceElement.style.height = `${rect.height}px`
+                innerPlaceElement.style.height = `${hoverElementRect.height}px`
             }
         } else {
-            // 位置+1
             position += 1
-            // 占位
-            hover.parentNode.insertBefore(placeElement, hover.nextElementSibling)
+
+            hoverElement.parentNode.insertBefore(placeElement, hoverElement.nextElementSibling)
         }
 
-        placeElement.setAttribute('data-target', this.props.id)
-        placeElement.setAttribute('data-position', position)
+        placeElement.setAttribute('data-target', String(id))
+
+        placeElement.setAttribute('data-position', String(position))
     }
 
-    handleDragEnd() {
-        // 显示
+    handleDragEnd = () => {
         this.element.style.display = ''
 
         if (!isDragging || !placeElement.parentNode) return
+
         isDragging = false
 
         document.body.removeChild(this.dragImage)
@@ -177,11 +156,10 @@ class Node extends PureComponent {
 
     render() {
         const { data, expandedMap, listComponent, onDrop, childrenClass, leafClass, ...other } = this.props
-
         const children = data[other.childrenKey]
         const hasChildren = children && children.length > 0
         const { expanded, fetching } = this.state
-
+        const wrapProps: React.HTMLAttributes<HTMLDivElement> = {}
         const listProps = {
             ...other,
             data: children,
@@ -193,10 +171,6 @@ class Node extends PureComponent {
             childrenClassName: childrenClass(data),
         }
 
-        // https://blog.csdn.net/weixin_33672400/article/details/94206193
-        // ondragover 当某被拖动的对象在另一对象容器范围内拖动时触发此事件
-        // ondragend 用户完成元素拖动后触发 在被拖动目标上触发的事件
-        const wrapProps = {}
         if (onDrop) {
             Object.assign(wrapProps, {
                 draggable: true,
@@ -205,17 +179,11 @@ class Node extends PureComponent {
             })
         }
 
-        // React.createElement()： 根据指定的第一个参数创建一个React元素。
-        // React.createElement(
-        //     type,
-        //     [props],
-        //     [...children]
-        // )
         return (
             <div
                 {...wrapProps}
                 ref={this.bindElement}
-                className={classnames(treeClass('node'), this.isLeaf() && leafClass(data))}
+                className={classnames(treeClass('node'), this.isLeaf && leafClass(data))}
             >
                 <Content
                     {...other}
@@ -231,17 +199,6 @@ class Node extends PureComponent {
             </div>
         )
     }
-}
-
-Node.propTypes = {
-    ...getProps(PropTypes),
-    bindNode: PropTypes.func.isRequired,
-    unbindNode: PropTypes.func.isRequired,
-    data: PropTypes.object,
-    index: PropTypes.number,
-    listComponent: PropTypes.func,
-    keygen: PropTypes.oneOfType([PropTypes.string, PropTypes.func]).isRequired,
-    onDrop: PropTypes.func,
 }
 
 export default Node

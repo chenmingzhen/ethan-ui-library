@@ -1,93 +1,64 @@
-// @ts-nocheck
 import React from 'react'
-import PropTypes from 'prop-types'
 import classnames from 'classnames'
 import { PureComponent } from '@/utils/component'
 import { treeClass } from '@/styles'
 import Spin from '../Spin'
-import Checkbox from './Checkbox'
+import TreeCheckbox from './TreeCheckbox'
+import { TreeContentProps } from './type'
 
-// Loading JSX
-const loading = (
-    <span className={treeClass('icon-loading')}>
-        <Spin name="ring" size={12} />
-    </span>
-)
+class Content extends PureComponent<TreeContentProps> {
+    get hasChildren() {
+        const { data, childrenKey } = this.props
 
-/**
- * 节点内容
- */
-class Content extends PureComponent {
-    constructor(props) {
-        super(props)
+        const children = data[childrenKey]
 
-        this.handleNodeClick = this.handleNodeClick.bind(this)
-        this.handleNodeExpand = this.handleNodeExpand.bind(this)
-        this.handleIndicatorClick = this.handleIndicatorClick.bind(this)
+        return children && children.length > 0
     }
 
-    /**
-     * 点击节点
-     */
-    handleNodeClick() {
-        const { data, id, parentClickExpand, childrenKey } = this.props
-        const children = data[childrenKey]
-        const hasChildren = children && children.length > 0
+    handleNodeClick = () => {
+        const { data, id, parentClickExpand, onNodeClick } = this.props
 
-        if (hasChildren && parentClickExpand) {
+        if (this.hasChildren && parentClickExpand) {
             this.handleIndicatorClick()
         } else {
-            // 这里不做处理 回调给Node Component处理
-            this.props.onNodeClick(data, id)
+            onNodeClick(data, id)
         }
     }
 
-    /**
-     * 双击展开或收缩
-     */
-    handleNodeExpand() {
-        const { data, childrenKey, doubleClickExpand } = this.props
+    handleNodeExpand = () => {
+        const { doubleClickExpand } = this.props
 
         if (!doubleClickExpand) return
 
-        const children = data[childrenKey]
-        const hasChildren = children && children.length > 0
-
-        if (hasChildren) this.handleIndicatorClick()
+        if (this.hasChildren) this.handleIndicatorClick()
     }
 
-    /**
-     * 点击指示器
-     */
-    handleIndicatorClick() {
+    handleIndicatorClick = () => {
         const { id, data, onToggle, loader, childrenKey, setFetching } = this.props
 
-        // 执行props的onToggle回调
         onToggle()
 
         if (data[childrenKey] !== undefined) return
 
-        // TODO setFetching与loader是不是懒加载
         setFetching(true)
+
         loader(id, data)
     }
 
-    renderNode() {
+    renderNode = () => {
         const { id, active, data, renderItem, expanded } = this.props
+
         const render = typeof renderItem === 'function' ? renderItem : d => d[renderItem]
 
         return render(data, expanded, active, id)
     }
 
-    /**
-     * 渲染指示器图标
-     * @returns {JSX.Element|null}
-     */
-    renderIndicator() {
+    renderIndicator = () => {
         const { data, expanded, expandIcons, loader, childrenKey, fetching, iconClass } = this.props
+
         const children = data[childrenKey]
-        // 根据expanded获取展开的图标
-        const icon = expandIcons ? expandIcons[expanded + 0] : <span className={treeClass('default-icon')} />
+
+        const icon = expandIcons ? expandIcons[expanded ? 1 : 0] : <span className={treeClass('default-icon')} />
 
         const indicator = (
             <a
@@ -98,12 +69,14 @@ class Content extends PureComponent {
             </a>
         )
 
-        if (children && children.length > 0) return indicator
-        if (Array.isArray(children) || children === null) return null
+        if ((children && children.length > 0) || (loader && !fetching)) return indicator
 
-        // 加载中且无子项 返回loading状态
-        if (fetching && !children) return loading
-        if (loader && !fetching) return indicator
+        if (fetching && !children)
+            return (
+                <span className={treeClass('icon-loading')}>
+                    <Spin name="ring" size={12} />
+                </span>
+            )
 
         return null
     }
@@ -114,9 +87,9 @@ class Content extends PureComponent {
         return (
             <div onDragOver={onDragOver}>
                 {this.renderIndicator()}
+
                 <div className={treeClass('content')}>
-                    {/* 存在onChange时才添加Checkbox */}
-                    {onChange && <Checkbox {...other} onChange={onChange} />}
+                    {onChange && <TreeCheckbox {...other} onChange={onChange} />}
                     <div
                         className={treeClass('text')}
                         onClick={this.handleNodeClick}
@@ -128,28 +101,6 @@ class Content extends PureComponent {
             </div>
         )
     }
-}
-
-Content.propTypes = {
-    active: PropTypes.bool,
-    data: PropTypes.object,
-    draggable: PropTypes.bool,
-    expanded: PropTypes.bool,
-    loader: PropTypes.func,
-    id: PropTypes.any,
-    onChange: PropTypes.func,
-    onToggle: PropTypes.func,
-    onDragOver: PropTypes.func,
-    onDrop: PropTypes.func,
-    onNodeClick: PropTypes.func,
-    renderItem: PropTypes.oneOfType([PropTypes.func, PropTypes.string]).isRequired,
-    parentClickExpand: PropTypes.bool,
-    childrenKey: PropTypes.string,
-    expandIcons: PropTypes.array,
-    setFetching: PropTypes.func,
-    fetching: PropTypes.bool,
-    doubleClickExpand: PropTypes.bool,
-    iconClass: PropTypes.string,
 }
 
 export default Content
