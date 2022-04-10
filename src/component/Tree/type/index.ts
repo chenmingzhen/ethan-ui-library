@@ -58,8 +58,6 @@ export interface TreeNodeProps {
 }
 
 export interface TreeNodeState {
-    active: boolean
-
     expanded: boolean
 
     fetching: boolean
@@ -85,7 +83,6 @@ export interface TreeRootProps {
 }
 
 export interface TreeProps {
-    active: React.Key
     data: any[]
     defaultExpanded: React.Key[]
     defaultValue: React.Key[]

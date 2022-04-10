@@ -1,11 +1,11 @@
 import React, { Key } from 'react'
-import immer from 'immer'
 import { PureComponent } from '@/utils/component'
 import DatumTree from '@/utils/Datum/Tree'
+import { fastClone } from '@/utils/clone'
 import Root from './Root'
-import { NodeBind, TreeProps, TreeState } from './type'
+import { NodeBind, TreeProps } from './type'
 
-class Tree extends PureComponent<TreeProps, TreeState> {
+class Tree extends PureComponent<TreeProps> {
     nodes = new Map<Key, NodeBind>()
 
     datum: DatumTree
@@ -25,8 +25,6 @@ class Tree extends PureComponent<TreeProps, TreeState> {
     constructor(props) {
         super(props)
 
-        this.state = { active: null }
-
         this.datum = new DatumTree({
             data: props.data,
             keygen: props.keygen,
@@ -41,9 +39,6 @@ class Tree extends PureComponent<TreeProps, TreeState> {
         if (prevProps.expanded !== this.props.expanded) {
             this.handleExpanded(this.props.expanded)
         }
-        if (prevProps.active !== this.props.active) {
-            this.handleActive(this.props.active)
-        }
 
         if (this.props.onChange || this.props.onDrop) {
             this.datum.mode = this.props.mode
@@ -56,15 +51,13 @@ class Tree extends PureComponent<TreeProps, TreeState> {
     bindNode = (id: Key, update: NodeBind) => {
         this.nodes.set(id, update)
 
-        const active = this.props.active === id
-
         const expanded = this.props.expanded || this.props.defaultExpanded
 
         if (this.props.defaultExpandAll) {
-            return { active, expanded: true }
+            return { expanded: true }
         }
 
-        return { active, expanded: expanded && expanded.indexOf(id) >= 0 }
+        return { expanded: expanded && expanded.indexOf(id) >= 0 }
     }
 
     unbindNode = (id: Key) => {
@@ -79,21 +72,8 @@ class Tree extends PureComponent<TreeProps, TreeState> {
         }
     }
 
-    handleActive = (active: Key) => {
-        for (const [id, update] of this.nodes) {
-            update('active', id === active)
-        }
-    }
-
     handleNodeClick = (node, id: Key) => {
-        const { active, onClick } = this.props
-
-        /** 不处理受控 */
-        if (active === undefined) {
-            this.setState({ active: id }, () => {
-                this.handleActive(id)
-            })
-        }
+        const { onClick } = this.props
 
         if (onClick) {
             onClick(node, id, this.datum.getPath(id))
@@ -120,47 +100,66 @@ class Tree extends PureComponent<TreeProps, TreeState> {
 
     handleDrop = (id: Key, targetId: Key, position: number) => {
         const { childrenKey } = this.props
+
         const current = this.datum.getPath(id)
+
         const target = this.datum.getPath(targetId)
-        const data = immer(this.props.data, draft => {
-            let node = draft
-            let temp
-            let removeNode
-            current.indexPath.forEach((p, i) => {
-                if (i < current.indexPath.length - 1) {
-                    node = node[p][childrenKey]
-                } else {
-                    temp = node
-                    removeNode = () => temp.splice(p, 1)[0]
-                    node = node[p]
-                }
-            })
 
-            let tnode = draft
-            target.indexPath.forEach((p, i) => {
-                if (i < target.indexPath.length - 1) {
-                    tnode = tnode[p][childrenKey]
-                } else if (tnode === temp) {
-                    // same parent
-                    removeNode()
-                    removeNode = () => {}
-                }
-            })
+        const data = fastClone(this.props.data)
 
-            if (position === -1) {
-                tnode = tnode[target.index]
-                if (!Array.isArray(tnode[childrenKey])) tnode[childrenKey] = []
-                tnode[childrenKey].push(node)
-                position = tnode[childrenKey].length - 1
-                const update = this.nodes.get(targetId)
-                if (update) update('expanded', true)
+        /** 移动的节点 */
+        let removedNode = data
+
+        /** 移动节点初始所在层级的所有节点List */
+        let sameRemovedNodeLevelNodeList
+
+        let removeNode: () => any
+
+        /** 找到移动节点的data信息 */
+        current.indexPath.forEach((p, i) => {
+            if (i < current.indexPath.length - 1) {
+                removedNode = removedNode[p][childrenKey]
             } else {
-                tnode.splice(position, 0, node)
-                targetId = target.path[target.path.length - 1]
-            }
+                sameRemovedNodeLevelNodeList = removedNode
 
-            removeNode()
+                removeNode = () => sameRemovedNodeLevelNodeList.splice(p, 1)[0]
+
+                removedNode = removedNode[p]
+            }
         })
+
+        let targetNode = data
+
+        target.indexPath.forEach((p, i) => {
+            if (i < target.indexPath.length - 1) {
+                targetNode = targetNode[p][childrenKey]
+            }
+        })
+
+        if (position === -1) {
+            targetNode = targetNode[target.index]
+
+            if (!Array.isArray(targetNode[childrenKey])) targetNode[childrenKey] = []
+
+            targetNode[childrenKey].push(removedNode)
+
+            position = targetNode[childrenKey].length - 1
+
+            const update = this.nodes.get(targetId)
+
+            if (update) update('expanded', true)
+        } else {
+            /** 同一层中移动 */
+            removeNode()
+            removeNode = () => {}
+
+            targetNode.splice(position, 0, removedNode)
+
+            targetId = target.path[target.path.length - 1]
+        }
+
+        removeNode()
+
         this.props.onDrop(data, id, targetId, position)
     }
 
@@ -182,7 +181,6 @@ class Tree extends PureComponent<TreeProps, TreeState> {
             childrenKey,
             expandIcons,
             dragImageStyle,
-            dragImageSelector,
             childrenClass,
             leafClass,
             dragHoverExpand,
@@ -213,7 +211,6 @@ class Tree extends PureComponent<TreeProps, TreeState> {
                 childrenKey={childrenKey}
                 expandIcons={expandIcons}
                 dragImageStyle={dragImageStyle}
-                dragImageSelector={dragImageSelector}
                 childrenClass={childrenClass}
                 leafClass={leafClass}
                 dragHoverExpand={dragHoverExpand}
