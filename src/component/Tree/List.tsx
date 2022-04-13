@@ -33,10 +33,14 @@ class List extends PureComponent<TreeListProps> {
         return <Node {...other} data={child} id={id} index={index} key={id} keygen={keygen} listComponent={List} />
     }
 
+    /**
+     * @todo animationList
+     */
     render() {
         const { data, expanded, className, style, childrenClassName } = this.props
 
         if (!expanded && !this.hasExpanded) return null
+
         this.hasExpanded = true
 
         const newStyle = Object.assign({}, style, { display: expanded ? 'block' : 'none' })

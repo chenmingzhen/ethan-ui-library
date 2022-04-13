@@ -1,5 +1,6 @@
-import Tree from '@/utils/Datum/Tree'
+import Tree, { PathMapValue } from '@/utils/Datum/Tree'
 import React, { ReactNode } from 'react'
+import TreeDatum from '@/utils/Datum/Tree'
 
 export interface TreeContext {
     datum: Tree
@@ -12,49 +13,55 @@ export interface TreeCheckboxProps {
 
     onChange(values: React.Key[], id: React.Key): void
 
-    datum
+    datum: TreeDatum
 }
 
 export interface TreeContentProps {
-    active: boolean
     data: any[]
     draggable: boolean
     expanded: boolean
-    loader: Function
+    loader: TreeProps['loader']
     id: React.Key
     onChange(values: React.Key[], id: React.Key): void
-    onToggle: Function
+    onToggle: () => void
     onDragOver: React.DragEventHandler<HTMLDivElement>
-    onDrop: Function
-    onNodeClick: Function
-    renderItem: string | Function
-    parentClickExpand: boolean
-    childrenKey: string
-    expandIcons: React.ReactNode[]
+    onNodeClick: TreeProps['onNodeClick']
+    renderItem: TreeProps['renderItem']
+    parentClickExpand: TreeProps['parentClickExpand']
+    childrenKey: TreeProps['childrenKey']
+    expandIcons: TreeProps['expandIcons']
     setFetching: (fetch: boolean) => void
     fetching: boolean
-    doubleClickExpand: boolean
-    iconClass: string
+    doubleClickExpand: TreeProps['doubleClickExpand']
+    iconClass: TreeProps['iconClass']
+    datum: TreeDatum
 }
 
 export interface TreeNodeProps {
     id: React.Key
-    bindNode: Function
-    unbindNode: Function
-    data: any[]
+    bindNode: (id: React.Key, update: NodeBind) => void
+    unbindNode: (id: React.Key) => void
+    data: TreeProps['data']
     index: number
     listComponent: React.ComponentClass<TreeListProps>
-    keygen
-    onDrop: Function
-    expandedMap: Map<React.Key, boolean>
-    childrenClass: (data: any) => string
-    leafClass: string
-    childrenKey: string
-    dragImageSelector
+    keygen: TreeProps['keygen']
+    onDrop: TreeListProps['onDrop']
+    childrenClass: TreeProps['childrenClass']
+    leafClass: TreeProps['leafClass']
+    childrenKey: TreeProps['childrenKey']
     dragImageStyle: React.CSSProperties
-    dragHoverExpand: boolean
-    onToggle: Function
-    loader
+    dragHoverExpand: TreeProps['dragHoverExpand']
+    onToggle: (id: React.Key, expanded: boolean) => void
+    loader: TreeProps['loader']
+    datum: TreeDatum
+    draggable: boolean
+    onChange: TreeProps['onChange']
+    onNodeClick: TreeProps['onNodeClick']
+    renderItem: TreeProps['renderItem']
+    parentClickExpand: TreeProps['parentClickExpand']
+    expandIcons: TreeProps['expandIcons']
+    doubleClickExpand: TreeProps['doubleClickExpand']
+    iconClass: TreeProps['iconClass']
 }
 
 export interface TreeNodeState {
@@ -64,48 +71,73 @@ export interface TreeNodeState {
 }
 
 export interface TreeListProps {
-    className: string
+    className?: string
     data: any[]
     expanded: boolean
     id: React.Key
-    isRoot: boolean
-    keygen
-    line: boolean
-    setLine: Function
-    style: React.CSSProperties
+    isRoot?: boolean
+    keygen: TreeProps['keygen']
+    line?: boolean
+    style?: React.CSSProperties
     childrenClassName: string
+    /**  */
+    bindNode: (id: React.Key, update: NodeBind) => void
+    unbindNode: (id: React.Key) => void
+    onDrop: (id: React.Key, targetId: React.Key | undefined, position: number) => void
+    childrenClass: TreeProps['childrenClass']
+    leafClass: TreeProps['leafClass']
+    childrenKey: TreeProps['childrenKey']
+    dragImageStyle: TreeProps['dragImageStyle']
+    dragHoverExpand: TreeProps['dragHoverExpand']
+    onToggle: (id: React.Key, expanded: boolean) => void
+    loader: TreeProps['loader']
+    datum: TreeDatum
+    draggable: boolean
+    onChange: TreeProps['onChange']
+    onNodeClick: TreeProps['onNodeClick']
+    renderItem: TreeProps['renderItem']
+    parentClickExpand: TreeProps['parentClickExpand']
+    expandIcons: TreeProps['expandIcons']
+    doubleClickExpand: TreeProps['doubleClickExpand']
+    iconClass: TreeProps['iconClass']
 }
 
 export interface TreeRootProps {
-    keygen: any
-    data: any[]
+    keygen: TreeProps['keygen']
+    data: TreeProps['data']
     line: boolean
 }
 
-export interface TreeProps {
-    data: any[]
-    defaultExpanded: React.Key[]
-    defaultValue: React.Key[]
-    disabled: boolean
-    expanded: React.Key[]
-    line: boolean
-    loader: (id: React.Key, data: any) => void
-    mode: number
-    onChange: Function
-    onClick: Function
-    onExpand: Function
-    onDrop: Function
-    value: React.Key[]
-    parentClickExpand: boolean
-    defaultExpandAll: boolean
-    childrenKey: string
-    expandIcons: [ReactNode, ReactNode]
-    dragImageStyle: React.CSSProperties
-    doubleClickExpand: boolean
-}
-
-export interface TreeState {
-    active: React.Key
+/** TODO 添加active状态 */
+export interface TreeProps<T = any> {
+    data: T[]
+    defaultExpanded?: React.Key[]
+    defaultValue?: React.Key[]
+    disabled?: boolean
+    expanded?: React.Key[]
+    line?: boolean
+    loader?: (id?: React.Key, data?: T) => void
+    mode?: number
+    onChange?: (values: React.Key[]) => void
+    onClick?: (data: T, id: React.Key, pathMap: PathMapValue) => void
+    onExpand?: (values: React.Key[]) => void
+    onDrop?: (data: T, id: React.Key, targetId: React.Key | undefined, position: number) => void
+    value?: React.Key[]
+    parentClickExpand?: boolean
+    defaultExpandAll?: boolean
+    childrenKey?: string
+    expandIcons?: [ReactNode, ReactNode]
+    dragImageStyle?: React.CSSProperties
+    doubleClickExpand?: boolean
+    className?: string
+    style?: React.CSSProperties
+    keygen?: keyof T | ((data: T, id: React.Key) => string)
+    renderItem?: ((data: T, isExpanded: boolean, id: React.Key) => React.ReactNode) | keyof T
+    childrenClass?: (data: T) => string
+    leafClass?: (data: T) => string
+    dragHoverExpand?: boolean
+    iconClass?: string
+    onNodeClick: (node: T, id: React.Key) => void
 }
 
 export type NodeBind = (state: keyof TreeNodeState & string, value: boolean) => void

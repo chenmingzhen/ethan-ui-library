@@ -162,7 +162,7 @@ class Node extends PureComponent<TreeNodeProps, TreeNodeState> {
     }
 
     render() {
-        const { data, expandedMap, listComponent, onDrop, childrenClass, leafClass, ...other } = this.props
+        const { data, listComponent, onDrop, childrenClass, leafClass, ...other } = this.props
         const children = data[other.childrenKey]
         const hasChildren = children && children.length > 0
         const { expanded, fetching } = this.state
@@ -171,7 +171,6 @@ class Node extends PureComponent<TreeNodeProps, TreeNodeState> {
             ...other,
             data: children,
             expanded,
-            expandedMap,
             onDrop,
             leafClass,
             childrenClass,

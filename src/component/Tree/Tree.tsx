@@ -5,10 +5,12 @@ import { fastClone } from '@/utils/clone'
 import Root from './Root'
 import { NodeBind, TreeProps } from './type'
 
-class Tree extends PureComponent<TreeProps> {
+class Tree<T = any> extends PureComponent<TreeProps<T>> {
     nodes = new Map<Key, NodeBind>()
 
     datum: DatumTree
+
+    static displayName = 'EthanTree'
 
     static defaultProps = {
         data: [],
@@ -17,7 +19,6 @@ class Tree extends PureComponent<TreeProps> {
         mode: 0,
         childrenKey: 'children',
         dragImageStyle: {},
-        dragImageSelector() {},
         childrenClass() {},
         leafClass() {},
     }

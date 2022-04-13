@@ -30,7 +30,7 @@ export const CheckedMode = {
     Shallow: 3,
 }
 
-interface PathMapValue {
+export interface PathMapValue {
     path: React.Key[]
 
     children: React.Key[]

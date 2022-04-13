@@ -82,7 +82,7 @@ class Content extends PureComponent<TreeContentProps> {
     }
 
     render() {
-        const { data, onToggle, onChange, expanded, draggable, onDragOver, onDrop, ...other } = this.props
+        const { data, onToggle, onChange, expanded, draggable, onDragOver, ...other } = this.props
 
         return (
             <div onDragOver={onDragOver}>
