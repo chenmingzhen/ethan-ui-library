@@ -1,10 +1,5 @@
-import Tree, { PathMapValue } from '@/utils/Datum/Tree'
+import TreeDatum, { PathMapValue } from '@/utils/Datum/Tree'
 import React, { ReactNode } from 'react'
-import TreeDatum from '@/utils/Datum/Tree'
-
-export interface TreeContext {
-    datum: Tree
-}
 
 export interface TreeCheckboxProps {
     disabled?: boolean
@@ -137,7 +132,7 @@ export interface TreeProps<T = any> {
     leafClass?: (data: T) => string
     dragHoverExpand?: boolean
     iconClass?: string
-    onNodeClick: (node: T, id: React.Key) => void
+    onNodeClick?: (node: T, id: React.Key) => void
 }
 
 export type NodeBind = (state: keyof TreeNodeState & string, value: boolean) => void

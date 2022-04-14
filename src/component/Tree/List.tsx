@@ -5,14 +5,32 @@ import { empty } from '@/utils/func'
 import { PureComponent } from '@/utils/component'
 import Node from './Node'
 import { TreeListProps } from './type'
+import AnimationHeight from '../List/AnimationHeight'
 
-class List extends PureComponent<TreeListProps> {
+interface ListState {
+    hasDoneAnimation: boolean
+}
+
+class List extends PureComponent<TreeListProps, ListState> {
     hasExpanded = false
 
     static defaultProps = {
         id: '',
         line: true,
         className: treeClass('children'),
+    }
+
+    constructor(props: TreeListProps) {
+        super(props)
+        this.state = {
+            hasDoneAnimation: props.expanded,
+        }
+    }
+
+    componentDidUpdate() {
+        if (this.props.expanded && !this.state.hasDoneAnimation) {
+            this.setState({ hasDoneAnimation: true })
+        }
     }
 
     getKey = (data, index) => {
@@ -33,9 +51,6 @@ class List extends PureComponent<TreeListProps> {
         return <Node {...other} data={child} id={id} index={index} key={id} keygen={keygen} listComponent={List} />
     }
 
-    /**
-     * @todo animationList
-     */
     render() {
         const { data, expanded, className, style, childrenClassName } = this.props
 
@@ -43,17 +58,23 @@ class List extends PureComponent<TreeListProps> {
 
         this.hasExpanded = true
 
-        const newStyle = Object.assign({}, style, { display: expanded ? 'block' : 'none' })
+        const { hasDoneAnimation } = this.state
+
+        const computedHeight = (expanded && !hasDoneAnimation) || !expanded ? 0 : 'auto'
 
         return (
-            <div
-                className={classnames(className, childrenClassName)}
+            <AnimationHeight
+                className={classnames(className, childrenClassName, expanded && 'show')}
+                /** 添加empty使拖动时不会出现禁止符号 */
                 onDrop={empty}
                 onDragOver={empty}
-                style={newStyle}
+                height={computedHeight}
+                duration={200}
+                style={style}
+                show={expanded}
             >
                 {data.map(this.renderNode)}
-            </div>
+            </AnimationHeight>
         )
     }
 }

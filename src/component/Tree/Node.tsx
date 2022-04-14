@@ -76,7 +76,7 @@ class Node extends PureComponent<TreeNodeProps, TreeNodeState> {
         /** DataTransfer 对象用于保存拖动并放下（drag and drop）过程中的数据 */
         /** @see https://developer.mozilla.org/zh-CN/docs/Web/API/DataTransfer */
         evt.dataTransfer.effectAllowed = 'copyMove'
-        evt.dataTransfer.setData('text/plain', String(id))
+        // evt.dataTransfer.setData('text/plain', String(id))
 
         const dragImage = this.element.querySelector(`.${treeClass('content')}`)
 

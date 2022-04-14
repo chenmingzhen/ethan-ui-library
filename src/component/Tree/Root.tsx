@@ -6,7 +6,7 @@ import List from './List'
 function Root(props) {
     const className = classnames(treeClass('_', props.line ? 'with-line' : 'no-line'), props.className)
 
-    return <List {...props} className={className} expanded />
+    return <List {...props} className={className} expanded isRoot />
 }
 
 Root.defaultProps = {
