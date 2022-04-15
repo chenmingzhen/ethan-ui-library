@@ -64,7 +64,7 @@ class List extends PureComponent<TreeListProps, ListState> {
 
         return (
             <AnimationHeight
-                className={classnames(className, childrenClassName, expanded && 'show')}
+                className={classnames(className, childrenClassName)}
                 /** 添加empty使拖动时不会出现禁止符号 */
                 onDrop={empty}
                 onDragOver={empty}

@@ -15,11 +15,11 @@
             margin-left: @tree-level-indent;
         }
 
-        & > div.show {
+        & > div:not(.@{tree-prefix}-children) {
             padding-bottom: @tree-node-margin-bottom;
         }
 
-        &:last-child > div {
+        &:last-child > div:not(.@{tree-prefix}-children) {
             padding-bottom: 0;
         }
     }
