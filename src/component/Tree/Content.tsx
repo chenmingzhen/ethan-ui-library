@@ -2,6 +2,7 @@ import React from 'react'
 import classnames from 'classnames'
 import { PureComponent } from '@/utils/component'
 import { treeClass } from '@/styles'
+import { isArray, isFunc } from '@/utils/is'
 import Spin from '../Spin'
 import TreeCheckbox from './TreeCheckbox'
 import { TreeContentProps } from './type'
@@ -45,6 +46,20 @@ class Content extends PureComponent<TreeContentProps> {
         loader(id, data)
     }
 
+    getIndicatorIcon = () => {
+        const { expanded, data, id, expandIcons } = this.props
+
+        if (isArray(expandIcons)) {
+            return expandIcons[expanded ? 1 : 0]
+        }
+
+        if (isFunc(expandIcons)) {
+            return expandIcons(id, expanded, data)
+        }
+
+        return <span className={treeClass('default-icon')} />
+    }
+
     renderNode = () => {
         const { id, data, renderItem, expanded } = this.props
 
@@ -54,11 +69,11 @@ class Content extends PureComponent<TreeContentProps> {
     }
 
     renderIndicator = () => {
-        const { data, expanded, expandIcons, loader, childrenKey, fetching, iconClass } = this.props
+        const { data, expanded, loader, childrenKey, fetching, iconClass } = this.props
 
         const children = data[childrenKey]
 
-        const icon = expandIcons ? expandIcons[expanded ? 1 : 0] : <span className={treeClass('default-icon')} />
+        const icon = this.getIndicatorIcon()
 
         const indicator = (
             <a
@@ -85,7 +100,7 @@ class Content extends PureComponent<TreeContentProps> {
         const { data, onToggle, onChange, expanded, draggable, onDragOver, ...other } = this.props
 
         return (
-            <div onDragOver={onDragOver}>
+            <div onDragOver={onDragOver} className={treeClass(other.active && 'active')}>
                 {this.renderIndicator()}
 
                 <div className={treeClass('content')}>

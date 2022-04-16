@@ -10,6 +10,7 @@
         position: relative;
         padding-left: @tree-indicator-size;
         line-height: @line-height-base;
+        cursor: pointer;
 
         > .@{tree-prefix}-children {
             margin-left: @tree-level-indent;
@@ -19,8 +20,8 @@
             padding-bottom: @tree-node-margin-bottom;
         }
 
-        &:last-child > div:not(.@{tree-prefix}-children) {
-            padding-bottom: 0;
+        .@{tree-prefix}-active {
+            background-color: @tree-active-bg;
         }
     }
 

@@ -12,6 +12,7 @@ export interface TreeCheckboxProps {
 }
 
 export interface TreeContentProps {
+    active: boolean
     data: any[]
     draggable: boolean
     expanded: boolean
@@ -34,7 +35,7 @@ export interface TreeContentProps {
 
 export interface TreeNodeProps {
     id: React.Key
-    bindNode: (id: React.Key, update: NodeBind) => void
+    bindNode: (id: React.Key, update: NodeBind) => TreeNodeState
     unbindNode: (id: React.Key) => void
     data: TreeProps['data']
     index: number
@@ -63,6 +64,8 @@ export interface TreeNodeState {
     expanded: boolean
 
     fetching: boolean
+
+    active: boolean
 }
 
 export interface TreeListProps {
@@ -76,7 +79,7 @@ export interface TreeListProps {
     style?: React.CSSProperties
     childrenClassName: string
     /**  */
-    bindNode: (id: React.Key, update: NodeBind) => void
+    bindNode: (id: React.Key, update: NodeBind) => TreeNodeState
     unbindNode: (id: React.Key) => void
     onDrop: (id: React.Key, targetId: React.Key | undefined, position: number) => void
     childrenClass: TreeProps['childrenClass']
@@ -103,8 +106,8 @@ export interface TreeRootProps {
     line: boolean
 }
 
-/** TODO 添加active状态 */
 export interface TreeProps<T = any> {
+    active?: React.Key
     data: T[]
     defaultExpanded?: React.Key[]
     defaultValue?: React.Key[]
@@ -121,7 +124,7 @@ export interface TreeProps<T = any> {
     parentClickExpand?: boolean
     defaultExpandAll?: boolean
     childrenKey?: string
-    expandIcons?: [ReactNode, ReactNode]
+    expandIcons?: [ReactNode, ReactNode] | ((id: React.Key, expanded: boolean, data: T) => React.ReactNode)
     dragImageStyle?: React.CSSProperties
     doubleClickExpand?: boolean
     className?: string

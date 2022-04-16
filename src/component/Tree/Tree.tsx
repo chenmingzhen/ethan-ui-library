@@ -5,7 +5,11 @@ import { fastClone } from '@/utils/clone'
 import Root from './Root'
 import { NodeBind, TreeProps } from './type'
 
-class Tree<T = any> extends PureComponent<TreeProps<T>> {
+interface TreeState {
+    active: React.Key
+}
+
+class Tree<T = any> extends PureComponent<TreeProps<T>, TreeState> {
     nodes = new Map<Key, NodeBind>()
 
     datum: DatumTree
@@ -23,6 +27,12 @@ class Tree<T = any> extends PureComponent<TreeProps<T>> {
         leafClass() {},
     }
 
+    get active() {
+        const { active } = this.props
+
+        return active === undefined ? this.state.active : active
+    }
+
     constructor(props) {
         super(props)
 
@@ -34,6 +44,10 @@ class Tree<T = any> extends PureComponent<TreeProps<T>> {
             disabled: typeof props.disabled === 'function' ? props.disabled : undefined,
             childrenKey: props.childrenKey,
         })
+
+        this.state = {
+            active: props.active,
+        }
     }
 
     componentDidUpdate(prevProps: TreeProps) {
@@ -41,10 +55,19 @@ class Tree<T = any> extends PureComponent<TreeProps<T>> {
             this.handleExpanded(this.props.expanded)
         }
 
+        if (prevProps.active !== this.props.active) {
+            this.handleActive(this.props.active)
+        }
+
         if (this.props.onChange || this.props.onDrop) {
             this.datum.mode = this.props.mode
 
-            if (prevProps.data !== this.props.data) this.datum.setData(this.props.data)
+            if (prevProps.data !== this.props.data) {
+                this.datum.setData(this.props.data)
+
+                /** 拖拽后需要重新触发Node的active */
+                this.handleActive(this.active)
+            }
             if (prevProps.value !== this.props.value) this.datum.setValue(this.props.value || [])
         }
     }
@@ -54,15 +77,23 @@ class Tree<T = any> extends PureComponent<TreeProps<T>> {
 
         const expanded = this.props.expanded || this.props.defaultExpanded
 
+        const active = this.props.active === id
+
         if (this.props.defaultExpandAll) {
-            return { expanded: true }
+            return { active, expanded: true }
         }
 
-        return { expanded: expanded && expanded.indexOf(id) >= 0 }
+        return { active, expanded: expanded && expanded.indexOf(id) >= 0 }
     }
 
     unbindNode = (id: Key) => {
         this.nodes.delete(id)
+    }
+
+    handleActive = (activeKey: React.Key) => {
+        for (const [id, update] of this.nodes) {
+            update('active', activeKey === id)
+        }
     }
 
     handleExpanded = expanded => {
@@ -74,7 +105,13 @@ class Tree<T = any> extends PureComponent<TreeProps<T>> {
     }
 
     handleNodeClick = (node, id: Key) => {
-        const { onClick } = this.props
+        const { onClick, active } = this.props
+
+        if (active === undefined) {
+            this.setState({ active: id }, () => {
+                this.handleActive(id)
+            })
+        }
 
         if (onClick) {
             onClick(node, id, this.datum.getPath(id))

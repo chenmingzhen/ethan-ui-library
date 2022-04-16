@@ -32,15 +32,24 @@ class Node extends PureComponent<TreeNodeProps, TreeNodeState> {
         return true
     }
 
-    constructor(props) {
+    constructor(props: TreeNodeProps) {
         super(props)
 
-        const { expanded } = props.bindNode(props.id, this.update)
-        this.state = { expanded, fetching: false }
+        const { expanded, active } = props.bindNode(props.id, this.update)
+
+        this.state = { expanded, fetching: false, active }
+    }
+
+    componentDidMount() {
+        /** For drag */
+        const { expanded, active } = this.props.bindNode(this.props.id, this.update)
+
+        this.setState({ expanded, active })
     }
 
     componentWillUnmount() {
         super.componentWillUnmount()
+
         this.props.unbindNode(this.props.id)
     }
 
@@ -71,7 +80,7 @@ class Node extends PureComponent<TreeNodeProps, TreeNodeState> {
 
         isDragging = true
 
-        const { dragImageStyle, id } = this.props
+        const { dragImageStyle } = this.props
 
         /** DataTransfer 对象用于保存拖动并放下（drag and drop）过程中的数据 */
         /** @see https://developer.mozilla.org/zh-CN/docs/Web/API/DataTransfer */
@@ -190,9 +199,13 @@ class Node extends PureComponent<TreeNodeProps, TreeNodeState> {
                 {...wrapProps}
                 ref={this.bindElement}
                 className={classnames(treeClass('node'), this.isLeaf && leafClass(data))}
+                onClick={() => {
+                    this.forceUpdate()
+                }}
             >
                 <Content
                     {...other}
+                    active={this.state.active}
                     data={data}
                     expanded={expanded}
                     onToggle={this.handleToggle}
