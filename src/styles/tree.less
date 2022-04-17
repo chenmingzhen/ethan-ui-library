@@ -8,21 +8,35 @@
 
     &-node {
         position: relative;
-        padding-left: @tree-indicator-size;
         line-height: @line-height-base;
         cursor: pointer;
 
         > .@{tree-prefix}-children {
+            padding-left: @tree-indicator-size;
             margin-left: @tree-level-indent;
         }
 
         & > div:not(.@{tree-prefix}-children) {
             padding-bottom: @tree-node-margin-bottom;
-        }
+            background-color: transparent;
+            transition: background-color 0.2s ease;
+            user-select: none;
 
-        .@{tree-prefix}-active {
-            background-color: @tree-active-bg;
+            &:hover {
+                background-color: @tree-hover-bg;
+            }
+
+            &.@{tree-prefix}-active {
+                background-color: @tree-active-bg;
+            }
         }
+    }
+
+    &-item {
+        padding-left: @tree-indicator-size;
+        border-radius: @tree-border-radius;
+        display: flex;
+        align-items: center;
     }
 
     &-with-line {
@@ -188,7 +202,7 @@
     &-content {
         z-index: 10;
         display: flex;
-
+        flex: 1;
         .@{tree-prefix}-text {
             flex: 1;
         }

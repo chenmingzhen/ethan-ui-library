@@ -100,7 +100,7 @@ class Content extends PureComponent<TreeContentProps> {
         const { data, onToggle, onChange, expanded, draggable, onDragOver, ...other } = this.props
 
         return (
-            <div onDragOver={onDragOver} className={treeClass(other.active && 'active')}>
+            <div onDragOver={onDragOver} className={treeClass('item', other.active && 'active')}>
                 {this.renderIndicator()}
 
                 <div className={treeClass('content')}>
