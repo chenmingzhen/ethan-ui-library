@@ -30,7 +30,7 @@ export const CheckedMode = {
     Shallow: 3,
 }
 
-export interface PathMapValue {
+export interface NodeInfo {
     path: React.Key[]
 
     children: React.Key[]
@@ -59,7 +59,7 @@ export default class {
 
     cachedValue: any
 
-    pathMap: Map<React.Key, PathMapValue> = new Map()
+    nodeInfoMap: Map<React.Key, NodeInfo> = new Map()
 
     dataMap: Map<React.Key, any> = new Map()
 
@@ -84,7 +84,7 @@ export default class {
         if (!ids) {
             ids = []
 
-            this.pathMap.forEach((val, id) => {
+            this.nodeInfoMap.forEach((val, id) => {
                 /** 根节点 */
                 if (val.path.length === 0) ids.push(id)
             })
@@ -93,7 +93,7 @@ export default class {
         /** 0:不选中 1:选中 2:indeterminate选中 */
         let checked
         ids.forEach(id => {
-            const { children } = this.pathMap.get(id)
+            const { children } = this.nodeInfoMap.get(id)
 
             if (forceCheck) {
                 this.setValueMap(id, 1)
@@ -153,7 +153,7 @@ export default class {
                 children = this.initData(d[this.childrenKey], [...path, id], isDisabled, indexPath)
             }
 
-            this.pathMap.set(id, {
+            this.nodeInfoMap.set(id, {
                 children,
                 path,
                 isDisabled,
@@ -186,7 +186,7 @@ export default class {
 
         /** 子节点为选中状态，parent节点一定为选中或indeterminate */
         const isParentChecked = (id: React.Key) => {
-            const { path } = this.pathMap.get(id)
+            const { path } = this.nodeInfoMap.get(id)
 
             const parentId = path[path.length - 1]
 
@@ -204,7 +204,7 @@ export default class {
                     if (checked >= 1) value.push(id)
                     break
                 case CheckedMode.Child:
-                    if (checked === 1 && this.pathMap.get(id).children.length === 0) value.push(id)
+                    if (checked === 1 && this.nodeInfoMap.get(id).children.length === 0) value.push(id)
                     break
                 case CheckedMode.Shallow:
                     if (checked === 1) {
@@ -236,7 +236,7 @@ export default class {
         /** 点击的节点 */
         if (!this.isDisabled(id)) this.setValueMap(id, checked)
 
-        const { path, children } = this.pathMap.get(id)
+        const { path, children } = this.nodeInfoMap.get(id)
 
         if (direction !== 'asc') {
             children.forEach(cid => {
@@ -250,7 +250,7 @@ export default class {
             let parentChecked = checked
 
             /** 设置父节点是否为indeterminate */
-            this.pathMap.get(parentId).children.forEach(cid => {
+            this.nodeInfoMap.get(parentId).children.forEach(cid => {
                 if (parentChecked !== this.valueMap.get(cid)) {
                     parentChecked = 2
                 }
@@ -261,7 +261,7 @@ export default class {
     }
 
     isDisabled(id) {
-        const node = this.pathMap.get(id)
+        const node = this.nodeInfoMap.get(id)
 
         if (node) return node.isDisabled
 
@@ -277,7 +277,7 @@ export default class {
     }
 
     getPath(id) {
-        return this.pathMap.get(id)
+        return this.nodeInfoMap.get(id)
     }
 
     getChecked(id) {
@@ -301,7 +301,7 @@ export default class {
     setData(data) {
         if (!data) return
 
-        this.pathMap = new Map()
+        this.nodeInfoMap = new Map()
 
         this.dataMap = new Map()
 

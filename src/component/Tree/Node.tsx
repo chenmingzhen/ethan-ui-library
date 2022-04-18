@@ -1,8 +1,7 @@
-import React, { createElement } from 'react'
+import React from 'react'
 import classnames from 'classnames'
 import { PureComponent } from '@/utils/component'
 import { treeClass } from '@/styles'
-import { runInNextFrame } from '@/utils/nextFrame'
 import Content from './Content'
 import { TreeNodeProps, TreeNodeState } from './type'
 
@@ -12,7 +11,7 @@ placeElement.className = treeClass('drag-place')
 const innerPlaceElement = document.createElement('div')
 placeElement.appendChild(innerPlaceElement)
 
-let isDragging = false
+let dragId = null
 
 class Node extends PureComponent<TreeNodeProps, TreeNodeState> {
     element: HTMLDivElement
@@ -35,16 +34,16 @@ class Node extends PureComponent<TreeNodeProps, TreeNodeState> {
     constructor(props: TreeNodeProps) {
         super(props)
 
-        const { expanded, active } = props.bindNode(props.id, this.update)
+        const { active } = props.bindNode(props.id, this.update)
 
-        this.state = { expanded, fetching: false, active }
+        this.state = { fetching: false, active }
     }
 
     componentDidMount() {
         /** For drag */
-        const { expanded, active } = this.props.bindNode(this.props.id, this.update)
+        const { active } = this.props.bindNode(this.props.id, this.update)
 
-        this.setState({ expanded, active })
+        this.setState({ active })
     }
 
     componentWillUnmount() {
@@ -57,35 +56,25 @@ class Node extends PureComponent<TreeNodeProps, TreeNodeState> {
         this.setState({ fetching })
     }
 
-    update = (key: keyof TreeNodeState & string, value: boolean) => {
-        if (this.state[key] !== value) this.setState(({ [key]: value } as unknown) as TreeNodeState)
+    update = (active: boolean) => {
+        this.setState({ active })
     }
 
     bindElement = el => {
         this.element = el
     }
 
-    handleToggle = () => {
-        const { id, onToggle } = this.props
-        // eslint-disable-next-line
-        const expanded = !this.state.expanded
-
-        this.setState({ expanded })
-
-        if (onToggle) onToggle(id, expanded)
-    }
-
     handleDragStart: React.DragEventHandler<HTMLDivElement> = evt => {
-        if (isDragging) return
+        this.props.onDragStateChange(true)
 
-        isDragging = true
+        dragId = this.props.id
 
         const { dragImageStyle } = this.props
 
         /** DataTransfer 对象用于保存拖动并放下（drag and drop）过程中的数据 */
         /** @see https://developer.mozilla.org/zh-CN/docs/Web/API/DataTransfer */
         evt.dataTransfer.effectAllowed = 'copyMove'
-        // evt.dataTransfer.setData('text/plain', String(id))
+        // evt.dataTransfer.setData('origin', String(id))
 
         const dragImage = this.element.querySelector(`.${treeClass('content')}`)
 
@@ -102,20 +91,23 @@ class Node extends PureComponent<TreeNodeProps, TreeNodeState> {
         }
 
         evt.dataTransfer.setDragImage(this.dragImage, evt.clientX - rect.left, evt.clientY - rect.top)
-
-        runInNextFrame(() => {
-            this.element.style.display = 'none'
-        })
     }
 
     handleDragOver: React.DragEventHandler<HTMLDivElement> = evt => {
-        if (!isDragging) return
+        if (dragId === null) return
 
-        const { dragHoverExpand, id } = this.props
+        const { dragHoverExpand, id, hoverElementRef, expanded } = this.props
+        /** datum不是使用箭头函数，使用解构赋值时this指向是这里 */
+        const targetPath = this.props.datum.getPath(id)
+        /** 同一个或者往自身下级拖动时不处理 */
+        if (targetPath.path.includes(dragId) || dragId === id) {
+            return
+        }
 
-        if (dragHoverExpand && !this.state.expanded) this.handleToggle()
+        if (dragHoverExpand && !expanded) this.props?.onToggle?.()
 
-        const hoverElement = this.element
+        const hoverElement = hoverElementRef.current
+
         const hoverElementRect = hoverElement.getBoundingClientRect()
         /** event target 可能为Node中的DOM的子节点 */
         const dragElementClientHeight = evt.currentTarget.getBoundingClientRect().height
@@ -149,11 +141,11 @@ class Node extends PureComponent<TreeNodeProps, TreeNodeState> {
     }
 
     handleDragEnd = () => {
-        this.element.style.display = ''
+        this.props.onDragStateChange(false)
 
-        if (!isDragging || !placeElement.parentNode) return
+        if (dragId === null || !placeElement.parentNode) return
 
-        isDragging = false
+        dragId = null
 
         document.body.removeChild(this.dragImage)
 
@@ -165,26 +157,15 @@ class Node extends PureComponent<TreeNodeProps, TreeNodeState> {
 
         placeElement.parentNode.removeChild(placeElement)
 
-        if (target !== id) {
-            onDrop(id, target, position)
-        }
+        onDrop(id, target, position)
     }
 
     render() {
-        const { data, listComponent, onDrop, childrenClass, leafClass, ...other } = this.props
-        const children = data[other.childrenKey]
-        const hasChildren = children && children.length > 0
-        const { expanded, fetching } = this.state
+        const { data, onDrop, childrenClass, leafClass, ...other } = this.props
+
+        const { fetching, active } = this.state
+
         const wrapProps: React.HTMLAttributes<HTMLDivElement> = {}
-        const listProps = {
-            ...other,
-            data: children,
-            expanded,
-            onDrop,
-            leafClass,
-            childrenClass,
-            childrenClassName: childrenClass(data),
-        }
 
         if (onDrop) {
             Object.assign(wrapProps, {
@@ -198,22 +179,17 @@ class Node extends PureComponent<TreeNodeProps, TreeNodeState> {
             <div
                 {...wrapProps}
                 ref={this.bindElement}
-                className={classnames(treeClass('node'), this.isLeaf && leafClass(data))}
-                onClick={() => {
-                    this.forceUpdate()
-                }}
+                className={classnames(treeClass('node', active && 'active'), this.isLeaf && leafClass(data))}
             >
                 <Content
                     {...other}
-                    active={this.state.active}
+                    active={active}
                     data={data}
-                    expanded={expanded}
-                    onToggle={this.handleToggle}
+                    onToggle={this.props.onToggle}
                     onDragOver={this.handleDragOver}
                     setFetching={this.setFetching}
                     fetching={fetching}
                 />
-                {hasChildren && createElement(listComponent, listProps)}
             </div>
         )
     }

@@ -1,4 +1,4 @@
-import TreeDatum, { PathMapValue } from '@/utils/Datum/Tree'
+import TreeDatum, { NodeInfo } from '@/utils/Datum/Tree'
 import React, { ReactNode } from 'react'
 
 export interface TreeCheckboxProps {
@@ -14,7 +14,6 @@ export interface TreeCheckboxProps {
 export interface TreeContentProps {
     active: boolean
     data: any[]
-    draggable: boolean
     expanded: boolean
     loader: TreeProps['loader']
     id: React.Key
@@ -35,22 +34,23 @@ export interface TreeContentProps {
 
 export interface TreeNodeProps {
     id: React.Key
-    bindNode: (id: React.Key, update: NodeBind) => TreeNodeState
-    unbindNode: (id: React.Key) => void
+    expanded: boolean
+    hoverElementRef: React.RefObject<HTMLDivElement>
+    onDragStateChange: (isDragging: boolean) => void
+    bindNode: TreeBranchProps['bindNode']
+    unbindNode: TreeBranchProps['unbindNode']
     data: TreeProps['data']
     index: number
-    listComponent: React.ComponentClass<TreeListProps>
     keygen: TreeProps['keygen']
-    onDrop: TreeListProps['onDrop']
+    onDrop: TreeBranchProps['onDrop']
     childrenClass: TreeProps['childrenClass']
     leafClass: TreeProps['leafClass']
     childrenKey: TreeProps['childrenKey']
     dragImageStyle: React.CSSProperties
     dragHoverExpand: TreeProps['dragHoverExpand']
-    onToggle: (id: React.Key, expanded: boolean) => void
+    onToggle: () => void
     loader: TreeProps['loader']
     datum: TreeDatum
-    draggable: boolean
     onChange: TreeProps['onChange']
     onNodeClick: TreeProps['onNodeClick']
     renderItem: TreeProps['renderItem']
@@ -61,14 +61,18 @@ export interface TreeNodeProps {
 }
 
 export interface TreeNodeState {
-    expanded: boolean
-
     fetching: boolean
 
     active: boolean
 }
 
-export interface TreeListProps {
+export interface TreeBranchState {
+    expanded: boolean
+
+    isDragging: boolean
+}
+
+export interface TreeBranchProps {
     className?: string
     data: any[]
     expanded: boolean
@@ -77,10 +81,13 @@ export interface TreeListProps {
     keygen: TreeProps['keygen']
     line?: boolean
     style?: React.CSSProperties
-    childrenClassName: string
+    disabled: TreeProps['disabled']
+    mode: TreeProps['mode']
     /**  */
-    bindNode: (id: React.Key, update: NodeBind) => TreeNodeState
+    bindNode: (id: React.Key, update: UpdateEvent) => Pick<TreeNodeState, 'active'>
+    bindList: (id: React.Key, update: UpdateEvent) => Pick<TreeBranchState, 'expanded'>
     unbindNode: (id: React.Key) => void
+    unbindList: (id: React.Key) => void
     onDrop: (id: React.Key, targetId: React.Key | undefined, position: number) => void
     childrenClass: TreeProps['childrenClass']
     leafClass: TreeProps['leafClass']
@@ -90,7 +97,6 @@ export interface TreeListProps {
     onToggle: (id: React.Key, expanded: boolean) => void
     loader: TreeProps['loader']
     datum: TreeDatum
-    draggable: boolean
     onChange: TreeProps['onChange']
     onNodeClick: TreeProps['onNodeClick']
     renderItem: TreeProps['renderItem']
@@ -100,10 +106,13 @@ export interface TreeListProps {
     iconClass: TreeProps['iconClass']
 }
 
-export interface TreeRootProps {
-    keygen: TreeProps['keygen']
-    data: TreeProps['data']
-    line: boolean
+export interface TreeListProps extends TreeBranchProps {
+    index: number
+}
+
+export interface TreeListState {
+    isDragging: boolean
+    expanded: boolean
 }
 
 export interface TreeProps<T = any> {
@@ -114,10 +123,10 @@ export interface TreeProps<T = any> {
     disabled?: boolean
     expanded?: React.Key[]
     line?: boolean
-    loader?: (id?: React.Key, data?: T) => void
+    loader?: (id: React.Key, data: T, pathValue: NodeInfo) => void
     mode?: number
     onChange?: (values: React.Key[]) => void
-    onClick?: (data: T, id: React.Key, pathMap: PathMapValue) => void
+    onClick?: (data: T, id: React.Key, pathMap: NodeInfo) => void
     onExpand?: (values: React.Key[]) => void
     onDrop?: (data: T, id: React.Key, targetId: React.Key | undefined, position: number) => void
     value?: React.Key[]
@@ -138,4 +147,4 @@ export interface TreeProps<T = any> {
     onNodeClick?: (node: T, id: React.Key) => void
 }
 
-export type NodeBind = (state: keyof TreeNodeState & string, value: boolean) => void
+export type UpdateEvent = (value: boolean) => void

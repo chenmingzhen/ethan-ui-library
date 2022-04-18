@@ -2,15 +2,19 @@ import React, { Key } from 'react'
 import { PureComponent } from '@/utils/component'
 import DatumTree from '@/utils/Datum/Tree'
 import { fastClone } from '@/utils/clone'
-import Root from './Root'
-import { NodeBind, TreeProps } from './type'
+import classnames from 'classnames'
+import { treeClass } from '@/styles'
+import { UpdateEvent, TreeProps } from './type'
+import Branch from './Branch'
 
 interface TreeState {
     active: React.Key
 }
 
 class Tree<T = any> extends PureComponent<TreeProps<T>, TreeState> {
-    nodes = new Map<Key, NodeBind>()
+    nodes = new Map<Key, UpdateEvent>()
+
+    lists = new Map<Key, UpdateEvent>()
 
     datum: DatumTree
 
@@ -18,6 +22,7 @@ class Tree<T = any> extends PureComponent<TreeProps<T>, TreeState> {
 
     static defaultProps = {
         data: [],
+        line: true,
         defaultExpanded: [],
         defaultValue: [],
         mode: 0,
@@ -72,35 +77,45 @@ class Tree<T = any> extends PureComponent<TreeProps<T>, TreeState> {
         }
     }
 
-    bindNode = (id: Key, update: NodeBind) => {
+    bindNode = (id: Key, update: UpdateEvent) => {
         this.nodes.set(id, update)
-
-        const expanded = this.props.expanded || this.props.defaultExpanded
 
         const active = this.props.active === id
 
-        if (this.props.defaultExpandAll) {
-            return { active, expanded: true }
-        }
-
-        return { active, expanded: expanded && expanded.indexOf(id) >= 0 }
+        return { active }
     }
 
     unbindNode = (id: Key) => {
         this.nodes.delete(id)
     }
 
+    bindList = (id: Key, update: UpdateEvent) => {
+        this.lists.set(id, update)
+
+        if (this.props.defaultExpandAll) {
+            return { expanded: true }
+        }
+
+        const expanded = this.props.expanded || this.props.defaultExpanded
+
+        return { expanded: expanded && expanded.indexOf(id) >= 0 }
+    }
+
+    unbindList = (id: Key) => {
+        this.lists.delete(id)
+    }
+
     handleActive = (activeKey: React.Key) => {
-        for (const [id, update] of this.nodes) {
-            update('active', activeKey === id)
+        for (const [id, updateNodeActiveState] of this.nodes) {
+            updateNodeActiveState(activeKey === id)
         }
     }
 
     handleExpanded = expanded => {
         const expandedSet = new Set(expanded)
 
-        for (const [id, update] of this.nodes) {
-            update('expanded', expandedSet.has(id))
+        for (const [id, updateNodeExpandedState] of this.lists) {
+            updateNodeExpandedState(expandedSet.has(id))
         }
     }
 
@@ -183,9 +198,9 @@ class Tree<T = any> extends PureComponent<TreeProps<T>, TreeState> {
 
             position = targetNode[childrenKey].length - 1
 
-            const update = this.nodes.get(targetId)
+            const updateNodeActiveState = this.nodes.get(targetId)
 
-            if (update) update('expanded', true)
+            if (updateNodeActiveState) updateNodeActiveState(true)
         } else {
             /** 同一层中移动 */
             removeNode()
@@ -228,8 +243,8 @@ class Tree<T = any> extends PureComponent<TreeProps<T>, TreeState> {
         const onToggle = onExpand ? this.handleToggle : undefined
 
         return (
-            <Root
-                className={className}
+            <Branch
+                className={classnames(treeClass('_', line ? 'with-line' : 'no-line'), className)}
                 data={data}
                 datum={this.datum}
                 disabled={typeof disabled !== 'function' && disabled}
@@ -254,6 +269,10 @@ class Tree<T = any> extends PureComponent<TreeProps<T>, TreeState> {
                 dragHoverExpand={dragHoverExpand}
                 doubleClickExpand={doubleClickExpand}
                 iconClass={iconClass}
+                unbindList={this.unbindList}
+                bindList={this.bindList}
+                isRoot
+                expanded
             />
         )
     }

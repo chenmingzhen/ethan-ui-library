@@ -35,15 +35,17 @@ class Content extends PureComponent<TreeContentProps> {
     }
 
     handleIndicatorClick = () => {
-        const { id, data, onToggle, loader, childrenKey, setFetching } = this.props
+        const { id, data, onToggle, loader, childrenKey, setFetching, datum } = this.props
 
         onToggle()
 
         if (data[childrenKey] !== undefined) return
 
+        const nodeInfo = datum.getPath(id)
+
         setFetching(true)
 
-        loader(id, data)
+        loader(id, data, nodeInfo)
     }
 
     getIndicatorIcon = () => {
@@ -84,23 +86,24 @@ class Content extends PureComponent<TreeContentProps> {
             </a>
         )
 
-        if ((children && children.length > 0) || (loader && !fetching)) return indicator
+        if ((children && children.length > 0) || (loader && !fetching))
+            return <span className={treeClass('indicator')}>{indicator}</span>
 
         if (fetching && !children)
             return (
-                <span className={treeClass('icon-loading')}>
+                <span className={treeClass('indicator')}>
                     <Spin name="ring" size={12} />
                 </span>
             )
 
-        return null
+        return <span className={treeClass('indicator')} />
     }
 
     render() {
-        const { data, onToggle, onChange, expanded, draggable, onDragOver, ...other } = this.props
+        const { data, onToggle, onChange, expanded, onDragOver, ...other } = this.props
 
         return (
-            <div onDragOver={onDragOver} className={treeClass('item', other.active && 'active')}>
+            <div onDragOver={onDragOver} className={treeClass('item')}>
                 {this.renderIndicator()}
 
                 <div className={treeClass('content')}>

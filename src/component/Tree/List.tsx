@@ -1,80 +1,77 @@
-import React from 'react'
-import classnames from 'classnames'
 import { treeClass } from '@/styles'
-import { empty } from '@/utils/func'
 import { PureComponent } from '@/utils/component'
+import { empty } from '@/utils/func'
+import React, { createRef } from 'react'
+import Branch from './Branch'
 import Node from './Node'
-import { TreeListProps } from './type'
-import AnimationHeight from '../List/AnimationHeight'
+import { TreeListProps, TreeListState } from './type'
 
-interface ListState {
-    hasDoneAnimation: boolean
-}
+class List extends PureComponent<TreeListProps, TreeListState> {
+    list = createRef<HTMLDivElement>()
 
-class List extends PureComponent<TreeListProps, ListState> {
-    hasExpanded = false
-
-    static defaultProps = {
-        id: '',
-        line: true,
-        className: treeClass('children'),
-    }
-
-    constructor(props: TreeListProps) {
+    constructor(props) {
         super(props)
-        this.state = {
-            hasDoneAnimation: props.expanded,
-        }
+
+        const { expanded } = props.bindList(props.id, this.update)
+
+        this.state = { expanded, isDragging: false }
     }
 
-    componentDidUpdate() {
-        if (this.props.expanded && !this.state.hasDoneAnimation) {
-            this.setState({ hasDoneAnimation: true })
-        }
+    componentDidMount() {
+        /** For drag */
+        const { expanded } = this.props.bindList(this.props.id, this.update)
+
+        this.setState({ expanded })
     }
 
-    getKey = (data, index) => {
-        const { id, keygen } = this.props
+    componentWillUnmount() {
+        super.componentWillUnmount()
 
-        if (typeof keygen === 'function') return keygen(data, id)
-
-        if (keygen) return data[keygen]
-
-        return id + (id ? ',' : '') + index
+        this.props.unbindList(this.props.id)
     }
 
-    renderNode = (child, index) => {
-        const { data, isRoot, expanded, keygen, line, className, style, ...other } = this.props
+    handleToggle = () => {
+        const { id, onToggle } = this.props
+        // eslint-disable-next-line
+        const expanded = !this.state.expanded
 
-        const id = this.getKey(child, index)
+        this.setState({ expanded })
 
-        return <Node {...other} data={child} id={id} index={index} key={id} keygen={keygen} listComponent={List} />
+        if (onToggle) onToggle(id, expanded)
+    }
+
+    update = (expanded: boolean) => {
+        this.setState({ expanded })
+    }
+
+    handleDragStateChange = isDragging => {
+        this.setState({ isDragging })
     }
 
     render() {
-        const { data, expanded, className, style, childrenClassName } = this.props
+        const { data, childrenKey } = this.props
 
-        if (!expanded && !this.hasExpanded) return null
+        const { isDragging } = this.state
 
-        this.hasExpanded = true
-
-        const { hasDoneAnimation } = this.state
-
-        const computedHeight = (expanded && !hasDoneAnimation) || !expanded ? 0 : 'auto'
+        const children = data[childrenKey]
 
         return (
-            <AnimationHeight
-                className={classnames(className, childrenClassName)}
-                /** 添加empty使拖动时不会出现禁止符号 */
+            <div
+                className={treeClass('list', isDragging && 'isDragging')}
+                ref={this.list}
                 onDrop={empty}
                 onDragOver={empty}
-                height={computedHeight}
-                duration={200}
-                style={style}
-                show={expanded}
             >
-                {data.map(this.renderNode)}
-            </AnimationHeight>
+                <Node
+                    {...this.props}
+                    expanded={this.state.expanded}
+                    onToggle={this.handleToggle}
+                    hoverElementRef={this.list}
+                    onDragStateChange={this.handleDragStateChange}
+                />
+
+                {children && <Branch {...this.props} expanded={this.state.expanded} data={children} isRoot={false} />}
+            </div>
         )
     }
 }
