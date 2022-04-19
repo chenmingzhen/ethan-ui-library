@@ -6,6 +6,7 @@ import { PureComponent } from '@/utils/component'
 import { TreeBranchProps } from './type'
 import AnimationHeight from '../List/AnimationHeight'
 import List from './List'
+import { removePlaceElementDom } from './utils'
 
 interface ListState {
     hasDoneAnimation: boolean
@@ -13,6 +14,8 @@ interface ListState {
 
 class Branch extends PureComponent<TreeBranchProps, ListState> {
     hasExpanded = false
+
+    element: HTMLDivElement
 
     static defaultProps = {
         id: '',
@@ -42,6 +45,14 @@ class Branch extends PureComponent<TreeBranchProps, ListState> {
         return id + (id ? ',' : '') + index
     }
 
+    handleDragLeave: React.DragEventHandler<HTMLDivElement> = e => {
+        const rect = this.element.getBoundingClientRect()
+
+        if (rect.top > e.clientY || rect.bottom < e.clientY || rect.left > e.clientX || rect.right < e.clientX) {
+            removePlaceElementDom()
+        }
+    }
+
     render() {
         const { data, expanded, className, style, isRoot } = this.props
 
@@ -55,14 +66,18 @@ class Branch extends PureComponent<TreeBranchProps, ListState> {
 
         return (
             <AnimationHeight
-                className={classnames(className, treeClass(!isRoot && 'branch'))}
+                className={classnames(className, treeClass(isRoot ? 'root' : 'branch'))}
                 /** 添加empty使拖动时不会出现禁止符号 */
                 onDrop={empty}
                 onDragOver={empty}
+                onDragLeave={isRoot ? this.handleDragLeave : undefined}
                 height={computedHeight}
                 duration={200}
                 style={style}
                 show={expanded}
+                forwardedRef={el => {
+                    this.element = el
+                }}
             >
                 {data.map((child, index) => {
                     const id = this.getKey(child, index)

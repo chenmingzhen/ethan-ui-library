@@ -4,12 +4,7 @@ import { PureComponent } from '@/utils/component'
 import { treeClass } from '@/styles'
 import Content from './Content'
 import { TreeNodeProps, TreeNodeState } from './type'
-
-const placeElement = document.createElement('div')
-placeElement.className = treeClass('drag-place')
-
-const innerPlaceElement = document.createElement('div')
-placeElement.appendChild(innerPlaceElement)
+import { innerPlaceElement, placeElement, removePlaceElementDom } from './utils'
 
 let dragId = null
 
@@ -96,11 +91,14 @@ class Node extends PureComponent<TreeNodeProps, TreeNodeState> {
     handleDragOver: React.DragEventHandler<HTMLDivElement> = evt => {
         if (dragId === null) return
 
-        const { dragHoverExpand, id, hoverElementRef, expanded } = this.props
+        const { dragHoverExpand, id, hoverElementRef, expanded, datum } = this.props
+
         /** datum不是使用箭头函数，使用解构赋值时this指向是这里 */
-        const targetPath = this.props.datum.getPath(id)
+        const targetPath = datum.getPath(id)
         /** 同一个或者往自身下级拖动时不处理 */
         if (targetPath.path.includes(dragId) || dragId === id) {
+            removePlaceElementDom()
+
             return
         }
 
@@ -130,7 +128,14 @@ class Node extends PureComponent<TreeNodeProps, TreeNodeState> {
             }
         } else {
             /** 放置hover元素的下方 */
-            position += 1
+            const { indexPath } = datum.getPath(dragId)
+
+            const dragIndex = indexPath[indexPath.length - 1]
+
+            if (dragIndex > this.props.index) {
+                position += 1
+            }
+
             /** hoverElement.nextElementSibling为空时放置到hoverElement的后面 */
             hoverElement.parentNode.insertBefore(placeElement, hoverElement.nextElementSibling)
         }
@@ -143,19 +148,26 @@ class Node extends PureComponent<TreeNodeProps, TreeNodeState> {
     handleDragEnd = () => {
         this.props.onDragStateChange(false)
 
-        if (dragId === null || !placeElement.parentNode) return
-
-        dragId = null
-
-        document.body.removeChild(this.dragImage)
-
-        const { id, onDrop } = this.props
+        const { id, onDrop, datum } = this.props
 
         const position = parseInt(placeElement.getAttribute('data-position'), 10)
 
         const target = placeElement.getAttribute('data-target')
 
-        placeElement.parentNode.removeChild(placeElement)
+        /** 拖拽时直接推拽到可拖拽区域外 */
+        if (!target) return
+
+        const targetPath = datum.getPath(target)
+
+        if (dragId === null || !placeElement.parentNode || target === id || targetPath.path.includes(id)) {
+            return
+        }
+
+        dragId = null
+
+        document.body.removeChild(this.dragImage)
+
+        removePlaceElementDom()
 
         onDrop(id, target, position)
     }

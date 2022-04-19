@@ -6,6 +6,12 @@
 .@{tree-prefix} {
     position: relative;
 
+    &-root,
+    &-branch {
+        /* AnimationHeight中有溢出隐藏属性，在branch最后一个元素中会把dragger-place隐藏掉 */
+        padding-bottom: 1px;
+    }
+
     &-branch {
         // todo var padding
         padding-left: @tree-indicator-size;
@@ -32,6 +38,7 @@
 
     &-list {
         box-sizing: content-box;
+        position: relative;
 
         &.@{tree-prefix}-isDragging {
             border: 1px solid @tree-drag-border-bg;
