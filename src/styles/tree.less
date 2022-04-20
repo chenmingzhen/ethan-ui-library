@@ -8,8 +8,10 @@
 
     &-root,
     &-branch {
-        /* AnimationHeight中有溢出隐藏属性，在branch最后一个元素中会把dragger-place隐藏掉 */
-        padding-bottom: 1px;
+        &.@{tree-prefix}-expanded {
+            /* AnimationHeight中有溢出隐藏属性，在branch最后一个元素中会把dragger-place隐藏掉 */
+            padding-bottom: 1px;
+        }
     }
 
     &-branch {

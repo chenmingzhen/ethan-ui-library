@@ -207,8 +207,6 @@ class Tree<T = any> extends PureComponent<TreeProps<T>, TreeState> {
             removeNode = () => {}
 
             targetNode.splice(position, 0, removedNode)
-
-            targetId = target.path[target.path.length - 1]
         }
 
         removeNode()

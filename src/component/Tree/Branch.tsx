@@ -66,7 +66,7 @@ class Branch extends PureComponent<TreeBranchProps, ListState> {
 
         return (
             <AnimationHeight
-                className={classnames(className, treeClass(isRoot ? 'root' : 'branch'))}
+                className={classnames(className, treeClass(isRoot ? 'root' : 'branch', expanded && 'expanded'))}
                 /** 添加empty使拖动时不会出现禁止符号 */
                 onDrop={empty}
                 onDragOver={empty}
@@ -82,7 +82,7 @@ class Branch extends PureComponent<TreeBranchProps, ListState> {
                 {data.map((child, index) => {
                     const id = this.getKey(child, index)
 
-                    return <List index={index} {...this.props} data={child} key={id} id={id} />
+                    return <List {...this.props} data={child} key={id} id={id} index={index} />
                 })}
             </AnimationHeight>
         )

@@ -4,7 +4,7 @@ import { PureComponent } from '@/utils/component'
 import { treeClass } from '@/styles'
 import Content from './Content'
 import { TreeNodeProps, TreeNodeState } from './type'
-import { innerPlaceElement, placeElement, removePlaceElementDom } from './utils'
+import { innerPlaceElement, isSameParentPath, placeElement, removePlaceElementDom } from './utils'
 
 let dragId = null
 
@@ -114,25 +114,33 @@ class Node extends PureComponent<TreeNodeProps, TreeNodeState> {
 
         let position = this.props.index
 
+        const { indexPath: dragIndexPath } = datum.getPath(dragId)
+
+        const { indexPath: currentIndexPath } = datum.getPath(id)
+
+        const dragIndex = dragIndexPath[dragIndexPath.length - 1]
+
         /** 操作placeholderInner的高度，placeholder的高度在样式中始终为0，如果放置hover元素内，inner高度撑开，实现放入效果 */
         innerPlaceElement.style.height = '0px'
 
+        /** 同一个Branch下的不同节点，需要根据拖动元素的index和hover的index进行比对计算position */
         if (hoverElementClientY < hoverElementMiddleY + dragElementClientHeight * 0.2) {
             /** 放置hover元素的上方 */
             hoverElement.parentNode.insertBefore(placeElement, hoverElement)
 
-            /** 放置hover元素内 */
             if (hoverElementClientY > dragElementClientHeight * 0.3) {
+                /** 放置hover元素内 */
                 position = -1
                 innerPlaceElement.style.height = `${hoverElementRect.height}px`
+            } else if (dragIndex < this.props.index && isSameParentPath(dragIndexPath, currentIndexPath)) {
+                /** 同级拖动 */
+                position -= 1
             }
         } else {
+            const sameParentPath = isSameParentPath(dragIndexPath, currentIndexPath)
+
             /** 放置hover元素的下方 */
-            const { indexPath } = datum.getPath(dragId)
-
-            const dragIndex = indexPath[indexPath.length - 1]
-
-            if (dragIndex > this.props.index) {
+            if ((dragIndex > this.props.index && sameParentPath) || !sameParentPath) {
                 position += 1
             }
 
