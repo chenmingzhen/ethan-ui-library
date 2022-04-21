@@ -66,25 +66,7 @@
     }
 
     &-with-line {
-        &:before {
-            height: 100%;
-            position: absolute;
-            top: 0;
-            bottom: 0;
-            left: 15px;
-            width: 1px;
-            background: linear-gradient(
-                to bottom,
-                @tree-line-color,
-                @tree-line-color 1px,
-                transparent 1px,
-                transparent
-            );
-            background-size: 100% 2px;
-            content: ' ';
-        }
-
-        .@{tree-prefix}-node {
+        &.@{tree-prefix}-branch {
             &:before {
                 height: 100%;
                 position: absolute;
