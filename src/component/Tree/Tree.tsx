@@ -105,7 +105,7 @@ class Tree<T = any> extends PureComponent<TreeProps<T>, TreeState> {
         this.lists.delete(id)
     }
 
-    handleActive = (activeKey: React.Key) => {
+    handleActive = (activeKey?: React.Key) => {
         for (const [id, updateNodeActiveState] of this.nodes) {
             updateNodeActiveState(activeKey === id)
         }
@@ -123,9 +123,15 @@ class Tree<T = any> extends PureComponent<TreeProps<T>, TreeState> {
         const { onClick, active } = this.props
 
         if (active === undefined) {
-            this.setState({ active: id }, () => {
-                this.handleActive(id)
-            })
+            if (this.state.active === id) {
+                this.setState({ active: null }, () => {
+                    this.handleActive(null)
+                })
+            } else {
+                this.setState({ active: id }, () => {
+                    this.handleActive(id)
+                })
+            }
         }
 
         if (onClick) {
