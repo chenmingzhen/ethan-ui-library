@@ -100,7 +100,9 @@ class Content extends PureComponent<TreeContentProps> {
     }
 
     render() {
-        const { data, onToggle, onChange, expanded, onDragOver, ...other } = this.props
+        const { data, onToggle, onChange, expanded, onDragOver, nodeContentTextTag, ...other } = this.props
+
+        const Tag = nodeContentTextTag as React.ElementType
 
         return (
             <div onDragOver={onDragOver} className={treeClass('item')}>
@@ -108,13 +110,13 @@ class Content extends PureComponent<TreeContentProps> {
 
                 <div className={treeClass('content')}>
                     {onChange && <TreeCheckbox {...other} onChange={onChange} />}
-                    <div
-                        className={treeClass('text')}
+                    <Tag
+                        className={treeClass('text', other.active && 'active')}
                         onClick={this.handleNodeClick}
                         onDoubleClick={this.handleNodeExpand}
                     >
                         {this.renderNode()}
-                    </div>
+                    </Tag>
                 </div>
             </div>
         )

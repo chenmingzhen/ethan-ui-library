@@ -30,6 +30,7 @@ export interface TreeContentProps {
     doubleClickExpand: TreeProps['doubleClickExpand']
     iconClass: TreeProps['iconClass']
     datum: TreeDatum
+    nodeContentTextTag: ITreeProps['nodeContentTextTag']
 }
 
 export interface TreeNodeProps {
@@ -58,6 +59,7 @@ export interface TreeNodeProps {
     expandIcons: TreeProps['expandIcons']
     doubleClickExpand: TreeProps['doubleClickExpand']
     iconClass: TreeProps['iconClass']
+    nodeContentTextTag: ITreeProps['nodeContentTextTag']
 }
 
 export interface TreeNodeState {
@@ -104,6 +106,7 @@ export interface TreeBranchProps {
     expandIcons: TreeProps['expandIcons']
     doubleClickExpand: TreeProps['doubleClickExpand']
     iconClass: TreeProps['iconClass']
+    nodeContentTextTag: ITreeProps['nodeContentTextTag']
 }
 
 export interface TreeListProps extends TreeBranchProps {
@@ -146,5 +149,13 @@ export interface TreeProps<T = any> {
     iconClass?: string
     onNodeClick?: (node: T, id: React.Key) => void
 }
+
+export interface ITreeProps<T = any> extends TreeProps<T> {
+    directory?: boolean
+
+    nodeContentTextTag?: keyof HTMLElementTagNameMap
+}
+
+export type DirectoryProps<T = any> = Omit<TreeProps<T>, 'onDrop' | 'mode' | 'onChange'>
 
 export type UpdateEvent = (value: boolean) => void

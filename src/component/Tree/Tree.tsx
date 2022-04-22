@@ -4,14 +4,14 @@ import DatumTree from '@/utils/Datum/Tree'
 import { fastClone } from '@/utils/clone'
 import classnames from 'classnames'
 import { treeClass } from '@/styles'
-import { UpdateEvent, TreeProps } from './type'
+import { UpdateEvent, ITreeProps } from './type'
 import Branch from './Branch'
 
 interface TreeState {
     active: React.Key
 }
 
-class Tree<T = any> extends PureComponent<TreeProps<T>, TreeState> {
+class Tree<T = any> extends PureComponent<ITreeProps<T>, TreeState> {
     nodes = new Map<Key, UpdateEvent>()
 
     lists = new Map<Key, UpdateEvent>()
@@ -22,6 +22,7 @@ class Tree<T = any> extends PureComponent<TreeProps<T>, TreeState> {
 
     static defaultProps = {
         data: [],
+        nodeContentTextTag: 'span',
         line: true,
         defaultExpanded: [],
         defaultValue: [],
@@ -55,7 +56,7 @@ class Tree<T = any> extends PureComponent<TreeProps<T>, TreeState> {
         }
     }
 
-    componentDidUpdate(prevProps: TreeProps) {
+    componentDidUpdate(prevProps: ITreeProps) {
         if (prevProps.expanded !== this.props.expanded) {
             this.handleExpanded(this.props.expanded)
         }
@@ -243,12 +244,18 @@ class Tree<T = any> extends PureComponent<TreeProps<T>, TreeState> {
             dragHoverExpand,
             doubleClickExpand,
             iconClass,
+            directory,
+            nodeContentTextTag,
         } = this.props
         const onToggle = onExpand ? this.handleToggle : undefined
 
         return (
             <Branch
-                className={classnames(treeClass('_', line ? 'with-line' : 'no-line'), className)}
+                nodeContentTextTag={nodeContentTextTag}
+                className={classnames(
+                    treeClass('_', line ? 'with-line' : 'no-line', directory && 'directory'),
+                    className
+                )}
                 data={data}
                 datum={this.datum}
                 disabled={typeof disabled !== 'function' && disabled}

@@ -15,27 +15,21 @@
     }
 
     &-branch {
-        // todo var padding
         padding-left: @tree-indicator-size;
+    }
+
+    &-director {
+        &-node {
+            .transition-bg();
+        }
     }
 
     &-node {
         position: relative;
         line-height: @line-height-base;
-        cursor: pointer;
         padding: 0 10px;
         box-sizing: content-box;
-        background-color: transparent;
-        transition: background-color 0.2s ease;
         user-select: none;
-
-        &:hover {
-            background-color: @tree-hover-bg;
-        }
-
-        &.@{tree-prefix}-active {
-            background-color: @tree-active-bg;
-        }
     }
 
     &-list {
@@ -194,8 +188,10 @@
         padding: 0 2px;
 
         .@{tree-prefix}-text {
-            flex: 1;
             padding: 0 2px;
+            cursor: pointer;
+
+            .transition-bg();
         }
     }
 
