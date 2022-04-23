@@ -58,7 +58,7 @@
             transform: rotateZ(360deg / @circleCount * (@i - 1));
 
             svg {
-                animation-delay: -@animationDuration + @animationDuration / @circleCount * (@i - 1);
+                animation-delay: -@animationDuration + (@animationDuration / @circleCount * (@i - 1));
             }
         }
     }
