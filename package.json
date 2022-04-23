@@ -109,7 +109,7 @@
         "koa-multer": "^1.0.2",
         "koa-router": "^7.3.0",
         "koa-send": "^4.1.2",
-        "less": "^2.7.3",
+        "less": "^4.1.2",
         "less-loader": "^10.2.0",
         "mini-css-extract-plugin": "^2.6.0",
         "npm-run-all": "^4.1.2",
