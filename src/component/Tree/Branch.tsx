@@ -33,6 +33,32 @@ class Branch extends PureComponent<TreeBranchProps, ListState> {
         if (this.props.expanded && !this.state.hasDoneAnimation) {
             this.setState({ hasDoneAnimation: true })
         }
+
+        if (this.props.expanded) {
+            this.branchVarInject()
+        }
+    }
+
+    componentDidMount() {
+        this.branchVarInject()
+    }
+
+    /** directory模式下计算line的位置（伪类中使用） */
+    branchVarInject = () => {
+        const { datum, directory, line, id, isRoot } = this.props
+
+        if (!directory || !line || !this.element || isRoot) return
+
+        const result = datum.getPath(id)
+
+        const { path } = result
+
+        /**
+         * @description 伪类设置css样式
+         * @see https://stackoverflow.com/questions/311052/setting-css-pseudo-class-rules-from-javascript
+         */
+
+        this.element.style.setProperty('--var-branch-pl', `${20 * path.length}px`)
     }
 
     getKey = (data, index) => {

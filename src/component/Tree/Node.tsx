@@ -35,10 +35,19 @@ class Node extends PureComponent<TreeNodeProps, TreeNodeState> {
     }
 
     componentDidMount() {
+        const { id, datum, bindNode, directory } = this.props
+
         /** For drag */
-        const { active } = this.props.bindNode(this.props.id, this.update)
+        const { active } = bindNode(id, this.update)
 
         this.setState({ active })
+
+        /** 目录模式下暂时不支持拖动，此逻辑可行,后期如果目录模式下可以拖动，需要重新updatePaddingLeft */
+        if (directory) {
+            const { path } = datum.getPath(id)
+
+            this.element.style.setProperty('--var-node-pl', `${20 * path.length}px`)
+        }
     }
 
     componentWillUnmount() {

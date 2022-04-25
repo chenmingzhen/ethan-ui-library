@@ -6,6 +6,7 @@ import classnames from 'classnames'
 import { treeClass } from '@/styles'
 import { UpdateEvent, ITreeProps } from './type'
 import Branch from './Branch'
+import Directory from './Directory'
 
 interface TreeState {
     active: React.Key
@@ -19,6 +20,8 @@ class Tree<T = any> extends PureComponent<ITreeProps<T>, TreeState> {
     datum: DatumTree
 
     static displayName = 'EthanTree'
+
+    static Directory = Directory
 
     static defaultProps = {
         data: [],
@@ -282,6 +285,7 @@ class Tree<T = any> extends PureComponent<ITreeProps<T>, TreeState> {
                 iconClass={iconClass}
                 unbindList={this.unbindList}
                 bindList={this.bindList}
+                directory={directory}
                 isRoot
                 expanded
             />

@@ -3,10 +3,12 @@ import { PureComponent } from '@/utils/component'
 import Tree from './Tree'
 import { DirectoryProps } from './type'
 
-export default class Directory extends PureComponent<DirectoryProps> {
+export default class Directory<T extends any> extends PureComponent<DirectoryProps<T>> {
+    static displayName = 'EthanTreeDirectory'
+
     render() {
         return (
-            <Tree
+            <Tree<T>
                 {...this.props}
                 directory
                 nodeContentTextTag="div"

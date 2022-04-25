@@ -60,6 +60,7 @@ export interface TreeNodeProps {
     doubleClickExpand: TreeProps['doubleClickExpand']
     iconClass: TreeProps['iconClass']
     nodeContentTextTag: ITreeProps['nodeContentTextTag']
+    directory: ITreeProps['directory']
 }
 
 export interface TreeNodeState {
@@ -107,6 +108,7 @@ export interface TreeBranchProps {
     doubleClickExpand: TreeProps['doubleClickExpand']
     iconClass: TreeProps['iconClass']
     nodeContentTextTag: ITreeProps['nodeContentTextTag']
+    directory: ITreeProps['directory']
 }
 
 export interface TreeListProps extends TreeBranchProps {
@@ -141,7 +143,7 @@ export interface TreeProps<T = any> {
     doubleClickExpand?: boolean
     className?: string
     style?: React.CSSProperties
-    keygen?: keyof T | ((data: T, id: React.Key) => string)
+    keygen: keyof T | ((data: T, id: React.Key) => string)
     renderItem?: ((data: T, isExpanded: boolean, id: React.Key) => React.ReactNode) | keyof T
     childrenClass?: (data: T) => string
     leafClass?: (data: T) => string

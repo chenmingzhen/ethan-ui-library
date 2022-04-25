@@ -6,6 +6,19 @@
 .@{tree-prefix} {
     position: relative;
 
+    .transition-bg() {
+        background-color: transparent;
+        transition: background-color 0.2s ease;
+
+        &:hover {
+            background-color: @tree-hover-bg;
+        }
+
+        &.@{tree-prefix}-active {
+            background-color: @tree-active-bg;
+        }
+    }
+
     &-root,
     &-branch {
         &.@{tree-prefix}-expanded {
@@ -14,13 +27,37 @@
         }
     }
 
-    &-branch {
+    &-branch:not(.@{tree-prefix}-directory) {
         padding-left: @tree-indicator-size;
     }
 
-    &-director {
-        &-node {
+    &-directory {
+        .@{tree-prefix}-node {
+            padding-left: var(--var-node-pl, 0);
             .transition-bg();
+        }
+
+        .@{tree-prefix}-text {
+            flex: 1;
+        }
+    }
+
+    &:not(&-directory) {
+        .@{tree-prefix}-text {
+            border-radius: 3px;
+            .transition-bg();
+        }
+    }
+
+    &-content {
+        z-index: 10;
+        display: flex;
+        flex: 1;
+        padding: 0 2px;
+
+        .@{tree-prefix}-text {
+            padding: 1px 2px;
+            cursor: pointer;
         }
     }
 
@@ -41,6 +78,11 @@
 
             > .@{tree-prefix}-node {
                 background-color: @tree-drag-bg;
+
+                .@{tree-prefix}-text {
+                    transition: none;
+                    background-color: transparent;
+                }
             }
         }
     }
@@ -67,16 +109,17 @@
                 top: 0;
                 bottom: 0;
                 left: 15px;
-                width: 1px;
-                background: linear-gradient(
-                    to bottom,
-                    @tree-line-color,
-                    @tree-line-color 1px,
-                    transparent 1px,
-                    transparent
-                );
+                width: 0.5px;
+                background: rgba(0, 0, 0, 0.1);
                 background-size: 100% 2px;
                 content: ' ';
+            }
+        }
+
+        &.@{tree-prefix}-directory.@{tree-prefix}-branch {
+            &:before {
+                left: calc(var(--var-branch-pl) + 5px);
+                z-index: 10;
             }
         }
 
@@ -179,20 +222,6 @@
         margin-left: 5px;
         width: 100%;
         height: 100%;
-    }
-
-    &-content {
-        z-index: 10;
-        display: flex;
-        flex: 1;
-        padding: 0 2px;
-
-        .@{tree-prefix}-text {
-            padding: 0 2px;
-            cursor: pointer;
-
-            .transition-bg();
-        }
     }
 
     &-checkbox {
