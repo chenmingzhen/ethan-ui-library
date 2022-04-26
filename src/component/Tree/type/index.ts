@@ -125,7 +125,7 @@ export interface TreeProps<T = any> {
     data: T[]
     defaultExpanded?: React.Key[]
     defaultValue?: React.Key[]
-    disabled?: boolean
+    disabled?: boolean | ((data: T) => boolean)
     expanded?: React.Key[]
     line?: boolean
     loader?: (id: React.Key, data: T, pathValue: NodeInfo) => void
