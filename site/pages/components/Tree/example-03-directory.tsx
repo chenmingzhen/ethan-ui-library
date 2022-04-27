@@ -1,74 +1,39 @@
 /**
- * cn - 点击事件
- *    -- 设置 onClick 属性监听节点点击
- * en - Click
- *    -- Set the onClick property to listen the node click.
+ * cn - 目录
+ *    -- 目录模式
+ * en - Directory
+ *    -- Use Tree.Directory.
  */
-import React, { Component } from 'react'
-import immer from 'immer'
-import { Tree } from 'ethan/index'
-import tree from 'doc/data/tree'
+import React from 'react'
+import { FontAwesome, Tree } from 'ethan'
+import data from 'doc/data/tree'
 
-export default class extends Component {
-    constructor(props) {
-        super(props)
-        this.state = { active: undefined, data: tree }
-        this.defaultExpanded = ['1']
-    }
+export default function() {
+    return (
+        <Tree.Directory
+            data={data}
+            keygen="id"
+            renderItem={(node, isExpanded) => {
+                let icon
+                if (!node.children || node.children.length === 0) {
+                    icon = <FontAwesome name="file-text-o" />
+                } else if (isExpanded) {
+                    icon = <FontAwesome name="folder-open" style={{ color: '#ffd666' }} />
+                } else {
+                    icon = <FontAwesome name="folder" style={{ color: '#ffd666' }} />
+                }
 
-    handleClick = (node, id) => {
-        console.log('click', id)
-        this.setState({ active: id })
-    }
-
-    handleEdit = event => {
-        const newText = event.target.value
-        const path = this.state.active.split(',')
-        this.setState(
-            immer(draft => {
-                let { data } = draft
-                path.forEach((id, index) => {
-                    data = data.find(d => d.id === id)
-                    if (index < path.length - 1) data = data.children
-                })
-                data.text = newText
-                draft.active = undefined
-            })
-        )
-    }
-
-    handleKeyDown = event => {
-        if (event.keyCode === 13) event.target.blur()
-    }
-
-    keyGenerator = (node, parentKey) => `${parentKey},${node.id}`.replace(/^,/, '')
-
-    renderItem = (node, isExpanded, isActive) =>
-        isActive ? (
-            <input
-                // eslint-disable-next-line
-                autoFocus
-                size="small"
-                onBlur={this.handleEdit}
-                onKeyDown={this.handleKeyDown}
-                defaultValue={node.text}
-                type="text"
-            />
-        ) : (
-            `node ${node.text}`
-        )
-
-    render() {
-        return (
-            <Tree
-                active={this.state.active}
-                data={this.state.data}
-                keygen={this.keyGenerator}
-                defaultExpanded={this.defaultExpanded}
-                onClick={this.handleClick}
-                onExpand={this.handleExpand}
-                renderItem={this.renderItem}
-            />
-        )
-    }
+                return (
+                    <span style={{ fontSize: '16px' }}>
+                        {icon} {node.text}
+                    </span>
+                )
+            }}
+            doubleClickExpand
+            expandIcons={[
+                <FontAwesome name="angle-right" key="angle-right" style={{ fontSize: '16px', color: '#adb5bd' }} />,
+                <FontAwesome name="angle-down" key="angle-down" style={{ fontSize: '16px', color: '#adb5bd' }} />,
+            ]}
+        />
+    )
 }

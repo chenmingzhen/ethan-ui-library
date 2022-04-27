@@ -36,3 +36,11 @@
 | onClick | (data: object) => void | none | node click |
 | iconClass | string | - | expand/collapse button's class |
 | nodeClass | string \| ((data: any) => string) | - | The class of the node, if it is a function, the parameter is the node data. |
+
+### Tree.Directory
+
+**The tree.directory component is identical to the Props of the Tree, but does not contain the Props below**
+
+* mode
+* onDrop
+* onChange

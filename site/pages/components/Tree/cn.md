@@ -9,6 +9,9 @@
 
 ## API
 
+
+### Tree
+
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
 | className | string | 无 | 扩展className |
@@ -36,3 +39,14 @@
 | onClick | (data: object) => void | 无 | 节点点击事件 |
 | iconClass | string | 无 | 展开/收起按钮的类名 |
 | nodeClass | string \| ((data: any) => string) | 无 | 节点的class，如果是函数，参数为该节点数据 |
+
+### Tree.Directory
+
+**Tree.Directory组件与Tree的Props一致，但不包含下面的Props**
+
+* mode
+* onDrop
+* onChange
+
+
+
