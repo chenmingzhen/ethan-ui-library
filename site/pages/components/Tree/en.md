@@ -36,6 +36,7 @@
 | onClick | (data: object) => void | none | node click |
 | iconClass | string | - | expand/collapse button's class |
 | nodeClass | string \| ((data: any) => string) | - | The class of the node, if it is a function, the parameter is the node data. |
+| dragImageSelector | (data: object) => string \| string | - | the selector of drag image |
 
 ### Tree.Directory
 
@@ -44,3 +45,4 @@
 * mode
 * onDrop
 * onChange
+* dragImageSelector

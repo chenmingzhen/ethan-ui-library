@@ -73,14 +73,15 @@ class Node extends PureComponent<TreeNodeProps, TreeNodeState> {
 
         dragId = this.props.id
 
-        const { dragImageStyle } = this.props
+        const { dragImageStyle, dragImageSelector, data } = this.props
 
         /** DataTransfer 对象用于保存拖动并放下（drag and drop）过程中的数据 */
         /** @see https://developer.mozilla.org/zh-CN/docs/Web/API/DataTransfer */
         evt.dataTransfer.effectAllowed = 'copyMove'
         // evt.dataTransfer.setData('origin', String(id))
 
-        const dragImage = this.element.querySelector(`.${treeClass('content')}`)
+        const dragImage =
+            document.querySelector(dragImageSelector?.(data)) || this.element.querySelector(`.${treeClass('content')}`)
 
         const rect = dragImage.getBoundingClientRect()
 

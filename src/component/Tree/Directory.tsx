@@ -15,6 +15,7 @@ export default class Directory<T extends any> extends PureComponent<DirectoryPro
                 mode={undefined}
                 onChange={undefined}
                 onDrop={undefined}
+                dragImageSelector={undefined}
             />
         )
     }

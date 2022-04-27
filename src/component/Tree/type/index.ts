@@ -61,6 +61,7 @@ export interface TreeNodeProps {
     iconClass: TreeProps['iconClass']
     nodeContentTextTag: ITreeProps['nodeContentTextTag']
     directory: ITreeProps['directory']
+    dragImageSelector: TreeProps['dragImageSelector']
 }
 
 export interface TreeNodeState {
@@ -109,6 +110,7 @@ export interface TreeBranchProps {
     iconClass: TreeProps['iconClass']
     nodeContentTextTag: ITreeProps['nodeContentTextTag']
     directory: ITreeProps['directory']
+    dragImageSelector: TreeProps['dragImageSelector']
 }
 
 export interface TreeListProps extends TreeBranchProps {
@@ -150,6 +152,7 @@ export interface TreeProps<T = any> {
     dragHoverExpand?: boolean
     iconClass?: string
     onNodeClick?: (node: T, id: React.Key) => void
+    dragImageSelector?: (data: T) => string
 }
 
 export interface ITreeProps<T = any> extends TreeProps<T> {
@@ -158,6 +161,6 @@ export interface ITreeProps<T = any> extends TreeProps<T> {
     nodeContentTextTag?: keyof HTMLElementTagNameMap
 }
 
-export type DirectoryProps<T = any> = Omit<TreeProps<T>, 'onDrop' | 'mode' | 'onChange'>
+export type DirectoryProps<T = any> = Omit<TreeProps<T>, 'onDrop' | 'mode' | 'onChange' | 'dragImageSelector'>
 
 export type UpdateEvent = (value: boolean) => void

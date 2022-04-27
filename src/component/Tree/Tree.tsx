@@ -249,6 +249,7 @@ class Tree<T = any> extends PureComponent<ITreeProps<T>, TreeState> {
             iconClass,
             directory,
             nodeContentTextTag,
+            dragImageSelector,
         } = this.props
         const onToggle = onExpand ? this.handleToggle : undefined
 
@@ -286,6 +287,7 @@ class Tree<T = any> extends PureComponent<ITreeProps<T>, TreeState> {
                 unbindList={this.unbindList}
                 bindList={this.bindList}
                 directory={directory}
+                dragImageSelector={dragImageSelector}
                 isRoot
                 expanded
             />

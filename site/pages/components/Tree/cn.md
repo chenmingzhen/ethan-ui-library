@@ -39,6 +39,8 @@
 | onClick | (data: object) => void | 无 | 节点点击事件 |
 | iconClass | string | 无 | 展开/收起按钮的类名 |
 | nodeClass | string \| ((data: any) => string) | 无 | 节点的class，如果是函数，参数为该节点数据 |
+| dragImageSelector | (data: object) => string \| string | 无 | 定义拖拽图片的选择器 |
+
 
 ### Tree.Directory
 
@@ -47,6 +49,6 @@
 * mode
 * onDrop
 * onChange
-
+* dragImageSelector
 
 

@@ -1,8 +1,8 @@
 /**
  * cn - 设置拖动样式
- *    -- 可以通过 dragImageStyle, dragHoverExpand定义一些拖动的设置
+ *    -- 可以通过 dragImageSelector, dragImageStyle, dragHoverExpand定义一些拖动的设置
  * en - Set the drag style
- *    -- Some drag settings can be defined by dragImageStyle, dragHoverExpand
+ *    -- Some drag settings can be defined by dragImageSelector, dragImageStyle, dragHoverExpand
  */
 import React, { Component } from 'react'
 import { Tree } from 'ethan/index'
@@ -36,6 +36,7 @@ export default class extends Component {
                 onDrop={this.handleDrop}
                 dragImageStyle={{ color: 'red' }}
                 renderItem={this.renderItem}
+                dragImageSelector={d => `#node-id-${d.id}`}
                 dragHoverExpand
             />
         )
