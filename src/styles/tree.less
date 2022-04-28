@@ -4,198 +4,241 @@
 @tree-prefix: ~'@{ethan-prefix}-tree';
 
 .@{tree-prefix} {
-  position: relative;
-
-  &-node {
     position: relative;
-    padding-left: @tree-indicator-size;
-    line-height: @line-height-base;
 
-    > .@{tree-prefix}-children {
-      margin-left: @tree-level-indent;
-    }
+    .transition-bg() {
+        background-color: transparent;
+        transition: background-color 0.2s ease;
 
-    & > div {
-      padding-bottom: @tree-node-margin-bottom;
-    }
-
-    &:last-child > div {
-      padding-bottom: 0;
-    }
-  }
-
-  &-with-line {
-    > .@{tree-prefix}-node:only-child:before {
-      display: none;
-    }
-
-    .@{tree-prefix}-node {
-      &:before {
-        position: absolute;
-        top: 0;
-        bottom: 0;
-        left: 5px;
-        width: 1px;
-        background: linear-gradient(to bottom, @tree-line-color, @tree-line-color 1px, transparent 1px, transparent);
-        background-size: 100% 2px;
-        content: ' ';
-      }
-
-      &:after {
-        position: absolute;
-        top: 9px;
-        left: 6px;
-        width: 11px;
-        height: 1px;
-        background: linear-gradient(to right, @tree-line-color, @tree-line-color 1px, transparent 1px, transparent);
-        background-size: 2px 100%;
-        content: ' ';
-      }
-
-      &:last-child:before {
-        top: -4px;
-        bottom: auto;
-        height: 14px;
-      }
-
-      &:first-child:before {
-        top: -4px;
-      }
-    }
-
-    &.@{tree-prefix} > .@{tree-prefix}-node:first-child:before {
-      top: 9px;
-    }
-
-    .@{tree-prefix}-icon-plus,
-    .@{tree-prefix}-icon-sub {
-      position: absolute;
-      z-index: 10;
-      top: 0px;
-      left: 0px;
-
-      &:hover span.@{tree-prefix}-default-icon {
-        border-color: @colors-primary;
-      }
-
-      &:focus span.@{tree-prefix}-default-icon {
-        .input-focus();
-      }
-
-      span.@{tree-prefix}-default-icon {
-        position: relative;
-        display: inline-block;
-        width: 11px;
-        height: 11px;
-        border: solid 1px @tree-indicator-color;
-        background: #fff;
-        border-radius: 2px;
-
-        &:before {
-          position: absolute;
-          top: 4px;
-          left: 1px;
-          display: block;
-          width: 7px;
-          height: 0;
-          border-bottom: solid 1px transparent;
-          border-color: inherit;
-          content: ' ';
+        &:hover {
+            background-color: @tree-hover-bg;
         }
-      }
+
+        &.@{tree-prefix}-active {
+            background-color: @tree-active-bg;
+        }
     }
 
-    .@{tree-prefix}-icon-plus span.@{tree-prefix}-default-icon {
-      &:after {
-        position: absolute;
-        top: 1px;
-        left: 4px;
-        display: block;
-        width: 0;
-        height: 7px;
-        border-right: solid 1px transparent;
-        border-color: inherit;
-        content: ' ';
-      }
+    &-root,
+    &-branch {
+        &.@{tree-prefix}-expanded {
+            /* AnimationHeight中有溢出隐藏属性，在branch最后一个元素中会把dragger-place隐藏掉 */
+            padding-bottom: 1px;
+        }
     }
-  }
 
-  &-no-line {
-    .@{tree-prefix}-icon-plus,
-    .@{tree-prefix}-icon-sub {
-      position: absolute;
-      z-index: 10;
-      top: 0px;
-      left: 0px;
-      width: 16px;
+    &-branch:not(.@{tree-prefix}-directory) {
+        padding-left: @tree-indicator-size;
+    }
 
-      &:after {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        display: inline-block;
-        padding: 10px;
-      }
+    &-directory {
+        .@{tree-prefix}-node {
+            padding-left: var(--var-node-pl, 0);
+            .transition-bg();
+        }
 
-      &:hover span.@{tree-prefix}-default-icon {
-        border-left-color: @colors-primary;
-      }
+        .@{tree-prefix}-text {
+            flex: 1;
+        }
+    }
 
-      span.@{tree-prefix}-default-icon {
-        position: absolute;
-        top: 6px;
-        left: 6px;
-        display: inline-block;
-        width: 0;
+    &:not(&-directory) {
+        .@{tree-prefix}-text {
+            border-radius: 3px;
+            .transition-bg();
+        }
+    }
+
+    &-content {
+        z-index: 10;
+        display: flex;
+        flex: 1;
+        padding: 0 2px;
+
+        .@{tree-prefix}-text {
+            padding: 1px 2px;
+            cursor: pointer;
+        }
+    }
+
+    &-node {
+        position: relative;
+        line-height: @line-height-base;
+        padding: 0 10px;
+        box-sizing: content-box;
+        user-select: none;
+    }
+
+    &-list {
+        box-sizing: content-box;
+        position: relative;
+
+        &.@{tree-prefix}-isDragging {
+            border: 1px solid @tree-drag-border-bg;
+
+            > .@{tree-prefix}-node {
+                background-color: @tree-drag-bg;
+
+                .@{tree-prefix}-text {
+                    transition: none;
+                    background-color: transparent;
+                }
+            }
+        }
+    }
+
+    &-item {
+        display: flex;
+        align-items: center;
+        padding-bottom: @tree-node-margin-bottom;
+    }
+
+    &-indicator {
+        line-height: 15px;
+        display: inline;
+        width: 15px;
+        height: 15px;
+        box-sizing: content-box;
+    }
+
+    &-with-line {
+        &.@{tree-prefix}-branch {
+            &:before {
+                height: 100%;
+                position: absolute;
+                top: 0;
+                bottom: 0;
+                left: 15px;
+                width: 0.5px;
+                background: rgba(0, 0, 0, 0.1);
+                background-size: 100% 2px;
+                content: ' ';
+            }
+        }
+
+        &.@{tree-prefix}-directory.@{tree-prefix}-branch {
+            &:before {
+                left: calc(var(--var-branch-pl) + 5px);
+                z-index: 10;
+            }
+        }
+
+        > .@{tree-prefix}-node:only-child:before {
+            display: none;
+        }
+
+        .@{tree-prefix}-icon-plus,
+        .@{tree-prefix}-icon-sub {
+            position: relative;
+            width: 100%;
+            height: 100%;
+
+            &:hover span.@{tree-prefix}-default-icon {
+                border-color: @colors-primary;
+            }
+
+            &:focus span.@{tree-prefix}-default-icon {
+                .input-focus();
+            }
+
+            span.@{tree-prefix}-default-icon {
+                position: relative;
+                display: inline-block;
+                width: 11px;
+                height: 11px;
+                border: solid 1px @tree-indicator-color;
+                background: #fff;
+                border-radius: 2px;
+
+                &:before {
+                    position: absolute;
+                    top: 4px;
+                    left: 1px;
+                    display: block;
+                    width: 7px;
+                    height: 0;
+                    border-bottom: solid 1px transparent;
+                    border-color: inherit;
+                    content: ' ';
+                }
+            }
+        }
+
+        .@{tree-prefix}-icon-plus span.@{tree-prefix}-default-icon {
+            &:after {
+                position: absolute;
+                top: 1px;
+                left: 4px;
+                display: block;
+                width: 0;
+                height: 7px;
+                border-right: solid 1px transparent;
+                border-color: inherit;
+                content: ' ';
+            }
+        }
+    }
+
+    &-no-line {
+        .@{tree-prefix}-icon-plus,
+        .@{tree-prefix}-icon-sub {
+            position: relative;
+            width: 100%;
+            height: 100%;
+
+            &:after {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                display: inline-block;
+            }
+
+            &:hover span.@{tree-prefix}-default-icon {
+                border-left-color: @colors-primary;
+            }
+
+            span.@{tree-prefix}-default-icon {
+                position: absolute;
+                top: 6px;
+                left: 6px;
+                display: inline-block;
+                width: 0;
+                height: 0;
+                border-width: 4px 5px;
+                border-style: solid;
+                border-color: transparent transparent transparent @tree-indicator-color;
+                transform-origin: 2px 4px;
+                transition: transform 0.2s linear;
+            }
+        }
+
+        .@{tree-prefix}-icon-sub span.@{tree-prefix}-default-icon {
+            transform: rotate(90deg);
+        }
+    }
+
+    &-icon-loading {
+        margin-left: 5px;
+        width: 100%;
+        height: 100%;
+    }
+
+    &-checkbox {
+        z-index: 10;
+        margin: 2px 6px 0 -2px;
+        font-size: 0;
+    }
+
+    &-drag-place {
+        position: relative;
+        z-index: 0;
+        width: 100%;
         height: 0;
-        border-width: 4px 5px;
-        border-style: solid;
-        border-color: transparent transparent transparent @tree-indicator-color;
-        transform-origin: 2px 4px;
-        transition: transform 0.2s linear;
-      }
+
+        div {
+            border: dashed 1px #ddd;
+            background: @gray-100;
+        }
     }
-
-    .@{tree-prefix}-icon-sub span.@{tree-prefix}-default-icon {
-      transform: rotate(90deg);
-    }
-  }
-
-  &-icon-loading {
-    position: absolute;
-    z-index: 10;
-    top: 3px;
-    left: 0px;
-    width: 12px;
-    height: 12px;
-    background: #fff;
-  }
-
-  &-content {
-    z-index: 10;
-    display: flex;
-
-    .@{tree-prefix}-text {
-      flex: 1;
-    }
-  }
-
-  &-checkbox {
-    z-index: 10;
-    margin: 2px 6px 0 -2px;
-    font-size: 0;
-  }
-
-  &-drag-place {
-    position: relative;
-    z-index: 0;
-    width: 100%;
-    height: 0;
-
-    div {
-      border: dashed 1px #ddd;
-      background: @gray-100;
-    }
-  }
 }

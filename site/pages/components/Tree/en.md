@@ -29,7 +29,6 @@
 | defaultExpandAll | boolean | false | default expand all nodes | 
 | childrenKey | string | 'children' | the key of the children data name | 
 | expandIcons | \[ReactNode, ReactNode] | none | custom expand/collapse button |
-| dragImageSelector | (data: object) => string \| string | - | the selector of drag image |
 | dragImageStyle | object | - | the style of drag Image |
 | leafClass | (data: object) => string \| string | - | the class of lead, the params of function is data |
 | dragHoverExpand | boolean | false | auto expand the node when drag over |
@@ -37,4 +36,13 @@
 | onClick | (data: object) => void | none | node click |
 | iconClass | string | - | expand/collapse button's class |
 | nodeClass | string \| ((data: any) => string) | - | The class of the node, if it is a function, the parameter is the node data. |
-| dragSibling | boolean  | - | whether drag can only be level |
+| dragImageSelector | (data: object) => string \| string | - | the selector of drag image |
+
+### Tree.Directory
+
+**The tree.directory component is identical to the Props of the Tree, but does not contain the Props below**
+
+* mode
+* onDrop
+* onChange
+* dragImageSelector

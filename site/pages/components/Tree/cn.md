@@ -9,6 +9,9 @@
 
 ## API
 
+
+### Tree
+
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
 | className | string | 无 | 扩展className |
@@ -29,7 +32,6 @@
 | defaultExpandAll | boolean | false | 默认展开所有节点 | 
 | childrenKey | string | 'children' | 指定子数据的属性名 |
 | expandIcons | \[ReactNode, ReactNode] | 无 | 自定义展开/收起按钮 |
-| dragImageSelector | (data: object) => string \| string | 无 | 定义拖拽图片的选择器 |
 | dragImageStyle | object | 无 | 拖拽图片的样式 |
 | leafClass | (data: object) => string \| string | 无 | 叶子节点的 class, 函数的参数为该条叶子节点数据 |
 | dragHoverExpand | boolean | false | 拖拽时自动展开含有子节点的节点 |
@@ -37,4 +39,16 @@
 | onClick | (data: object) => void | 无 | 节点点击事件 |
 | iconClass | string | 无 | 展开/收起按钮的类名 |
 | nodeClass | string \| ((data: any) => string) | 无 | 节点的class，如果是函数，参数为该节点数据 |
-| dragSibling | boolean  | 无 | 是否只能平级拖拽 |
+| dragImageSelector | (data: object) => string \| string | 无 | 定义拖拽图片的选择器 |
+
+
+### Tree.Directory
+
+**Tree.Directory组件与Tree的Props一致，但不包含下面的Props**
+
+* mode
+* onDrop
+* onChange
+* dragImageSelector
+
+
