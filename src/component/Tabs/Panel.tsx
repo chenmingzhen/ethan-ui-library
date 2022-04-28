@@ -1,7 +1,7 @@
 import React, { useRef } from 'react'
 import classnames from 'classnames'
 import { tabsClass } from '@/styles'
-import List from '../List'
+import AnimationHeight from '../List/AnimationHeight'
 import { TabsPanelProps } from './type'
 
 interface ITabsPanelProps extends TabsPanelProps {
@@ -16,7 +16,7 @@ export interface ComputedPanelComponent extends React.MemoExoticComponent<React.
     IS_ETHAN_PANEL: boolean
 }
 
-const CollapseList = List(['collapse'], 'fast')
+// const CollapseList = List(['collapse'], 'fast')
 
 const Panel: React.FC<ITabsPanelProps> = props => {
     const { children, isActive, collapsible, collapsed, lazy, style, background } = props
@@ -39,7 +39,11 @@ const Panel: React.FC<ITabsPanelProps> = props => {
     if (!collapsible) return result
 
     // 处理折叠情况
-    return <CollapseList show={!collapsed}>{result}</CollapseList>
+    return (
+        <AnimationHeight show={!collapsed} height={!collapsed ? 'auto' : 0}>
+            {result}
+        </AnimationHeight>
+    )
 }
 
 const ComputedPanel = (Panel as unknown) as ComputedPanelComponent
