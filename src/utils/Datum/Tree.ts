@@ -1,17 +1,25 @@
 import { CheckboxProps } from '@/component/Checkbox/type'
 import React from 'react'
 
-interface TreeDatumOptions {
+export interface KeygenParams {
+    data: any
+
+    parentKey?: React.Key
+
+    index: number
+}
+
+export interface TreeDatumOptions {
     /** 数据源 */
     data: any
     /** 当前选中的值 */
     value: any
 
-    keygen: ((data: any, parentKey: string) => string) | string
+    keygen: (params: KeygenParams) => string
 
     mode: number
 
-    disabled: boolean | (() => boolean)
+    disabled: boolean | ((data: any) => boolean)
 
     childrenKey: string
 }
@@ -43,7 +51,7 @@ export interface NodeInfo {
 }
 
 export default class {
-    keygen: ((data: any, parentKey: string) => string) | string
+    keygen: TreeDatumOptions['keygen']
 
     mode: number
 
@@ -128,7 +136,7 @@ export default class {
         const ids = []
 
         data.forEach((d, i) => {
-            const id = this.getKey(d, path[path.length - 1], i)
+            const id = this.keygen({ data: d, parentKey: path[path.length - 1], index: i })
 
             if (this.dataMap.get(id)) {
                 console.warn(`There is already a key "${id}" exists. The key must be unique.`)
@@ -288,14 +296,6 @@ export default class {
         if (value === 2) checked = 'indeterminate'
 
         return checked
-    }
-
-    getKey(data, id = '', index) {
-        if (typeof this.keygen === 'function') return this.keygen(data, id)
-
-        if (this.keygen) return data[this.keygen]
-
-        return id + (id ? ',' : '') + index
     }
 
     setData(data) {

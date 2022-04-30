@@ -61,6 +61,8 @@ const REDUNDANT = 4
 function initRoot() {
     root = document.createElement('div')
 
+    root.className = 'ethan-absolute-root'
+
     document.body.appendChild(root)
 }
 
@@ -128,6 +130,12 @@ function generateAbsoluteList(ListComponent: React.FC<GenerateAbsoluteListProps>
             this.resetPosition()
         }
 
+        componentWillUnmount() {
+            if (this.element) {
+                root.removeChild(this.element)
+            }
+        }
+
         render = () => {
             if (!this.props.absolute) {
                 return this.renderList()
@@ -144,6 +152,7 @@ function generateAbsoluteList(ListComponent: React.FC<GenerateAbsoluteListProps>
                 autoClass,
                 zIndex,
                 value,
+                fixed,
                 ...props
             } = this.props
 
