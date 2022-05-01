@@ -5,11 +5,9 @@ import { listClass } from '@/styles'
 import { Component } from '@/utils/component'
 import shallowEqual from '@/utils/shallowEqual'
 import { docScroll, docSize } from '@/utils/dom/document'
-import { compose } from '@/utils/func'
-import { scrollConsumer } from '../Scroll/context'
 import { ListProps } from '.'
 
-interface AbsoluteListProps {
+interface AbsoluteListProps extends Omit<ListProps, 'show'> {
     focus?: boolean
 
     fixed?: boolean | 'min'
@@ -22,21 +20,16 @@ interface AbsoluteListProps {
 
     scrollElement?: HTMLElement
 
-    scrollLeft?: number
-
-    scrollTop?: number
-
+    /** 传送门的类名 */
     rootClass?: string
-
-    zIndex?: number
 
     style?: React.CSSProperties
 
     autoClass?: string
 
-    value?: any
+    zIndex?: number
 
-    className?: string
+    value?: any
 }
 
 interface AbsoluteListState {
@@ -146,13 +139,11 @@ function generateAbsoluteList(ListComponent: React.FC<GenerateAbsoluteListProps>
                 rootClass,
                 absolute,
                 position,
-                scrollLeft,
-                scrollTop,
                 scrollElement,
                 autoClass,
-                zIndex,
                 value,
                 fixed,
+                zIndex,
                 ...props
             } = this.props
 
@@ -163,13 +154,11 @@ function generateAbsoluteList(ListComponent: React.FC<GenerateAbsoluteListProps>
             this.element.className = className
 
             const mergeStyle = Object.assign(
-                {},
+                { zIndex },
                 style,
                 props.style,
                 this.state.overDoc ? { right: 0, left: 'auto' } : undefined
             )
-
-            if (zIndex || typeof zIndex === 'number') mergeStyle.zIndex = zIndex
 
             return ReactDOM.createPortal(
                 <ListComponent getRef={this.bindListRef} {...props} focus={focus} style={mergeStyle} />,
@@ -184,21 +173,22 @@ function generateAbsoluteList(ListComponent: React.FC<GenerateAbsoluteListProps>
                 focus,
                 rootClass,
                 position,
-                scrollLeft,
-                scrollTop,
                 scrollElement,
                 style = {},
                 zIndex,
                 ...props
             } = this.props
 
-            if (style?.zIndex) style.zIndex = zIndex
-
-            const mergeStyle = Object.assign({}, style, this.state.overDoc ? { right: 0, left: 'auto' } : undefined)
+            const mergeStyle = Object.assign(
+                { zIndex },
+                style,
+                this.state.overDoc ? { right: 0, left: 'auto' } : undefined
+            )
 
             return <ListComponent getRef={this.bindListRef} {...props} focus={focus} style={mergeStyle} />
         }
 
+        /** 若传入getRef，则不处理AbsoluteList内的List样式，由上层组件自行处理 */
         resetPosition = () => {
             const { focus } = this.props
 
@@ -206,7 +196,7 @@ function generateAbsoluteList(ListComponent: React.FC<GenerateAbsoluteListProps>
 
             const pos = this.listEl.getBoundingClientRect()
 
-            const overDoc = pos.left + pos.width > docSize.width
+            const overDoc = Math.abs(pos.left) + pos.width > docSize.width
 
             if (this.state.overDoc === overDoc) return
 
@@ -270,7 +260,7 @@ function generateAbsoluteList(ListComponent: React.FC<GenerateAbsoluteListProps>
         }
     }
 
-    return compose(scrollConsumer)(AbsoluteList) as typeof AbsoluteList
+    return AbsoluteList
 }
 
 export default generateAbsoluteList
