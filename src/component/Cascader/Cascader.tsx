@@ -11,8 +11,11 @@ import Result from './Result'
 import CascaderList from './List'
 import absoluteList from '../List/AbsoluteList'
 import { CascaderState, CascaderProps } from './type'
+import List from '../List'
 
-const OptionList = absoluteList(({ focus, getRef, ...other }) => (focus ? <div {...other} /> : null))
+const FadeList = List(['fade', 'scale-y'], 'fast', 'inline-flex')
+
+const OptionList = absoluteList(({ focus, ...other }) => <FadeList show={focus} {...other} />)
 
 class Cascader<T extends any> extends PureComponent<CascaderProps, CascaderState> {
     static defaultProps = {
@@ -31,7 +34,7 @@ class Cascader<T extends any> extends PureComponent<CascaderProps, CascaderState
 
     containerElementRef = React.createRef<HTMLDivElement>()
 
-    listRef = React.createRef<HTMLDivElement>()
+    list: HTMLDivElement
 
     constructor(props) {
         super(props)
@@ -53,8 +56,12 @@ class Cascader<T extends any> extends PureComponent<CascaderProps, CascaderState
         })
     }
 
-    componentDidUpdate() {
+    componentDidUpdate(prevProps: CascaderProps) {
         this.resetListStyle()
+
+        if (prevProps.value !== this.props.value) this.datum.setValue(this.props.value || [])
+
+        if (prevProps.data !== this.props.data) this.datum.setData(this.props.data)
     }
 
     keygen = ({ data, parentKey = '', index }: KeygenParams) => {
@@ -159,9 +166,9 @@ class Cascader<T extends any> extends PureComponent<CascaderProps, CascaderState
     }
 
     resetListStyle = () => {
-        if (!this.listRef.current) return
+        if (!this.list) return
 
-        const element = this.listRef.current
+        const element = this.list
 
         const { listStyle } = this.state
 
@@ -197,7 +204,7 @@ class Cascader<T extends any> extends PureComponent<CascaderProps, CascaderState
     renderList = () => {
         const { data, renderItem, mode, onChange, loader, onItemClick, expandTrigger, childrenKey, text } = this.props
 
-        const { path, listStyle } = this.state
+        const { path } = this.state
 
         const props = {
             datum: this.datum,
@@ -212,12 +219,11 @@ class Cascader<T extends any> extends PureComponent<CascaderProps, CascaderState
             childrenKey,
             text,
         }
-        const className = classnames(selectClass('options'), cascaderClass('options'))
 
         let nextPathData: any[] = data
 
         return (
-            <div className={className} ref={this.listRef} style={listStyle}>
+            <>
                 <CascaderList {...props} key="root" data={data} currentPathActiveId={path[0]} parentId="" path={[]} />
                 {path.map((id, index) => {
                     nextPathData = nextPathData?.find(d => {
@@ -243,30 +249,36 @@ class Cascader<T extends any> extends PureComponent<CascaderProps, CascaderState
 
                     return null
                 })}
-            </div>
+            </>
         )
     }
 
     renderAbsoluteList = () => {
         const { zIndex, absolute } = this.props
-        const { focus, position } = this.state
-
-        const className = classnames(cascaderClass(focus && 'focus'), selectClass(this.state.position))
+        const { focus, position, listStyle } = this.state
 
         if (!focus && !this.isRendered) return null
 
         this.isRendered = true
 
+        const absoluteRootCls = classnames(cascaderClass(focus && 'focus'), selectClass(this.state.position))
+
+        const className = classnames(selectClass('options'), cascaderClass('options'))
+
         return (
             <OptionList
-                rootClass={className}
+                rootClass={absoluteRootCls}
                 position={position}
                 absolute={absolute}
                 focus={focus}
                 parentElement={this.containerElementRef.current}
                 data-id={this.cascaderId}
                 zIndex={zIndex}
-                fixed="min"
+                className={className}
+                style={listStyle}
+                getRef={list => {
+                    this.list = list
+                }}
             >
                 {this.renderList()}
             </OptionList>
