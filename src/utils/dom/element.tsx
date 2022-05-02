@@ -1,13 +1,16 @@
-// @ts-nocheck
 import React from 'react'
 
-// https://developer.mozilla.org/zh-CN/docs/Web/API/Element/matches
+/** @see https://developer.mozilla.org/zh-CN/docs/Web/API/Element/matches */
 if (Element && !Element.prototype.matches) {
     const proto = Element.prototype
     proto.matches =
+        /** @ts-ignore */
         proto.matchesSelector ||
+        /** @ts-ignore */
         proto.mozMatchesSelector ||
+        /** @ts-ignore */
         proto.msMatchesSelector ||
+        /** @ts-ignore */
         proto.oMatchesSelector ||
         proto.webkitMatchesSelector
 }
@@ -71,15 +74,11 @@ export function cssSupport(attr, value) {
 }
 
 export function getCursorOffset(length) {
-    // https://developer.mozilla.org/zh-cn/docs/web/api/selection/anchoroffset
+    /** @see https://developer.mozilla.org/zh-cn/docs/web/api/selection/anchoroffset */
     if (window.getSelection) {
         return window.getSelection().anchorOffset
     }
-    if (document.selection) {
-        const range = document.selection.createRange()
-        range.moveStart('character', -length)
-        return range.text.length
-    }
+
     return null
 }
 
@@ -99,10 +98,6 @@ function select(element) {
         const sel = window.getSelection()
         sel.removeAllRanges()
         sel.addRange(range)
-    } else if (document.selection) {
-        const range = document.selection.createRange()
-        range.moveToElementText(element)
-        range.select()
     }
 }
 
@@ -123,12 +118,6 @@ function end(element) {
         range.selectAllChildren(element)
         // Selection.collapseToEnd() 方法的作用是取消当前选区，并把光标定位在原选区的最末尾处，如果此时光标所处的位置是可编辑的，且它获得了焦点，则光标会在原地闪烁。
         range.collapseToEnd()
-    } else if (document.selection) {
-        // 兼容IE
-        const range = document.selection.createRange()
-        range.moveToElementText(element)
-        range.collapse(false)
-        range.select()
     }
 }
 
@@ -138,6 +127,57 @@ export function isDescendent(el: HTMLElement, id: string) {
     if (!el.parentElement) return false
 
     return isDescendent(el.parentElement, id)
+}
+
+interface AddResizeObserverOptions {
+    direction?: 'x' | 'y'
+}
+
+export function addResizeObserver(element: HTMLElement, handler: () => void, options: AddResizeObserverOptions = {}) {
+    let lastClientWidth
+
+    let lastClientHeight
+
+    if (window.ResizeObserver) {
+        const { direction } = options
+
+        if (direction) {
+            lastClientWidth = element.clientWidth
+            lastClientHeight = element.clientHeight
+        }
+
+        const observerCallback: ResizeObserverCallback = entries => {
+            const { width, height } = entries[0].contentRect
+
+            if (direction === 'x') {
+                if (lastClientWidth !== width) {
+                    handler()
+                }
+            } else if (direction === 'y') {
+                if (lastClientHeight !== height) {
+                    handler()
+                }
+            }
+
+            lastClientWidth = width
+
+            lastClientHeight = height
+        }
+
+        let observer = new ResizeObserver(observerCallback)
+
+        observer.observe(element)
+
+        return () => {
+            observer.disconnect()
+
+            observer = null
+        }
+    }
+
+    window.addEventListener('resize', handler)
+
+    return () => window.removeEventListener('resize', handler)
 }
 
 export const focusElement = { select, end, wrapSpan }

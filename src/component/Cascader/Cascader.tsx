@@ -5,8 +5,9 @@ import { getUidStr } from '@/utils/uid'
 import TreeDatum, { KeygenParams } from '@/utils/Datum/Tree'
 import { cascaderClass, selectClass } from '@/styles'
 import { docSize } from '@/utils/dom/document'
-import { isDescendent } from '@/utils/dom/element'
+import { addResizeObserver, isDescendent } from '@/utils/dom/element'
 import { runInNextFrame } from '@/utils/nextFrame'
+import { throttleWrapper } from '@/utils/lazyload'
 import Result from './Result'
 import CascaderList from './List'
 import absoluteList from '../List/AbsoluteList'
@@ -36,6 +37,8 @@ class Cascader<T extends any> extends PureComponent<CascaderProps, CascaderState
 
     list: HTMLDivElement
 
+    cancelResizeObserver: () => void
+
     constructor(props) {
         super(props)
 
@@ -56,12 +59,24 @@ class Cascader<T extends any> extends PureComponent<CascaderProps, CascaderState
         })
     }
 
+    componentDidMount() {
+        this.cancelResizeObserver = addResizeObserver(
+            this.containerElementRef.current,
+            throttleWrapper(this.resetListStyle),
+            { direction: 'x' }
+        )
+    }
+
     componentDidUpdate(prevProps: CascaderProps) {
         this.resetListStyle()
 
         if (prevProps.value !== this.props.value) this.datum.setValue(this.props.value || [])
 
         if (prevProps.data !== this.props.data) this.datum.setData(this.props.data)
+    }
+
+    componentWillUnmount() {
+        this.cancelResizeObserver()
     }
 
     keygen = ({ data, parentKey = '', index }: KeygenParams) => {

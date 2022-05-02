@@ -17,4 +17,11 @@ declare global {
             // ...
         }
     }
+
+    interface Document {
+        /** For IE */
+        selection: {
+            createRange(): Range
+        }
+    }
 }
