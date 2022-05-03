@@ -8,7 +8,10 @@
     line-height: 1.5;
     position: absolute;
     z-index: 1001;
-    padding: 10px 0;
+
+    &:not(.@{popover-prefix}-hide-arrow) {
+        padding: 10px 0;
+    }
 
     .popover-animation();
 

@@ -26,6 +26,7 @@ export interface PopoverProps {
 
     onVisibleChange?: (e: boolean) => void
 
+    /** @todo 添加两种混合trigger模式 */
     trigger?: 'click' | 'hover'
 
     visible?: boolean
@@ -43,6 +44,12 @@ export interface PopoverProps {
     getPopupContainer?: () => HTMLElement
 
     className?: string
+
+    arrowProps?: React.DOMAttributes<HTMLDivElement>
+
+    innerProps?: React.DOMAttributes<HTMLDivElement>
+
+    showArrow?: boolean
 }
 
 interface PopoverState {
@@ -58,6 +65,12 @@ class Popover extends Component<IPopoverProps, PopoverState> {
         mouseLeaveDelay: 0.1,
 
         defaultVisible: false,
+
+        arrowProps: {},
+
+        innerProps: {},
+
+        showArrow: true,
     }
 
     element = document.createElement('div')
@@ -113,10 +126,10 @@ class Popover extends Component<IPopoverProps, PopoverState> {
     }
 
     componentDidUpdate(prevProps: PopoverProps, prevState: PopoverState) {
-        const { visible } = this.props
+        const { visible, showArrow } = this.props
 
         if (this.props.className !== prevProps.className && this.element) {
-            this.element.className = classnames(popoverClass('_'), this.props.className)
+            this.element.className = classnames(popoverClass('_', !showArrow && 'hide-arrow'), this.props.className)
         }
 
         if (typeof visible === 'boolean') {
@@ -155,7 +168,7 @@ class Popover extends Component<IPopoverProps, PopoverState> {
     }
 
     render = () => {
-        const { children, title, content } = this.props
+        const { children, title, content, arrowProps, showArrow, innerProps } = this.props
 
         const wrapChildren = !isDOMElement(children) ? wrapSpan(children) : children
 
@@ -170,11 +183,13 @@ class Popover extends Component<IPopoverProps, PopoverState> {
             elements.push(
                 ReactDOM.createPortal(
                     <>
-                        <div className={popoverClass('arrow')}>
-                            <div className={popoverClass('arrow-content')} />
-                        </div>
+                        {showArrow && (
+                            <div className={popoverClass('arrow')} {...arrowProps}>
+                                <div className={popoverClass('arrow-content')} />
+                            </div>
+                        )}
 
-                        <div className={popoverClass('inner')}>
+                        <div className={popoverClass('inner')} {...innerProps}>
                             {title && <div className={popoverClass('title')}>{title}</div>}
 
                             {wrapChildren && <div className={popoverClass('inner-content')}>{wrapContent}</div>}
@@ -223,7 +238,10 @@ class Popover extends Component<IPopoverProps, PopoverState> {
 
             this.element.style.display = 'none'
 
-            this.element.className = classnames(popoverClass('_'), this.props.className)
+            this.element.className = classnames(
+                popoverClass('_', !this.props.showArrow && 'hide-arrow'),
+                this.props.className
+            )
         }
     }
 
