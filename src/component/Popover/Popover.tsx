@@ -121,7 +121,7 @@ class Popover extends Component<IPopoverProps, PopoverState> {
         this.bindEvents()
 
         if (this.state.show) {
-            this.handleShow(null, true)
+            this.handleShow()
         }
     }
 
@@ -138,7 +138,7 @@ class Popover extends Component<IPopoverProps, PopoverState> {
             if (isSame) return
 
             if (this.state.show) {
-                this.handleShow(null, true)
+                this.handleShow()
             } else {
                 this.handleHide(0)
             }
@@ -261,13 +261,13 @@ class Popover extends Component<IPopoverProps, PopoverState> {
 
             this.element.addEventListener('mouseleave', this.handleHide)
         } else {
-            this.eventHandlerElement?.addEventListener('click', this.handleShow)
+            this.eventHandlerElement?.addEventListener('click', this.handleEventHandlerClick)
         }
     }
 
     removeTriggerEvent = () => {
         // remove click handler
-        this.eventHandlerElement?.removeEventListener('click', this.handleShow)
+        this.eventHandlerElement?.removeEventListener('click', this.handleEventHandlerClick)
 
         // remove hover handler
         this.element.removeEventListener('mouseleave', this.handleHide)
@@ -293,8 +293,15 @@ class Popover extends Component<IPopoverProps, PopoverState> {
         this.element.setAttribute('data-placement', position)
     }
 
-    // 控制显示 force表示defaultVisible为true，用于强制显示
-    handleShow = (_, force?: boolean) => {
+    handleEventHandlerClick = () => {
+        if (this.state.show) {
+            this.handleHide(0)
+        } else {
+            this.handleShow()
+        }
+    }
+
+    handleShow = () => {
         if (this.delayTimeout) {
             clearTimeout(this.delayTimeout)
         }
@@ -304,13 +311,6 @@ class Popover extends Component<IPopoverProps, PopoverState> {
         }
 
         this.handleInitDOM()
-
-        if (this.state.show && !force) {
-            // 处理Click的类型 点击Children收缩
-            this.handleHide(0)
-
-            return
-        }
 
         if (typeof this.props.visible !== 'boolean') document.addEventListener('mousedown', this.clickAway)
 
