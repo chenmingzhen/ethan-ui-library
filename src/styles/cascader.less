@@ -13,7 +13,6 @@
 
     &-result {
         cursor: pointer;
-        // position: relative;
         display: flex;
         max-height: 105px;
         flex-flow: wrap;
@@ -51,6 +50,13 @@
                 }
             }
 
+            &-placeholder {
+                position: absolute;
+                z-index: -100;
+                user-select: none;
+                contain: layout;
+            }
+
             &:after {
                 content: '\feff ';
             }
@@ -58,6 +64,18 @@
 
         .@{cascader-prefix}-item {
             background: @select-result-bg;
+        }
+    }
+
+    &-popover {
+        .@{cascader-prefix}-result {
+            padding: 0;
+            max-width: 300px;
+        }
+
+        .@{cascader-prefix}-item {
+            // margin-bottom: 0;
+            max-width: none;
         }
     }
 

@@ -335,6 +335,7 @@ class Cascader<T extends any> extends PureComponent<CascaderProps, CascaderState
                     onClear={this.handleClear}
                     onPathChange={this.handlePathChange}
                     disabled={disabled}
+                    cascaderId={this.cascaderId}
                 />
 
                 {this.renderAbsoluteList()}

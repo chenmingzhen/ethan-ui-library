@@ -32,3 +32,5 @@ export function substitute(str: string | ((obj: Record<string, any>) => any), ob
 
     return ''
 }
+
+export const parsePxToNumber = str => Number(str.replace(/\s+|px/gi, ''))

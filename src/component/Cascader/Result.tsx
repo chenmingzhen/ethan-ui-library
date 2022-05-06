@@ -1,12 +1,81 @@
 import React from 'react'
 import classnames from 'classnames'
 import { inputClass, selectClass, cascaderClass } from '@/styles'
+import { addResizeObserver } from '@/utils/dom/element'
+import { isSameArrayValue } from '@/utils/array'
+import { runInNextFrame } from '@/utils/nextFrame'
+import { debounce } from '@/utils/func'
 import { CascaderResultProps } from './type'
 import Caret from '../icons/Caret'
+import More from './More'
+import { getResetMore } from './util'
 
-export default class Result extends React.PureComponent<CascaderResultProps> {
+interface CascaderResultState {
+    showNum: number
+}
+
+export default class Result extends React.PureComponent<CascaderResultProps, CascaderResultState> {
     static defaultProps = {
         value: [],
+    }
+
+    resultElement: HTMLElement
+
+    cancelResizeObserver: () => void
+
+    shouldResetMore = false
+
+    constructor(props) {
+        super(props)
+
+        this.state = {
+            showNum: -1,
+        }
+    }
+
+    componentDidMount() {
+        const { compressed } = this.props
+
+        if (compressed) {
+            runInNextFrame(this.resetMore)
+
+            this.cancelResizeObserver = addResizeObserver(this.resultElement, debounce(this.resetMore), {
+                direction: 'x',
+            })
+        }
+    }
+
+    componentDidUpdate(prevProps: CascaderResultProps) {
+        const { value, compressed } = this.props
+
+        if (compressed) {
+            if (!isSameArrayValue(prevProps.value, value)) {
+                this.resetMore()
+            } else if (value.length && this.shouldResetMore) {
+                this.shouldResetMore = false
+
+                this.setState({
+                    showNum: getResetMore({
+                        fixWidth: 0,
+                        container: this.resultElement,
+                        doms: this.resultElement.querySelectorAll(`.${cascaderClass('item')}`),
+                    }),
+                })
+            }
+        }
+    }
+
+    componentWillUnmount(): void {
+        if (this.cancelResizeObserver) {
+            this.cancelResizeObserver()
+        }
+    }
+
+    resetMore = () => {
+        /** reset的作用是重置More中的DOM，获取所有的 Item 计算 */
+        this.setState({ showNum: -1 })
+        this.forceUpdate()
+        this.shouldResetMore = true
     }
 
     handleNodeClick = id => {
@@ -95,13 +164,22 @@ export default class Result extends React.PureComponent<CascaderResultProps> {
         )
     }
 
-    /** @todo */
     renderMore = (items: React.ReactNode[]) => {
-        return items
+        const { showNum } = this.state
+
+        const { cascaderId } = this.props
+
+        return [<More itemNodes={items} key="ethan-cascader-more" showNum={showNum} dataId={cascaderId} />]
     }
 
     renderResult = () => {
-        const items = this.handleNode()
+        const { compressed } = this.props
+
+        let items = this.handleNode()
+
+        if (compressed) {
+            items = this.renderMore(items)
+        }
 
         if (items.length === 0) {
             items.push(this.renderPlaceholder())
@@ -116,7 +194,13 @@ export default class Result extends React.PureComponent<CascaderResultProps> {
         const result = value.length === 0 ? this.renderPlaceholder() : this.renderResult()
 
         return (
-            <div className={cascaderClass('result')} style={style}>
+            <div
+                className={cascaderClass('result')}
+                style={style}
+                ref={el => {
+                    this.resultElement = el
+                }}
+            >
                 {result}
                 {this.renderIndicator()}
                 {this.renderClear()}

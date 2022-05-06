@@ -130,10 +130,10 @@ export function isDescendent(el: HTMLElement, id: string) {
 }
 
 interface AddResizeObserverOptions {
-    direction?: 'x' | 'y'
+    direction: 'x' | 'y'
 }
 
-export function addResizeObserver(element: HTMLElement, handler: () => void, options: AddResizeObserverOptions = {}) {
+export function addResizeObserver(element: HTMLElement, handler: () => void, options: AddResizeObserverOptions) {
     let lastClientWidth
 
     let lastClientHeight

@@ -40,6 +40,7 @@ export interface CascaderProps<T = any> {
     renderResult?: keyof T | ((data: T) => React.ReactNode)
     /** @todo  */
     changeOnSelect?: boolean
+    compressed?: boolean
 }
 
 export interface CascaderListProps extends Omit<CascaderNodeProps, 'active' | 'id'> {
@@ -79,4 +80,12 @@ export interface CascaderResultProps {
     renderResult?: CascaderProps['renderResult']
     style?: CascaderProps['style']
     value?: CascaderProps['value']
+    compressed?: CascaderProps['compressed']
+    cascaderId: React.Key
+}
+
+export interface CascaderMoreProps {
+    showNum: number
+    itemNodes: React.ReactNode[]
+    dataId: React.Key
 }
