@@ -24,7 +24,7 @@ export interface PopoverProps {
 
     cancelText?: string
 
-    onVisibleChange?: (e: boolean) => void
+    onVisibleChange?: (visible: boolean) => void
 
     /** @todo 添加两种混合trigger模式 */
     trigger?: 'click' | 'hover'
@@ -56,6 +56,11 @@ interface PopoverState {
     show: boolean
 }
 
+/**
+ * @description
+ * 1.handleShow与handleHide处理事件的动作，根据是否受控调用setShow
+ * 2.setShow处理动画的变动以及更改state
+ */
 class Popover extends Component<IPopoverProps, PopoverState> {
     static defaultProps = {
         trigger: 'hover',
@@ -109,7 +114,7 @@ class Popover extends Component<IPopoverProps, PopoverState> {
 
     getSnapshotBeforeUpdate = (prevProps: PopoverProps) => {
         if (prevProps.trigger !== this.props.trigger) {
-            this.bindEvents()
+            this.bindTriggerEvents()
         }
 
         return null
@@ -118,10 +123,10 @@ class Popover extends Component<IPopoverProps, PopoverState> {
     componentDidMount = () => {
         super.componentDidMount()
 
-        this.bindEvents()
+        this.bindTriggerEvents()
 
         if (this.state.show) {
-            this.handleShow()
+            this.handleDefaultShow()
         }
     }
 
@@ -137,11 +142,8 @@ class Popover extends Component<IPopoverProps, PopoverState> {
 
             if (isSame) return
 
-            if (this.state.show) {
-                this.handleShow()
-            } else {
-                this.handleHide(0)
-            }
+            /** 受控执行动画 */
+            this.setShow(this.state.show)
         }
     }
 
@@ -246,11 +248,8 @@ class Popover extends Component<IPopoverProps, PopoverState> {
     }
 
     // 绑定与清除DOM的处理事件
-    bindEvents = () => {
-        const { trigger, visible } = this.props
-
-        // 受控不添加事件
-        if (typeof visible === 'boolean') return
+    bindTriggerEvents = () => {
+        const { trigger } = this.props
 
         this.removeTriggerEvent()
 
@@ -263,6 +262,18 @@ class Popover extends Component<IPopoverProps, PopoverState> {
         } else {
             this.eventHandlerElement?.addEventListener('click', this.handleEventHandlerClick)
         }
+    }
+
+    bindDocumentAndWindowEvents = () => {
+        document.addEventListener('mousedown', this.clickAway)
+
+        window.addEventListener('resize', this.handlePos)
+    }
+
+    removeDocumentAndWindowEvents = () => {
+        document.removeEventListener('mousedown', this.clickAway)
+
+        window.removeEventListener('resize', this.handlePos)
     }
 
     removeTriggerEvent = () => {
@@ -301,6 +312,14 @@ class Popover extends Component<IPopoverProps, PopoverState> {
         }
     }
 
+    handleDefaultShow = () => {
+        this.handleInitDOM()
+
+        this.bindDocumentAndWindowEvents()
+
+        this.setShow(true)
+    }
+
     handleShow = () => {
         if (this.delayTimeout) {
             clearTimeout(this.delayTimeout)
@@ -312,16 +331,19 @@ class Popover extends Component<IPopoverProps, PopoverState> {
 
         this.handleInitDOM()
 
-        if (typeof this.props.visible !== 'boolean') document.addEventListener('mousedown', this.clickAway)
+        this.bindDocumentAndWindowEvents()
 
-        window.addEventListener('resize', this.handlePos)
+        const { onVisibleChange, visible } = this.props
 
-        // 在受控的情况下 可能存在DOM的位置偏差 添加回调使位置正确
-        requestAnimationFrame(() => {
-            this.handlePos()
+        if (typeof visible === 'boolean') {
+            if (onVisibleChange) {
+                onVisibleChange(true)
+            }
 
-            this.setShow(true)
-        })
+            return
+        }
+
+        this.setShow(true)
     }
 
     handleHide = e => {
@@ -338,7 +360,17 @@ class Popover extends Component<IPopoverProps, PopoverState> {
 
         if (this.delayTimeout) clearTimeout(this.delayTimeout)
 
-        document.removeEventListener('mousedown', this.clickAway)
+        const { onVisibleChange, visible } = this.props
+
+        if (typeof visible === 'boolean') {
+            if (onVisibleChange) {
+                onVisibleChange(false)
+            }
+
+            return
+        }
+
+        this.removeDocumentAndWindowEvents()
 
         this.setShow(false)
     }
@@ -356,15 +388,15 @@ class Popover extends Component<IPopoverProps, PopoverState> {
     }
 
     setShow = show => {
-        const { onVisibleChange, mouseEnterDelay, mouseLeaveDelay, trigger } = this.props
+        const { mouseEnterDelay, mouseLeaveDelay, trigger } = this.props
 
         const delay = show ? mouseEnterDelay : mouseLeaveDelay
 
         this.delayTimeout = setTimeout(
             () => {
-                if (onVisibleChange) onVisibleChange(show)
-
                 if (show) {
+                    this.handlePos()
+
                     this.element.style.display = 'block'
 
                     this.element.classList.remove(popoverClass('exit'))
