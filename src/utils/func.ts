@@ -32,3 +32,19 @@ export function createFunc(func) {
     if (typeof func === 'function') return func
     return data => (func ? data[func] : data)
 }
+
+export function debounce(fn, delay = 80) {
+    let timer: NodeJS.Timeout
+
+    return function(...args) {
+        if (timer) {
+            clearTimeout(timer)
+
+            timer = null
+        }
+
+        timer = setTimeout(() => {
+            fn(...args)
+        }, delay)
+    }
+}

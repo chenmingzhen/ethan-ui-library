@@ -1,6 +1,6 @@
 import React, { Key } from 'react'
 import { PureComponent } from '@/utils/component'
-import DatumTree from '@/utils/Datum/Tree'
+import DatumTree, { KeygenParams } from '@/utils/Datum/Tree'
 import { fastClone } from '@/utils/clone'
 import classnames from 'classnames'
 import { treeClass } from '@/styles'
@@ -47,7 +47,7 @@ class Tree<T = any> extends PureComponent<ITreeProps<T>, TreeState> {
 
         this.datum = new DatumTree({
             data: props.data,
-            keygen: props.keygen,
+            keygen: this.keygen,
             mode: props.mode,
             value: props.value || props.defaultValue,
             disabled: typeof props.disabled === 'function' ? props.disabled : undefined,
@@ -79,6 +79,16 @@ class Tree<T = any> extends PureComponent<ITreeProps<T>, TreeState> {
             }
             if (prevProps.value !== this.props.value) this.datum.setValue(this.props.value || [])
         }
+    }
+
+    keygen = ({ data, index, parentKey = '' }: KeygenParams) => {
+        const { keygen } = this.props
+
+        if (typeof keygen === 'function') return keygen(data, parentKey)
+
+        if (keygen) return data[keygen]
+
+        return parentKey + (parentKey ? ',' : '') + index
     }
 
     bindNode = (id: Key, update: UpdateEvent) => {
@@ -264,7 +274,7 @@ class Tree<T = any> extends PureComponent<ITreeProps<T>, TreeState> {
                 datum={this.datum}
                 disabled={typeof disabled !== 'function' && disabled}
                 bindNode={this.bindNode}
-                keygen={keygen}
+                keygen={this.keygen}
                 line={line}
                 loader={loader}
                 mode={mode}

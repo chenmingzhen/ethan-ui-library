@@ -1,4 +1,4 @@
-import TreeDatum, { NodeInfo } from '@/utils/Datum/Tree'
+import TreeDatum, { NodeInfo, TreeDatumOptions } from '@/utils/Datum/Tree'
 import React, { ReactNode } from 'react'
 
 export interface TreeCheckboxProps {
@@ -42,7 +42,7 @@ export interface TreeNodeProps {
     unbindNode: TreeBranchProps['unbindNode']
     data: TreeProps['data']
     index: number
-    keygen: TreeProps['keygen']
+    keygen: TreeDatumOptions['keygen']
     onDrop: TreeBranchProps['onDrop']
     childrenClass: TreeProps['childrenClass']
     leafClass: TreeProps['leafClass']
@@ -80,9 +80,9 @@ export interface TreeBranchProps {
     className?: string
     data: any[]
     expanded: boolean
-    id: React.Key
+    parentKey?: React.Key
     isRoot?: boolean
-    keygen: TreeProps['keygen']
+    keygen: TreeDatumOptions['keygen']
     line?: boolean
     style?: React.CSSProperties
     disabled: TreeProps['disabled']
@@ -113,8 +113,9 @@ export interface TreeBranchProps {
     dragImageSelector: TreeProps['dragImageSelector']
 }
 
-export interface TreeListProps extends TreeBranchProps {
+export interface TreeListProps extends Omit<TreeBranchProps, 'parentKey' | 'expanded'> {
     index: number
+    id: React.Key
 }
 
 export interface TreeListState {

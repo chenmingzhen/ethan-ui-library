@@ -1,52 +1,30 @@
-// @ts-nocheck
-import React, { useCallback, memo } from 'react'
-import PropTypes from 'prop-types'
+import React from 'react'
 import { getLocale } from '@/locale'
 import { cascaderClass } from '@/styles'
 import Node from './Node'
+import { CascaderListProps } from './type'
 
-const List = props => {
-    const getKey = useCallback(
-        (data, index) => {
-            const { keygen, parentId } = props
+const CascaderList: React.FC<CascaderListProps> = props => {
+    const { data, text, currentPathActiveId, keygen, parentId, ...other } = props
 
-            if (typeof keygen === 'function') return keygen(data, parentId)
-            if (keygen) return data[keygen]
-
-            return parentId + (parentId ? ',' : '') + index
-        },
-        [props.keygen, props.parentId]
-    )
-
-    const getText = useCallback(key => props.text[key] || getLocale(key), [props.text])
-
-    const { data, ...other } = props
-
-    if (!data || data.length === 0) return <span className={cascaderClass('no-data')}>{getText('noData')}</span>
+    if (!data || data.length === 0)
+        return <span className={cascaderClass('no-data')}>{text.noData || getLocale('noData')}</span>
 
     return (
         <div className={cascaderClass('list')}>
-            {data.map((d, i) => {
-                const id = getKey(d, i)
-                return <Node {...other} key={id} active={other.id === id} id={id} data={d} />
+            {data.map((d, index) => {
+                const id = keygen({ data: d, parentKey: parentId, index })
+
+                return <Node {...other} key={id} active={currentPathActiveId === id} id={id} data={d} />
             })}
         </div>
     )
 }
 
-List.propTypes = {
-    data: PropTypes.array,
-    id: PropTypes.string,
-    keygen: PropTypes.any,
-    onNodeClick: PropTypes.func,
-    parentId: PropTypes.string,
-    text: PropTypes.object,
-}
-
-List.defaultProps = {
-    id: '',
+CascaderList.defaultProps = {
+    currentPathActiveId: '',
     parentId: '',
     text: {},
 }
 
-export default memo(List)
+export default React.memo(CascaderList)
