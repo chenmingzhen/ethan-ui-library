@@ -18,7 +18,7 @@ class Branch extends PureComponent<TreeBranchProps, ListState> {
     element: HTMLDivElement
 
     static defaultProps = {
-        id: '',
+        parentKey: '',
         line: true,
     }
 
@@ -45,11 +45,11 @@ class Branch extends PureComponent<TreeBranchProps, ListState> {
 
     /** directory模式下计算line的位置（伪类中使用） */
     branchVarInject = () => {
-        const { datum, directory, line, id, isRoot } = this.props
+        const { datum, directory, line, parentKey, isRoot } = this.props
 
         if (!directory || !line || !this.element || isRoot) return
 
-        const result = datum.getPath(id)
+        const result = datum.getPath(parentKey)
 
         const { path } = result
 
@@ -61,16 +61,6 @@ class Branch extends PureComponent<TreeBranchProps, ListState> {
         this.element.style.setProperty('--var-branch-pl', `${20 * path.length}px`)
     }
 
-    getKey = (data, index) => {
-        const { id, keygen } = this.props
-
-        if (typeof keygen === 'function') return keygen(data, id)
-
-        if (keygen) return data[keygen]
-
-        return id + (id ? ',' : '') + index
-    }
-
     handleDragLeave: React.DragEventHandler<HTMLDivElement> = e => {
         const rect = this.element.getBoundingClientRect()
 
@@ -80,7 +70,7 @@ class Branch extends PureComponent<TreeBranchProps, ListState> {
     }
 
     render() {
-        const { data, expanded, className, style, isRoot } = this.props
+        const { data, expanded, className, style, isRoot, parentKey, ...rest } = this.props
 
         if (!expanded && !this.hasExpanded) return null
 
@@ -106,9 +96,9 @@ class Branch extends PureComponent<TreeBranchProps, ListState> {
                 }}
             >
                 {data.map((child, index) => {
-                    const id = this.getKey(child, index)
+                    const id = this.props.keygen({ parentKey, data: child, index })
 
-                    return <List {...this.props} data={child} key={id} id={id} index={index} />
+                    return <List {...rest} data={child} key={id} id={id} index={index} />
                 })}
             </AnimationHeight>
         )

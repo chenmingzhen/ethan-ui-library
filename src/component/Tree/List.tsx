@@ -70,7 +70,15 @@ class List extends PureComponent<TreeListProps, TreeListState> {
                     onDragStateChange={this.handleDragStateChange}
                 />
 
-                {children && <Branch {...this.props} expanded={this.state.expanded} data={children} isRoot={false} />}
+                {children && (
+                    <Branch
+                        {...this.props}
+                        parentKey={this.props.id}
+                        expanded={this.state.expanded}
+                        data={children}
+                        isRoot={false}
+                    />
+                )}
             </div>
         )
     }
