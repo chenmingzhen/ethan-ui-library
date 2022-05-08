@@ -98,7 +98,7 @@ class Branch extends PureComponent<TreeBranchProps, ListState> {
                 {data.map((child, index) => {
                     const id = this.props.keygen({ parentKey, data: child, index })
 
-                    return <List {...rest} data={child} key={id} id={id} index={index} />
+                    return <List {...rest} className={className} data={child} key={id} id={id} index={index} />
                 })}
             </AnimationHeight>
         )
