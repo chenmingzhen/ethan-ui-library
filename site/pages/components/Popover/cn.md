@@ -16,7 +16,7 @@
 | children | ReactNode | 必填 | 弹出显示内容 |
 | position | 'top-left' \| 'top' \| 'top-right' \| 'left-top' \| 'left' \| 'left-bottom' \| 'right-top' \| 'right' \| 'right-bottom' \| 'bottom-left' \| 'bottom' \| 'bottom-right' | 'top' | 弹出层位置 |
 | style | object | 无 | 最外层扩展样式 |
-| trigger | 'click' \| 'hover' | 'hover' | 触发方式 |
+| trigger | 'click' \| 'hover'\|[] | 'hover' | 触发方式 |
 | priorityDirection | string | 'vertical' | 弹出位置优先级, 默认为左右优先, 只在未设置 position 时生效, 可选值\['vertical', 'horizontal'] |
 | getPopupContainer | () => HTMLElement | 无 | 自定义Popover容器，覆盖默认渲染在body下的行为, () => DOMElement |
 | showArrow | boolean | true | 是否展示箭头 |

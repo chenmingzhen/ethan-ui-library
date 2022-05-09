@@ -16,7 +16,7 @@
 | children | ReactNode | required | Pop-up content. |
 | position | 'top-left' \| 'top' \| 'top-right' \| 'left-top' \| 'left' \| 'left-bottom' \| 'right-top' \| 'right' \| 'right-bottom' \| 'bottom-left' \| 'bottom' \| 'bottom-right' | 'top' | The position of pop-up layer |
 | style | object | - | The pop-up container style |
-| trigger | 'click' \| 'hover' | 'hover' | type of show |
+| trigger | 'click' \| 'hover' | 'hover'\|[] | type of show |
 | priorityDirection | string | 'vertical' | Popup location priority, default is left and right priority, only valid when position is not set, Options: \['vertical', 'horizontal'] |
 | getPopupContainer | () => HTMLElement | none | Custom Popover container, override the default behavior which is rendering under the body, () => DOMElement |
 | showArrow | boolean | true | Whether to show arrow |

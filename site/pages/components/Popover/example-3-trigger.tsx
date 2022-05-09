@@ -1,8 +1,8 @@
 /**
- * cn - 点击触发
- *    -- 默认是移入组件触发，设置 trigger 为 'click'，可以改为点击触发
+ * cn - 触发方式
+ *    -- 默认是移入组件触发，设置 trigger 为 'click'或Trigger数组，可以改变触发方式
  * en - Trigger
- *    -- Set the trigger property to change the trigger event to 'click'.
+ *    -- Set the trigger property to change the trigger event.
  */
 import React from 'react'
 import { Button, Popover, Card } from 'ethan/index'
@@ -11,7 +11,7 @@ export default function() {
     return (
         <Popover
             style={{ marginRight: 12 }}
-            trigger="click"
+            trigger={['click', 'hover']}
             content={
                 <Card style={{ width: 300, border: 0, background: 'transparent' }}>
                     <Card.Header>Header</Card.Header>
@@ -19,7 +19,7 @@ export default function() {
                 </Card>
             }
         >
-            <Button>Click me</Button>
+            <Button>Trigger</Button>
         </Popover>
     )
 }

@@ -7,12 +7,16 @@ import { getPositionStr, getPosition } from '@/utils/dom/popover'
 import { popoverClass } from '@/styles/index'
 import isDOMElement from '@/utils/dom/isDOMElement'
 import { parsePxToNumber } from '@/utils/strings'
+import { isArray } from '@/utils/is'
+import { LiteralUnion } from '@/utils/utilityTypes'
 
 export interface IPopoverProps extends PopoverProps {
     isConfirmLoading?: boolean
 
     innerAlwaysUpdate?: boolean
 }
+
+type Trigger = LiteralUnion<'click' | 'hover', string>
 
 export interface PopoverProps {
     placement?: string
@@ -27,8 +31,7 @@ export interface PopoverProps {
 
     onVisibleChange?: (visible: boolean) => void
 
-    /** @todo 添加两种混合trigger模式 */
-    trigger?: 'click' | 'hover'
+    trigger?: Trigger | Trigger[]
 
     visible?: boolean
 
@@ -117,14 +120,6 @@ class Popover extends Component<IPopoverProps, PopoverState> {
         return false
     }
 
-    getSnapshotBeforeUpdate = (prevProps: PopoverProps) => {
-        if (prevProps.trigger !== this.props.trigger) {
-            this.bindTriggerEvents()
-        }
-
-        return null
-    }
-
     componentDidMount = () => {
         super.componentDidMount()
 
@@ -210,6 +205,10 @@ class Popover extends Component<IPopoverProps, PopoverState> {
         return elements
     }
 
+    hasTrigger = (trigger: Trigger) => {
+        return isArray(this.props.trigger) ? this.props.trigger.includes(trigger) : trigger === this.props.trigger
+    }
+
     getContainer = () => {
         const { getPopupContainer } = this.props
 
@@ -254,17 +253,17 @@ class Popover extends Component<IPopoverProps, PopoverState> {
 
     // 绑定与清除DOM的处理事件
     bindTriggerEvents = () => {
-        const { trigger } = this.props
-
         this.removeTriggerEvent()
 
-        if (trigger === 'hover') {
+        if (this.hasTrigger('hover')) {
             this.eventHandlerElement?.addEventListener('mouseenter', this.handleShow)
 
             this.eventHandlerElement?.addEventListener('mouseleave', this.handleHide)
 
             this.element.addEventListener('mouseleave', this.handleHide)
-        } else {
+        }
+
+        if (this.hasTrigger('click')) {
             this.eventHandlerElement?.addEventListener('click', this.handleEventHandlerClick)
         }
     }
