@@ -19,6 +19,8 @@
 | trigger | 'click' \| 'hover' | 'hover' | type of show |
 | priorityDirection | string | 'vertical' | Popup location priority, default is left and right priority, only valid when position is not set, Options: \['vertical', 'horizontal'] |
 | getPopupContainer | () => HTMLElement | none | Custom Popover container, override the default behavior which is rendering under the body, () => DOMElement |
+| showArrow | boolean | true | Whether to show arrow |
+| autoAdjustOverflow | boolean | true | Whether the popover automatically adjusts its position when it is blocked |
 
 ### Popover.Confirm
 

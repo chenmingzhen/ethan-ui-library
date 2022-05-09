@@ -6,6 +6,7 @@ import { getParent, wrapSpan } from '@/utils/dom/element'
 import { getPositionStr, getPosition } from '@/utils/dom/popover'
 import { popoverClass } from '@/styles/index'
 import isDOMElement from '@/utils/dom/isDOMElement'
+import { parsePxToNumber } from '@/utils/strings'
 
 export interface IPopoverProps extends PopoverProps {
     isConfirmLoading?: boolean
@@ -50,6 +51,8 @@ export interface PopoverProps {
     innerProps?: React.DOMAttributes<HTMLDivElement>
 
     showArrow?: boolean
+
+    autoAdjustOverflow?: boolean
 }
 
 interface PopoverState {
@@ -76,6 +79,8 @@ class Popover extends Component<IPopoverProps, PopoverState> {
         innerProps: {},
 
         showArrow: true,
+
+        autoAdjustOverflow: true,
     }
 
     element = document.createElement('div')
@@ -86,7 +91,7 @@ class Popover extends Component<IPopoverProps, PopoverState> {
 
     delayTimeout: NodeJS.Timeout
 
-    dismissTimeout: NodeJS.Timeout
+    animationTimeout: NodeJS.Timeout
 
     get eventHandlerElement() {
         return this.placeHolderRef.current.nextElementSibling as HTMLElement
@@ -289,7 +294,7 @@ class Popover extends Component<IPopoverProps, PopoverState> {
     }
 
     handlePos = () => {
-        const { placement, style } = this.props
+        const { placement, style, autoAdjustOverflow } = this.props
 
         const position = getPositionStr(placement, null, this.placeHolderRef.current?.parentElement, this.container)
 
@@ -302,6 +307,22 @@ class Popover extends Component<IPopoverProps, PopoverState> {
         })
 
         this.element.setAttribute('data-placement', position)
+
+        if (autoAdjustOverflow) {
+            const { left, right, top, bottom } = this.element.getBoundingClientRect()
+
+            if (left < 0) {
+                this.element.style.left = `${parsePxToNumber(this.element.style.left) + Math.abs(left)}px`
+            } else if (right < 0) {
+                this.element.style.right = `${parsePxToNumber(this.element.style.right) + Math.abs(right)}px`
+            }
+
+            if (top < 0) {
+                this.element.style.top = `${parsePxToNumber(this.element.style.top) + Math.abs(top)}px`
+            } else if (bottom < 0) {
+                this.element.style.bottom = `${parsePxToNumber(this.element.style.bottom) + Math.abs(bottom)}px`
+            }
+        }
     }
 
     handleEventHandlerClick = () => {
@@ -325,8 +346,8 @@ class Popover extends Component<IPopoverProps, PopoverState> {
             clearTimeout(this.delayTimeout)
         }
 
-        if (this.dismissTimeout) {
-            clearTimeout(this.dismissTimeout)
+        if (this.animationTimeout) {
+            clearTimeout(this.animationTimeout)
         }
 
         this.handleInitDOM()
@@ -360,6 +381,10 @@ class Popover extends Component<IPopoverProps, PopoverState> {
 
         if (this.delayTimeout) clearTimeout(this.delayTimeout)
 
+        if (this.animationTimeout) {
+            clearTimeout(this.animationTimeout)
+        }
+
         const { onVisibleChange, visible } = this.props
 
         if (typeof visible === 'boolean') {
@@ -388,26 +413,30 @@ class Popover extends Component<IPopoverProps, PopoverState> {
     }
 
     setShow = show => {
-        const { mouseEnterDelay, mouseLeaveDelay, trigger } = this.props
+        const { mouseEnterDelay, mouseLeaveDelay, trigger, autoAdjustOverflow } = this.props
 
         const delay = show ? mouseEnterDelay : mouseLeaveDelay
 
         this.delayTimeout = setTimeout(
             () => {
                 if (show) {
+                    this.element.style.display = 'block'
+
                     this.handlePos()
 
-                    this.element.style.display = 'block'
+                    this.element.classList.add(popoverClass('enter'))
 
                     this.element.classList.remove(popoverClass('exit'))
 
-                    this.element.classList.add(popoverClass('enter'))
+                    this.animationTimeout = setTimeout(() => {
+                        autoAdjustOverflow && this.handlePos()
+                    }, 250)
                 } else {
-                    this.element.classList.remove(popoverClass('enter'))
-
                     this.element.classList.add(popoverClass('exit'))
 
-                    this.dismissTimeout = setTimeout(() => {
+                    this.element.classList.remove(popoverClass('enter'))
+
+                    this.animationTimeout = setTimeout(() => {
                         this.element.style.display = 'none'
                     }, 250)
                 }
