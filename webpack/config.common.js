@@ -80,10 +80,22 @@ module.exports = function getCommon(config) {
                 {
                     test: /\.jsx?$/,
                     exclude: [/node_modules/],
-                    loader: 'babel-loader',
-                    options: {
-                        cacheDirectory: true,
-                    },
+                    use: [
+                        !config.DEV
+                            ? {
+                                  loader: 'babel-loader',
+                                  options: {
+                                      cacheDirectory: true,
+                                  },
+                              }
+                            : {
+                                  loader: 'esbuild-loader',
+                                  options: {
+                                      loader: 'jsx',
+                                      target: 'es2015',
+                                  },
+                              },
+                    ],
                 },
                 {
                     test: /\.tsx?$/,
