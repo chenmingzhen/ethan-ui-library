@@ -250,6 +250,18 @@
         }
     }
 
+    &[data-placement='cover'] {
+        transform: translateX(0);
+        padding: 0;
+
+        .@{popover-prefix}-inner {
+            box-shadow: none;
+            &-content {
+                padding: 0;
+            }
+        }
+    }
+
     // ------------------------------confirm----------------------------------------
 
     &-confirm {

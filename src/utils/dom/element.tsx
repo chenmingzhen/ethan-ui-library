@@ -24,7 +24,7 @@ export function wrapSpan(children) {
     })
 }
 
-export function getParent(el, target) {
+export function getParent(el, target): HTMLElement | null {
     if (!target) {
         return null
     }

@@ -15,7 +15,6 @@
 | disabled | boolean | false | 是否禁用 |
 | clearable | boolean | true | 是否展示清除按钮 |
 | placeholder | string | 无 | 同原生 textarea 标签的 placeholder |
-| delay | number | 400 | 用户输入触发 onChange 和校验间隔时间，单位 毫秒 |
 | trim | boolean | false | trim 为 true 时，失去焦点时会自动删除空白字符 |
 | onBlur | (e: MouseEvent) => void | 无 | 失去焦点事件 |
 | onFocus | (e: MouseEvent) => void | 无 | 聚焦事件 |

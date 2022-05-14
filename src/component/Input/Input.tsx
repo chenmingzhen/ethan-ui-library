@@ -17,8 +17,12 @@ class Input extends PureComponent<IInputProps> {
 
         this.ref = el
 
-        if (forwardedRef && forwardedRef.current) {
-            forwardedRef.current = el
+        if (forwardedRef) {
+            if (typeof forwardedRef === 'function') {
+                forwardedRef(el)
+            } else {
+                forwardedRef.current = el
+            }
         }
     }
 

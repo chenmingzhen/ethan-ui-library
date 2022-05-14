@@ -15,7 +15,6 @@
 | disabled | boolean | false | Whether to disable |
 | clearable | boolean | true | Whether to show the clear button |
 | placeholder | string | none | The same as the native placeholder tag |
-| delay | number | 400 | User input triggers the onChange and to check interval, unit: ms. |
 | trim | boolean | false | When trim is true, blank characters are automatically deleted when lose focus |
 | onBlur | (e: MouseEvent) => void | none | blur event |
 | onFocus | (e: MouseEvent) => void | none | focus event |

@@ -1,18 +1,25 @@
-// @ts-nocheck
-import React, { useCallback, useRef, useState, useEffect } from 'react'
-import PropTypes from 'prop-types'
-import classnames from 'classnames'
-import Textarea from '@/component/Textarea'
-import Input from '@/component/Input'
-import Popover from '@/component/Popover'
+import React from 'react'
+import { PureComponent } from '@/utils/component'
 import { editableAreaClass } from '@/styles'
+import classnames from 'classnames'
 import { focusElement, getParent } from '@/utils/dom/element'
+import { getUidStr } from '@/utils/uid'
+import { EditableProps } from './type'
+import Popover from '../Popover/Popover'
 import icons from '../icons'
+import Input from '../Input'
+import Textarea from '../Textarea'
 
-const formatShowValue = value => {
-    if (!value && value !== 0) return ''
+interface EditableAreaState {
+    value: string
+    showTextarea: boolean
+}
+
+const formatShowValue = (value: string) => {
+    if (!value) return ''
 
     const arr = String(value).split('\n')
+
     const len = arr.length
 
     if (len > 1) return `${arr[0]}...`
@@ -20,165 +27,137 @@ const formatShowValue = value => {
     return String(value)
 }
 
-const Editable = props => {
-    const [value, setValue] = useState(props.value)
-    const [showTextarea, setShowTextarea] = useState(false)
-    const { width, style, className, bordered, clearable, getPopupContainer } = props
-    const popWidth = useRef()
-    const containerRef = useRef()
-    const inputRef = useRef()
-    const prevPropsRef = useRef()
-    const prevProps = prevPropsRef.current
+export default class EditableArea extends PureComponent<EditableProps, EditableAreaState> {
+    static displayName = 'EthanEditableArea'
 
-    // ------------------------lifecycle-----------------------
-    useEffect(() => {
-        if (prevProps && prevProps.showTextarea !== showTextarea && showTextarea) {
-            autoFocus()
+    popWidth = 0
+
+    input = React.createRef<HTMLInputElement>()
+
+    container = React.createRef<HTMLDivElement>()
+
+    textareaId = getUidStr()
+
+    constructor(props) {
+        super(props)
+
+        this.state = {
+            value: props.value,
+            showTextarea: false,
         }
-        if (prevProps && value !== prevProps.value) {
-            setValue(value)
+    }
+
+    componentDidUpdate(prevProps: EditableProps, prevState: EditableAreaState) {
+        const { value } = this.props
+
+        const { showTextarea } = this.state
+
+        if (prevState.showTextarea !== showTextarea && showTextarea) {
+            this.autoFocus()
         }
 
-        prevPropsRef.current = props
-    })
+        if (value !== prevProps.value) {
+            this.setState({ value })
+        }
+    }
 
-    // ------------------------method---------------------------
-    // 绑定InputRef
-    const bindInput = useCallback(el => {
-        inputRef.current = el
-    }, [])
+    autoFocus = () => {
+        setTimeout(() => {
+            const target = document.getElementById(this.textareaId)
 
-    // 绑定textarea的Ref
-    const bindContainer = useCallback(el => {
-        containerRef.current = el
-    }, [])
+            if (target) focusElement.end(target)
+        }, 100)
+    }
 
-    const updateShowTextarea = useCallback(flag => {
-        // Input的上层 label标签的
-        if (flag && inputRef.current)
-            popWidth.current = getParent(inputRef.current, `.${editableAreaClass('input')}`).offsetWidth
-        setShowTextarea(flag)
-    }, [])
+    dispatchShowTextarea = (show: boolean) => {
+        if (show && this.input.current) {
+            this.popWidth = getParent(this.input.current, `.${editableAreaClass('input')}`)?.offsetWidth
+        }
 
-    const showPop = useCallback(() => updateShowTextarea(true), [])
+        this.setState({ showTextarea: show })
+    }
 
-    const hidePop = useCallback(() => updateShowTextarea(false), [])
+    handleChange = value => {
+        const { onChange } = this.props
 
-    const onChange = useCallback(
-        val => {
-            if (typeof props.onChange === 'function') props.onChange(val)
-            setValue(val)
-        },
-        [props.onChange]
-    )
+        if (onChange) onChange(value)
 
-    const onBlur = useCallback(
-        e => {
-            hidePop()
-            if (typeof props.onBlur === 'function') props.onBlur(e)
-        },
-        [props.onBlur]
-    )
+        this.setState({ value })
+    }
 
-    const handleFocus = useCallback(
-        e => {
-            if (typeof props.onFocus === 'function') props.onFocus(e)
-        },
-        [props.onFocus]
-    )
+    handleBlur = e => {
+        const { onBlur } = this.props
 
-    const autoFocus = useCallback(() => {
-        if (!containerRef.current) return
-        const target = containerRef.current.querySelector(
-            `.${editableAreaClass('text-area')} textarea.so-input-auto-size`
-        )
-        if (target) focusElement.end(target)
-    }, [containerRef.current])
+        if (onBlur) onBlur(e)
 
-    const renderInput = useCallback(() => {
-        const { placeholder, disabled } = props
+        this.dispatchShowTextarea(false)
+    }
+
+    render() {
+        const {
+            className,
+            style,
+            getPopupContainer,
+            placeholder,
+            disabled,
+            bordered,
+            width,
+            clearable,
+            maxHeight,
+            onFocus,
+        } = this.props
+
+        const { showTextarea, value } = this.state
+
+        const cls = classnames(className, editableAreaClass('_', !bordered && 'none-bordered'))
+
+        const ms = Object.assign({ width }, style)
+
+        const popStyle: React.CSSProperties = { width: this.popWidth }
 
         return (
-            <Input
-                forwardedRef={bindInput}
-                placeholder={placeholder}
-                value={formatShowValue(value)}
-                className={editableAreaClass('input')}
-                onFocus={showPop}
-                disabled={disabled}
-            />
-        )
-    }, [value, props.placeholder, props.disabled])
-
-    const renderTextarea = useCallback(() => {
-        const { delay, placeholder, maxHeight } = props
-
-        if (!showTextarea) return null
-        return (
-            <div ref={bindContainer}>
-                <Textarea
-                    className={editableAreaClass('text-area')}
-                    autosize
-                    value={value}
-                    rows={1}
-                    delay={delay}
-                    onChange={onChange}
-                    onBlur={onBlur}
-                    onFocus={handleFocus}
-                    placeholder={placeholder}
-                    maxHeight={maxHeight}
-                />
-            </div>
-        )
-    }, [showTextarea, value, props.delay, props.placeholder, props.maxHeight])
-
-    // ------------------------render---------------------------
-    const cls = classnames(className, editableAreaClass('_', !bordered && 'none-bordered'))
-    const ms = Object.assign({ width }, style)
-    const popStyle = { width: popWidth.current }
-
-    // Popover 作用是 输入足够多的内容时 Input被掩盖，由Textarea接管显示
-    return (
-        <div className={cls} style={ms}>
-            {renderInput()}
             <Popover
                 visible={showTextarea}
                 showArrow={false}
                 className={editableAreaClass('popover')}
-                position="cover"
-                style={popStyle}
+                innerProps={{ style: popStyle }}
                 getPopupContainer={getPopupContainer}
+                animation={false}
+                placement="cover"
+                content={
+                    <div ref={this.container}>
+                        <Textarea
+                            className={editableAreaClass('text-area')}
+                            autoSize
+                            value={value}
+                            rows={1}
+                            onChange={this.handleChange}
+                            onBlur={this.handleBlur}
+                            onFocus={onFocus}
+                            placeholder={placeholder}
+                            maxHeight={maxHeight}
+                            id={this.textareaId}
+                        />
+                    </div>
+                }
             >
-                {renderTextarea()}
-            </Popover>
-            {clearable && value ? (
-                <div className={editableAreaClass('clear')} onClick={onChange.bind(null, '')}>
-                    {icons.CloseCircle}
+                <div className={cls} style={ms}>
+                    <Input
+                        forwardedRef={this.input}
+                        placeholder={placeholder}
+                        value={formatShowValue(value)}
+                        className={editableAreaClass('input')}
+                        onFocus={this.dispatchShowTextarea.bind(this, true)}
+                        disabled={disabled}
+                    />
+
+                    {clearable && value ? (
+                        <div className={editableAreaClass('clear')} onClick={this.handleChange.bind(this, '')}>
+                            {icons.CloseCircle}
+                        </div>
+                    ) : null}
                 </div>
-            ) : null}
-        </div>
-    )
+            </Popover>
+        )
+    }
 }
-
-Editable.defaultProps = {
-    bordered: false,
-}
-
-Editable.propTypes = {
-    onBlur: PropTypes.func,
-    onChange: PropTypes.func,
-    value: PropTypes.string,
-    style: PropTypes.object,
-    className: PropTypes.string,
-    delay: PropTypes.number,
-    bordered: PropTypes.bool,
-    placeholder: PropTypes.string,
-    onFocus: PropTypes.func,
-    disabled: PropTypes.bool,
-    clearable: PropTypes.bool,
-    getPopupContainer: PropTypes.func,
-    maxHeight: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
-    width: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
-}
-
-export default Editable

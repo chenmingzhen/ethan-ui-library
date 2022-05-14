@@ -6,8 +6,8 @@
  */
 
 import React from 'react'
-import { EditableArea } from 'ethan/index'
+import { EditableArea } from 'ethan'
 
 export default function() {
-  return <EditableArea bordered placeholder="input something" />
+    return <EditableArea bordered placeholder="input something" />
 }

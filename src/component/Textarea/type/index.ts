@@ -9,7 +9,7 @@ export interface TextareaProps
         InputBorderProps {
     autoSize?: boolean
     showCount?: boolean
-    maxHeight?: number
+    maxHeight?: string|number
     onEnterPress?: (value: string, evt: React.KeyboardEvent<HTMLTextAreaElement>) => void
     onChange?: (string) => void
     rows?: number
