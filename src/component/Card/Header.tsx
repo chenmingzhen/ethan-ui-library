@@ -3,14 +3,7 @@ import classnames from 'classnames'
 import { cardClass } from '@/styles'
 import icons from '../icons'
 import { context } from './context'
-
-export interface CardHeaderProps {
-    align: string
-
-    className: string
-
-    style: React.CSSProperties
-}
+import { CardHeaderProps } from './type'
 
 const Header: React.FC<CardHeaderProps> = ({ align, className, style, children }) => {
     const { collapsed, onCollapse } = useContext(context)

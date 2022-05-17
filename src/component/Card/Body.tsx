@@ -3,18 +3,7 @@ import classnames from 'classnames'
 import { cardClass } from '@/styles'
 import { context } from './context'
 import CollapseList from '../List/AnimationHeight'
-
-// const CollapseList = List(['collapse'], 'fast')
-
-interface CardBodyProps extends React.DetailedHTMLProps<React.HTMLAttributes<HTMLDivElement>, HTMLDivElement> {
-    className?: string
-
-    // 初始折叠状态（仅在 collapsible 为 true 时有效）
-    defaultCollapsed?: boolean
-
-    // 最外层扩展样式
-    style?: React.CSSProperties
-}
+import { CardBodyProps } from './type'
 
 const Body: React.FC<CardBodyProps> = ({ className, ...props }) => {
     const { collapsible, collapsed, onCollapse } = React.useContext(context)

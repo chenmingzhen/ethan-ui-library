@@ -1,10 +1,7 @@
 import React, { useContext } from 'react'
 import Button from '../Button'
 import { context } from './context'
-
-interface CardSubmitProps extends React.DetailedHTMLProps<React.HTMLAttributes<HTMLDivElement>, HTMLDivElement> {
-    loading: boolean
-}
+import { CardSubmitProps } from './type'
 
 const Submit: React.FC<CardSubmitProps> = ({ loading, children, ...props }) => {
     const { onSubmit, formStatus } = useContext(context)

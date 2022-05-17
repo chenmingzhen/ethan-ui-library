@@ -5,28 +5,8 @@ import { cardClass } from '@/styles'
 import { compose } from '@/utils/func'
 import resizable from '@/hoc/resizable'
 import moveable from '@/hoc/moveable'
-import { Provider, CardContext } from './context'
-
-interface CardProps {
-    /** 是否显示阴影 */
-    shadow?: boolean | 'hover'
-    /** 初始折叠状态（仅在 collapsible 为 true 时有效） */
-    defaultCollapsed?: boolean
-    /** 是否可折叠，'bottom' 表示从下方点击折叠 */
-    collapsible?: boolean
-    /** 手风琴下控制展开的值 */
-    id?: string | number
-    /** 最外层样式名 */
-    className?: string
-    /** 是否折叠，用于受控状态 */
-    collapsed: boolean
-    /** 折叠状态改变时回调事件 */
-    onCollapse(e: boolean): void
-    /** 最外层扩展样式 */
-    style: React.CSSProperties
-    /** ref 穿透多重转发 */
-    forwardedRef: (el: HTMLDivElement) => void
-}
+import { Provider } from './context'
+import { CardContext, CardProps } from './type'
 
 const Card: React.FC<CardProps> = ({ collapsible = false, forwardedRef, ...props }) => {
     const [collapsed, setCollapsed] = useState<boolean>(props.defaultCollapsed || true)
