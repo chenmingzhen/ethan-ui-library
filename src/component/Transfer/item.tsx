@@ -1,32 +1,34 @@
-// @ts-nocheck
-import React, { memo, useCallback } from 'react'
-import PropTypes from 'prop-types'
+import React, { memo, useContext } from 'react'
 import classnames from 'classnames'
 import { transferClass } from '@/styles'
 import Checkbox from '../Checkbox'
-import { Consumer } from './context'
+import { TransferContext } from './context'
+import { TransferItemProps } from './type'
 
-const Item = props => {
-    const { index, selecteds, checkKey, setSelecteds, content, disabled, itemClass } = props
-    const check = useCallback(
-        c => {
-            if (c) {
-                setSelecteds(index, [...selecteds[index], checkKey])
-            } else {
-                setSelecteds(
-                    index,
-                    selecteds[index].filter(ch => ch !== checkKey)
-                )
-            }
-        },
-        [index, selecteds, checkKey, setSelecteds]
-    )
+const Item: React.FC<TransferItemProps> = props => {
+    const { selecteds, setSelecteds } = useContext(TransferContext)
+
+    const { index, checkKey, content, disabled, itemClass, lineHeight } = props
+
+    function handleCheck(check) {
+        if (check) {
+            setSelecteds(index, [...selecteds[index], checkKey])
+        } else {
+            setSelecteds(
+                index,
+                selecteds[index].filter(ch => ch !== checkKey)
+            )
+        }
+    }
 
     return (
-        <div className={classnames(transferClass('item', disabled && 'item-disabled'), itemClass)}>
+        <div
+            className={classnames(transferClass('item', disabled && 'item-disabled'), itemClass)}
+            style={{ height: lineHeight }}
+        >
             <Checkbox
                 className={transferClass('item-check')}
-                onChange={check}
+                onChange={handleCheck}
                 disabled={disabled}
                 checked={selecteds[index].indexOf(checkKey) > -1}
             >
@@ -36,16 +38,4 @@ const Item = props => {
     )
 }
 
-Item.propTypes = {
-    index: PropTypes.number,
-    selecteds: PropTypes.array,
-    checkKey: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
-    setSelecteds: PropTypes.func,
-    content: PropTypes.oneOfType([PropTypes.string, PropTypes.object]),
-    disabled: PropTypes.oneOfType([PropTypes.bool, PropTypes.func]),
-    itemClass: PropTypes.string,
-}
-
-export default memo(prop => (
-    <Consumer>{value => <Item {...prop} selecteds={value.selecteds} setSelecteds={value.setSelecteds} />}</Consumer>
-))
+export default memo(Item)

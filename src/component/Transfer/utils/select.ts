@@ -1,26 +1,26 @@
-// @ts-nocheck
 import { getKey } from '@/utils/uid'
+import { ITransferProps, TransferBaseData, TransferDefaultData } from '../type'
 
 /**
  * 获取左右的勾选项
- * @param selecteds
- * @param props
- * @returns {[[], []]|null}
  */
-const splitSelecteds = (selecteds, props) => {
-    if (!selecteds) return null
+function splitSelecteds<D extends TransferBaseData = TransferDefaultData, FD = D>(
+    selectedKeys: FD[],
+    props: ITransferProps<D, FD>
+) {
+    if (!selectedKeys) return null
 
     const { data, keygen, datum } = props
 
-    const left = []
-    const right = []
+    const left: FD[] = []
+    const right: FD[] = []
 
-    selecteds.forEach(s => {
-        const v = data.find((d, i) => getKey(d, keygen, i) === s)
+    selectedKeys.forEach(selectedKey => {
+        const v = data.find((item, index) => getKey(item, keygen, index) === selectedKey)
 
         if (v) {
-            if (datum.check(v)) right.push(s)
-            else left.push(s)
+            if (datum.check(v)) right.push(selectedKey)
+            else left.push(selectedKey)
         }
     })
 

@@ -1,4 +1,6 @@
-// @ts-nocheck
-import createContext from 'create-react-context'
+import { createContext } from 'react'
+import { TransferContextProps } from './type'
 
-export const { Provider, Consumer } = createContext()
+export const TransferContext = createContext<TransferContextProps>(undefined)
+
+export const { Provider, Consumer } = TransferContext

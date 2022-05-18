@@ -1,92 +1,123 @@
-// @ts-nocheck
-import React, { useState, useCallback, memo, useMemo, useRef } from 'react'
-import PropTypes from 'prop-types'
-import classnames from 'classnames'
+import React from 'react'
 import { transferClass } from '@/styles'
-import { getKey } from '@/utils/uid'
-import { createFunc } from '@/utils/func'
-import { isFunc } from '@/utils/is'
 import { getLocale } from '@/locale'
-import LazyList from '../List/LazyList'
+import classnames from 'classnames'
+import { isArray, isFunc } from '@/utils/is'
+import { createFunc } from '@/utils/func'
+import { TransferCardProps } from './type'
+import ECard from '../Card'
 import Spin from '../Spin'
-import filter from './filter'
-import SCard from '../Card'
 import Checkbox from '../Checkbox'
-import Item from './item'
 import Input from '../Input'
+import LazyList from '../List/LazyList'
+import Item from './Item'
 
-const Card = props => {
-    const [lh, setLh] = useState(props.listHeight)
-    const [mounted, setMounted] = useState(false)
-    const cardBody = useRef()
-    const {
-        title,
-        data,
-        selecteds,
-        footer,
-        listClassName,
-        listStyle,
-        empty,
-        disabled,
-        loading,
-        listHeight,
-        customRender,
-        keygen,
-        index,
-        setSelecteds,
-        onFilter,
-        onSearch,
-        renderFilter,
-        filterText,
-        values,
-        lineHeight,
-        rowsInView,
-        renderItem,
-    } = props
+interface CardState {
+    lazyHeight: number
 
-    // --------------------------method and computed-----------------
-    const check = useMemo(() => {
+    text: string
+}
+
+class Card extends React.PureComponent<TransferCardProps, CardState> {
+    cardBody: HTMLDivElement
+
+    get check() {
+        const { selecteds } = this.props
+
         if (selecteds.length === 0) return false
 
-        if (selecteds.length === data.length) return true
+        if (selecteds.length === this.data.length) return true
 
         return 'indeterminate'
-    }, [selecteds, data])
+    }
 
-    const listms = useMemo(() => Object.assign({}, listStyle, { height: listHeight }), [listStyle, listHeight])
+    get data() {
+        const { onFilter, data, index } = this.props
 
-    const checkAll = useCallback(
-        c => {
-            if (c) {
-                if (typeof disabled === 'function')
-                    setSelecteds(
-                        index,
-                        data.reduce((r, d, i) => {
-                            if (disabled(d)) return r
-                            r.push(getKey(d, keygen, i))
-                            return r
-                        }, [])
-                    )
-                else
-                    setSelecteds(
-                        index,
-                        data.map((d, i) => getKey(d, keygen, i))
-                    )
+        const { text } = this.state
+
+        if (!onFilter || !text) return data
+
+        return data.filter(d => onFilter(text, d, !index))
+    }
+
+    constructor(props: TransferCardProps) {
+        super(props)
+
+        this.state = {
+            lazyHeight: 0,
+            text: '',
+        }
+    }
+
+    componentDidMount() {
+        this.forceUpdate()
+    }
+
+    bindCardBody = (el: HTMLDivElement) => {
+        this.cardBody = el
+
+        this.setState({ lazyHeight: el?.offsetHeight })
+    }
+
+    checkAll = check => {
+        const { setSelecteds, disabled, getKey, index } = this.props
+
+        if (check) {
+            if (typeof disabled === 'function') {
+                const newSelecteds = this.data.reduce((total, current, i) => {
+                    if (disabled(current)) return total
+
+                    total.push(getKey(current, i))
+
+                    return total
+                }, [])
+
+                setSelecteds(index, newSelecteds)
             } else {
-                setSelecteds(index, [])
+                setSelecteds(
+                    index,
+                    this.data.map((item, i) => getKey(item, i))
+                )
             }
-        },
-        [keygen, index, setSelecteds, data]
-    )
+        } else {
+            setSelecteds(index, [])
+        }
+    }
 
-    // eslint-disable-next-line no-underscore-dangle
-    const _renderFilter = useCallback(() => {
+    handleFilter = text => {
+        const { onSearch, index } = this.props
+
+        if (onSearch) onSearch(text, !index)
+
+        this.setState({ text })
+    }
+
+    customSetSelected = value => {
+        const { setSelecteds, index, selecteds } = this.props
+
+        if (typeof value === 'string') {
+            setSelecteds(index, [...selecteds, value])
+
+            return
+        }
+        if (isArray(value)) {
+            setSelecteds(index, value)
+        }
+    }
+
+    renderFilter = () => {
+        const { onFilter, onSearch, renderFilter, disabled } = this.props
+
+        const { text } = this.state
+
         if (!onFilter && !onSearch) return null
+
         if (renderFilter && typeof renderFilter === 'function') {
             return (
                 <div className={transferClass('filter')}>
                     {renderFilter({
-                        value: filterText,
+                        text,
                         disabled: disabled === true,
                         onFilter,
                         placeholder: getLocale('search'),
@@ -98,138 +129,110 @@ const Card = props => {
             <div className={transferClass('filter')}>
                 <Input
                     disabled={disabled === true}
-                    onChange={onFilter}
+                    onChange={this.handleFilter}
                     placeholder={getLocale('search')}
                     clearable
                     size="small"
-                    value={filterText}
+                    value={text}
                 />
             </div>
         )
-    }, [onFilter, onSearch, renderFilter, filterText, disabled])
+    }
 
-    const bindCardBody = useCallback(
-        node => {
-            cardBody.current = node
-            setMounted(true)
-            setLh(node ? node.offsetHeight : listHeight)
-        },
-        [listHeight, cardBody.current]
-    )
+    renderItem = (data, i) => {
+        const { disabled, getKey, lineHeight, renderItem, itemClass, index } = this.props
 
-    const customSetSelected = useCallback(
-        value => {
-            if (typeof value === 'string') {
-                setSelecteds(index, [...selecteds, value])
-                return
-            }
-            if (Array.isArray(value)) {
-                setSelecteds(index, value)
-            }
-        },
-        [index, setSelecteds, selecteds]
-    )
-    const handleRenderItem = useCallback(
-        (d, i) => {
-            const disable = disabled === true
-            const key = getKey(d, keygen, i)
+        const key = getKey(data, i)
 
-            return (
-                <Item
-                    lineHeight={lineHeight}
-                    key={key}
-                    disabled={disable || (typeof disabled === 'function' && disabled(d))}
-                    index={index}
-                    checkKey={key}
-                    liData={d}
-                    content={createFunc(renderItem)(d)}
-                />
-            )
-        },
-        [keygen, index, renderItem, disabled, lineHeight]
-    )
-
-    const renderLazyList = useCallback(() => {
-        if (!mounted) return null
         return (
-            <LazyList
-                stay={!filterText}
-                data={data}
-                itemsInView={rowsInView}
+            <Item
                 lineHeight={lineHeight}
-                height={lh}
-                scrollHeight={lineHeight * data.length}
-                renderItem={handleRenderItem}
+                key={key}
+                disabled={typeof disabled === 'function' ? disabled(data) : disabled}
+                index={index}
+                checkKey={key}
+                content={createFunc(renderItem)(data)}
+                itemClass={itemClass}
             />
         )
-    }, [filterText, data, rowsInView, lh, rowsInView, handleRenderItem, lineHeight])
+    }
 
-    const renderBody = useCallback(() => {
+    renderBody = () => {
+        const { customRender, values, selecteds, index, rowsInView, lineHeight } = this.props
+
+        const { lazyHeight, text } = this.state
+
         if (isFunc(customRender)) {
             const custom = customRender({
-                onSelected: customSetSelected,
+                onSelected: this.customSetSelected,
                 direction: index === 0 ? 'left' : 'right',
-                selectedKeys: props.selecteds,
+                selectedKeys: selecteds,
                 value: values,
             })
+
             if (custom) return custom
         }
 
-        return renderLazyList()
-    }, [customRender, props.selecteds, values, customSetSelected, index, renderLazyList])
-    // ---------------------------render------------------------------
-    const disable = disabled === true
+        return (
+            <LazyList
+                stay={!text}
+                data={this.data}
+                itemsInView={rowsInView}
+                lineHeight={lineHeight}
+                height={lazyHeight}
+                scrollHeight={lineHeight * this.data.length}
+                renderItem={this.renderItem}
+            />
+        )
+    }
 
-    return (
-        <SCard className={transferClass('card')}>
-            <SCard.Header className={transferClass('card-header')}>
-                <div>
-                    <Checkbox onChange={checkAll} checked={check} disabled={disable}>
-                        {check ? `${selecteds.length} ${getLocale('selected')}` : getLocale('selectAll')}
-                    </Checkbox>
-                </div>
-                <div className={transferClass('card-header-title')}>{title}</div>
-            </SCard.Header>
-            {_renderFilter()}
-            <Spin loading={loading}>
-                <SCard.Body className={classnames(transferClass('card-body'), listClassName)} style={listms}>
-                    <div className={transferClass('body-container')} ref={bindCardBody}>
-                        {renderBody()}
-                        {!isFunc(customRender) && data.length === 0 && (
-                            <div className={transferClass('empty')}>{empty || getLocale('noData')}</div>
-                        )}
-                    </div>
-                </SCard.Body>
-            </Spin>
+    render() {
+        const {
+            selecteds,
+            disabled,
+            loading,
+            title,
+            listClassName,
+            listStyle,
+            listHeight,
+            customRender,
+            empty,
+            footer,
+        } = this.props
 
-            {footer && <SCard.Footer className={transferClass('card-footer')}>{footer}</SCard.Footer>}
-        </SCard>
-    )
+        const listMergeStyle = Object.assign({}, listStyle, { height: listHeight })
+
+        return (
+            <>
+                <ECard className={transferClass('card')}>
+                    <ECard.Header className={transferClass('card-header')}>
+                        <div>
+                            <Checkbox onChange={this.checkAll} checked={this.check} disabled={disabled === true}>
+                                {this.check ? `${selecteds.length} ${getLocale('selected')}` : getLocale('selectAll')}
+                            </Checkbox>
+                        </div>
+                        <div className={transferClass('card-header-title')}>{title}</div>
+                    </ECard.Header>
+                    {this.renderFilter()}
+                    <Spin loading={loading}>
+                        <ECard.Body
+                            className={classnames(transferClass('card-body'), listClassName)}
+                            style={listMergeStyle}
+                        >
+                            <div className={transferClass('body-container')} ref={this.bindCardBody}>
+                                {this.renderBody()}
+                                {!isFunc(customRender) && this.data.length === 0 && (
+                                    <div className={transferClass('empty')}>{empty || getLocale('noData')}</div>
+                                )}
+                            </div>
+                        </ECard.Body>
+                    </Spin>
+
+                    {footer && <ECard.Footer className={transferClass('card-footer')}>{footer}</ECard.Footer>}
+                </ECard>
+            </>
+        )
+    }
 }
 
-Card.propTypes = {
-    selecteds: PropTypes.array,
-    keygen: PropTypes.oneOfType([PropTypes.string, PropTypes.func]),
-    data: PropTypes.array,
-    setSelecteds: PropTypes.func,
-    title: PropTypes.oneOfType([PropTypes.string, PropTypes.object]),
-    renderItem: PropTypes.oneOfType([PropTypes.string, PropTypes.func]),
-    index: PropTypes.number, // 0左1右
-    footer: PropTypes.object,
-    listClassName: PropTypes.string,
-    listStyle: PropTypes.object,
-    disabled: PropTypes.oneOfType([PropTypes.bool, PropTypes.func]),
-    onFilter: PropTypes.func,
-    empty: PropTypes.oneOfType([PropTypes.string, PropTypes.object]),
-    loading: PropTypes.bool,
-    onSearch: PropTypes.func,
-    rowsInView: PropTypes.number,
-    lineHeight: PropTypes.number,
-    listHeight: PropTypes.number,
-    filterText: PropTypes.string,
-    renderFilter: PropTypes.func,
-    customRender: PropTypes.func,
-    values: PropTypes.array,
-}
-
-export default filter(memo(Card))
+export default Card

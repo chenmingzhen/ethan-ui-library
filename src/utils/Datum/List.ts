@@ -220,6 +220,7 @@ export default class List<T = string> {
         return flatten
     }
 
+    /** @todo 入参改为对象形式，去掉第二个参数 */
     // hoc=》setValue=》本类set=》本类add
     add(data: T | T[], _?: any, childrenKey?: string, unshift?: boolean) {
         if (data === undefined || data === null) return
