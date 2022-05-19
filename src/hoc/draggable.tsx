@@ -37,21 +37,21 @@ export default curry(Origin => {
             this.removeEvents()
         }
 
-        addEvents() {
+        addEvents = () => {
             document.addEventListener('mousemove', this.handleDrag)
 
             document.addEventListener('mouseup', this.handleDragEnd)
             document.addEventListener('mouseleave', this.handleDragEnd)
         }
 
-        removeEvents() {
+        removeEvents = () => {
             document.removeEventListener('mousemove', this.handleDrag)
 
             document.removeEventListener('mouseup', this.handleDragEnd)
             document.removeEventListener('mouseleave', this.handleDragEnd)
         }
 
-        handleDrag(e: MouseEvent) {
+        handleDrag = (e: MouseEvent) => {
             if (!this.dragging) return
 
             if (e.clientX === 0 && e.clientY === 0) return
@@ -68,7 +68,7 @@ export default curry(Origin => {
             onDrag?.(mx, my, e.clientX, e.clientY)
         }
 
-        handleDragStart(e: React.MouseEvent<HTMLDivElement>) {
+        handleDragStart = (e: React.MouseEvent<HTMLDivElement>) => {
             if (e.button !== 0) return
 
             const { onDragStart } = this.props
@@ -83,7 +83,7 @@ export default curry(Origin => {
             onDragStart?.(true)
         }
 
-        handleDragEnd() {
+        handleDragEnd = () => {
             if (!this.dragging) return
 
             const { onDragEnd } = this.props
