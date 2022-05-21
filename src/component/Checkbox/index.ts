@@ -8,10 +8,7 @@ import { CheckboxComponent } from './type'
 
 const CheckboxContainer = compose(InputAble, consumer)(Checkbox) as CheckboxComponent
 
-CheckboxContainer.Group = compose(
-    InputAble,
-    Datum.Hoc({ bindProps: ['disabled', 'format', 'prediction', 'separator'] })
-)(Group)
+CheckboxContainer.Group = compose(InputAble, Datum.Hoc({ bindProps: ['disabled', 'format', 'prediction'] }))(Group)
 
 CheckboxContainer.displayName = 'EthanCheckbox'
 

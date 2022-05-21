@@ -1,12 +1,12 @@
 import { getKey } from '@/utils/uid'
-import { ITransferProps, TransferBaseData, TransferDefaultData } from '../type'
+import { TransferProps, TransferBaseData, TransferDefaultData } from '../type'
 
 /**
  * 获取左右的勾选项
  */
 function splitSelecteds<D extends TransferBaseData = TransferDefaultData, FD = D>(
     selectedKeys: FD[],
-    props: ITransferProps<D, FD>
+    props: TransferProps<D, FD>
 ) {
     if (!selectedKeys) return null
 
