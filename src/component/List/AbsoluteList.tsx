@@ -5,10 +5,11 @@ import { listClass } from '@/styles'
 import { Component } from '@/utils/component'
 import shallowEqual from '@/utils/shallowEqual'
 import { docScroll, docSize } from '@/utils/dom/document'
+import { InjectComponent } from '@/utils/utilityTypes'
 import { ListProps } from '.'
 
-interface AbsoluteListProps extends Omit<ListProps, 'show'> {
-    focus?: boolean
+export interface AbsoluteListProps extends Omit<ListProps, 'show'> {
+    focus: boolean
 
     fixed?: boolean | 'min'
 
@@ -29,7 +30,8 @@ interface AbsoluteListProps extends Omit<ListProps, 'show'> {
 
     zIndex?: number
 
-    value?: any
+    /** 传入List的业务Props */
+    [pass: string]: any
 }
 
 interface AbsoluteListState {
@@ -37,7 +39,11 @@ interface AbsoluteListState {
     overDoc: boolean
 }
 
-interface GenerateAbsoluteListProps extends Omit<ListProps, 'show'> {
+interface GenerateAbsoluteListProps
+    extends Omit<
+        AbsoluteListProps,
+        'fixed' | 'parentElement' | 'position' | 'absolute' | 'scrollElement' | 'rootClass' | 'autoClass' | 'zIndex'
+    > {
     focus: boolean
 }
 
@@ -59,7 +65,7 @@ function initRoot() {
     document.body.appendChild(root)
 }
 
-function generateAbsoluteList(ListComponent: React.FC<GenerateAbsoluteListProps>) {
+function generateAbsoluteList(ListComponent: InjectComponent<GenerateAbsoluteListProps>) {
     class AbsoluteList extends Component<AbsoluteListProps, AbsoluteListState> {
         lastStyle: React.CSSProperties = {}
 
@@ -141,7 +147,6 @@ function generateAbsoluteList(ListComponent: React.FC<GenerateAbsoluteListProps>
                 position,
                 scrollElement,
                 autoClass,
-                value,
                 fixed,
                 zIndex,
                 ...props

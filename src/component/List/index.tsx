@@ -3,6 +3,7 @@ import { useUpdateEffect } from 'react-use'
 import { hidableClass } from '@/styles'
 import classnames from 'classnames'
 import { listClass } from '@/styles'
+import { runInNextFrame } from '@/utils/nextFrame'
 
 export interface ListProps extends React.DetailedHTMLProps<React.HTMLAttributes<HTMLDivElement>, HTMLDivElement> {
     show: boolean
@@ -32,117 +33,104 @@ const transformDuration = (duration: string | number) => {
 
 type AnimationType = 'fade' | 'collapse' | 'scale-y'
 
+/** @todo 移除高阶组件用法 */
 export default function buildList(type: AnimationType[], rawDuration: string | number, display = 'block') {
     const duration = transformDuration(rawDuration)
     const hasCollapse = type.indexOf('collapse') >= 0
     const needTransform = type.indexOf('scale-y') >= 0
 
-    const HideHander: React.FC<ListProps> = ({ show, getRef, style, ...props }) => {
-        const height = useRef<number>(0)
-        const isShowing = useRef<boolean>(false)
-        const elRef = useRef<HTMLDivElement>()
+    return class extends React.PureComponent<ListProps, { show: boolean }> {
+        element: HTMLDivElement
 
-        let animation = `animation-${duration}`
+        timer: NodeJS.Timer
 
-        if (!needTransform) {
-            animation = `fade-${animation}`
+        constructor(props: ListProps) {
+            super(props)
+
+            this.state = {
+                show: props.show,
+            }
         }
 
-        const className = classnames(hidableClass('_', ...type, animation), props.className)
+        componentDidMount() {
+            const { show } = this.state
 
-        const doShow = () => {
-            const el = elRef.current
-            const es = el.style
+            if (show) return
 
-            es.display = display
-            // 由于先将display none转为可见形态 设置延时 将div添加show的属性 进而有transform
-            setTimeout(() => {
-                el.classList.add(hidableClass('show'))
-
-                isShowing.current = true
-
-                if (!hasCollapse) {
-                    setTimeout(() => {
-                        isShowing.current = false
-                    }, duration)
+            runInNextFrame(() => {
+                if (hasCollapse) {
+                    this.element.style.overflow = 'hidden'
+                    this.element.style.height = '0'
                 }
-            }, 20)
-
-            if (hasCollapse) {
-                setTimeout(() => {
-                    es.height = `${height.current}px`
-                    isShowing.current = true
-
-                    setTimeout(() => {
-                        isShowing.current = false
-                        es.height = 'auto'
-                        es.overflow = ''
-                    }, duration)
-                }, 30)
-            }
+            })
         }
 
-        const doHide = () => {
-            const el = elRef.current
+        componentDidUpdate(prevProps: ListProps) {
+            if (prevProps.show === this.props.show || !hasCollapse) return
 
-            // 移除show
-            el.classList.remove(hidableClass('show'))
+            if (this.timer) {
+                clearTimeout(this.timer)
 
-            if (hasCollapse) {
-                el.style.overflow = 'hidden'
-                el.style.height = `${el.offsetHeight}px`
-                height.current = el.offsetHeight
-
-                setTimeout(() => {
-                    el.style.height = '0'
-                }, 30)
+                this.timer = null
             }
 
-            setTimeout(() => {
-                if (isShowing.current) return
+            const { show } = this.props
 
-                el.style.display = 'none'
-            }, duration)
-        }
+            const prevHeight = this.element.offsetHeight
 
-        useEffect(() => {
-            const el = elRef.current
+            this.element.style.height = 'auto'
 
-            // 已经是显示状态 不执行
+            const newHeight = this.element.offsetHeight
+
+            this.element.style.height = `${prevHeight}px`
+
             if (show) {
-                el.classList.add(hidableClass('show'))
-                return
+                runInNextFrame(() => {
+                    this.element.style.height = `${newHeight}px`
+
+                    this.timer = setTimeout(() => {
+                        this.element.style.height = 'auto'
+                        this.element.style.overflow = ''
+                    }, duration)
+                })
+            } else {
+                runInNextFrame(() => {
+                    this.element.style.height = `${newHeight}px`
+
+                    this.timer = setTimeout(() => {
+                        this.element.style.height = '0'
+                        this.element.style.overflow = 'hidden'
+                    }, duration)
+                })
+            }
+        }
+
+        bindListElement = (element: HTMLDivElement) => {
+            const { getRef } = this.props
+
+            getRef?.(element)
+
+            this.element = element
+        }
+
+        render() {
+            const { show, getRef, style = {}, ...other } = this.props
+
+            let animation = `animation-${duration}`
+
+            if (!needTransform) {
+                animation = `fade-${animation}`
             }
 
-            // 获取当前容器的高度
-            if (hasCollapse) height.current = el.offsetHeight
+            const className = classnames(
+                hidableClass('_', ...type, animation, show && 'show'),
+                listClass('_'),
+                other.className
+            )
 
-            // 隐藏
-            el.style.display = 'none'
+            const ms = Object.assign({ display }, style)
 
-            if (hasCollapse) {
-                el.style.overflow = 'hidden'
-                el.style.height = '0'
-            }
-        }, [])
-
-        useUpdateEffect(() => {
-            if (show) doShow()
-            else doHide()
-        }, [show])
-
-        return (
-            <div
-                {...props}
-                ref={e => {
-                    getRef?.(e)
-                    elRef.current = e
-                }}
-                className={classnames(listClass('_'), className)}
-                style={style}
-            />
-        )
+            return <div {...other} ref={this.bindListElement} className={className} style={ms} />
+        }
     }
-
-    return memo(HideHander)
 }
