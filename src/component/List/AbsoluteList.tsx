@@ -8,7 +8,7 @@ import { docScroll, docSize } from '@/utils/dom/document'
 import { InjectComponent } from '@/utils/utilityTypes'
 import { ListProps } from '.'
 
-export interface AbsoluteListProps extends Omit<ListProps, 'show'> {
+export interface AbsoluteListProps extends Omit<ListProps, 'show' | 'animationTypes' | 'duration'> {
     focus: boolean
 
     fixed?: boolean | 'min'

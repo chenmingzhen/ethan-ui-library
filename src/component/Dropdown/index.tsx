@@ -14,14 +14,7 @@ import Caret from '../icons/Caret'
 import Position from './enum/Position'
 import { ComplicatedDropDownData, IDropDownProps } from './type'
 
-function buildDropList(animation: boolean) {
-    const FadeList = List(['fade'], animation ? 'fast' : 0)
-
-    return generateAbsoluteList(({ focus, ...props }) => <FadeList show={focus} {...props} />)
-}
-
-// TODO 矫正position的方向，顺带修改absoluteList的getPosition的判断
-
+/** @TODO 矫正position的方向，顺带修改absoluteList的getPosition的判断 */
 const Dropdown: React.FC<IDropDownProps> = props => {
     const {
         animation,
@@ -46,7 +39,11 @@ const Dropdown: React.FC<IDropDownProps> = props => {
 
     const dropdownId = useRef(getUidStr()).current
 
-    const DropdownList = useRef(buildDropList(animation)).current
+    const DropdownList = useRef(
+        generateAbsoluteList(({ focus, ...other }) => (
+            <List {...other} show={focus} animationTypes={['fade']} duration={animation ? 'fast' : 0} />
+        ))
+    ).current
 
     const closeTimer = useRef<NodeJS.Timeout>()
 

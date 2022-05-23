@@ -12,11 +12,11 @@ import Result from './Result'
 import CascaderList from './List'
 import absoluteList from '../List/AbsoluteList'
 import { CascaderState, CascaderProps } from './type'
-import List from '../List'
+import AnimationList from '../List'
 
-const FadeList = List(['fade', 'scale-y'], 'fast', 'inline-flex')
-
-const OptionList = absoluteList(({ focus, ...other }) => <FadeList show={focus} {...other} />)
+const OptionList = absoluteList(({ focus, ...other }) => (
+    <AnimationList show={focus} {...other} animationTypes={['fade', 'scale-y']} duration="fast" display="inline-flex" />
+))
 
 class Cascader<T extends any> extends PureComponent<CascaderProps, CascaderState> {
     static defaultProps = {

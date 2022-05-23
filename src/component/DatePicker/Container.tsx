@@ -16,11 +16,12 @@ import Picker from './Picker'
 import Range from './Range'
 import Text from './Text'
 import absoluteList from '../List/AbsoluteList'
-import List from '../List'
+import AnimationList from '../List'
 import DateFns from './utils'
 
-const FadeList = List(['fade'], 'fast')
-const OptionList = absoluteList(({ focus, ...other }) => <FadeList show={focus} {...other} />)
+const OptionList = absoluteList(({ focus, ...other }) => (
+    <AnimationList show={focus} {...other} animationTypes={['fade']} duration="fast" />
+))
 
 class Container extends PureComponent {
     constructor(props) {
@@ -323,8 +324,8 @@ class Container extends PureComponent {
             value = date.map(v =>
                 v
                     ? utils.format(v, format, {
-                        weekStartsOn: getLocale('startOfWeek'),
-                    })
+                          weekStartsOn: getLocale('startOfWeek'),
+                      })
                     : v
             )
         else
@@ -415,11 +416,11 @@ class Container extends PureComponent {
             <div className={datepickerClass('result')}>
                 {range
                     ? [
-                        this.renderText(value[0], placeholder[0], 0),
-                        <span key="-" className={datepickerClass('separate')}>
+                          this.renderText(value[0], placeholder[0], 0),
+                          <span key="-" className={datepickerClass('separate')}>
                               ~
-                        </span>,
-                        this.renderText(value[1], placeholder[1], 1),
+                          </span>,
+                          this.renderText(value[1], placeholder[1], 1),
                       ]
                     : this.renderText(value, placeholder)}
                 <Icon
@@ -503,7 +504,7 @@ class Container extends PureComponent {
         return (
             <div
                 // eslint-disable-next-line
-        tabIndex={ disabled === true ? -1 : 0}
+                tabIndex={disabled === true ? -1 : 0}
                 className={className}
                 onFocus={this.handleFocus}
                 data-id={this.pickerId}

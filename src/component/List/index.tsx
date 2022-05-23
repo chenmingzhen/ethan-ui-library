@@ -1,8 +1,6 @@
-import React, { useRef, useEffect, memo } from 'react'
-import { useUpdateEffect } from 'react-use'
+import React from 'react'
 import { hidableClass } from '@/styles'
 import classnames from 'classnames'
-import { listClass } from '@/styles'
 import { runInNextFrame } from '@/utils/nextFrame'
 
 export interface ListProps extends React.DetailedHTMLProps<React.HTMLAttributes<HTMLDivElement>, HTMLDivElement> {
@@ -13,6 +11,12 @@ export interface ListProps extends React.DetailedHTMLProps<React.HTMLAttributes<
     className?: string
 
     getRef?(e: HTMLDivElement): void
+
+    animationTypes: AnimationType[]
+
+    display?: React.CSSProperties['display']
+
+    duration?: 'fast' | 'slow' | number
 }
 
 const transformDuration = (duration: string | number) => {
@@ -33,104 +37,165 @@ const transformDuration = (duration: string | number) => {
 
 type AnimationType = 'fade' | 'collapse' | 'scale-y'
 
-/** @todo 移除高阶组件用法 */
-export default function buildList(type: AnimationType[], rawDuration: string | number, display = 'block') {
-    const duration = transformDuration(rawDuration)
-    const hasCollapse = type.indexOf('collapse') >= 0
-    const needTransform = type.indexOf('scale-y') >= 0
+export default class AnimationList extends React.PureComponent<ListProps> {
+    element: HTMLDivElement
 
-    return class extends React.PureComponent<ListProps, { show: boolean }> {
-        element: HTMLDivElement
+    timer: NodeJS.Timer
 
-        timer: NodeJS.Timer
+    static defaultProps = {
+        display: 'block',
+    }
 
-        constructor(props: ListProps) {
-            super(props)
+    get hasCollapse() {
+        const { animationTypes } = this.props
 
-            this.state = {
-                show: props.show,
+        return animationTypes.indexOf('collapse') >= 0
+    }
+
+    get hasTransform() {
+        const { animationTypes } = this.props
+
+        return animationTypes.indexOf('scale-y') >= 0
+    }
+
+    get hasFade() {
+        const { animationTypes } = this.props
+
+        return animationTypes.indexOf('fade') >= 0
+    }
+
+    get duration() {
+        const { duration } = this.props
+
+        return transformDuration(duration)
+    }
+
+    componentDidMount() {
+        const { show } = this.props
+
+        if (show) return
+
+        runInNextFrame(() => {
+            this.element.style.display = 'none'
+
+            if (this.hasCollapse) {
+                this.element.style.overflow = 'hidden'
+                this.element.style.height = '0'
             }
+
+            if (this.hasFade) {
+                this.element.style.opacity = '0'
+            }
+
+            if (this.hasTransform) {
+                this.element.style.transform = 'scaleY(0)'
+            }
+        })
+    }
+
+    componentDidUpdate(prevProps: ListProps) {
+        if (prevProps.show === this.props.show) return
+
+        if (this.timer) {
+            clearTimeout(this.timer)
+
+            this.timer = null
         }
 
-        componentDidMount() {
-            const { show } = this.state
+        const { show, display } = this.props
 
-            if (show) return
-
+        if (show) {
             runInNextFrame(() => {
-                if (hasCollapse) {
-                    this.element.style.overflow = 'hidden'
-                    this.element.style.height = '0'
-                }
-            })
-        }
+                this.element.style.display = display
 
-        componentDidUpdate(prevProps: ListProps) {
-            if (prevProps.show === this.props.show || !hasCollapse) return
+                const newHeight = this.getNewElementHeight()
 
-            if (this.timer) {
-                clearTimeout(this.timer)
-
-                this.timer = null
-            }
-
-            const { show } = this.props
-
-            const prevHeight = this.element.offsetHeight
-
-            this.element.style.height = 'auto'
-
-            const newHeight = this.element.offsetHeight
-
-            this.element.style.height = `${prevHeight}px`
-
-            if (show) {
                 runInNextFrame(() => {
-                    this.element.style.height = `${newHeight}px`
+                    if (this.hasFade) {
+                        this.element.style.opacity = '1'
+                    }
 
-                    this.timer = setTimeout(() => {
-                        this.element.style.height = 'auto'
-                        this.element.style.overflow = ''
-                    }, duration)
+                    if (this.hasTransform) {
+                        this.element.style.transform = 'scaleY(1)'
+                    }
+
+                    if (this.hasCollapse) {
+                        this.element.style.height = `${newHeight}px`
+
+                        this.timer = setTimeout(() => {
+                            runInNextFrame(() => {
+                                this.element.style.height = 'auto'
+                                this.element.style.overflow = ''
+                            })
+                        }, this.duration)
+                    }
                 })
-            } else {
-                runInNextFrame(() => {
+            })
+        } else {
+            runInNextFrame(() => {
+                if (this.hasCollapse) {
+                    const newHeight = this.element.offsetHeight
+
                     this.element.style.height = `${newHeight}px`
 
-                    this.timer = setTimeout(() => {
+                    runInNextFrame(() => {
                         this.element.style.height = '0'
                         this.element.style.overflow = 'hidden'
-                    }, duration)
-                })
-            }
+                    })
+                }
+
+                if (this.hasFade) {
+                    this.element.style.opacity = '0'
+                }
+
+                if (this.hasTransform) {
+                    this.element.style.transform = 'scaleY(0)'
+                }
+
+                this.timer = setTimeout(() => {
+                    runInNextFrame(() => {
+                        this.element.style.display = 'none'
+                    })
+                }, this.duration)
+            })
+        }
+    }
+
+    getNewElementHeight = () => {
+        if (!this.element) return 0
+
+        const prevHeight = this.element.offsetHeight
+
+        this.element.style.height = 'auto'
+
+        const newHeight = this.element.offsetHeight
+
+        this.element.style.height = `${prevHeight}px`
+
+        return newHeight
+    }
+
+    bindListElement = (element: HTMLDivElement) => {
+        const { getRef } = this.props
+
+        getRef?.(element)
+
+        this.element = element
+    }
+
+    render() {
+        const { show, getRef, style = {}, animationTypes, duration, ...other } = this.props
+
+        let animation = `animation-${this.duration}`
+
+        if (!this.hasTransform) {
+            animation = `fade-${animation}`
         }
 
-        bindListElement = (element: HTMLDivElement) => {
-            const { getRef } = this.props
+        const className = classnames(hidableClass('_', animation), other.className)
 
-            getRef?.(element)
+        const ms = Object.assign({}, style)
 
-            this.element = element
-        }
-
-        render() {
-            const { show, getRef, style = {}, ...other } = this.props
-
-            let animation = `animation-${duration}`
-
-            if (!needTransform) {
-                animation = `fade-${animation}`
-            }
-
-            const className = classnames(
-                hidableClass('_', ...type, animation, show && 'show'),
-                listClass('_'),
-                other.className
-            )
-
-            const ms = Object.assign({ display }, style)
-
-            return <div {...other} ref={this.bindListElement} className={className} style={ms} />
-        }
+        return <div {...other} ref={this.bindListElement} className={className} style={ms} />
     }
 }
