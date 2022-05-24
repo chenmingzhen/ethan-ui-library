@@ -8,7 +8,7 @@ import { docScroll, docSize } from '@/utils/dom/document'
 import { InjectComponent } from '@/utils/utilityTypes'
 import { ListProps } from '.'
 
-export interface AbsoluteListProps extends Omit<ListProps, 'show' | 'animationTypes' | 'duration'> {
+export interface AbsoluteListProps extends Omit<ListProps, 'show' | 'animationTypes' | 'duration' | 'lazyDom'> {
     focus: boolean
 
     fixed?: boolean | 'min'
@@ -65,6 +65,7 @@ function initRoot() {
     document.body.appendChild(root)
 }
 
+/** @todo 考虑移除高阶组件的用法  */
 function generateAbsoluteList(ListComponent: InjectComponent<GenerateAbsoluteListProps>) {
     class AbsoluteList extends Component<AbsoluteListProps, AbsoluteListState> {
         lastStyle: React.CSSProperties = {}

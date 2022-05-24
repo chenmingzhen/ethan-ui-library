@@ -15,7 +15,14 @@ import { CascaderState, CascaderProps } from './type'
 import AnimationList from '../List'
 
 const OptionList = absoluteList(({ focus, ...other }) => (
-    <AnimationList show={focus} {...other} animationTypes={['fade', 'scale-y']} duration="fast" display="inline-flex" />
+    <AnimationList
+        show={focus}
+        {...other}
+        lazyDom
+        animationTypes={['fade', 'scale-y']}
+        duration="fast"
+        display="inline-flex"
+    />
 ))
 
 class Cascader<T extends any> extends PureComponent<CascaderProps, CascaderState> {

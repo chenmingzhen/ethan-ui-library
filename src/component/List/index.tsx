@@ -17,6 +17,9 @@ export interface ListProps extends React.DetailedHTMLProps<React.HTMLAttributes<
     display?: React.CSSProperties['display']
 
     duration?: 'fast' | 'slow' | number
+
+    /** AnimationList是否一开始就存在于DOM中,懒加载的需要设置该值(Cascader)  */
+    lazyDom?: boolean
 }
 
 const transformDuration = (duration: string | number) => {
@@ -71,9 +74,64 @@ export default class AnimationList extends React.PureComponent<ListProps> {
     }
 
     componentDidMount() {
-        const { show } = this.props
+        const { show, lazyDom } = this.props
 
-        if (show) return
+        if (show) {
+            if (lazyDom) {
+                // 不起效果的写法，按常规逻辑，下面的写法是没有问题的，第一帧先将动画置为起始态，第二帧开始将动画置为最终态
+                // if (this.hasTransform) {
+                //     runInNextFrame(() => {
+                //         this.element.style.transform = 'scaleY(0)'
+
+                //         runInNextFrame(() => {
+                //             this.element.style.transform = 'scaleY(1)'
+                //         })
+                //     })
+                // }
+
+                /** 第一次写的时候，使用了两次runInNextFrame，但是没有出现动画的效果，写法如下，后看官网得到解决疑惑 */
+                /** @see https://zh-hans.reactjs.org/docs/react-component.html#componentdidmount */
+                /** @see https://zhuanlan.zhihu.com/p/388636591 */
+                /** 虽然didMount已经将组件已经挂载到DOM树上，但是视图还没有更新，我理解成这一层已经是runInNextFrame了 */
+
+                if (this.hasTransform) {
+                    this.element.style.transform = 'scaleY(0)'
+
+                    runInNextFrame(() => {
+                        this.element.style.transform = 'scaleY(1)'
+                    })
+                }
+
+                if (this.hasFade) {
+                    this.element.style.opacity = '0'
+
+                    runInNextFrame(() => {
+                        this.element.style.opacity = '1'
+                    })
+                }
+
+                if (this.hasCollapse) {
+                    const fullHeight = this.getFullElementHeight()
+
+                    this.element.style.display = this.props.display
+
+                    this.element.style.height = '0'
+
+                    this.element.style.overflow = 'hidden'
+
+                    runInNextFrame(() => {
+                        this.element.style.height = `${fullHeight}px`
+
+                        this.timer = setTimeout(() => {
+                            this.element.style.height = 'auto'
+                            this.element.style.overflow = ''
+                        }, this.duration)
+                    })
+                }
+            }
+
+            return
+        }
 
         runInNextFrame(() => {
             this.element.style.display = 'none'
@@ -106,11 +164,14 @@ export default class AnimationList extends React.PureComponent<ListProps> {
 
         if (show) {
             runInNextFrame(() => {
+                /** 第一帧先将display从none显示出来 */
                 this.element.style.display = display
 
-                const newHeight = this.getNewElementHeight()
+                /** 在第一帧时获取元素的原始完整高度 */
+                const fullHeight = this.getFullElementHeight()
 
                 runInNextFrame(() => {
+                    /** 第二帧开始动画的转变 */
                     if (this.hasFade) {
                         this.element.style.opacity = '1'
                     }
@@ -120,7 +181,7 @@ export default class AnimationList extends React.PureComponent<ListProps> {
                     }
 
                     if (this.hasCollapse) {
-                        this.element.style.height = `${newHeight}px`
+                        this.element.style.height = `${fullHeight}px`
 
                         this.timer = setTimeout(() => {
                             runInNextFrame(() => {
@@ -161,7 +222,7 @@ export default class AnimationList extends React.PureComponent<ListProps> {
         }
     }
 
-    getNewElementHeight = () => {
+    getFullElementHeight = () => {
         if (!this.element) return 0
 
         const prevHeight = this.element.offsetHeight
@@ -184,7 +245,7 @@ export default class AnimationList extends React.PureComponent<ListProps> {
     }
 
     render() {
-        const { show, getRef, style = {}, animationTypes, duration, ...other } = this.props
+        const { show, getRef, style = {}, animationTypes, duration, lazyDom, ...other } = this.props
 
         let animation = `animation-${this.duration}`
 
