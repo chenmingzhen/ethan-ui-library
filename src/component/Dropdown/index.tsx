@@ -6,7 +6,7 @@ import { docSize } from '@/utils/dom/document'
 import { getUidStr } from '@/utils/uid'
 import classnames from 'classnames'
 import Button from '../Button'
-import List from '../List'
+import AnimationList from '../List'
 import Item from './Item'
 import generateAbsoluteList from '../List/AbsoluteList'
 import absoluteConsumer from '../Table/context'
@@ -39,9 +39,17 @@ const Dropdown: React.FC<IDropDownProps> = props => {
 
     const dropdownId = useRef(getUidStr()).current
 
+    const isRendered = useRef(false)
+
     const DropdownList = useRef(
         generateAbsoluteList(({ focus, ...other }) => (
-            <List {...other} show={focus} animationTypes={['fade']} duration={animation ? 'fast' : 0} />
+            <AnimationList
+                {...other}
+                lazyDom
+                show={focus}
+                animationTypes={['fade']}
+                duration={animation ? 'fast' : 0}
+            />
         ))
     ).current
 
@@ -159,6 +167,10 @@ const Dropdown: React.FC<IDropDownProps> = props => {
 
     function renderList() {
         if (!Array.isArray(data) || data.length === 0) return null
+
+        if (!isRendered.current && !show) return renderButton()
+
+        isRendered.current = true
 
         return (
             <>

@@ -79,6 +79,7 @@ export default class AnimationList extends React.PureComponent<ListProps> {
         if (show) {
             if (lazyDom) {
                 // 不起效果的写法，按常规逻辑，下面的写法是没有问题的，第一帧先将动画置为起始态，第二帧开始将动画置为最终态
+                // 在Chrome中无效果，在火狐开发者版中有效果
                 // if (this.hasTransform) {
                 //     runInNextFrame(() => {
                 //         this.element.style.transform = 'scaleY(0)'
@@ -94,6 +95,7 @@ export default class AnimationList extends React.PureComponent<ListProps> {
                 /** @see https://zhuanlan.zhihu.com/p/388636591 */
                 /** 虽然didMount已经将组件已经挂载到DOM树上，但是视图还没有更新，我理解成这一层已经是runInNextFrame了 */
 
+                /** 下面的写法在火狐开发者版中无效果,chrome中有效果 */
                 if (this.hasTransform) {
                     this.element.style.transform = 'scaleY(0)'
 
