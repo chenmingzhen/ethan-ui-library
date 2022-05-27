@@ -79,7 +79,7 @@ export default class AnimationList extends React.PureComponent<ListProps> {
         if (show) {
             if (lazyDom) {
                 // 不起效果的写法，按常规逻辑，下面的写法是没有问题的，第一帧先将动画置为起始态，第二帧开始将动画置为最终态
-                // 在Chrome中无效果，在火狐开发者版中有效果
+                // 在Chrome中无效果，在火狐开发者版中有效果 (Dropdown是click的情况 hover的情况则相反,Chrome有效果，火狐中没有)
                 // if (this.hasTransform) {
                 //     runInNextFrame(() => {
                 //         this.element.style.transform = 'scaleY(0)'
@@ -90,25 +90,33 @@ export default class AnimationList extends React.PureComponent<ListProps> {
                 //     })
                 // }
 
-                /** 第一次写的时候，使用了两次runInNextFrame，但是没有出现动画的效果，写法如下，后看官网得到解决疑惑 */
                 /** @see https://zh-hans.reactjs.org/docs/react-component.html#componentdidmount */
                 /** @see https://zhuanlan.zhihu.com/p/388636591 */
-                /** 虽然didMount已经将组件已经挂载到DOM树上，但是视图还没有更新，我理解成这一层已经是runInNextFrame了 */
 
-                /** 下面的写法在火狐开发者版中无效果,chrome中有效果 */
+                /** 最终版，各个浏览器都能执行动画的版本 */
                 if (this.hasTransform) {
+                    this.element.style.display = 'none'
                     this.element.style.transform = 'scaleY(0)'
 
                     runInNextFrame(() => {
-                        this.element.style.transform = 'scaleY(1)'
+                        this.element.style.display = this.props.display
+
+                        runInNextFrame(() => {
+                            this.element.style.transform = 'scaleY(1)'
+                        })
                     })
                 }
 
                 if (this.hasFade) {
+                    this.element.style.display = 'none'
                     this.element.style.opacity = '0'
 
                     runInNextFrame(() => {
-                        this.element.style.opacity = '1'
+                        this.element.style.display = this.props.display
+
+                        runInNextFrame(() => {
+                            this.element.style.opacity = '1'
+                        })
                     })
                 }
 
@@ -130,6 +138,33 @@ export default class AnimationList extends React.PureComponent<ListProps> {
                         }, this.duration)
                     })
                 }
+
+                // or
+
+                // if (this.hasCollapse) {
+                //     const fullHeight = this.getFullElementHeight()
+
+                //     runInNextFrame(() => {
+                //         this.element.style.display = 'none'
+
+                //         this.element.style.height = '0'
+
+                //         this.element.style.overflow = 'hidden'
+
+                //         runInNextFrame(() => {
+                //             this.element.style.display = this.props.display
+
+                //             runInNextFrame(() => {
+                //                 this.element.style.height = `${fullHeight}px`
+
+                //                 this.timer = setTimeout(() => {
+                //                     this.element.style.height = 'auto'
+                //                     this.element.style.overflow = ''
+                //                 }, this.duration)
+                //             })
+                //         })
+                //     })
+                // }
             }
 
             return
