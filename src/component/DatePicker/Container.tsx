@@ -15,13 +15,9 @@ import utils from './utils'
 import Picker from './Picker'
 import Range from './Range'
 import Text from './Text'
-import absoluteList from '../List/AbsoluteList'
+import AbsoluteList from '../List/AbsoluteList'
 import AnimationList from '../List'
 import DateFns from './utils'
-
-const OptionList = absoluteList(({ focus, ...other }) => (
-    <AnimationList show={focus} {...other} animationTypes={['fade']} duration="fast" />
-))
 
 class Container extends PureComponent {
     constructor(props) {
@@ -450,6 +446,11 @@ class Container extends PureComponent {
             props.rootClass = datepickerClass('absolute')
             props.parentElement = this.element
         }
+
+        /** @todo AbsoluteList AnimationList */
+
+        return null
+
         return <OptionList {...props}>{this.renderPicker()}</OptionList>
     }
 

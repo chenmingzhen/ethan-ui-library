@@ -2,6 +2,7 @@ import React from 'react'
 import { hidableClass } from '@/styles'
 import classnames from 'classnames'
 import { runInNextFrame } from '@/utils/nextFrame'
+import { isEmpty } from '@/utils/is'
 
 export interface ListProps extends React.DetailedHTMLProps<React.HTMLAttributes<HTMLDivElement>, HTMLDivElement> {
     show: boolean
@@ -20,6 +21,8 @@ export interface ListProps extends React.DetailedHTMLProps<React.HTMLAttributes<
 
     /** AnimationList是否一开始就存在于DOM中,懒加载的需要设置该值(Cascader)  */
     lazyDom?: boolean
+
+    onTransitionEnd?: React.TransitionEventHandler<HTMLDivElement>
 }
 
 const transformDuration = (duration: string | number) => {
@@ -93,6 +96,9 @@ export default class AnimationList extends React.PureComponent<ListProps> {
                 /** @see https://zh-hans.reactjs.org/docs/react-component.html#componentdidmount */
                 /** @see https://zhuanlan.zhihu.com/p/388636591 */
 
+                /** 提前获取DOM的完整高度 */
+                const fullHeight = this.getFullElementHeight()
+
                 /** 最终版，各个浏览器都能执行动画的版本 */
                 if (this.hasTransform) {
                     this.element.style.display = 'none'
@@ -121,50 +127,26 @@ export default class AnimationList extends React.PureComponent<ListProps> {
                 }
 
                 if (this.hasCollapse) {
-                    const fullHeight = this.getFullElementHeight()
-
-                    this.element.style.display = this.props.display
-
+                    this.element.style.display = 'none'
                     this.element.style.height = '0'
-
                     this.element.style.overflow = 'hidden'
 
                     runInNextFrame(() => {
-                        this.element.style.height = `${fullHeight}px`
+                        this.element.style.display = this.props.display
 
-                        this.timer = setTimeout(() => {
-                            this.element.style.height = 'auto'
-                            this.element.style.overflow = ''
-                        }, this.duration)
+                        runInNextFrame(() => {
+                            this.element.style.height = `${fullHeight}px`
+
+                            this.timer = setTimeout(() => {
+                                if (isEmpty(this.props.height)) {
+                                    this.element.style.height = 'auto'
+                                }
+
+                                this.element.style.overflow = ''
+                            }, this.duration)
+                        })
                     })
                 }
-
-                // or
-
-                // if (this.hasCollapse) {
-                //     const fullHeight = this.getFullElementHeight()
-
-                //     runInNextFrame(() => {
-                //         this.element.style.display = 'none'
-
-                //         this.element.style.height = '0'
-
-                //         this.element.style.overflow = 'hidden'
-
-                //         runInNextFrame(() => {
-                //             this.element.style.display = this.props.display
-
-                //             runInNextFrame(() => {
-                //                 this.element.style.height = `${fullHeight}px`
-
-                //                 this.timer = setTimeout(() => {
-                //                     this.element.style.height = 'auto'
-                //                     this.element.style.overflow = ''
-                //                 }, this.duration)
-                //             })
-                //         })
-                //     })
-                // }
             }
 
             return
@@ -222,7 +204,12 @@ export default class AnimationList extends React.PureComponent<ListProps> {
 
                         this.timer = setTimeout(() => {
                             runInNextFrame(() => {
-                                this.element.style.height = 'auto'
+                                if (isEmpty(this.props.height)) {
+                                    this.element.style.height = 'auto'
+                                } else {
+                                    this.element.style.height = `${this.props.height}px`
+                                }
+
                                 this.element.style.overflow = ''
                             })
                         }, this.duration)
@@ -260,7 +247,9 @@ export default class AnimationList extends React.PureComponent<ListProps> {
     }
 
     getFullElementHeight = () => {
-        if (!this.element) return 0
+        if (!isEmpty(this.props.height)) return this.props.height
+
+        if (!this.element) return this.props.height ?? 0
 
         const prevHeight = this.element.offsetHeight
 
@@ -282,7 +271,16 @@ export default class AnimationList extends React.PureComponent<ListProps> {
     }
 
     render() {
-        const { show, getRef, style = {}, animationTypes, duration, lazyDom, ...other } = this.props
+        const {
+            show,
+            getRef,
+            style = {},
+            animationTypes,
+            duration,
+            lazyDom,
+            onTransitionEnd: handleTransitionEnd,
+            ...other
+        } = this.props
 
         let animation = `animation-${this.duration}`
 
@@ -294,6 +292,14 @@ export default class AnimationList extends React.PureComponent<ListProps> {
 
         const ms = Object.assign({}, style)
 
-        return <div {...other} ref={this.bindListElement} className={className} style={ms} />
+        return (
+            <div
+                {...other}
+                ref={this.bindListElement}
+                className={className}
+                style={ms}
+                onTransitionEnd={handleTransitionEnd}
+            />
+        )
     }
 }
