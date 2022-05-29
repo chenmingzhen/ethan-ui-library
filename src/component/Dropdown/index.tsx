@@ -166,7 +166,7 @@ const Dropdown: React.FC<IDropDownProps> = props => {
             <>
                 <AbsoluteList
                     focus={show}
-                    absolute
+                    absolute={absolute}
                     getParentElement={() => dropdownParentElementRef.current}
                     getListElement={() => animationListRef.current}
                     position={position}
