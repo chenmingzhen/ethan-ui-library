@@ -26,8 +26,6 @@ export interface AbsoluteListProps {
 
     style?: React.CSSProperties
 
-    autoClass?: string
-
     zIndex?: number
 
     children:
@@ -230,13 +228,13 @@ export default class AbsoluteList extends Component<AbsoluteListProps, AbsoluteL
     }
 
     render() {
-        const { rootClass, absolute, autoClass } = this.props
+        const { rootClass, absolute } = this.props
 
         if (!absolute) {
             return this.renderChildren()
         }
 
-        const className = classnames(listClass('absolute-wrapper'), rootClass, autoClass)
+        const className = classnames(listClass('absolute-wrapper'), rootClass)
 
         this.element.className = className
 
