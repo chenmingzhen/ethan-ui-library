@@ -39,10 +39,10 @@ export interface DatumListProps<Data = any, FormatResult = Data> {
 }
 
 /**
- * 装载一组数据的HOC List
- * 事件派发
- * 值存储
+ * @todo 移除separator
  */
+
+/** 不存储Data，只存储Value */
 export default class List<T = string> {
     distinct?: boolean
 
@@ -70,10 +70,23 @@ export default class List<T = string> {
     disabled: (...args) => boolean
 
     /** InnerValues 内部直接操作的源，不引起更新，由value的变化驱动更新 */
-    $values: any
+    private $values: any
 
     /** 缓存outerValue */
     $cachedValue: any
+
+    /** 暴露给外部获取的values */
+    get values() {
+        return this.$values
+    }
+
+    set values(values) {
+        this.$values = values
+
+        this.dispatch(CHANGE_ACTION)
+
+        this.onChange?.(this.getOuterValue())
+    }
 
     constructor(args: DatumListProps<T> = {}) {
         const { format, onChange, separator, value, prediction, distinct, disabled, limit } = args
@@ -84,36 +97,15 @@ export default class List<T = string> {
 
         this.separator = separator
 
-        this.prediction = prediction
-
         this.onChange = onChange
 
         this.initFormat(format)
 
+        this.prediction = prediction || ((formatValue, data) => formatValue === this.format(data))
+
         this.setDisabled(disabled)
 
         this.setInnerValue(value, INIT_ACTION)
-    }
-
-    get length() {
-        return this.$values.length
-    }
-
-    /**
-     * 劫持values 本质是$value
-     * set值时 dispatch事件
-     */
-    get values() {
-        return this.$values
-    }
-
-    /** 暴露外部设置values 触发更新 */
-    set values(values) {
-        this.$values = values
-
-        this.dispatch(CHANGE_ACTION)
-
-        this.onChange?.(this.getOuterValue())
     }
 
     setInnerValue(values = [], type) {
@@ -128,10 +120,10 @@ export default class List<T = string> {
     }
 
     getOuterValue() {
-        let value = this.values
+        let value = this.$values
 
-        if (this.limit === 1) value = this.values[0]
-        else if (this.separator) value = this.values.join(this.separator)
+        if (this.limit === 1) [value] = this.$values
+        else if (this.separator) value = this.$values.join(this.separator)
 
         this.$cachedValue = value
 
@@ -220,7 +212,6 @@ export default class List<T = string> {
         return flatten
     }
 
-    // hoc=》setValue=》本类set=》本类add
     add(data: T | T[], _?: any, childrenKey?: string, unshift?: boolean) {
         if (data === undefined || data === null) return
 
@@ -245,43 +236,40 @@ export default class List<T = string> {
 
         const values = []
 
-        for (const r of raws) {
-            const v = this.format(r)
+        for (const rawDataItem of raws) {
+            const formatDataValue = this.format(rawDataItem)
 
-            if (v !== undefined) values.push(v)
+            if (formatDataValue !== undefined) {
+                values.push(formatDataValue)
+            }
         }
 
-        this.handleChange(unshift ? values.concat(this.values) : this.values.concat(values), data, true)
+        this.handleChange(unshift ? values.concat(this.$values) : this.$values.concat(values), data, true)
     }
 
-    set(value) {
+    set(data) {
         this.$values = []
 
-        this.add(value)
+        this.add(data)
     }
 
-    check(raw) {
-        if (this.prediction) {
-            for (let i = 0; i < this.values.length; i++) {
-                if (this.prediction(this.values[i], raw)) return true
-            }
-            return false
+    check(data) {
+        for (const value of this.$values) {
+            if (this.prediction(value, data)) return true
         }
 
-        return this.values.indexOf(this.format(raw)) >= 0
+        return false
     }
 
     getDataByValue(data, value) {
-        if (this.prediction) {
-            for (let i = 0, count = data.length; i < count; i++) {
-                if (this.prediction(value, data[i])) return data[i]
-            }
-            return null
+        for (const d of data) {
+            if (this.prediction(value, d)) return d
         }
 
-        return data.find(d => value === this.format(d))
+        return null
     }
 
+    /** @todo 暂未用到 考虑移除 */
     clear() {
         this.values = []
     }
@@ -315,10 +303,11 @@ export default class List<T = string> {
         return value === this.format(data)
     }
 
-    remove(value, _?, childrenKey?) {
-        if (!value) return
+    /** @todo 移除第二个参数 */
+    remove(data, _?, childrenKey?) {
+        if (!data) return
 
-        let raws = Array.isArray(value) ? value : [value]
+        let raws = Array.isArray(data) ? data : [data]
 
         if (childrenKey) {
             raws = this.flattenTreeData(raws, childrenKey)
@@ -326,21 +315,27 @@ export default class List<T = string> {
 
         raws = raws.filter(r => !this.disabled(r))
 
-        const values = []
+        const newValues = []
 
-        const prediction = this.prediction || this.defaultPrediction.bind(this)
+        // for (const value of this.$values) {
+        //     for (const rawDataItem of raws) {
+        //         if (this.prediction(value, rawDataItem)) break
+        //     }
+        // }
 
-        outer: for (const val of this.values) {
+        /** @todo 写法很奇怪 不使用这种写法 */
+        outer: for (const value of this.$values) {
             for (let j = 0; j < raws.length; j++) {
-                if (raws[j].IS_NOT_MATCHED_VALUE || prediction(val, raws[j])) {
+                if (this.prediction(value, raws[j])) {
                     raws.splice(j, 1)
+
                     continue outer
                 }
             }
-            values.push(val)
+            newValues.push(value)
         }
 
-        this.handleChange(values, value, false)
+        this.handleChange(newValues, data, false)
     }
 
     subscribe(name, fn) {
