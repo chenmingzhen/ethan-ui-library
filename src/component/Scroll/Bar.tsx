@@ -170,7 +170,10 @@ class ScrollBar extends PureComponent<ScrollBarProps, ScrollBarState> {
                 {({ barLength }) => {
                     this.barLength = barLength
 
-                    const value = (length - barLength) * offset
+                    /** 滚动条可以移动的最大值 */
+                    const moveableLength = length - barLength
+
+                    const value = moveableLength * offset
 
                     const style: React.CSSProperties = {}
 

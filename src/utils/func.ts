@@ -28,6 +28,10 @@ export function empty(e) {
     e.preventDefault()
 }
 
+export function stopPropagation(e) {
+    e.stopPropagation()
+}
+
 export function createFunc(func) {
     if (typeof func === 'function') return func
     return data => (func ? data[func] : data)

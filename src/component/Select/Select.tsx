@@ -255,7 +255,7 @@ class Select extends PureComponent {
     // result Input 失焦
     handleInputBlur(text) {
         const { onFilter, onCreate, multiple, filterSingleSelect, data } = this.props
-
+        console.log(this.lastChangeIsOptionClick)
         if (onFilter && text && filterSingleSelect && data.length === 1) {
             this.handleChange(null, data[0], false)
             return
@@ -301,6 +301,7 @@ class Select extends PureComponent {
 
     // 处理keycode事件
     handleKeyDown(e) {
+        console.log(e.keyCode)
         // just for enter to open the list
         if ((e.keyCode === 13 || e.keyCode === 40) && !this.state.focus) {
             e.preventDefault()
@@ -483,7 +484,7 @@ class Select extends PureComponent {
         return (
             <div
                 // eslint-disable-next-line
-        tabIndex={disabled === true ? -1 : 0}
+                tabIndex={disabled === true ? -1 : 0}
                 ref={this.bindElement}
                 className={className}
                 data-id={this.selectId}

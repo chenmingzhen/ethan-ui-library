@@ -31,6 +31,8 @@ interface BaseScrollProps {
 
 export interface ScrollHandlerProps extends BaseScrollProps {
     scroll?: 'x' | 'y' | 'both'
+
+    /** @todo 下面的两个为比例值，应更正名称为ratio */
     /** Left偏差比例值 */
     scrollLeft?: number
     /** Top偏差比例值 */

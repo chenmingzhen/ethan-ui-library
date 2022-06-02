@@ -12,16 +12,16 @@ const users = fetchUser(10000)
 const style = { width: 240, marginBottom: 12, display: 'block' }
 
 export default function() {
-  return (
-    <Select
-      data={users}
-      datum={{ format: 'id' }}
-      keygen="id"
-      defaultValue={3}
-      style={style}
-      placeholder="Select a user"
-      renderItem={(user, i) => `${user.firstName} ${user.lastName} (${i + 1})`}
-      renderResult={user => `${user.firstName} ${user.lastName}`}
-    />
-  )
+    return (
+        <Select
+            data={users}
+            keygen="id"
+            format="id"
+            defaultValue={3}
+            style={style}
+            placeholder="Select a user"
+            renderItem={(user, i) => `${user.firstName} ${user.lastName} (${i + 1})`}
+            renderResult={user => `${user.firstName} ${user.lastName}`}
+        />
+    )
 }

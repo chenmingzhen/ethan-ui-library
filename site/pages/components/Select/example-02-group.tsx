@@ -10,24 +10,24 @@ import React from 'react'
 import { Select } from 'ethan/index'
 
 const data = [
-  { value: 'Beijing', tag: '1' },
-  { value: 'China', tag: '2' },
-  { value: 'Shanghai', tag: '1' },
-  { value: 'Mars', tag: '3' },
+    { value: 'Beijing', tag: '1' },
+    { value: 'China', tag: '2' },
+    { value: 'Shanghai', tag: '1' },
+    { value: 'Mars', tag: '3' },
 ]
 
 export default function() {
-  return (
-    <Select
-      groupBy={d => {
-        if (d.tag === '1') return 'City'
-        if (d.tag === '2') return 'Country'
-        return 'Other'
-      }}
-      keygen="value"
-      style={{ width: 240 }}
-      data={data}
-      renderItem="value"
-    />
-  )
+    return (
+        <Select
+            groupBy={d => {
+                if (d.tag === '1') return 'City'
+                if (d.tag === '2') return 'Country'
+                return 'Other'
+            }}
+            keygen="value"
+            style={{ width: 240 }}
+            data={data}
+            renderItem="value"
+        />
+    )
 }
