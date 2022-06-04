@@ -102,7 +102,12 @@ class Select extends PureComponent<ISelectProps, SelectState> {
     handleClickAway = (evt: MouseEvent) => {
         const desc = isDescendent(evt.target as HTMLElement, this.selectId)
 
-        if (desc) return
+        if (desc) {
+            /** 绝对定位下 disabled部分选项，点击disabled的选项，仍然会失去焦点,添加锁 */
+            this.startKeepFocus()
+
+            return
+        }
 
         this.element.blur()
     }

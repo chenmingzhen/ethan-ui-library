@@ -57,6 +57,14 @@
             }
         }
 
+        .@{select-prefix}-input2 {
+            margin-bottom: @padding-base-vertical;
+
+            input {
+                padding: 0;
+            }
+        }
+
         .@{select-prefix}-item {
             position: relative;
             display: inline-block;
@@ -385,6 +393,10 @@
                 background: @select-disabled-bg-color;
                 color: @select-disabled-color;
                 cursor: not-allowed;
+
+                > * {
+                    cursor: not-allowed !important;
+                }
             }
         }
     }
@@ -415,7 +427,8 @@
 
         .@{select-prefix}-item,
         .@{select-prefix}-ellipsis,
-        .@{select-prefix}-input {
+        .@{select-prefix}-input,
+        .@{select-prefix}-input2 {
             margin-bottom: @padding-small-vertical;
             font-size: @font-size-small;
         }
@@ -426,7 +439,8 @@
 
         .@{select-prefix}-item,
         .@{select-prefix}-ellipsis,
-        .@{select-prefix}-input {
+        .@{select-prefix}-input,
+        .@{select-prefix}-input2 {
             margin-bottom: @padding-large-vertical;
             font-size: @font-size-large;
         }
