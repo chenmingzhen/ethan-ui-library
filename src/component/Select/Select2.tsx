@@ -41,17 +41,15 @@ class Select extends PureComponent<ISelectProps, SelectState> {
 
     selectId = getUidStr()
 
-    blurred = false
-
-    lastChangeIsOptionClick = false
-
-    inputBlurTimer: NodeJS.Timeout
-
     inputReset: () => void
 
     selectOptionListFuncMap: SelectOptionListBindFuncMap
 
     isRender = false
+
+    afterActionKeepFocus = false
+
+    clickLockTimer: NodeJS.Timeout
 
     constructor(props) {
         super(props)
@@ -63,12 +61,30 @@ class Select extends PureComponent<ISelectProps, SelectState> {
         }
     }
 
+    /**
+     *  @description
+     *  select的容器使用了onBlur和onFocus，有时候点击select里面的元素，不用失去焦点。
+     *  使用afterActionKeepFocus标记去阻止重新执行focus和blur事件
+     */
+    startKeepFocus = () => {
+        /** 标记操作的DOM仍然是属于Select组件，阻止聚焦和失焦 */
+        this.afterActionKeepFocus = true
+
+        setTimeout(() => {
+            /** 虽然阻止了handleBlur和handleFocus的执行，此时的Select容器已经是失去焦点状态，重新拿回焦点 */
+            this.element.focus()
+
+            this.afterActionKeepFocus = false
+        }, 30)
+    }
+
     bindClickAway = () => {
-        document.addEventListener('click', this.handleClickAway, true)
+        /** 使用mousedown代替click，因为mousedown的执行时先于blur */
+        document.addEventListener('mousedown', this.handleClickAway, true)
     }
 
     clearClickAway = () => {
-        document.removeEventListener('click', this.handleClickAway, true)
+        document.removeEventListener('mousedown', this.handleClickAway, true)
     }
 
     bindOptionListFunc = (funcMap: SelectOptionListBindFuncMap) => {
@@ -77,10 +93,6 @@ class Select extends PureComponent<ISelectProps, SelectState> {
 
     bindElement = (element: HTMLDivElement) => {
         this.element = element
-    }
-
-    setInputReset = fn => {
-        this.inputReset = fn
     }
 
     handleControlChange = (control: SelectState['control']) => {
@@ -92,7 +104,53 @@ class Select extends PureComponent<ISelectProps, SelectState> {
 
         if (desc) return
 
-        if (this.element) this.element.blur()
+        this.element.blur()
+    }
+
+    handleBlur: React.FocusEventHandler<HTMLDivElement> = evt => {
+        if (this.afterActionKeepFocus) return
+
+        /**
+         * FocusEvent.relatedTarget
+         * @see https://developer.mozilla.org/en-US/docs/Web/API/FocusEvent/relatedTarget
+         */
+
+        if (evt.relatedTarget && getParent(evt.relatedTarget as HTMLElement, `.${selectClass('result')}`)) {
+            return
+        }
+
+        this.props.onBlur(evt)
+
+        this.clearClickAway()
+
+        this.handleFocusStateChange(false, evt)
+    }
+
+    handleChange = (dataItem: any, fromInput = false) => {
+        const { datum, multiple, disabled } = this.props
+
+        if (disabled === true || this.clickLockTimer) return
+
+        /** 以动画持续时间做锁的时间 */
+        this.clickLockTimer = setTimeout(() => {
+            this.clickLockTimer = null
+        }, 240)
+
+        this.startKeepFocus()
+
+        if (multiple) {
+            const checked = !datum.check(dataItem)
+
+            if (checked) {
+                datum.add(dataItem)
+            } else {
+                datum.remove(dataItem)
+            }
+        } else {
+            datum.set(dataItem)
+
+            this.handleFocusStateChange(false)
+        }
     }
 
     handleFocusStateChange = (focus: boolean, e?) => {
@@ -123,19 +181,12 @@ class Select extends PureComponent<ISelectProps, SelectState> {
     }
 
     handleFocus: React.FocusEventHandler<HTMLDivElement> = evt => {
+        if (this.afterActionKeepFocus) return
+
         this.props.onFocus(evt)
     }
 
-    handleBlur: React.FocusEventHandler<HTMLDivElement> = evt => {
-        this.props.onBlur(evt)
-
-        this.clearClickAway()
-
-        this.handleFocusStateChange(false, evt)
-    }
-
     handleClick = (evt: React.MouseEvent<HTMLDivElement, MouseEvent> | React.KeyboardEvent<HTMLDivElement>) => {
-        /** 1.在进行折叠动画时，避免点击Option再次展开下拉  2.focus状态回车  */
         if (!getParent(evt.target as HTMLElement, `.${selectClass('result')}`) && evt.target !== this.element) {
             return
         }
@@ -166,6 +217,8 @@ class Select extends PureComponent<ISelectProps, SelectState> {
             this.handleChange(hoverData)
 
             this.selectOptionListFuncMap.handleHover?.(hoverIndex)
+
+            // this.startKeepFocus()
         }
     }
 
@@ -220,7 +273,7 @@ class Select extends PureComponent<ISelectProps, SelectState> {
 
                 break
             default:
-                this.lastChangeIsOptionClick = false
+                break
         }
     }
 
@@ -231,37 +284,12 @@ class Select extends PureComponent<ISelectProps, SelectState> {
 
         datum.set([])
 
-        this.element.focus()
+        /** 此处按常理 自己将元素focus即可，
+         * 但是前面的动作执行的blur的操作，同时执行focus只会生效第一个blur，
+         * 所以也加入到延时任务中 */
+        this.startKeepFocus()
 
         if (focus) {
-            this.handleFocusStateChange(false)
-        }
-    }
-
-    handleChange = (dataItem: any, fromInput = false) => {
-        const { datum, multiple, disabled } = this.props
-
-        if (disabled === true) return
-
-        if (this.inputBlurTimer) {
-            this.lastChangeIsOptionClick = true
-
-            clearTimeout(this.inputBlurTimer)
-
-            this.inputBlurTimer = null
-        }
-
-        if (multiple) {
-            const checked = !datum.check(dataItem)
-
-            if (checked) {
-                datum.add(dataItem)
-            } else {
-                datum.remove(dataItem)
-            }
-        } else {
-            datum.set(dataItem)
-
             this.handleFocusStateChange(false)
         }
     }
@@ -375,8 +403,8 @@ class Select extends PureComponent<ISelectProps, SelectState> {
                 className={className}
                 data-id={this.selectId}
                 onFocus={this.handleFocus}
-                onBlur={this.handleBlur}
                 onClick={this.handleClick}
+                onBlur={this.handleBlur}
                 onKeyDown={this.handleKeyDown}
             >
                 <Result
@@ -393,11 +421,12 @@ class Select extends PureComponent<ISelectProps, SelectState> {
                     placeholder={placeholder}
                     renderResult={renderResult}
                     onInputFocus={this.handleInputFocus}
-                    bindInputReset={this.setInputReset}
                     compressed={compressed}
                     showArrow={showArrow}
                     compressedClassName={compressedClassName}
                     resultClassName={resultClassName}
+                    size={size}
+                    onInputBlur={() => {}}
                 />
 
                 {this.renderOptions()}

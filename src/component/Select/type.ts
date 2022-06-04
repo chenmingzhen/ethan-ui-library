@@ -40,7 +40,7 @@ export interface SelectProps<
     position?: SelectState['position']
     renderItem: keyof D | ((data: D, index: number) => ReactNode)
     result?: D[]
-    size?: string
+    size?: 'large' | 'default' | 'small'
     text?
     compressed?: boolean
     autoAdapt?: boolean
@@ -117,12 +117,12 @@ export interface SelectResultProps
         | 'showArrow'
         | 'resultClassName'
         | 'compressedClassName'
+        | 'size'
     > {
     onClear?(): void
     onRemove(data: any): void
     onInputBlur(text: string | number): void
     onInputFocus(): void
-    bindInputReset(fn: Function): void
     compressed: boolean
     focus: boolean
 }
@@ -137,9 +137,6 @@ export interface SelectResultItemProps extends Pick<SelectResultProps, 'renderRe
 export interface SelectFilterHocProps extends ISelectProps, Pick<SelectProps, 'onFilter'> {}
 
 export interface SelectInputProps
-    extends Pick<
-        SelectResultProps,
-        'onInputFocus' | 'onInputBlur' | 'multiple' | 'focus' | 'onInput' | 'bindInputReset'
-    > {
+    extends Pick<SelectResultProps, 'onInputFocus' | 'onInputBlur' | 'multiple' | 'focus' | 'onInput'> {
     text: string
 }

@@ -76,17 +76,15 @@ export default function FilterHoc(Origin) {
         }
 
         handleInput = (text: string) => {
-            const { onFilter, onCreate } = this.props
+            const { onCreate } = this.props
+
+            this.setState({ filterText: text })
 
             if (onCreate) {
                 const createData = this.handleCreate(text)
 
                 this.setState({ createData })
             }
-
-            if (!onFilter) return
-
-            this.setState({ filterText: text })
         }
 
         getFilterData() {

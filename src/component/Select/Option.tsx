@@ -12,13 +12,7 @@ const Option: React.FC<OptionProps> = props => {
     function handleClick() {
         if (locked.current || disabled || data[groupKey]) return
 
-        locked.current = true
-
         onClick(data)
-
-        setTimeout(() => {
-            locked.current = false
-        }, 200)
     }
 
     const isGroupTitle = data[groupKey]
@@ -29,10 +23,18 @@ const Option: React.FC<OptionProps> = props => {
 
     const result = isGroupTitle ?? renderItem(data, index)
 
+    /**
+     *
+     * 事件执行顺序
+     * @see https://stackoverflow.com/questions/39439115/how-to-execute-click-function-before-the-blur-function
+     *
+     */
+
     return (
         <span
             className={className}
-            onClick={handleClick}
+            // onClick={handleClick}
+            onMouseDown={handleClick}
             onMouseEnter={() => {
                 onHover(index)
             }}

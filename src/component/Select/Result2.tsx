@@ -51,7 +51,17 @@ export default class Result extends PureComponent<SelectResultProps> {
     }
 
     renderResult = () => {
-        const { resultClassName, renderResult, result, multiple, compressed, datum, onRemove, onInput } = this.props
+        const {
+            resultClassName,
+            renderResult,
+            result,
+            multiple,
+            compressed,
+            datum,
+            onRemove,
+            onInput,
+            focus,
+        } = this.props
 
         const value = typeof renderResult === 'function' ? renderResult(result[0]) : result[0]?.[renderResult]
 
@@ -81,8 +91,8 @@ export default class Result extends PureComponent<SelectResultProps> {
             return items
         }
 
-        if (onInput) {
-            return this.renderInput()
+        if (onInput && focus) {
+            return this.renderInput(result[0])
         }
 
         return (
@@ -92,8 +102,42 @@ export default class Result extends PureComponent<SelectResultProps> {
         )
     }
 
-    renderInput = () => {
-        const { multiple, onInput, focus, onInputFocus, bindInputReset, onInputBlur, filterText } = this.props
+    renderInput = (placeholder = '') => {
+        const {
+            multiple,
+            onInput,
+            focus,
+            onInputFocus,
+            bindInputReset,
+            onInputBlur,
+            size,
+            result,
+            selectId,
+        } = this.props
+
+        return (
+            <Input
+                key={selectId}
+                defaultValue=""
+                className={selectClass('input2')}
+                size={size}
+                onChange={onInput}
+                placeholder={placeholder}
+                autoFocus
+            />
+        )
+
+        return (
+            <SelectInput
+                onInputFocus={onInputFocus}
+                onInputBlur={onInputBlur}
+                multiple={multiple}
+                focus={focus}
+                text={filterText}
+                onInput={onInput}
+                bindInputReset={bindInputReset}
+            />
+        )
     }
 
     renderPlaceholder = () => {
