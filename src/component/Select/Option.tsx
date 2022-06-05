@@ -23,24 +23,12 @@ const Option: React.FC<OptionProps> = props => {
 
     const result = isGroupTitle ?? renderItem(data, index)
 
-    /**
-     *
-     * 事件执行顺序
-     * @see https://stackoverflow.com/questions/39439115/how-to-execute-click-function-before-the-blur-function
-     *
-     */
-
     return (
         <span
             className={className}
-            // onClick={handleClick}
-            onMouseDown={handleClick}
+            onClick={handleClick}
             onMouseEnter={() => {
                 onHover(index)
-            }}
-            onFocus={e => {
-                /** 不冒泡到Select容器的onFocus中 */
-                e.stopPropagation()
             }}
         >
             {result}

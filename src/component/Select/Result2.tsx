@@ -103,39 +103,17 @@ export default class Result extends PureComponent<SelectResultProps> {
     }
 
     renderInput = (placeholder = '') => {
-        const {
-            multiple,
-            onInput,
-            focus,
-            onInputFocus,
-            bindInputReset,
-            onInputBlur,
-            size,
-            result,
-            selectId,
-        } = this.props
+        const { onInput, size } = this.props
 
         return (
             <Input
-                key={selectId}
+                key="key"
                 defaultValue=""
                 className={selectClass('input2')}
                 size={size}
                 onChange={onInput}
                 placeholder={placeholder}
                 autoFocus
-            />
-        )
-
-        return (
-            <SelectInput
-                onInputFocus={onInputFocus}
-                onInputBlur={onInputBlur}
-                multiple={multiple}
-                focus={focus}
-                text={filterText}
-                onInput={onInput}
-                bindInputReset={bindInputReset}
             />
         )
     }

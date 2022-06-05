@@ -79,7 +79,12 @@ class Select extends PureComponent<ISelectProps, SelectState> {
     }
 
     bindClickAway = () => {
-        /** 使用mousedown代替click，因为mousedown的执行时先于blur */
+        /**
+         * 事件执行顺序
+         * @see https://stackoverflow.com/questions/39439115/how-to-execute-click-function-before-the-blur-function
+         * 使用mousedown代替click，因为mousedown的执行时先于blur,在Option中为click事件，所以这里使用mousedown提前blur，click执行
+         * 如果点击的还是select的元素，提前上锁，然后不能继续执行blur
+         */
         document.addEventListener('mousedown', this.handleClickAway, true)
     }
 
@@ -103,7 +108,6 @@ class Select extends PureComponent<ISelectProps, SelectState> {
         const desc = isDescendent(evt.target as HTMLElement, this.selectId)
 
         if (desc) {
-            /** 绝对定位下 disabled部分选项，点击disabled的选项，仍然会失去焦点,添加锁 */
             this.startKeepFocus()
 
             return
@@ -131,7 +135,7 @@ class Select extends PureComponent<ISelectProps, SelectState> {
         this.handleFocusStateChange(false, evt)
     }
 
-    handleChange = (dataItem: any, fromInput = false) => {
+    handleChange = (dataItem: any) => {
         const { datum, multiple, disabled } = this.props
 
         if (disabled === true || this.clickLockTimer) return
@@ -222,8 +226,6 @@ class Select extends PureComponent<ISelectProps, SelectState> {
             this.handleChange(hoverData)
 
             this.selectOptionListFuncMap.handleHover?.(hoverIndex)
-
-            // this.startKeepFocus()
         }
     }
 
@@ -292,6 +294,8 @@ class Select extends PureComponent<ISelectProps, SelectState> {
         /** 此处按常理 自己将元素focus即可，
          * 但是前面的动作执行的blur的操作，同时执行focus只会生效第一个blur，
          * 所以也加入到延时任务中 */
+
+        // document mousedown中已添加startKeepFocus，但是还没打开下拉，是不会触发keepFocus，所以处理下面逻辑处理还没打开就点击清除的情况
         this.startKeepFocus()
 
         if (focus) {
