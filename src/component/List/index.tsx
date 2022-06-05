@@ -23,6 +23,8 @@ export interface ListProps extends React.DetailedHTMLProps<React.HTMLAttributes<
     lazyDom?: boolean
 
     onTransitionEnd?: React.TransitionEventHandler<HTMLDivElement>
+
+    bindResetHeight?: (fn: () => void) => void
 }
 
 const transformDuration = (duration: string | number) => {
@@ -50,6 +52,12 @@ export default class AnimationList extends React.PureComponent<ListProps> {
 
     static defaultProps = {
         display: 'block',
+    }
+
+    constructor(props) {
+        super(props)
+
+        props.bindResetHeight(this.resetHeight)
     }
 
     get hasCollapse() {
@@ -262,6 +270,17 @@ export default class AnimationList extends React.PureComponent<ListProps> {
         return newHeight
     }
 
+    /**
+     * @description
+     * 如果内容的高度会发生变化，暴露此方法重新获取高度,
+     * 如果动画类型中包含折叠，再次展示时,则会自动计算最新的高度，
+     */
+    resetHeight = () => {
+        const fullHeight = this.getFullElementHeight()
+
+        this.element.style.height = `${fullHeight}px`
+    }
+
     bindListElement = (element: HTMLDivElement) => {
         const { getRef } = this.props
 
@@ -279,6 +298,7 @@ export default class AnimationList extends React.PureComponent<ListProps> {
             duration,
             lazyDom,
             onTransitionEnd: handleTransitionEnd,
+            bindResetHeight,
             ...other
         } = this.props
 

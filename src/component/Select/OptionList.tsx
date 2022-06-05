@@ -30,6 +30,8 @@ class OptionList2 extends PureComponent<SelectListProps, OptionListState> {
 
     hoverMoveTimer: NodeJS.Timeout
 
+    resetAnimationHeight: () => void
+
     constructor(props: SelectListProps) {
         super(props)
 
@@ -70,6 +72,14 @@ class OptionList2 extends PureComponent<SelectListProps, OptionListState> {
                 }
             })
         }
+
+        if (prevProps.data.length !== data.length && this.resetAnimationHeight) {
+            this.resetAnimationHeight()
+        }
+    }
+
+    bindResetHeight = fn => {
+        this.resetAnimationHeight = fn
     }
 
     startHoverMoveTimer = () => {
@@ -299,6 +309,7 @@ class OptionList2 extends PureComponent<SelectListProps, OptionListState> {
                 className={classnames(selectClass('options'), className)}
                 animationTypes={['fade', 'scale-y']}
                 onMouseMove={this.handleMouseMove}
+                bindResetHeight={this.bindResetHeight}
             >
                 {this.renderList()}
             </AnimationList>
