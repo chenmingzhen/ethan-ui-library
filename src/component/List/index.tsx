@@ -19,21 +19,23 @@ export interface ListProps extends React.DetailedHTMLProps<React.HTMLAttributes<
 
     duration?: 'fast' | 'slow' | number
 
-    /** AnimationList是否一开始就存在于DOM中,懒加载的需要设置该值(Cascader)  */
+    /** AnimationList是否一开始就存在于DOM中,懒加载的需要设置该值  */
     lazyDom?: boolean
 
     onTransitionEnd?: React.TransitionEventHandler<HTMLDivElement>
-
-    bindResetHeight?: (fn: () => void) => void
 }
+
+export const FAST_TRANSITION_DURATION = 240
+
+export const SLOW_TRANSITION_DURATION = 480
 
 const transformDuration = (duration: string | number) => {
     switch (duration) {
         case 'fast':
-            duration = 240
+            duration = FAST_TRANSITION_DURATION
             break
         case 'slow':
-            duration = 480
+            duration = SLOW_TRANSITION_DURATION
             break
         default:
             if (typeof duration !== 'number') duration = 360
@@ -52,12 +54,6 @@ export default class AnimationList extends React.PureComponent<ListProps> {
 
     static defaultProps = {
         display: 'block',
-    }
-
-    constructor(props) {
-        super(props)
-
-        props.bindResetHeight(this.resetHeight)
     }
 
     get hasCollapse() {
@@ -254,8 +250,17 @@ export default class AnimationList extends React.PureComponent<ListProps> {
         }
     }
 
+    /**
+     *
+     * @description 已做优化，如果动画的类型不包含折叠，则不从element中获取高度，因为获取高度的动作是会附一个确定的高度值,对DOM造成污染,
+     * 例如优化前，Select的输入模式中，动画模式中没包含高度，输入一个值时，DOM的高度已经发生改变，但是getFullElementHeight函数赋DOM还是旧的高度，导致显示异常
+     *
+     */
     getFullElementHeight = () => {
         if (!isEmpty(this.props.height)) return this.props.height
+
+        /** 返回一个没有意义的值，使DOM不会参与计算然后被赋值一个确定的高度 */
+        if (!this.hasCollapse) return 0
 
         if (!this.element) return this.props.height ?? 0
 
@@ -270,17 +275,6 @@ export default class AnimationList extends React.PureComponent<ListProps> {
         return newHeight
     }
 
-    /**
-     * @description
-     * 如果内容的高度会发生变化，暴露此方法重新获取高度,
-     * 如果动画类型中包含折叠，再次展示时,则会自动计算最新的高度，
-     */
-    resetHeight = () => {
-        const fullHeight = this.getFullElementHeight()
-
-        this.element.style.height = `${fullHeight}px`
-    }
-
     bindListElement = (element: HTMLDivElement) => {
         const { getRef } = this.props
 
@@ -290,17 +284,7 @@ export default class AnimationList extends React.PureComponent<ListProps> {
     }
 
     render() {
-        const {
-            show,
-            getRef,
-            style = {},
-            animationTypes,
-            duration,
-            lazyDom,
-            onTransitionEnd: handleTransitionEnd,
-            bindResetHeight,
-            ...other
-        } = this.props
+        const { show, getRef, style = {}, animationTypes, duration, lazyDom, ...other } = this.props
 
         let animation = `animation-${this.duration}`
 
@@ -312,14 +296,6 @@ export default class AnimationList extends React.PureComponent<ListProps> {
 
         const ms = Object.assign({}, style)
 
-        return (
-            <div
-                {...other}
-                ref={this.bindListElement}
-                className={className}
-                style={ms}
-                onTransitionEnd={handleTransitionEnd}
-            />
-        )
+        return <div {...other} ref={this.bindListElement} className={className} style={ms} />
     }
 }
