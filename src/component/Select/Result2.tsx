@@ -7,10 +7,30 @@ import { SelectResultProps } from './type'
 import Caret from '../icons/Caret'
 import ResultItem from './ResultItem'
 import Popover from '../Popover/Popover'
-import SelectInput from './Input2'
 import Input from '../Input'
 
-export default class Result extends PureComponent<SelectResultProps> {
+export default class Result extends PureComponent<SelectResultProps, { showInput: boolean }> {
+    constructor(props: SelectResultProps) {
+        super(props)
+
+        const { focus, onInput } = props
+
+        /** 在输入模式下，如果focus的状态直接改变，Input结束挂载，onBlur不能冒泡到父容器上， 为了确保onBlur能顺利冒泡到父容器中，添加延时 */
+        this.state = { showInput: !!(focus && onInput) }
+    }
+
+    componentDidUpdate(prevProps: Readonly<SelectResultProps>): void {
+        if (!this.props.onInput && !prevProps.onInput) return
+
+        if (prevProps.focus && this.props.focus === false) {
+            setTimeout(() => {
+                this.setState({ showInput: false })
+            }, 10)
+        } else if (prevProps.focus !== this.props.focus) {
+            this.setState({ showInput: this.props.focus })
+        }
+    }
+
     renderMore = (resultList: any[]) => {
         const { datum, renderResult, compressedClassName, resultClassName, onRemove } = this.props
 
@@ -51,17 +71,7 @@ export default class Result extends PureComponent<SelectResultProps> {
     }
 
     renderResult = () => {
-        const {
-            resultClassName,
-            renderResult,
-            result,
-            multiple,
-            compressed,
-            datum,
-            onRemove,
-            onInput,
-            focus,
-        } = this.props
+        const { resultClassName, renderResult, result, multiple, compressed, datum, onRemove } = this.props
 
         const value = typeof renderResult === 'function' ? renderResult(result[0]) : result[0]?.[renderResult]
 
@@ -88,10 +98,14 @@ export default class Result extends PureComponent<SelectResultProps> {
                 items.push(this.renderMore(restResult))
             }
 
+            if (this.state.showInput) {
+                items.push(this.renderInput())
+            }
+
             return items
         }
 
-        if (onInput && focus) {
+        if (this.state.showInput) {
             return this.renderInput(result[0])
         }
 
@@ -103,17 +117,19 @@ export default class Result extends PureComponent<SelectResultProps> {
     }
 
     renderInput = (placeholder = '') => {
-        const { onInput, size } = this.props
+        const { onInput, size, onInputBlur, onInputFocus } = this.props
 
         return (
             <Input
+                autoFocus
                 key="key"
                 defaultValue=""
                 className={selectClass('input2')}
                 size={size}
                 onChange={onInput}
                 placeholder={placeholder}
-                autoFocus
+                onBlur={onInputBlur}
+                onFocus={onInputFocus}
             />
         )
     }
@@ -121,7 +137,7 @@ export default class Result extends PureComponent<SelectResultProps> {
     renderPlaceholder = () => {
         const { focus, onInput, placeholder } = this.props
 
-        if (focus && onInput) {
+        if (this.state.showInput) {
             return this.renderInput()
         }
 

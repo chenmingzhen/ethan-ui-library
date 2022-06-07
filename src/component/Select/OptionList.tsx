@@ -30,8 +30,6 @@ class OptionList2 extends PureComponent<SelectListProps, OptionListState> {
 
     hoverMoveTimer: NodeJS.Timeout
 
-    resetAnimationHeight: () => void
-
     constructor(props: SelectListProps) {
         super(props)
 
@@ -67,19 +65,11 @@ class OptionList2 extends PureComponent<SelectListProps, OptionListState> {
             this.lastScrollTop = 0
             this.setState({ currentIndex: 0, scrollTopRatio: 0 }, () => {
                 if (this.optionInner) {
-                    setTranslate(this.optionInner, '0px', '0px')
-                    // this.optionInner.style.marginTop = '0px'
+                    setTranslate(this.optionInner, '0rem', '0rem')
+                    // this.optionInner.style.marginTop = '0rem'
                 }
             })
         }
-
-        if (prevProps.data.length !== data.length && this.resetAnimationHeight) {
-            this.resetAnimationHeight()
-        }
-    }
-
-    bindResetHeight = fn => {
-        this.resetAnimationHeight = fn
     }
 
     startHoverMoveTimer = () => {
@@ -154,7 +144,7 @@ class OptionList2 extends PureComponent<SelectListProps, OptionListState> {
         if (currentIndex < 0) currentIndex = 0
 
         // 设置滚动效果
-        setTranslate(this.optionInner, '0px', `-${this.lastScrollTop}px`)
+        setTranslate(this.optionInner, '0rem', `-${this.lastScrollTop}px`)
 
         this.setState({ scrollTopRatio, currentIndex })
     }
@@ -195,7 +185,7 @@ class OptionList2 extends PureComponent<SelectListProps, OptionListState> {
         if (emptyHeight < this.lastScrollTop) {
             // 到达当前视图的顶部
 
-            setTranslate(this.optionInner, '0px', `-${emptyHeight}px`)
+            setTranslate(this.optionInner, '0rem', `-${emptyHeight}px`)
 
             this.lastScrollTop = emptyHeight
 
@@ -209,7 +199,7 @@ class OptionList2 extends PureComponent<SelectListProps, OptionListState> {
 
             const scrollHeight = emptyHeight + lineHeight - height
 
-            setTranslate(this.optionInner, '0px', `-${scrollHeight}px`)
+            setTranslate(this.optionInner, '0rem', `-${scrollHeight}px`)
 
             this.lastScrollTop = scrollHeight
 
@@ -225,7 +215,7 @@ class OptionList2 extends PureComponent<SelectListProps, OptionListState> {
         } else if (hoverIndex === 0 && emptyHeight === 0) {
             // 到达数据源的顶部(0 1)
 
-            setTranslate(this.optionInner, '0px', '0px')
+            setTranslate(this.optionInner, '0rem', '0rem')
 
             this.setState({ currentIndex: 0, scrollTopRatio: 0 })
         }
@@ -297,7 +287,7 @@ class OptionList2 extends PureComponent<SelectListProps, OptionListState> {
     }
 
     render() {
-        const { focus, style, selectId, className } = this.props
+        const { focus, style, selectId, className, onTransitionEnd } = this.props
 
         return (
             <AnimationList
@@ -309,7 +299,7 @@ class OptionList2 extends PureComponent<SelectListProps, OptionListState> {
                 className={classnames(selectClass('options'), className)}
                 animationTypes={['fade', 'scale-y']}
                 onMouseMove={this.handleMouseMove}
-                bindResetHeight={this.bindResetHeight}
+                onTransitionEnd={onTransitionEnd}
             >
                 {this.renderList()}
             </AnimationList>

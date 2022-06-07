@@ -4,10 +4,12 @@ import { PureComponent } from '@/utils/component'
 import { getUidStr } from '@/utils/uid'
 import { getParent, isDescendent } from '@/utils/dom/element'
 import { docSize } from '@/utils/dom/document'
+import { debounce } from '@/utils/func'
 import { SelectOptionListBindFuncMap, SelectState, ISelectProps } from './type'
 import Result from './Result2'
 import OptionList from './OptionList'
 import AbsoluteList from '../List/AbsoluteList'
+import { FAST_TRANSITION_DURATION } from '../List'
 
 class Select extends PureComponent<ISelectProps, SelectState> {
     static defaultProps = {
@@ -47,7 +49,7 @@ class Select extends PureComponent<ISelectProps, SelectState> {
 
     isRender = false
 
-    afterActionKeepFocus = false
+    keepSelectFocus = false
 
     clickLockTimer: NodeJS.Timeout
 
@@ -66,15 +68,15 @@ class Select extends PureComponent<ISelectProps, SelectState> {
      *  select的容器使用了onBlur和onFocus，有时候点击select里面的元素，不用失去焦点。
      *  使用afterActionKeepFocus标记去阻止重新执行focus和blur事件
      */
-    startKeepFocus = () => {
+    startKeepSelectFocus = () => {
         /** 标记操作的DOM仍然是属于Select组件，阻止聚焦和失焦 */
-        this.afterActionKeepFocus = true
+        this.keepSelectFocus = true
 
         setTimeout(() => {
             /** 虽然阻止了handleBlur和handleFocus的执行，此时的Select容器已经是失去焦点状态，重新拿回焦点 */
             this.element.focus()
 
-            this.afterActionKeepFocus = false
+            this.keepSelectFocus = false
         }, 30)
     }
 
@@ -83,7 +85,7 @@ class Select extends PureComponent<ISelectProps, SelectState> {
          * 事件执行顺序
          * @see https://stackoverflow.com/questions/39439115/how-to-execute-click-function-before-the-blur-function
          * 使用mousedown代替click，因为mousedown的执行时先于blur,在Option中为click事件，所以这里使用mousedown提前blur，click执行
-         * 如果点击的还是select的元素，提前上锁，然后不能继续执行blur
+         * 如果点击的还是select的元素且不是Input，提前上锁，然后不能继续执行blur
          */
         document.addEventListener('mousedown', this.handleClickAway, true)
     }
@@ -107,17 +109,25 @@ class Select extends PureComponent<ISelectProps, SelectState> {
     handleClickAway = (evt: MouseEvent) => {
         const desc = isDescendent(evt.target as HTMLElement, this.selectId)
 
+        const isClickInput = getParent(evt.target as HTMLElement, `.${selectClass('input2')}`)
+
+        if (isClickInput) {
+            return
+        }
+
+        /** 点击Select内部元素时，上锁 */
         if (desc) {
-            this.startKeepFocus()
+            this.startKeepSelectFocus()
 
             return
         }
 
+        /** 如果是从Input中失去焦点，下面的语句失效，直接从事件冒泡中执行handleBlur */
         this.element.blur()
     }
 
     handleBlur: React.FocusEventHandler<HTMLDivElement> = evt => {
-        if (this.afterActionKeepFocus) return
+        if (this.keepSelectFocus) return
 
         /**
          * FocusEvent.relatedTarget
@@ -145,7 +155,7 @@ class Select extends PureComponent<ISelectProps, SelectState> {
             this.clickLockTimer = null
         }, 240)
 
-        this.startKeepFocus()
+        this.startKeepSelectFocus()
 
         if (multiple) {
             const checked = !datum.check(dataItem)
@@ -190,11 +200,22 @@ class Select extends PureComponent<ISelectProps, SelectState> {
     }
 
     handleFocus: React.FocusEventHandler<HTMLDivElement> = evt => {
-        if (this.afterActionKeepFocus) return
+        if (this.keepSelectFocus) return
 
         this.props.onFocus(evt)
     }
 
+    handleListTransitionEnd = debounce(() => {
+        const { onInput } = this.props
+
+        const { focus } = this.state
+
+        if (focus || !onInput) return
+
+        onInput('')
+    }, FAST_TRANSITION_DURATION)
+
+    /** 如果是可输入的情况, 打开下拉时，焦点已经在Input上了 */
     handleClick = (evt: React.MouseEvent<HTMLDivElement, MouseEvent> | React.KeyboardEvent<HTMLDivElement>) => {
         if (!getParent(evt.target as HTMLElement, `.${selectClass('result')}`) && evt.target !== this.element) {
             return
@@ -212,8 +233,6 @@ class Select extends PureComponent<ISelectProps, SelectState> {
             this.handleFocusStateChange(true, evt)
         }
     }
-
-    handleInputFocus = () => {}
 
     handleEnter = () => {
         const { data, groupKey } = this.props
@@ -240,8 +259,12 @@ class Select extends PureComponent<ISelectProps, SelectState> {
             return
         }
 
+        /** Tab键 */
         if (evt.keyCode === 9) {
-            if (this.element) this.element.blur()
+            if (this.element) {
+                /** 如果是输入模式下点击Tab，下面的语句是不会执行，由Input冒泡到handleBlur */
+                this.element.blur()
+            }
 
             if (focus) this.handleFocusStateChange(false, evt)
 
@@ -296,7 +319,7 @@ class Select extends PureComponent<ISelectProps, SelectState> {
          * 所以也加入到延时任务中 */
 
         // document mousedown中已添加startKeepFocus，但是还没打开下拉，是不会触发keepFocus，所以处理下面逻辑处理还没打开就点击清除的情况
-        this.startKeepFocus()
+        this.startKeepSelectFocus()
 
         if (focus) {
             this.handleFocusStateChange(false)
@@ -365,6 +388,7 @@ class Select extends PureComponent<ISelectProps, SelectState> {
                     renderItem={this.renderItem}
                     control={this.state.control}
                     onControlChange={this.handleControlChange}
+                    onTransitionEnd={this.handleListTransitionEnd}
                 />
             </AbsoluteList>
         )
@@ -406,40 +430,42 @@ class Select extends PureComponent<ISelectProps, SelectState> {
         const renderResult = this.props.renderResult || this.renderItem
 
         return (
-            <div
-                tabIndex={disabled === true ? -1 : 0}
-                ref={this.bindElement}
-                className={className}
-                data-id={this.selectId}
-                onFocus={this.handleFocus}
-                onClick={this.handleClick}
-                onBlur={this.handleBlur}
-                onKeyDown={this.handleKeyDown}
-            >
-                <Result
-                    filterText={filterText}
-                    onClear={clearable ? this.handleClear : undefined}
-                    onCreate={onCreate}
-                    onInput={onInput}
-                    onRemove={this.handleRemove}
-                    datum={datum}
-                    disabled={disabled}
-                    focus={this.state.focus}
-                    result={result}
-                    multiple={multiple}
-                    placeholder={placeholder}
-                    renderResult={renderResult}
-                    onInputFocus={this.handleInputFocus}
-                    compressed={compressed}
-                    showArrow={showArrow}
-                    compressedClassName={compressedClassName}
-                    resultClassName={resultClassName}
-                    size={size}
-                    onInputBlur={() => {}}
-                />
+            <>
+                <div
+                    tabIndex={disabled === true ? -1 : 0}
+                    ref={this.bindElement}
+                    className={className}
+                    data-id={this.selectId}
+                    onFocus={this.handleFocus}
+                    onClick={this.handleClick}
+                    onBlur={this.handleBlur}
+                    onKeyDown={this.handleKeyDown}
+                >
+                    <Result
+                        filterText={filterText}
+                        onClear={clearable ? this.handleClear : undefined}
+                        onCreate={onCreate}
+                        onInput={onInput}
+                        onRemove={this.handleRemove}
+                        datum={datum}
+                        disabled={disabled}
+                        focus={this.state.focus}
+                        result={result}
+                        multiple={multiple}
+                        placeholder={placeholder}
+                        renderResult={renderResult}
+                        onInputFocus={() => {}}
+                        onInputBlur={() => {}}
+                        compressed={compressed}
+                        showArrow={showArrow}
+                        compressedClassName={compressedClassName}
+                        resultClassName={resultClassName}
+                        size={size}
+                    />
 
-                {this.renderOptions()}
-            </div>
+                    {this.renderOptions()}
+                </div>
+            </>
         )
     }
 }

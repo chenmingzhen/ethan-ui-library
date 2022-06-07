@@ -1,5 +1,6 @@
 import List from '@/utils/Datum/List'
 import React, { ReactNode } from 'react'
+import { ListProps } from '../List'
 
 export type SelectBaseData = Record<string, any> | string | number
 
@@ -65,9 +66,10 @@ export interface SelectState {
 
 export interface SelectListProps
     extends Pick<
-        ISelectProps,
-        'height' | 'lineHeight' | 'itemsInView' | 'text' | 'loading' | 'keygen' | 'datum' | 'position'
-    > {
+            ISelectProps,
+            'height' | 'lineHeight' | 'itemsInView' | 'text' | 'loading' | 'keygen' | 'datum' | 'position'
+        >,
+        ListProps {
     control: SelectState['control']
     selectId: string
     onControlChange(control: SelectState['control']): void
@@ -121,7 +123,7 @@ export interface SelectResultProps
     > {
     onClear?(): void
     onRemove(data: any): void
-    onInputBlur(text: string | number): void
+    onInputBlur(e: React.FocusEvent<HTMLInputElement>): void
     onInputFocus(): void
     compressed: boolean
     focus: boolean

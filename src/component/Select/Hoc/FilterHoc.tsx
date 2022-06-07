@@ -81,9 +81,13 @@ export default function FilterHoc(Origin) {
             this.setState({ filterText: text })
 
             if (onCreate) {
-                const createData = this.handleCreate(text)
+                if (text !== '') {
+                    const createData = this.handleCreate(text)
 
-                this.setState({ createData })
+                    this.setState({ createData })
+                } else {
+                    this.setState({ createData: undefined })
+                }
             }
         }
 
@@ -118,8 +122,6 @@ export default function FilterHoc(Origin) {
                     result={this.getResultByValues()}
                     filterText={filterText}
                     onInput={onFilter || onCreate ? this.handleInput : undefined}
-                    /** @todo 移除这个参数 */
-                    inputable={!!onCreate}
                     {...dataGenerator.call(this)}
                 />
             )
