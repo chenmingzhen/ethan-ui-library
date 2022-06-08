@@ -24,7 +24,7 @@ export interface InputProps<Value = string | number>
     style?: React.CSSProperties
     type?: HTMLInputElement['type']
     value?: Value
-    forwardedRef?: React.MutableRefObject<HTMLInputElement>
+    forwardedRef?: React.MutableRefObject<HTMLInputElement> | React.RefCallback<HTMLInputElement>
 }
 
 export interface InputNumberProps extends InputProps {
