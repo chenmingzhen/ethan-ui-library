@@ -11,7 +11,13 @@ export const isDate = val => val instanceof Date
 
 export const isFunc = f => typeof f === 'function'
 
-export const isString = s => typeof s === 'string'
+export function isString(s): s is string {
+    return typeof s === 'string'
+}
+
+export function isNumber(n): n is number {
+    return typeof n === 'number'
+}
 
 export const isError = val => val instanceof Error
 
