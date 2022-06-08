@@ -52,6 +52,14 @@ export const isEmpty = val => {
     return false
 }
 
+export function isEmptyStr(str: string) {
+    return str === ''
+}
+
+export function isZero(num: number) {
+    return num === 0
+}
+
 export const isMergeable = val => {
     if (!isObject(val)) return false
 

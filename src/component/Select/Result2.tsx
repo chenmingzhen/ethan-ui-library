@@ -1,10 +1,11 @@
-import React from 'react'
+import React, { isValidElement } from 'react'
 import { PureComponent } from '@/utils/component'
 import classnames from 'classnames'
 import { inputClass, selectClass } from '@/styles'
 import { stopPropagation } from '@/utils/func'
 import { warningOnce } from '@/utils/warning'
 import { SELECT_RENDER_RESULT } from '@/utils/warning/types'
+import { isString } from '@/utils/is'
 import { SelectResultProps } from './type'
 import Caret from '../icons/Caret'
 import ResultItem from './ResultItem'
@@ -36,17 +37,23 @@ export default class Result extends PureComponent<SelectResultProps, { showInput
     buildResult = item => {
         const { renderResult } = this.props
 
+        let node = null
+
         if (typeof renderResult === 'function') {
-            return renderResult(item)
+            node = renderResult(item)
         }
 
         if (typeof renderResult === 'string') {
-            return item?.[renderResult]
+            node = item?.[renderResult]
         }
 
-        warningOnce(SELECT_RENDER_RESULT)
+        if (!isValidElement(node) && !isString(node)) {
+            warningOnce(SELECT_RENDER_RESULT)
 
-        return null
+            return null
+        }
+
+        return node
     }
 
     renderMore = (resultList: any[]) => {
@@ -128,13 +135,13 @@ export default class Result extends PureComponent<SelectResultProps, { showInput
         }
 
         return (
-            <span title={value} className={classnames(selectClass('ellipsis'), resultClassName)}>
+            <span title={isString(value) && value} className={classnames(selectClass('ellipsis'), resultClassName)}>
                 {value}
             </span>
         )
     }
 
-    renderInput = (placeholder = '') => {
+    renderInput = (placeholder: React.ReactNode = '') => {
         const { onInput, size, onInputBlur, onInputFocus, onBindInputInstance, filterText } = this.props
 
         return (
@@ -145,7 +152,7 @@ export default class Result extends PureComponent<SelectResultProps, { showInput
                 className={selectClass('input2')}
                 size={size}
                 onChange={onInput}
-                placeholder={placeholder}
+                placeholder={isString(placeholder) && placeholder}
                 onBlur={onInputBlur}
                 onFocus={onInputFocus}
                 forwardedRef={onBindInputInstance}

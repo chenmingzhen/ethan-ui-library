@@ -28,6 +28,8 @@ export function empty(e) {
     e.preventDefault()
 }
 
+export function noop() {}
+
 export function stopPropagation(e) {
     e.stopPropagation()
 }

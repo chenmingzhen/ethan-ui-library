@@ -27,7 +27,7 @@ const Option: React.FC<OptionProps> = props => {
         <span
             className={className}
             onClick={handleClick}
-            onMouseEnter={() => {
+            onMouseMove={() => {
                 onHover(index)
             }}
         >

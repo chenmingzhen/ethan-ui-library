@@ -6,6 +6,8 @@ import { getLocale } from '@/locale'
 import { setTranslate } from '@/utils/dom/translate'
 import { getKey } from '@/utils/uid'
 import { CHANGE_ACTION } from '@/utils/Datum/types'
+import { isEmpty, isEmptyStr, isZero } from '@/utils/is'
+import { getRangeValue } from '@/utils/numbers'
 import { SelectListProps } from './type'
 import Spin from '../Spin'
 import Scroll from '../Scroll'
@@ -27,9 +29,9 @@ class OptionList extends PureComponent<SelectListProps, OptionListState> {
 
     optionInner: HTMLDivElement
 
-    isHoverMoving = false
-
     hoverMoveTimer: NodeJS.Timeout
+
+    scrollTimer: NodeJS.Timeout
 
     constructor(props: SelectListProps) {
         super(props)
@@ -51,6 +53,8 @@ class OptionList extends PureComponent<SelectListProps, OptionListState> {
         super.componentDidMount()
 
         this.props.datum.subscribe(CHANGE_ACTION, this.forceUpdate)
+
+        /** @todo 滚动到默认值的地方 */
     }
 
     componentWillUnmount() {
@@ -59,17 +63,49 @@ class OptionList extends PureComponent<SelectListProps, OptionListState> {
         this.props.datum.subscribe(CHANGE_ACTION, this.forceUpdate)
     }
 
-    componentDidUpdate(prevProps: Readonly<SelectListProps>): void {
-        const { data } = this.props
+    componentDidUpdate(prevProps: Readonly<SelectListProps>, prevState: Readonly<OptionListState>): void {
+        if (this.props.data !== prevProps.data && this.props.data.length !== prevProps.data.length) {
+            /** 动态添加值 */
+            if (isEmpty(this.props.filterText) && isEmptyStr(this.props.filterText) && !isZero(this.props.data)) {
+                if (this.props.lineHeight * this.props.data.length < this.props.height) return
 
-        if (data !== prevProps.data && data.length !== prevProps.data.length) {
-            this.lastScrollTop = 0
-            this.setState({ currentIndex: 0, scrollTopRatio: 0 }, () => {
-                if (this.optionInner) {
-                    setTranslate(this.optionInner, '0rem', '0rem')
-                    // this.optionInner.style.marginTop = '0rem'
-                }
-            })
+                const prevContentHeight = prevProps.data.length * prevProps.lineHeight - prevProps.height
+
+                const prevScrollTopRadio = prevState.scrollTopRatio
+
+                const nextContentHeight = this.props.data.length * this.props.lineHeight - this.props.height
+
+                /** @todo 行高发生变化时，还未重新计算currentIndex */
+                const nextCurrentIndex = prevProps.lineHeight === this.props.lineHeight ? this.state.currentIndex : 0
+
+                const nextScrollTopRadio = getRangeValue({
+                    current: prevScrollTopRadio * (prevContentHeight / nextContentHeight),
+                })
+
+                this.lastScrollTop = nextContentHeight * nextScrollTopRadio
+
+                this.setState({ currentIndex: nextCurrentIndex, scrollTopRatio: nextScrollTopRadio }, () => {
+                    if (this.optionInner) {
+                        setTranslate(this.optionInner, '0rem', `-${this.lastScrollTop}px`)
+                    }
+                })
+            } else {
+                this.lastScrollTop = 0
+
+                this.setState({ currentIndex: 0, scrollTopRatio: 0 }, () => {
+                    if (this.optionInner) {
+                        setTranslate(this.optionInner, '0rem', '0rem')
+                    }
+                })
+            }
+        }
+
+        if (
+            this.props.onScrollRadioChange &&
+            prevState.scrollTopRatio !== this.state.scrollTopRatio &&
+            !isZero(this.props.data)
+        ) {
+            this.props.onScrollRadioChange(this.state.scrollTopRatio, this.lastScrollTop)
         }
     }
 
@@ -80,11 +116,21 @@ class OptionList extends PureComponent<SelectListProps, OptionListState> {
             this.hoverMoveTimer = null
         }
 
-        this.isHoverMoving = true
-
         this.hoverMoveTimer = setTimeout(() => {
-            this.isHoverMoving = false
+            this.hoverMoveTimer = null
         }, 50)
+    }
+
+    startScrollTimer = () => {
+        if (this.scrollTimer) {
+            clearTimeout(this.scrollTimer)
+
+            this.scrollTimer = null
+        }
+
+        this.scrollTimer = setTimeout(() => {
+            this.scrollTimer = null
+        }, 10)
     }
 
     handleHover = (index: number) => {
@@ -93,13 +139,13 @@ class OptionList extends PureComponent<SelectListProps, OptionListState> {
         /** 当鼠标在select的滚动容器内，键盘操作时，会触发Option的Hover，此时键盘的优先级更高 */
         if (control === 'keyboard') return
 
-        if (this.state.hoverIndex !== index) {
+        if (this.state.hoverIndex !== index && !this.scrollTimer) {
             this.setState({ hoverIndex: index })
         }
     }
 
     handleMouseMove = () => {
-        if (this.props.control !== 'mouse' && !this.isHoverMoving) {
+        if (this.props.control !== 'mouse' && !this.hoverMoveTimer) {
             this.props.onControlChange('mouse')
         }
     }
@@ -108,6 +154,8 @@ class OptionList extends PureComponent<SelectListProps, OptionListState> {
         if (!this.optionInner) return
 
         const { data, itemsInView, lineHeight } = this.props
+
+        this.startScrollTimer()
 
         // 屏内的高度
         const fullHeight = itemsInView * lineHeight
@@ -140,6 +188,7 @@ class OptionList extends PureComponent<SelectListProps, OptionListState> {
 
         let currentIndex = Math.floor(this.lastScrollTop / lineHeight) - 1
 
+        /** @todo 滚动到底部左右的位置,边界条件,考虑移除 */
         if (data.length - itemsInView < currentIndex) currentIndex = data.length - itemsInView
 
         if (currentIndex < 0) currentIndex = 0

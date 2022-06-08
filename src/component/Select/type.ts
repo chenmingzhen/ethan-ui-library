@@ -58,7 +58,7 @@ export interface SelectProps<
     groupBy?: (item: any, index: number, items: any) => string | number
     cacheAble?: boolean
     spinProps?: Omit<SpinProps, 'children' | 'loading'>
-    onScroll?: (scrollTopRadio: number, lastScrollTop: number) => void
+    onScrollRadioChange?: (scrollTopRadio: number, lastScrollTop: number) => void
 }
 
 export interface SelectState {
@@ -80,7 +80,8 @@ export interface SelectListProps
             | 'position'
             | 'spinProps'
             | 'size'
-            | 'onScroll'
+            | 'onScrollRadioChange'
+            | 'filterText'
         >,
         Omit<ListProps, 'onScroll'> {
     control: SelectState['control']

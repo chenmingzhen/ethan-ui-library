@@ -43,8 +43,6 @@ class Select extends PureComponent<ISelectProps, SelectState> {
 
     selectId = getUidStr()
 
-    inputReset: () => void
-
     selectOptionListFuncMap: SelectOptionListBindFuncMap
 
     isRender = false
@@ -56,10 +54,6 @@ class Select extends PureComponent<ISelectProps, SelectState> {
     inputInstance: HTMLInputElement
 
     focusTimer: NodeJS.Timeout
-
-    get inputAble() {
-        return !!this.props.onInput
-    }
 
     constructor(props) {
         super(props)
@@ -402,6 +396,8 @@ class Select extends PureComponent<ISelectProps, SelectState> {
             'groupKey',
             'spinProps',
             'size',
+            'filterText',
+            'onScrollRadioChange',
         ].forEach(k => {
             props[k] = this.props[k]
         })

@@ -34,12 +34,6 @@ class Scroll extends PureComponent<ScrollProps> {
     /** 像素y 实际值 */
     pixelY = 0
 
-    /** 上一次的X方向滚动的Radio */
-    lastX = 0
-
-    /** 上一次的Y方向滚动的Radio */
-    lastY = 0
-
     wheelElement: HTMLDivElement
 
     innerElement: HTMLDivElement
@@ -68,6 +62,10 @@ class Scroll extends PureComponent<ScrollProps> {
         this.wheelElement.removeEventListener('wheel', this.handleWheel)
         this.wheelElement.removeEventListener('touchstart', this.handleTouchStart)
         this.wheelElement.removeEventListener('touchmove', this.handleTouchMove)
+    }
+
+    bindWheelElement = wheelElement => {
+        this.wheelElement = wheelElement
     }
 
     getWheelRect = () => {
@@ -174,11 +172,7 @@ class Scroll extends PureComponent<ScrollProps> {
 
         const xMax = Math.round((1 - width / scrollWidth) * scrollWidth)
 
-        if (this.props.onScroll && (this.lastX !== x || this.lastY !== y)) {
-            this.lastX = x
-
-            this.lastY = y
-
+        if (this.props.onScroll) {
             this.props.onScroll(x, y, xMax, this.innerElement, width, height, pixelX, pixelY)
         }
     }
@@ -228,13 +222,7 @@ class Scroll extends PureComponent<ScrollProps> {
         this.wheelX = Math.ceil(scrollWidth) > Math.ceil(width)
 
         return (
-            <div
-                style={style}
-                ref={wheelElement => {
-                    this.wheelElement = wheelElement
-                }}
-                className={className}
-            >
+            <div style={style} ref={this.bindWheelElement} className={className}>
                 {/* iframe用于占位计算onresize */}
                 <iframe tabIndex={-1} title="scroll" ref={this.handleIframeResize} className={scrollClass('iframe')} />
                 <div
