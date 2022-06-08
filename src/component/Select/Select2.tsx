@@ -53,6 +53,14 @@ class Select extends PureComponent<ISelectProps, SelectState> {
 
     clickLockTimer: NodeJS.Timeout
 
+    inputInstance: HTMLInputElement
+
+    focusTimer: NodeJS.Timeout
+
+    get inputAble() {
+        return !!this.props.onInput
+    }
+
     constructor(props) {
         super(props)
 
@@ -72,12 +80,30 @@ class Select extends PureComponent<ISelectProps, SelectState> {
         /** 标记操作的DOM仍然是属于Select组件，阻止聚焦和失焦 */
         this.keepSelectFocus = true
 
-        setTimeout(() => {
+        if (this.focusTimer) {
+            clearTimeout(this.focusTimer)
+
+            this.focusTimer = null
+        }
+
+        this.focusTimer = setTimeout(() => {
             /** 虽然阻止了handleBlur和handleFocus的执行，此时的Select容器已经是失去焦点状态，重新拿回焦点 */
             this.element.focus()
 
             this.keepSelectFocus = false
         }, 30)
+    }
+
+    startInputFocus = () => {
+        if (this.focusTimer) {
+            clearTimeout(this.focusTimer)
+
+            this.focusTimer = null
+        }
+
+        this.inputInstance.focus()
+
+        this.keepSelectFocus = false
     }
 
     bindClickAway = () => {
@@ -100,6 +126,10 @@ class Select extends PureComponent<ISelectProps, SelectState> {
 
     bindElement = (element: HTMLDivElement) => {
         this.element = element
+    }
+
+    bindInputInstance = (input: HTMLInputElement) => {
+        this.inputInstance = input
     }
 
     handleControlChange = (control: SelectState['control']) => {
@@ -146,7 +176,7 @@ class Select extends PureComponent<ISelectProps, SelectState> {
     }
 
     handleChange = (dataItem: any) => {
-        const { datum, multiple, disabled } = this.props
+        const { datum, multiple, disabled, onInput } = this.props
 
         if (disabled === true || this.clickLockTimer) return
 
@@ -162,6 +192,13 @@ class Select extends PureComponent<ISelectProps, SelectState> {
 
             if (checked) {
                 datum.add(dataItem)
+
+                /** 多选创建模式选中后，需要清除值,并让Input获取焦点，但不执行handleBlur */
+                if (onInput) {
+                    onInput('')
+
+                    this.startInputFocus()
+                }
             } else {
                 datum.remove(dataItem)
             }
@@ -363,6 +400,8 @@ class Select extends PureComponent<ISelectProps, SelectState> {
             'filterText',
             'zIndex',
             'groupKey',
+            'spinProps',
+            'size',
         ].forEach(k => {
             props[k] = this.props[k]
         })
@@ -442,6 +481,7 @@ class Select extends PureComponent<ISelectProps, SelectState> {
                     onKeyDown={this.handleKeyDown}
                 >
                     <Result
+                        size={size}
                         filterText={filterText}
                         onClear={clearable ? this.handleClear : undefined}
                         onCreate={onCreate}
@@ -460,7 +500,7 @@ class Select extends PureComponent<ISelectProps, SelectState> {
                         showArrow={showArrow}
                         compressedClassName={compressedClassName}
                         resultClassName={resultClassName}
-                        size={size}
+                        onBindInputInstance={this.bindInputInstance}
                     />
 
                     {this.renderOptions()}

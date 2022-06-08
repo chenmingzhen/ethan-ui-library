@@ -1,6 +1,7 @@
 import List from '@/utils/Datum/List'
 import React, { ReactNode } from 'react'
 import { ListProps } from '../List'
+import { SpinProps } from '../Spin'
 
 export type SelectBaseData = Record<string, any> | string | number
 
@@ -32,7 +33,7 @@ export interface SelectProps<
     filterText?: string
     height?: number
     itemsInView?: number
-    loading?: React.ReactNode | boolean
+    loading?: boolean
     multiple?: boolean
     onBlur?: (evt: React.FocusEvent<HTMLDivElement>) => void
     onCreate?: ((text: string) => D) | boolean
@@ -56,6 +57,8 @@ export interface SelectProps<
     defaultValue?: any
     groupBy?: (item: any, index: number, items: any) => string | number
     cacheAble?: boolean
+    spinProps?: Omit<SpinProps, 'children' | 'loading'>
+    onScroll?: (scrollTopRadio: number, lastScrollTop: number) => void
 }
 
 export interface SelectState {
@@ -67,9 +70,19 @@ export interface SelectState {
 export interface SelectListProps
     extends Pick<
             ISelectProps,
-            'height' | 'lineHeight' | 'itemsInView' | 'text' | 'loading' | 'keygen' | 'datum' | 'position'
+            | 'height'
+            | 'lineHeight'
+            | 'itemsInView'
+            | 'text'
+            | 'loading'
+            | 'keygen'
+            | 'datum'
+            | 'position'
+            | 'spinProps'
+            | 'size'
+            | 'onScroll'
         >,
-        ListProps {
+        Omit<ListProps, 'onScroll'> {
     control: SelectState['control']
     selectId: string
     onControlChange(control: SelectState['control']): void
@@ -127,13 +140,15 @@ export interface SelectResultProps
     onInputFocus(): void
     compressed: boolean
     focus: boolean
+    onBindInputInstance(input: HTMLInputElement): void
 }
 
-export interface SelectResultItemProps extends Pick<SelectResultProps, 'renderResult' | 'resultClassName'> {
+export interface SelectResultItemProps extends Pick<SelectResultProps, 'resultClassName'> {
     result: any
     disabled: boolean
     onRemove: SelectResultProps['onRemove']
     title?: boolean
+    renderResult: (data) => React.ReactNode
 }
 
 export interface SelectFilterHocProps extends ISelectProps, Pick<SelectProps, 'onFilter'> {}

@@ -11,7 +11,7 @@ const ResultItem: React.FC<SelectResultItemProps> = function(props) {
 
     const hideRemove = disabled || !remove
 
-    const content = typeof renderResult === 'function' ? renderResult(value) : value?.[renderResult]
+    const content = renderResult(value)
 
     if (isEmpty(content)) return null
 

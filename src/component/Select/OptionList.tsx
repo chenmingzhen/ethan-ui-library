@@ -11,6 +11,7 @@ import Spin from '../Spin'
 import Scroll from '../Scroll'
 import Option from './Option'
 import AnimationList from '../List'
+import { transformSizeToPx } from './util'
 
 interface OptionListState {
     // 目前选中的index
@@ -21,7 +22,7 @@ interface OptionListState {
     scrollTopRatio: number
 }
 
-class OptionList2 extends PureComponent<SelectListProps, OptionListState> {
+class OptionList extends PureComponent<SelectListProps, OptionListState> {
     lastScrollTop = 0
 
     optionInner: HTMLDivElement
@@ -240,16 +241,20 @@ class OptionList2 extends PureComponent<SelectListProps, OptionListState> {
             renderItem,
             groupKey,
             text,
+            spinProps,
+            size,
         } = this.props
 
         const { hoverIndex, currentIndex } = this.state
 
         const scroll = lineHeight * data.length > height ? 'y' : undefined
 
-        if (loading)
+        const spinSize = transformSizeToPx(size)
+
+        if (loading && !data.length)
             return (
                 <span className={selectClass('option')}>
-                    {typeof loading === 'boolean' ? <Spin size={20} /> : loading}
+                    {typeof loading === 'boolean' ? <Spin size={spinSize} /> : loading}
                 </span>
             )
 
@@ -257,32 +262,34 @@ class OptionList2 extends PureComponent<SelectListProps, OptionListState> {
             return <span className={selectClass('option')}>{text?.noData || getLocale('noData')}</span>
 
         return (
-            <Scroll
-                scroll={scroll}
-                style={{ height: scroll ? height : undefined }}
-                onScroll={this.handleScroll}
-                scrollHeight={data.length * lineHeight}
-                scrollTop={this.state.scrollTopRatio}
-            >
-                <div ref={this.bindOptionInner}>
-                    <div style={{ height: currentIndex * lineHeight }} />
-                    {/* 优化性能 视图内的渲染 并非一次渲染全部 */}
-                    {data.slice(currentIndex, currentIndex + itemsInView).map((d, i) => (
-                        <Option
-                            isActive={datum.check(d)}
-                            disabled={datum.disabled(d)}
-                            isHover={hoverIndex === currentIndex + i}
-                            key={d[groupKey] ? `__${d[groupKey]}__` : getKey(d, keygen, i)}
-                            index={currentIndex + i}
-                            data={d}
-                            onClick={onChange}
-                            renderItem={renderItem}
-                            onHover={this.handleHover}
-                            groupKey={groupKey}
-                        />
-                    ))}
-                </div>
-            </Scroll>
+            <Spin size={spinSize} {...spinProps} loading={loading}>
+                <Scroll
+                    scroll={scroll}
+                    style={{ height: scroll ? height : undefined }}
+                    onScroll={this.handleScroll}
+                    scrollHeight={data.length * lineHeight}
+                    scrollTop={this.state.scrollTopRatio}
+                >
+                    <div ref={this.bindOptionInner}>
+                        <div style={{ height: currentIndex * lineHeight }} />
+                        {/* 优化性能 视图内的渲染 并非一次渲染全部 */}
+                        {data.slice(currentIndex, currentIndex + itemsInView).map((d, i) => (
+                            <Option
+                                isActive={datum.check(d)}
+                                disabled={datum.disabled(d)}
+                                isHover={hoverIndex === currentIndex + i}
+                                key={d[groupKey] ? `__${d[groupKey]}__` : getKey(d, keygen, i)}
+                                index={currentIndex + i}
+                                data={d}
+                                onClick={onChange}
+                                renderItem={renderItem}
+                                onHover={this.handleHover}
+                                groupKey={groupKey}
+                            />
+                        ))}
+                    </div>
+                </Scroll>
+            </Spin>
         )
     }
 
@@ -307,4 +314,4 @@ class OptionList2 extends PureComponent<SelectListProps, OptionListState> {
     }
 }
 
-export default OptionList2
+export default OptionList

@@ -1,5 +1,6 @@
 import React from 'react'
 import { PureComponent } from '@/utils/component'
+import { isNumber, isString } from '@/utils/is'
 import { SelectFilterHocProps } from '../type'
 
 interface SelectFilterHocState {
@@ -46,11 +47,13 @@ export default function FilterHoc(Origin) {
                         }
 
                         if (result === undefined && onCreate) {
-                            /** @todo 如果是创建出来的数据 怎么处理 */
-
-                            console.log('todo')
-
-                            result = this.handleCreate(value)
+                            /** value是直接输入的，对应基本的数据类型data */
+                            if (isString(value) || isNumber(value)) {
+                                result = this.handleCreate(value)
+                            } else {
+                                /** 复杂的数据类型 */
+                                result = value
+                            }
                         }
                     }
 

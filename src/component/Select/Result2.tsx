@@ -3,6 +3,8 @@ import { PureComponent } from '@/utils/component'
 import classnames from 'classnames'
 import { inputClass, selectClass } from '@/styles'
 import { stopPropagation } from '@/utils/func'
+import { warningOnce } from '@/utils/warning'
+import { SELECT_RENDER_RESULT } from '@/utils/warning/types'
 import { SelectResultProps } from './type'
 import Caret from '../icons/Caret'
 import ResultItem from './ResultItem'
@@ -31,8 +33,24 @@ export default class Result extends PureComponent<SelectResultProps, { showInput
         }
     }
 
+    buildResult = item => {
+        const { renderResult } = this.props
+
+        if (typeof renderResult === 'function') {
+            return renderResult(item)
+        }
+
+        if (typeof renderResult === 'string') {
+            return item?.[renderResult]
+        }
+
+        warningOnce(SELECT_RENDER_RESULT)
+
+        return null
+    }
+
     renderMore = (resultList: any[]) => {
-        const { datum, renderResult, compressedClassName, resultClassName, onRemove } = this.props
+        const { datum, compressedClassName, resultClassName, onRemove } = this.props
 
         const className = classnames(selectClass('popover'), compressedClassName)
 
@@ -51,7 +69,7 @@ export default class Result extends PureComponent<SelectResultProps, { showInput
                                 result={result}
                                 disabled={datum.disabled(result)}
                                 onRemove={onRemove}
-                                renderResult={renderResult}
+                                renderResult={this.buildResult}
                                 resultClassName={resultClassName}
                             />
                         ))}
@@ -71,9 +89,9 @@ export default class Result extends PureComponent<SelectResultProps, { showInput
     }
 
     renderResult = () => {
-        const { resultClassName, renderResult, result, multiple, compressed, datum, onRemove } = this.props
+        const { resultClassName, result, multiple, compressed, datum, onRemove } = this.props
 
-        const value = typeof renderResult === 'function' ? renderResult(result[0]) : result[0]?.[renderResult]
+        const value = this.buildResult(result[0])
 
         if (multiple) {
             const computedResults = compressed ? result.slice(0, 1) : result
@@ -87,7 +105,7 @@ export default class Result extends PureComponent<SelectResultProps, { showInput
                     result={r}
                     disabled={datum.disabled(r)}
                     onRemove={removable ? onRemove : undefined}
-                    renderResult={renderResult}
+                    renderResult={this.buildResult}
                     resultClassName={resultClassName}
                 />
             ))
@@ -106,7 +124,7 @@ export default class Result extends PureComponent<SelectResultProps, { showInput
         }
 
         if (this.state.showInput) {
-            return this.renderInput(result[0])
+            return this.renderInput(value)
         }
 
         return (
@@ -117,25 +135,26 @@ export default class Result extends PureComponent<SelectResultProps, { showInput
     }
 
     renderInput = (placeholder = '') => {
-        const { onInput, size, onInputBlur, onInputFocus } = this.props
+        const { onInput, size, onInputBlur, onInputFocus, onBindInputInstance, filterText } = this.props
 
         return (
             <Input
                 autoFocus
                 key="key"
-                defaultValue=""
+                value={filterText}
                 className={selectClass('input2')}
                 size={size}
                 onChange={onInput}
                 placeholder={placeholder}
                 onBlur={onInputBlur}
                 onFocus={onInputFocus}
+                forwardedRef={onBindInputInstance}
             />
         )
     }
 
     renderPlaceholder = () => {
-        const { focus, onInput, placeholder } = this.props
+        const { placeholder } = this.props
 
         if (this.state.showInput) {
             return this.renderInput()
