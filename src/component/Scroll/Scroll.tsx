@@ -34,6 +34,12 @@ class Scroll extends PureComponent<ScrollProps> {
     /** 像素y 实际值 */
     pixelY = 0
 
+    /** 上一次的X方向滚动的Radio */
+    lastX = 0
+
+    /** 上一次的Y方向滚动的Radio */
+    lastY = 0
+
     wheelElement: HTMLDivElement
 
     innerElement: HTMLDivElement
@@ -110,11 +116,11 @@ class Scroll extends PureComponent<ScrollProps> {
             this.pixelX = 0
         }
 
-        let x = left + this.pixelX / scrollWidth
+        let x = scrollWidth === 0 ? 0 : left + this.pixelX / scrollWidth
         if (x < 0) x = 0
         if (x > 1) x = 1
 
-        let y = top + this.pixelY / scrollHeight
+        let y = scrollHeight === 0 ? 0 : top + this.pixelY / scrollHeight
         if (y < 0) y = 0
         if (y > 1) y = 1
 
@@ -168,7 +174,11 @@ class Scroll extends PureComponent<ScrollProps> {
 
         const xMax = Math.round((1 - width / scrollWidth) * scrollWidth)
 
-        if (this.props.onScroll) {
+        if (this.props.onScroll && (this.lastX !== x || this.lastY !== y)) {
+            this.lastX = x
+
+            this.lastY = y
+
             this.props.onScroll(x, y, xMax, this.innerElement, width, height, pixelX, pixelY)
         }
     }
