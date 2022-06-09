@@ -236,8 +236,8 @@ export default class List<T = string> {
 
         const values = []
 
-        for (const rawDataItem of raws) {
-            const formatDataValue = this.format(rawDataItem)
+        for (let i = 0; i < raws.length; i++) {
+            const formatDataValue = this.format(raws[i])
 
             if (formatDataValue !== undefined) {
                 values.push(formatDataValue)
@@ -254,16 +254,16 @@ export default class List<T = string> {
     }
 
     check(data) {
-        for (const value of this.$values) {
-            if (this.prediction(value, data)) return true
+        for (let i = 0; i < this.$values.length; i++) {
+            if (this.prediction(this.$values[i], data)) return true
         }
 
         return false
     }
 
     getDataByValue(data, value) {
-        for (const d of data) {
-            if (this.prediction(value, d)) return d
+        for (let i = 0; i < data.length; i++) {
+            if (this.prediction(value, data[i])) return data[i]
         }
 
         return null
@@ -286,8 +286,6 @@ export default class List<T = string> {
     initFormat(f) {
         switch (typeof f) {
             case 'string':
-                // 获取格式化后的值  如data的item {id:1,color:"red"} datum={{format:"color"}}
-                // 获取就是color的值
                 this.format = value => value[f]
                 break
             case 'function':
@@ -317,14 +315,9 @@ export default class List<T = string> {
 
         const newValues = []
 
-        // for (const value of this.$values) {
-        //     for (const rawDataItem of raws) {
-        //         if (this.prediction(value, rawDataItem)) break
-        //     }
-        // }
+        outer: for (let i = 0; i < this.$values.length; i++) {
+            const value = this.$values[i]
 
-        /** @todo 写法很奇怪 不使用这种写法 */
-        outer: for (const value of this.$values) {
             for (let j = 0; j < raws.length; j++) {
                 if (this.prediction(value, raws[j])) {
                     raws.splice(j, 1)
@@ -332,6 +325,7 @@ export default class List<T = string> {
                     continue outer
                 }
             }
+
             newValues.push(value)
         }
 
