@@ -107,6 +107,11 @@ class Select extends PureComponent<ISelectProps, SelectState> {
          * 使用mousedown代替click，因为mousedown的执行时先于blur,在Option中为click事件，所以这里使用mousedown提前blur，click执行
          * 如果点击的还是select的元素且不是Input，提前上锁，然后不能继续执行blur
          */
+
+        /**
+         * @see https://developer.mozilla.org/zh-CN/docs/Web/API/EventTarget/addEventListener
+         * 设置为true,捕获阶段执行,防止下层的DOM阻止冒泡无法执行到这个Handler
+         *  */
         document.addEventListener('mousedown', this.handleClickAway, true)
     }
 
@@ -147,6 +152,7 @@ class Select extends PureComponent<ISelectProps, SelectState> {
         }
 
         /** 如果是从Input中失去焦点，下面的语句失效，直接从事件冒泡中执行handleBlur */
+        /** @todo 下面语句多余，点击document非select的元素时，就会触发handleBlur，不需手动触发blur */
         this.element.blur()
     }
 

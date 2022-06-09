@@ -135,7 +135,10 @@ export default class Result extends PureComponent<SelectResultProps, { showInput
         }
 
         return (
-            <span title={isString(value) && value} className={classnames(selectClass('ellipsis'), resultClassName)}>
+            <span
+                title={isString(value) ? value : undefined}
+                className={classnames(selectClass('ellipsis'), resultClassName)}
+            >
                 {value}
             </span>
         )
