@@ -54,7 +54,27 @@ class OptionList extends PureComponent<SelectListProps, OptionListState> {
 
         this.props.datum.subscribe(CHANGE_ACTION, this.forceUpdate)
 
-        /** @todo 滚动到默认值的地方 */
+        /** 滚动到默认值的地方 */
+
+        if (!this.props.datum.values.length) return
+
+        const item = this.props.datum.getDataByValue(this.props.data, this.props.datum.values[0])
+
+        if (!item) return
+
+        const { index: scrollIndex } = item
+
+        if ((scrollIndex + 1) * this.props.lineHeight <= this.props.height) return
+
+        this.lastScrollTop = scrollIndex * this.props.lineHeight
+
+        const contentHeight = this.props.data.length * this.props.lineHeight - this.props.height
+
+        const scrollTopRatio = this.lastScrollTop / contentHeight
+
+        setTranslate(this.optionInner, '0rem', `-${this.lastScrollTop}px`)
+
+        this.setState({ scrollTopRatio, currentIndex: scrollIndex })
     }
 
     componentWillUnmount() {
@@ -71,20 +91,20 @@ class OptionList extends PureComponent<SelectListProps, OptionListState> {
 
                 const prevContentHeight = prevProps.data.length * prevProps.lineHeight - prevProps.height
 
-                const prevScrollTopRadio = prevState.scrollTopRatio
+                const prevScrollTopRatio = prevState.scrollTopRatio
 
                 const nextContentHeight = this.props.data.length * this.props.lineHeight - this.props.height
 
                 /** @todo 行高发生变化时，还未重新计算currentIndex */
                 const nextCurrentIndex = prevProps.lineHeight === this.props.lineHeight ? this.state.currentIndex : 0
 
-                const nextScrollTopRadio = getRangeValue({
-                    current: prevScrollTopRadio * (prevContentHeight / nextContentHeight),
+                const nextScrollTopRatio = getRangeValue({
+                    current: prevScrollTopRatio * (prevContentHeight / nextContentHeight),
                 })
 
-                this.lastScrollTop = nextContentHeight * nextScrollTopRadio
+                this.lastScrollTop = nextContentHeight * nextScrollTopRatio
 
-                this.setState({ currentIndex: nextCurrentIndex, scrollTopRatio: nextScrollTopRadio }, () => {
+                this.setState({ currentIndex: nextCurrentIndex, scrollTopRatio: nextScrollTopRatio }, () => {
                     if (this.optionInner) {
                         setTranslate(this.optionInner, '0rem', `-${this.lastScrollTop}px`)
                     }
@@ -101,13 +121,15 @@ class OptionList extends PureComponent<SelectListProps, OptionListState> {
         }
 
         if (
-            this.props.onScrollRadioChange &&
+            this.props.onScrollRatioChange &&
             prevState.scrollTopRatio !== this.state.scrollTopRatio &&
             !isZero(this.props.data)
         ) {
-            this.props.onScrollRadioChange(this.state.scrollTopRatio, this.lastScrollTop)
+            this.props.onScrollRatioChange(this.state.scrollTopRatio, this.lastScrollTop)
         }
     }
+
+    scrollToIndex = () => {}
 
     startHoverMoveTimer = () => {
         if (this.hoverMoveTimer) {

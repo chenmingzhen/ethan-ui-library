@@ -403,7 +403,7 @@ class Select extends PureComponent<ISelectProps, SelectState> {
             'spinProps',
             'size',
             'filterText',
-            'onScrollRadioChange',
+            'onScrollRatioChange',
         ].forEach(k => {
             props[k] = this.props[k]
         })
