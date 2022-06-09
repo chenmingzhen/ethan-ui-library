@@ -5,7 +5,7 @@ import { inputClass, selectClass } from '@/styles'
 import { stopPropagation } from '@/utils/func'
 import { warningOnce } from '@/utils/warning'
 import { SELECT_RENDER_RESULT } from '@/utils/warning/types'
-import { isString } from '@/utils/is'
+import { isNumber, isString } from '@/utils/is'
 import { SelectResultProps } from './type'
 import Caret from '../icons/Caret'
 import ResultItem from './ResultItem'
@@ -47,7 +47,7 @@ export default class Result extends PureComponent<SelectResultProps, { showInput
             node = item?.[renderResult]
         }
 
-        if (!isValidElement(node) && !isString(node)) {
+        if (!isValidElement(node) && !isString(node) && !isNumber(node)) {
             warningOnce(SELECT_RENDER_RESULT)
 
             return null
