@@ -1,4 +1,6 @@
 import shallowEqual from '@/utils/shallowEqual'
+import { warning } from '../warning'
+import { DATUM_LIST_INVALID_VALUES } from '../warning/types'
 import { CHANGE_ACTION, INIT_ACTION } from './types'
 
 export type FormatInfer<T> = T extends Record<string, any>
@@ -154,7 +156,7 @@ export default class List<T = string> {
             return [values] as string[]
         }
 
-        console.error(new Error('Select values is not valid.'))
+        warning(DATUM_LIST_INVALID_VALUES)
 
         return []
     }
@@ -261,9 +263,10 @@ export default class List<T = string> {
         return false
     }
 
+    /** @todo 返回参数已经修改，合并dev-transfer分支时，需适配代码 */
     getDataByValue(data, value) {
         for (let i = 0; i < data.length; i++) {
-            if (this.prediction(value, data[i])) return data[i]
+            if (this.prediction(value, data[i])) return { data: data[i], index: i }
         }
 
         return null
