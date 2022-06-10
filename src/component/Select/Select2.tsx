@@ -2,7 +2,7 @@ import React from 'react'
 import { selectClass } from '@/styles'
 import { PureComponent } from '@/utils/component'
 import { getUidStr } from '@/utils/uid'
-import { getParent, isDescendent } from '@/utils/dom/element'
+import { addResizeObserver, getParent, isDescendent } from '@/utils/dom/element'
 import { docSize } from '@/utils/dom/document'
 import { debounce } from '@/utils/func'
 import { SelectOptionListBindFuncMap, SelectState, ISelectProps } from './type'
@@ -55,6 +55,8 @@ class Select extends PureComponent<ISelectProps, SelectState> {
 
     focusTimer: NodeJS.Timeout
 
+    cancelResizeObserver: () => void
+
     constructor(props) {
         super(props)
 
@@ -62,6 +64,21 @@ class Select extends PureComponent<ISelectProps, SelectState> {
             control: 'mouse',
             focus: false,
             position: 'drop-down',
+        }
+    }
+
+    componentDidMount() {
+        super.componentDidMount()
+
+        /** Result高度发生变化时 */
+        this.cancelResizeObserver = addResizeObserver(this.element, this.forceUpdate, { direction: 'y' })
+    }
+
+    componentWillUnmount() {
+        super.componentWillUnmount()
+
+        if (this.cancelResizeObserver) {
+            this.cancelResizeObserver()
         }
     }
 
