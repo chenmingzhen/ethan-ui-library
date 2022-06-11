@@ -152,7 +152,7 @@ export default class Result extends PureComponent<SelectResultProps, { showInput
                 autoFocus
                 key="key"
                 value={filterText}
-                className={selectClass('input2')}
+                className={selectClass('input')}
                 size={size}
                 onChange={onInput}
                 placeholder={isString(placeholder) ? placeholder : undefined}

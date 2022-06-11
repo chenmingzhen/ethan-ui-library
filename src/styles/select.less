@@ -40,25 +40,14 @@
         }
 
         .@{select-prefix}-input {
-            display: inline-flex;
-            min-width: 12px;
+            margin-bottom: @padding-base-vertical;
+            border-width: 0;
+            border-color: @input-border;
+            background: transparent;
+            border-radius: 0;
+            box-shadow: none;
+            width: auto;
             flex: 1;
-            margin-bottom: @padding-base-vertical;
-            outline: none;
-            cursor: text;
-            white-space: pre;
-
-            &:after {
-                content: '\feff ';
-            }
-
-            &.@{select-prefix}-full {
-                display: block;
-            }
-        }
-
-        .@{select-prefix}-input2 {
-            margin-bottom: @padding-base-vertical;
 
             input {
                 padding: 0;
@@ -427,8 +416,7 @@
 
         .@{select-prefix}-item,
         .@{select-prefix}-ellipsis,
-        .@{select-prefix}-input,
-        .@{select-prefix}-input2 {
+        .@{select-prefix}-input {
             margin-bottom: @padding-small-vertical;
             font-size: @font-size-small;
         }
@@ -439,8 +427,7 @@
 
         .@{select-prefix}-item,
         .@{select-prefix}-ellipsis,
-        .@{select-prefix}-input,
-        .@{select-prefix}-input2 {
+        .@{select-prefix}-input {
             margin-bottom: @padding-large-vertical;
             font-size: @font-size-large;
         }
@@ -519,7 +506,7 @@
     &-pre {
         .@{select-prefix}-item,
         .@{select-prefix}-option,
-        .@{select-prefix}-result .@{select-prefix}-input {
+        .@{select-prefix}-result {
             // white-space 属性设置如何处理元素内的空白。
             // 空白会被浏览器保留。其行为方式类似 HTML 中的 <pre> 标签。
             white-space: pre;

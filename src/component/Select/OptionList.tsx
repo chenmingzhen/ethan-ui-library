@@ -365,7 +365,9 @@ class OptionList extends PureComponent<SelectListProps, OptionListState> {
     }
 
     render() {
-        const { focus, style, selectId, className, onTransitionEnd } = this.props
+        const { focus, style, selectId, className, onTransitionEnd, customRender = {} } = this.props
+
+        const { header, footer } = customRender
 
         return (
             <AnimationList
@@ -379,7 +381,9 @@ class OptionList extends PureComponent<SelectListProps, OptionListState> {
                 onMouseMove={this.handleMouseMove}
                 onTransitionEnd={onTransitionEnd}
             >
+                {header ? <div className={selectClass('custom')}>{header}</div> : null}
                 {this.renderList()}
+                {footer ? <div className={selectClass('custom')}>{footer}</div> : null}
             </AnimationList>
         )
     }

@@ -53,8 +53,6 @@ class Select extends PureComponent<ISelectProps, SelectState> {
 
     inputInstance: HTMLInputElement
 
-    focusTimer: NodeJS.Timeout
-
     cancelResizeObserver: () => void
 
     constructor(props) {
@@ -87,34 +85,16 @@ class Select extends PureComponent<ISelectProps, SelectState> {
      *  select的容器使用了onBlur和onFocus，有时候点击select里面的元素，不用失去焦点。
      *  使用afterActionKeepFocus标记去阻止重新执行focus和blur事件
      */
-    startKeepSelectFocus = () => {
+    startKeepSelectFocus = (autoFocus = true) => {
         /** 标记操作的DOM仍然是属于Select组件，阻止聚焦和失焦 */
         this.keepSelectFocus = true
 
-        if (this.focusTimer) {
-            clearTimeout(this.focusTimer)
-
-            this.focusTimer = null
-        }
-
-        this.focusTimer = setTimeout(() => {
+        setTimeout(() => {
             /** 虽然阻止了handleBlur和handleFocus的执行，此时的Select容器已经是失去焦点状态，重新拿回焦点 */
-            this.element.focus()
+            if (autoFocus) this.element.focus()
 
             this.keepSelectFocus = false
         }, 30)
-    }
-
-    startInputFocus = () => {
-        if (this.focusTimer) {
-            clearTimeout(this.focusTimer)
-
-            this.focusTimer = null
-        }
-
-        this.inputInstance.focus()
-
-        this.keepSelectFocus = false
     }
 
     bindClickAway = () => {
@@ -155,9 +135,12 @@ class Select extends PureComponent<ISelectProps, SelectState> {
     handleClickAway = (evt: MouseEvent) => {
         const desc = isDescendent(evt.target as HTMLElement, this.selectId)
 
-        const isClickInput = getParent(evt.target as HTMLElement, `.${selectClass('input2')}`)
+        const clickInput = getParent(evt.target as HTMLElement, `.${selectClass('input')}`)
 
-        if (isClickInput) {
+        const clickCustom = getParent(evt.target as HTMLElement, `.${selectClass('custom')}`)
+
+        if (clickInput || clickCustom) {
+            this.startKeepSelectFocus(false)
             return
         }
 
@@ -202,7 +185,7 @@ class Select extends PureComponent<ISelectProps, SelectState> {
             this.clickLockTimer = null
         }, 240)
 
-        this.startKeepSelectFocus()
+        let autoFocusElement = true
 
         if (multiple) {
             const checked = !datum.check(dataItem)
@@ -214,7 +197,9 @@ class Select extends PureComponent<ISelectProps, SelectState> {
                 if (onInput) {
                     onInput('')
 
-                    this.startInputFocus()
+                    autoFocusElement = false
+
+                    this.inputInstance.focus()
                 }
             } else {
                 datum.remove(dataItem)
@@ -224,6 +209,8 @@ class Select extends PureComponent<ISelectProps, SelectState> {
 
             this.handleFocusStateChange(false)
         }
+
+        this.startKeepSelectFocus(autoFocusElement)
     }
 
     handleFocusStateChange = (focus: boolean, e?) => {
@@ -421,6 +408,7 @@ class Select extends PureComponent<ISelectProps, SelectState> {
             'size',
             'filterText',
             'onScrollRatioChange',
+            'customRender',
         ].forEach(k => {
             props[k] = this.props[k]
         })

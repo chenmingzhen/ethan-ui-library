@@ -59,6 +59,10 @@ export interface SelectProps<
     cacheAble?: boolean
     spinProps?: Omit<SpinProps, 'children' | 'loading'>
     onScrollRatioChange?: (scrollTopRatio: number, lastScrollTop: number) => void
+    customRender?: {
+        header?: React.ReactNode
+        footer?: React.ReactNode
+    }
 }
 
 export interface SelectState {
@@ -82,6 +86,7 @@ export interface SelectListProps
             | 'size'
             | 'onScrollRatioChange'
             | 'filterText'
+            | 'customRender'
         >,
         Omit<ListProps, 'onScroll'> {
     control: SelectState['control']
