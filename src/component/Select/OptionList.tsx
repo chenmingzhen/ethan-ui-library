@@ -155,11 +155,11 @@ class OptionList extends PureComponent<SelectListProps, OptionListState> {
         }, 10)
     }
 
-    handleHover = (index: number) => {
+    handleHover = (index: number, force = false) => {
         const { control } = this.props
 
         /** 当鼠标在select的滚动容器内，键盘操作时，会触发Option的Hover，此时键盘的优先级更高 */
-        if (control === 'keyboard') return
+        if (control === 'keyboard' && !force) return
 
         if (this.state.hoverIndex !== index && !this.scrollTimer) {
             this.setState({ hoverIndex: index })

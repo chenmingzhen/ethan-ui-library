@@ -5,6 +5,7 @@ import { getUidStr } from '@/utils/uid'
 import { addResizeObserver, getParent, isDescendent } from '@/utils/dom/element'
 import { docSize } from '@/utils/dom/document'
 import { debounce } from '@/utils/func'
+import { isEmpty } from '@/utils/is'
 import { SelectOptionListBindFuncMap, SelectState, ISelectProps } from './type'
 import Result from './Result2'
 import OptionList from './OptionList'
@@ -77,6 +78,18 @@ class Select extends PureComponent<ISelectProps, SelectState> {
 
         if (this.cancelResizeObserver) {
             this.cancelResizeObserver()
+        }
+    }
+
+    componentDidUpdate(prevProps: Readonly<ISelectProps>, prevState: Readonly<SelectState>, snapshot?: any): void {
+        if (
+            this.props.onInput &&
+            this.props.filterText &&
+            this.props.filterText !== prevProps.filterText &&
+            this.selectOptionListFuncMap &&
+            this.props.multiple
+        ) {
+            this.selectOptionListFuncMap.handleHover(0, true)
         }
     }
 
@@ -282,7 +295,7 @@ class Select extends PureComponent<ISelectProps, SelectState> {
 
         const hoverData = data[hoverIndex]
 
-        if (hoverData && !hoverData[groupKey]) {
+        if (!isEmpty(hoverData) && !hoverData[groupKey]) {
             this.handleChange(hoverData)
 
             this.selectOptionListFuncMap.handleHover?.(hoverIndex)
