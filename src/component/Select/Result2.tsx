@@ -155,7 +155,7 @@ export default class Result extends PureComponent<SelectResultProps, { showInput
                 className={selectClass('input2')}
                 size={size}
                 onChange={onInput}
-                placeholder={isString(placeholder) && placeholder}
+                placeholder={isString(placeholder) ? placeholder : undefined}
                 onBlur={onInputBlur}
                 onFocus={onInputFocus}
                 forwardedRef={onBindInputInstance}
