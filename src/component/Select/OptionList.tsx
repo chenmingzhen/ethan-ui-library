@@ -49,13 +49,23 @@ class OptionList extends PureComponent<SelectListProps, OptionListState> {
         })
     }
 
+    /** 存在滚动的情况下，计算滚动的比例值和滚动值 */
+    computeScroll = (currentIndex: number) => {
+        const lastScrollTop = currentIndex * this.props.lineHeight
+
+        const contentHeight = this.props.data.length * this.props.lineHeight - this.props.height
+
+        const scrollTopRatio = lastScrollTop / contentHeight
+
+        return { lastScrollTop, scrollTopRatio }
+    }
+
     componentDidMount() {
         super.componentDidMount()
 
         this.props.datum.subscribe(CHANGE_ACTION, this.forceUpdate)
 
         /** 滚动到默认值的地方 */
-
         if (!this.props.datum.values.length) return
 
         const item = this.props.datum.getDataByValue(this.props.data, this.props.datum.values[0])
@@ -66,15 +76,13 @@ class OptionList extends PureComponent<SelectListProps, OptionListState> {
 
         if ((scrollIndex + 1) * this.props.lineHeight <= this.props.height) return
 
-        this.lastScrollTop = scrollIndex * this.props.lineHeight
+        const { lastScrollTop, scrollTopRatio } = this.computeScroll(scrollIndex)
 
-        const contentHeight = this.props.data.length * this.props.lineHeight - this.props.height
-
-        const scrollTopRatio = this.lastScrollTop / contentHeight
+        this.lastScrollTop = lastScrollTop
 
         setTranslate(this.optionInner, '0rem', `-${this.lastScrollTop}px`)
 
-        this.setState({ scrollTopRatio, currentIndex: scrollIndex })
+        this.setState({ scrollTopRatio, currentIndex: scrollIndex, hoverIndex: scrollIndex })
     }
 
     componentWillUnmount() {
@@ -235,6 +243,7 @@ class OptionList extends PureComponent<SelectListProps, OptionListState> {
 
         if (hoverIndex >= max) {
             hoverIndex = 0
+
             this.lastScrollTop = 0
         }
 
@@ -256,33 +265,35 @@ class OptionList extends PureComponent<SelectListProps, OptionListState> {
         if (emptyHeight < this.lastScrollTop) {
             // 到达当前视图的顶部
 
-            setTranslate(this.optionInner, '0rem', `-${emptyHeight}px`)
-
-            this.lastScrollTop = emptyHeight
-
             currentIndex = hoverIndex
 
-            this.setState({ currentIndex, scrollTopRatio: emptyHeight / (lineHeight * max) })
+            const { scrollTopRatio, lastScrollTop } = this.computeScroll(currentIndex)
+
+            this.lastScrollTop = lastScrollTop
+
+            setTranslate(this.optionInner, '0rem', `-${lastScrollTop}px`)
+
+            this.setState({ currentIndex, scrollTopRatio })
             // 推理1：假设是打开Select(高度足够滚动) 此时的lastScrollTop的高度为0，height是容器的高度，一直移动
             // 当emptyHeight的高度大于容器的高度的时候 就应该触发到达当前视图的底部的逻辑
         } else if (emptyHeight + lineHeight > this.lastScrollTop + height) {
             // 到达当前视图的底部
 
-            const scrollHeight = emptyHeight + lineHeight - height
-
-            setTranslate(this.optionInner, '0rem', `-${scrollHeight}px`)
-
-            this.lastScrollTop = scrollHeight
-
             // 由于currentIndex涉及到data的懒加载渲染，见RenderList
             // 到达视图底部，继续向下时，currentIndex的位置应该是当前hoverIndex减去（容器的高度/每个Item的高度）
             // 所以currentIndex会是在当前视图的顶部
             // 然后currentIndex+itemsInView确保数据被渲染出来
-            currentIndex = hoverIndex - Math.ceil(height / lineHeight)
+            currentIndex = hoverIndex - Math.floor(height / lineHeight)
 
             if (currentIndex < 0) currentIndex = 0
 
-            this.setState({ currentIndex, scrollTopRatio: emptyHeight / (lineHeight * max) })
+            const { scrollTopRatio, lastScrollTop } = this.computeScroll(currentIndex)
+
+            setTranslate(this.optionInner, '0rem', `-${lastScrollTop}px`)
+
+            this.lastScrollTop = lastScrollTop
+
+            this.setState({ currentIndex, scrollTopRatio })
         } else if (hoverIndex === 0 && emptyHeight === 0) {
             // 到达数据源的顶部(0 1)
 
