@@ -81,18 +81,6 @@ class Select extends PureComponent<ISelectProps, SelectState> {
         }
     }
 
-    componentDidUpdate(prevProps: Readonly<ISelectProps>): void {
-        if (
-            this.props.onInput &&
-            this.props.filterText &&
-            this.props.filterText !== prevProps.filterText &&
-            this.selectOptionListFuncMap &&
-            this.props.multiple
-        ) {
-            // this.selectOptionListFuncMap.handleHover(0, true)
-        }
-    }
-
     /**
      *  @description
      *  select的容器使用了onBlur和onFocus，有时候点击select里面的元素，不用失去焦点。
