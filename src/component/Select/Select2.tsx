@@ -81,7 +81,7 @@ class Select extends PureComponent<ISelectProps, SelectState> {
         }
     }
 
-    componentDidUpdate(prevProps: Readonly<ISelectProps>, prevState: Readonly<SelectState>, snapshot?: any): void {
+    componentDidUpdate(prevProps: Readonly<ISelectProps>): void {
         if (
             this.props.onInput &&
             this.props.filterText &&
@@ -89,7 +89,7 @@ class Select extends PureComponent<ISelectProps, SelectState> {
             this.selectOptionListFuncMap &&
             this.props.multiple
         ) {
-            this.selectOptionListFuncMap.handleHover(0, true)
+            // this.selectOptionListFuncMap.handleHover(0, true)
         }
     }
 

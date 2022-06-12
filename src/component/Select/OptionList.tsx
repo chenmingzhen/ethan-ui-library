@@ -85,8 +85,12 @@ class OptionList extends PureComponent<SelectListProps, OptionListState> {
 
     componentDidUpdate(prevProps: Readonly<SelectListProps>, prevState: Readonly<OptionListState>): void {
         if (this.props.data !== prevProps.data && this.props.data.length !== prevProps.data.length) {
-            /** 动态添加值 */
-            if (isEmpty(this.props.filterText) && isEmptyStr(this.props.filterText) && !isZero(this.props.data)) {
+            /** 动态添加值,重新计算位置 */
+            if (
+                isEmptyStr(this.props.filterText) &&
+                !isZero(this.props.data.length) &&
+                this.props.data.length > prevProps.data.length
+            ) {
                 if (this.props.lineHeight * this.props.data.length < this.props.height) return
 
                 const prevContentHeight = prevProps.data.length * prevProps.lineHeight - prevProps.height
@@ -95,24 +99,21 @@ class OptionList extends PureComponent<SelectListProps, OptionListState> {
 
                 const nextContentHeight = this.props.data.length * this.props.lineHeight - this.props.height
 
-                /** @todo 行高发生变化时，还未重新计算currentIndex */
-                const nextCurrentIndex = prevProps.lineHeight === this.props.lineHeight ? this.state.currentIndex : 0
-
                 const nextScrollTopRatio = getRangeValue({
                     current: prevScrollTopRatio * (prevContentHeight / nextContentHeight),
                 })
 
                 this.lastScrollTop = nextContentHeight * nextScrollTopRatio
 
-                this.setState({ currentIndex: nextCurrentIndex, scrollTopRatio: nextScrollTopRatio }, () => {
-                    if (this.optionInner) {
-                        setTranslate(this.optionInner, '0rem', `-${this.lastScrollTop}px`)
-                    }
-                })
+                this.setState({ scrollTopRatio: nextScrollTopRatio })
+
+                if (this.optionInner) {
+                    setTranslate(this.optionInner, '0rem', `-${this.lastScrollTop}px`)
+                }
             } else {
                 this.lastScrollTop = 0
 
-                this.setState({ currentIndex: 0, scrollTopRatio: 0 }, () => {
+                this.setState({ currentIndex: 0, scrollTopRatio: 0, hoverIndex: 0 }, () => {
                     if (this.optionInner) {
                         setTranslate(this.optionInner, '0rem', '0rem')
                     }
@@ -128,8 +129,6 @@ class OptionList extends PureComponent<SelectListProps, OptionListState> {
             this.props.onScrollRatioChange(this.state.scrollTopRatio, this.lastScrollTop)
         }
     }
-
-    scrollToIndex = () => {}
 
     startHoverMoveTimer = () => {
         if (this.hoverMoveTimer) {
