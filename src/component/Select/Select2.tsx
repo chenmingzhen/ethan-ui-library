@@ -56,6 +56,8 @@ class Select extends PureComponent<ISelectProps, SelectState> {
 
     cancelResizeObserver: () => void
 
+    deleteLockTimer: NodeJS.Timeout
+
     constructor(props) {
         super(props)
 
@@ -96,6 +98,18 @@ class Select extends PureComponent<ISelectProps, SelectState> {
 
             this.keepSelectFocus = false
         }, 30)
+    }
+
+    startDeleteLockTimer = () => {
+        if (this.deleteLockTimer) {
+            clearTimeout(this.deleteLockTimer)
+
+            this.deleteLockTimer = null
+        }
+
+        this.deleteLockTimer = setTimeout(() => {
+            this.deleteLockTimer = null
+        }, 500)
     }
 
     bindClickAway = () => {
@@ -176,7 +190,7 @@ class Select extends PureComponent<ISelectProps, SelectState> {
         this.handleFocusStateChange(false, evt)
     }
 
-    handleChange = (dataItem: any) => {
+    handleChange = (dataItem: any, autoFocusElement = true) => {
         const { datum, multiple, disabled, onInput } = this.props
 
         if (disabled === true || this.clickLockTimer) return
@@ -185,8 +199,6 @@ class Select extends PureComponent<ISelectProps, SelectState> {
         this.clickLockTimer = setTimeout(() => {
             this.clickLockTimer = null
         }, 240)
-
-        let autoFocusElement = true
 
         if (multiple) {
             const checked = !datum.check(dataItem)
@@ -199,8 +211,6 @@ class Select extends PureComponent<ISelectProps, SelectState> {
                     onInput('')
 
                     autoFocusElement = false
-
-                    this.inputInstance.focus()
                 }
             } else {
                 datum.remove(dataItem)
@@ -209,6 +219,10 @@ class Select extends PureComponent<ISelectProps, SelectState> {
             datum.set(dataItem)
 
             this.handleFocusStateChange(false)
+        }
+
+        if (!autoFocusElement && this.inputInstance) {
+            this.inputInstance.focus()
         }
 
         this.startKeepSelectFocus(autoFocusElement)
@@ -290,6 +304,39 @@ class Select extends PureComponent<ISelectProps, SelectState> {
         }
     }
 
+    handleDelete = (evt: React.KeyboardEvent<HTMLDivElement>) => {
+        const { multiple, filterText, datum, data } = this.props
+
+        if (!multiple || this.deleteLockTimer) return
+
+        if (filterText.length === 1) {
+            this.startDeleteLockTimer()
+        }
+
+        if (!isEmpty(filterText)) return
+
+        const { values } = datum
+
+        if (!values.length) return
+
+        const afterValues = [...values]
+
+        const deleteValue = afterValues.pop()
+
+        const { data: dataItem } = datum.getDataByValue(data, deleteValue) || {}
+
+        if (dataItem) {
+            this.handleRemove(dataItem)
+        } else {
+            /* onCreate生成的result */
+            datum.removeNotOriginData(afterValues, deleteValue)
+        }
+
+        evt.stopPropagation()
+
+        evt.preventDefault()
+    }
+
     handleKeyDown: React.KeyboardEventHandler<HTMLDivElement> = evt => {
         const { focus } = this.state
 
@@ -344,6 +391,11 @@ class Select extends PureComponent<ISelectProps, SelectState> {
                 evt.preventDefault()
 
                 break
+
+            case 8:
+                this.handleDelete(evt)
+
+                break
             default:
                 break
         }
@@ -369,7 +421,7 @@ class Select extends PureComponent<ISelectProps, SelectState> {
     }
 
     handleRemove = dataItem => {
-        this.handleChange(dataItem)
+        this.handleChange(dataItem, false)
     }
 
     renderItem = (data: any, index?: number) => {

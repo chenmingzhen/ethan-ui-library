@@ -133,7 +133,7 @@ export default class List<T = string> {
     }
 
     /** 将数据转为Array格式 */
-    arrayValue(values = []) {
+    private arrayValue(values = []) {
         if (this.limit === 1 && !Array.isArray(values)) {
             return [values]
         }
@@ -172,7 +172,7 @@ export default class List<T = string> {
     }
 
     // 设置disabled
-    setDisabled(disabled) {
+    private setDisabled(disabled) {
         this.disabled = (...obj) => {
             switch (typeof disabled) {
                 case 'boolean':
@@ -186,7 +186,7 @@ export default class List<T = string> {
     }
 
     // 处理Change 并触发事件派发
-    handleChange(values, ...args) {
+    private handleChange(values, ...args) {
         this.$values = values
 
         this.dispatch(CHANGE_ACTION)
@@ -278,7 +278,7 @@ export default class List<T = string> {
     }
 
     // 派发事件
-    dispatch(name, ...args) {
+    private dispatch(name, ...args) {
         const event = this.$events[name]
 
         if (!event) return
@@ -286,7 +286,7 @@ export default class List<T = string> {
         event.forEach(fn => fn(...args))
     }
 
-    initFormat(f) {
+    private initFormat(f) {
         switch (typeof f) {
             case 'string':
                 this.format = value => value[f]
@@ -298,10 +298,6 @@ export default class List<T = string> {
                 this.format = a => a
                 break
         }
-    }
-
-    defaultPrediction(value, data) {
-        return value === this.format(data)
     }
 
     /** @todo 移除第二个参数 */
@@ -333,6 +329,11 @@ export default class List<T = string> {
         }
 
         this.handleChange(newValues, data, false)
+    }
+
+    /** 移除不属于原数据data的value，例如Select创建模式创建的值 */
+    removeNotOriginData(afterValues, removedValue) {
+        this.handleChange(afterValues, removedValue, false)
     }
 
     subscribe(name, fn) {
