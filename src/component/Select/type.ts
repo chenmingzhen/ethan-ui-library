@@ -63,6 +63,7 @@ export interface SelectProps<
         header?: React.ReactNode
         footer?: React.ReactNode
     }
+    columnWidth: number
 }
 
 export interface SelectState {
@@ -87,6 +88,10 @@ export interface SelectListProps
             | 'onScrollRatioChange'
             | 'filterText'
             | 'customRender'
+            /* BoxList */
+            | 'multiple'
+            | 'columnWidth'
+            | 'columns'
         >,
         Omit<ListProps, 'onScroll'> {
     control: SelectState['control']
@@ -105,15 +110,14 @@ export interface SelectListProps
     className?: string
 }
 
-export interface OptionProps {
+export interface OptionProps extends Pick<SelectListProps, 'columns' | 'renderItem'> {
     data: any
     disabled: boolean
     index: number
     isActive: boolean
     isHover: boolean
-    onHover
-    renderItem
-    groupKey
+    onHover: (index: number) => void
+    groupKey: string
     onClick: SelectListProps['onChange']
 }
 
@@ -162,4 +166,13 @@ export interface SelectFilterHocProps extends ISelectProps, Pick<SelectProps, 'o
 export interface SelectInputProps
     extends Pick<SelectResultProps, 'onInputFocus' | 'onInputBlur' | 'multiple' | 'focus' | 'onInput'> {
     text: string
+}
+
+export interface SelectBoxOptionProps extends Pick<SelectListProps, 'columns' | 'renderItem'> {
+    data: any
+    disabled: boolean
+    index: number
+    isActive: boolean
+    multiple: boolean
+    onClick: SelectListProps['onChange']
 }

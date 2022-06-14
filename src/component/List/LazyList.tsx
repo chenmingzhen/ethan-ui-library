@@ -1,121 +1,117 @@
-// @ts-nocheck
-import React, { useState, useRef, useCallback, memo, useMemo } from 'react'
-import PropType from 'prop-types'
-import { usePrevious, useUpdateEffect } from 'react-use'
+import React from 'react'
 import { setTranslate } from '@/utils/dom/translate'
+import { PureComponent } from '@/utils/component'
 import Scroll from '../Scroll'
 
-// 懒加载原理，通过滚动的高度，以及props的itemsInView，itemsInView,data来计算当前的currentIndex，在而加上itemsInView 渲染数据
-const LazyList = props => {
-    const [currentIndex, setCurrentIndex] = useState(0)
-    // 滚动比例系数
-    const [scrollTop, setScrollTop] = useState(0)
-    const { scrollHeight, height, lineHeight, data, itemsInView, renderItem } = props
-    const optionInner = useRef()
-    const lastScrollTop = useRef(0)
-    const prevProps = usePrevious(props)
+interface LazyListProps {
+    scrollHeight: number
+    data?: any[]
+    itemsInView?: number
+    lineHeight?: number
+    height: number
+    renderItem: (data, index: number) => React.ReactNode
+}
 
-    // ------------------------------------lifecycle---------------------------
-    useUpdateEffect(() => {
-        if (!props.stay && prevProps.data.length !== props.data.length) {
-            setCurrentIndex(0)
-            setScrollTop(0)
-        }
-    }, [props.stay, props.data])
+interface LazyListState {
+    currentIndex: number
+    scrollTopRatio: number
+}
 
-    // ------------------------------------method and computed------------------
-    const scroll = useMemo(() => {
+export default class LazyList extends PureComponent<LazyListProps, LazyListState> {
+    static defaultProps = {
+        itemsInView: 10,
+        lineHeight: 32,
+        data: [],
+    }
+
+    get scroll(): 'y' | undefined {
+        const { height, scrollHeight } = this.props
+
         if (height < scrollHeight) {
             return 'y'
         }
-        return ''
-    }, [height, scrollHeight])
+        return undefined
+    }
 
-    // 懒加载原理
-    const items = useMemo(() => data.slice(currentIndex, currentIndex + itemsInView).map((d, i) => renderItem(d, i)), [
-        data,
-        currentIndex,
-        itemsInView,
-        renderItem,
-    ])
+    lastScrollTop = 0
 
-    const handleScroll = useCallback(
-        (x, y, max, bar, v, h, pixelX, pixelY) => {
-            if (!optionInner.current) return
+    optionInner: HTMLDivElement
 
-            const fullHeight = itemsInView * lineHeight
-            const contentHeight = scrollHeight - h
-            // 容器的高度大于内容高度 不需要设置滚动
-            let newScrollTop = h > fullHeight ? 0 : y
+    constructor(props) {
+        super(props)
 
-            // 设置滚动
-            // TODO 参考Select中的OptionList 去掉marginTop的引用
-            optionInner.current.style.marginTop = `${scrollTop * h}px`
+        this.state = {
+            currentIndex: 0,
+            scrollTopRatio: 0,
+        }
+    }
 
-            // 以向下方向为例
-            // marginTop 负责将容器往下顶
-            // transform负责将内容上移
-            if (pixelY === undefined || pixelY === 0) {
-                // 点击条造成滚动
-                lastScrollTop.current = scrollTop * contentHeight
-            } else {
-                // 鼠标滚轮滚动
-                lastScrollTop.current += pixelY
-                if (lastScrollTop.current < 0) lastScrollTop.current = 0
+    componentDidUpdate(prevProps: Readonly<LazyListProps>): void {
+        if (prevProps.data.length !== this.props.data.length) {
+            this.setState({ currentIndex: 0, scrollTopRatio: 0 })
+        }
+    }
 
-                // scroll over bottom
-                if (lastScrollTop.current > contentHeight) lastScrollTop.current = contentHeight
-                newScrollTop = lastScrollTop.current / contentHeight
-                optionInner.current.style.marginTop = `${scrollTop * h}px`
-            }
+    bindOptionInner = (el: HTMLDivElement) => {
+        this.optionInner = el
+    }
 
-            let index = Math.floor(lastScrollTop.current / lineHeight) - 1
-            if (data.length - itemsInView < index) index = data.length - itemsInView
-            if (index < 0) index = 0
+    handleScroll = (_, y, __, ___, ____, scrollContainerHeight, _____, pixelY) => {
+        if (!this.optionInner) return
 
-            setTranslate(optionInner.current, '0px', `-${lastScrollTop.current + scrollTop * h}px`)
+        const { itemsInView, lineHeight, data } = this.props
 
-            setScrollTop(newScrollTop)
-            setCurrentIndex(index)
-        },
-        [optionInner.current, lastScrollTop.current, data, itemsInView, lineHeight, scrollHeight, scrollTop]
-    )
-    // ------------------------------------render------------------------------
-    return (
-        <Scroll
-            stable
-            scroll={scroll}
-            style={{ height: scroll ? height : undefined }}
-            onScroll={handleScroll}
-            scrollHeight={scrollHeight}
-            scrollTop={scrollTop}
-        >
-            <div
-                ref={el => {
-                    optionInner.current = el
-                }}
+        const fullHeight = itemsInView * lineHeight
+
+        const contentHeight = data.length * lineHeight - scrollContainerHeight
+
+        let scrollTopRatio = scrollContainerHeight > fullHeight ? 0 : y
+
+        if (!pixelY) {
+            /** 拖动bar */
+            this.lastScrollTop = scrollTopRatio * contentHeight
+        } else {
+            /** wheel滚动 */
+            this.lastScrollTop += pixelY
+
+            if (this.lastScrollTop < 0) this.lastScrollTop = 0
+
+            /** 滚动到底部 */
+            if (this.lastScrollTop > contentHeight) this.lastScrollTop = contentHeight
+
+            scrollTopRatio = this.lastScrollTop / contentHeight
+        }
+
+        setTranslate(this.optionInner, '0rem', `-${this.lastScrollTop}px`)
+
+        let currentIndex = Math.floor(this.lastScrollTop / lineHeight) - 1
+
+        if (data.length - itemsInView < currentIndex) currentIndex = data.length - itemsInView
+
+        if (currentIndex < 0) currentIndex = 0
+
+        this.setState({ scrollTopRatio, currentIndex })
+    }
+
+    render() {
+        const { height, scrollHeight, lineHeight, data, itemsInView, renderItem } = this.props
+
+        const { scrollTopRatio, currentIndex } = this.state
+
+        return (
+            <Scroll
+                stable
+                scroll={this.scroll}
+                style={{ height: this.scroll ? height : undefined }}
+                onScroll={this.handleScroll}
+                scrollHeight={scrollHeight}
+                scrollTop={scrollTopRatio}
             >
-                <div style={{ height: currentIndex * lineHeight }} />
-                {items}
-            </div>
-        </Scroll>
-    )
+                <div ref={this.bindOptionInner}>
+                    <div style={{ height: currentIndex * lineHeight }} />
+                    {data.slice(currentIndex, currentIndex + itemsInView).map((d, i) => renderItem(d, i))}
+                </div>
+            </Scroll>
+        )
+    }
 }
-
-LazyList.defaultProps = {
-    itemsInView: 10,
-    lineHeight: 32,
-    data: [],
-}
-
-LazyList.propTypes = {
-    scrollHeight: PropType.number.isRequired,
-    data: PropType.array,
-    itemsInView: PropType.number,
-    lineHeight: PropType.number,
-    height: PropType.number.isRequired,
-    renderItem: PropType.func.isRequired,
-    stay: PropType.bool,
-}
-
-export default memo(LazyList)

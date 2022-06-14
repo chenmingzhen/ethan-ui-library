@@ -11,6 +11,7 @@ import Result from './Result2'
 import OptionList from './OptionList'
 import AbsoluteList from '../List/AbsoluteList'
 import { FAST_TRANSITION_DURATION } from '../List'
+import BoxList from './BoxList'
 
 class Select extends PureComponent<ISelectProps, SelectState> {
     static defaultProps = {
@@ -466,7 +467,7 @@ class Select extends PureComponent<ISelectProps, SelectState> {
             props[k] = this.props[k]
         })
 
-        const List = OptionList
+        const List = props.columns >= 1 || props.columns === -1 ? BoxList : OptionList
 
         return (
             <AbsoluteList

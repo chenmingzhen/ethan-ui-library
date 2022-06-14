@@ -18,7 +18,17 @@
 
 *   [x] Select 当输入内容时，Hover 第一个,
 
--   [] 多选 Backspace 键删除选项（输入为 null）处理删除后 Input 聚焦问题，如果意图是删除 Input 的内容，不是 Tag，需要一个锁去延迟从删除 Input 到 Tag 的过程
+-   [x] 多选 Backspace 键删除选项（输入为 null）处理删除后 Input 聚焦问题，如果意图是删除 Input 的内容，不是 Tag，需要一个锁去延迟从删除 Input 到 Tag 的过程
+
+-   [] SelectOptionList 和 LazyList 的滚动逻辑合并在一起
+
+-   [] 修改所有 Select 模式的 loading，懒加载数据使用另外的逻辑处理，到时候写一个 DEMO
+
+-   [] Select 溢出屏幕时，设置 right:0，从 Absolute 的 resetPosition 的 todo 修改
+
+-   [] Select BoxList 支持分组
+
+-   [] Select OptionList 的 handleScroll 计算 scrollTopRatio 和 Scroll/Scroll 的 wheelOrTouchDispatchScroll 计算不一致，原因在于 wheelOrTouchDispatchScroll 的高度是使用 scrollHeight 而不是 contentHeight,到时统一使用 contentHeight 计算
 
 -   [ ] Tree 改用 AnimationList 动画，并添加 Fade 的类型
 
