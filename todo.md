@@ -20,7 +20,7 @@
 
 -   [x] 多选 Backspace 键删除选项（输入为 null）处理删除后 Input 聚焦问题，如果意图是删除 Input 的内容，不是 Tag，需要一个锁去延迟从删除 Input 到 Tag 的过程
 
--   [] SelectOptionList 和 LazyList 的滚动逻辑合并在一起
+-   [x] SelectOptionList 和 LazyList 的滚动逻辑合并在一起
 
 -   [] LazyList 添加一个 defaultIndex 的属性，用于非受控的情况下，滚动到默认的位置
 

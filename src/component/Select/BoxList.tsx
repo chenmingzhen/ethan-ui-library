@@ -137,6 +137,7 @@ class BoxList extends PureComponent<SelectListProps> {
 
         return (
             <LazyList
+                control={false}
                 scrollHeight={scrollHeight}
                 lineHeight={lineHeight}
                 data={sliceData}
