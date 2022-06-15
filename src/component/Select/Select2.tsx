@@ -155,21 +155,22 @@ class Select extends PureComponent<ISelectProps, SelectState> {
 
         const clickCustom = getParent(evt.target as HTMLElement, `.${selectClass('custom')}`)
 
-        if (clickInput || clickCustom) {
-            this.startKeepSelectFocus(false)
-            return
-        }
-
-        /** 点击Select内部元素时，上锁 */
+        /** 点击Select内部元素时 */
         if (desc) {
-            this.startKeepSelectFocus()
+            /** 多选模式下点击输入框或者点击自定义区域，Select保持Focus状态，但不获取焦点 */
+            if (clickInput || clickCustom) {
+                this.startKeepSelectFocus(false)
+            } else {
+                this.startKeepSelectFocus()
+            }
 
             return
         }
 
-        /** 如果是从Input中失去焦点，下面的语句失效，直接从事件冒泡中执行handleBlur */
-        /** @todo 下面语句多余，点击document非select的元素时，就会触发handleBlur，不需手动触发blur */
-        this.element.blur()
+        /** 如果是非绝对定位的情况下，点击元素外的内容会由事件触发handleBlur，但是在绝对定位下，下拉的内容已经不在Select的DOM上，无法冒泡的SelectDOM上，所以手动触发handleBlur */
+        if (document.activeElement !== this.element) {
+            this.handleBlur(undefined)
+        }
     }
 
     handleBlur: React.FocusEventHandler<HTMLDivElement> = evt => {
@@ -180,7 +181,7 @@ class Select extends PureComponent<ISelectProps, SelectState> {
          * @see https://developer.mozilla.org/en-US/docs/Web/API/FocusEvent/relatedTarget
          */
 
-        if (evt.relatedTarget && getParent(evt.relatedTarget as HTMLElement, `.${selectClass('result')}`)) {
+        if (evt && evt.relatedTarget && getParent(evt.relatedTarget as HTMLElement, `.${selectClass('result')}`)) {
             return
         }
 
