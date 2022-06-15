@@ -105,7 +105,7 @@ export default class LazyList<T extends any = any> extends Component<LazyListPro
             /** 重新计算位置 */
             if (!isZero(this.props.data.length) && this.props.shouldRecomputed(prevProps.data, this.props.data)) {
                 if (this.props.lineHeight * this.props.data.length < this.props.height) return
-                console.log(111)
+
                 const prevContentHeight = prevProps.data.length * prevProps.lineHeight - prevProps.height
 
                 const prevScrollTopRatio = prevState.scrollTopRatio
