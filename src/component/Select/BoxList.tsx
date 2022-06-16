@@ -9,6 +9,7 @@ import AnimationList from '../List'
 import LazyList from '../List/LazyList'
 import Spin from '../Spin'
 import BoxOption from './BoxOption'
+import FormatBoxListDataHandler from './Hoc/FormatBoxListDataHandler'
 import { SelectListProps } from './type'
 
 class BoxList extends PureComponent<SelectListProps> {
@@ -112,39 +113,27 @@ class BoxList extends PureComponent<SelectListProps> {
     }
 
     renderLazyList = () => {
-        const { columns, height, lineHeight, data, itemsInView } = this.props
+        const { columns, height, lineHeight, data, itemsInView, datum } = this.props
 
         const scrollHeight = lineHeight * Math.ceil(data.length / columns)
 
-        /**
-         * 根据列数再次分割数据
-         * columns:3 => [[1,2,3],[4,5,6]]
-         */
-        const sliceData = data.reduce((accumulatedValue, currentValue) => {
-            let lastItem = accumulatedValue[accumulatedValue.length - 1]
-
-            if (!lastItem) {
-                lastItem = []
-
-                accumulatedValue.push(lastItem)
-            }
-
-            if (lastItem.length >= columns) accumulatedValue.push([currentValue])
-            else lastItem.push(currentValue)
-
-            return accumulatedValue
-        }, [])
-
         return (
-            <LazyList
-                control={false}
-                scrollHeight={scrollHeight}
-                lineHeight={lineHeight}
-                data={sliceData}
-                itemsInView={itemsInView}
-                height={height}
-                renderItem={this.handleRenderItem}
-            />
+            <FormatBoxListDataHandler data={data} datum={datum} columns={columns}>
+                {({ defaultIndex, sliceData }) => {
+                    return (
+                        <LazyList
+                            control={false}
+                            defaultIndex={defaultIndex}
+                            scrollHeight={scrollHeight}
+                            lineHeight={lineHeight}
+                            data={sliceData}
+                            itemsInView={itemsInView}
+                            height={height}
+                            renderItem={this.handleRenderItem}
+                        />
+                    )
+                }}
+            </FormatBoxListDataHandler>
         )
     }
 

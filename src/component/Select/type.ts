@@ -176,3 +176,6 @@ export interface SelectBoxOptionProps extends Pick<SelectListProps, 'columns' | 
     multiple: boolean
     onClick: SelectListProps['onChange']
 }
+export interface FormatBoxListDataHandlerProps extends Pick<SelectListProps, 'data' | 'columns' | 'results' | 'datum'> {
+    children(params: { defaultIndex: number; sliceData: any[] }): React.ReactNode
+}

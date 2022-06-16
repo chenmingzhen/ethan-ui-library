@@ -3,6 +3,7 @@ import { setTranslate } from '@/utils/dom/translate'
 import { Component } from '@/utils/component'
 import { getRangeValue } from '@/utils/numbers'
 import { isZero } from '@/utils/is'
+import { computeScroll, getVirtualScrollInitIndex } from '@/utils/virtual-scroll'
 import Scroll from '../Scroll'
 
 interface LazyListProps<T extends any = any> {
@@ -15,9 +16,12 @@ interface LazyListProps<T extends any = any> {
     onScrollRatioChange?: (ratio: number, lastScrollTop: number) => void
     /** 当数据源的长度发生变化且数据源长度大于1时，传入判断函数是否允许重新计算对应的滚动值 */
     shouldRecomputed?: (prevData: T[], nextData: T[]) => boolean
+    /** 数据源起始的Index,默认hover的位置，视图会滚动到此处 */
+    defaultIndex?: number
     /* 如果受控处理，下面的Props必须传 */
     control?: boolean
     onStateChange?(params: Partial<LazyListState>): void
+    /** 控制渲染数据源的起始Index,初次挂载时，视图会滚动到此处 */
     currentIndex?: number
     scrollTopRatio?: number
     lastScrollTop?: number
@@ -29,26 +33,6 @@ export interface LazyListState {
     lastScrollTop: number
 }
 
-interface ComputedScrollParams {
-    dataLength: number
-    lineHeight: number
-    height: number
-    currentIndex: number
-}
-
-/** 存在滚动的情况下，计算滚动的比例值和滚动值 */
-export function computeScroll(params: ComputedScrollParams) {
-    const { dataLength, lineHeight, height, currentIndex } = params
-
-    const lastScrollTop = currentIndex * lineHeight
-
-    const contentHeight = dataLength * lineHeight - height
-
-    const scrollTopRatio = lastScrollTop / contentHeight
-
-    return { lastScrollTop, scrollTopRatio }
-}
-
 /** 不能使用PureComponent，因为Item的部分状态是在上层中使用的，例如Select OptionList Option的hoverIndex prop， */
 export default class LazyList<T extends any = any> extends Component<LazyListProps<T>, LazyListState> {
     static defaultProps = {
@@ -56,6 +40,7 @@ export default class LazyList<T extends any = any> extends Component<LazyListPro
         lineHeight: 32,
         data: [],
         shouldRecomputed: () => true,
+        defaultIndex: 0,
     }
 
     static getDerivedStateFromProps(nextProps: LazyListProps, nextState: LazyListState): LazyListState {
@@ -86,18 +71,45 @@ export default class LazyList<T extends any = any> extends Component<LazyListPro
 
     private optionInner: HTMLDivElement
 
-    constructor(props: LazyListProps) {
-        super(props)
+    getInitState = (): LazyListState => {
+        const { control, defaultIndex, lineHeight, height, data } = this.props
 
-        this.state = {
-            currentIndex: props.currentIndex || 0,
-            scrollTopRatio: props.scrollTopRatio || 0,
-            lastScrollTop: props.lastScrollTop || 0,
+        if (control && isZero(this.props.currentIndex) && isZero(this.props.lastScrollTop)) {
+            return {
+                currentIndex: this.props.currentIndex || 0,
+                scrollTopRatio: this.props.scrollTopRatio || 0,
+                lastScrollTop: this.props.lastScrollTop || 0,
+            }
+        }
+
+        const currentIndex = defaultIndex
+            ? getVirtualScrollInitIndex({ height, lineHeight, defaultIndex, dataLength: data.length })
+            : 0
+
+        const { scrollTopRatio, lastScrollTop } = computeScroll({
+            dataLength: this.props.data.length,
+            lineHeight,
+            height,
+            currentIndex,
+        })
+
+        return {
+            currentIndex,
+            lastScrollTop,
+            scrollTopRatio,
         }
     }
 
+    constructor(props: LazyListProps) {
+        super(props)
+
+        this.state = this.getInitState()
+    }
+
     componentDidMount() {
-        setTranslate(this.optionInner, '0rem', `-${this.state.lastScrollTop}px`)
+        if (this.state.lastScrollTop) {
+            setTranslate(this.optionInner, '0rem', `-${this.state.lastScrollTop}px`)
+        }
     }
 
     componentDidUpdate(prevProps: Readonly<LazyListProps>, prevState: Readonly<LazyListState>): void {

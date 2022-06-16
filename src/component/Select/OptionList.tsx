@@ -6,12 +6,13 @@ import { getLocale } from '@/locale'
 import { getKey } from '@/utils/uid'
 import { CHANGE_ACTION } from '@/utils/Datum/types'
 import { isEmptyStr } from '@/utils/is'
+import { computeScroll, getVirtualScrollInitIndex } from '@/utils/virtual-scroll'
 import { SelectListProps } from './type'
 import Spin from '../Spin'
 import Option from './Option'
 import AnimationList from '../List'
 import { transformSizeToPx } from './util'
-import LazyList, { computeScroll, LazyListState } from '../List/LazyList'
+import LazyList, { LazyListState } from '../List/LazyList'
 
 interface OptionListState {
     /* 目前选中的index */
@@ -47,9 +48,11 @@ class OptionList extends PureComponent<SelectListProps, OptionListState> {
 
         if (!item) return defaultState
 
-        const { index: currentIndex } = item
+        const { index: defaultIndex } = item
 
-        if ((currentIndex + 1) * lineHeight <= height) return defaultState
+        if ((defaultIndex + 1) * lineHeight <= height) return defaultState
+
+        const currentIndex = getVirtualScrollInitIndex({ lineHeight, dataLength: data.length, defaultIndex, height })
 
         const { lastScrollTop, scrollTopRatio } = computeScroll({
             currentIndex,
@@ -59,7 +62,7 @@ class OptionList extends PureComponent<SelectListProps, OptionListState> {
         })
 
         /** 滚动到默认值的地方 */
-        return { scrollTopRatio, currentIndex, hoverIndex: currentIndex, lastScrollTop }
+        return { scrollTopRatio, currentIndex, hoverIndex: defaultIndex, lastScrollTop }
     }
 
     constructor(props: SelectListProps) {
