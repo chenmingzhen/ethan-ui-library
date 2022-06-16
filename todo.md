@@ -26,23 +26,23 @@
 
 -   [x] 滚动到 defaultIndex 出现空白 bug，原因在于现在滚动到 defaultIndex 是在固定在第一行，比如，defaultIndex 是最后一个，也放置到视图第一个位置是错误的
 
--   [x]将 Select 的默认高度改成 256，hoverMove 出现 hoverIndex 不在视图内的情况
+-   [x] 将 Select 的默认高度改成 256，hoverMove 出现 hoverIndex 不在视图内的情况
 
--   []BoxOption 多次重复渲染 bug
+-   [x] BoxOption 多次重复渲染 bug
 
--   [] 进一步封装 LazyList 的受控情况，可以在使用时只管理 currentIndex
+-   [ ] 进一步封装 LazyList 的受控情况，可以在使用时只管理 currentIndex
 
 -   [x] absolute 模式下点击 custom 后再点击 document 无法关闭 Select
 
--   [] 移除 Scroll 的 stableProps,高度增加时，重新计算滚动的位置，之前的 Select didupdate 有处理
+-   [ ] 移除 Scroll 的 stableProps,高度增加时，重新计算滚动的位置，之前的 Select didupdate 有处理
 
--   [] 修改所有 Select 模式的 loading，懒加载数据使用另外的逻辑处理，到时候写一个 DEMO
+-   [ ] 修改所有 Select 模式的 loading，懒加载数据使用另外的逻辑处理，到时候写一个 DEMO
 
--   [] Select 溢出屏幕时，设置 right:0，从 Absolute 的 resetPosition 的 todo 修改
+-   [ ] Select 溢出屏幕时，设置 right:0，从 Absolute 的 resetPosition 的 todo 修改
 
--   [] Select BoxList 支持分组
+-   [ ] Select BoxList 支持分组
 
--   [] Select OptionList 的 handleScroll 计算 scrollTopRatio 和 Scroll/Scroll 的 wheelOrTouchDispatchScroll 计算不一致，原因在于 wheelOrTouchDispatchScroll 的高度是使用 scrollHeight 而不是 contentHeight,到时统一使用 contentHeight 计算
+-   [ ] Select OptionList 的 handleScroll 计算 scrollTopRatio 和 Scroll/Scroll 的 wheelOrTouchDispatchScroll 计算不一致，原因在于 wheelOrTouchDispatchScroll 的高度是使用 scrollHeight 而不是 contentHeight,到时统一使用 contentHeight 计算
 
 -   [ ] Tree 改用 AnimationList 动画，并添加 Fade 的类型
 

@@ -39,11 +39,13 @@ class BoxList extends PureComponent<SelectListProps> {
         }
     }
 
-    handleRenderItem = (data, groupIndex) => {
+    handleRenderItem = (data: any[], groupIndex) => {
         const { datum, keygen, columns, multiple, onChange, renderItem, lineHeight } = this.props
 
+        const groupKey = `__${data.map((d, i) => getKey(d, keygen, i)).join()}__`
+
         return (
-            <div key={groupIndex} style={{ height: lineHeight }}>
+            <div key={groupKey} style={{ height: lineHeight }}>
                 {data.map((d, i) => (
                     <BoxOption
                         key={getKey(d, keygen, groupIndex + i)}
