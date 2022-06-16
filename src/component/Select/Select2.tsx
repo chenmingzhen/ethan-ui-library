@@ -17,7 +17,7 @@ class Select extends PureComponent<ISelectProps, SelectState> {
     static defaultProps = {
         clearable: false,
         data: [],
-        height: 250,
+        height: 256,
         itemsInView: 10,
         lineHeight: 32,
         loading: false,

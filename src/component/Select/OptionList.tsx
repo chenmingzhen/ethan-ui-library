@@ -141,7 +141,7 @@ class OptionList extends PureComponent<SelectListProps, OptionListState> {
 
         let { hoverIndex, currentIndex, lastScrollTop: newLastScrollTop } = this.state
 
-        // 无hover 取当前的index
+        /** 无hover 取当前的index */
         if (hoverIndex === undefined) hoverIndex = currentIndex
         else hoverIndex += step
 
@@ -153,7 +153,7 @@ class OptionList extends PureComponent<SelectListProps, OptionListState> {
 
         const data = this.props.data[hoverIndex]
 
-        // 如果为Group的标题 则多加或减1
+        /** 如果为Group的标题 则多加或减1 */
         if (data && data[groupKey]) {
             if (step > 0) hoverIndex += 1
             else hoverIndex -= 1
@@ -163,12 +163,8 @@ class OptionList extends PureComponent<SelectListProps, OptionListState> {
 
         const emptyHeight = hoverIndex * lineHeight
 
-        // 推理2：由于在到达当前视图的底部逻辑中，对lastScrollTop设置为scrollHeight，注意到scrollHeight是有减去height
-        // 此时在height以内的高度 向上移动是不会触发lastScrollTop的更新，scrollTop不会得到重新的计算
-        // 如果超过了height的阀值，即到达当前视图的顶部 就会触发下面的逻辑
         if (emptyHeight < newLastScrollTop) {
-            // 到达当前视图的顶部
-
+            /** 到达当前视图的顶部 */
             currentIndex = hoverIndex
 
             const { scrollTopRatio, lastScrollTop } = computeScroll({
@@ -181,16 +177,13 @@ class OptionList extends PureComponent<SelectListProps, OptionListState> {
             newLastScrollTop = lastScrollTop
 
             this.setState({ currentIndex, scrollTopRatio, lastScrollTop: newLastScrollTop })
-            // 推理1：假设是打开Select(高度足够滚动) 此时的lastScrollTop的高度为0，height是容器的高度，一直移动
-            // 当emptyHeight的高度大于容器的高度的时候 就应该触发到达当前视图的底部的逻辑
         } else if (emptyHeight + lineHeight > newLastScrollTop + height) {
-            // 到达当前视图的底部
+            /** 到达当前视图的底部 */
 
-            // 由于currentIndex涉及到data的懒加载渲染，见RenderList
-            // 到达视图底部，继续向下时，currentIndex的位置应该是当前hoverIndex减去（容器的高度/每个Item的高度）
-            // 所以currentIndex会是在当前视图的顶部
-            // 然后currentIndex+itemsInView确保数据被渲染出来
-            currentIndex = hoverIndex - Math.floor(height / lineHeight)
+            /** 如果可以整除，证明每个Item是与滚动容器贴合，加1，避免出现计算滚动值时缺少一个Item的高度 */
+            const touchEdge = height % lineHeight === 0 ? 1 : 0
+
+            currentIndex = hoverIndex - Math.floor(height / lineHeight) + touchEdge
 
             if (currentIndex < 0) currentIndex = 0
 
@@ -205,8 +198,7 @@ class OptionList extends PureComponent<SelectListProps, OptionListState> {
 
             this.setState({ currentIndex, scrollTopRatio, lastScrollTop })
         } else if (hoverIndex === 0 && emptyHeight === 0) {
-            // 到达数据源的顶部(0 1)
-
+            /** 到达数据源的顶部 */
             this.setState({ currentIndex: 0, scrollTopRatio: 0, lastScrollTop: 0 })
         }
 

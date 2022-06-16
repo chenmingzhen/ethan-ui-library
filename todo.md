@@ -22,11 +22,11 @@
 
 -   [x] SelectOptionList 和 LazyList 的滚动逻辑合并在一起
 
--   [] LazyList 添加一个 defaultIndex 的属性，用于非受控的情况下，滚动到默认的位置
+-   [x] LazyList 添加一个 defaultIndex 的属性，用于非受控的情况下，滚动到默认的位置
 
--   [] 滚动到 defaultIndex 出现空白 bug，原因在于现在滚动到 defaultIndex 是在固定在第一行，比如，defaultIndex 是最后一个，也放置到视图第一个位置是错误的
+-   [x] 滚动到 defaultIndex 出现空白 bug，原因在于现在滚动到 defaultIndex 是在固定在第一行，比如，defaultIndex 是最后一个，也放置到视图第一个位置是错误的
 
--   []将 Select 的默认高度改成 256，hoverMove 出现 hoverIndex 不在视图内的情况
+-   [x]将 Select 的默认高度改成 256，hoverMove 出现 hoverIndex 不在视图内的情况
 
 -   []BoxOption 多次重复渲染 bug
 
