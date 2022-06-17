@@ -7,7 +7,6 @@ import { computeScroll, getVirtualScrollCurrentIndex } from '@/utils/virtual-scr
 import Scroll from '../Scroll'
 
 interface LazyListProps<T extends any = any> {
-    scrollHeight: number
     data: T[]
     itemsInView: number
     lineHeight: number
@@ -59,10 +58,16 @@ export default class LazyList<T extends any = any> extends Component<LazyListPro
         }
     }
 
-    private get scroll(): 'y' | undefined {
-        const { height, scrollHeight } = this.props
+    private get scrollHeight() {
+        const { data, lineHeight } = this.props
 
-        if (height < scrollHeight) {
+        return data.length * lineHeight
+    }
+
+    private get scroll(): 'y' | undefined {
+        const { height } = this.props
+
+        if (height < this.scrollHeight) {
             return 'y'
         }
 
@@ -116,7 +121,11 @@ export default class LazyList<T extends any = any> extends Component<LazyListPro
         if (this.props.data !== prevProps.data && this.props.data.length !== prevProps.data.length) {
             /** 重新计算位置 */
             if (!isZero(this.props.data.length) && this.props.shouldRecomputed(prevProps.data, this.props.data)) {
-                if (this.props.lineHeight * this.props.data.length < this.props.height) return
+                if (this.props.lineHeight * this.props.data.length < this.props.height) {
+                    this.dispatchState({ scrollTopRatio: 0, lastScrollTop: 0, currentIndex: 0 })
+
+                    return
+                }
 
                 const prevContentHeight = prevProps.data.length * prevProps.lineHeight - prevProps.height
 
@@ -220,7 +229,7 @@ export default class LazyList<T extends any = any> extends Component<LazyListPro
     }
 
     render() {
-        const { height, scrollHeight, lineHeight, data, itemsInView, renderItem } = this.props
+        const { height, lineHeight, data, itemsInView, renderItem } = this.props
 
         const { scrollTopRatio, currentIndex } = this.state
 
@@ -231,7 +240,7 @@ export default class LazyList<T extends any = any> extends Component<LazyListPro
                 scroll={this.scroll}
                 style={{ height: this.scroll ? height : undefined }}
                 onScroll={this.handleScroll}
-                scrollHeight={scrollHeight}
+                scrollHeight={this.scrollHeight}
                 scrollTop={scrollTopRatio}
             >
                 <div ref={this.bindOptionInner}>

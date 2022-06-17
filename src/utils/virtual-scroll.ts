@@ -19,6 +19,8 @@ interface InitIndexParams {
 export function getVirtualScrollCurrentIndex(params: InitIndexParams) {
     const { scrollIndex, dataLength, lineHeight, height } = params
 
+    if (scrollIndex < -1 || scrollIndex > dataLength - 1) return 0
+
     let currentIndex = scrollIndex
 
     const scrollHeight = dataLength * lineHeight

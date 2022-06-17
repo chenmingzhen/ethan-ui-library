@@ -117,8 +117,6 @@ class BoxList extends PureComponent<SelectListProps> {
     renderLazyList = () => {
         const { columns, height, lineHeight, data, itemsInView, datum } = this.props
 
-        const scrollHeight = lineHeight * Math.ceil(data.length / columns)
-
         return (
             <FormatBoxListDataHandler data={data} datum={datum} columns={columns}>
                 {({ defaultIndex, sliceData }) => {
@@ -126,7 +124,6 @@ class BoxList extends PureComponent<SelectListProps> {
                         <LazyList
                             control={false}
                             defaultIndex={defaultIndex}
-                            scrollHeight={scrollHeight}
                             lineHeight={lineHeight}
                             data={sliceData}
                             itemsInView={itemsInView}
