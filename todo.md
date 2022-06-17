@@ -32,6 +32,8 @@
 
 -   [ ] 进一步封装 LazyList 的受控情况，可以在使用时只管理 currentIndex
 
+-   [ ]适配横向滚动的 LazyList，考虑添加鼠标移动事件到 LazyList 中
+
 -   [x] absolute 模式下点击 custom 后再点击 document 无法关闭 Select
 
 -   [ ] 移除 Scroll 的 stableProps,高度增加时，重新计算滚动的位置，之前的 Select didupdate 有处理

@@ -7,7 +7,7 @@
 import { getRangeValue } from './numbers'
 
 interface InitIndexParams {
-    defaultIndex: number
+    scrollIndex: number
 
     dataLength: number
 
@@ -16,10 +16,10 @@ interface InitIndexParams {
     height: number
 }
 
-export function getVirtualScrollInitIndex(params: InitIndexParams) {
-    const { defaultIndex, dataLength, lineHeight, height } = params
+export function getVirtualScrollCurrentIndex(params: InitIndexParams) {
+    const { scrollIndex, dataLength, lineHeight, height } = params
 
-    let currentIndex = defaultIndex
+    let currentIndex = scrollIndex
 
     const scrollHeight = dataLength * lineHeight
 

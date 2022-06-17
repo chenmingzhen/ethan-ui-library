@@ -6,7 +6,7 @@ import { getLocale } from '@/locale'
 import { getKey } from '@/utils/uid'
 import { CHANGE_ACTION } from '@/utils/Datum/types'
 import { isEmptyStr } from '@/utils/is'
-import { computeScroll, getVirtualScrollInitIndex } from '@/utils/virtual-scroll'
+import { computeScroll, getVirtualScrollCurrentIndex } from '@/utils/virtual-scroll'
 import { SelectListProps } from './type'
 import Spin from '../Spin'
 import Option from './Option'
@@ -52,7 +52,12 @@ class OptionList extends PureComponent<SelectListProps, OptionListState> {
 
         if ((defaultIndex + 1) * lineHeight <= height) return defaultState
 
-        const currentIndex = getVirtualScrollInitIndex({ lineHeight, dataLength: data.length, defaultIndex, height })
+        const currentIndex = getVirtualScrollCurrentIndex({
+            lineHeight,
+            dataLength: data.length,
+            scrollIndex: defaultIndex,
+            height,
+        })
 
         const { lastScrollTop, scrollTopRatio } = computeScroll({
             currentIndex,

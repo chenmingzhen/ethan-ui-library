@@ -3,12 +3,12 @@ import { setTranslate } from '@/utils/dom/translate'
 import { Component } from '@/utils/component'
 import { getRangeValue } from '@/utils/numbers'
 import { isZero } from '@/utils/is'
-import { computeScroll, getVirtualScrollInitIndex } from '@/utils/virtual-scroll'
+import { computeScroll, getVirtualScrollCurrentIndex } from '@/utils/virtual-scroll'
 import Scroll from '../Scroll'
 
 interface LazyListProps<T extends any = any> {
     scrollHeight: number
-    data?: T[]
+    data: T[]
     itemsInView: number
     lineHeight: number
     height: number
@@ -83,7 +83,7 @@ export default class LazyList<T extends any = any> extends Component<LazyListPro
         }
 
         const currentIndex = defaultIndex
-            ? getVirtualScrollInitIndex({ height, lineHeight, defaultIndex, dataLength: data.length })
+            ? getVirtualScrollCurrentIndex({ height, lineHeight, scrollIndex: defaultIndex, dataLength: data.length })
             : 0
 
         const { scrollTopRatio, lastScrollTop } = computeScroll({
@@ -149,6 +149,27 @@ export default class LazyList<T extends any = any> extends Component<LazyListPro
         }
     }
 
+    /** 暴露外部使用 */
+    scrollToView = (scrollIndex: number) => {
+        const { lineHeight, height, data } = this.props
+
+        if (scrollIndex < 0 || scrollIndex >= data.length || !this.scroll || this.state.currentIndex === scrollIndex)
+            return
+
+        const currentIndex = scrollIndex
+            ? getVirtualScrollCurrentIndex({ height, lineHeight, scrollIndex, dataLength: data.length })
+            : 0
+
+        const { lastScrollTop, scrollTopRatio } = computeScroll({
+            currentIndex,
+            dataLength: data.length,
+            lineHeight,
+            height,
+        })
+
+        this.dispatchState({ lastScrollTop, scrollTopRatio, currentIndex })
+    }
+
     private dispatchState = (state: Partial<LazyListState>) => {
         if (this.props.control && this.props.onStateChange) {
             this.props.onStateChange(state)
@@ -159,19 +180,6 @@ export default class LazyList<T extends any = any> extends Component<LazyListPro
 
     private bindOptionInner = (el: HTMLDivElement) => {
         this.optionInner = el
-    }
-
-    scrollToView = (scrollIndex: number) => {
-        if ((scrollIndex + 1) * this.props.lineHeight <= this.props.height) return
-
-        const { lastScrollTop, scrollTopRatio } = computeScroll({
-            currentIndex: scrollIndex,
-            dataLength: this.props.data.length,
-            lineHeight: this.props.lineHeight,
-            height: this.props.height,
-        })
-
-        this.dispatchState({ lastScrollTop, scrollTopRatio, currentIndex: scrollIndex })
     }
 
     private handleScroll = (_, y, __, ___, ____, scrollContainerHeight, _____, pixelY) => {
@@ -216,6 +224,8 @@ export default class LazyList<T extends any = any> extends Component<LazyListPro
 
         const { scrollTopRatio, currentIndex } = this.state
 
+        const sliceData = data.slice(currentIndex, currentIndex + itemsInView)
+
         return (
             <Scroll
                 scroll={this.scroll}
@@ -226,7 +236,7 @@ export default class LazyList<T extends any = any> extends Component<LazyListPro
             >
                 <div ref={this.bindOptionInner}>
                     <div style={{ height: currentIndex * lineHeight }} />
-                    {data.slice(currentIndex, currentIndex + itemsInView).map((d, i) => renderItem(d, i))}
+                    {sliceData.map((d, i) => renderItem(d, i))}
                 </div>
             </Scroll>
         )
