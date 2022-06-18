@@ -6,7 +6,7 @@ import { getLocale } from '@/locale'
 import { getKey } from '@/utils/uid'
 import { CHANGE_ACTION } from '@/utils/Datum/types'
 import { isEmptyStr } from '@/utils/is'
-import { computeScroll, getVirtualScrollCurrentIndex } from '@/utils/virtual-scroll'
+import { getRangeValue } from '@/utils/numbers'
 import { SelectListProps } from './type'
 import Spin from '../Spin'
 import Option from './Option'
@@ -32,8 +32,12 @@ class OptionList extends PureComponent<SelectListProps, OptionListState> {
 
     scrollTimer: NodeJS.Timeout
 
+    lazyList: LazyList
+
+    defaultIndex = 0
+
     getInitState = (): OptionListState => {
-        const { datum, data, lineHeight, height } = this.props
+        const { datum, data } = this.props
 
         const defaultState = {
             currentIndex: 0,
@@ -48,26 +52,15 @@ class OptionList extends PureComponent<SelectListProps, OptionListState> {
 
         if (!item) return defaultState
 
-        const { index: defaultIndex } = item
+        const { index } = item
 
-        if ((defaultIndex + 1) * lineHeight <= height) return defaultState
+        const defaultIndex = getRangeValue({ min: 0, max: data.length - 1, current: index })
 
-        const currentIndex = getVirtualScrollCurrentIndex({
-            lineHeight,
-            dataLength: data.length,
-            scrollIndex: defaultIndex,
-            height,
-        })
+        defaultState.hoverIndex = defaultIndex
 
-        const { lastScrollTop, scrollTopRatio } = computeScroll({
-            currentIndex,
-            dataLength: data.length,
-            lineHeight,
-            height,
-        })
+        this.defaultIndex = defaultIndex
 
-        /** 滚动到默认值的地方 */
-        return { scrollTopRatio, currentIndex, hoverIndex: defaultIndex, lastScrollTop }
+        return defaultState
     }
 
     constructor(props: SelectListProps) {
@@ -92,6 +85,10 @@ class OptionList extends PureComponent<SelectListProps, OptionListState> {
         super.componentWillUnmount()
 
         this.props.datum.subscribe(CHANGE_ACTION, this.forceUpdate)
+    }
+
+    bindLazyList = (instance: LazyList) => {
+        this.lazyList = instance
     }
 
     startHoverMoveTimer = () => {
@@ -144,7 +141,9 @@ class OptionList extends PureComponent<SelectListProps, OptionListState> {
 
         const { lineHeight, height, groupKey } = this.props
 
-        let { hoverIndex, currentIndex, lastScrollTop: newLastScrollTop } = this.state
+        let { hoverIndex, currentIndex } = this.state
+
+        const { lastScrollTop } = this.state
 
         /** 无hover 取当前的index */
         if (hoverIndex === undefined) hoverIndex = currentIndex
@@ -152,8 +151,6 @@ class OptionList extends PureComponent<SelectListProps, OptionListState> {
 
         if (hoverIndex >= max) {
             hoverIndex = 0
-
-            newLastScrollTop = 0
         }
 
         const data = this.props.data[hoverIndex]
@@ -168,21 +165,10 @@ class OptionList extends PureComponent<SelectListProps, OptionListState> {
 
         const emptyHeight = hoverIndex * lineHeight
 
-        if (emptyHeight < newLastScrollTop) {
+        if (emptyHeight < lastScrollTop) {
             /** 到达当前视图的顶部 */
             currentIndex = hoverIndex
-
-            const { scrollTopRatio, lastScrollTop } = computeScroll({
-                currentIndex,
-                dataLength: this.props.data.length,
-                lineHeight: this.props.lineHeight,
-                height: this.props.height,
-            })
-
-            newLastScrollTop = lastScrollTop
-
-            this.setState({ currentIndex, scrollTopRatio, lastScrollTop: newLastScrollTop })
-        } else if (emptyHeight + lineHeight > newLastScrollTop + height) {
+        } else if (emptyHeight + lineHeight > lastScrollTop + height) {
             /** 到达当前视图的底部 */
 
             /** 如果可以整除，证明每个Item是与滚动容器贴合，加1，避免出现计算滚动值时缺少一个Item的高度 */
@@ -191,27 +177,26 @@ class OptionList extends PureComponent<SelectListProps, OptionListState> {
             currentIndex = hoverIndex - Math.floor(height / lineHeight) + touchEdge
 
             if (currentIndex < 0) currentIndex = 0
-
-            const { scrollTopRatio, lastScrollTop } = computeScroll({
-                currentIndex,
-                dataLength: this.props.data.length,
-                lineHeight: this.props.lineHeight,
-                height: this.props.height,
-            })
-
-            newLastScrollTop = lastScrollTop
-
-            this.setState({ currentIndex, scrollTopRatio, lastScrollTop })
         } else if (hoverIndex === 0 && emptyHeight === 0) {
             /** 到达数据源的顶部 */
-            this.setState({ currentIndex: 0, scrollTopRatio: 0, lastScrollTop: 0 })
+            currentIndex = 0
         }
+
+        this.lazyList.scrollToView(currentIndex)
 
         this.setState({ hoverIndex })
     }
 
-    handleLazyListStateChange = (state: Partial<LazyListState>) => {
-        this.setState(state as LazyListState)
+    handleScrollStateChange = (state: LazyListState) => {
+        const { onScrollRatioChange } = this.props
+
+        const { scrollTopRatio, lastScrollTop } = state
+
+        if (onScrollRatioChange) {
+            onScrollRatioChange(scrollTopRatio, lastScrollTop)
+        }
+
+        this.setState(state)
     }
 
     bindOptionInner = el => {
@@ -260,7 +245,7 @@ class OptionList extends PureComponent<SelectListProps, OptionListState> {
     }
 
     renderList = () => {
-        const { loading, data, height, lineHeight, text, size } = this.props
+        const { loading, data, height, text, size } = this.props
 
         const spinSize = transformSizeToPx(size)
 
@@ -276,19 +261,15 @@ class OptionList extends PureComponent<SelectListProps, OptionListState> {
 
         return (
             <LazyList
-                control
                 height={height}
+                defaultIndex={this.defaultIndex}
+                ref={this.bindLazyList}
                 data={this.props.data}
                 renderItem={this.renderItem}
                 lineHeight={this.props.lineHeight}
                 itemsInView={this.props.itemsInView}
-                scrollHeight={data.length * lineHeight}
-                scrollTopRatio={this.state.scrollTopRatio}
-                lastScrollTop={this.state.lastScrollTop}
-                currentIndex={this.state.currentIndex}
-                onStateChange={this.handleLazyListStateChange}
-                onScrollRatioChange={this.props.onScrollRatioChange}
                 shouldRecomputed={this.shouldRecomputed}
+                onScrollStateChange={this.handleScrollStateChange}
             />
         )
     }

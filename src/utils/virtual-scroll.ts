@@ -1,9 +1,3 @@
-/**
- * 默认currentIndex是在第一行，但是如果defaultIndex是后面的数据.
- * 例如最后一个，也放置在第一行的话，会出现溢出高度的情况，出现空白，
- * 所以如果有溢出，计算合适的currentIndex
- */
-
 import { getRangeValue } from './numbers'
 
 interface InitIndexParams {
@@ -16,6 +10,11 @@ interface InitIndexParams {
     height: number
 }
 
+/**
+ * 默认currentIndex是在第一行，但是如果defaultIndex是后面的数据.
+ * 例如最后一个，也放置在第一行的话，会出现溢出高度的情况，出现空白，
+ * 所以如果有溢出，计算合适的currentIndex
+ */
 export function getVirtualScrollCurrentIndex(params: InitIndexParams) {
     const { scrollIndex, dataLength, lineHeight, height } = params
 
