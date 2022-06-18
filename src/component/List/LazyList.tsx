@@ -4,6 +4,7 @@ import { Component } from '@/utils/component'
 import { getRangeValue } from '@/utils/numbers'
 import { isZero } from '@/utils/is'
 import { computeScroll, getVirtualScrollCurrentIndex } from '@/utils/virtual-scroll'
+import { KeyboardKey } from '@/utils/keyboard'
 import Scroll from '../Scroll'
 
 interface LazyListProps<T extends any = any> {
@@ -17,6 +18,7 @@ interface LazyListProps<T extends any = any> {
     /** 数据源起始的Index,默认hover的位置，视图会滚动到此处 */
     defaultIndex?: number
     onScrollStateChange?(params: LazyListState): void
+    keyboardControl?: boolean
 }
 
 export interface LazyListState {
@@ -33,6 +35,7 @@ export default class LazyList<T extends any = any> extends Component<LazyListPro
         data: [],
         shouldRecomputed: () => true,
         defaultIndex: 0,
+        keyboardControl: false,
     }
 
     private get scrollHeight() {
@@ -205,8 +208,37 @@ export default class LazyList<T extends any = any> extends Component<LazyListPro
         this.dispatchState({ scrollTopRatio, currentIndex, lastScrollTop })
     }
 
+    handleKeydown: React.KeyboardEventHandler<HTMLDivElement> = evt => {
+        if (!this.props.keyboardControl) return
+
+        const { currentIndex } = this.state
+
+        const { data, lineHeight, height } = this.props
+
+        const { key } = evt
+
+        switch (key) {
+            case KeyboardKey.ArrowUp:
+                evt.preventDefault()
+
+                this.scrollToView(currentIndex - 1 < 0 ? data.length - 1 : currentIndex - 1)
+
+                break
+            case KeyboardKey.ArrowDown:
+                evt.preventDefault()
+
+                this.scrollToView(
+                    currentIndex + 1 > data.length - Math.ceil(height / lineHeight) ? 0 : currentIndex + 1
+                )
+
+                break
+            default:
+                break
+        }
+    }
+
     render() {
-        const { height, lineHeight, data, itemsInView, renderItem } = this.props
+        const { height, lineHeight, data, itemsInView, renderItem, keyboardControl } = this.props
 
         const { scrollTopRatio, currentIndex } = this.state
 
@@ -220,7 +252,11 @@ export default class LazyList<T extends any = any> extends Component<LazyListPro
                 scrollHeight={this.scrollHeight}
                 scrollTop={scrollTopRatio}
             >
-                <div ref={this.bindOptionInner}>
+                <div
+                    ref={this.bindOptionInner}
+                    tabIndex={keyboardControl ? -1 : undefined}
+                    onKeyDown={this.handleKeydown}
+                >
                     <div style={{ height: currentIndex * lineHeight }} />
                     {sliceData.map((d, i) => renderItem(d, i))}
                 </div>

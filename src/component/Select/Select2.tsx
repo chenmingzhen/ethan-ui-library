@@ -6,6 +6,7 @@ import { addResizeObserver, getParent, isDescendent } from '@/utils/dom/element'
 import { docSize } from '@/utils/dom/document'
 import { debounce } from '@/utils/func'
 import { isEmpty } from '@/utils/is'
+import { KeyboardKey } from '@/utils/keyboard'
 import { SelectOptionListBindFuncMap, SelectState, ISelectProps } from './type'
 import Result from './Result2'
 import OptionList from './OptionList'
@@ -350,8 +351,7 @@ class Select extends PureComponent<ISelectProps, SelectState> {
             return
         }
 
-        /** Tab键 */
-        if (evt.keyCode === 9) {
+        if (evt.key === KeyboardKey.Tab) {
             if (this.element) {
                 /** 如果是输入模式下点击Tab，下面的语句是不会执行，由Input冒泡到handleBlur */
                 this.element.blur()
@@ -366,8 +366,8 @@ class Select extends PureComponent<ISelectProps, SelectState> {
 
         this.handleControlChange('keyboard')
 
-        switch (evt.keyCode) {
-            case 38:
+        switch (evt.key) {
+            case KeyboardKey.ArrowUp:
                 evt.preventDefault()
 
                 if (this.selectOptionListFuncMap) {
@@ -375,7 +375,7 @@ class Select extends PureComponent<ISelectProps, SelectState> {
                 }
 
                 break
-            case 40:
+            case KeyboardKey.ArrowDown:
                 evt.preventDefault()
 
                 if (this.selectOptionListFuncMap) {
@@ -383,7 +383,7 @@ class Select extends PureComponent<ISelectProps, SelectState> {
                 }
 
                 break
-            case 13:
+            case KeyboardKey.Enter:
                 if (this.selectOptionListFuncMap) {
                     this.handleEnter()
                 }
@@ -394,7 +394,7 @@ class Select extends PureComponent<ISelectProps, SelectState> {
 
                 break
 
-            case 8:
+            case KeyboardKey.Backspace:
                 this.handleDelete(evt)
 
                 break
