@@ -19,7 +19,6 @@ class Select extends PureComponent<ISelectProps, SelectState> {
         clearable: false,
         data: [],
         height: 256,
-        itemsInView: 10,
         lineHeight: 32,
         loading: false,
         multiple: false,

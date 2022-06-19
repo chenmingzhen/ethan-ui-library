@@ -32,7 +32,6 @@ export interface SelectProps<
     disabled?: boolean | ((data: FormatData) => boolean)
     filterText?: string
     height?: number
-    itemsInView?: number
     loading?: boolean
     multiple?: boolean
     onBlur?: (evt: React.FocusEvent<HTMLDivElement>) => void
@@ -77,7 +76,6 @@ export interface SelectListProps
             ISelectProps,
             | 'height'
             | 'lineHeight'
-            | 'itemsInView'
             | 'text'
             | 'loading'
             | 'keygen'

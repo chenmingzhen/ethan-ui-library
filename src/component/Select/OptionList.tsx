@@ -267,7 +267,6 @@ class OptionList extends PureComponent<SelectListProps, OptionListState> {
                 data={this.props.data}
                 renderItem={this.renderItem}
                 lineHeight={this.props.lineHeight}
-                itemsInView={this.props.itemsInView}
                 shouldRecomputed={this.shouldRecomputed}
                 onScrollStateChange={this.handleScrollStateChange}
             />

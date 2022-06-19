@@ -9,7 +9,6 @@ import Scroll from '../Scroll'
 
 interface LazyListProps<T extends any = any> {
     data: T[]
-    itemsInView: number
     lineHeight: number
     height: number
     renderItem: (data, index: number) => React.ReactNode
@@ -27,10 +26,12 @@ export interface LazyListState {
     lastScrollTop: number
 }
 
+/** 预留两个位置的偏差值 */
+const LAZY_LIST_DATA_OFFSET = 2
+
 /** 不能使用PureComponent，因为Item的部分状态是在上层中使用的，例如Select OptionList Option的hoverIndex prop， */
 export default class LazyList<T extends any = any> extends Component<LazyListProps<T>, LazyListState> {
     static defaultProps = {
-        itemsInView: 10,
         lineHeight: 32,
         data: [],
         shouldRecomputed: () => true,
@@ -52,6 +53,12 @@ export default class LazyList<T extends any = any> extends Component<LazyListPro
         }
 
         return undefined
+    }
+
+    private get itemsInView() {
+        const { height, lineHeight } = this.props
+
+        return Math.ceil(height / lineHeight)
     }
 
     private optionInner: HTMLDivElement
@@ -171,16 +178,12 @@ export default class LazyList<T extends any = any> extends Component<LazyListPro
         this.optionInner = el
     }
 
-    private handleScroll = (_, y, __, ___, ____, scrollContainerHeight, _____, pixelY) => {
+    private handleScroll = (_, scrollTopRatio, __, ___, ____, scrollContainerHeight, _____, pixelY) => {
         if (!this.optionInner) return
 
-        const { itemsInView, lineHeight, data } = this.props
-
-        const fullHeight = itemsInView * lineHeight
+        const { lineHeight, data } = this.props
 
         const contentHeight = data.length * lineHeight - scrollContainerHeight
-
-        let scrollTopRatio = scrollContainerHeight > fullHeight ? 0 : y
 
         let { lastScrollTop } = this.state
 
@@ -201,7 +204,7 @@ export default class LazyList<T extends any = any> extends Component<LazyListPro
 
         let currentIndex = Math.floor(lastScrollTop / lineHeight) - 1
 
-        if (data.length - itemsInView < currentIndex) currentIndex = data.length - itemsInView
+        if (data.length - this.itemsInView < currentIndex) currentIndex = data.length - this.itemsInView
 
         if (currentIndex < 0) currentIndex = 0
 
@@ -213,7 +216,7 @@ export default class LazyList<T extends any = any> extends Component<LazyListPro
 
         const { currentIndex } = this.state
 
-        const { data, lineHeight, height } = this.props
+        const { data } = this.props
 
         const { key } = evt
 
@@ -227,9 +230,7 @@ export default class LazyList<T extends any = any> extends Component<LazyListPro
             case KeyboardKey.ArrowDown:
                 evt.preventDefault()
 
-                this.scrollToView(
-                    currentIndex + 1 > data.length - Math.ceil(height / lineHeight) ? 0 : currentIndex + 1
-                )
+                this.scrollToView(currentIndex + 1 > data.length - this.itemsInView ? 0 : currentIndex + 1)
 
                 break
             default:
@@ -238,11 +239,11 @@ export default class LazyList<T extends any = any> extends Component<LazyListPro
     }
 
     render() {
-        const { height, lineHeight, data, itemsInView, renderItem, keyboardControl } = this.props
+        const { height, lineHeight, data, renderItem, keyboardControl } = this.props
 
         const { scrollTopRatio, currentIndex } = this.state
 
-        const sliceData = data.slice(currentIndex, currentIndex + itemsInView)
+        const sliceData = data.slice(currentIndex, currentIndex + this.itemsInView + LAZY_LIST_DATA_OFFSET)
 
         return (
             <Scroll

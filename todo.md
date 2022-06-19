@@ -30,7 +30,9 @@
 
 -   [x] BoxOption 多次重复渲染 bug
 
--   [ ] 进一步封装 LazyList 的受控情况，可以在使用时只受控 currentIndex，不暴露 scrollToView
+-   [x] 进一步封装 LazyList 的受控情况，可以在使用时只受控 currentIndex，不暴露 scrollToView
+
+-   [x] LazyList 移除 itemInView
 
 *   [x] absolute 模式下点击 custom 后再点击 document 无法关闭 Select
 

@@ -115,18 +115,16 @@ class BoxList extends PureComponent<SelectListProps> {
     }
 
     renderLazyList = () => {
-        const { columns, height, lineHeight, data, itemsInView, datum } = this.props
+        const { columns, height, lineHeight, data, datum } = this.props
 
         return (
             <FormatBoxListDataHandler data={data} datum={datum} columns={columns}>
                 {({ defaultIndex, sliceData }) => {
                     return (
                         <LazyList
-                            control={false}
                             defaultIndex={defaultIndex}
                             lineHeight={lineHeight}
                             data={sliceData}
-                            itemsInView={itemsInView}
                             height={height}
                             renderItem={this.handleRenderItem}
                         />
