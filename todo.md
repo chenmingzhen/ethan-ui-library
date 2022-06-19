@@ -38,7 +38,7 @@
 
 *   [ ] 移除 Scroll 的 stableProps,高度增加时，重新计算滚动的位置，之前的 Select didupdate 有处理
 
-*   [ ] 修改所有 Select 模式的 loading，懒加载数据使用另外的逻辑处理，到时候写一个 DEMO
+*   [x] 修改所有 Select 模式的 loading，懒加载数据使用另外的逻辑处理，到时候写一个 DEMO
 
 *   [ ] Select 溢出屏幕时，设置 right:0，从 Absolute 的 resetPosition 的 todo 修改
 

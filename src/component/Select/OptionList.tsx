@@ -249,7 +249,7 @@ class OptionList extends PureComponent<SelectListProps, OptionListState> {
 
         const spinSize = transformSizeToPx(size)
 
-        if (loading && !data.length)
+        if (loading)
             return (
                 <span className={selectClass('option')}>
                     {typeof loading === 'boolean' ? <Spin size={spinSize} /> : loading}
