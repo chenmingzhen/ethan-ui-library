@@ -44,7 +44,7 @@
 
 *   [ ] Select BoxList 支持分组
 
-*   [ ] Select OptionList 的 handleScroll 计算 scrollTopRatio 和 Scroll/Scroll 的 wheelOrTouchDispatchScroll 计算不一致，原因在于 wheelOrTouchDispatchScroll 的高度是使用 scrollHeight 而不是 contentHeight,到时统一使用 contentHeight 计算
+*   [x] Select OptionList 的 handleScroll 计算 scrollTopRatio 和 Scroll/Scroll 的 wheelOrTouchDispatchScroll 计算不一致，原因在于 wheelOrTouchDispatchScroll 的高度是使用 scrollHeight 而不是 contentHeight,到时统一使用 contentHeight 计算
 
 *   [ ] Tree 改用 AnimationList 动画，并添加 Fade 的类型
 

@@ -107,6 +107,8 @@ class Scroll extends PureComponent<ScrollProps> {
 
         const { scrollWidth, scrollHeight } = this.props
 
+        const { height, width } = this.getWheelRect()
+
         /** 只能一个方向滚动 一个方向滚动 另外一个方向设置为0 */
         if (Math.abs(this.pixelX) > Math.abs(this.pixelY)) {
             this.pixelY = 0
@@ -114,11 +116,15 @@ class Scroll extends PureComponent<ScrollProps> {
             this.pixelX = 0
         }
 
-        let x = scrollWidth === 0 ? 0 : left + this.pixelX / scrollWidth
+        const contentHeight = scrollHeight - height
+
+        const contentWidth = scrollWidth - width
+
+        let x = scrollWidth === 0 ? 0 : left + this.pixelX / contentWidth
         if (x < 0) x = 0
         if (x > 1) x = 1
 
-        let y = scrollHeight === 0 ? 0 : top + this.pixelY / scrollHeight
+        let y = scrollHeight === 0 ? 0 : top + this.pixelY / contentHeight
         if (y < 0) y = 0
         if (y > 1) y = 1
 

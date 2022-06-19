@@ -198,8 +198,6 @@ export default class LazyList<T extends any = any> extends Component<LazyListPro
 
             /** 滚动到底部 */
             if (lastScrollTop > contentHeight) lastScrollTop = contentHeight
-
-            scrollTopRatio = lastScrollTop / contentHeight
         }
 
         let currentIndex = Math.floor(lastScrollTop / lineHeight) - 1
