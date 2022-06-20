@@ -34,22 +34,22 @@
 
 -   [x] LazyList 移除 itemInView
 
-*   [x] absolute 模式下点击 custom 后再点击 document 无法关闭 Select
+-   [x] absolute 模式下点击 custom 后再点击 document 无法关闭 Select
 
-*   [ ] 移除 Scroll 的 stableProps,高度增加时，重新计算滚动的位置，之前的 Select didupdate 有处理
+-   [ ] 移除 Scroll 的 stableProps,高度增加时，重新计算滚动的位置，之前的 Select didupdate 有处理
 
-*   [x] 修改所有 Select 模式的 loading，懒加载数据使用另外的逻辑处理，到时候写一个 DEMO
+-   [x] 修改所有 Select 模式的 loading，懒加载数据使用另外的逻辑处理，到时候写一个 DEMO
 
-*   [ ] Select 溢出屏幕时，设置 right:0，从 Absolute 的 resetPosition 的 todo 修改
+-   [ ] Select 溢出屏幕时，设置 right:0，从 Absolute 的 resetPosition 的 todo 修改
 
-*   [ ] Select BoxList 支持分组
+-   [x] Select BoxList 支持分组
 
-*   [x] Select OptionList 的 handleScroll 计算 scrollTopRatio 和 Scroll/Scroll 的 wheelOrTouchDispatchScroll 计算不一致，原因在于 wheelOrTouchDispatchScroll 的高度是使用 scrollHeight 而不是 contentHeight,到时统一使用 contentHeight 计算
+-   [x] Select OptionList 的 handleScroll 计算 scrollTopRatio 和 Scroll/Scroll 的 wheelOrTouchDispatchScroll 计算不一致，原因在于 wheelOrTouchDispatchScroll 的高度是使用 scrollHeight 而不是 contentHeight,到时统一使用 contentHeight 计算
 
-*   [ ] Tree 改用 AnimationList 动画，并添加 Fade 的类型
+-   [ ] Tree 改用 AnimationList 动画，并添加 Fade 的类型
 
-*   [ ] cascader 的 index 编写，document 的 mouseDown 没有在捕获执行,可以验证一下
+-   [ ] cascader 的 index 编写，document 的 mouseDown 没有在捕获执行,可以验证一下
 
-*   [ ] 将 SelectOptionList 的样式过一遍
+-   [ ] 将 SelectOptionList 的样式过一遍
 
-*   [ ] 完成 Select 后实现 innerTitle
+-   [ ] 完成 Select 后实现 innerTitle

@@ -1,8 +1,9 @@
+import { isEmpty } from '@/utils/is'
 import React, { useMemo, useState } from 'react'
 import { FormatBoxListDataHandlerProps } from '../type'
 
 const FormatBoxListDataHandler: React.FC<FormatBoxListDataHandlerProps> = function(props) {
-    const { data: propData, columns, children, datum } = props
+    const { data: propData, columns, children, datum, groupKey } = props
 
     /**
      * 根据列数再次分割数据
@@ -12,14 +13,27 @@ const FormatBoxListDataHandler: React.FC<FormatBoxListDataHandlerProps> = functi
         return propData.reduce((accumulatedValue, currentValue) => {
             let lastItem = accumulatedValue[accumulatedValue.length - 1]
 
+            const groupTitle = currentValue[groupKey]
+
+            if (!isEmpty(groupTitle)) {
+                accumulatedValue.push([currentValue])
+
+                accumulatedValue.push([])
+
+                return accumulatedValue
+            }
+
             if (!lastItem) {
                 lastItem = []
 
                 accumulatedValue.push(lastItem)
             }
 
-            if (lastItem.length >= columns) accumulatedValue.push([currentValue])
-            else lastItem.push(currentValue)
+            if (lastItem.length >= columns) {
+                accumulatedValue.push([currentValue])
+            } else {
+                lastItem.push(currentValue)
+            }
 
             return accumulatedValue
         }, [])

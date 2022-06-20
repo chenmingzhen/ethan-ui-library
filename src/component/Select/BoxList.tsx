@@ -1,6 +1,7 @@
 import { getLocale } from '@/locale'
 import { selectClass } from '@/styles'
 import { PureComponent } from '@/utils/component'
+import { isEmpty } from '@/utils/is'
 import { getKey } from '@/utils/uid'
 import React from 'react'
 import Checkbox from '../Checkbox'
@@ -8,6 +9,7 @@ import { Checked } from '../Checkbox/type'
 import AnimationList from '../List'
 import LazyList from '../List/LazyList'
 import Spin from '../Spin'
+import BoxListTitle from './BoxListTitle'
 import BoxOption from './BoxOption'
 import FormatBoxListDataHandler from './Hoc/FormatBoxListDataHandler'
 import { SelectListProps } from './type'
@@ -40,12 +42,18 @@ class BoxList extends PureComponent<SelectListProps> {
     }
 
     handleRenderItem = (data: any[], groupIndex) => {
-        const { datum, keygen, columns, multiple, onChange, renderItem, lineHeight } = this.props
+        const { datum, keygen, columns, multiple, onChange, renderItem, lineHeight, groupKey } = this.props
 
-        const groupKey = `__${data.map((d, i) => getKey(d, keygen, i)).join()}__`
+        const groupTitle = data[0] && data[0][groupKey] ? data[0][groupKey] : undefined
+
+        if (!isEmpty(groupTitle)) {
+            return <BoxListTitle title={groupTitle} key={groupTitle} style={{ height: lineHeight }} />
+        }
+
+        const lineKey = `__${data.map((d, i) => getKey(d, keygen, i)).join()}__`
 
         return (
-            <div key={groupKey} style={{ height: lineHeight }}>
+            <div key={lineKey} style={{ height: lineHeight }}>
                 {data.map((d, i) => (
                     <BoxOption
                         key={getKey(d, keygen, groupIndex + i)}
@@ -93,9 +101,15 @@ class BoxList extends PureComponent<SelectListProps> {
     }
 
     renderStack = () => {
-        const { columns, datum, multiple, onChange, renderItem, data, keygen } = this.props
+        const { columns, datum, multiple, onChange, renderItem, data, keygen, groupKey } = this.props
 
         return data.map((d, i) => {
+            const groupTitle = d[groupKey]
+
+            if (!isEmpty(groupTitle)) {
+                return <BoxListTitle title={groupTitle} key={groupTitle} />
+            }
+
             const isActive = datum.check(d)
 
             return (
@@ -115,10 +129,10 @@ class BoxList extends PureComponent<SelectListProps> {
     }
 
     renderLazyList = () => {
-        const { columns, height, lineHeight, data, datum } = this.props
+        const { columns, height, lineHeight, data, datum, groupKey } = this.props
 
         return (
-            <FormatBoxListDataHandler data={data} datum={datum} columns={columns}>
+            <FormatBoxListDataHandler data={data} datum={datum} columns={columns} groupKey={groupKey}>
                 {({ defaultIndex, sliceData }) => {
                     return (
                         <LazyList

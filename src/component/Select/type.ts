@@ -102,7 +102,7 @@ export interface SelectListProps
     groupKey?: string
     children: React.ReactNode
     bindOptionListFunc: (func: SelectOptionListBindFuncMap) => void
-    data: any
+    data: any[]
     focus: boolean
     style?: React.CSSProperties
     className?: string
@@ -174,6 +174,13 @@ export interface SelectBoxOptionProps extends Pick<SelectListProps, 'columns' | 
     multiple: boolean
     onClick: SelectListProps['onChange']
 }
-export interface FormatBoxListDataHandlerProps extends Pick<SelectListProps, 'data' | 'columns' | 'results' | 'datum'> {
+export interface FormatBoxListDataHandlerProps
+    extends Pick<SelectListProps, 'data' | 'columns' | 'results' | 'datum' | 'groupKey'> {
     children(params: { defaultIndex: number; sliceData: any[] }): React.ReactNode
+}
+
+export interface BoxListTitleProps {
+    title: React.ReactNode
+
+    style?: React.CSSProperties
 }
