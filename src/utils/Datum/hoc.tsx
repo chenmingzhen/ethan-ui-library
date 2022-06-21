@@ -4,6 +4,7 @@ import shallowEqual from '@/utils/shallowEqual'
 import { IGNORE_VALIDATE } from './types'
 import List from './List'
 import Form from './Form'
+import { isEmpty } from '../is'
 
 interface HocProps {
     onChange()
@@ -78,7 +79,7 @@ export default curry((options: Options, Origin) => {
                     ops.onChange = onChange
                 }
 
-                if (!ops.multiple) {
+                if (!isEmpty(ops.multiple) && !ops.multiple) {
                     ops.limit = 1
                 }
 

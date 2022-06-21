@@ -44,14 +44,16 @@ class Transfer<
     get targets() {
         const { data, datum } = this.props
 
-        const datumValues = datum.getOuterValue()
+        const datumValues = []
 
-        return datumValues.reduce((p, n) => {
-            const d = datum.getDataByValue(data, n)
+        return datumValues.reduce((accumulatedValue, currentValue) => {
+            const item = datum.getDataByValue(data, currentValue)
 
-            if (d) p.push(d)
+            if (item) {
+                accumulatedValue.push(item.data)
+            }
 
-            return p
+            return accumulatedValue
         }, [])
     }
 

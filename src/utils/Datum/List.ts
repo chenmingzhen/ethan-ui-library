@@ -112,7 +112,7 @@ export default class List<T = string> {
     }
 
     getOuterValue() {
-        let value = this.$values
+        let value: any[] = this.$values
 
         if (this.limit === 1) [value] = this.$values
 
@@ -241,7 +241,6 @@ export default class List<T = string> {
         return false
     }
 
-    /** @todo 返回参数已经修改，合并dev-transfer分支时，需适配代码 */
     getDataByValue(data, value) {
         for (let i = 0; i < data.length; i++) {
             if (this.prediction(value, data[i])) return { data: data[i], index: i }
