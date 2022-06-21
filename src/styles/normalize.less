@@ -585,3 +585,11 @@ h6, .h6 { font-size: @font-size-h6; }
 p {
     margin: 0 0 (@line-height-computed / 2);
 }
+
+// https://stackoverflow.com/questions/61992025/google-chrome-showing-black-border-on-focus-state-for-button-user-agent-styles
+// 懒加载中div focus，移动键盘div出现黑边（chrome中出现）
+*,
+*:focus,
+*:hover {
+    outline: none;
+}

@@ -1,4 +1,4 @@
-import React, { useRef } from 'react'
+import React, { useCallback, useRef } from 'react'
 import useSafeState from '@/hooks/useSafeState'
 import { getParent } from '@/utils/dom/element'
 import { dropdownClass } from '@/styles'
@@ -6,22 +6,15 @@ import { docSize } from '@/utils/dom/document'
 import { getUidStr } from '@/utils/uid'
 import classnames from 'classnames'
 import Button from '../Button'
-import List from '../List'
+import AnimationList from '../List'
 import Item from './Item'
-import generateAbsoluteList from '../List/AbsoluteList'
+import AbsoluteList from '../List/AbsoluteList'
 import absoluteConsumer from '../Table/context'
 import Caret from '../icons/Caret'
 import Position from './enum/Position'
 import { ComplicatedDropDownData, IDropDownProps } from './type'
 
-function buildDropList(animation: boolean) {
-    const FadeList = List(['fade'], animation ? 'fast' : 0)
-
-    return generateAbsoluteList(({ focus, ...props }) => <FadeList show={focus} {...props} />)
-}
-
-// TODO 矫正position的方向，顺带修改absoluteList的getPosition的判断
-
+/** @TODO 矫正position的方向，顺带修改absoluteList的getPosition的判断 */
 const Dropdown: React.FC<IDropDownProps> = props => {
     const {
         animation,
@@ -42,11 +35,13 @@ const Dropdown: React.FC<IDropDownProps> = props => {
         buttonProps,
     } = props
 
-    const dropdownParentElement = useRef<HTMLDivElement>()
+    const dropdownParentElementRef = useRef<HTMLDivElement>()
+
+    const animationListRef = useRef<HTMLDivElement>()
 
     const dropdownId = useRef(getUidStr()).current
 
-    const DropdownList = useRef(buildDropList(animation)).current
+    const isRendered = useRef(false)
 
     const closeTimer = useRef<NodeJS.Timeout>()
 
@@ -55,14 +50,14 @@ const Dropdown: React.FC<IDropDownProps> = props => {
 
         if (pos !== 'auto') return pos
 
-        if (!dropdownParentElement.current) return 'bottom-left'
+        if (!dropdownParentElementRef.current) return 'bottom-left'
 
         // 如果position是auto 计算位置给出最合适的position
         const windowHeight = docSize.height
 
         const windowWidth = docSize.width
 
-        const rect = dropdownParentElement.current.getBoundingClientRect()
+        const rect = dropdownParentElementRef.current.getBoundingClientRect()
 
         pos = rect.bottom > windowHeight / 2 ? 'top-' : 'bottom-'
         pos += rect.right > windowWidth / 2 ? 'right' : 'left'
@@ -72,45 +67,45 @@ const Dropdown: React.FC<IDropDownProps> = props => {
 
     const position = getPosition()
 
-    const [show, setShow] = useSafeState(false)
+    const [show, updateShow] = useSafeState(false)
 
-    function clickAway(e: MouseEvent) {
+    const clickAway = useCallback((e: MouseEvent) => {
         const el = getParent(e.target, 'a')
 
         const onSelf = absolute
             ? getParent(e.target, `[data-id=${dropdownId}]`)
-            : el === dropdownParentElement.current || dropdownParentElement.current?.contains(el)
+            : el === dropdownParentElementRef.current || dropdownParentElementRef.current?.contains(el)
 
         if (el?.getAttribute('data-role') === 'item' && onSelf) return
 
         handleHide(0)
-    }
+    }, [])
 
-    function toggleDocumentEvent(isBind: boolean) {
+    const toggleDocumentEvent = useCallback((isBind: boolean) => {
         const method = isBind ? 'addEventListener' : 'removeEventListener'
 
         document[method]('click', clickAway)
-    }
+    }, [])
 
-    function handleFocus() {
+    const handleFocus = useCallback(() => {
         if (closeTimer.current) {
             clearTimeout(closeTimer.current)
         }
 
         if (show) return
 
-        setShow(true)
+        updateShow(true)
 
         toggleDocumentEvent(true)
-    }
+    }, [])
 
-    function handleHide(delay = 200) {
+    const handleHide = useCallback((delay = 200) => {
         closeTimer.current = setTimeout(() => {
-            setShow(false)
+            updateShow(false)
 
             toggleDocumentEvent(false)
         }, delay)
-    }
+    }, [])
 
     function handleToggle(isShow: boolean) {
         if (trigger === 'click') return
@@ -137,10 +132,10 @@ const Dropdown: React.FC<IDropDownProps> = props => {
         if (isSub) {
             return (
                 <a
-                    key="button"
                     className={dropdownClass('button', 'item', show && 'active')}
                     data-role="item"
                     onClick={handleFocus}
+                    key="button"
                 >
                     <span className={spanClassName}>{placeholder}</span>
                     {caret}
@@ -163,50 +158,68 @@ const Dropdown: React.FC<IDropDownProps> = props => {
     function renderList() {
         if (!Array.isArray(data) || data.length === 0) return null
 
+        if (!isRendered.current && !show) return renderButton()
+
+        isRendered.current = true
+
         return (
             <>
-                <DropdownList
-                    absolute={absolute}
-                    parentElement={dropdownParentElement.current}
-                    position={position}
-                    className={classnames(dropdownClass('menu', columns > 1 && 'box-list'), listClassName)}
-                    style={{ width }}
-                    key="list"
+                <AbsoluteList
                     focus={show}
-                    data-id={dropdownId}
+                    absolute={absolute}
+                    getParentElement={() => dropdownParentElementRef.current}
+                    getListElement={() => animationListRef.current}
+                    position={position}
+                    style={{ width }}
                     fixed="min"
                 >
-                    {data.map((d: ComplicatedDropDownData, index) => {
-                        const childPosition = Position[position]
+                    {({ style: absoluteStyle, resetPosition }) => {
+                        return (
+                            <AnimationList
+                                show={show}
+                                style={absoluteStyle}
+                                data-id={dropdownId}
+                                className={classnames(dropdownClass('menu', columns > 1 && 'box-list'), listClassName)}
+                                animationTypes={['fade']}
+                                duration={animation ? 'fast' : 0}
+                                getRef={list => (animationListRef.current = list)}
+                                onTransitionEnd={resetPosition}
+                                lazyDom
+                            >
+                                {data.map((d: ComplicatedDropDownData, index) => {
+                                    const childPosition = Position[position]
 
-                        const itemClassName = dropdownClass('item', !width && 'no-width')
+                                    const itemClassName = dropdownClass('item', !width && 'no-width')
 
-                        return d.children ? (
-                            <Dropdown
-                                style={{ width: '100%' }}
-                                data={d.children}
-                                disabled={d.disabled}
-                                placeholder={d.content}
-                                key={index}
-                                position={childPosition}
-                                onClick={onClick}
-                                renderItem={renderItem}
-                                trigger={trigger}
-                                isSub
-                            />
-                        ) : (
-                            <Item
-                                data={d}
-                                key={index}
-                                onClick={d.onClick || onClick}
-                                itemClassName={itemClassName}
-                                renderItem={renderItem}
-                                columns={columns}
-                                width={width}
-                            />
+                                    return d.children ? (
+                                        <Dropdown
+                                            style={{ width: '100%' }}
+                                            data={d.children}
+                                            disabled={d.disabled}
+                                            placeholder={d.content}
+                                            key={index}
+                                            position={childPosition}
+                                            onClick={onClick}
+                                            renderItem={renderItem}
+                                            trigger={trigger}
+                                            isSub
+                                        />
+                                    ) : (
+                                        <Item
+                                            data={d}
+                                            key={index}
+                                            onClick={d.onClick || onClick}
+                                            itemClassName={itemClassName}
+                                            renderItem={renderItem}
+                                            columns={columns}
+                                            width={width}
+                                        />
+                                    )
+                                })}
+                            </AnimationList>
                         )
-                    })}
-                </DropdownList>
+                    }}
+                </AbsoluteList>
 
                 {renderButton()}
             </>
@@ -215,7 +228,7 @@ const Dropdown: React.FC<IDropDownProps> = props => {
 
     return (
         <div
-            ref={dropdownParentElement}
+            ref={dropdownParentElementRef}
             className={cls}
             style={style}
             onMouseEnter={handleToggle.bind(this, true)}

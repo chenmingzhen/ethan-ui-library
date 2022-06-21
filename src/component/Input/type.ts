@@ -24,10 +24,10 @@ export interface InputProps<Value = string | number>
     style?: React.CSSProperties
     type?: HTMLInputElement['type']
     value?: Value
-    forwardedRef?: React.MutableRefObject<HTMLInputElement> | ((el: HTMLInputElement) => void)
+    forwardedRef?: React.MutableRefObject<HTMLInputElement> | React.RefCallback<HTMLInputElement>
 }
 
-export interface InputNumberProps extends InputProps {
+export interface InputNumberProps extends InputProps<number> {
     allowNull?: boolean
     hideArrow?: boolean
     max?: number

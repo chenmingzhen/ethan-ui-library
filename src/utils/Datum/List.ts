@@ -1,4 +1,6 @@
 import shallowEqual from '@/utils/shallowEqual'
+import { warning } from '../warning'
+import { DATUM_LIST_INVALID_VALUES } from '../warning/types'
 import { CHANGE_ACTION, INIT_ACTION } from './types'
 
 export type FormatInfer<T> = T extends Record<string, any>
@@ -24,8 +26,6 @@ export interface DatumListProps<Data = any, FormatResult = Data> {
         checked: boolean
     ): void
 
-    separator?: string
-
     /** 继承覆写此属性 */
     value?: any
 
@@ -38,17 +38,11 @@ export interface DatumListProps<Data = any, FormatResult = Data> {
     limit?: number
 }
 
-/**
- * 装载一组数据的HOC List
- * 事件派发
- * 值存储
- */
+/** 不存储Data，只存储Value */
 export default class List<T = string> {
     distinct?: boolean
 
     limit?: number
-
-    separator?: string
 
     format: (value) => string
 
@@ -70,50 +64,40 @@ export default class List<T = string> {
     disabled: (...args) => boolean
 
     /** InnerValues 内部直接操作的源，不引起更新，由value的变化驱动更新 */
-    $values: any
+    private $values: any
 
     /** 缓存outerValue */
     $cachedValue: any
 
-    constructor(args: DatumListProps<T> = {}) {
-        const { format, onChange, separator, value, prediction, distinct, disabled, limit } = args
-
-        this.distinct = distinct
-
-        this.limit = limit
-
-        this.separator = separator
-
-        this.prediction = prediction
-
-        this.onChange = onChange
-
-        this.initFormat(format)
-
-        this.setDisabled(disabled)
-
-        this.setInnerValue(value, INIT_ACTION)
-    }
-
-    get length() {
-        return this.$values.length
-    }
-
-    /**
-     * 劫持values 本质是$value
-     * set值时 dispatch事件
-     */
+    /** 暴露给外部获取的values */
     get values() {
         return this.$values
     }
 
-    /** 暴露外部设置values 触发更新 */
     set values(values) {
         this.$values = values
 
         this.dispatch(CHANGE_ACTION)
 
         this.onChange?.(this.getOuterValue())
+    }
+
+    constructor(args: DatumListProps<T> = {}) {
+        const { format, onChange, value, prediction, distinct, disabled, limit } = args
+
+        this.distinct = distinct
+
+        this.limit = limit
+
+        this.onChange = onChange
+
+        this.initFormat(format)
+
+        this.prediction = prediction || ((formatValue, data) => formatValue === this.format(data))
+
+        this.setDisabled(disabled)
+
+        this.setInnerValue(value, INIT_ACTION)
     }
 
     setInnerValue(values = [], type) {
@@ -128,10 +112,9 @@ export default class List<T = string> {
     }
 
     getOuterValue() {
-        let value = this.values
+        let value = this.$values
 
-        if (this.limit === 1) value = this.values[0]
-        else if (this.separator) value = this.values.join(this.separator)
+        if (this.limit === 1) [value] = this.$values
 
         this.$cachedValue = value
 
@@ -139,7 +122,7 @@ export default class List<T = string> {
     }
 
     /** 将数据转为Array格式 */
-    arrayValue(values = []) {
+    private arrayValue(values = []) {
         if (this.limit === 1 && !Array.isArray(values)) {
             return [values]
         }
@@ -151,18 +134,7 @@ export default class List<T = string> {
             return values
         }
 
-        // values值string类型 判断是否传入分割符  根据分割符来返回values的数组
-        if (typeof values === 'string') {
-            if (this.separator) {
-                return (values as string).split(this.separator).map(s => s.trim())
-            }
-
-            console.warn('Select separator parameter is empty.')
-
-            return [values] as string[]
-        }
-
-        console.error(new Error('Select values is not valid.'))
+        warning(DATUM_LIST_INVALID_VALUES)
 
         return []
     }
@@ -178,7 +150,7 @@ export default class List<T = string> {
     }
 
     // 设置disabled
-    setDisabled(disabled) {
+    private setDisabled(disabled) {
         this.disabled = (...obj) => {
             switch (typeof disabled) {
                 case 'boolean':
@@ -192,7 +164,7 @@ export default class List<T = string> {
     }
 
     // 处理Change 并触发事件派发
-    handleChange(values, ...args) {
+    private handleChange(values, ...args) {
         this.$values = values
 
         this.dispatch(CHANGE_ACTION)
@@ -220,8 +192,6 @@ export default class List<T = string> {
         return flatten
     }
 
-    /** @todo 入参改为对象形式，去掉第二个参数 */
-    // hoc=》setValue=》本类set=》本类add
     add(data: T | T[], _?: any, childrenKey?: string, unshift?: boolean) {
         if (data === undefined || data === null) return
 
@@ -246,49 +216,47 @@ export default class List<T = string> {
 
         const values = []
 
-        for (const r of raws) {
-            const v = this.format(r)
+        for (let i = 0; i < raws.length; i++) {
+            const formatDataValue = this.format(raws[i])
 
-            if (v !== undefined) values.push(v)
+            if (formatDataValue !== undefined) {
+                values.push(formatDataValue)
+            }
         }
 
-        this.handleChange(unshift ? values.concat(this.values) : this.values.concat(values), data, true)
+        this.handleChange(unshift ? values.concat(this.$values) : this.$values.concat(values), data, true)
     }
 
-    set(value) {
+    set(data) {
         this.$values = []
 
-        this.add(value)
+        this.add(data)
     }
 
-    check(raw) {
-        if (this.prediction) {
-            for (let i = 0; i < this.values.length; i++) {
-                if (this.prediction(this.values[i], raw)) return true
-            }
-            return false
+    check(data) {
+        for (let i = 0; i < this.$values.length; i++) {
+            if (this.prediction(this.$values[i], data)) return true
         }
 
-        return this.values.indexOf(this.format(raw)) >= 0
+        return false
     }
 
+    /** @todo 返回参数已经修改，合并dev-transfer分支时，需适配代码 */
     getDataByValue(data, value) {
-        if (this.prediction) {
-            for (let i = 0, count = data.length; i < count; i++) {
-                if (this.prediction(value, data[i])) return data[i]
-            }
-            return null
+        for (let i = 0; i < data.length; i++) {
+            if (this.prediction(value, data[i])) return { data: data[i], index: i }
         }
 
-        return data.find(d => value === this.format(d))
+        return null
     }
 
+    /** @todo 暂未用到 考虑移除 */
     clear() {
         this.values = []
     }
 
     // 派发事件
-    dispatch(name, ...args) {
+    private dispatch(name, ...args) {
         const event = this.$events[name]
 
         if (!event) return
@@ -296,11 +264,9 @@ export default class List<T = string> {
         event.forEach(fn => fn(...args))
     }
 
-    initFormat(f) {
+    private initFormat(f) {
         switch (typeof f) {
             case 'string':
-                // 获取格式化后的值  如data的item {id:1,color:"red"} datum={{format:"color"}}
-                // 获取就是color的值
                 this.format = value => value[f]
                 break
             case 'function':
@@ -312,14 +278,11 @@ export default class List<T = string> {
         }
     }
 
-    defaultPrediction(value, data) {
-        return value === this.format(data)
-    }
+    /** @todo 移除第二个参数 */
+    remove(data, _?, childrenKey?) {
+        if (!data) return
 
-    remove(value, _?, childrenKey?) {
-        if (!value) return
-
-        let raws = Array.isArray(value) ? value : [value]
+        let raws = Array.isArray(data) ? data : [data]
 
         if (childrenKey) {
             raws = this.flattenTreeData(raws, childrenKey)
@@ -327,21 +290,28 @@ export default class List<T = string> {
 
         raws = raws.filter(r => !this.disabled(r))
 
-        const values = []
+        const newValues = []
 
-        const prediction = this.prediction || this.defaultPrediction.bind(this)
+        outer: for (let i = 0; i < this.$values.length; i++) {
+            const value = this.$values[i]
 
-        outer: for (const val of this.values) {
             for (let j = 0; j < raws.length; j++) {
-                if (raws[j].IS_NOT_MATCHED_VALUE || prediction(val, raws[j])) {
+                if (this.prediction(value, raws[j])) {
                     raws.splice(j, 1)
+
                     continue outer
                 }
             }
-            values.push(val)
+
+            newValues.push(value)
         }
 
-        this.handleChange(values, value, false)
+        this.handleChange(newValues, data, false)
+    }
+
+    /** 移除不属于原数据data的value，例如Select创建模式创建的值 */
+    removeNotOriginData(afterValues, removedValue) {
+        this.handleChange(afterValues, removedValue, false)
     }
 
     subscribe(name, fn) {

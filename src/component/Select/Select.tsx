@@ -1,28 +1,64 @@
-// @ts-nocheck
 import React from 'react'
-import PropTypes from 'prop-types'
-import { PureComponent } from '@/utils/component'
-import { getProps } from '@/utils/proptypes'
-import { getUidStr } from '@/utils/uid'
 import { selectClass } from '@/styles'
-import { getLocale } from '@/locale'
-import { isObject } from '@/utils/is'
+import { PureComponent } from '@/utils/component'
+import { getUidStr } from '@/utils/uid'
+import { addResizeObserver, getParent, isDescendent } from '@/utils/dom/element'
 import { docSize } from '@/utils/dom/document'
-import { getParent } from '@/utils/dom/element'
+import { debounce } from '@/utils/func'
+import { isEmpty } from '@/utils/is'
+import { KeyboardKey } from '@/utils/keyboard'
+import { SelectOptionListBindFuncMap, SelectState, ISelectProps } from './type'
 import Result from './Result'
 import OptionList from './OptionList'
-import OptionTree from './OptionTree'
+import AbsoluteList from '../List/AbsoluteList'
+import { FAST_TRANSITION_DURATION } from '../List'
 import BoxList from './BoxList'
-import absoluteList from '../List/AbsoluteList'
 
-const WrappedOptionList = absoluteList(OptionList)
-const WrappedBoxList = absoluteList(BoxList)
-const WrappedOptionTree = absoluteList(OptionTree)
+class Select extends PureComponent<ISelectProps, SelectState> {
+    static defaultProps = {
+        clearable: false,
+        data: [],
+        height: 256,
+        lineHeight: 32,
+        loading: false,
+        multiple: false,
+        renderItem(item) {
+            if (typeof item === 'string' || typeof item === 'number') {
+                return item
+            }
 
-// 判断元素是否为result输入框
-const isResult = el => getParent(el, `.${selectClass('result')}`)
+            console.error(
+                `RenderItem or RenderResult must return reactNode.But Got ${typeof item}.Maybe you passed a wrong value or didn't pass it`
+            )
 
-class Select extends PureComponent {
+            return null
+        },
+        text: {},
+        compressed: false,
+        trim: true,
+        autoAdapt: false,
+        showArrow: true,
+        focusSelected: true,
+    }
+
+    element: HTMLDivElement
+
+    selectId = getUidStr()
+
+    selectOptionListFuncMap: SelectOptionListBindFuncMap
+
+    isRender = false
+
+    keepSelectFocus = false
+
+    clickLockTimer: NodeJS.Timeout
+
+    inputInstance: HTMLInputElement
+
+    cancelResizeObserver: () => void
+
+    deleteLockTimer: NodeJS.Timeout
+
     constructor(props) {
         super(props)
 
@@ -31,369 +67,379 @@ class Select extends PureComponent {
             focus: false,
             position: 'drop-down',
         }
-
-        this.bindElement = this.bindElement.bind(this)
-        this.bindOptionFunc = this.bindOptionFunc.bind(this)
-        this.setInputReset = this.setInputReset.bind(this)
-        this.shouldFocus = this.shouldFocus.bind(this)
-
-        this.handleClick = this.handleClick.bind(this)
-        this.handleFocus = this.handleFocus.bind(this)
-        this.handleBlur = this.handleState.bind(this, false)
-        this.handleClear = this.handleClear.bind(this)
-        this.handleChange = this.handleChange.bind(this)
-        this.handleRemove = this.handleChange.bind(this, false)
-        this.handleKeyDown = this.handleKeyDown.bind(this)
-        this.handleInputFocus = this.handleInputFocus.bind(this)
-        this.handleControlChange = this.handleControlChange.bind(this)
-        this.handleClickAway = this.handleClickAway.bind(this)
-        this.handleInputBlur = this.handleInputBlur.bind(this)
-
-        this.renderItem = this.renderItem.bind(this)
-
-        // option list not render till first focused
-        this.renderPending = true
-
-        this.optionList = {}
-        this.selectId = `select_${getUidStr()}`
-        // this.closeByResult = false
-        this.mouseDown = false
-
-        this.lastResult = undefined
     }
 
-    componentDidUpdate(prevProps, prevState) {
-        const { onFilter } = this.props
+    componentDidMount() {
+        super.componentDidMount()
 
-        // clear filter
-        if (prevState.focus !== this.state.focus && !this.state.focus && onFilter) {
-            setTimeout(() => {
-                onFilter('')
-            }, 400)
-        }
+        /** Result高度发生变化时 */
+        this.cancelResizeObserver = addResizeObserver(this.element, this.forceUpdate, { direction: 'y' })
     }
 
     componentWillUnmount() {
         super.componentWillUnmount()
-        this.clearClickAway()
-    }
 
-    getText(key) {
-        return this.props.text[key] || getLocale(key)
-    }
-
-    setInputReset(fn) {
-        this.inputReset = fn
-    }
-
-    // 判断点击的内容是否为Selected容器或容器内
-    isDescendent(el, id) {
-        if (el.getAttribute('data-id') === id) return true
-        if (!el.parentElement) return false
-
-        return this.isDescendent(el.parentElement, id)
-    }
-
-    bindOptionFunc(name, fn) {
-        // 选项List绑定
-        this.optionList[name] = fn
-    }
-
-    bindElement(el) {
-        this.element = el
-    }
-
-    // 绑定document的点击事件
-    bindClickAway() {
-        document.addEventListener('click', this.handleClickAway, true)
-    }
-
-    // 解绑document的点击事件
-    clearClickAway() {
-        document.removeEventListener('click', this.handleClickAway, true)
-    }
-
-    // 点击屏幕事件
-    handleClickAway(e) {
-        const desc = this.isDescendent(e.target, this.selectId)
-
-        // 点击为外部文档 非Select
-        if (!desc) {
-            // absolute情况
-            if (!getParent(e.target, `[data-id=${this.selectId}]`)) {
-                // 失焦
-                this.blured = true
-                // 回调onBlur
-                this.props.onBlur()
-                // 清除document事件
-                this.clearClickAway()
-                // Select外层div失去焦点
-                if (this.element) this.element.blur()
-            }
-
-            this.handleState(false, null)
+        if (this.cancelResizeObserver) {
+            this.cancelResizeObserver()
         }
     }
 
-    handleClick(e) {
-        const { onCreate, onFilter } = this.props
-        const plain = !onCreate && !onFilter
+    /**
+     *  @description
+     *  select的容器使用了onBlur和onFocus，有时候点击select里面的元素，不用失去焦点。
+     *  使用afterActionKeepFocus标记去阻止重新执行focus和blur事件
+     */
+    startKeepSelectFocus = (autoFocus = true) => {
+        /** 标记操作的DOM仍然是属于Select组件，阻止聚焦和失焦 */
+        this.keepSelectFocus = true
 
-        // 点击输入框
-        if (plain && isResult(e.target) && this.state.focus) {
-            this.handleState(false, e)
-            return
-        }
+        setTimeout(() => {
+            /** 虽然阻止了handleBlur和handleFocus的执行，此时的Select容器已经是失去焦点状态，重新拿回焦点 */
+            if (autoFocus) this.element.focus()
 
-        this.handleState(true, e)
+            this.keepSelectFocus = false
+        }, 30)
     }
 
-    // 设置折叠状态
-    handleState(focus, e) {
-        if (this.props.disabled === true) return
+    startDeleteLockTimer = () => {
+        if (this.deleteLockTimer) {
+            clearTimeout(this.deleteLockTimer)
 
-        if (focus === this.state.focus) return
-
-        // 点击了关闭的icon 不处理
-        if (focus && e && e.target.classList.contains(selectClass('close'))) return
-
-        const { height, onCollapse } = this.props
-        let { position } = this.props
-        // 计算选择框的位置
-        const windowHeight = docSize.height
-        const bottom = height + this.element.getBoundingClientRect().bottom
-        if (bottom > windowHeight && !position) position = 'drop-up'
-
-        // 执行折叠回调
-        if (onCollapse) onCollapse(focus)
-        this.setState({ focus, position: position || 'drop-down' })
-
-        if (focus) {
-            this.blured = false
-            this.renderPending = false
+            this.deleteLockTimer = null
         }
+
+        this.deleteLockTimer = setTimeout(() => {
+            this.deleteLockTimer = null
+        }, 500)
     }
 
-    // 转换控制模式
-    handleControlChange(control) {
+    bindClickAway = () => {
+        /**
+         * 事件执行顺序
+         * @see https://stackoverflow.com/questions/39439115/how-to-execute-click-function-before-the-blur-function
+         * 使用mousedown代替click，因为mousedown的执行时先于blur,在Option中为click事件，所以这里使用mousedown提前blur，click执行
+         * 如果点击的还是select的元素且不是Input，提前上锁，然后不能继续执行blur
+         */
+
+        /**
+         * @see https://developer.mozilla.org/zh-CN/docs/Web/API/EventTarget/addEventListener
+         * 设置为true,捕获阶段执行,防止下层的DOM阻止冒泡无法执行到这个Handler
+         *  */
+        document.addEventListener('mousedown', this.handleClickAway, true)
+    }
+
+    clearClickAway = () => {
+        document.removeEventListener('mousedown', this.handleClickAway, true)
+    }
+
+    bindOptionListFunc = (funcMap: SelectOptionListBindFuncMap) => {
+        this.selectOptionListFuncMap = funcMap
+    }
+
+    bindElement = (element: HTMLDivElement) => {
+        this.element = element
+    }
+
+    bindInputInstance = (input: HTMLInputElement) => {
+        this.inputInstance = input
+    }
+
+    handleControlChange = (control: SelectState['control']) => {
         if (control !== this.state.control) this.setState({ control })
     }
 
-    // data改变执行
-    handleChange(_, data, fromInput) {
-        const { datum, multiple, disabled, emptyAfterSelect, onFilter, filterText, onCreate } = this.props
-        if (disabled === true) return
+    handleClickAway = (evt: MouseEvent) => {
+        const desc = isDescendent(evt.target as HTMLElement, this.selectId)
 
-        // if click option, ignore blur event
-        if (this.inputBlurTimer) {
-            this.lastChangeIsOptionClick = true
-            clearTimeout(this.inputBlurTimer)
+        const clickInput = getParent(evt.target as HTMLElement, `.${selectClass('input')}`)
+
+        const clickCustom = getParent(evt.target as HTMLElement, `.${selectClass('custom')}`)
+
+        /** 点击Select内部元素时 */
+        if (desc) {
+            /** 多选模式下点击输入框或者点击自定义区域，Select保持Focus状态，但不获取焦点 */
+            if (clickInput || clickCustom) {
+                this.startKeepSelectFocus(false)
+            } else {
+                this.startKeepSelectFocus()
+            }
+
+            return
         }
 
-        // 多选
+        /** 如果是非绝对定位的情况下，点击元素外的内容会由事件触发handleBlur，但是在绝对定位下，下拉的内容已经不在Select的DOM上，无法冒泡的SelectDOM上，所以手动触发handleBlur */
+        if (document.activeElement !== this.element) {
+            this.handleBlur(undefined)
+        }
+    }
+
+    handleBlur: React.FocusEventHandler<HTMLDivElement> = evt => {
+        if (this.keepSelectFocus) return
+
+        /**
+         * FocusEvent.relatedTarget
+         * @see https://developer.mozilla.org/en-US/docs/Web/API/FocusEvent/relatedTarget
+         */
+
+        if (evt && evt.relatedTarget && getParent(evt.relatedTarget as HTMLElement, `.${selectClass('result')}`)) {
+            return
+        }
+
+        this.props.onBlur(evt)
+
+        this.clearClickAway()
+
+        this.handleFocusStateChange(false, evt)
+    }
+
+    handleChange = (dataItem: any, autoFocusElement = true) => {
+        const { datum, multiple, disabled, onInput } = this.props
+
+        if (disabled === true || this.clickLockTimer) return
+
+        /** 以动画持续时间做锁的时间 */
+        this.clickLockTimer = setTimeout(() => {
+            this.clickLockTimer = null
+        }, 240)
+
         if (multiple) {
-            // filter中getResultByValues设置IS_NOT_MATCHED_VALUE 无匹配到值
-            if (isObject(data) && data.IS_NOT_MATCHED_VALUE) {
-                datum.remove(data)
-            } else {
-                const checked = !datum.check(data)
-                //
-                if (checked) {
-                    // 选中添加
-                    datum.add(data)
-                } else {
-                    if (fromInput === true) return
-                    // 移除
-                    datum.remove(data)
+            const checked = !datum.check(dataItem)
+
+            if (checked) {
+                datum.add(dataItem)
+
+                /** 多选创建模式选中后，需要清除值,并让Input获取焦点，但不执行handleBlur */
+                if (onInput) {
+                    onInput('')
+
+                    autoFocusElement = false
                 }
-                if (this.inputReset) this.inputReset()
+            } else {
+                datum.remove(dataItem)
             }
         } else {
-            datum.set(data)
-            this.handleState(false)
-            // 元素聚焦
-            setTimeout(() => {
-                if (onCreate && this.blured) return
-                if (this.element) this.element.focus()
-            }, 10)
+            datum.set(dataItem)
+
+            this.handleFocusStateChange(false)
         }
 
-        if (emptyAfterSelect && onFilter && filterText) onFilter('')
-    }
-
-    // 判断是否需要focus
-    shouldFocus(el) {
-        // 点击为自身
-        if (el.getAttribute('data-id') === this.selectId) return true
-        // 点击结果result框
-        if (getParent(el, `.${selectClass('result')}`)) return true
-
-        return false
-    }
-
-    // 聚焦处理
-    handleFocus(e) {
-        if (!this.shouldFocus(e.target)) return
-
-        // 回调Focus
-        this.props.onFocus(e)
-
-        this.bindClickAway()
-    }
-
-    // result input 聚焦
-    handleInputFocus() {
-        this.inputLocked = true
-        // 如果上一次操作是通过keycode保存的 那么就保持hover的位置
-        // 否则 清除hover的位置
-        if (this.props.inputable && this.state.control === 'keyboard') {
-            // 暂不显示选中
-            if (this.optionList.handleHover) this.optionList.handleHover(0, true)
+        if (!autoFocusElement && this.inputInstance) {
+            this.inputInstance.focus()
         }
+
+        this.startKeepSelectFocus(autoFocusElement)
     }
 
-    // result Input 失焦
-    handleInputBlur(text) {
-        const { onFilter, onCreate, multiple, filterSingleSelect, data } = this.props
+    handleFocusStateChange = (focus: boolean, e?) => {
+        const { disabled, height, onCollapse, position } = this.props
 
-        if (onFilter && text && filterSingleSelect && data.length === 1) {
-            this.handleChange(null, data[0], false)
+        if (disabled === true) return
+
+        if (this.state.focus === focus) return
+
+        if (focus && e && e.target.classList.contains(selectClass('close'))) return
+
+        let newPosition = position || 'drop-down'
+
+        const windowHeight = docSize.height
+
+        const bottom = height + this.element.getBoundingClientRect().bottom
+
+        if (bottom > windowHeight && !newPosition) newPosition = 'drop-up'
+
+        if (onCollapse) onCollapse(focus)
+
+        /** 当下拉框被隐藏时，不需要清除ClickAway事件，因为此时的Select的element还处于focus,当Select失去焦点时才清除ClickAway事件 */
+        if (focus) {
+            this.bindClickAway()
+        }
+
+        this.setState({ focus, position: newPosition })
+    }
+
+    handleFocus: React.FocusEventHandler<HTMLDivElement> = evt => {
+        if (this.keepSelectFocus) return
+
+        this.props.onFocus(evt)
+    }
+
+    handleListTransitionEnd = debounce(() => {
+        const { onInput } = this.props
+
+        const { focus } = this.state
+
+        if (focus || !onInput) return
+
+        onInput('')
+    }, FAST_TRANSITION_DURATION)
+
+    /** 如果是可输入的情况, 打开下拉时，焦点已经在Input上了 */
+    handleClick = (evt: React.MouseEvent<HTMLDivElement, MouseEvent> | React.KeyboardEvent<HTMLDivElement>) => {
+        if (!getParent(evt.target as HTMLElement, `.${selectClass('result')}`) && evt.target !== this.element) {
             return
         }
-        if (!onCreate) return
-        if (multiple && !text) return
 
-        if (this.lastChangeIsOptionClick) return
+        const { onInput } = this.props
 
-        // if click option, ignore input blur
-        this.inputBlurTimer = setTimeout(() => {
-            const retData = onCreate(text)
-            this.handleChange(null, retData, true)
-        }, 200)
-    }
+        const { focus } = this.state
 
-    handleClear() {
-        this.props.datum.setValue([])
-        this.element.focus()
+        const plain = !onInput
 
-        if (this.state.focus === false) {
-            this.forceUpdate()
+        if (plain && focus) {
+            this.handleFocusStateChange(false, evt)
         } else {
-            this.handleState(false)
+            this.handleFocusStateChange(true, evt)
         }
     }
 
-    // 处理回车事件
-    // 获取选中的数值
-    handleEnter() {
-        const hoverIndex = this.optionList.getIndex && this.optionList.getIndex()
+    handleEnter = () => {
+        const { data, groupKey } = this.props
 
-        const data = this.props.data[hoverIndex]
+        const hoverIndex = this.selectOptionListFuncMap.getHoverIndex?.()
 
-        if (data && !data[this.props.groupKey]) {
-            const checked = !this.props.datum.check(data)
+        const hoverData = data[hoverIndex]
 
-            this.handleChange(checked, data)
+        if (!isEmpty(hoverData) && !hoverData[groupKey]) {
+            this.handleChange(hoverData)
 
-            if (this.optionList.handleHover) this.optionList.handleHover(hoverIndex)
+            this.selectOptionListFuncMap.handleHover?.(hoverIndex)
         }
     }
 
-    // 处理keycode事件
-    handleKeyDown(e) {
-        // just for enter to open the list
-        if ((e.keyCode === 13 || e.keyCode === 40) && !this.state.focus) {
-            e.preventDefault()
-            this.handleClick(e)
+    handleDelete = (evt: React.KeyboardEvent<HTMLDivElement>) => {
+        const { multiple, filterText, datum, data } = this.props
+
+        if (!multiple || this.deleteLockTimer) return
+
+        if (filterText.length === 1) {
+            this.startDeleteLockTimer()
+        }
+
+        if (!isEmpty(filterText)) return
+
+        const { values } = datum
+
+        if (!values.length) return
+
+        const afterValues = [...values]
+
+        const deleteValue = afterValues.pop()
+
+        const { data: dataItem } = datum.getDataByValue(data, deleteValue) || {}
+
+        if (dataItem) {
+            this.handleRemove(dataItem)
+        } else {
+            /* onCreate生成的result */
+            datum.removeNotOriginData(afterValues, deleteValue)
+        }
+
+        evt.stopPropagation()
+
+        evt.preventDefault()
+    }
+
+    handleKeyDown: React.KeyboardEventHandler<HTMLDivElement> = evt => {
+        const { focus } = this.state
+
+        if (evt.keyCode === 13 && !focus) {
+            evt.preventDefault()
+
+            this.handleClick(evt)
+
             return
         }
 
-        // fot close the list
-        if (e.keyCode === 9) {
-            this.props.onBlur(e)
+        if (evt.key === KeyboardKey.Tab) {
+            if (this.element) {
+                /** 如果是输入模式下点击Tab，下面的语句是不会执行，由Input冒泡到handleBlur */
+                this.element.blur()
+            }
 
-            if (this.state.focus) this.handleState(false, e)
-            // TODO 考虑删除下面多余逻辑
-            else this.clearClickAway()
+            if (focus) this.handleFocusStateChange(false, evt)
+
             return
         }
 
-        // no focus no event
-        if (!this.state.focus) return
+        if (!focus) return
 
         this.handleControlChange('keyboard')
 
-        switch (e.keyCode) {
-            // 移动数据
-            case 38:
-                if (this.optionList.hoverMove) this.optionList.hoverMove(-1)
-                e.preventDefault()
+        switch (evt.key) {
+            case KeyboardKey.ArrowUp:
+                evt.preventDefault()
+
+                if (this.selectOptionListFuncMap) {
+                    this.selectOptionListFuncMap.hoverMove(-1)
+                }
+
                 break
-            case 40:
-                if (this.optionList.hoverMove) this.optionList.hoverMove(1)
-                e.preventDefault()
+            case KeyboardKey.ArrowDown:
+                evt.preventDefault()
+
+                if (this.selectOptionListFuncMap) {
+                    this.selectOptionListFuncMap.hoverMove(1)
+                }
+
                 break
-            case 13:
-                this.handleEnter()
-                e.preventDefault()
-                e.stopPropagation()
+            case KeyboardKey.Enter:
+                if (this.selectOptionListFuncMap) {
+                    this.handleEnter()
+                }
+
+                evt.stopPropagation()
+
+                evt.preventDefault()
+
+                break
+
+            case KeyboardKey.Backspace:
+                this.handleDelete(evt)
+
                 break
             default:
-                this.lastChangeIsOptionClick = false
+                break
         }
     }
 
-    renderItem(data, index) {
+    handleClear = () => {
+        const { datum } = this.props
+
+        const { focus } = this.state
+
+        datum.set([])
+
+        /** 此处按常理 自己将元素focus即可，
+         * 但是前面的动作执行的blur的操作，同时执行focus只会生效第一个blur，
+         * 所以也加入到延时任务中 */
+
+        // document mousedown中已添加startKeepFocus，但是还没打开下拉，是不会触发keepFocus，所以处理下面逻辑处理还没打开就点击清除的情况
+        this.startKeepSelectFocus()
+
+        if (focus) {
+            this.handleFocusStateChange(false)
+        }
+    }
+
+    handleRemove = dataItem => {
+        this.handleChange(dataItem, false)
+    }
+
+    renderItem = (data: any, index?: number) => {
         const { renderItem } = this.props
-        // 如果为string 使用data的属性
+
         return typeof renderItem === 'function' ? renderItem(data, index) : data[renderItem]
     }
 
-    renderTree() {
+    renderList = () => {
         const { focus, position } = this.state
-        const props = {}
-        ;[
-            'treeData',
-            'expanded',
-            'onExpand',
-            'loader',
-            'defaultExpanded',
-            'defaultExpandAll',
-            'datum',
-            'keygen',
-            'multiple',
-            'text',
-            'height',
-            'loading',
-            'onFilter',
-            'filterText',
-            'absolute',
-            'zIndex',
-            'childrenKey',
-        ].forEach(k => {
-            props[k] = this.props[k]
-        })
-        props.renderItem = this.renderItem
-        return (
-            <WrappedOptionTree
-                onChange={this.handleChange}
-                parentElement={this.element}
-                position={position}
-                rootClass={selectClass(position)}
-                selectId={this.selectId}
-                focus={focus}
-                renderPending={this.renderPending}
-                fixed="min"
-                {...props}
-            />
-        )
-    }
+        const { autoAdapt, absolute } = this.props
 
-    renderList() {
-        const { focus, control, position } = this.state
-        const { autoAdapt, value } = this.props
+        if (!focus && !this.isRender) return null
 
-        const props = {}
+        this.isRender = true
+
+        const props: any = {}
         ;[
             'data',
             'datum',
@@ -408,96 +454,95 @@ class Select extends PureComponent {
             'lineHeight',
             'height',
             'loading',
-            'onFilter',
+            'onInput',
             'filterText',
             'zIndex',
             'groupKey',
+            'spinProps',
+            'size',
+            'filterText',
+            'onScrollRatioChange',
+            'customRender',
         ].forEach(k => {
             props[k] = this.props[k]
         })
 
-        const List = props.columns >= 1 || props.columns === -1 ? WrappedBoxList : WrappedOptionList
+        const List = props.columns >= 1 || props.columns === -1 ? BoxList : OptionList
 
         return (
-            <List
-                {...props}
+            <AbsoluteList
                 rootClass={selectClass(position)}
-                autoClass={selectClass(autoAdapt && 'auto-adapt')}
-                bindOptionFunc={this.bindOptionFunc}
-                renderPending={this.renderPending}
                 focus={focus}
-                control={control}
-                selectId={this.selectId}
-                onControlChange={this.handleControlChange}
-                onChange={this.handleChange}
-                renderItem={this.renderItem}
-                parentElement={this.element}
+                getParentElement={() => this.element}
                 position={position}
-                onBlur={this.handleBlur}
+                absolute={absolute}
                 fixed={autoAdapt ? 'min' : true}
-                value={value}
-            />
+            >
+                <List
+                    {...props}
+                    focus={focus}
+                    selectId={this.selectId}
+                    className={selectClass(autoAdapt && 'auto-adapt')}
+                    bindOptionListFunc={this.bindOptionListFunc}
+                    onChange={this.handleChange}
+                    renderItem={this.renderItem}
+                    control={this.state.control}
+                    onControlChange={this.handleControlChange}
+                    onTransitionEnd={this.handleListTransitionEnd}
+                />
+            </AbsoluteList>
         )
     }
 
-    renderOptions() {
-        const { treeData } = this.props
-
-        if (treeData) return this.renderTree()
-
-        return this.renderList()
-    }
-
     render() {
+        const { position, focus } = this.state
+
         const {
             placeholder,
             multiple,
             clearable,
             disabled,
             size,
-            onFilter,
             datum,
             filterText,
             onCreate,
             result,
             compressed,
-            trim,
-            renderUnmatched,
             showArrow,
-            focusSelected,
             compressedClassName,
             resultClassName,
+            onInput,
         } = this.props
 
         const className = selectClass(
             'inner',
             size,
-            this.state.focus && 'focus',
-            this.state.position,
+            focus && 'focus',
+            position,
             multiple && 'multiple',
-            disabled === true && 'disabled',
-            !trim && 'pre'
+            disabled === true && 'disabled'
         )
+
         const renderResult = this.props.renderResult || this.renderItem
 
         return (
             <div
-                // eslint-disable-next-line
-        tabIndex={disabled === true ? -1 : 0}
+                tabIndex={disabled === true ? -1 : 0}
                 ref={this.bindElement}
                 className={className}
                 data-id={this.selectId}
                 onFocus={this.handleFocus}
                 onClick={this.handleClick}
+                onBlur={this.handleBlur}
                 onKeyDown={this.handleKeyDown}
             >
                 <Result
-                    trim={trim}
+                    size={size}
                     filterText={filterText}
                     onClear={clearable ? this.handleClear : undefined}
                     onCreate={onCreate}
+                    onInput={onInput}
                     onRemove={this.handleRemove}
-                    onFilter={onFilter}
                     datum={datum}
                     disabled={disabled}
                     focus={this.state.focus}
@@ -505,95 +550,17 @@ class Select extends PureComponent {
                     multiple={multiple}
                     placeholder={placeholder}
                     renderResult={renderResult}
-                    renderUnmatched={renderUnmatched}
-                    onInputBlur={this.handleInputBlur}
-                    onInputFocus={this.handleInputFocus}
-                    setInputReset={this.setInputReset}
                     compressed={compressed}
                     showArrow={showArrow}
-                    focusSelected={focusSelected}
                     compressedClassName={compressedClassName}
                     resultClassName={resultClassName}
+                    onBindInputInstance={this.bindInputInstance}
                 />
-                {this.renderOptions()}
+
+                {this.renderList()}
             </div>
         )
     }
-}
-
-Select.propTypes = {
-    ...getProps(PropTypes, 'placeholder', 'keygen'),
-    // 为 true 时，选项弹出层在 DOM 中独立 render
-    absolute: PropTypes.bool,
-    // 是否可清除值
-    clearable: PropTypes.bool,
-    // columns 大于 1 时，选项展示为多列布局模式
-    columns: PropTypes.number,
-    // 数据项，单条数据作为 value 的数据必须是唯一的
-    data: PropTypes.array,
-    // 树形结构数据项，[{children: []}]
-    treeData: PropTypes.array,
-    datum: PropTypes.object.isRequired,
-    disabled: PropTypes.oneOfType([PropTypes.bool, PropTypes.func]),
-    filterText: PropTypes.string,
-    height: PropTypes.number,
-    itemsInView: PropTypes.number,
-    lineHeight: PropTypes.number,
-    loading: PropTypes.oneOfType([PropTypes.element, PropTypes.bool]),
-    multiple: PropTypes.bool,
-    onBlur: PropTypes.func,
-    // 如果设置了 onCreate 事件，组件为可输入状态
-    // onCreate为函数时，将此函数返回值作为新的选项拆入最上方
-    // onCreate为true时，使用默认函数 text => text
-    onCreate: PropTypes.func,
-    // onFilter 不为空时，可以输入过滤数据
-    // onFilter 如果返回一个函数，使用这个函数做前端过滤
-    // 如果不返回，可以自行做后端过滤
-    onFilter: PropTypes.func,
-    onFocus: PropTypes.func,
-    position: PropTypes.string,
-    // 为 string 时，返回 d[string]
-    // 为 function 时，返回函数结果
-    renderItem: PropTypes.oneOfType([PropTypes.string, PropTypes.func]),
-    result: PropTypes.array,
-    size: PropTypes.string,
-    text: PropTypes.object,
-    // 将选中值合并，只在多选模式下有效
-    compressed: PropTypes.bool,
-    trim: PropTypes.bool,
-    // autoAdapt
-    autoAdapt: PropTypes.bool,
-    // 当筛选数据仅为一条时，失焦后直接选中该条数据。仅在 Filter 下有效。
-    filterSingleSelect: PropTypes.bool,
-    // 渲染未匹配值的方式
-    renderUnmatched: PropTypes.func,
-    // 选中后是否清空输入框内容 ｜
-    emptyAfterSelect: PropTypes.bool,
-    // 是否显示下拉箭头，仅针对单选情况
-    showArrow: PropTypes.bool,
-    // onCreate 或 onFilter 在单选情况下单击值后是否选中值
-    focusSelected: PropTypes.bool,
-    compressedClassName: PropTypes.string,
-    // 下拉列表展开/收起回调
-    onCollapse: PropTypes.func,
-    resultClassName: PropTypes.oneOfType([PropTypes.string, PropTypes.func]),
-}
-
-Select.defaultProps = {
-    clearable: false,
-    data: [],
-    height: 250,
-    itemsInView: 10,
-    lineHeight: 32,
-    loading: false,
-    multiple: false,
-    renderItem: e => e,
-    text: {},
-    compressed: false,
-    trim: true,
-    autoAdapt: false,
-    showArrow: true,
-    focusSelected: true,
 }
 
 export default Select

@@ -9,37 +9,39 @@ import { Select } from 'ethan/index'
 import { fetch } from 'doc/data/user'
 
 export default class extends Component {
-  constructor(props) {
-    super(props)
-    this.state = {
-      data: [],
-      loading: false,
+    constructor(props) {
+        super(props)
+        this.state = {
+            data: [],
+            loading: false,
+        }
     }
-  }
 
-  componentDidMount() {
-    this.handleFilter('')
-  }
+    componentDidMount() {
+        this.handleFilter('')
+    }
 
-  handleFilter = text => {
-    this.setState({ loading: true })
-    fetch.get('user', { username: text }).then(res => {
-      this.setState({ loading: false, data: res.data })
-    })
-  }
+    handleFilter = text => {
+        this.setState({ loading: true })
+        fetch.get('user', { username: text }).then(res => {
+            this.setState({ loading: false, data: res.data })
+        })
+    }
 
-  render() {
-    return (
-      <Select
-        loading={this.state.loading}
-        keygen="id"
-        style={{ width: 240 }}
-        data={this.state.data}
-        placeholder="Select user"
-        onFilter={this.handleFilter}
-        datum={{ format: 'id' }}
-        renderItem={user => `${user.firstName} ${user.lastName}`}
-      />
-    )
-  }
+    render() {
+        return null
+
+        return (
+            <Select
+                loading={this.state.loading}
+                keygen="id"
+                style={{ width: 240 }}
+                data={this.state.data}
+                placeholder="Select user"
+                onFilter={this.handleFilter}
+                datum={{ format: 'id' }}
+                renderItem={user => `${user.firstName} ${user.lastName}`}
+            />
+        )
+    }
 }

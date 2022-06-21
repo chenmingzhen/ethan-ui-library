@@ -175,7 +175,8 @@
     }
 
     position: relative;
-    display: flex;
+    // display: flex;
+    display: inline-block;
     width: 100%;
     border: 1px solid @input-border;
     background-color: @input-bg;
@@ -327,7 +328,7 @@
         padding: 0;
     }
 
-    .@{input-prefix} {
+    > .@{input-prefix} {
         width: auto;
         flex: 1;
         border-width: 0;

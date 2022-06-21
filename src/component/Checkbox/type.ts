@@ -10,7 +10,7 @@ export interface CheckHandlerContext<V = any> {
     checked: (value: V) => boolean
 }
 
-type Checked = boolean | 'indeterminate'
+export type Checked = boolean | 'indeterminate'
 
 export interface CheckItemProps<V = any> extends Omit<CheckHandlerContext<V>, 'checked'> {
     checked?: Checked | CheckHandlerContext<V>['checked']

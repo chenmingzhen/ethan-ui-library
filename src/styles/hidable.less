@@ -16,31 +16,17 @@
     }
 
     &-animation-240 {
-        transition: height 0.24s ease-in-out, opacity 0.24s ease-in-out, transform 0.24s ease-in-out;
+        transition: height 0.24s ease-in-out, opacity 0.16s cubic-bezier(0.8, 0.1, 0.1, 0.8),
+            transform 0.24s cubic-bezier(0.9, 0.1, 0.1, 0.9);
     }
 
     &-animation-360 {
-        transition: height 0.36s ease-in-out, opacity 0.36s ease-in-out, transform 0.36s ease-in-out;
+        transition: height 0.36s ease-in-out, opacity 0.27s cubic-bezier(0.8, 0.1, 0.1, 0.8),
+            transform 0.36s cubic-bezier(0.9, 0.1, 0.1, 0.9);
     }
 
     &-animation-480 {
-        transition: height 0.48s ease-in-out, opacity 0.48s ease-in-out, transform 0.48s ease-in-out;
-    }
-
-    &-scale-y {
-        transform: scaleY(0);
-
-        &.@{hidable-prefix}-show {
-            transform: scaleY(1);
-        }
-    }
-
-    &-fade,
-    &-collapse-fade {
-        opacity: 0;
-
-        &.@{hidable-prefix}-show {
-            opacity: 1;
-        }
+        transition: height 0.48s ease-in-out, opacity 0.32s cubic-bezier(0.8, 0.1, 0.1, 0.8),
+            transform 0.48s cubic-bezier(0.9, 0.1, 0.1, 0.9);
     }
 }

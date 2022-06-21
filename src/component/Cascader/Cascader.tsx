@@ -10,13 +10,9 @@ import { runInNextFrame } from '@/utils/nextFrame'
 import { throttleWrapper } from '@/utils/lazyload'
 import Result from './Result'
 import CascaderList from './List'
-import absoluteList from '../List/AbsoluteList'
 import { CascaderState, CascaderProps } from './type'
-import List from '../List'
-
-const FadeList = List(['fade', 'scale-y'], 'fast', 'inline-flex')
-
-const OptionList = absoluteList(({ focus, ...other }) => <FadeList show={focus} {...other} />)
+import AnimationList from '../List'
+import AbsoluteList from '../List/AbsoluteList'
 
 class Cascader<T extends any> extends PureComponent<CascaderProps, CascaderState> {
     static defaultProps = {
@@ -191,7 +187,8 @@ class Cascader<T extends any> extends PureComponent<CascaderProps, CascaderState
 
         const { width } = element.getBoundingClientRect()
 
-        const { left } = element.parentElement.getBoundingClientRect()
+        /** 不能直接使用element的left，因为它会变，导致反复渲染 */
+        const { left } = this.containerElementRef.current.getBoundingClientRect()
 
         if (data.length === 0) {
             if (listStyle.height === 'auto') return
@@ -281,28 +278,42 @@ class Cascader<T extends any> extends PureComponent<CascaderProps, CascaderState
         const className = classnames(selectClass('options'), cascaderClass('options'))
 
         return (
-            <OptionList
+            <AbsoluteList
                 rootClass={absoluteRootCls}
                 position={position}
                 absolute={absolute}
                 focus={focus}
-                parentElement={this.containerElementRef.current}
-                data-id={this.cascaderId}
+                getParentElement={() => this.containerElementRef.current}
                 zIndex={zIndex}
-                className={className}
-                style={listStyle}
-                getRef={list => {
-                    this.list = list
-                }}
             >
-                {this.renderList()}
-            </OptionList>
+                {({ style }) => {
+                    const ms = Object.assign({}, style, listStyle)
+
+                    return (
+                        <AnimationList
+                            lazyDom
+                            style={ms}
+                            show={focus}
+                            data-id={this.cascaderId}
+                            className={className}
+                            animationTypes={['fade', 'scale-y']}
+                            duration="fast"
+                            display="inline-flex"
+                            getRef={list => {
+                                this.list = list
+                            }}
+                            onTransitionEnd={this.resetListStyle}
+                        >
+                            {this.renderList()}
+                        </AnimationList>
+                    )
+                }}
+            </AbsoluteList>
         )
     }
 
     render() {
-        /** @todo onFocus和onBlur,keygen 是不是不用传到子组件中 */
-        const { placeholder, disabled, spinProps, ...other } = this.props
+        const { placeholder, disabled, spinProps, onFocus, onBlur, keygen, ...other } = this.props
 
         const { focus, position } = this.state
 
@@ -321,7 +332,7 @@ class Cascader<T extends any> extends PureComponent<CascaderProps, CascaderState
                 // eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex
                 tabIndex={disabled === true ? -1 : 0}
                 className={className}
-                onFocus={other.onFocus}
+                onFocus={onFocus}
                 ref={this.containerElementRef}
                 onClick={this.handleFocusChange.bind(this, true)}
                 onKeyDown={this.handleKeyDown}

@@ -1,44 +1,41 @@
-import React from 'react'
+import React, { isValidElement } from 'react'
 import ReactDOM from 'react-dom'
 import classnames from 'classnames'
 import { listClass } from '@/styles'
 import { Component } from '@/utils/component'
-import shallowEqual from '@/utils/shallowEqual'
 import { docScroll, docSize } from '@/utils/dom/document'
-import { ListProps } from '.'
 
-interface AbsoluteListProps extends Omit<ListProps, 'show'> {
-    focus?: boolean
+export interface AbsoluteListProps {
+    focus: boolean
 
     fixed?: boolean | 'min'
 
-    parentElement?: HTMLElement
+    getParentElement?: () => HTMLElement
+
+    /** AbsoluteList下的List实例，如果传入，则由此组件控制计算溢出屏幕的style */
+    getListElement?: () => HTMLElement
 
     position?: string
 
     absolute?: boolean
 
-    scrollElement?: HTMLElement
+    getScrollElement?: () => HTMLElement
 
     /** 传送门的类名 */
     rootClass?: string
 
     style?: React.CSSProperties
 
-    autoClass?: string
-
     zIndex?: number
 
-    value?: any
+    children:
+        | ((params: { style: React.CSSProperties; overDoc?: boolean; resetPosition: () => void }) => React.ReactNode)
+        | React.ReactNode
 }
 
 interface AbsoluteListState {
     // 用于自动适应屏幕位置
     overDoc: boolean
-}
-
-interface GenerateAbsoluteListProps extends Omit<ListProps, 'show'> {
-    focus: boolean
 }
 
 let root: HTMLDivElement
@@ -59,208 +56,188 @@ function initRoot() {
     document.body.appendChild(root)
 }
 
-function generateAbsoluteList(ListComponent: React.FC<GenerateAbsoluteListProps>) {
-    class AbsoluteList extends Component<AbsoluteListProps, AbsoluteListState> {
-        lastStyle: React.CSSProperties = {}
+export default class AbsoluteList extends Component<AbsoluteListProps, AbsoluteListState> {
+    adjustDoc = false
 
-        element: HTMLDivElement
+    lastStyle: React.CSSProperties = {}
 
-        listEl: HTMLDivElement
+    element: HTMLDivElement
 
-        adjustDoc = false
+    constructor(props) {
+        super(props)
 
-        get style() {
-            const { parentElement, scrollElement, focus } = this.props
-
-            const lazyResult = { focus, style: this.lastStyle }
-
-            if (!focus) return lazyResult
-
-            let style: React.CSSProperties = {}
-
-            if (parentElement) {
-                const rect = parentElement.getBoundingClientRect()
-
-                const scrollRect = scrollElement ? scrollElement.getBoundingClientRect() : ({} as DOMRect)
-
-                // parentElement被滚动元素遮挡 不计算位置
-                if (
-                    rect.bottom < scrollRect.top ||
-                    rect.top > scrollRect.bottom ||
-                    rect.right < scrollRect.left ||
-                    rect.left > scrollRect.right
-                ) {
-                    return { focus: false, style: this.lastStyle }
-                }
-
-                style = this.getPosition(rect)
-            }
-
-            if (shallowEqual(style, this.lastStyle)) return lazyResult
-
-            this.lastStyle = style
-
-            return { focus, style }
+        this.state = {
+            overDoc: false,
         }
 
-        constructor(props: AbsoluteListProps) {
-            super(props)
+        if (!props.absolute) return
 
-            this.state = {
-                overDoc: false,
+        if (!root) initRoot()
+
+        this.element = document.createElement('div')
+
+        root.appendChild(this.element)
+    }
+
+    get parentElement() {
+        return this.props.getParentElement?.()
+    }
+
+    get scrollElement() {
+        return this.props.getScrollElement?.()
+    }
+
+    get listElement() {
+        return this.props.getListElement?.()
+    }
+
+    get style() {
+        const { focus } = this.props
+
+        const { parentElement, scrollElement } = this
+
+        if (!focus) return this.lastStyle
+
+        let style: React.CSSProperties = {}
+
+        if (parentElement) {
+            const rect = parentElement.getBoundingClientRect()
+
+            const scrollRect = scrollElement ? scrollElement.getBoundingClientRect() : ({} as DOMRect)
+
+            // parentElement被滚动元素遮挡 不计算位置
+            if (
+                rect.bottom < scrollRect.top ||
+                rect.top > scrollRect.bottom ||
+                rect.right < scrollRect.left ||
+                rect.left > scrollRect.right
+            ) {
+                return this.lastStyle
             }
 
-            if (!props.absolute) return
-
-            if (!root) initRoot()
-
-            this.element = document.createElement('div')
-
-            root.appendChild(this.element)
+            style = this.getPosition(rect)
         }
 
-        componentDidUpdate() {
-            this.resetPosition()
+        this.lastStyle = style
+
+        return style
+    }
+
+    getPosition = (rect: DOMRect) => {
+        const { fixed } = this.props
+
+        let { position } = this.props
+
+        const style: React.CSSProperties = {
+            position: 'absolute',
         }
 
-        componentWillUnmount() {
-            if (this.element) {
-                root.removeChild(this.element)
+        if (fixed) {
+            const widthKey = fixed === 'min' ? 'minWidth' : 'width'
+
+            style[widthKey] = rect.width
+        }
+
+        if (dropdownPosition.includes(position)) {
+            position = position
+                .split('-')
+                .reverse()
+                .join('-')
+        }
+
+        if (listPosition.includes(position)) {
+            style.left = rect.left + docScroll.left
+
+            if (position === 'drop-down') {
+                style.top = rect.top + rect.height + docScroll.top
+            } else {
+                style.bottom = -(rect.top + docScroll.top)
             }
-        }
+        } else if (pickerPosition.includes(position)) {
+            const [h, v] = position.split('-')
 
-        render = () => {
-            if (!this.props.absolute) {
-                return this.renderList()
-            }
-
-            const {
-                parentElement,
-                rootClass,
-                absolute,
-                position,
-                scrollElement,
-                autoClass,
-                value,
-                fixed,
-                zIndex,
-                ...props
-            } = this.props
-
-            const className = classnames(listClass('absolute-wrapper'), rootClass, autoClass)
-
-            const { focus, style } = props.focus ? this.style : { style: this.lastStyle, focus: undefined }
-
-            this.element.className = className
-
-            const mergeStyle = Object.assign(
-                { zIndex },
-                style,
-                props.style,
-                this.state.overDoc ? { right: 0, left: 'auto' } : undefined
-            )
-
-            return ReactDOM.createPortal(
-                <ListComponent getRef={this.bindListRef} {...props} focus={focus} style={mergeStyle} />,
-                this.element
-            )
-        }
-
-        renderList = () => {
-            const {
-                parentElement,
-                absolute,
-                focus,
-                rootClass,
-                position,
-                scrollElement,
-                style = {},
-                zIndex,
-                ...props
-            } = this.props
-
-            const mergeStyle = Object.assign(
-                { zIndex },
-                style,
-                this.state.overDoc ? { right: 0, left: 'auto' } : undefined
-            )
-
-            return <ListComponent getRef={this.bindListRef} {...props} focus={focus} style={mergeStyle} />
-        }
-
-        /** 若传入getRef，则不处理AbsoluteList内的List样式，由上层组件自行处理 */
-        resetPosition = () => {
-            const { focus } = this.props
-
-            if (!focus || !this.listEl) return
-
-            const pos = this.listEl.getBoundingClientRect()
-
-            const overDoc = Math.abs(pos.left) + pos.width > docSize.width
-
-            if (this.state.overDoc === overDoc) return
-
-            this.setState({ overDoc })
-        }
-
-        getPosition = (rect: DOMRect): React.CSSProperties => {
-            const { fixed } = this.props
-
-            let { position } = this.props
-
-            const style: React.CSSProperties = {
-                position: 'absolute',
-            }
-
-            if (fixed) {
-                const widthKey = fixed === 'min' ? 'minWidth' : 'width'
-
-                style[widthKey] = rect.width
-            }
-
-            if (dropdownPosition.includes(position)) {
-                position = position
-                    .split('-')
-                    .reverse()
-                    .join('-')
-            }
-
-            if (listPosition.includes(position)) {
+            if (h === 'left') {
                 style.left = rect.left + docScroll.left
+            } else {
+                style.left = rect.right + docScroll.left
 
-                if (position === 'drop-down') {
-                    style.top = rect.top + rect.height + docScroll.top
-                } else {
-                    style.bottom = -(rect.top + docScroll.top)
-                }
-            } else if (pickerPosition.includes(position)) {
-                const [h, v] = position.split('-')
-
-                if (h === 'left') {
-                    style.left = rect.left + docScroll.left
-                } else {
-                    style.left = rect.right + docScroll.left
-
-                    style.transform = 'translateX(-100%)'
-                }
-
-                if (v === 'bottom') {
-                    style.top = rect.bottom + docScroll.top + REDUNDANT
-                } else {
-                    style.top = rect.top + docScroll.top - REDUNDANT
-
-                    style.transform = style.transform ? 'translate(-100%, -100%)' : 'translateY(-100%)'
-                }
+                style.transform = 'translateX(-100%)'
             }
-            return style
-        }
 
-        bindListRef = listEl => {
-            this.listEl = listEl
+            if (v === 'bottom') {
+                style.top = rect.bottom + docScroll.top + REDUNDANT
+            } else {
+                style.top = rect.top + docScroll.top - REDUNDANT
+
+                style.transform = style.transform ? 'translate(-100%, -100%)' : 'translateY(-100%)'
+            }
+        }
+        return style
+    }
+
+    resetPosition = () => {
+        const { focus } = this.props
+
+        const { listElement } = this
+
+        if (!focus || !listElement) return
+
+        const pos = listElement.getBoundingClientRect()
+
+        /** @todo 这里考虑使用parentElement的left 参照Cascader的reset */
+        const overDoc = Math.abs(pos.left) + pos.width > docSize.width
+
+        if (this.state.overDoc === overDoc) return
+
+        this.setState({ overDoc })
+    }
+
+    componentDidUpdate() {
+        this.resetPosition()
+    }
+
+    componentWillUnmount() {
+        if (this.element) {
+            root.removeChild(this.element)
         }
     }
 
-    return AbsoluteList
-}
+    renderChildren = () => {
+        const { zIndex, children, absolute } = this.props
 
-export default generateAbsoluteList
+        const ms = Object.assign(
+            { zIndex },
+            this.style,
+            this.props.style,
+            this.state.overDoc ? { right: 0, left: 'auto' } : undefined
+        )
+
+        if (typeof children === 'function') {
+            return children({
+                style: absolute ? ms : this.props.style,
+                overDoc: this.state.overDoc,
+                resetPosition: this.resetPosition,
+            })
+        }
+
+        if (isValidElement(children)) {
+            return React.cloneElement(children, { style: absolute ? ms : this.props.style })
+        }
+
+        throw new Error('Expect children is a validElement')
+    }
+
+    render() {
+        const { rootClass, absolute } = this.props
+
+        if (!absolute) {
+            return this.renderChildren()
+        }
+
+        const className = classnames(listClass('absolute-wrapper'), rootClass)
+
+        this.element.className = className
+
+        return ReactDOM.createPortal(<>{this.renderChildren()}</>, this.element)
+    }
+}

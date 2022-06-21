@@ -10,7 +10,6 @@ interface ScrollHandlerState {
 
 export default class extends PureComponent<ScrollHandlerProps, ScrollHandlerState> {
     static defaultProps: ScrollHandlerProps = {
-        scroll: 'both',
         onScroll() {},
     }
 

@@ -11,7 +11,13 @@ export const isDate = val => val instanceof Date
 
 export const isFunc = f => typeof f === 'function'
 
-export const isString = s => typeof s === 'string'
+export function isString(s): s is string {
+    return typeof s === 'string'
+}
+
+export function isNumber(n): n is number {
+    return typeof n === 'number'
+}
 
 export const isError = val => val instanceof Error
 
@@ -44,6 +50,14 @@ export const isEmpty = val => {
     if (typeof val === 'object') return Object.keys(val).length === 0
 
     return false
+}
+
+export function isEmptyStr(str: string) {
+    return str === ''
+}
+
+export function isZero(num: number) {
+    return num === 0
 }
 
 export const isMergeable = val => {

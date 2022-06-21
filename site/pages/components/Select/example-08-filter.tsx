@@ -10,26 +10,28 @@ import { Select } from 'ethan/index'
 const data = ['red', 'orange', 'yellow', 'green', 'cyan', 'blue', 'violet']
 
 export default function() {
-  return (
-    <div>
-      <Select
-        style={{ width: 240, marginBottom: 12 }}
-        data={data}
-        keygen
-        placeholder="Select color"
-        onFilter={text => d => d.indexOf(text) >= 0}
-      />
+    return (
+        <div>
+            <Select
+                style={{ width: 240, marginBottom: 12 }}
+                data={data}
+                keygen
+                placeholder="Select color"
+                onFilter={(text, data) => {
+                    console.log(text, data)
+                }}
+            />
 
-      <br />
+            <br />
 
-      <Select
-        style={{ width: 300 }}
-        multiple
-        keygen
-        data={data}
-        placeholder="Select color"
-        onFilter={text => d => d.indexOf(text) >= 0}
-      />
-    </div>
-  )
+            {/* <Select
+                style={{ width: 300 }}
+                multiple
+                keygen
+                data={data}
+                placeholder="Select color"
+                onFilter={text => d => d.indexOf(text) >= 0}
+            /> */}
+        </div>
+    )
 }

@@ -7,3 +7,7 @@ export function range(end: number, start = 0) {
 export function toPrecision(num: number, precision = 12) {
     return parseFloat(num.toPrecision(precision))
 }
+
+export function getRangeValue({ min = 0, max = 1, current }) {
+    return Math.min(max, Math.max(min, current))
+}

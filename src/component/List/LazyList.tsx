@@ -1,121 +1,265 @@
-// @ts-nocheck
-import React, { useState, useRef, useCallback, memo, useMemo } from 'react'
-import PropType from 'prop-types'
-import { usePrevious, useUpdateEffect } from 'react-use'
+import React from 'react'
 import { setTranslate } from '@/utils/dom/translate'
+import { Component } from '@/utils/component'
+import { getRangeValue } from '@/utils/numbers'
+import { isZero } from '@/utils/is'
+import { computeScroll, getVirtualScrollCurrentIndex } from '@/utils/virtual-scroll'
+import { KeyboardKey } from '@/utils/keyboard'
 import Scroll from '../Scroll'
 
-// 懒加载原理，通过滚动的高度，以及props的itemsInView，itemsInView,data来计算当前的currentIndex，在而加上itemsInView 渲染数据
-const LazyList = props => {
-    const [currentIndex, setCurrentIndex] = useState(0)
-    // 滚动比例系数
-    const [scrollTop, setScrollTop] = useState(0)
-    const { scrollHeight, height, lineHeight, data, itemsInView, renderItem } = props
-    const optionInner = useRef()
-    const lastScrollTop = useRef(0)
-    const prevProps = usePrevious(props)
+interface LazyListProps<T extends any = any> {
+    data: T[]
+    lineHeight: number
+    height: number
+    renderItem: (data, index: number) => React.ReactNode
+    /** 当数据源的长度发生变化且数据源长度大于1时，传入判断函数是否允许重新计算对应的滚动值 */
+    shouldRecomputed?: (prevData: T[], nextData: T[]) => boolean
+    /** 数据源起始的Index,默认hover的位置，视图会滚动到此处 */
+    defaultIndex?: number
+    onScrollStateChange?(params: LazyListState): void
+    keyboardControl?: boolean
+}
 
-    // ------------------------------------lifecycle---------------------------
-    useUpdateEffect(() => {
-        if (!props.stay && prevProps.data.length !== props.data.length) {
-            setCurrentIndex(0)
-            setScrollTop(0)
-        }
-    }, [props.stay, props.data])
+export interface LazyListState {
+    currentIndex: number
+    scrollTopRatio: number
+    lastScrollTop: number
+}
 
-    // ------------------------------------method and computed------------------
-    const scroll = useMemo(() => {
-        if (height < scrollHeight) {
+/** 预留两个位置的偏差值 */
+const LAZY_LIST_DATA_OFFSET = 2
+
+/** 不能使用PureComponent，因为Item的部分状态是在上层中使用的，例如Select OptionList Option的hoverIndex prop， */
+export default class LazyList<T extends any = any> extends Component<LazyListProps<T>, LazyListState> {
+    static defaultProps = {
+        lineHeight: 32,
+        data: [],
+        shouldRecomputed: () => true,
+        defaultIndex: 0,
+        keyboardControl: false,
+    }
+
+    private get scrollHeight() {
+        const { data, lineHeight } = this.props
+
+        return data.length * lineHeight
+    }
+
+    private get scroll(): 'y' | undefined {
+        const { height } = this.props
+
+        if (height < this.scrollHeight) {
             return 'y'
         }
-        return ''
-    }, [height, scrollHeight])
 
-    // 懒加载原理
-    const items = useMemo(() => data.slice(currentIndex, currentIndex + itemsInView).map((d, i) => renderItem(d, i)), [
-        data,
-        currentIndex,
-        itemsInView,
-        renderItem,
-    ])
+        return undefined
+    }
 
-    const handleScroll = useCallback(
-        (x, y, max, bar, v, h, pixelX, pixelY) => {
-            if (!optionInner.current) return
+    private get itemsInView() {
+        const { height, lineHeight } = this.props
 
-            const fullHeight = itemsInView * lineHeight
-            const contentHeight = scrollHeight - h
-            // 容器的高度大于内容高度 不需要设置滚动
-            let newScrollTop = h > fullHeight ? 0 : y
+        return Math.ceil(height / lineHeight)
+    }
 
-            // 设置滚动
-            // TODO 参考Select中的OptionList 去掉marginTop的引用
-            optionInner.current.style.marginTop = `${scrollTop * h}px`
+    private optionInner: HTMLDivElement
 
-            // 以向下方向为例
-            // marginTop 负责将容器往下顶
-            // transform负责将内容上移
-            if (pixelY === undefined || pixelY === 0) {
-                // 点击条造成滚动
-                lastScrollTop.current = scrollTop * contentHeight
+    getInitState = (): LazyListState => {
+        const { defaultIndex, lineHeight, height, data } = this.props
+
+        /** 默认值小于容器高度，不计算 */
+        if ((defaultIndex + 1) * lineHeight <= height) {
+            return { currentIndex: 0, lastScrollTop: 0, scrollTopRatio: 0 }
+        }
+
+        const currentIndex = getVirtualScrollCurrentIndex({
+            height,
+            lineHeight,
+            scrollIndex: defaultIndex,
+            dataLength: data.length,
+        })
+
+        const { scrollTopRatio, lastScrollTop } = computeScroll({
+            dataLength: this.props.data.length,
+            lineHeight,
+            height,
+            currentIndex,
+        })
+
+        return {
+            currentIndex,
+            lastScrollTop,
+            scrollTopRatio,
+        }
+    }
+
+    constructor(props: LazyListProps) {
+        super(props)
+
+        this.state = this.getInitState()
+    }
+
+    componentDidMount() {
+        const { onScrollStateChange } = this.props
+
+        if (onScrollStateChange) {
+            onScrollStateChange(this.state)
+        }
+
+        if (this.state.lastScrollTop) {
+            setTranslate(this.optionInner, '0rem', `-${this.state.lastScrollTop}px`)
+        }
+    }
+
+    componentDidUpdate(prevProps: Readonly<LazyListProps>, prevState: Readonly<LazyListState>): void {
+        if (this.props.data !== prevProps.data && this.props.data.length !== prevProps.data.length) {
+            /** 重新计算位置 */
+            if (!isZero(this.props.data.length) && this.props.shouldRecomputed(prevProps.data, this.props.data)) {
+                if (this.props.lineHeight * this.props.data.length < this.props.height) {
+                    this.dispatchState({ scrollTopRatio: 0, lastScrollTop: 0, currentIndex: 0 })
+
+                    return
+                }
+
+                const prevContentHeight = prevProps.data.length * prevProps.lineHeight - prevProps.height
+
+                const prevScrollTopRatio = prevState.scrollTopRatio
+
+                const nextContentHeight = this.props.data.length * this.props.lineHeight - this.props.height
+
+                const nextScrollTopRatio = getRangeValue({
+                    current: prevScrollTopRatio * (prevContentHeight / nextContentHeight),
+                })
+
+                const lastScrollTop = nextContentHeight * nextScrollTopRatio
+
+                this.dispatchState({
+                    scrollTopRatio: nextScrollTopRatio,
+                    lastScrollTop,
+                    currentIndex: this.state.currentIndex,
+                })
             } else {
-                // 鼠标滚轮滚动
-                lastScrollTop.current += pixelY
-                if (lastScrollTop.current < 0) lastScrollTop.current = 0
-
-                // scroll over bottom
-                if (lastScrollTop.current > contentHeight) lastScrollTop.current = contentHeight
-                newScrollTop = lastScrollTop.current / contentHeight
-                optionInner.current.style.marginTop = `${scrollTop * h}px`
+                this.dispatchState({ currentIndex: 0, scrollTopRatio: 0, lastScrollTop: 0 })
             }
+        }
+    }
 
-            let index = Math.floor(lastScrollTop.current / lineHeight) - 1
-            if (data.length - itemsInView < index) index = data.length - itemsInView
-            if (index < 0) index = 0
+    /** 暴露外部使用 */
+    scrollToView = (scrollIndex: number) => {
+        const { lineHeight, height, data } = this.props
 
-            setTranslate(optionInner.current, '0px', `-${lastScrollTop.current + scrollTop * h}px`)
+        if (scrollIndex < 0 || scrollIndex >= data.length || !this.scroll || this.state.currentIndex === scrollIndex)
+            return
 
-            setScrollTop(newScrollTop)
-            setCurrentIndex(index)
-        },
-        [optionInner.current, lastScrollTop.current, data, itemsInView, lineHeight, scrollHeight, scrollTop]
-    )
-    // ------------------------------------render------------------------------
-    return (
-        <Scroll
-            stable
-            scroll={scroll}
-            style={{ height: scroll ? height : undefined }}
-            onScroll={handleScroll}
-            scrollHeight={scrollHeight}
-            scrollTop={scrollTop}
-        >
-            <div
-                ref={el => {
-                    optionInner.current = el
-                }}
+        const currentIndex = getVirtualScrollCurrentIndex({ height, lineHeight, scrollIndex, dataLength: data.length })
+
+        const { lastScrollTop, scrollTopRatio } = computeScroll({
+            currentIndex,
+            dataLength: data.length,
+            lineHeight,
+            height,
+        })
+
+        this.dispatchState({ lastScrollTop, scrollTopRatio, currentIndex })
+    }
+
+    private dispatchState = (state: LazyListState) => {
+        this.setState(state)
+
+        const { onScrollStateChange } = this.props
+
+        if (onScrollStateChange) {
+            onScrollStateChange(state)
+        }
+
+        setTranslate(this.optionInner, '0rem', `-${state.lastScrollTop}px`)
+    }
+
+    private bindOptionInner = (el: HTMLDivElement) => {
+        this.optionInner = el
+    }
+
+    private handleScroll = (_, scrollTopRatio, __, ___, ____, scrollContainerHeight, _____, pixelY) => {
+        if (!this.optionInner) return
+
+        const { lineHeight, data } = this.props
+
+        const contentHeight = data.length * lineHeight - scrollContainerHeight
+
+        let { lastScrollTop } = this.state
+
+        if (!pixelY) {
+            /** 拖动bar */
+            lastScrollTop = scrollTopRatio * contentHeight
+        } else {
+            /** wheel滚动 */
+            lastScrollTop += pixelY
+
+            if (lastScrollTop < 0) lastScrollTop = 0
+
+            /** 滚动到底部 */
+            if (lastScrollTop > contentHeight) lastScrollTop = contentHeight
+        }
+
+        let currentIndex = Math.floor(lastScrollTop / lineHeight) - 1
+
+        if (data.length - this.itemsInView < currentIndex) currentIndex = data.length - this.itemsInView
+
+        if (currentIndex < 0) currentIndex = 0
+
+        this.dispatchState({ scrollTopRatio, currentIndex, lastScrollTop })
+    }
+
+    handleKeydown: React.KeyboardEventHandler<HTMLDivElement> = evt => {
+        if (!this.props.keyboardControl) return
+
+        const { currentIndex } = this.state
+
+        const { data } = this.props
+
+        const { key } = evt
+
+        switch (key) {
+            case KeyboardKey.ArrowUp:
+                evt.preventDefault()
+
+                this.scrollToView(currentIndex - 1 < 0 ? data.length - 1 : currentIndex - 1)
+
+                break
+            case KeyboardKey.ArrowDown:
+                evt.preventDefault()
+
+                this.scrollToView(currentIndex + 1 > data.length - this.itemsInView ? 0 : currentIndex + 1)
+
+                break
+            default:
+                break
+        }
+    }
+
+    render() {
+        const { height, lineHeight, data, renderItem, keyboardControl } = this.props
+
+        const { scrollTopRatio, currentIndex } = this.state
+
+        const sliceData = data.slice(currentIndex, currentIndex + this.itemsInView + LAZY_LIST_DATA_OFFSET)
+
+        return (
+            <Scroll
+                scroll={this.scroll}
+                style={{ height: this.scroll ? height : undefined }}
+                onScroll={this.handleScroll}
+                scrollHeight={this.scrollHeight}
+                scrollTop={scrollTopRatio}
             >
-                <div style={{ height: currentIndex * lineHeight }} />
-                {items}
-            </div>
-        </Scroll>
-    )
+                <div
+                    ref={this.bindOptionInner}
+                    tabIndex={keyboardControl ? -1 : undefined}
+                    onKeyDown={this.handleKeydown}
+                >
+                    <div style={{ height: currentIndex * lineHeight }} />
+                    {sliceData.map((d, i) => renderItem(d, i))}
+                </div>
+            </Scroll>
+        )
+    }
 }
-
-LazyList.defaultProps = {
-    itemsInView: 10,
-    lineHeight: 32,
-    data: [],
-}
-
-LazyList.propTypes = {
-    scrollHeight: PropType.number.isRequired,
-    data: PropType.array,
-    itemsInView: PropType.number,
-    lineHeight: PropType.number,
-    height: PropType.number.isRequired,
-    renderItem: PropType.func.isRequired,
-    stay: PropType.bool,
-}
-
-export default memo(LazyList)
