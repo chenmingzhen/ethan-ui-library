@@ -5,4 +5,6 @@ import inputable from '../Form/inputable'
 
 const TransferComponent = compose(inputable, Datum.Hoc({ bindProps: ['disabled', 'format', 'prediction'] }))(Transfer)
 
+TransferComponent.displayName = 'EthanTransfer'
+
 export default TransferComponent as typeof Transfer

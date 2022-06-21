@@ -26,8 +26,6 @@ class Transfer<
         listHeight: 180,
     }
 
-    static displayName = 'EthanTransfer'
-
     get selecteds() {
         const { selectedKeys } = this.props
 
