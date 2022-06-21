@@ -78,6 +78,10 @@ export default curry((options: Options, Origin) => {
                     ops.onChange = onChange
                 }
 
+                if (!ops.multiple) {
+                    ops.limit = 1
+                }
+
                 this.datum = new Datum(Object.assign(ops))
             }
         }

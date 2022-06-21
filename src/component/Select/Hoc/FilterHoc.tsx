@@ -28,7 +28,7 @@ export default function FilterHoc(Origin) {
         }
 
         getResultByValues = () => {
-            const { datum, cacheAble, treeData, onCreate, data } = this.props
+            const { datum, cacheAble, onCreate, data } = this.props
 
             const { values } = datum
 
@@ -38,22 +38,19 @@ export default function FilterHoc(Origin) {
                 let result = cacheAble ? this.resultCache.get(value) : undefined
 
                 if (result === undefined) {
-                    if (treeData) {
-                    } else {
-                        for (const item of data) {
-                            if (datum.prediction(value, item)) {
-                                result = item
-                            }
+                    for (const item of data) {
+                        if (datum.prediction(value, item)) {
+                            result = item
                         }
+                    }
 
-                        if (result === undefined && onCreate) {
-                            /** value是直接输入的，对应基本的数据类型data */
-                            if (isString(value) || isNumber(value)) {
-                                result = this.handleCreate(value)
-                            } else {
-                                /** 复杂的数据类型 */
-                                result = value
-                            }
+                    if (result === undefined && onCreate) {
+                        /** value是直接输入的，对应基本的数据类型data */
+                        if (isString(value) || isNumber(value)) {
+                            result = this.handleCreate(value)
+                        } else {
+                            /** 复杂的数据类型 */
+                            result = value
                         }
                     }
 

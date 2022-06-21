@@ -144,8 +144,6 @@ export interface SelectResultProps
     > {
     onClear?(): void
     onRemove(data: any): void
-    onInputBlur(e: React.FocusEvent<HTMLInputElement>): void
-    onInputFocus(): void
     compressed: boolean
     focus: boolean
     onBindInputInstance(input: HTMLInputElement): void
@@ -161,8 +159,7 @@ export interface SelectResultItemProps extends Pick<SelectResultProps, 'resultCl
 
 export interface SelectFilterHocProps extends ISelectProps, Pick<SelectProps, 'onFilter'> {}
 
-export interface SelectInputProps
-    extends Pick<SelectResultProps, 'onInputFocus' | 'onInputBlur' | 'multiple' | 'focus' | 'onInput'> {
+export interface SelectInputProps extends Pick<SelectResultProps, 'multiple' | 'focus' | 'onInput'> {
     text: string
 }
 
