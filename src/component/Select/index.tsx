@@ -10,7 +10,7 @@ import FilterHoc from './Hoc/FilterHoc'
 const SelectContainer = compose(
     inputable,
     inputBorder({ className: selectClass('_'), tag: 'div' }),
-    Datum.Hoc({ bindProps: ['disabled', 'limit', 'format', 'prediction', 'separator', 'multiple'] }),
+    Datum.Hoc({ bindProps: ['disabled', 'limit', 'format', 'prediction', 'multiple'] }),
     FilterHoc,
     group
 )(Select)

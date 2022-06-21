@@ -494,10 +494,6 @@ class Select extends PureComponent<ISelectProps, SelectState> {
         )
     }
 
-    renderOptions = () => {
-        return this.renderList()
-    }
-
     render() {
         const { position, focus } = this.state
 
@@ -530,41 +526,39 @@ class Select extends PureComponent<ISelectProps, SelectState> {
         const renderResult = this.props.renderResult || this.renderItem
 
         return (
-            <>
-                <div
-                    tabIndex={disabled === true ? -1 : 0}
-                    ref={this.bindElement}
-                    className={className}
-                    data-id={this.selectId}
-                    onFocus={this.handleFocus}
-                    onClick={this.handleClick}
-                    onBlur={this.handleBlur}
-                    onKeyDown={this.handleKeyDown}
-                >
-                    <Result
-                        size={size}
-                        filterText={filterText}
-                        onClear={clearable ? this.handleClear : undefined}
-                        onCreate={onCreate}
-                        onInput={onInput}
-                        onRemove={this.handleRemove}
-                        datum={datum}
-                        disabled={disabled}
-                        focus={this.state.focus}
-                        result={result}
-                        multiple={multiple}
-                        placeholder={placeholder}
-                        renderResult={renderResult}
-                        compressed={compressed}
-                        showArrow={showArrow}
-                        compressedClassName={compressedClassName}
-                        resultClassName={resultClassName}
-                        onBindInputInstance={this.bindInputInstance}
-                    />
+            <div
+                tabIndex={disabled === true ? -1 : 0}
+                ref={this.bindElement}
+                className={className}
+                data-id={this.selectId}
+                onFocus={this.handleFocus}
+                onClick={this.handleClick}
+                onBlur={this.handleBlur}
+                onKeyDown={this.handleKeyDown}
+            >
+                <Result
+                    size={size}
+                    filterText={filterText}
+                    onClear={clearable ? this.handleClear : undefined}
+                    onCreate={onCreate}
+                    onInput={onInput}
+                    onRemove={this.handleRemove}
+                    datum={datum}
+                    disabled={disabled}
+                    focus={this.state.focus}
+                    result={result}
+                    multiple={multiple}
+                    placeholder={placeholder}
+                    renderResult={renderResult}
+                    compressed={compressed}
+                    showArrow={showArrow}
+                    compressedClassName={compressedClassName}
+                    resultClassName={resultClassName}
+                    onBindInputInstance={this.bindInputInstance}
+                />
 
-                    {this.renderOptions()}
-                </div>
-            </>
+                {this.renderList()}
+            </div>
         )
     }
 }

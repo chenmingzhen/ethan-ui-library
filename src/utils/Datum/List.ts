@@ -26,8 +26,6 @@ export interface DatumListProps<Data = any, FormatResult = Data> {
         checked: boolean
     ): void
 
-    separator?: string
-
     /** 继承覆写此属性 */
     value?: any
 
@@ -40,17 +38,11 @@ export interface DatumListProps<Data = any, FormatResult = Data> {
     limit?: number
 }
 
-/**
- * @todo 移除separator
- */
-
 /** 不存储Data，只存储Value */
 export default class List<T = string> {
     distinct?: boolean
 
     limit?: number
-
-    separator?: string
 
     format: (value) => string
 
@@ -91,13 +83,11 @@ export default class List<T = string> {
     }
 
     constructor(args: DatumListProps<T> = {}) {
-        const { format, onChange, separator, value, prediction, distinct, disabled, limit } = args
+        const { format, onChange, value, prediction, distinct, disabled, limit } = args
 
         this.distinct = distinct
 
         this.limit = limit
-
-        this.separator = separator
 
         this.onChange = onChange
 
@@ -125,7 +115,6 @@ export default class List<T = string> {
         let value = this.$values
 
         if (this.limit === 1) [value] = this.$values
-        else if (this.separator) value = this.$values.join(this.separator)
 
         this.$cachedValue = value
 
@@ -143,17 +132,6 @@ export default class List<T = string> {
 
         if (Array.isArray(values)) {
             return values
-        }
-
-        // values值string类型 判断是否传入分割符  根据分割符来返回values的数组
-        if (typeof values === 'string') {
-            if (this.separator) {
-                return (values as string).split(this.separator).map(s => s.trim())
-            }
-
-            console.warn('Select separator parameter is empty.')
-
-            return [values] as string[]
         }
 
         warning(DATUM_LIST_INVALID_VALUES)
