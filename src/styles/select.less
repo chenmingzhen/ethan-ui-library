@@ -225,48 +225,6 @@
         border-radius: @input-dropdown-border-radius;
     }
 
-    &-tree {
-        width: auto;
-        min-width: 100%;
-
-        .@{select-prefix}-tree-wrapper {
-            padding: 8px 8px 4px 8px;
-
-            .@{ethan-prefix}-tree-node {
-                &:last-child > div {
-                    padding-bottom: 4px;
-                }
-            }
-
-            .@{ethan-prefix}-tree-content {
-                color: @gray-600;
-                white-space: nowrap;
-                cursor: default;
-
-                .@{select-prefix}-tree-node {
-                    display: block;
-                    padding: 0 4px;
-                    border-radius: 2px;
-
-                    &:hover {
-                        background-color: @primary-color-fade-10;
-                    }
-
-                    &.@{select-prefix}-selected {
-                        background-color: @primary-color-fade-60;
-                        color: white;
-                    }
-
-                    &.@{select-prefix}-disabled {
-                        padding-right: @select-result-space;
-                        cursor: not-allowed;
-                        background: @select-disabled-bg-color;
-                    }
-                }
-            }
-        }
-    }
-
     &-box-list {
         display: flex;
         overflow: hidden;
