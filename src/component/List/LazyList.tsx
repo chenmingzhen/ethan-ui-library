@@ -113,13 +113,11 @@ export default class LazyList<T extends any = any> extends Component<LazyListPro
     componentDidUpdate(prevProps: Readonly<LazyListProps>, prevState: Readonly<LazyListState>): void {
         if (this.props.data !== prevProps.data && this.props.data.length !== prevProps.data.length) {
             /** 重新计算位置 */
-            if (!isZero(this.props.data.length) && this.props.shouldRecomputed(prevProps.data, this.props.data)) {
-                if (this.props.lineHeight * this.props.data.length < this.props.height) {
-                    this.dispatchState({ scrollTopRatio: 0, lastScrollTop: 0, currentIndex: 0 })
-
-                    return
-                }
-
+            if (
+                !isZero(this.props.data.length) &&
+                this.scroll &&
+                this.props.shouldRecomputed(prevProps.data, this.props.data)
+            ) {
                 const prevContentHeight = prevProps.data.length * prevProps.lineHeight - prevProps.height
 
                 const prevScrollTopRatio = prevState.scrollTopRatio
