@@ -44,9 +44,7 @@ class Transfer<
     get targets() {
         const { data, datum } = this.props
 
-        const datumValues = []
-
-        return datumValues.reduce((accumulatedValue, currentValue) => {
+        return datum.values.reduce((accumulatedValue, currentValue) => {
             const item = datum.getDataByValue(data, currentValue)
 
             if (item) {

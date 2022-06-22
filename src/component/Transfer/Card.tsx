@@ -2,7 +2,7 @@ import React from 'react'
 import { transferClass } from '@/styles'
 import { getLocale } from '@/locale'
 import classnames from 'classnames'
-import { isArray, isFunc } from '@/utils/is'
+import { isArray, isEmptyStr, isFunc } from '@/utils/is'
 import { createFunc } from '@/utils/func'
 import { TransferCardProps } from './type'
 import ECard from '../Card'
@@ -158,9 +158,9 @@ class Card extends React.PureComponent<TransferCardProps, CardState> {
     }
 
     renderBody = () => {
-        const { customRender, values, selecteds, index, rowsInView, lineHeight } = this.props
+        const { customRender, values, selecteds, index, lineHeight } = this.props
 
-        const { lazyHeight, text } = this.state
+        const { lazyHeight } = this.state
 
         if (isFunc(customRender)) {
             const custom = customRender({
@@ -175,13 +175,11 @@ class Card extends React.PureComponent<TransferCardProps, CardState> {
 
         return (
             <LazyList
-                stay={!text}
                 data={this.data}
-                itemsInView={rowsInView}
                 lineHeight={lineHeight}
                 height={lazyHeight}
-                scrollHeight={lineHeight * this.data.length}
                 renderItem={this.renderItem}
+                shouldRecomputed={() => false}
             />
         )
     }
@@ -207,7 +205,11 @@ class Card extends React.PureComponent<TransferCardProps, CardState> {
                 <ECard className={transferClass('card')}>
                     <ECard.Header className={transferClass('card-header')}>
                         <div>
-                            <Checkbox onChange={this.checkAll} checked={this.check} disabled={disabled === true}>
+                            <Checkbox
+                                onChange={this.checkAll}
+                                checked={this.check}
+                                disabled={disabled === true || loading}
+                            >
                                 {this.check ? `${selecteds.length} ${getLocale('selected')}` : getLocale('selectAll')}
                             </Checkbox>
                         </div>
