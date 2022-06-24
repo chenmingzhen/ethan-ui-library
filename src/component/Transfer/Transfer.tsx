@@ -125,7 +125,7 @@ class Transfer<
 
         const { selecteds, sources, targets } = this
 
-        const datumValues = datum.getOuterValue()
+        const datumValues = datum.getValue()
 
         return (
             <div className={classnames(transferClass('_'), className)} style={style}>

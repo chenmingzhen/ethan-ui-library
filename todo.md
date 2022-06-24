@@ -36,11 +36,13 @@
 
 -   [x] absolute 模式下点击 custom 后再点击 document 无法关闭 Select
 
+-   [ ] CheckGroup 受控处理，检验表单组件受控情况
+
 -   [ ] 移除 Scroll 的 stableProps,高度增加时，重新计算滚动的位置，之前的 Select didupdate 有处理
 
 -   [x] 修改所有 Select 模式的 loading，懒加载数据使用另外的逻辑处理，到时候写一个 DEMO
 
--   [ ] Select 溢出屏幕时，设置 right:0，从 Absolute 的 resetPosition 的 todo 修改
+-   [ ] Cascader 点击清除不能失去焦点 bug
 
 -   [x] Select BoxList 支持分组
 
@@ -53,3 +55,5 @@
 -   [ ] 将 SelectOptionList 的样式过一遍
 
 -   [ ] 完成 Select 后实现 innerTitle
+
+-   [ ] 拆分构建过程到新的工具包

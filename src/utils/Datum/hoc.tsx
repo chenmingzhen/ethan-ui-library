@@ -16,6 +16,8 @@ interface HocProps {
     initValidate?: boolean
 
     value: any
+
+    control?: boolean
 }
 
 interface Options {
@@ -26,8 +28,6 @@ interface Options {
     limit?: number
 
     bindProps?: string[]
-
-    ignoreUndefined?: boolean
 }
 
 const types = {
@@ -39,7 +39,7 @@ const types = {
  * Datum的高阶组件容器 通常给Group赋值Datum
  */
 export default curry((options: Options, Origin) => {
-    const { type = 'list', key = 'value', limit = 0, bindProps = [], ignoreUndefined } = options || {}
+    const { type = 'list', key = 'value', limit = 0, bindProps = [] } = options || {}
 
     const Datum = types[type]
 
@@ -47,6 +47,8 @@ export default curry((options: Options, Origin) => {
         datum: typeof Form | List
 
         prevValues
+
+        control = false
 
         static defaultProps = {
             initValidate: false,
@@ -72,7 +74,7 @@ export default curry((options: Options, Origin) => {
                         return o
                     },
                     // 初始值
-                    { value, limit, initValidate }
+                    { value, limit, initValidate, control: props['data-control'] }
                 )
 
                 if (onChange) {
@@ -110,17 +112,11 @@ export default curry((options: Options, Origin) => {
         setValue(action) {
             const values = this.props[key]
 
-            if (ignoreUndefined && values === undefined) return
-
-            if (type !== 'list') {
-                this.datum.setValue(values, action)
-            } else {
-                ;(this.datum as List).setInnerValue(values, action)
-            }
+            this.datum.setValue(values, action)
         }
 
         render() {
-            const { onDatumBind, ...props } = this.props
+            const { onDatumBind, control, ...props } = this.props
 
             if (onDatumBind) onDatumBind(this.datum)
 

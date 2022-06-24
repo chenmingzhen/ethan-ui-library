@@ -36,6 +36,8 @@ export interface DatumListProps<Data = any, FormatResult = Data> {
     disabled?: boolean | ((value: Data) => boolean)
 
     limit?: number
+
+    control?: boolean
 }
 
 /** 不存储Data，只存储Value */
@@ -63,11 +65,10 @@ export default class List<T = string> {
 
     disabled: (...args) => boolean
 
+    control = false
+
     /** InnerValues 内部直接操作的源，不引起更新，由value的变化驱动更新 */
     private $values: any
-
-    /** 缓存outerValue */
-    $cachedValue: any
 
     /** 暴露给外部获取的values */
     get values() {
@@ -79,11 +80,11 @@ export default class List<T = string> {
 
         this.dispatch(CHANGE_ACTION)
 
-        this.onChange?.(this.getOuterValue())
+        this.onChange?.(this.getValue())
     }
 
     constructor(args: DatumListProps<T> = {}) {
-        const { format, onChange, value, prediction, distinct, disabled, limit } = args
+        const { format, onChange, value, prediction, distinct, disabled, limit, control } = args
 
         this.distinct = distinct
 
@@ -97,26 +98,24 @@ export default class List<T = string> {
 
         this.setDisabled(disabled)
 
-        this.setInnerValue(value, INIT_ACTION)
+        this.$values = this.arrayValue(value)
+
+        this.setValue(value)
+
+        this.control = !!control
     }
 
-    setInnerValue(values = [], type) {
-        if (type === INIT_ACTION) {
-            this.$values = this.arrayValue(values)
-        } else {
-            // TODO 表单时候
-            this.resetValue(this.arrayValue(values), shallowEqual(this.$cachedValue, values))
-        }
+    /** 与set不一样的是，此处不执行onChange回调 */
+    setValue(values = []) {
+        this.$values = this.arrayValue(values)
 
-        this.getOuterValue()
+        this.dispatch(CHANGE_ACTION)
     }
 
-    getOuterValue() {
+    getValue() {
         let value: any[] = this.$values
 
         if (this.limit === 1) [value] = this.$values
-
-        this.$cachedValue = value
 
         return value
     }
@@ -139,16 +138,6 @@ export default class List<T = string> {
         return []
     }
 
-    resetValue(values, cached) {
-        this.$values = values
-
-        if (this.onChange && !cached) {
-            this.onChange(this.getOuterValue())
-        }
-
-        this.dispatch(CHANGE_ACTION)
-    }
-
     // 设置disabled
     private setDisabled(disabled) {
         this.disabled = (...obj) => {
@@ -165,43 +154,23 @@ export default class List<T = string> {
 
     // 处理Change 并触发事件派发
     private handleChange(values, ...args) {
-        this.$values = values
+        /** @bug  由于此处逻辑发生改变，导致transfer select的渲染响应不正确 */
+        if (!this.control) {
+            this.$values = values
 
+            this.onChange?.(this.getValue(), ...args)
+        } else {
+            this.onChange?.(values, ...args)
+        }
+
+        /** 执行一次更新的操作 */
         this.dispatch(CHANGE_ACTION)
-
-        this.onChange?.(this.getOuterValue(), ...args)
     }
 
-    // TODO
-    flattenTreeData(data, childrenKey) {
-        const keys = data.map(v => this.format(v)).filter(v => typeof v !== 'object')
-        const key = keys.join()
-        if (keys.length !== 0) {
-            const cached = this.$cachedFlatten.get(key)
-            if (cached) return cached
-        }
-        const flatten = []
-        const deepAdd = items => {
-            items.forEach(item => {
-                flatten.push(item)
-                if (item[childrenKey]) deepAdd(item[childrenKey])
-            })
-        }
-        deepAdd(data)
-        if (keys.length) this.$cachedFlatten.set(key, flatten)
-        return flatten
-    }
-
-    add(data: T | T[], _?: any, childrenKey?: string, unshift?: boolean) {
+    add({ data, unshift }: { data: any; unshift?: boolean }) {
         if (data === undefined || data === null) return
 
-        if (this.limit === 1) this.$values = []
-
         let raws = Array.isArray(data) ? data : [data]
-
-        if (childrenKey && this.limit !== 1) {
-            raws = this.flattenTreeData(raws, childrenKey)
-        }
 
         raws = raws.filter(v => {
             // 获取是否disabled
@@ -230,7 +199,7 @@ export default class List<T = string> {
     set(data) {
         this.$values = []
 
-        this.add(data)
+        this.add({ data })
     }
 
     check(data) {
@@ -249,12 +218,7 @@ export default class List<T = string> {
         return null
     }
 
-    /** @todo 暂未用到 考虑移除 */
-    clear() {
-        this.values = []
-    }
-
-    // 派发事件
+    /** 派发事件 */
     private dispatch(name, ...args) {
         const event = this.$events[name]
 
@@ -277,15 +241,10 @@ export default class List<T = string> {
         }
     }
 
-    /** @todo 移除第二个参数 */
-    remove(data, _?, childrenKey?) {
+    remove({ data }: { data: any }) {
         if (!data) return
 
         let raws = Array.isArray(data) ? data : [data]
-
-        if (childrenKey) {
-            raws = this.flattenTreeData(raws, childrenKey)
-        }
 
         raws = raws.filter(r => !this.disabled(r))
 

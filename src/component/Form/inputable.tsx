@@ -110,6 +110,9 @@ export default curry(Origin =>
 
             updateTimer: NodeJS.Timeout
 
+            /** 是否为受控，Datum中使用 */
+            control = false
+
             constructor(props) {
                 super(props)
 
@@ -208,6 +211,9 @@ export default curry(Origin =>
                 }
 
                 const hasValue = 'value' in this.props || 'checked' in this.props
+
+                /** @todo */
+                this.control = hasValue
 
                 // 非表单控制(前者为非受控值，后者为受控值)
                 return !hasValue && !formDatum ? this.state.value : value
@@ -405,6 +411,7 @@ export default curry(Origin =>
                         onChange={this.handleChange}
                         onDatumBind={this.handleDatumBind}
                         validateHook={this.validateHook}
+                        data-control={this.control}
                     />
                 )
             }

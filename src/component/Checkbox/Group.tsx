@@ -48,9 +48,9 @@ class CheckboxGroup<D = CheckItemGroupDefaultDataRecord, FD = D> extends PureCom
         const { data, datum } = this.props
 
         if (checked) {
-            datum.add(data[index])
+            datum.add({ data: data[index] })
         } else {
-            datum.remove(data[index])
+            datum.remove({ data: data[index] })
         }
     }
 
@@ -58,9 +58,9 @@ class CheckboxGroup<D = CheckItemGroupDefaultDataRecord, FD = D> extends PureCom
         const { datum } = this.props
 
         if (checked) {
-            datum.add(value)
+            datum.add({ data: value })
         } else {
-            datum.remove(value)
+            datum.remove({ data: value })
         }
     }
 

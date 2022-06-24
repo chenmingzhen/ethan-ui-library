@@ -50,21 +50,13 @@ export default class RadioGroup<D = CheckItemGroupDefaultDataRecord, FD = D> ext
     handleClick = (checked: boolean, index: number) => {
         const { data, datum } = this.props
 
-        if (checked) {
-            datum.add(data[index])
-        } else {
-            datum.remove(data[index])
-        }
+        datum.set(checked ? data[index] : [])
     }
 
     handleGroupCallback: CheckItemProps['onGroupCallback'] = (value, checked) => {
         const { datum } = this.props
 
-        if (checked) {
-            datum.add(value)
-        } else {
-            datum.remove(value)
-        }
+        datum.set(checked ? value : [])
     }
 
     render() {

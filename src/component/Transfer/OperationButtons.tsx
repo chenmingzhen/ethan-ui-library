@@ -16,9 +16,9 @@ const OperationButtons: React.FC<TransferOperationButtonProps> = props => {
         setSelecteds(1 - index, [])
 
         if (index) {
-            datum.add(newValue, undefined, undefined, true)
+            datum.add({ data: newValue, unshift: true })
         } else {
-            datum.remove(newValue, undefined, undefined)
+            datum.remove({ data: newValue })
         }
     }
 

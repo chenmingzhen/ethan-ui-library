@@ -206,7 +206,7 @@ class Select extends PureComponent<ISelectProps, SelectState> {
             const checked = !datum.check(dataItem)
 
             if (checked) {
-                datum.add(dataItem)
+                datum.add({ data: dataItem })
 
                 /** 多选创建模式选中后，需要清除值,并让Input获取焦点，但不执行handleBlur */
                 if (onInput) {
@@ -215,7 +215,7 @@ class Select extends PureComponent<ISelectProps, SelectState> {
                     autoFocusElement = false
                 }
             } else {
-                datum.remove(dataItem)
+                datum.remove({ data: dataItem })
             }
         } else {
             datum.set(dataItem)
