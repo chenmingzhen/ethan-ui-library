@@ -1,24 +1,15 @@
 const chalk = require('chalk')
 
-/**
- * @param {string} message
- */
-function info(message) {
-    console.log(chalk.blue(message))
+function info(...args) {
+    console.log(chalk.blue(args))
 }
 
-/**
- * @param {string} message
- */
-function error(message) {
-    console.log(chalk.red(message))
+function error(...args) {
+    console.log(chalk.red(args))
 }
 
-/**
- * @param {string} message
- */
-function success(message) {
-    console.log(chalk.green(message))
+function success(...args) {
+    console.log(chalk.green(args))
 }
 
 const Log = {

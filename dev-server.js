@@ -12,6 +12,7 @@ const webpackConfig = require('./webpack/config.dev')
 const config = require('./config')
 const { version } = require('./package.json')
 const ejs = require('./scripts/ejs')
+const Log = require('./scripts/utils/log')
 
 // 通过ejs生成模板
 require('./scripts/dev-site')
@@ -20,9 +21,14 @@ require('./scripts/dev-site')
 
 // 生成临时打包文件 供后面koa2使用
 
-new WebpackDevServer(webpack(webpackConfig)).listen(config.dev.webpackPort, 'localhost', err => {
-    if (err) {
-        console.log(err)
+const devServer = new WebpackDevServer(
+    { port: config.dev.webpackPort, client: { overlay: false } },
+    webpack(webpackConfig)
+)
+
+devServer.startCallback(e => {
+    if (e) {
+        console.log(e)
     }
 })
 
@@ -86,8 +92,14 @@ router.get(config.dev.scriptPath, async (ctx, next) => {
         if (url.endsWith('.css')) {
             ctx.set('Content-Type', 'text/css; charset=utf-8')
         }
+
         ctx.set('Access-Control-Allow-Origin', '*')
-        ctx.body = await got(options.url).then(data => data.body)
+
+        ctx.body = await got(options.url)
+            .then(data => data.body)
+            .catch(e => {
+                Log.error(e, options.url)
+            })
     }
 })
 
@@ -133,6 +145,5 @@ if (config.proxy) config.proxy(router)
 app.use(router.routes())
 
 app.listen(config.dev.publishPort, () => {
-    const ps = config.dev.publishPort === 80 ? '' : `:${config.dev.publishPort}`
-    console.log(`server running on http://localhost${ps}`)
+    console.log(`server running on http://localhost${config.dev.publishPort}`)
 })

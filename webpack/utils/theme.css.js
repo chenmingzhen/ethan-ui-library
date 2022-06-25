@@ -97,6 +97,7 @@ module.exports = function({ name, hot, entry, output, clean, prefix = 'theme', m
             })
         )
     }
-    if (hot) conf.plugins.push(new webpack.HotModuleReplacementPlugin())
+
+    
     return conf
 }
