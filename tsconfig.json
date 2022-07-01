@@ -6,5 +6,5 @@
         // 移除严格模式 (对象可能未定义)
         "strict": false
     },
-    "exclude": ["node_modules", "ssh-client", "webpack", "docs-pages", "publish", "site/chunks", "*.js"]
+    "exclude": ["node_modules", "ssh-client", "docs-pages", "publish", "site/chunks"]
 }

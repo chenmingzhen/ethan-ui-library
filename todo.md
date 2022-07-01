@@ -36,6 +36,8 @@
 
 -   [x] absolute 模式下点击 custom 后再点击 document 无法关闭 Select
 
+-   [ ] 打包 dist 后，生成 main.js 文件，编写一个 WebpackPlugin 或使用一个插件清除这个文件
+
 -   [ ] CheckGroup 受控处理，检验表单组件受控情况
 
 -   [ ] 移除 Scroll 的 stableProps,高度增加时，重新计算滚动的位置，之前的 Select didupdate 有处理

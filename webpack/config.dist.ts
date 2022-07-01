@@ -1,13 +1,11 @@
-// build CDN links way and css style
-
-const path = require('path')
-const { merge } = require('webpack-merge')
-const config = require('../config')
-const common = require('./config.common')
-const cssConf = require('./utils/theme.css')
+/** 构建CDN库链接和样式 */
+import path from 'path'
+import { merge } from 'webpack-merge'
+import config from '../config'
+import { getCommonConfig, getThemeWebpackConfig } from './utils'
 
 const cssConfig = config.themes.map(name =>
-    cssConf({
+    getThemeWebpackConfig({
         name,
         entry: [
             './src/styles/normalize.less',
@@ -16,11 +14,10 @@ const cssConfig = config.themes.map(name =>
             './src/styles/spin.ts',
         ],
         output: { path: path.join(__dirname, '../publish/dist') },
-        clean: true,
     })
 )
 
-const jsConfig = merge(common({ ...config.webpack }), {
+const jsConfig = merge(getCommonConfig({ Dev: false }), {
     stats: { children: false },
     entry: './src/index.ts',
     output: {
@@ -32,4 +29,4 @@ const jsConfig = merge(common({ ...config.webpack }), {
     mode: 'production',
 })
 
-module.exports = [jsConfig, ...cssConfig]
+export default [jsConfig, ...cssConfig]

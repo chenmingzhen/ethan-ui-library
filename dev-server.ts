@@ -1,29 +1,23 @@
-const got = require('got')
-const Koa = require('koa')
-const send = require('koa-send')
-const Router = require('koa-router')
-const multer = require('koa-multer')
-const fs = require('fs')
-const webpack = require('webpack')
-const WebpackDevServer = require('webpack-dev-server')
-const path = require('path')
-const { execSync } = require('child_process')
-const webpackConfig = require('./webpack/config.dev')
-const config = require('./config')
-const { version } = require('./package.json')
-const ejs = require('./scripts/ejs')
-const Log = require('./scripts/utils/log')
+import got from 'got'
+import Koa from 'koa'
+import send from 'koa-send'
+import Router from 'koa-router'
+import multer from 'koa-multer'
+import fs from 'fs'
+import webpack, { Configuration } from 'webpack'
+import WebpackDevServer from 'webpack-dev-server'
+import webpackConfig from './webpack/config.dev'
+import config from './config'
+import { version } from './package.json'
+import ejs from './scripts/ejs'
+import Log from './scripts/utils/log'
 
-// 通过ejs生成模板
-require('./scripts/dev-site')
-
-//  webpack server ===========================================
-
-// 生成临时打包文件 供后面koa2使用
+/** 通过ejs生成模板 */
+import './scripts/dev-site'
 
 const devServer = new WebpackDevServer(
     { port: config.dev.webpackPort, client: { overlay: false } },
-    webpack(webpackConfig)
+    webpack(webpackConfig as Configuration)
 )
 
 devServer.startCallback(e => {
@@ -31,6 +25,11 @@ devServer.startCallback(e => {
         console.log(e)
     }
 })
+
+/** 开发环境Upload上传处理的文件 */
+if (!fs.existsSync('temp')) {
+    fs.mkdirSync('temp')
+}
 
 // dev server ================================================
 const app = new Koa()
@@ -44,12 +43,7 @@ router.get('**/react-dom.production.min.js', async ctx => {
     await send(ctx, 'node_modules/react-dom/umd/react-dom.development.js')
 })
 
-// dll
-router.get('**/vendors.dll.js', async ctx => {
-    await send(ctx, './webpack/dll/vendors.dll.js')
-})
-
-// docs upload中使用
+/** Upload Example中使用 */
 router.get('**/jszip.min.js', async ctx => {
     await send(ctx, 'node_modules/jszip/dist/jszip.min.js')
 })
@@ -58,11 +52,7 @@ router.get('/images/*', async ctx => {
     await send(ctx, `site/${ctx.path}`)
 })
 
-if (!fs.existsSync('temp')) {
-    fs.mkdirSync('temp')
-}
-
-// 不使用中间件的保存位置配置 自行读入文件
+/** 不使用中间件的保存位置配置 自行读入文件 */
 /** upload.single的中name要与表单的一致 */
 const upload = multer({})
 router.post('/upload/', upload.single('file'), async ctx => {
@@ -79,8 +69,11 @@ router.post('/upload/', upload.single('file'), async ctx => {
 // dev code proxy
 // 处理app.js 热模块更新
 router.get(config.dev.scriptPath, async (ctx, next) => {
+    /** @type string|string[] */
     let url = ctx.url.split('/')
+
     url = url[url.length - 1]
+
     if (url.endsWith('.Form') || url.endsWith('.List')) {
         await next()
     } else {
@@ -109,8 +102,9 @@ router.get('/*.hot-update.js(on)?', async ctx => {
         url: `http://localhost:${config.dev.webpackPort}/${ctx.url}`,
         method: 'GET',
     }
+
     ctx.set('Access-Control-Allow-Origin', '*')
-    // ctx.body = request(options)
+
     ctx.body = await got(options.url).then(data => data.body)
 })
 
@@ -131,7 +125,7 @@ router.get('/*', async ctx => {
     ctx.type = 'text/html; charset=utf-8'
     // 页面真正的渲染处理 通过ejs渲染处理 将参数传给模板
     // 页面中引入/site/index.js 进而显示web页面
-    ctx.body = await ejs.renderFile(`./site/index.html`, {
+    ctx.body = await ejs.renderFile('./site/index.html', {
         scripts,
         env: 'development',
         appName: config.appName,
@@ -139,8 +133,6 @@ router.get('/*', async ctx => {
         description: '',
     })
 })
-
-if (config.proxy) config.proxy(router)
 
 app.use(router.routes())
 
