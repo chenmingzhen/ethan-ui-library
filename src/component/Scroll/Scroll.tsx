@@ -41,19 +41,10 @@ class Scroll extends PureComponent<ScrollProps> {
     componentDidMount = () => {
         super.componentDidMount()
 
-        this.recomputedScrollRect()
-
         this.wheelElement.addEventListener('wheel', this.handleWheel, { passive: false })
         /** 移动端事件 */
         this.wheelElement.addEventListener('touchstart', this.handleTouchStart, { passive: true })
         this.wheelElement.addEventListener('touchmove', this.handleTouchMove, { passive: false })
-    }
-
-    componentDidUpdate = prevProps => {
-        const { stable, scrollWidth, scrollHeight } = this.props
-
-        if (scrollWidth !== prevProps.scrollWidth) this.recomputedScrollRect()
-        else if (stable && scrollHeight !== prevProps.scrollHeight) this.recomputedScrollRect()
     }
 
     componentWillUnmount = () => {

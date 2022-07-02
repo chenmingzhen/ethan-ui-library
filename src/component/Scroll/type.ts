@@ -19,7 +19,6 @@ interface BaseScrollProps {
         /** Y方向滚动的实际值 */
         pixelY?: number
     ): void
-    stable?: boolean
     /** 滚动y的总长度 */
     scrollHeight?: number
     /** 滚动x的总长度 */

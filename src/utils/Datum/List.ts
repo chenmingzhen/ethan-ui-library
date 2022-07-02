@@ -1,7 +1,6 @@
-import shallowEqual from '@/utils/shallowEqual'
 import { warning } from '../warning'
 import { DATUM_LIST_INVALID_VALUES } from '../warning/types'
-import { CHANGE_ACTION, INIT_ACTION } from './types'
+import { CHANGE_ACTION } from './types'
 
 export type FormatInfer<T> = T extends Record<string, any>
     ? keyof T
