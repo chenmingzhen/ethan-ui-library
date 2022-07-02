@@ -4,6 +4,7 @@ import MiniCssExtractPlugin from 'mini-css-extract-plugin'
 import UglifyWebpackPlugin from 'uglifyjs-webpack-plugin'
 import OptimizeCSSAssetsPlugin from 'optimize-css-assets-webpack-plugin'
 import { CleanWebpackPlugin } from 'clean-webpack-plugin'
+import ReactRefreshWebpackPlugin from '@pmmmwh/react-refresh-webpack-plugin'
 import config from '../../config'
 
 export function getLessLoader(name: string) {
@@ -197,7 +198,8 @@ export function getCommonConfig(options: GetCommonConfigOptionParams) {
             new webpack.ProvidePlugin({
                 process: 'process/browser',
             }),
-        ],
+            Dev && new ReactRefreshWebpackPlugin({ overlay: { sockPort: config.dev.webpackPort } }),
+        ].filter(Boolean),
     }
 
     return commonConfig
@@ -210,10 +212,11 @@ interface GetThemeWebpackConfigParams {
     prefix?: string
     mode?: 'production' | 'development'
     clean?: boolean
+    Dev?: boolean
 }
 
 export function getThemeWebpackConfig(options: GetThemeWebpackConfigParams) {
-    const { name, entry, output, prefix = 'theme', mode = 'production', clean = false } = options
+    const { name, entry, output, prefix = 'theme', mode = 'production', clean = false, Dev = false } = options
 
     const themeConfig: Configuration = {
         mode,
@@ -259,6 +262,7 @@ export function getThemeWebpackConfig(options: GetThemeWebpackConfigParams) {
                 process: 'process/browser',
             }),
             clean && new CleanWebpackPlugin(),
+            Dev && new ReactRefreshWebpackPlugin({ overlay: { sockPort: config.dev.webpackPort } }),
         ].filter(Boolean),
     }
 

@@ -73,6 +73,7 @@ router.get(config.dev.scriptPath, async (ctx, next) => {
     let url = ctx.url.split('/')
 
     url = url[url.length - 1]
+    ;[url] = url.split('?')
 
     if (url.endsWith('.Form') || url.endsWith('.List')) {
         await next()

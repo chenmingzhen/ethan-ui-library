@@ -4,8 +4,8 @@
     "main": "./lib/index.js",
     "license": "MIT",
     "peerDependencies": {
-        "react": ">=16.8.0",
-        "react-dom": ">=16.8.0"
+        "react": ">=17.0.0",
+        "react-dom": ">=17.0.0"
     },
     "dependencies": {
         "classnames": "^2.2.6",
@@ -63,6 +63,7 @@
         "@babel/preset-env": "^7.1.6",
         "@babel/preset-react": "^7.0.0",
         "@babel/register": "^7.0.0",
+        "@pmmmwh/react-refresh-webpack-plugin": "^0.5.7",
         "@types/prismjs": "^1.26.0",
         "@types/react": "^17.0.4",
         "@types/react-dom": "^17.0.9",
@@ -119,11 +120,12 @@
         "prismjs": "^1.15.0",
         "prop-types": "^15.6.0",
         "raw-loader": "^4.0.2",
-        "react": "^16.8.6",
+        "react": "^17.0.0",
         "react-color": "^2.14.0",
-        "react-dom": "^16.8.6",
+        "react-dom": "^17.0.0",
         "react-hot-loader": "^4.3.2",
         "react-markdown": "^3.1.4",
+        "react-refresh": "^0.14.0",
         "react-router-dom": "^5.2.0",
         "rimraf": "^2.6.2",
         "ssh2": "^0.8.9",

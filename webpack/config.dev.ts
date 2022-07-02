@@ -4,6 +4,7 @@ import { getCommonConfig, getThemeWebpackConfig } from './utils'
 
 const cssConfig = config.themes.map(name =>
     getThemeWebpackConfig({
+        Dev: true,
         mode: 'development',
         name,
         entry: [
@@ -14,7 +15,11 @@ const cssConfig = config.themes.map(name =>
             './site/styles/index.ts',
             './site/less-entry.ts',
         ],
-        output: { publicPath: `http://localhost:${config.dev.publishPort}/`, filename: '__css_hot_loader.js' },
+        output: {
+            publicPath: `http://localhost:${config.dev.publishPort}/`,
+            filename: '__css_hot_loader.js',
+            uniqueName: '__css_hot_loader',
+        },
         prefix: '',
     })
 )
@@ -25,8 +30,11 @@ const jsConfig = merge(getCommonConfig({ Dev: true }), {
     output: {
         filename: '[name].js',
         /** 指示打包生成的路径，热更新请求publicPath的资源 */
+        uniqueName: '[name]',
         publicPath: `http://localhost:${config.dev.publishPort}/`,
-        libraryTarget: 'umd',
+        library: {
+            type: 'umd',
+        },
     },
     mode: 'development',
 })
