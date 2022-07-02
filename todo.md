@@ -44,7 +44,7 @@
 
 -   [x] 修改所有 Select 模式的 loading，懒加载数据使用另外的逻辑处理，到时候写一个 DEMO
 
--   [ ] Cascader 点击清除不能失去焦点 bug
+-   [x] Cascader 点击清除不能失去焦点 bug
 
 -   [x] Select BoxList 支持分组
 
