@@ -157,6 +157,8 @@ class Cascader<T extends any> extends PureComponent<CascaderProps, CascaderState
             this.datum.setValue([])
         }
 
+        this.props.onBlur()
+
         onChange([])
 
         runInNextFrame(() => {
