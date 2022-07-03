@@ -19,7 +19,7 @@ export interface CascaderProps<T = any> {
     keygen?: keyof T | ((data: T, parentKey: React.Key) => React.Key)
     loader?: (key: React.Key, data: T) => void
     /** @todo */
-    mode: number
+    mode?: number
     onBlur?: () => void
     onChange?: (value: React.Key[], selected?: T[]) => void
     onFocus?: (e: React.FocusEvent<HTMLDivElement>) => void

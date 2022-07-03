@@ -1,12 +1,17 @@
-// @ts-nocheck
 import inputBorder from '@/hoc/inputBorder'
 import { selectClass } from '@/styles'
 import { compose } from '@/utils/func'
+import React from 'react'
 import Component from './Cascader'
 import inputable from '../Form/inputable'
 import absolute from '../Table/context'
+import { CascaderProps } from './type'
 
-const Cascader = compose(inputable, inputBorder({ className: selectClass('_'), tag: 'span' }), absolute)(Component)
+const Cascader = compose(
+    inputable,
+    inputBorder({ className: selectClass('_'), tag: 'span' }),
+    absolute
+)(Component) as React.ComponentClass<CascaderProps>
 
 Cascader.displayName = 'EthanCascader'
 

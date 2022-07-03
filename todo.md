@@ -52,7 +52,7 @@
 
 -   [ ] Tree 改用 AnimationList 动画，并添加 Fade 的类型
 
--   [ ] cascader 的 index 编写，document 的 mouseDown 没有在捕获执行,可以验证一下
+-   [x] cascader 的 index 编写，document 的 mouseDown 没有在捕获执行,可以验证一下
 
 -   [ ] 将 SelectOptionList 的样式过一遍
 

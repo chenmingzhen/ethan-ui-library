@@ -86,11 +86,11 @@ class Cascader<T extends any> extends PureComponent<CascaderProps, CascaderState
     }
 
     bindClickAway = () => {
-        document.addEventListener('mousedown', this.handleClickDocumentAway)
+        document.addEventListener('mousedown', this.handleClickDocumentAway, true)
     }
 
     clearClickAway = () => {
-        document.removeEventListener('mousedown', this.handleClickDocumentAway)
+        document.removeEventListener('mousedown', this.handleClickDocumentAway, true)
     }
 
     handleClickDocumentAway = (e: MouseEvent) => {
