@@ -98,3 +98,6 @@ export const isLink = (el: React.ReactElement<{ to?: string }>) => {
 }
 
 export const isEnterPress = (e: React.KeyboardEvent) => e.keyCode === 13
+
+/** 是否为原始数据 */
+export const isPrimitive = val => Object(val) !== val
