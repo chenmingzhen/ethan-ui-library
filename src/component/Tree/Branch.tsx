@@ -4,15 +4,11 @@ import { treeClass } from '@/styles'
 import { empty } from '@/utils/func'
 import { PureComponent } from '@/utils/component'
 import { TreeBranchProps } from './type'
-import AnimationHeight from '../List/AnimationHeight'
+import AnimationList from '../List'
 import List from './List'
 import { removePlaceElementDom } from './utils'
 
-interface ListState {
-    hasDoneAnimation: boolean
-}
-
-class Branch extends PureComponent<TreeBranchProps, ListState> {
+class Branch extends PureComponent<TreeBranchProps> {
     hasExpanded = false
 
     element: HTMLDivElement
@@ -22,18 +18,7 @@ class Branch extends PureComponent<TreeBranchProps, ListState> {
         line: true,
     }
 
-    constructor(props: TreeBranchProps) {
-        super(props)
-        this.state = {
-            hasDoneAnimation: props.expanded,
-        }
-    }
-
     componentDidUpdate() {
-        if (this.props.expanded && !this.state.hasDoneAnimation) {
-            this.setState({ hasDoneAnimation: true })
-        }
-
         if (this.props.expanded) {
             this.branchVarInject()
         }
@@ -76,22 +61,19 @@ class Branch extends PureComponent<TreeBranchProps, ListState> {
 
         this.hasExpanded = true
 
-        const { hasDoneAnimation } = this.state
-
-        const computedHeight = (expanded && !hasDoneAnimation) || !expanded ? 0 : 'auto'
-
         return (
-            <AnimationHeight
+            <AnimationList
+                lazyDom
                 className={classnames(className, treeClass(isRoot ? 'root' : 'branch', expanded && 'expanded'))}
                 /** 添加empty使拖动时不会出现禁止符号 */
                 onDrop={empty}
                 onDragOver={empty}
                 onDragLeave={isRoot ? this.handleDragLeave : undefined}
-                height={computedHeight}
-                duration={200}
                 style={style}
                 show={expanded}
-                forwardedRef={el => {
+                animationTypes={['collapse', 'fade']}
+                duration="fast"
+                getRef={el => {
                     this.element = el
                 }}
             >
@@ -100,7 +82,7 @@ class Branch extends PureComponent<TreeBranchProps, ListState> {
 
                     return <List {...rest} className={className} data={child} key={id} id={id} index={index} />
                 })}
-            </AnimationHeight>
+            </AnimationList>
         )
     }
 }
