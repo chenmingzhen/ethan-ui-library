@@ -6,9 +6,9 @@ export const updateSubscribe = name => `__UPDATE_SUBSCRIBE_${name}__`
 
 export const CHANGE_ACTION = 'CHANGE_ACTION'
 
-export const VALIDATE_TOPIC = '__VALIDATE_TOPIC__'
+export const VALIDATE_ACTION = '__VALIDATE_ACTION__'
 
-export const RESET_TOPIC = '__RESET_TOPIC__'
+export const RESET_ACTION = '__RESET_ACTION__'
 
 export const FORCE_PASS = '__VALIDATE_FORCE_PASS__'
 

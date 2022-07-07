@@ -120,7 +120,7 @@ export default class List<T = string> {
     }
 
     /** 将数据转为Array格式 */
-    private arrayValue(values = []) {
+    arrayValue(values = []) {
         if (this.limit === 1 && !Array.isArray(values)) {
             return [values]
         }

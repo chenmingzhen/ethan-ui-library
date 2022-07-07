@@ -169,13 +169,7 @@ FieldSet.defaultProps = {
 export const fieldSetConsumer = Origin => props => (
     <Consumer>
         {({ path, val } = {}) => (
-            <Origin
-                {...props}
-                // eslint-disable-next-line
-        name={extendName(path, props.name)}
-                innerFormNamePath={path}
-                fieldSetValidate={val}
-            />
+            <Origin {...props} name={extendName(path, props.name)} innerFormNamePath={path} fieldSetValidate={val} />
         )}
     </Consumer>
 )

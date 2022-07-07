@@ -11,10 +11,8 @@ import { FORCE_PASS, ERROR_TYPE, IGNORE_VALIDATE, errorSubscribe, IGNORE_BIND } 
 import { itemConsumer } from '@/component/Form/Item'
 import validate from '@/utils/validate'
 import Datum from '@/utils/Datum'
-import Form from '@/utils/Datum/Form'
-import List from '@/utils/Datum/List'
-import { formConsumer } from './formContext'
-import { loopConsumer } from './Loop'
+import FormDatum from '@/utils/Datum/Form'
+import ListDatum from '@/utils/Datum/List'
 import { fieldSetConsumer } from './FieldSet'
 import { Rule } from '../Rule/type'
 
@@ -37,7 +35,7 @@ interface IInputableProps extends InputAbleProps {
 
     forceChangeOnValueSet: boolean
 
-    formDatum: any
+    formDatum: FormDatum
 
     innerFormNamePath: string
 
@@ -71,15 +69,7 @@ interface InputableState {
     value: any
 }
 
-const types = ['formDatum', 'disabled', 'combineRules']
-
-// formConsumer(types) 先返回一个未执行的方法  compose进行洋葱操作,返回的是一个方法,下面将类传进consumer作为参数
-// 从fieldSetConsumer开始 把类放进去，返回一个HocConsumer包裹的组件，再传递给loopConsumer，itemConsumer，
-// 最后经过fieldSetConsumer，loopConsumer，itemConsumer包装的组件 传递给formConsumer(types)
-// formConsumer(types)得到的是一个柯里化的函数，第一个keys参数已经是types，包装三层包装传递进来的组件是第二个参数Origin 第三个参数是外界传进来的props
-// 最终导出一个 inputable的高阶组件
-// types 走到formConsumer的keys
-const consumer = compose(formConsumer(types), itemConsumer, loopConsumer, fieldSetConsumer)
+const consumer = compose(itemConsumer, fieldSetConsumer)
 
 const tryValue = (val, def) => (val === undefined ? def : val)
 
@@ -104,7 +94,7 @@ export default curry(Origin =>
 
             lastValue
 
-            datum: Form | List
+            datum: FormDatum | ListDatum
 
             customValidate
 
@@ -253,9 +243,8 @@ export default curry(Origin =>
                 this.customValidate = customValidate
             }
 
-            /** @todo data类型  */
             validate = (value, data?: any, type?: string) => {
-                const { name, formDatum, combineRules, bind } = this.props
+                const { name, formDatum, bind } = this.props
 
                 const names = Array.isArray(name) ? name : [name]
 
@@ -263,16 +252,11 @@ export default curry(Origin =>
 
                 const validateProps = filterProps(this.props, v => typeof v === 'string' || typeof v === 'number')
 
-                if (this.datum) {
-                    const datumValue =
-                        this.datum instanceof Datum.Form ? this.datum.formatValue(value) : this.datum.arrayValue(value)
-
-                    value = this.datum.limit === 1 ? datumValue[0] : datumValue
-
-                    validateProps.type = 'array'
+                if (this.datum instanceof Datum.List) {
+                    value = this.datum.arrayValue(value)
                 }
 
-                if (type === FORCE_PASS || value === FORCE_PASS) {
+                if (type === FORCE_PASS) {
                     this.handleError()
 
                     return Promise.resolve(true)
@@ -289,15 +273,9 @@ export default curry(Origin =>
 
                 if (!data && formDatum) data = formDatum.getValue()
 
-                /** @todo 不应该直接操作rules */
-                let { rules } = this.props
+                const { rules } = this.props
 
                 names.forEach((n, i) => {
-                    // 如果为非表单 则names为[undefined]
-                    if (formDatum && combineRules) {
-                        rules = combineRules(n, rules)
-                    }
-
                     if (isArray(rules) && rules.length > 0) {
                         validateResults.push(validate(value[i], data, rules, validateProps))
                     }

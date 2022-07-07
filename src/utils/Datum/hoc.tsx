@@ -2,8 +2,8 @@ import React from 'react'
 import { curry } from '@/utils/func'
 import shallowEqual from '@/utils/shallowEqual'
 import { IGNORE_VALIDATE } from './types'
-import List from './List'
-import Form from './Form'
+import ListDatum from './List'
+import FormDatum from './Form'
 import { isEmpty } from '../is'
 
 interface HocProps {
@@ -11,7 +11,7 @@ interface HocProps {
 
     onDatumBind(datum)
 
-    datum?: Form | List
+    datum?: FormDatum | ListDatum
 
     initValidate?: boolean
 
@@ -31,8 +31,8 @@ interface Options {
 }
 
 const types = {
-    form: Form,
-    list: List,
+    form: FormDatum,
+    list: ListDatum,
 }
 
 /**
@@ -44,7 +44,7 @@ export default curry((options: Options, Origin) => {
     const Datum = types[type]
 
     return class extends React.PureComponent<HocProps> {
-        datum: typeof Form | List
+        datum: typeof FormDatum | ListDatum
 
         prevValues
 
@@ -61,15 +61,13 @@ export default curry((options: Options, Origin) => {
 
             const value = props[key]
 
-            // 判断外部是否传进Datum
             if (datum instanceof Datum) {
                 this.datum = datum
             } else {
-                // 绑定指定Props
-                // 让Datum使用Props指定bind的值
+                /** 绑定指定Props */
+                /** 让Datum使用Props指定bind的值 */
                 const ops: any = bindProps.reduce(
                     (o, k) => {
-                        // o {value,limit,initValidate} k keys
                         o[k] = props[k]
                         return o
                     },
