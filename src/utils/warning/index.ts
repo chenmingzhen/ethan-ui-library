@@ -1,18 +1,16 @@
 /** @see https://github.com/react-component/util/blob/master/src/warning.ts */
 
-import { warningMessageMap } from './types'
-
 let warned: Record<string, boolean> = {}
 
-export function warning(key: string) {
-    if (process.env.NODE_ENV !== 'production' && console !== undefined && warningMessageMap[key]) {
-        console.error(`Warning: ${warningMessageMap[key]}`)
+export function warning(message) {
+    if (process.env.NODE_ENV !== 'production' && console !== undefined) {
+        console.error(`Warning: ${message}`)
     }
 }
 
-export function note(key: string) {
-    if (process.env.NODE_ENV !== 'production' && console !== undefined && warningMessageMap[key]) {
-        console.warn(`Note: ${warningMessageMap[key]}`)
+export function note(message) {
+    if (process.env.NODE_ENV !== 'production' && console !== undefined) {
+        console.warn(`Note: ${message}`)
     }
 }
 
@@ -20,19 +18,19 @@ export function resetWarned() {
     warned = {}
 }
 
-export function call(method: (key: string) => void, key: string) {
-    if (!warned[key]) {
-        method(key)
-        warned[key] = true
+export function call(method: (message: string) => void, message: string) {
+    if (!warned[message]) {
+        method(message)
+        warned[message] = true
     }
 }
 
-export function warningOnce(key: string) {
-    call(warning, key)
+export function warningOnce(string: string) {
+    call(warning, string)
 }
 
-export function noteOnce(key: string) {
-    call(note, key)
+export function noteOnce(string: string) {
+    call(note, string)
 }
 
 export default warningOnce

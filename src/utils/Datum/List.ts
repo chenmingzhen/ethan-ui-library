@@ -1,5 +1,4 @@
 import { warning } from '../warning'
-import { DATUM_LIST_INVALID_VALUES } from '../warning/types'
 import { CHANGE_ACTION } from './types'
 
 export type FormatInfer<T> = T extends Record<string, any>
@@ -132,7 +131,9 @@ export default class List<T = string> {
             return values
         }
 
-        warning(DATUM_LIST_INVALID_VALUES)
+        warning(
+            '[Ethan UI:Datum.List]:the defaultValue or value props is not a valid value.MayBe you should pass an array'
+        )
 
         return []
     }

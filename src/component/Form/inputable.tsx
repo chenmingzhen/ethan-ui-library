@@ -132,11 +132,18 @@ export default curry(Origin =>
 
                         name.forEach((n, i) => formDatum.bind(n, this.handleUpdate, dv[i], this.validate))
 
-                        this.state.value = name.map(n => formDatum.get(n))
+                        this.setImmerState(draft => {
+                            draft.value = name.map(n => formDatum.get(n))
+                        })
+
+                        /** @todo 去除订阅，外部不操作内部的订阅 */
                         formDatum.subscribe(errorSubscribe(this.errorName), this.handleUpdate)
                     } else {
                         formDatum.bind(name, this.handleUpdate, defaultValue, this.validate)
-                        this.state.value = formDatum.get(name)
+
+                        this.setImmerState(draft => {
+                            draft.value = formDatum.get(name)
+                        })
                     }
                 }
 
