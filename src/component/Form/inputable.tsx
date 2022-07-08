@@ -7,7 +7,7 @@ import { filterProps } from '@/utils/objects'
 import { getUidStr } from '@/utils/uid'
 import shallowEqual from '@/utils/shallowEqual'
 import { isArray } from '@/utils/is'
-import { FORCE_PASS, ERROR_TYPE, IGNORE_VALIDATE, errorSubscribe, IGNORE_BIND } from '@/utils/Datum/types'
+import { FORCE_PASS, ERROR_ACTION, errorSubscribe, IGNORE_BIND, IGNORE_VALIDATE } from '@/utils/Datum/types'
 import { itemConsumer } from '@/component/Form/Item'
 import validate from '@/utils/validate'
 import Datum from '@/utils/Datum'
@@ -32,8 +32,6 @@ interface IInputableProps extends InputAbleProps {
     defaultValue: any
 
     fieldSetValidate: any
-
-    forceChangeOnValueSet: boolean
 
     formDatum: FormDatum
 
@@ -120,12 +118,8 @@ export default curry(Origin =>
             componentDidMount = () => {
                 super.componentDidMount()
 
-                const { formDatum, loopContext, name, defaultValue, bindInputToItem, popover } = this.props
+                const { formDatum, name, defaultValue, bindInputToItem, popover } = this.props
 
-                /**
-                 * TODO formDatum
-                 * 不直接操作state
-                 */
                 if (formDatum && name) {
                     if (Array.isArray(name)) {
                         const dv = defaultValue || []
@@ -136,7 +130,7 @@ export default curry(Origin =>
                             draft.value = name.map(n => formDatum.get(n))
                         })
 
-                        /** @todo 去除订阅，外部不操作内部的订阅 */
+                        /** @todo 将错误订阅放到FormItem中处理 */
                         formDatum.subscribe(errorSubscribe(this.errorName), this.handleUpdate)
                     } else {
                         formDatum.bind(name, this.handleUpdate, defaultValue, this.validate)
@@ -148,8 +142,6 @@ export default curry(Origin =>
                 }
 
                 if (bindInputToItem && name && !popover) bindInputToItem(this.errorName)
-
-                if (loopContext) loopContext.bind(this.validate)
             }
 
             shouldComponentUpdate(nextProps, nextState) {
@@ -170,20 +162,19 @@ export default curry(Origin =>
             componentWillUnmount() {
                 super.componentWillUnmount()
 
-                const { formDatum, name, loopContext, unbindInputFromItem } = this.props
+                const { formDatum, name, unbindInputFromItem } = this.props
 
-                /** TODO */
                 if (formDatum && name) {
-                    formDatum.unbind(name, this.handleUpdate)
+                    formDatum.unbind(name)
+
                     if (Array.isArray(name)) {
                         formDatum.unsubscribe(errorSubscribe(this.errorName), this.handleUpdate)
-                        formDatum.setError(this.errorName)
+
+                        formDatum.removeFormError(this.errorName)
                     }
                 }
 
                 if (unbindInputFromItem && name) unbindInputFromItem(this.errorName)
-
-                if (loopContext) loopContext.unbind(this.validate)
             }
 
             get errorName() {
@@ -209,7 +200,6 @@ export default curry(Origin =>
 
                 const hasValue = 'value' in this.props || 'checked' in this.props
 
-                /** @todo */
                 this.control = hasValue
 
                 // 非表单控制(前者为非受控值，后者为受控值)
@@ -234,9 +224,7 @@ export default curry(Origin =>
                 const { formDatum, name, onItemError, onError } = this.props
 
                 if (formDatum && name) {
-                    if (!isSameError(error, formDatum.getError(this.errorName, true))) {
-                        formDatum.setError(this.errorName, error, true)
-                    }
+                    /** @todo */
                 } else {
                     this.setState({ error })
                 }
@@ -303,7 +291,7 @@ export default curry(Origin =>
 
             /** 子组件value改变 (datum管理value) 此处驱动更新 */
             handleChange = (value, ...args) => {
-                const { formDatum, name, fieldSetValidate, onChange } = this.props
+                const { formDatum, name, onChange } = this.props
 
                 const currentValue = this.getValue()
 
@@ -313,7 +301,6 @@ export default curry(Origin =>
 
                 const beforeChange = beforeValueChange(this.props.beforeChange)
 
-                /** TODO */
                 if (formDatum && name) {
                     value = beforeChange(value, formDatum)
 
@@ -325,42 +312,44 @@ export default curry(Origin =>
 
                     this.setState({ value })
 
-                    /** TODO  */
                     this.validate(value).catch(() => {})
                 }
 
                 onChange?.(value, ...args)
-
-                fieldSetValidate?.(true)
             }
 
-            /** @todo */
-            handleUpdate = (value, sn, type) => {
-                if (type === ERROR_TYPE) {
+            handleUpdate = (value, name, type) => {
+                if (type === ERROR_ACTION) {
                     if (!isSameError(value, this.state.error)) this.setState({ error: value })
+
                     return
                 }
 
-                const { name, onChange, forceChangeOnValueSet } = this.props
-                const newValue = !Array.isArray(name)
+                const { name: propName, onChange } = this.props
+
+                const newValue = !Array.isArray(propName)
                     ? value
                     : immer(this.getValue(), draft => {
-                          name.forEach((n, i) => {
-                              if (n === sn) draft[i] = value
+                          propName.forEach((n, i) => {
+                              if (n === name) draft[i] = value
                           })
                       })
 
                 if (shallowEqual(newValue, this.lastValue)) return
+
                 this.lastValue = newValue
 
                 if (type === FORCE_PASS) {
                     this.handleError()
+
                     this.setState({ error: undefined })
+
                     this.forceUpdate()
+
                     return
                 }
 
-                if (onChange && forceChangeOnValueSet) onChange(newValue)
+                if (onChange) onChange(newValue)
 
                 if (type !== IGNORE_VALIDATE) {
                     if (this.updateTimer) clearTimeout(this.updateTimer)
@@ -369,6 +358,7 @@ export default curry(Origin =>
                         this.validate(newValue, undefined, type).catch(() => {})
                     }, 0)
                 }
+
                 this.forceUpdate()
             }
 

@@ -6,7 +6,7 @@ import { Component } from '@/utils/component'
 import { filterProps } from '@/utils/objects'
 import validate from '@/utils/validate'
 import { FormError, isSameError } from '@/utils/errors'
-import { ERROR_TYPE, FORCE_PASS, IGNORE_VALIDATE } from '@/utils/Datum/types'
+import { ERROR_ACTION, FORCE_PASS, IGNORE_VALIDATE } from '@/utils/Datum/types'
 import FieldError from './FieldError'
 
 const { Provider, Consumer } = createReactContext()
@@ -77,7 +77,7 @@ class FieldSet extends Component {
     handleUpdate(v, n, type) {
         if (this.updateTimer) clearTimeout(this.updateTimer)
         this.updateTimer = setTimeout(() => {
-            if (type === ERROR_TYPE || type === FORCE_PASS || type === IGNORE_VALIDATE) {
+            if (type === ERROR_ACTION || type === FORCE_PASS || type === IGNORE_VALIDATE) {
                 this.forceUpdate()
             } else {
                 this.updateWithValidate()

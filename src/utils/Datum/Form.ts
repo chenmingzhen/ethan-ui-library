@@ -13,10 +13,22 @@ import {
     RESET_ACTION,
     CHANGE_ACTION,
     FORCE_PASS,
-    ERROR_TYPE,
+    ERROR_ACTION,
     IGNORE_VALIDATE,
 } from './types'
 import { warningOnce } from '../warning'
+
+interface FormDatumOptions {
+    removeUndefined?: boolean
+
+    rules?: Rule[]
+
+    onChange?: (...args) => void
+
+    value?: any
+
+    initValidate?: boolean
+}
 
 export default class {
     $events: Record<string, ((...args) => void)[]> = {}
@@ -37,8 +49,8 @@ export default class {
 
     deepSetOptions = { forceSet: true, removeUndefined: undefined }
 
-    constructor(options = {}) {
-        const { removeUndefined = true, rules, onChange, value, error, initValidate } = options
+    constructor(options: FormDatumOptions) {
+        const { removeUndefined = true, rules, onChange, value, initValidate } = options || {}
 
         this.rules = rules
 
@@ -47,8 +59,6 @@ export default class {
         this.deepSetOptions.removeUndefined = removeUndefined
 
         if (value) this.setValue(value, initValidate ? undefined : IGNORE_VALIDATE)
-
-        if (error) this.resetFormError(error)
     }
 
     private dispatch = (name: string, ...args) => {
@@ -93,6 +103,13 @@ export default class {
         events.push(callback)
     }
 
+    unsubscribe = (name: string, callback?) => {
+        if (!this.$events[name]) return
+
+        if (callback) this.$events[name] = this.$events[name].filter(fn => fn !== callback)
+        else delete this.$events[name]
+    }
+
     bind = (name: string, callback, value, validate) => {
         if (this.$inputNames[name]) {
             warningOnce(`There is already an item with name "${name}" exists. The name props must be unique.`)
@@ -113,6 +130,30 @@ export default class {
         this.subscribe(errorSubscribe(name), callback)
     }
 
+    unbind = (name: string | string[]) => {
+        if (Array.isArray(name)) {
+            name.forEach(n => this.unbind(n))
+
+            return
+        }
+
+        this.unsubscribe(updateSubscribe(name))
+
+        this.unsubscribe(errorSubscribe(name))
+
+        delete this.$inputNames[name]
+
+        delete this.$validator[name]
+
+        delete this.$errors[name]
+
+        delete this.$defaultValues[name]
+
+        if (!deepHas(this.$values, name)) return
+
+        deepRemove(this.$values, name)
+    }
+
     /** 往下层传递更新事件 */
     private publishValue = (name, type) => {
         const na = `${name}[`
@@ -127,7 +168,7 @@ export default class {
     }
 
     /** 设置（单个字段）的值，相当于ant setFields */
-    private set = (name: string | string[], value, pub: boolean) => {
+    set = (name: string | string[], value, pub?: boolean) => {
         if (isArray(name)) {
             this.setArrayValue(name, value)
 
@@ -165,7 +206,16 @@ export default class {
         if (this.onChange) this.onChange(this.getValue())
     }
 
-    private getValue = () => {
+    getValue = () => {
         return deepClone(this.$values)
+    }
+
+    getError = (name: string) => {
+        /** @todo */
+        return getSthByName(name, this.$errors)
+    }
+
+    removeFormError = (name: string) => {
+        delete this.$errors[name]
     }
 }

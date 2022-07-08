@@ -26,20 +26,16 @@ export default class Form extends PureComponent<IFormProps> {
 
         if (formRef) formRef(this.form)
 
-        this.setStatus()
-
         if (this.form) {
             this.form.addEventListener('submit', this.handleSubmit)
         }
     }
 
     componentDidUpdate(prevProps) {
-        this.setStatus()
         if (prevProps.error !== this.props.error) this.props.datum.resetFormError(this.props.error)
     }
 
     componentWillUnmount() {
-        this.props.datum.formUnmount = true
         if (this.form) {
             this.form.removeEventListener('submit', this.handleSubmit)
         }

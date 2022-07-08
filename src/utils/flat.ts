@@ -134,8 +134,9 @@ export const getSthByName = (name, source = {}) => {
 
     name.split('.').forEach(n => {
         const match = /^\[(\d+)\]$/.exec(n)
-        // eslint-disable-next-line
+
         if (match) n = match[1]
+
         if (result) result = result[n]
         else result = undefined
     })

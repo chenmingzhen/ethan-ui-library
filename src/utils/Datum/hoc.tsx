@@ -98,8 +98,6 @@ export default curry((options: Options, Origin) => {
 
             const values = this.props[key]
 
-            // 值发生改变时 重新设置值
-
             if (!shallowEqual(values, this.prevValues)) {
                 this.setValue(this.props.initValidate ? undefined : IGNORE_VALIDATE)
 
