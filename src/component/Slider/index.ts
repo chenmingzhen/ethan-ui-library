@@ -1,8 +1,8 @@
 import React from 'react'
-import inputable from '../Form/inputable'
+import withControl from '../../hoc/withControl'
 import Container from './Container'
 import { SliderContainerProps } from './type'
 
-const Slider = inputable(Container) as React.ComponentClass<SliderContainerProps>
+const Slider = withControl(Container) as React.ComponentClass<SliderContainerProps>
 
 export default Slider

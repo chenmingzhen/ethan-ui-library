@@ -104,6 +104,8 @@ export default class Form extends PureComponent<IFormProps> {
             labelAlign,
             labelVerticalAlign,
             labelWidth,
+            /** */
+            onChange,
             ...other
         } = this.props
 
@@ -126,8 +128,8 @@ export default class Form extends PureComponent<IFormProps> {
             <FormProvider value={providerValue}>
                 <form
                     ref={this.bindElement}
-                    onReset={this.handleReset}
                     {...other}
+                    onReset={this.handleReset}
                     className={className}
                     data-id={this.id}
                 >

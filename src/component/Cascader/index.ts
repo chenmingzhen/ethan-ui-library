@@ -3,12 +3,12 @@ import { selectClass } from '@/styles'
 import { compose } from '@/utils/func'
 import React from 'react'
 import Component from './Cascader'
-import inputable from '../Form/inputable'
+import withControl from '../../hoc/withControl'
 import absolute from '../Table/context'
 import { CascaderProps } from './type'
 
 const Cascader = compose(
-    inputable,
+    withControl,
     inputBorder({ className: selectClass('_'), tag: 'span' }),
     absolute
 )(Component) as React.ComponentClass<CascaderProps>

@@ -1,15 +1,15 @@
 import { compose } from '@/utils/func'
 import Datum from '@/utils/Datum'
-import inputable from '../Form/inputable'
+import withControl from '../../hoc/withControl'
 import { consumer } from '../Checkbox/context'
 import Group from './Group'
 import Radio from './Radio'
 import { RadioComponent } from './type'
 
-const RadioContainer = compose(inputable, consumer)(Radio) as RadioComponent
+const RadioContainer = compose(withControl, consumer)(Radio) as RadioComponent
 
 RadioContainer.Group = compose(
-    inputable,
+    withControl,
     Datum.Hoc({ limit: 1, bindProps: ['disabled', 'format', 'prediction'] })
 )(Group)
 

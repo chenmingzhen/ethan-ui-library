@@ -1,9 +1,9 @@
 import Datum from '@/utils/Datum'
 import { compose } from '@/utils/func'
 import Transfer from './Transfer'
-import inputable from '../Form/inputable'
+import withControl from '../../hoc/withControl'
 
-const TransferComponent = compose(inputable, Datum.Hoc({ bindProps: ['disabled', 'format', 'prediction'] }))(Transfer)
+const TransferComponent = compose(withControl, Datum.Hoc({ bindProps: ['disabled', 'format', 'prediction'] }))(Transfer)
 
 TransferComponent.displayName = 'EthanTransfer'
 

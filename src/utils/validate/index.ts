@@ -1,4 +1,3 @@
-import Datum from '@/utils/Datum'
 import { wrapFormError } from '../errors'
 import { substitute } from '../strings'
 import { flattenArray } from '../flat'
@@ -16,18 +15,12 @@ function getRule(rule, props: Record<string, any> = {}) {
         /** RuleRender */ else return rule
     }
 
-    /** @todo remove  */
-    if (typeof props === 'string') props = { type: props }
-
     // 执行内置检验方法获取的返回值
     const { type = props.type, message, regExp, validator, ...other } = innerRuleExecuteResult
 
     props = Object.assign({}, props, other)
 
     props.message = typeof message === 'function' ? message(props) : substitute(message, props)
-
-    // 返回自定义的规则校验方法,并在回调的props中添加message的属性
-    if (validator) return (val, formData, callback) => validator(val, formData, callback, props)
 
     if (other.required) return required(props)
 
@@ -49,7 +42,6 @@ function getRule(rule, props: Record<string, any> = {}) {
     throw err
 }
 
-/** @todo 合并代码后补充rules的类型 */
 const validate = (value, formData, rules, props) =>
     new Promise((resolve, reject) => {
         /** 扁平化后 递归调用 */
@@ -75,15 +67,8 @@ const validate = (value, formData, rules, props) =>
 
         const validateFunction = getRule(rule, props)
 
-        let val = value
-
-        /** TODO 什么情况传入Datum？ */
-        if (validateFunction === rule && (value instanceof Datum.List || value instanceof Datum.Form)) {
-            val = value.getOuterValue()
-        }
-
         // 处理自定义规则校验与内置规则校验
-        const cb = validateFunction(val, formData, validateCallback)
+        const cb = validateFunction(value, formData, validateCallback)
 
         // 处理自定义规则校验 返回是Promise的情况
         if (cb && cb.then) {

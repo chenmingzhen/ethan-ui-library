@@ -1,16 +1,16 @@
 import { InputBorderProps } from '@/hoc/inputBorder'
 import { TrimProps } from '@/hoc/trim'
 import React from 'react'
-import { InputAbleProps } from '../Form/inputable'
+import { Rule } from '../Rule/type'
 
 export interface InputProps<Value = string | number>
     extends Omit<
-            React.InputHTMLAttributes<HTMLInputElement>,
-            'size' | 'prefix' | 'type' | 'value' | 'onChange' | 'defaultValue'
-        >,
-        InputAbleProps,
-        TrimProps,
-        InputBorderProps {
+    React.InputHTMLAttributes<HTMLInputElement>,
+    'size' | 'prefix' | 'type' | 'value' | 'onChange' | 'defaultValue'
+    >,
+    TrimProps,
+    InputBorderProps {
+    rules?: Rule[]
     className?: string
     clearable?: boolean | (() => void)
     defaultValue?: Value

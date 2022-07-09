@@ -1,15 +1,15 @@
-import { InputAbleProps } from '@/component/Form/inputable'
 import { InputBorderProps } from '@/hoc/inputBorder'
 import { TrimProps } from '@/hoc/trim'
 
 export interface TextareaProps
     extends InputAbleProps,
-        Omit<React.TextareaHTMLAttributes<HTMLTextAreaElement>, 'size' | 'defaultValue' | 'onChange'>,
-        TrimProps,
-        InputBorderProps {
+    Omit<React.TextareaHTMLAttributes<HTMLTextAreaElement>, 'size' | 'defaultValue' | 'onChange'>,
+    TrimProps,
+    InputBorderProps {
+    rules?: Rule[]
     autoSize?: boolean
     showCount?: boolean
-    maxHeight?: string|number
+    maxHeight?: string | number
     onEnterPress?: (value: string, evt: React.KeyboardEvent<HTMLTextAreaElement>) => void
     onChange?: (string) => void
     rows?: number

@@ -29,7 +29,10 @@ export type RegExpOptions = {
 export type BaseOptionKeys = keyof BaseOptions
 
 export type Validator = {
-    [key in string]?: (val: number, formData: string, callback, props) => void | Promise<void | Error>
+    /**
+     * @todo 完善类型
+     */
+    [key in string]?: (val: any, formData: any, callback, props) => void | Promise<void | Error>
 }
 
 export type RequiredFuncOutPut = {

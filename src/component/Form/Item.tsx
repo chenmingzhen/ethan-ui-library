@@ -15,9 +15,16 @@ interface FormItemState {
     errors: Record<string, FormError>
 }
 
+/**
+ * 显示Label和Item包裹内表单组件错误
+ */
 export default class FormItem extends PureComponent<IFormItemProps, FormItemState> {
     events: FormItemContextProps
 
+    /**
+     * Item中可能多个表单组件
+     * 表单组件可能多个name  一个组件多个Name使用|联接
+     */
     get errors() {
         const { formDatum } = this.props
 

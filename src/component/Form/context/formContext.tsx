@@ -1,4 +1,8 @@
 import { createContext } from 'react'
 import { FormContextProps } from '../type'
 
-export const { Provider: FormProvider, Consumer: FormConsumer } = createContext<FormContextProps>(undefined)
+const formContext = createContext<FormContextProps>(undefined)
+
+export const { Provider: FormProvider } = formContext
+
+export default formContext

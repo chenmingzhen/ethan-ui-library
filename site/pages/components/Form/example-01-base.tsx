@@ -41,12 +41,7 @@ export default class extends PureComponent {
 
     render() {
         return (
-            <Form
-                onSubmit={data => {
-                    console.log(data)
-                }}
-                onChange={console.log}
-            >
+            <Form onChange={console.log}>
                 <Form.Item label="Email">
                     <Input name="email" />
                 </Form.Item>
