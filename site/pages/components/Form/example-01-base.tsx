@@ -5,7 +5,7 @@
  *    -- The form has a two-way binding mechanism built in, automatically sending and collecting data based on the name property of the form element.
  */
 import React, { PureComponent } from 'react'
-import { Form, Input, Checkbox, Radio, Textarea, Select, Tree, Upload } from 'ethan'
+import { Form, Input, Checkbox, Radio, Textarea, Select, DatePicker, Upload } from 'ethan'
 
 const citys = [
     {
@@ -72,7 +72,6 @@ export default class extends PureComponent {
                         action="//jsonplaceholder.typicode.com/posts"
                         accept="image/*"
                         name="file"
-                        onSuccess={(res, file, data) => ({ data })}
                         renderResult={f => f.data}
                         limit={3}
                     />
@@ -108,7 +107,14 @@ export default class extends PureComponent {
                     />
                 </Form.Item>
 
-                <Form.Item label="Date" />
+                <Form.Item label="Date">
+                    <DatePicker
+                        type="datetime"
+                        range
+                        name={['startDate', 'endDate']}
+                        defaultValue={[Date.now() - 100000000, Date.now()]}
+                    />
+                </Form.Item>
 
                 <Form.Item label="Description">
                     <Textarea name="desc" autoSize />
