@@ -449,9 +449,11 @@ class Container extends PureComponent {
 
         /** @todo AbsoluteList AnimationList */
 
-        return null
-
-        return <OptionList {...props}>{this.renderPicker()}</OptionList>
+        return (
+            <AnimationList {...props} show={focus} animationTypes={['fade']}>
+                {this.renderPicker()}
+            </AnimationList>
+        )
     }
 
     renderPicker() {
