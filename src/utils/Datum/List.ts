@@ -1,3 +1,4 @@
+import { isArray } from '../is'
 import { warning } from '../warning'
 import { CHANGE_ACTION } from './types'
 
@@ -154,12 +155,12 @@ export default class List<T = string> {
 
     // 处理Change 并触发事件派发
     private handleChange(values, ...args) {
-        /** @bug  由于此处逻辑发生改变，导致transfer select的渲染响应不正确 */
         if (!this.control) {
             this.$values = values
 
             this.onChange?.(this.getValue(), ...args)
         } else {
+            /** @bug 如果是受控的模式 返回值会包裹一个数组，部分组件不需要包裹数组，目前只有CheckboxGroup需要 */
             this.onChange?.(values, ...args)
         }
 

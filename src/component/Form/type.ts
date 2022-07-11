@@ -13,6 +13,9 @@ export interface FormItemProps {
     children: React.ReactNode
     style?: React.CSSProperties
     grid?: number
+
+    name?: string | string[]
+    defaultValue: any
 }
 
 export interface IFormItemProps extends FormItemProps {

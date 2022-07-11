@@ -10,5 +10,5 @@ import { Select } from 'ethan/index'
 const data = ['red', 'orange', 'yellow', 'green', 'cyan', 'blue', 'violet']
 
 export default function() {
-    return <Select keygen style={{ width: 240 }} data={data} defaultValue="" />
+    return <Select keygen style={{ width: 240 }} data={data} value="red" onChange={console.log} />
 }

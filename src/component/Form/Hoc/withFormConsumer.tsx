@@ -4,7 +4,10 @@ import { isEmpty } from '@/utils/is'
 import formContext from '../context/formContext'
 import { FormContextProps } from '../type'
 
-const withForm = curry((keys: Array<keyof FormContextProps>, Origin: typeof React.Component, props) => {
+/**
+ * 从FormProvider中读取指定的keys
+ */
+const withFormConsumer = curry((keys: Array<keyof FormContextProps>, Origin: typeof React.Component, props) => {
     const value = useContext(formContext) || {}
 
     const formContextProps: any = {}
@@ -22,4 +25,4 @@ const withForm = curry((keys: Array<keyof FormContextProps>, Origin: typeof Reac
     return <Origin {...formContextProps} {...props} disabled={formContextProps.disabled || props.disabled} />
 })
 
-export default withForm
+export default withFormConsumer

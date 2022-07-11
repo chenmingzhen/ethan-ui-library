@@ -19,12 +19,6 @@ interface WithControlState {
 export default curry(
     Origin =>
         class extends Component<WithControlProps, WithControlState> {
-            static propTypes = {}
-
-            static defaultProps = {
-                rules: [],
-            }
-
             /** 是否为受控，Datum中使用 */
             control = false
 
@@ -48,7 +42,6 @@ export default curry(
                 return !hasValue ? this.state.value : value
             }
 
-            /** 子组件value改变 (datum管理value) 此处驱动更新 */
             handleChange = (value, ...args) => {
                 const { onChange, validate } = this.props
 

@@ -2,7 +2,7 @@ import deepEqual from 'deep-eql'
 import { unflatten, insertValue, spliceValue, getSthByName } from '@/utils/flat'
 import { fastClone, deepClone } from '@/utils/clone'
 import { deepGet, deepSet, deepRemove, deepMerge, objectValues, deepHas } from '@/utils/objects'
-import { isObject, isArray } from '@/utils/is'
+import { isObject, isArray, isEmpty } from '@/utils/is'
 import { promiseAll, FormError } from '@/utils/errors'
 import { Rule } from '@/component/Rule/type'
 import {
@@ -115,7 +115,7 @@ export default class {
             warningOnce(`There is already an item with name "${name}" exists. The name props must be unique.`)
         }
 
-        if (value !== undefined && this.get(name) === null) {
+        if (value !== undefined && isEmpty(this.get(name))) {
             this.set(name, value, true)
         }
 
@@ -179,9 +179,7 @@ export default class {
 
         deepSet(this.$values, name, value, this.deepSetOptions)
 
-        if (this.$inputNames[name]) {
-            this.dispatch(updateSubscribe(name), value, name)
-        }
+        this.dispatch(updateSubscribe(name), value, name)
 
         if (isObject(value) || pub) this.publishValue(name, FORCE_PASS)
 

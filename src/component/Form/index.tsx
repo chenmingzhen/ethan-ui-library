@@ -1,11 +1,17 @@
 import Datum from '@/utils/Datum'
 import { compose } from '@/utils/func'
 import Form from './Form'
-import withForm from './Hoc/withForm'
-import Item from './Item'
+import withFormConsumer from './Hoc/withFormConsumer'
+import Item from './FormItem'
 
 const FormComponent = compose(Datum.Hoc({ type: 'form', bindProps: ['removeUndefined', 'error'] }))(Form)
 
-FormComponent.Item = withForm(['formDatum', 'labelWidth', 'labelAlign', 'labelVerticalAlign', 'keepErrorHeight'])(Item)
+FormComponent.Item = withFormConsumer([
+    'formDatum',
+    'labelWidth',
+    'labelAlign',
+    'labelVerticalAlign',
+    'keepErrorHeight',
+])(Item)
 
 export default FormComponent
