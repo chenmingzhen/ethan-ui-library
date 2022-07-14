@@ -39,7 +39,7 @@ export default curry((options: Options, Origin) => {
 
     const Datum = types[type]
 
-    return class extends React.PureComponent<HocProps> {
+    return class extends React.Component<HocProps> {
         datum: typeof FormDatum | ListDatum
 
         prevValues
@@ -84,9 +84,10 @@ export default curry((options: Options, Origin) => {
 
             const values = this.props[key]
 
-            if (this.props.control) {
-                console.log(values)
-
+            if (
+                this.props.control &&
+                (!shallowEqual(values, this.datum.getValue()) || !shallowEqual(this.prevValues, values))
+            ) {
                 this.datum.setValue(values)
             }
 

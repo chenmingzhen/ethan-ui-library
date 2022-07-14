@@ -1,6 +1,6 @@
 import React from 'react'
 import classnames from 'classnames'
-import { PureComponent } from '@/utils/component'
+import { Component } from '@/utils/component'
 import { curry } from '@/utils/func'
 import Popover, { PopoverProps } from '@/component/Popover/Popover'
 import { isEmpty } from '@/utils/is'
@@ -63,7 +63,7 @@ interface Options {
  */
 export default curry(
     (options: Options, Origin) =>
-        class extends PureComponent<IInputBorderProps, InputBorderState> {
+        class extends Component<IInputBorderProps, InputBorderState> {
             static defaultProps = {
                 border: true,
                 style: {},

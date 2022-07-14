@@ -62,7 +62,7 @@ export default curry(
 
             render() {
                 const { value, defaultValue, error, ...other } = this.props
-                console.log(this.getValue())
+
                 return (
                     <Origin
                         {...other}
