@@ -10,5 +10,18 @@ import { Select } from 'ethan/index'
 const data = ['red', 'orange', 'yellow', 'green', 'cyan', 'blue', 'violet']
 
 export default function() {
-    return <Select keygen style={{ width: 240 }} data={data} value="red" onChange={console.log} />
+    const [value, updateValue] = React.useState('red')
+
+    return (
+        <Select
+            keygen
+            style={{ width: 240 }}
+            data={data}
+            value={value}
+            // onChange={(c, v, b) => {
+            //     updateValue(c)
+            //     console.log(c, v, b)
+            // }}
+        />
+    )
 }

@@ -1,17 +1,13 @@
 import React from 'react'
 import { curry } from '@/utils/func'
-import shallowEqual from '@/utils/shallowEqual'
-import { IGNORE_VALIDATE } from './types'
 import ListDatum from './List'
 import FormDatum from './Form'
-import { isEmpty } from '../is'
+import shallowEqual from '../shallowEqual'
 
 interface HocProps {
     onChange()
 
     onDatumBind(datum)
-
-    datum?: FormDatum | ListDatum
 
     initValidate?: boolean
 
@@ -57,30 +53,24 @@ export default curry((options: Options, Origin) => {
         constructor(props) {
             super(props)
 
-            const { datum, onChange, initValidate } = props
+            const { onChange, initValidate, control } = props
 
             const value = props[key]
 
-            if (datum instanceof Datum) {
-                this.datum = datum
-            } else {
-                /** 绑定指定Props */
-                /** 让Datum使用Props指定bind的值 */
-                const ops: any = bindProps.reduce(
-                    (o, k) => {
-                        o[k] = props[k]
-                        return o
-                    },
-                    // 初始值
-                    { value, limit, initValidate, control: props['data-control'] }
-                )
+            const ops: any = bindProps.reduce(
+                (o, k) => {
+                    o[k] = props[k]
+                    return o
+                },
+                // 初始值
+                { value, limit, initValidate, control }
+            )
 
-                if (onChange) {
-                    ops.onChange = onChange
-                }
-
-                this.datum = new Datum(Object.assign(ops))
+            if (onChange) {
+                ops.onChange = onChange
             }
+
+            this.datum = new Datum(Object.assign(ops))
         }
 
         componentDidMount() {
@@ -94,17 +84,13 @@ export default curry((options: Options, Origin) => {
 
             const values = this.props[key]
 
-            if (!shallowEqual(values, this.prevValues)) {
-                this.setValue(this.props.initValidate ? undefined : IGNORE_VALIDATE)
+            if (this.props.control) {
+                console.log(values)
 
-                this.prevValues = values
+                this.datum.setValue(values)
             }
-        }
 
-        setValue(action) {
-            const values = this.props[key]
-
-            this.datum.setValue(values, action)
+            this.prevValues = values
         }
 
         render() {

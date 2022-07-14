@@ -1,6 +1,7 @@
 import React from 'react'
 import { PureComponent } from '@/utils/component'
 import { isNumber, isString } from '@/utils/is'
+import { CHANGE_ACTION } from '@/utils/Datum/types'
 import { SelectFilterHocProps } from '../type'
 
 interface SelectFilterHocState {
@@ -25,6 +26,18 @@ export default function FilterHoc(Origin) {
                 filterText: '',
                 createData: undefined,
             }
+        }
+
+        componentDidMount() {
+            super.componentDidMount()
+
+            this.props.datum.subscribe(CHANGE_ACTION, this.forceUpdate)
+        }
+
+        componentWillUnmount(): void {
+            super.componentWillUnmount()
+
+            this.props.datum.unsubscribe(CHANGE_ACTION, this.forceUpdate)
         }
 
         getResultByValues = () => {

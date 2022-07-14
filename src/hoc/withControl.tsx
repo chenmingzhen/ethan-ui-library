@@ -62,14 +62,14 @@ export default curry(
 
             render() {
                 const { value, defaultValue, error, ...other } = this.props
-
+                console.log(this.getValue())
                 return (
                     <Origin
                         {...other}
                         error={error}
                         value={this.getValue()}
                         onChange={this.handleChange}
-                        data-control={this.control}
+                        control={this.control}
                     />
                 )
             }

@@ -15,5 +15,5 @@ function renderItem(color) {
 }
 
 export default function() {
-    return <Radio.Group keygen data={data} defaultValue="blue" renderItem={renderItem} />
+    return <Radio.Group keygen data={data} value="blue" renderItem={renderItem} />
 }

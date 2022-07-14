@@ -1,4 +1,3 @@
-import { isArray } from '../is'
 import { warning } from '../warning'
 import { CHANGE_ACTION } from './types'
 
@@ -139,7 +138,6 @@ export default class List<T = string> {
         return []
     }
 
-    // 设置disabled
     private setDisabled(disabled) {
         this.disabled = (...obj) => {
             switch (typeof disabled) {
@@ -153,16 +151,11 @@ export default class List<T = string> {
         }
     }
 
-    // 处理Change 并触发事件派发
+    /** 处理Change 并触发事件派发 */
     private handleChange(values, ...args) {
-        if (!this.control) {
-            this.$values = values
+        this.$values = values
 
-            this.onChange?.(this.getValue(), ...args)
-        } else {
-            /** @bug 如果是受控的模式 返回值会包裹一个数组，部分组件不需要包裹数组，目前只有CheckboxGroup需要 */
-            this.onChange?.(values, ...args)
-        }
+        this.onChange?.(this.getValue(), ...args)
 
         /** 执行一次更新的操作 */
         this.dispatch(CHANGE_ACTION)
@@ -174,7 +167,6 @@ export default class List<T = string> {
         let raws = Array.isArray(data) ? data : [data]
 
         raws = raws.filter(v => {
-            // 获取是否disabled
             const disabled = this.disabled(v)
 
             if (disabled) return false
