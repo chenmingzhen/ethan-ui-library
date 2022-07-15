@@ -1,3 +1,4 @@
+/** @see https://friconix.com/ */
 import React from 'react'
 
 const icon = path => (
