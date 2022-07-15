@@ -4,7 +4,7 @@ import { Component } from '@/utils/component'
 import { formClass } from '@/styles'
 import { FormError } from '@/utils/errors'
 import FormDatum from '@/utils/Datum/Form'
-import { isArray, isEmpty } from '@/utils/is'
+import { isArray, isEmpty, isFunc } from '@/utils/is'
 import withValidate, { ValidateHocOutPutProps } from '@/hoc/withValidate'
 import immer from 'immer'
 import shallowEqual from '@/utils/shallowEqual'
@@ -64,6 +64,8 @@ class FormItem extends Component<IFormItemProps, FormItemState> {
 
     componentDidMount() {
         super.componentDidMount()
+
+        this.lastValue = this.value
     }
 
     handleUpdate = (value, name) => {
@@ -88,8 +90,14 @@ class FormItem extends Component<IFormItemProps, FormItemState> {
         this.forceUpdate()
     }
 
-    handleChange = value => {
-        const { name, formDatum } = this.props
+    handleChange = (value, ...args) => {
+        const { name, formDatum, children } = this.props
+
+        const anyChildren = children as any
+
+        if (anyChildren && anyChildren.props && anyChildren.props.onChange && isFunc(anyChildren.props.onChange)) {
+            anyChildren.props.onChange(value, ...args)
+        }
 
         if (isArray(name)) {
             name.forEach((n, i) => formDatum.set(n, value[i]))
