@@ -36,14 +36,14 @@ export interface FormContextProps {
     rules: Rule[]
 }
 
-export interface FormProps<T = any>
+export interface FormProps<T extends Record<string, any>>
     extends Omit<
-    React.FormHTMLAttributes<HTMLFormElement>,
-    'value' | 'onChange' | 'defaultValue' | 'onSubmit' | 'onError'
+        React.FormHTMLAttributes<HTMLFormElement>,
+        'value' | 'onChange' | 'defaultValue' | 'onSubmit' | 'onError'
     > {
     className?: string
     disabled?: boolean
-    defaultValue?: any
+    defaultValue?: Partial<T>
     inline?: boolean
     /** @todo */
     formRef?: (form: HTMLFormElement) => void
@@ -63,7 +63,7 @@ export interface FormProps<T = any>
     value: T
 }
 
-export interface IFormProps extends FormProps {
+export interface IFormProps<T extends Record<string, any>> extends FormProps<T> {
     setFormStatus
 
     datum: FormDatum

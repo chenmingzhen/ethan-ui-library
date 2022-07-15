@@ -100,9 +100,9 @@ class FormItem extends Component<IFormItemProps, FormItemState> {
         }
 
         if (isArray(name)) {
-            name.forEach((n, i) => formDatum.set(n, value[i]))
+            name.forEach((n, i) => formDatum.set({ name: n, value: value[i] }))
         } else {
-            formDatum.set(name, value)
+            formDatum.set({ name, value })
         }
     }
 
@@ -157,7 +157,7 @@ class FormItem extends Component<IFormItemProps, FormItemState> {
             return cloneElement(children, { value, onChange: this.handleChange })
         }
 
-        console.error(new Error('Form.Field expect a single ReactElement or a function.'))
+        console.error(new Error('Form.Item expect a single ReactElement or a function.'))
 
         return null
     }

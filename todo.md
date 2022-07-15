@@ -60,4 +60,10 @@
 
 -   [ ] 拆分构建过程到新的工具包
 
--   [ ] Inputable 拆分 Form 的逻辑
+-   [x] Inputable 拆分 Form 的逻辑
+
+-   [x] Form 支持简单的 defaultValue 和复杂的 defaultValue
+
+-   [ ] Form 校验错误与显示错误
+
+-   [ ] 补全 Form，FormItem，DatumForm 的泛型

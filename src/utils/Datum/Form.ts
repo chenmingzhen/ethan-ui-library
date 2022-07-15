@@ -1,21 +1,11 @@
 import deepEqual from 'deep-eql'
-import { unflatten, insertValue, spliceValue, getSthByName } from '@/utils/flat'
+import { flatten, getSthByName } from '@/utils/flat'
 import { fastClone, deepClone } from '@/utils/clone'
-import { deepGet, deepSet, deepRemove, deepMerge, objectValues, deepHas } from '@/utils/objects'
+import { deepGet, deepSet, deepRemove, deepHas } from '@/utils/objects'
 import { isObject, isArray, isEmpty } from '@/utils/is'
-import { promiseAll, FormError } from '@/utils/errors'
+import { FormError } from '@/utils/errors'
 import { Rule } from '@/component/Rule/type'
-import {
-    updateSubscribe,
-    errorSubscribe,
-    changeSubscribe,
-    VALIDATE_ACTION,
-    RESET_ACTION,
-    CHANGE_ACTION,
-    FORCE_PASS,
-    ERROR_ACTION,
-    IGNORE_VALIDATE,
-} from './types'
+import { updateSubscribe, errorSubscribe, FORCE_PASS, IGNORE_VALIDATE } from './types'
 import { warningOnce } from '../warning'
 
 interface FormDatumOptions {
@@ -28,8 +18,20 @@ interface FormDatumOptions {
     value?: any
 
     initValidate?: boolean
+
+    defaultValue: any
 }
 
+interface DatumSetParams {
+    name: string | string[]
+    value: any
+    /** 是否触发onChange */
+    dispatchChange?: boolean
+    /** 是否往下层触发更新 */
+    publishToChildrenItem?: boolean
+}
+
+/** 除$values外，其他的映射值均为扁平化存储  */
 export default class {
     $events: Record<string, ((...args) => void)[]> = {}
 
@@ -37,6 +39,7 @@ export default class {
 
     $defaultValues = {}
 
+    /** 非扁平化存储 */
     $values = {}
 
     $inputNames = {}
@@ -50,7 +53,7 @@ export default class {
     deepSetOptions = { forceSet: true, removeUndefined: undefined }
 
     constructor(options: FormDatumOptions) {
-        const { removeUndefined = true, rules, onChange, value, initValidate } = options || {}
+        const { removeUndefined = true, rules, onChange, value, initValidate, defaultValue = {} } = options || {}
 
         this.rules = rules
 
@@ -58,7 +61,11 @@ export default class {
 
         this.deepSetOptions.removeUndefined = removeUndefined
 
-        if (value) this.setValue(value, initValidate ? undefined : IGNORE_VALIDATE)
+        this.$defaultValues = { ...flatten(defaultValue) }
+
+        const initValue = value in options ? value : defaultValue
+
+        if (initValue) this.setValue(initValue, initValidate ? undefined : IGNORE_VALIDATE)
     }
 
     private dispatch = (name: string, ...args) => {
@@ -90,7 +97,6 @@ export default class {
         Object.keys(this.$inputNames)
             .sort((a, b) => a.length - b.length)
             .forEach(name => {
-                /** @todo 点对点更新 */
                 this.dispatch(updateSubscribe(name), this.get(name), name, type)
             })
     }
@@ -116,10 +122,11 @@ export default class {
         }
 
         if (value !== undefined && isEmpty(this.get(name))) {
-            this.set(name, value, true)
+            this.set({ name, value, dispatchChange: false, publishToChildrenItem: true })
         }
 
-        if (value) this.$defaultValues[name] = fastClone(value)
+        /** Form的defaultValue优先级高于FormItem的 */
+        if (!(name in this.$defaultValues) && value) this.$defaultValues[name] = fastClone(value)
 
         this.$validator[name] = validate
 
@@ -168,7 +175,7 @@ export default class {
     }
 
     /** 设置（单个字段）的值，相当于ant setFields */
-    set = (name: string | string[], value, pub?: boolean) => {
+    set = ({ name, value, dispatchChange = true, publishToChildrenItem = false }: DatumSetParams) => {
         if (isArray(name)) {
             this.setArrayValue(name, value)
 
@@ -181,9 +188,11 @@ export default class {
 
         this.dispatch(updateSubscribe(name), value, name)
 
-        if (isObject(value) || pub) this.publishValue(name, FORCE_PASS)
+        if (isObject(value) || publishToChildrenItem) this.publishValue(name, FORCE_PASS)
 
-        this.handleChange()
+        if (dispatchChange) {
+            this.handleChange()
+        }
     }
 
     private setArrayValue = (names: string[], values) => {

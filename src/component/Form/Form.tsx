@@ -7,7 +7,7 @@ import { IGNORE_BIND } from '@/utils/Datum/types'
 import { IFormProps } from './type'
 import { FormProvider } from './context/formContext'
 
-export default class Form extends PureComponent<IFormProps> {
+export default class Form<T extends Record<string, any>> extends PureComponent<IFormProps<T>> {
     form: HTMLFormElement
 
     id = getUidStr()
