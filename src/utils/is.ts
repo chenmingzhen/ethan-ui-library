@@ -9,7 +9,7 @@ export const isObject = val => val && typeof val === 'object' && !isArray(val)
 
 export const isDate = val => val instanceof Date
 
-export const isFunc = f => typeof f === 'function'
+export const isFunc = (f): f is (...args) => any => typeof f === 'function'
 
 export function isString(s): s is string {
     return typeof s === 'string'
@@ -19,7 +19,7 @@ export function isNumber(n): n is number {
     return typeof n === 'number'
 }
 
-export const isError = val => val instanceof Error
+export const isError = (val): val is Error => val instanceof Error
 
 export const isRegexp = val => val instanceof RegExp
 

@@ -2,21 +2,23 @@ import React, { cloneElement, isValidElement } from 'react'
 import classnames from 'classnames'
 import { Component } from '@/utils/component'
 import { formClass } from '@/styles'
-import { FormError } from '@/utils/errors'
+import { FormError, isSameError } from '@/utils/errors'
 import FormDatum from '@/utils/Datum/Form'
 import { isArray, isEmpty, isFunc } from '@/utils/is'
 import withValidate, { ValidateHocOutPutProps } from '@/hoc/withValidate'
 import immer from 'immer'
 import shallowEqual from '@/utils/shallowEqual'
+import { ERROR_ACTION } from '@/utils/Datum/types'
 import { getGrid } from '../Grid/util'
 import { FormItemProps } from './type'
+import AnimationList from '../List'
 
 interface IFormItemProps extends FormItemProps, ValidateHocOutPutProps {
     formDatum: FormDatum
 }
 
 interface FormItemState {
-    value: any
+    error: Error
 }
 
 class FormItem extends Component<IFormItemProps, FormItemState> {
@@ -68,14 +70,23 @@ class FormItem extends Component<IFormItemProps, FormItemState> {
         this.lastValue = this.value
     }
 
-    handleUpdate = (value, name) => {
-        const { name: propName, validate } = this.props
+    handleUpdate = (data, name, type) => {
+        const { name: propName, validate, error, onInternalError } = this.props
+
+        /** ERROR_ACTION */
+        if (type === ERROR_ACTION) {
+            if (!isSameError(data, error)) {
+                onInternalError(data)
+            }
+
+            return
+        }
 
         const newValue = !Array.isArray(propName)
-            ? value
+            ? data
             : immer(this.value, draft => {
                   propName.forEach((n, i) => {
-                      if (n === name) draft[i] = value
+                      if (n === name) draft[i] = data
                   })
               })
 
@@ -106,14 +117,18 @@ class FormItem extends Component<IFormItemProps, FormItemState> {
         }
     }
 
-    renderHelp = (errors: FormError[]) => {
-        if (errors.length > 0) {
+    renderHelp = (error: Error) => {
+        if (error) {
             return (
-                <div className={formClass('error')}>
-                    {errors.map((e, i) => (
-                        <div key={i}>{e.message}</div>
-                    ))}
-                </div>
+                <AnimationList
+                    lazyDom
+                    duration="fast"
+                    className={formClass('error')}
+                    animationTypes={['fade', 'scale-y']}
+                    show
+                >
+                    {error.message}
+                </AnimationList>
             )
         }
 
@@ -121,7 +136,11 @@ class FormItem extends Component<IFormItemProps, FormItemState> {
 
         if (!tip) return null
 
-        return <div className={formClass('tip')}>{tip}</div>
+        return (
+            <AnimationList className={formClass('tip')} duration="fast" animationTypes={['fade', 'scale-y']} show>
+                {tip}
+            </AnimationList>
+        )
     }
 
     get value() {
@@ -163,16 +182,14 @@ class FormItem extends Component<IFormItemProps, FormItemState> {
     }
 
     render() {
-        const { grid, label, labelAlign, labelWidth, required, style } = this.props
-
-        const { errors } = this
+        const { grid, label, labelAlign, labelWidth, required, style, error } = this.props
 
         const className = classnames(
             getGrid(grid),
             formClass(
                 'item',
                 required && 'required',
-                errors.length > 0 && 'invalid',
+                error && 'invalid',
                 ['top', 'right'].indexOf(labelAlign) >= 0 && `label-align-${labelAlign}`
             ),
             this.props.className
@@ -187,7 +204,7 @@ class FormItem extends Component<IFormItemProps, FormItemState> {
                 )}
                 <div className={formClass('control')}>
                     {this.renderChildren()}
-                    {this.renderHelp(errors)}
+                    {this.renderHelp(error)}
                 </div>
             </div>
         )

@@ -2,10 +2,9 @@ import deepEqual from 'deep-eql'
 import { flatten, getSthByName } from '@/utils/flat'
 import { fastClone, deepClone } from '@/utils/clone'
 import { deepGet, deepSet, deepRemove, deepHas } from '@/utils/objects'
-import { isObject, isArray, isEmpty } from '@/utils/is'
-import { FormError } from '@/utils/errors'
+import { isObject, isArray, isEmpty, isError, isString } from '@/utils/is'
 import { Rule } from '@/component/Rule/type'
-import { updateSubscribe, errorSubscribe, FORCE_PASS, IGNORE_VALIDATE } from './types'
+import { updateSubscribe, errorSubscribe, FORCE_PASS, IGNORE_VALIDATE, ERROR_ACTION } from './types'
 import { warningOnce } from '../warning'
 
 interface FormDatumOptions {
@@ -31,11 +30,18 @@ interface DatumSetParams {
     publishToChildrenItem?: boolean
 }
 
+interface DatumSetErrorParams {
+    name: string | string[]
+    error: Error | string
+    /** 内部使用 */
+    INTERNAL_dispatchUpdate?: boolean
+}
+
 /** 除$values外，其他的映射值均为扁平化存储  */
 export default class {
     $events: Record<string, ((...args) => void)[]> = {}
 
-    $errors: Record<string, FormError> = {}
+    $errors: Record<string, Error> = {}
 
     $defaultValues = {}
 
@@ -193,6 +199,34 @@ export default class {
         if (dispatchChange) {
             this.handleChange()
         }
+    }
+
+    setFormError = (errors = {}) => {
+        const flattenErrors = flatten(errors)
+
+        Object.keys(flattenErrors).forEach(name => {
+            const error = flattenErrors[name]
+
+            this.setError({ name, error })
+        })
+    }
+
+    setError = ({ name, error }: DatumSetErrorParams) => {
+        if (isArray(name)) {
+            ;[name] = name
+        }
+
+        let wrapError: Error
+
+        if (this.$inputNames[name]) {
+            if (isError(error)) {
+                wrapError = error
+            } else if (isString(error)) {
+                wrapError = new Error(error)
+            }
+        }
+
+        this.dispatch(errorSubscribe(name), wrapError, name, ERROR_ACTION)
     }
 
     private setArrayValue = (names: string[], values) => {

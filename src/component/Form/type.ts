@@ -38,8 +38,8 @@ export interface FormContextProps {
 
 export interface FormProps<T extends Record<string, any>>
     extends Omit<
-        React.FormHTMLAttributes<HTMLFormElement>,
-        'value' | 'onChange' | 'defaultValue' | 'onSubmit' | 'onError'
+    React.FormHTMLAttributes<HTMLFormElement>,
+    'value' | 'onChange' | 'defaultValue' | 'onSubmit' | 'onError'
     > {
     className?: string
     disabled?: boolean
@@ -61,6 +61,7 @@ export interface FormProps<T extends Record<string, any>>
     onChange?: (value: T) => void
     removeUndefined?: boolean
     value: T
+    error: Record<string, string | Error>
 }
 
 export interface IFormProps<T extends Record<string, any>> extends FormProps<T> {

@@ -4,6 +4,7 @@ import { PureComponent } from '@/utils/component'
 import { formClass } from '@/styles'
 import { getUidStr } from '@/utils/uid'
 import { IGNORE_BIND } from '@/utils/Datum/types'
+import shallowEqual from '@/utils/shallowEqual'
 import { IFormProps } from './type'
 import { FormProvider } from './context/formContext'
 
@@ -32,7 +33,7 @@ export default class Form<T extends Record<string, any>> extends PureComponent<I
     }
 
     componentDidUpdate(prevProps) {
-        if (prevProps.error !== this.props.error) this.props.datum.resetFormError(this.props.error)
+        if (!shallowEqual(prevProps.error, this.props.error)) this.props.datum.setFormError(this.props.error)
     }
 
     componentWillUnmount() {

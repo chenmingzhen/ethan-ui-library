@@ -5,7 +5,7 @@
  *    -- The form has a two-way binding mechanism built in, automatically sending and collecting data based on the name property of the form element.
  */
 import React, { PureComponent } from 'react'
-import { Form, Input, Checkbox, Radio, Textarea, Select, DatePicker, Upload } from 'ethan'
+import { Form, Input, Checkbox, Radio, Textarea, Select, DatePicker, Upload, Rule } from 'ethan'
 
 const citys = [
     {
@@ -22,17 +22,20 @@ export default class extends PureComponent {
     constructor(props) {
         super(props)
 
-        this.state = { value: undefined }
+        this.state = { value: undefined, error: undefined }
     }
 
     componentDidMount() {
-        this.handleChange({
-            email: 'test@example.com',
-            age: 18,
-            favoriteColor: ['cyan', 'yellow'],
-            startDate: Date.now(),
-            endDate: Date.now() + 86400000,
-        })
+        setTimeout(() => {
+            this.setState({
+                error: {
+                    email: 'Test',
+                    obj: {
+                        one: 'One Test',
+                    },
+                },
+            })
+        }, 2000)
     }
 
     handleChange = value => {
@@ -40,10 +43,15 @@ export default class extends PureComponent {
     }
 
     render() {
+        const { test, required } = Rule({
+            test() {
+                return Promise.reject(new Error('Test'))
+            },
+        })
         return (
-            <Form onChange={console.log}>
-                <Form.Item label="Email" name="email" defaultValue="1">
-                    <Input clearable />
+            <Form error={this.state.error}>
+                <Form.Item label="Email" name="email" defaultValue="1" rules={[required]}>
+                    <Input clearable popoverProps={{ placement: 'left-top' }} />
                 </Form.Item>
 
                 <Form.Item label="Object.one" name="obj.one" defaultValue="one">

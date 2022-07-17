@@ -17,6 +17,8 @@ export interface ValidateHocOutPutProps {
     validate(value, data?): Promise<Error | undefined>
 
     error: Error
+
+    onInternalError(error: Error): void
 }
 
 export default curry(
@@ -64,7 +66,14 @@ export default curry(
             }
 
             render() {
-                return <Origin {...this.props} error={this.state.error} validate={this.validate} />
+                return (
+                    <Origin
+                        {...this.props}
+                        error={this.state.error}
+                        onInternalError={this.handleError}
+                        validate={this.validate}
+                    />
+                )
             }
         }
 )

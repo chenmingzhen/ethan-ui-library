@@ -3,7 +3,7 @@ import classnames from 'classnames'
 import { Component } from '@/utils/component'
 import { curry } from '@/utils/func'
 import Popover, { PopoverProps } from '@/component/Popover/Popover'
-import { isEmpty } from '@/utils/is'
+import { isEmpty, isFunc } from '@/utils/is'
 import { buttonClass, inputClass, popoverClass } from '../styles'
 
 export interface InputBorderProps {
@@ -68,6 +68,7 @@ export default curry(
                 border: true,
                 style: {},
                 popoverProps: {},
+                errors: [],
             }
 
             el = React.createRef<HTMLElement>()
@@ -108,9 +109,17 @@ export default curry(
             buildContent = () => {
                 const { error, tip } = this.props
 
-                const content =
-                    error?.message ??
-                    (typeof tip === 'function' ? (!isEmpty(this.props.value) ? tip(this.props.value) : null) : tip)
+                let content
+
+                if (error) {
+                    content = error.message
+                } else if (isFunc(tip)) {
+                    if (!isEmpty(this.props.value)) {
+                        content = tip(this.props.value)
+                    }
+                } else {
+                    content = tip
+                }
 
                 if (!this.cacheContent) this.cacheContent = content
 
