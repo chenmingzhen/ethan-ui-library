@@ -13,7 +13,7 @@ export interface ListProps extends React.DetailedHTMLProps<React.HTMLAttributes<
 
     getRef?(e: HTMLDivElement): void
 
-    animationTypes: AnimationType[]
+    animationTypes?: AnimationType[]
 
     display?: React.CSSProperties['display']
 
@@ -56,6 +56,12 @@ export default class AnimationList extends React.PureComponent<ListProps> {
         display: 'block',
     }
 
+    get hasAnimation() {
+        const { animationTypes } = this.props
+
+        return !isEmpty(animationTypes)
+    }
+
     get hasCollapse() {
         const { animationTypes } = this.props
 
@@ -83,8 +89,11 @@ export default class AnimationList extends React.PureComponent<ListProps> {
     componentDidMount() {
         const { show, lazyDom } = this.props
 
+        if (!this.hasAnimation) return
+
         if (show) {
             if (lazyDom) {
+                if (!this.element) return
                 // 不起效果的写法，按常规逻辑，下面的写法是没有问题的，第一帧先将动画置为起始态，第二帧开始将动画置为最终态
                 // 在Chrome中无效果，在火狐开发者版中有效果 (Dropdown是click的情况 hover的情况则相反,Chrome有效果，火狐中没有)
                 // if (this.hasTransform) {
@@ -109,9 +118,13 @@ export default class AnimationList extends React.PureComponent<ListProps> {
                     this.element.style.transform = 'scaleY(0)'
 
                     runInNextFrame(() => {
+                        if (!this.element) return
+
                         this.element.style.display = this.props.display
 
                         runInNextFrame(() => {
+                            if (!this.element) return
+
                             this.element.style.transform = 'scaleY(1)'
                         })
                     })
@@ -122,9 +135,13 @@ export default class AnimationList extends React.PureComponent<ListProps> {
                     this.element.style.opacity = '0'
 
                     runInNextFrame(() => {
+                        if (!this.element) return
+
                         this.element.style.display = this.props.display
 
                         runInNextFrame(() => {
+                            if (!this.element) return
+
                             this.element.style.opacity = '1'
                         })
                     })
@@ -136,12 +153,18 @@ export default class AnimationList extends React.PureComponent<ListProps> {
                     this.element.style.overflow = 'hidden'
 
                     runInNextFrame(() => {
+                        if (!this.element) return
+
                         this.element.style.display = this.props.display
 
                         runInNextFrame(() => {
+                            if (!this.element) return
+
                             this.element.style.height = `${fullHeight}px`
 
                             this.timer = setTimeout(() => {
+                                if (!this.element) return
+
                                 if (isEmpty(this.props.height)) {
                                     this.element.style.height = 'auto'
                                 }
@@ -157,6 +180,8 @@ export default class AnimationList extends React.PureComponent<ListProps> {
         }
 
         runInNextFrame(() => {
+            if (!this.element) return
+
             this.element.style.display = 'none'
 
             if (this.hasCollapse) {
@@ -175,6 +200,8 @@ export default class AnimationList extends React.PureComponent<ListProps> {
     }
 
     componentDidUpdate(prevProps: ListProps) {
+        if (!this.hasAnimation) return
+
         if (prevProps.show === this.props.show) return
 
         if (this.timer) {
@@ -187,6 +214,8 @@ export default class AnimationList extends React.PureComponent<ListProps> {
 
         if (show) {
             runInNextFrame(() => {
+                if (!this.element) return
+
                 /** 第一帧先将display从none显示出来 */
                 this.element.style.display = display
 
@@ -194,6 +223,8 @@ export default class AnimationList extends React.PureComponent<ListProps> {
                 const fullHeight = this.getFullElementHeight()
 
                 runInNextFrame(() => {
+                    if (!this.element) return
+
                     /** 第二帧开始动画的转变 */
                     if (this.hasFade) {
                         this.element.style.opacity = '1'
@@ -222,12 +253,16 @@ export default class AnimationList extends React.PureComponent<ListProps> {
             })
         } else {
             runInNextFrame(() => {
+                if (!this.element) return
+
                 if (this.hasCollapse) {
                     const newHeight = this.element.offsetHeight
 
                     this.element.style.height = `${newHeight}px`
 
                     runInNextFrame(() => {
+                        if (!this.element) return
+
                         this.element.style.height = '0'
                         this.element.style.overflow = 'hidden'
                     })
@@ -243,6 +278,8 @@ export default class AnimationList extends React.PureComponent<ListProps> {
 
                 this.timer = setTimeout(() => {
                     runInNextFrame(() => {
+                        if (!this.element) return
+
                         this.element.style.display = 'none'
                     })
                 }, this.duration)
@@ -290,6 +327,10 @@ export default class AnimationList extends React.PureComponent<ListProps> {
 
         if (!this.hasTransform) {
             animation = `fade-${animation}`
+        }
+
+        if (!this.hasAnimation) {
+            animation = ''
         }
 
         const className = classnames(hidableClass('_', animation), other.className)
