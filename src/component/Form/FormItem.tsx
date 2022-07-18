@@ -1,21 +1,17 @@
 import React, { cloneElement, isValidElement } from 'react'
 import classnames from 'classnames'
 import { Component } from '@/utils/component'
-import { formClass } from '@/styles'
-import { FormError, isSameError } from '@/utils/errors'
-import FormDatum from '@/utils/Datum/Form'
+import { formClass, inputClass } from '@/styles'
+import { isSameError } from '@/utils/errors'
 import { isArray, isEmpty, isFunc } from '@/utils/is'
-import withValidate, { ValidateHocOutPutProps } from '@/hoc/withValidate'
+import withValidate from '@/hoc/withValidate'
 import immer from 'immer'
 import shallowEqual from '@/utils/shallowEqual'
 import { ERROR_ACTION } from '@/utils/Datum/types'
 import { getGrid } from '../Grid/util'
-import { FormItemProps } from './type'
+import { IFormItemProps } from './type'
 import AnimationList from '../List'
-
-interface IFormItemProps extends FormItemProps, ValidateHocOutPutProps {
-    formDatum: FormDatum
-}
+import FormHelp from './FormHelp'
 
 interface FormItemState {
     error: Error
@@ -23,6 +19,8 @@ interface FormItemState {
 
 class FormItem extends Component<IFormItemProps, FormItemState> {
     lastValue
+
+    validateTimer: NodeJS.Timeout
 
     constructor(props) {
         super(props)
@@ -40,24 +38,6 @@ class FormItem extends Component<IFormItemProps, FormItemState> {
         }
     }
 
-    get errors() {
-        const { formDatum, name } = this.props
-
-        if (!name || !formDatum) return []
-
-        const names = isArray(name) ? name : [name]
-
-        const errors: FormError[] = []
-
-        names.forEach(it => {
-            const error = formDatum.getError(it)
-
-            if (error) errors.push(error)
-        })
-
-        return errors
-    }
-
     get formable() {
         const { formDatum, name } = this.props
 
@@ -71,7 +51,7 @@ class FormItem extends Component<IFormItemProps, FormItemState> {
     }
 
     handleUpdate = (data, name, type) => {
-        const { name: propName, validate, error, onInternalError } = this.props
+        const { name: propName, validate, error, onInternalError, throttle } = this.props
 
         /** ERROR_ACTION */
         if (type === ERROR_ACTION) {
@@ -95,7 +75,15 @@ class FormItem extends Component<IFormItemProps, FormItemState> {
         this.lastValue = newValue
 
         if (validate) {
-            validate(newValue, undefined).catch(() => {})
+            if (this.validateTimer) {
+                clearTimeout(this.validateTimer)
+
+                this.validateTimer = null
+            }
+
+            this.validateTimer = setTimeout(() => {
+                validate(newValue, undefined).catch(() => {})
+            }, throttle)
         }
 
         this.forceUpdate()
@@ -162,18 +150,20 @@ class FormItem extends Component<IFormItemProps, FormItemState> {
     }
 
     renderChildren = () => {
-        const { children } = this.props
+        const { children, error } = this.props
 
         const { value } = this
 
         if (!this.formable) return children
 
+        const className = error ? inputClass('invalid') : undefined
+
         if (typeof children === 'function') {
-            return children({ value, onChange: this.handleChange })
+            return children({ value, onChange: this.handleChange, className })
         }
 
         if (isValidElement(children)) {
-            return cloneElement(children, { value, onChange: this.handleChange })
+            return cloneElement(children, { value, onChange: this.handleChange, className })
         }
 
         console.error(new Error('Form.Item expect a single ReactElement or a function.'))
@@ -182,7 +172,7 @@ class FormItem extends Component<IFormItemProps, FormItemState> {
     }
 
     render() {
-        const { grid, label, labelAlign, labelWidth, required, style, error } = this.props
+        const { grid, label, labelAlign, labelWidth, required, style, error, animation } = this.props
 
         const className = classnames(
             getGrid(grid),
@@ -204,7 +194,7 @@ class FormItem extends Component<IFormItemProps, FormItemState> {
                 )}
                 <div className={formClass('control')}>
                     {this.renderChildren()}
-                    {this.renderHelp(error)}
+                    <FormHelp error={error} animation={animation} />
                 </div>
             </div>
         )

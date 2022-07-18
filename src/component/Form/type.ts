@@ -1,3 +1,4 @@
+import { ValidateHocOutPutProps } from '@/hoc/withValidate'
 import FormDatum from '@/utils/Datum/Form'
 import { FormError } from '@/utils/errors'
 import React from 'react'
@@ -15,11 +16,14 @@ export interface FormItemProps {
     grid?: number
 
     name?: string | string[]
-    defaultValue: any
+    defaultValue?: any
+    animation?: boolean
 }
 
-export interface IFormItemProps extends FormItemProps {
+export interface IFormItemProps extends FormItemProps, ValidateHocOutPutProps {
     formDatum: FormDatum
+
+    throttle?: number
 }
 
 export interface FormItemContextProps {
@@ -38,8 +42,8 @@ export interface FormContextProps {
 
 export interface FormProps<T extends Record<string, any>>
     extends Omit<
-    React.FormHTMLAttributes<HTMLFormElement>,
-    'value' | 'onChange' | 'defaultValue' | 'onSubmit' | 'onError'
+        React.FormHTMLAttributes<HTMLFormElement>,
+        'value' | 'onChange' | 'defaultValue' | 'onSubmit' | 'onError'
     > {
     className?: string
     disabled?: boolean
@@ -60,12 +64,20 @@ export interface FormProps<T extends Record<string, any>>
     labelWidth?: string | number
     onChange?: (value: T) => void
     removeUndefined?: boolean
-    value: T
-    error: Record<string, string | Error>
+    value?: T
+    error?: Record<string, string | Error>
+    animation?: boolean
 }
 
 export interface IFormProps<T extends Record<string, any>> extends FormProps<T> {
     setFormStatus
-
     datum: FormDatum
+}
+
+export interface FormHelpProps {
+    error?: Error
+
+    tip?: React.ReactNode
+
+    animation?: boolean
 }

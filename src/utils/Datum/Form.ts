@@ -33,8 +33,6 @@ interface DatumSetParams {
 interface DatumSetErrorParams {
     name: string | string[]
     error: Error | string
-    /** 内部使用 */
-    INTERNAL_dispatchUpdate?: boolean
 }
 
 /** 除$values外，其他的映射值均为扁平化存储  */
@@ -249,14 +247,5 @@ export default class {
 
     getValue = () => {
         return deepClone(this.$values)
-    }
-
-    getError = (name: string) => {
-        /** @todo */
-        return getSthByName(name, this.$errors)
-    }
-
-    removeFormError = (name: string) => {
-        delete this.$errors[name]
     }
 }

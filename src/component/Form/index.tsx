@@ -14,6 +14,8 @@ FormComponent.Item = withFormConsumer([
     'labelAlign',
     'labelVerticalAlign',
     'keepErrorHeight',
+    'animation',
+    'throttle',
 ])(Item)
 
 export default FormComponent

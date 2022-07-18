@@ -19,7 +19,7 @@ export default class Form<T extends Record<string, any>> extends PureComponent<I
 
     static defaultProps = {
         scrollToError: false,
-        throttle: 1000,
+        throttle: 300,
     }
 
     componentDidMount() {
@@ -105,8 +105,12 @@ export default class Form<T extends Record<string, any>> extends PureComponent<I
             labelAlign,
             labelVerticalAlign,
             labelWidth,
+            animation,
+            throttle,
             /** */
+            defaultValue,
             onChange,
+            onSubmit,
             ...other
         } = this.props
 
@@ -123,6 +127,8 @@ export default class Form<T extends Record<string, any>> extends PureComponent<I
             labelVerticalAlign,
             labelWidth,
             rules,
+            animation,
+            throttle,
         }
 
         return (

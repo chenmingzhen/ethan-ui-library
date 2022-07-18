@@ -65,19 +65,19 @@ export default class AnimationList extends React.PureComponent<ListProps> {
     get hasCollapse() {
         const { animationTypes } = this.props
 
-        return animationTypes.indexOf('collapse') >= 0
+        return this.hasAnimation && animationTypes.indexOf('collapse') >= 0
     }
 
     get hasTransform() {
         const { animationTypes } = this.props
 
-        return animationTypes.indexOf('scale-y') >= 0
+        return this.hasAnimation && animationTypes.indexOf('scale-y') >= 0
     }
 
     get hasFade() {
         const { animationTypes } = this.props
 
-        return animationTypes.indexOf('fade') >= 0
+        return this.hasAnimation && animationTypes.indexOf('fade') >= 0
     }
 
     get duration() {
