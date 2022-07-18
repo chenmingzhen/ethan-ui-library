@@ -1,11 +1,12 @@
 import deepEqual from 'deep-eql'
-import { flatten, getSthByName } from '@/utils/flat'
+import { flatten, unflatten } from '@/utils/flat'
 import { fastClone, deepClone } from '@/utils/clone'
 import { deepGet, deepSet, deepRemove, deepHas } from '@/utils/objects'
 import { isObject, isArray, isEmpty, isError, isString } from '@/utils/is'
 import { Rule } from '@/component/Rule/type'
 import { updateSubscribe, errorSubscribe, FORCE_PASS, IGNORE_VALIDATE, ERROR_ACTION } from './types'
 import { warningOnce } from '../warning'
+import { allPromiseFinish, FormError } from '../errors'
 
 interface FormDatumOptions {
     removeUndefined?: boolean
@@ -48,7 +49,7 @@ export default class {
 
     $inputNames = {}
 
-    $validator: Record<string, (value, data, action) => void> = {}
+    $validator: Record<string, (value, data?) => Promise<true | Error>> = {}
 
     rules: Rule[] = []
 
@@ -247,5 +248,79 @@ export default class {
 
     getValue = () => {
         return deepClone(this.$values)
+    }
+
+    validateForm = async (names?: string[]) => {
+        if (!names) {
+            names = Object.keys(this.$validator)
+        }
+
+        const validatePromise: Promise<any>[] = []
+
+        const successRecord: any = {}
+
+        const failResult = []
+
+        for (let i = 0; i < names.length; i++) {
+            validatePromise.push(this.validate(names[i]))
+        }
+
+        let count = validatePromise.length
+
+        await new Promise(next => {
+            validatePromise.forEach((promise, index) => {
+                const name = names[index]
+
+                promise
+                    .then(value => {
+                        successRecord[name] = value
+                    })
+                    .catch((error: FormError) => {
+                        const validateResult = unflatten({ [`${[error.name]}`]: error.message })
+
+                        failResult.push(validateResult)
+                    })
+                    .finally(() => {
+                        count -= 1
+
+                        if (!count) {
+                            next(undefined)
+                        }
+                    })
+            })
+        })
+
+        if (failResult.length) return Promise.reject(failResult)
+
+        /** 恢复到原本的格式 */
+        const validateResult = unflatten(successRecord)
+
+        return Promise.resolve(validateResult)
+    }
+
+    validate = (name: string) => {
+        const validator = this.$validator[name]
+
+        return new Promise((resolve, reject) => {
+            if (!validator) {
+                resolve({ [`${name}`]: undefined })
+
+                return
+            }
+
+            const value = this.get(name)
+
+            validator(value)
+                .then(res => {
+                    if (res !== true) {
+                        reject(new FormError(res.message, name, value))
+                    } else {
+                        resolve(value)
+                    }
+                })
+                .catch(e => {
+                    reject(new FormError(e.message, name, value))
+                })
+        })
     }
 }

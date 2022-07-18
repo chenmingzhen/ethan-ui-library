@@ -50,6 +50,16 @@ class FormItem extends Component<IFormItemProps, FormItemState> {
         this.lastValue = this.value
     }
 
+    componentWillUnmount() {
+        super.componentWillUnmount()
+
+        const { formDatum, name } = this.props
+
+        if (formDatum && name) {
+            formDatum.unbind(name)
+        }
+    }
+
     handleUpdate = (data, name, type) => {
         const { name: propName, validate, error, onInternalError, throttle } = this.props
 
