@@ -195,6 +195,10 @@ export default class List<T = string> {
         this.add({ data })
     }
 
+    clear() {
+        this.values = []
+    }
+
     check(data) {
         for (let i = 0; i < this.$values.length; i++) {
             if (this.prediction(this.$values[i], data)) return true
