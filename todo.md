@@ -64,6 +64,10 @@
 
 -   [x] Form 支持简单的 defaultValue 和复杂的 defaultValue
 
--   [ ] Form 校验错误与显示错误
+-   [x] Form 校验错误与显示错误
 
 -   [ ] 补全 Form，FormItem，DatumForm 的泛型
+
+-   [ ] validateTrigger 实现
+
+-   [ ] FieldSet 处理数组或对象

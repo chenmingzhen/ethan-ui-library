@@ -81,3 +81,31 @@ export interface FormHelpProps {
 
     animation?: boolean
 }
+
+export interface FieldSetChildrenProps {
+    list: any[]
+    value: any
+    index: number
+    datum: FormDatum
+    onChange
+    onInsert
+    onAppend
+    onRemove
+}
+
+export interface FieldSetProps {
+    defaultValue?: any[]
+    empty?: () => React.ReactNode
+    name: string
+    rules?: Rule[]
+    children: React.ReactNode | (() => React.ReactNode)
+    keygen?: (value: any) => React.Key
+}
+
+export interface IFieldSetProps extends FieldSetProps, ValidateHocOutPutProps {
+    formDatum: FormDatum
+}
+
+export interface FieldSetContextProps {
+    path?: string
+}

@@ -6,7 +6,7 @@ import { isObject, isArray, isEmpty, isError, isString } from '@/utils/is'
 import { Rule } from '@/component/Rule/type'
 import { updateSubscribe, errorSubscribe, FORCE_PASS, IGNORE_VALIDATE, ERROR_ACTION } from './types'
 import { warningOnce } from '../warning'
-import { allPromiseFinish, FormError } from '../errors'
+import { FormError } from '../errors'
 
 interface FormDatumOptions {
     removeUndefined?: boolean
@@ -322,5 +322,17 @@ export default class {
                     reject(new FormError(e.message, name, value))
                 })
         })
+    }
+
+    insert = (name: string, index: number, value) => {
+        const values = this.get(name) as any[]
+
+        if (values) {
+            values.splice(index, 0, value)
+
+            this.handleChange()
+        } else {
+            this.set({ name, value: [value] })
+        }
     }
 }

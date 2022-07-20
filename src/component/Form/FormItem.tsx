@@ -8,10 +8,11 @@ import withValidate from '@/hoc/withValidate'
 import immer from 'immer'
 import shallowEqual from '@/utils/shallowEqual'
 import { ERROR_ACTION } from '@/utils/Datum/types'
+import { compose } from '@/utils/func'
 import { getGrid } from '../Grid/util'
 import { IFormItemProps } from './type'
-import AnimationList from '../List'
 import FormHelp from './FormHelp'
+import { fieldSetConsumer } from './FieldSet'
 
 interface FormItemState {
     error: Error
@@ -115,32 +116,6 @@ class FormItem extends Component<IFormItemProps, FormItemState> {
         }
     }
 
-    renderHelp = (error: Error) => {
-        if (error) {
-            return (
-                <AnimationList
-                    lazyDom
-                    duration="fast"
-                    className={formClass('error')}
-                    animationTypes={['fade', 'scale-y']}
-                    show
-                >
-                    {error.message}
-                </AnimationList>
-            )
-        }
-
-        const { tip } = this.props
-
-        if (!tip) return null
-
-        return (
-            <AnimationList className={formClass('tip')} duration="fast" animationTypes={['fade', 'scale-y']} show>
-                {tip}
-            </AnimationList>
-        )
-    }
-
     get value() {
         const { formDatum, name } = this.props
 
@@ -176,9 +151,7 @@ class FormItem extends Component<IFormItemProps, FormItemState> {
             return cloneElement(children, { value, onChange: this.handleChange, className })
         }
 
-        console.error(new Error('Form.Item expect a single ReactElement or a function.'))
-
-        return null
+        return children
     }
 
     render() {
@@ -211,4 +184,4 @@ class FormItem extends Component<IFormItemProps, FormItemState> {
     }
 }
 
-export default withValidate(FormItem)
+export default compose(withValidate, fieldSetConsumer)(FormItem)

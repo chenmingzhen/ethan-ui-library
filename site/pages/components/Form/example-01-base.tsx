@@ -25,18 +25,7 @@ export default class extends PureComponent {
         this.state = { value: undefined, error: undefined }
     }
 
-    componentDidMount() {
-        setTimeout(() => {
-            this.setState({
-                error: {
-                    email: 'Test',
-                    obj: {
-                        one: 'One Test',
-                    },
-                },
-            })
-        }, 2000)
-    }
+    componentDidMount() {}
 
     handleChange = value => {
         this.setState({ value })
@@ -51,6 +40,7 @@ export default class extends PureComponent {
         return (
             <Form error={this.state.error}>
                 <Form.Item label="Email" name="email" defaultValue="1" rules={[required]}>
+                    <div>11</div>
                     <Input clearable popoverProps={{ placement: 'left-top' }} />
                 </Form.Item>
 
