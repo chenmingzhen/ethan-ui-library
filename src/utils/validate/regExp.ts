@@ -1,16 +1,13 @@
+import { ValidatorProps } from '@/component/Rule/type'
+import { isString } from '../is'
 import nullable from './nullable'
 
-/**
- *
- * @param regExp 检验的正则表达式
- * @param options props
- * @returns {function(*=, *=, *=): (undefined)}
- */
-export default (regExp, options) =>
+export default (options: ValidatorProps) =>
     nullable((value, formData, callback) => {
-        const { message } = options
+        const { message, regExp } = options
 
-        const reg = typeof regExp === 'string' ? new RegExp(regExp) : regExp
+        const reg = isString(regExp) ? new RegExp(regExp) : regExp
+
         if (reg.test(value)) {
             callback(true)
         } else {

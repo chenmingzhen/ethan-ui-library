@@ -1,3 +1,4 @@
+import { BaseOptionRule, InnerRuleFuncResult, Rule, ValidatorFunc, ValidatorProps } from '@/component/Rule/type'
 import { wrapFormError } from '../errors'
 import { substitute } from '../strings'
 import { flattenArray } from '../flat'
@@ -5,18 +6,20 @@ import range from './range'
 import rangeLength from './rangeLength'
 import required from './required'
 import regTest from './regExp'
+import { isArray, isFunc, isPromise } from '../is'
+import { warning } from '../warning'
 
-function getRule(rule, props: Record<string, any> = {}) {
-    let innerRuleExecuteResult
+function getRule(rule: Rule, props: ValidatorProps) {
+    let innerRuleExecuteResult = rule as InnerRuleFuncResult
 
-    if (typeof rule === 'function') {
-        /** 内置的检验的方法,执行方法获取message,tip等信息 */
-        if (rule.isInnerValidator) innerRuleExecuteResult = rule()
-        /** RuleRender */ else return rule
+    if (isFunc(rule)) {
+        /** 内置的检验的方法,执行方法获取message等信息 */
+        if ((<BaseOptionRule[keyof BaseOptionRule]>rule).isInnerValidator) innerRuleExecuteResult = (rule as any)()
+        /** RuleRender */ else return (rule as unknown) as ValidatorFunc
     }
 
-    // 执行内置检验方法获取的返回值
-    const { type = props.type, message, regExp, validator, ...other } = innerRuleExecuteResult
+    /** 执行内置检验方法获取的返回值 */
+    const { type = props.type, message, ...other } = innerRuleExecuteResult
 
     props = Object.assign({}, props, other)
 
@@ -24,55 +27,59 @@ function getRule(rule, props: Record<string, any> = {}) {
 
     if (other.required) return required(props)
 
-    if (regExp) return regTest(regExp, props)
+    if (other.regExp) return regTest(props)
 
     if (other.min !== undefined || other.max !== undefined) {
-        if (type === 'number' || type === 'integer') {
-            // 范围检测
+        if (type === 'number') {
+            /** 范围检测 */
             return range(props)
         }
-        // 长度检测
+
+        /** 长度检测 */
         return rangeLength(props)
     }
 
-    const err = new Error('Rule is not valid.Please check your rule constructor and rulesProps')
+    const error = new Error('Rule is not valid.Please check your rule constructor and rulesProps')
 
-    console.error(err)
+    warning(`[Ethan UI:Rule]:${error.message}`)
 
-    throw err
+    throw error
 }
 
-const validate = (value, formData, rules, props) =>
+const validate = (value: any, formData: any, rules: Rule[], props: ValidatorProps) =>
     new Promise((resolve, reject) => {
         /** 扁平化后 递归调用 */
         const $rules = flattenArray(rules)
 
         const rule = $rules.shift()
 
+        const mergeProps = Object.assign({}, props, { type: isArray(value) ? 'array' : props.type })
+
+        /** 递归结束 */
         if (rule === undefined) {
             resolve(true)
 
             return
         }
 
-        function validateCallback(result: boolean | string) {
+        function runNextCallback(result: boolean | string | Error | Error[]) {
             if (result !== true) {
                 reject(wrapFormError(result))
 
                 return
             }
 
-            validate(value, formData, $rules, props).then(resolve, reject)
+            validate(value, formData, $rules, mergeProps).then(resolve, reject)
         }
 
-        const validateFunction = getRule(rule, props)
+        const validateFunction = getRule(rule, mergeProps)
 
-        // 处理自定义规则校验与内置规则校验
-        const cb = validateFunction(value, formData, validateCallback)
+        /** 处理自定义规则校验与内置规则校验 */
+        const promise = validateFunction(value, formData, runNextCallback)
 
-        // 处理自定义规则校验 返回是Promise的情况
-        if (cb && cb.then) {
-            cb.then(validateCallback.bind(null, true)).catch(e => {
+        /** 处理自定义规则校验 返回是Promise的情况 */
+        if (isPromise(promise)) {
+            promise.then(runNextCallback.bind(null, true)).catch(e => {
                 reject(wrapFormError(e))
             })
         }

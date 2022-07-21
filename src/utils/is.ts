@@ -11,13 +11,9 @@ export const isDate = val => val instanceof Date
 
 export const isFunc = (f): f is (...args) => any => typeof f === 'function'
 
-export function isString(s): s is string {
-    return typeof s === 'string'
-}
+export const isString = (s): s is string => typeof s === 'string'
 
-export function isNumber(n): n is number {
-    return typeof n === 'number'
-}
+export const isNumber = (n): n is number => typeof n === 'number'
 
 export const isError = (val): val is Error => val instanceof Error
 
@@ -29,7 +25,7 @@ export const isSet = nameIs('Set')
 
 export const isSymbol = nameIs('Symbol')
 
-export const isPromise = p => p && (nameIs('Promise', p) || isFunc(p.then))
+export const isPromise = (p): p is Promise<any> => p && (nameIs('Promise', p) || isFunc(p.then))
 
 export const isBuffer = val => {
     if (val?.constructor && typeof val.constructor.isBuffer === 'function') {

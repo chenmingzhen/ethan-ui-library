@@ -5,11 +5,11 @@ import { Rule } from '../Rule/type'
 
 export interface InputProps<Value = string | number>
     extends Omit<
-    React.InputHTMLAttributes<HTMLInputElement>,
-    'size' | 'prefix' | 'type' | 'value' | 'onChange' | 'defaultValue'
-    >,
-    TrimProps,
-    InputBorderProps {
+            React.InputHTMLAttributes<HTMLInputElement>,
+            'size' | 'prefix' | 'type' | 'value' | 'onChange' | 'defaultValue'
+        >,
+        TrimProps,
+        InputBorderProps {
     rules?: Rule[]
     className?: string
     clearable?: boolean | (() => void)

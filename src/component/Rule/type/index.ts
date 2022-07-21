@@ -1,3 +1,5 @@
+type MessageType = string | ((props: any) => string)
+
 export interface BaseOptions {
     required?: RequiredOptions
     min?: MinOptions
@@ -5,62 +7,98 @@ export interface BaseOptions {
     regExp?: RegExpOptions
 }
 
+/** Options可以直接在构建Rule时传入进行配置，但优先级最低 */
+/** const rule=Rule({required:{message:'BlaBlaBla'},min:{message(){return 'BlaBlaBla'},min:10}}) */
 export type RequiredOptions = {
-    message?: string
-
-    tip?: string
+    message?: MessageType
 }
 
 export type MinOptions = {
-    len: number
-    message?: string
+    min: number
+    message?: MessageType
 }
 
 export type MaxOptions = {
-    len: number
-    message?: string
+    max: number
+    message?: MessageType
 }
 
 export type RegExpOptions = {
     regExp: string | RegExp
-    message?: string
+    message?: MessageType
 }
 
 export type BaseOptionKeys = keyof BaseOptions
 
+export type ValidatorFunc = (val: any, formData: any, callback: (res: true | Error) => void) => void | Promise<true>
+
 export type Validator = {
-    /**
-     * @todo 完善类型
-     */
-    [key in string]?: (val: any, formData: any, callback, props) => void | Promise<void | Error>
+    [key in string]?: ValidatorFunc
 }
 
-export type RequiredFuncOutPut = {
-    message: (() => string) | string
-    tip?: string
-    required: true
+export type ValidatorProps = {
+    [key in string]?: string | number
+} & {
+    max?: MaxFuncOutPut['max']
+    min?: MinFuncOutPut['min']
+    required?: RequiredFuncOutPut['required']
+    regExp?: RegExpFuncOutPut['regExp']
+    message?: string
 }
 
-export type LenFuncOutPut = {
-    message: string
-
-    len: number
+/** 内置校验方法的输出,如果不想使用方法的形式，可以直接传入校验方法的输出 */
+/** <Something rules={[Rule.require]} /> => <Something rules={[{required:true,message:'BlaBlaBla'}]} /> */
+export interface RequiredFuncOutPut {
+    message: MessageType
+    required: boolean
 }
 
-export type RegExpFuncOutPut = {
-    message: string
+export interface MinFuncOutPut {
+    message: MessageType
+    min: number
+}
 
+export interface MaxFuncOutPut {
+    message: MessageType
+    max: number
+}
+
+export interface RegExpFuncOutPut {
+    message: MessageType
     regExp: string | RegExp
 }
 
-export interface BaseOptionRuleOutput {
-    required: (message: string) => RequiredFuncOutPut
-
-    min: (message: string) => LenFuncOutPut
-
-    max: (message: string) => LenFuncOutPut
-
-    regExp: (message: string) => RegExpFuncOutPut
+export interface Type {
+    type: 'number' | 'array' | 'string'
 }
 
-export type Rule = Validator[keyof Validator] | BaseOptionRuleOutput[keyof BaseOptionRuleOutput]
+export type InnerRuleFuncResult = RequiredFuncOutPut & MinFuncOutPut & MaxFuncOutPut & RegExpFuncOutPut & Type
+
+/** 内置校验方法 */
+export interface BaseOptionRule {
+    required: {
+        (message?: string): RequiredFuncOutPut
+        isInnerValidator: true
+    }
+    min: {
+        (length: number, message?: string): MinFuncOutPut
+        isInnerValidator: true
+    }
+    max: {
+        (length: number, message?: string): MaxFuncOutPut
+        isInnerValidator: true
+    }
+    regExp: {
+        (regexp: string | RegExp, message?: string): RegExpFuncOutPut
+        isInnerValidator: true
+    }
+}
+
+export type Rule =
+    | Validator[keyof Validator]
+    | BaseOptionRule[keyof BaseOptionRule]
+    | RequiredFuncOutPut
+    | MinFuncOutPut
+    | MaxFuncOutPut
+    | RegExpFuncOutPut
+    | Type
