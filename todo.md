@@ -74,4 +74,4 @@
 
 -   [x] FieldSet rule 和触发校验
 
--   [ ] FormItem 和 FieldSet 增加 flow 属性
+-   [x] FormItem 和 FieldSet 增加 flow 属性

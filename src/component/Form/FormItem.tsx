@@ -7,7 +7,7 @@ import { isArray, isEmpty, isFunc } from '@/utils/is'
 import withValidate from '@/hoc/withValidate'
 import immer from 'immer'
 import shallowEqual from '@/utils/shallowEqual'
-import { ERROR_ACTION } from '@/utils/Datum/types'
+import { ERROR_ACTION, updateSubscribe } from '@/utils/Datum/types'
 import { compose } from '@/utils/func'
 import { getGrid } from '../Grid/util'
 import { IFormItemProps } from './type'
@@ -26,7 +26,7 @@ class FormItem extends Component<IFormItemProps, FormItemState> {
     constructor(props) {
         super(props)
 
-        const { defaultValue, formDatum, validate, name } = this.props
+        const { defaultValue, formDatum, validate, name, flow } = this.props
 
         if (formDatum && name) {
             if (!isArray(name)) {
@@ -36,6 +36,12 @@ class FormItem extends Component<IFormItemProps, FormItemState> {
 
                 name.forEach((n, i) => formDatum.bind(n, this.handleUpdate, defaultValues[i], validate))
             }
+        }
+
+        if (isArray(flow)) {
+            flow.forEach(n => {
+                formDatum.subscribe(updateSubscribe(n), this.forceUpdate)
+            })
         }
     }
 
@@ -54,10 +60,16 @@ class FormItem extends Component<IFormItemProps, FormItemState> {
     componentWillUnmount() {
         super.componentWillUnmount()
 
-        const { formDatum, name } = this.props
+        const { formDatum, name, flow } = this.props
 
         if (formDatum && name) {
             formDatum.unbind(name)
+        }
+
+        if (isArray(flow)) {
+            flow.forEach(n => {
+                formDatum.unsubscribe(updateSubscribe(n))
+            })
         }
     }
 

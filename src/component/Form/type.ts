@@ -17,6 +17,7 @@ export interface FormItemProps extends Pick<FormContextProps, 'animation'> {
 
     name?: string | string[]
     defaultValue?: any
+    flow?: string[]
 }
 
 export interface IFormItemProps extends FormItemProps, ValidateHocOutPutProps {
@@ -95,6 +96,7 @@ export interface FieldSetProps extends Pick<FormContextProps, 'animation'> {
     name: string
     rules?: Rule[]
     children: React.ReactNode | ((params: FieldSetChildrenFuncParams) => React.ReactNode)
+    flow?: string[]
 }
 
 export interface IFieldSetProps extends FieldSetProps, ValidateHocOutPutProps {

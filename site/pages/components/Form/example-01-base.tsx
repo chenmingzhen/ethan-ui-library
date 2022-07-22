@@ -40,7 +40,6 @@ export default class extends PureComponent {
         return (
             <Form error={this.state.error}>
                 <Form.Item label="Email" name="email" defaultValue="1" rules={[required]}>
-                    <div>11</div>
                     <Input clearable popoverProps={{ placement: 'left-top' }} />
                 </Form.Item>
 
@@ -60,7 +59,12 @@ export default class extends PureComponent {
                     <Input.Number width={120} max={100} min={10} />
                 </Form.Item>
 
-                <Form.Item label="Name" name={['firstName', 'lastName']} defaultValue={['Ethan', 'Chen']}>
+                <Form.Item
+                    label="Name"
+                    name={['firstName', 'lastName']}
+                    defaultValue={['Ethan', 'Chen']}
+                    flow={['email']}
+                >
                     {React.createElement<any>(({ value = [], onChange }) => {
                         function handleChange(name, v) {
                             if (name === 'firstName') {

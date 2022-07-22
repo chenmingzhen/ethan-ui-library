@@ -1,7 +1,8 @@
 import React from 'react'
 import withValidate from '@/hoc/withValidate'
 import { PureComponent } from '@/utils/component'
-import { isFunc } from '@/utils/is'
+import { isArray, isFunc } from '@/utils/is'
+import { updateSubscribe } from '@/utils/Datum/types'
 import { IFieldSetProps } from './type'
 import { FieldSetConsumer, FieldSetProvider } from './context/fieldSetContext'
 import FormHelp from './FormHelp'
@@ -20,20 +21,32 @@ class FieldSet extends PureComponent<IFieldSetProps> {
     constructor(props: IFieldSetProps) {
         super(props)
 
-        const { defaultValue, formDatum, validate, name } = this.props
+        const { defaultValue, formDatum, validate, name, flow } = this.props
 
         if (formDatum && name) {
             formDatum.bind(name, this.handleUpdate, defaultValue, validate)
+        }
+
+        if (isArray(flow)) {
+            flow.forEach(n => {
+                formDatum.subscribe(updateSubscribe(n), this.forceUpdate)
+            })
         }
 
         window.formDatum = formDatum
     }
 
     componentWillUnmount() {
-        const { formDatum, name } = this.props
+        const { formDatum, name, flow } = this.props
 
         if (formDatum && name) {
             formDatum.unbind(name)
+        }
+
+        if (isArray(flow)) {
+            flow.forEach(n => {
+                formDatum.unsubscribe(updateSubscribe(n))
+            })
         }
     }
 
