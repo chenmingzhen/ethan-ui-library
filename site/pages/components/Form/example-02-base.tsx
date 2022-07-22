@@ -8,42 +8,56 @@ import React, { PureComponent } from 'react'
 import { Form, Input, Button, Rule, FontAwesome } from 'ethan'
 
 const rules = Rule({
-    isExist: (values, _, callback) => {
-        const result = []
+    isExist: values => {
         const valueMap = {}
-        values.forEach(({ name }, i) => {
-            if (!name) return
-            if (valueMap[name]) result[i] = { name: new Error(`Name "${name}" is existed.`) }
-            else valueMap[name] = true
-        })
-        callback(result.length > 0 ? result : true)
+
+        for (const { name } of values) {
+            if (!name) continue
+
+            if (valueMap[name]) {
+                return Promise.reject(new Error(`Name "${name}" is existed.`))
+            }
+
+            valueMap[name] = true
+        }
+
+        return Promise.resolve(true)
     },
 })
 
 export default class extends PureComponent {
+    constructor() {
+        super()
+
+        this.state = {
+            index: 0,
+        }
+    }
+
     renderEmpty = onAppend => (
-        <Button key="empty" onClick={() => onAppend({})}>
+        <Button
+            key="empty"
+            onClick={() => {
+                this.setState({ index: this.state.index + 1 })
+
+                onAppend({ age: this.state.index, name: this.state.index })
+            }}
+        >
             Add new friend
         </Button>
     )
 
     render() {
         return (
-            <Form>
+            <Form animation>
                 <Form.Item label="Name" name="name">
                     <Input defaultValue="Harry Potter" />
                 </Form.Item>
 
                 <Form.Item label="Friends">
-                    <Form.FieldSet
-                        /** rules.min(2) */
-                        rules={[rules.isExist]}
-                        name="friends"
-                        empty={this.renderEmpty}
-                        // defaultValue={[{ name: 'Hermione Granger', age: 16 }, {}]}
-                    >
+                    <Form.FieldSet rules={[rules.isExist]} name="friends" emptyRender={this.renderEmpty} keygen="age">
                         {({ onAppend, onRemove }) => (
-                            <div style={{ display: 'flex', alignItems: 'center', marginBottom: 12 }}>
+                            <div style={{ display: 'flex', marginBottom: 4 }}>
                                 <Form.Item name="name" rules={[rules.required]}>
                                     <Input style={{ width: 180, marginInlineEnd: 8 }} placeholder="Name" />
                                 </Form.Item>
@@ -52,12 +66,24 @@ export default class extends PureComponent {
                                     <Input style={{ width: 60 }} type="number" title="Friend age" placeholder="Age" />
                                 </Form.Item>
 
-                                <a style={{ margin: '0 12px' }} onClick={() => onAppend({ age: 16 })}>
-                                    <FontAwesome name="plus" />
-                                </a>
-                                <a onClick={onRemove}>
-                                    <FontAwesome name="close" />
-                                </a>
+                                <div style={{ lineHeight: '32px' }}>
+                                    <a
+                                        style={{ margin: '0 12px' }}
+                                        onClick={() => {
+                                            this.setState({ index: this.state.index + 1 })
+
+                                            onAppend({
+                                                age: this.state.index,
+                                                name: this.state.index,
+                                            })
+                                        }}
+                                    >
+                                        <FontAwesome name="plus" />
+                                    </a>
+                                    <a onClick={onRemove}>
+                                        <FontAwesome name="close" />
+                                    </a>
+                                </div>
                             </div>
                         )}
                     </Form.FieldSet>

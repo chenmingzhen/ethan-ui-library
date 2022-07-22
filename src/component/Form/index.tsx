@@ -19,6 +19,6 @@ FormComponent.Item = withFormConsumer([
     'throttle',
 ])(Item)
 
-FormComponent.FieldSet = withFormConsumer(['formDatum'], FieldSet)
+FormComponent.FieldSet = withFormConsumer(['formDatum', 'animation'], FieldSet)
 
 export default FormComponent

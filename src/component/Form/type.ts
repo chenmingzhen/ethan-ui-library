@@ -4,7 +4,7 @@ import { FormError } from '@/utils/errors'
 import React from 'react'
 import { Rule } from '../Rule/type'
 
-export interface FormItemProps {
+export interface FormItemProps extends Pick<FormContextProps, 'animation'> {
     className?: string
     label?: React.ReactNode
     labelAlign?: 'top' | 'right'
@@ -17,7 +17,6 @@ export interface FormItemProps {
 
     name?: string | string[]
     defaultValue?: any
-    animation?: boolean
 }
 
 export interface IFormItemProps extends FormItemProps, ValidateHocOutPutProps {
@@ -38,6 +37,7 @@ export interface FormContextProps {
     labelAlign?: 'top' | 'right' | 'left'
     labelWidth?: string | number
     rules: Rule[]
+    animation?: boolean
 }
 
 export interface FormProps<T extends Record<string, any>>
@@ -74,32 +74,27 @@ export interface IFormProps<T extends Record<string, any>> extends FormProps<T> 
     datum: FormDatum
 }
 
-export interface FormHelpProps {
+export interface FormHelpProps extends Pick<FormContextProps, 'animation'> {
     error?: Error
 
     tip?: React.ReactNode
-
-    animation?: boolean
 }
 
-export interface FieldSetChildrenProps {
+export interface FieldSetChildrenFuncParams {
+    onAppend(value): void
+    onRemove(): void
+    onInsert(index: number, value): void
     list: any[]
-    value: any
     index: number
-    datum: FormDatum
-    onChange
-    onInsert
-    onAppend
-    onRemove
+    value: any
 }
 
-export interface FieldSetProps {
+export interface FieldSetProps extends Pick<FormContextProps, 'animation'> {
     defaultValue?: any[]
-    empty?: () => React.ReactNode
+    emptyRender?: (insert: (value) => void) => React.ReactNode
     name: string
     rules?: Rule[]
-    children: React.ReactNode | (() => React.ReactNode)
-    keygen?: (value: any) => React.Key
+    children: React.ReactNode | ((params: FieldSetChildrenFuncParams) => React.ReactNode)
 }
 
 export interface IFieldSetProps extends FieldSetProps, ValidateHocOutPutProps {

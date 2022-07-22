@@ -70,4 +70,8 @@
 
 -   [ ] validateTrigger 实现
 
--   [ ] FieldSet 处理数组或对象
+-   [x] FieldSet 处理数组或对象
+
+-   [x] FieldSet rule 和触发校验
+
+-   [ ] FormItem 和 FieldSet 增加 flow 属性

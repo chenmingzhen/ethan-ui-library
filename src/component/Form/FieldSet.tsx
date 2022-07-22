@@ -29,6 +29,14 @@ class FieldSet extends PureComponent<IFieldSetProps> {
         window.formDatum = formDatum
     }
 
+    componentWillUnmount() {
+        const { formDatum, name } = this.props
+
+        if (formDatum && name) {
+            formDatum.unbind(name)
+        }
+    }
+
     handleUpdate = () => {
         const { validate, formDatum, name } = this.props
 
@@ -39,13 +47,6 @@ class FieldSet extends PureComponent<IFieldSetProps> {
         this.forceUpdate()
     }
 
-    /** @todo 完善这个方法 */
-    handleChange = (index: number, value) => {
-        const { formDatum, name, validate } = this.props
-
-        formDatum.set({ name: `${name}[${index}]`, value })
-    }
-
     handleInsert = (index: number, value) => {
         const { name, formDatum } = this.props
 
@@ -54,25 +55,33 @@ class FieldSet extends PureComponent<IFieldSetProps> {
         this.handleUpdate()
     }
 
+    handleRemove = (index: number) => {
+        const { formDatum, name } = this.props
+
+        formDatum.splice(name, index)
+
+        this.handleUpdate()
+    }
+
     render() {
-        const { name, defaultValue, empty, children, formDatum, error, keygen } = this.props
+        const { name, defaultValue, emptyRender, children, formDatum, error, animation } = this.props
 
         if (!isFunc(children)) {
             return (
                 <FieldSetProvider value={{ path: name }}>
                     {children}
-                    <FormHelp error={error} />
+                    <FormHelp error={error} animation={animation} />
                 </FieldSetProvider>
             )
         }
 
         const values = formDatum.get(name) || defaultValue || []
 
-        if (!values.length && empty) {
+        if (!values.length && emptyRender) {
             return (
                 <>
-                    {empty(this.handleInsert.bind(this, 0))}
-                    <FormHelp error={error} />
+                    {emptyRender(this.handleInsert.bind(this, 0))}
+                    <FormHelp error={error} animation={animation} />
                 </>
             )
         }
@@ -81,13 +90,20 @@ class FieldSet extends PureComponent<IFieldSetProps> {
             <>
                 {values.map((value, i) => {
                     return (
-                        <FieldSetProvider key={keygen ? keygen(value) : i} value={{ path: `${name}[${i}]` }}>
-                            {children({ onAppend: this.handleInsert.bind(this, i + 1) })}
+                        <FieldSetProvider key={i} value={{ path: `${name}[${i}]` }}>
+                            {children({
+                                onAppend: this.handleInsert.bind(this, i + 1),
+                                onRemove: this.handleRemove.bind(this, i),
+                                onInsert: this.handleInsert.bind(this),
+                                list: values,
+                                index: i,
+                                value,
+                            })}
                         </FieldSetProvider>
                     )
                 })}
 
-                <FormHelp error={error} />
+                <FormHelp error={error} animation={animation} />
             </>
         )
     }

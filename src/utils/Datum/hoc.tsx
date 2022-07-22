@@ -7,8 +7,6 @@ import shallowEqual from '../shallowEqual'
 interface HocProps {
     onChange()
 
-    onDatumBind(datum)
-
     initValidate?: boolean
 
     value: any
@@ -40,7 +38,7 @@ export default curry((options: Options, Origin) => {
     const Datum = types[type]
 
     return class extends React.Component<HocProps> {
-        datum: typeof FormDatum | ListDatum
+        datum: FormDatum | ListDatum
 
         prevValues
 
@@ -95,9 +93,7 @@ export default curry((options: Options, Origin) => {
         }
 
         render() {
-            const { onDatumBind, control, ...props } = this.props
-
-            if (onDatumBind) onDatumBind(this.datum)
+            const { control, ...props } = this.props
 
             return <Origin {...props} datum={this.datum} />
         }

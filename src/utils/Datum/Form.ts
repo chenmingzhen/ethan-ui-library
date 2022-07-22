@@ -4,7 +4,7 @@ import { fastClone, deepClone } from '@/utils/clone'
 import { deepGet, deepSet, deepRemove, deepHas } from '@/utils/objects'
 import { isObject, isArray, isEmpty, isError, isString } from '@/utils/is'
 import { Rule } from '@/component/Rule/type'
-import { updateSubscribe, errorSubscribe, FORCE_PASS, IGNORE_VALIDATE, ERROR_ACTION } from './types'
+import { updateSubscribe, errorSubscribe, ERROR_ACTION } from './types'
 import { warningOnce } from '../warning'
 import { FormError } from '../errors'
 
@@ -58,7 +58,7 @@ export default class {
     deepSetOptions = { forceSet: true, removeUndefined: undefined }
 
     constructor(options: FormDatumOptions) {
-        const { removeUndefined = true, rules, onChange, value, initValidate, defaultValue = {} } = options || {}
+        const { removeUndefined = true, rules, onChange, value, defaultValue = {} } = options || {}
 
         this.rules = rules
 
@@ -70,7 +70,7 @@ export default class {
 
         const initValue = value in options ? value : defaultValue
 
-        if (initValue) this.setValue(initValue, initValidate ? undefined : IGNORE_VALIDATE)
+        if (initValue) this.setValue(initValue)
     }
 
     private dispatch = (name: string, ...args) => {
@@ -88,7 +88,7 @@ export default class {
     }
 
     /** 设置表单的值 相当于setFieldsValue */
-    setValue = (value, type) => {
+    setValue = value => {
         const values = isObject(value) ? value : {}
 
         if (values !== value) {
@@ -102,7 +102,7 @@ export default class {
         Object.keys(this.$inputNames)
             .sort((a, b) => a.length - b.length)
             .forEach(name => {
-                this.dispatch(updateSubscribe(name), this.get(name), name, type)
+                this.dispatch(updateSubscribe(name), this.get(name), name)
             })
     }
 
@@ -167,7 +167,7 @@ export default class {
     }
 
     /** 往下层传递更新事件 */
-    private publishValue = (name, type) => {
+    private publishValue = (name, type?) => {
         const na = `${name}[`
 
         const no = `${name}.`
@@ -193,7 +193,7 @@ export default class {
 
         this.dispatch(updateSubscribe(name), value, name)
 
-        if (isObject(value) || publishToChildrenItem) this.publishValue(name, FORCE_PASS)
+        if (isObject(value) || publishToChildrenItem) this.publishValue(name)
 
         if (dispatchChange) {
             this.handleChange()
@@ -273,6 +273,8 @@ export default class {
 
                 promise
                     .then(value => {
+                        if (value === undefined && this.deepSetOptions.removeUndefined) return
+
                         successRecord[name] = value
                     })
                     .catch((error: FormError) => {
@@ -324,6 +326,7 @@ export default class {
         })
     }
 
+    /** For FieldSet */
     insert = (name: string, index: number, value) => {
         const values = this.get(name) as any[]
 
@@ -331,8 +334,20 @@ export default class {
             values.splice(index, 0, value)
 
             this.handleChange()
+            /** 在FieldSet中是使用index作为Key，此处强制Item的更新，使Item获得对应的value */
+            this.publishValue(name)
         } else {
             this.set({ name, value: [value] })
         }
+    }
+
+    splice = (name: string, index: number) => {
+        const values = this.get(name)
+
+        values.splice(index, 1)
+
+        this.handleChange()
+
+        this.publishValue(name)
     }
 }

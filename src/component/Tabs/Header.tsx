@@ -82,12 +82,14 @@ const Header: React.FC<TabsHeaderProps> = props => {
             computedAttribute(pixelY)
         }
 
-        if ((overflow || attribute > 0) && !hasBindWheel.current) {
+        if ((overflow || attribute > 0) && !hasBindWheel.current && innerElementRef.current) {
             innerElementRef.current.addEventListener('wheel', onWheel, { passive: false })
 
             hasBindWheel.current = true
 
             return () => {
+                if (!innerElementRef.current) return
+
                 innerElementRef.current.removeEventListener('wheel', onWheel)
 
                 hasBindWheel.current = false
