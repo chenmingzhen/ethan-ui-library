@@ -1,11 +1,12 @@
 import React from 'react'
 import withValidate from '@/hoc/withValidate'
 import { PureComponent } from '@/utils/component'
-import { isArray, isFunc } from '@/utils/is'
-import { updateSubscribe } from '@/utils/Datum/types'
+import { isFunc } from '@/utils/is'
+import { compose } from '@/utils/func'
 import { IFieldSetProps } from './type'
 import { FieldSetConsumer, FieldSetProvider } from './context/fieldSetContext'
 import FormHelp from './FormHelp'
+import withFlow from './Hoc/withFlow'
 
 function extendName(path = '', name: string | string[]) {
     if (name === undefined) return undefined
@@ -21,32 +22,22 @@ class FieldSet extends PureComponent<IFieldSetProps> {
     constructor(props: IFieldSetProps) {
         super(props)
 
-        const { defaultValue, formDatum, validate, name, flow } = this.props
+        const { defaultValue, formDatum, validate, name, onFlowUpdateBind } = this.props
 
         if (formDatum && name) {
             formDatum.bind(name, this.handleUpdate, defaultValue, validate)
         }
 
-        if (isArray(flow)) {
-            flow.forEach(n => {
-                formDatum.subscribe(updateSubscribe(n), this.forceUpdate)
-            })
-        }
+        onFlowUpdateBind(this.forceUpdate)
 
         window.formDatum = formDatum
     }
 
     componentWillUnmount() {
-        const { formDatum, name, flow } = this.props
+        const { formDatum, name } = this.props
 
         if (formDatum && name) {
             formDatum.unbind(name)
-        }
-
-        if (isArray(flow)) {
-            flow.forEach(n => {
-                formDatum.unsubscribe(updateSubscribe(n))
-            })
         }
     }
 
@@ -126,4 +117,4 @@ export const fieldSetConsumer = Origin => props => (
     <FieldSetConsumer>{({ path } = {}) => <Origin {...props} name={extendName(path, props.name)} />}</FieldSetConsumer>
 )
 
-export default withValidate(FieldSet)
+export default compose(withValidate, withFlow)(FieldSet)

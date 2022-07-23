@@ -1,24 +1,25 @@
 import React, { cloneElement, isValidElement } from 'react'
 import classnames from 'classnames'
-import { Component } from '@/utils/component'
+import { PureComponent } from '@/utils/component'
 import { formClass, inputClass } from '@/styles'
 import { isSameError } from '@/utils/errors'
 import { isArray, isEmpty, isFunc } from '@/utils/is'
 import withValidate from '@/hoc/withValidate'
 import immer from 'immer'
 import shallowEqual from '@/utils/shallowEqual'
-import { ERROR_ACTION, updateSubscribe } from '@/utils/Datum/types'
+import { ERROR_ACTION } from '@/utils/Datum/types'
 import { compose } from '@/utils/func'
 import { getGrid } from '../Grid/util'
 import { IFormItemProps } from './type'
 import FormHelp from './FormHelp'
 import { fieldSetConsumer } from './FieldSet'
+import withFlow from './Hoc/withFlow'
 
 interface FormItemState {
     error: Error
 }
 
-class FormItem extends Component<IFormItemProps, FormItemState> {
+class FormItem extends PureComponent<IFormItemProps, FormItemState> {
     lastValue
 
     validateTimer: NodeJS.Timeout
@@ -26,7 +27,7 @@ class FormItem extends Component<IFormItemProps, FormItemState> {
     constructor(props) {
         super(props)
 
-        const { defaultValue, formDatum, validate, name, flow } = this.props
+        const { defaultValue, formDatum, validate, name, onFlowUpdateBind } = this.props
 
         if (formDatum && name) {
             if (!isArray(name)) {
@@ -38,11 +39,7 @@ class FormItem extends Component<IFormItemProps, FormItemState> {
             }
         }
 
-        if (isArray(flow)) {
-            flow.forEach(n => {
-                formDatum.subscribe(updateSubscribe(n), this.forceUpdate)
-            })
-        }
+        onFlowUpdateBind(this.forceUpdate)
     }
 
     get formable() {
@@ -60,16 +57,10 @@ class FormItem extends Component<IFormItemProps, FormItemState> {
     componentWillUnmount() {
         super.componentWillUnmount()
 
-        const { formDatum, name, flow } = this.props
+        const { formDatum, name } = this.props
 
         if (formDatum && name) {
             formDatum.unbind(name)
-        }
-
-        if (isArray(flow)) {
-            flow.forEach(n => {
-                formDatum.unsubscribe(updateSubscribe(n))
-            })
         }
     }
 
@@ -196,4 +187,4 @@ class FormItem extends Component<IFormItemProps, FormItemState> {
     }
 }
 
-export default compose(withValidate, fieldSetConsumer)(FormItem)
+export default compose(withValidate, fieldSetConsumer, withFlow)(FormItem)

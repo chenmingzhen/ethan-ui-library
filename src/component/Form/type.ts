@@ -17,10 +17,10 @@ export interface FormItemProps extends Pick<FormContextProps, 'animation'> {
 
     name?: string | string[]
     defaultValue?: any
-    flow?: string[]
+    flow?: string[] | true
 }
 
-export interface IFormItemProps extends FormItemProps, ValidateHocOutPutProps {
+export interface IFormItemProps extends FormItemProps, ValidateHocOutPutProps, WithFlowOutputProps {
     formDatum: FormDatum
 
     throttle?: number
@@ -99,10 +99,16 @@ export interface FieldSetProps extends Pick<FormContextProps, 'animation'> {
     flow?: string[]
 }
 
-export interface IFieldSetProps extends FieldSetProps, ValidateHocOutPutProps {
+export interface IFieldSetProps extends FieldSetProps, ValidateHocOutPutProps, WithFlowOutputProps {
     formDatum: FormDatum
 }
 
 export interface FieldSetContextProps {
     path?: string
+}
+
+export type WithFlowProps = IFieldSetProps | IFormItemProps
+
+export interface WithFlowOutputProps {
+    onFlowUpdateBind: (update: () => void) => void
 }
