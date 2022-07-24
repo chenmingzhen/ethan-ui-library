@@ -22,8 +22,8 @@ function create(name: 'PureComponent' | 'Component') {
             if (this.$isMounted !== false) super.setState(...args)
         }
 
-        setImmerState = fn => {
-            immer(fn)
+        setImmerState = (fn, callback) => {
+            this.setState(immer(fn), callback)
         }
 
         forceUpdate = () => {
