@@ -4,6 +4,7 @@ import { Component } from '@/utils/component'
 import { curry } from '@/utils/func'
 import Popover, { PopoverProps } from '@/component/Popover/Popover'
 import { isEmpty, isFunc } from '@/utils/is'
+import { FormItemConsumer } from '@/component/Form/context/formItemContext'
 import { buttonClass, inputClass, popoverClass } from '../styles'
 
 export interface InputBorderProps {
@@ -137,87 +138,105 @@ export default curry(
             }
 
             render() {
-                const { className, border, size, tip, width, style, error, popoverProps, ...other } = this.props
-
-                const { focus } = this.state
-
-                const Tag = ((options.tag || 'label') as unknown) as React.ElementType
-
-                const tagStyle = Object.assign({ width }, style)
-
-                const newClassName = classnames(
-                    inputClass(
-                        '_',
-                        focus && other.disabled !== true && 'focus',
-                        other.disabled === true && 'disabled',
-                        options.isGroup && 'group',
-                        size,
-                        tagStyle.width && 'inline',
-                        !border && 'no-border',
-                        options.overflow && `overflow-${options.overflow}`,
-                        error && 'invalid',
-                        popoverProps.placement && error && 'focus'
-                    ),
-                    buttonClass(
-                        options.isGroup && 'group',
-                        options.from === 'input' && options.isGroup && 'from-input-group'
-                    ),
-                    typeof options.className === 'function' ? options.className(this.props) : options.className,
-                    this.props.className
-                )
-
-                const popoverClassList = ['input-tip']
-
-                const placement = popoverProps.placement || 'bottom-left'
-
-                const popoverStyles =
-                    popoverProps.style && popoverProps.style.width
-                        ? popoverProps.style
-                        : popoverProps.style
-                        ? Object.assign({}, { minWidth: 200, maxWidth: 400 }, popoverProps.style)
-                        : { minWidth: 200, maxWidth: 400 }
-
-                const content = this.buildContent()
-
-                const popoverVisible = !!error || !!(content && focus)
-
-                if (error) {
-                    popoverClassList.push('input-error')
-                }
-
-                const originComponent = (
-                    <Origin {...other} size={size} onFocus={this.handleFocus} onBlur={this.handleBlur} />
-                )
-
                 return (
-                    <Tag
-                        ref={this.el}
-                        className={newClassName}
-                        style={tagStyle}
-                        tabIndex={options.enterPress ? '0' : undefined}
-                    >
-                        {options.popover ? (
-                            <>
-                                {this.state.mounted && (
-                                    <Popover
-                                        getPopupContainer={() => this.el.current}
-                                        {...popoverProps}
-                                        visible={popoverVisible}
-                                        style={popoverStyles}
-                                        className={popoverClass(...popoverClassList)}
-                                        placement={placement}
-                                        content={content || this.cacheContent}
-                                        onVisibleChange={this.handleVisibleChange}
-                                        innerAlwaysUpdate
-                                    >
-                                        {originComponent}
-                                    </Popover>
-                                )}
-                            </>
-                        ) : (
-                            originComponent
-                        )}
-                    </Tag>
+                    <FormItemConsumer>
+                        {({ hasItemError } = {}) => {
+                            const {
+                                className,
+                                border,
+                                size,
+                                tip,
+                                width,
+                                style,
+                                error,
+                                popoverProps,
+                                ...other
+                            } = this.props
+
+                            const { focus } = this.state
+
+                            const Tag = ((options.tag || 'label') as unknown) as React.ElementType
+
+                            const tagStyle = Object.assign({ width }, style)
+
+                            const newClassName = classnames(
+                                inputClass(
+                                    '_',
+                                    focus && other.disabled !== true && 'focus',
+                                    other.disabled === true && 'disabled',
+                                    options.isGroup && 'group',
+                                    size,
+                                    tagStyle.width && 'inline',
+                                    !border && 'no-border',
+                                    options.overflow && `overflow-${options.overflow}`,
+                                    (hasItemError || error) && 'invalid',
+                                    popoverProps.placement && error && 'focus'
+                                ),
+                                buttonClass(
+                                    options.isGroup && 'group',
+                                    options.from === 'input' && options.isGroup && 'from-input-group'
+                                ),
+                                typeof options.className === 'function'
+                                    ? options.className(this.props)
+                                    : options.className,
+                                this.props.className
+                            )
+
+                            const popoverClassList = ['input-tip']
+
+                            const placement = popoverProps.placement || 'bottom-left'
+
+                            const popoverStyles =
+                                popoverProps.style && popoverProps.style.width
+                                    ? popoverProps.style
+                                    : popoverProps.style
+                                    ? Object.assign({}, { minWidth: 200, maxWidth: 400 }, popoverProps.style)
+                                    : { minWidth: 200, maxWidth: 400 }
+
+                            const content = this.buildContent()
+
+                            const popoverVisible = !!error || !!(content && focus)
+
+                            if (error) {
+                                popoverClassList.push('input-error')
+                            }
+
+                            const originComponent = (
+                                <Origin {...other} size={size} onFocus={this.handleFocus} onBlur={this.handleBlur} />
+                            )
+
+                            return (
+                                <Tag
+                                    ref={this.el}
+                                    className={newClassName}
+                                    style={tagStyle}
+                                    tabIndex={options.enterPress ? '0' : undefined}
+                                >
+                                    {options.popover ? (
+                                        <>
+                                            {this.state.mounted && (
+                                                <Popover
+                                                    getPopupContainer={() => this.el.current}
+                                                    {...popoverProps}
+                                                    visible={popoverVisible}
+                                                    style={popoverStyles}
+                                                    className={popoverClass(...popoverClassList)}
+                                                    placement={placement}
+                                                    content={content || this.cacheContent}
+                                                    onVisibleChange={this.handleVisibleChange}
+                                                    innerAlwaysUpdate
+                                                >
+                                                    {originComponent}
+                                                </Popover>
+                                            )}
+                                        </>
+                                    ) : (
+                                        originComponent
+                                    )}
+                                </Tag>
+                            )
+                        }}
+                    </FormItemConsumer>
                 )
             }
         }

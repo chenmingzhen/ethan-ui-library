@@ -1,7 +1,7 @@
 import React, { cloneElement, createContext, isValidElement } from 'react'
 import classnames from 'classnames'
 import { PureComponent } from '@/utils/component'
-import { formClass, inputClass } from '@/styles'
+import { formClass } from '@/styles'
 import { isSameError } from '@/utils/errors'
 import { isArray, isEmpty, isFunc } from '@/utils/is'
 import withValidate from '@/hoc/withValidate'
@@ -9,18 +9,18 @@ import immer from 'immer'
 import shallowEqual from '@/utils/shallowEqual'
 import { ERROR_ACTION } from '@/utils/Datum/types'
 import { compose } from '@/utils/func'
-import { getUidStr } from '@/utils/uid'
 import { getGrid } from '../Grid/util'
 import { FormItemErrorListContext, IFormItemProps } from './type'
 import FormHelp from './FormHelp'
 import { fieldSetConsumer } from './FieldSet'
 import withFlow from './Hoc/withFlow'
+import { FormItemProvider } from './context/formItemContext'
 
 interface FormItemState {
     errors: Record<string, Error>
 }
 
-const { Provider, Consumer } = createContext<FormItemErrorListContext>(undefined)
+const { Provider: ErrorListProvider, Consumer: ErrorListConsumer } = createContext<FormItemErrorListContext>(undefined)
 
 function arrayNamesToStr(name: string | string[] = '') {
     if (!isArray(name)) {
@@ -121,11 +121,11 @@ class FormItem extends PureComponent<IFormItemProps, FormItemState> {
             onUpdateChildItemErrors(arrayNamesToStr(name), undefined)
         } else {
             /** Root */
-            this.updateChildItemErros(arrayNamesToStr(name), undefined)
+            this.updateChildItemErrors(arrayNamesToStr(name), undefined)
         }
     }
 
-    updateChildItemErros = (nameStr: string, error: Error) => {
+    updateChildItemErrors = (nameStr: string, error: Error) => {
         this.setImmerState(draft => {
             if (error) {
                 draft.errors[nameStr] = error
@@ -209,14 +209,14 @@ class FormItem extends PureComponent<IFormItemProps, FormItemState> {
     }
 
     renderChildren = () => {
-        const { children, formDatum } = this.props
+        const { children, formDatum, error } = this.props
 
         const { value } = this
 
         if (!this.formable) return children
 
         if (typeof children === 'function') {
-            return children({ value, onChange: this.handleChange, formDatum })
+            return children({ value, onChange: this.handleChange, formDatum, error })
         }
 
         if (isValidElement(children)) {
@@ -258,11 +258,11 @@ class FormItem extends PureComponent<IFormItemProps, FormItemState> {
 
         if (noStyle) {
             return (
-                <>
+                <FormItemProvider value={{ hasItemError: !!error }}>
                     {this.renderChildren()}
 
                     {this.renderHelp()}
-                </>
+                </FormItemProvider>
             )
         }
 
@@ -271,39 +271,51 @@ class FormItem extends PureComponent<IFormItemProps, FormItemState> {
             formClass(
                 'item',
                 required && 'required',
-                error && 'invalid',
-                // Object.keys(errors).filter(key => !!errors[key]).length && 'invalid',
+                /**
+                 * @todo
+                 * 下面的样式是为了兼容InputGroup的，但是有点别扭。
+                 * 因为FormItem内的输入型组件（有InputBorder包裹）的Error样式是通过FormItem的上下文读取的,
+                 * 由于InputGroup不存在成为受控组件的条件（没有value和onChange），所以没有hasItemError的值
+                 * 如果想让InputGroup获取样式，需要在formless中添加InputGroup的invalid的样式，并且要封装一下InputGroup，例如使用children函数的形式
+                 * 如果包裹InputGroup的顶层FormItem是noStyle.则error下InputGroup的样式会失效
+                 */
+                Object.keys(errors).filter(key => !!errors[key]).length && 'invalid',
                 ['top', 'right'].indexOf(labelAlign) >= 0 && `label-align-${labelAlign}`
             ),
             this.props.className
         )
 
         return (
-            <Provider value={{ onUpdateChildItemErrors: onUpdateChildItemErrors || this.updateChildItemErros }}>
-                <div className={className} style={style}>
-                    {label && (
-                        <div style={{ width: labelWidth }} className={formClass('label')}>
-                            {label}
-                        </div>
-                    )}
-                    <div className={formClass('control')}>
-                        {this.renderChildren()}
+            <ErrorListProvider
+                value={{ onUpdateChildItemErrors: onUpdateChildItemErrors || this.updateChildItemErrors }}
+            >
+                <FormItemProvider value={{ hasItemError: !!error }}>
+                    <div className={className} style={style}>
+                        {label && (
+                            <div style={{ width: labelWidth }} className={formClass('label')}>
+                                {label}
+                            </div>
+                        )}
+                        <div className={formClass('control')}>
+                            {this.renderChildren()}
 
-                        {this.renderHelp()}
+                            {this.renderHelp()}
+                        </div>
                     </div>
-                </div>
-            </Provider>
+                </FormItemProvider>
+            </ErrorListProvider>
         )
     }
 }
 
-const withErrorList = Origin =>
+/** 顶层FormItem收集Error统一显示 */
+const withCollectError = Origin =>
     React.memo(props => (
-        <Consumer>
+        <ErrorListConsumer>
             {({ onUpdateChildItemErrors } = {}) => {
                 return <Origin onUpdateChildItemErrors={onUpdateChildItemErrors} {...props} />
             }}
-        </Consumer>
+        </ErrorListConsumer>
     ))
 
-export default compose(withValidate, fieldSetConsumer, withFlow, withErrorList)(FormItem)
+export default compose(withValidate, fieldSetConsumer, withFlow, withCollectError)(FormItem)

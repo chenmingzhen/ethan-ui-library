@@ -4,12 +4,12 @@
  * en - NoStyle
  *    -- The form has a two-way binding mechanism built in, automatically sending and collecting data based on the name property of the form element.
  */
-import React, { PureComponent } from 'react'
-import { Form, Input, Select } from 'ethan'
+import React from 'react'
+import { Button, FontAwesome, Form, Input, Select, Upload } from 'ethan'
 
 const App = () => {
     return (
-        <Form labelWidth="80px">
+        <Form labelWidth="80px" onChange={console.log}>
             <Form.Item label="Username">
                 <div style={{ display: 'flex', alignItems: 'center' }}>
                     <Form.Item
@@ -62,12 +62,7 @@ const App = () => {
                     </Form.Item>
                 </Input.Group>
             </Form.Item>
-            <Form.Item
-                label="BirthDate"
-                style={{
-                    marginBottom: 0,
-                }}
-            >
+            <Form.Item label="BirthDate">
                 <Form.Item
                     name="year"
                     rules={[
@@ -82,7 +77,7 @@ const App = () => {
                         marginBottom: 0,
                     }}
                 >
-                    <Input placeholder="Input birth year" />
+                    <Input />
                 </Form.Item>
                 <Form.Item
                     name="month"
@@ -100,6 +95,34 @@ const App = () => {
                 >
                     <Input placeholder="Input birth month" />
                 </Form.Item>
+            </Form.Item>
+            <Form.Item
+                name="avatar"
+                rules={[
+                    {
+                        required: true,
+                        message: 'Avatar is required',
+                    },
+                ]}
+                label="Avatar"
+            >
+                {({ value, onChange, error }) => {
+                    return (
+                        <>
+                            <Upload
+                                value={value}
+                                onChange={onChange}
+                                style={{ width: 300 }}
+                                beforeUpload={() => Promise.resolve({ status: 'MANUAL' })}
+                            >
+                                <Button type={error ? 'danger' : 'default'}>
+                                    <FontAwesome name="cloud-upload " style={{ marginRight: 4 }} />
+                                    Upload avatar
+                                </Button>
+                            </Upload>
+                        </>
+                    )
+                }}
             </Form.Item>
         </Form>
     )
