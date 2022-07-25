@@ -4,6 +4,12 @@ import { FormError } from '@/utils/errors'
 import React from 'react'
 import { Rule } from '../Rule/type'
 
+export interface FormItemChildrenFuncParams {
+    formDatum: FormDatum
+    value: any
+    onChange: (value: any, ...args) => void
+}
+
 export interface FormItemProps extends Pick<FormContextProps, 'animation'> {
     className?: string
     label?: React.ReactNode
@@ -11,16 +17,25 @@ export interface FormItemProps extends Pick<FormContextProps, 'animation'> {
     labelWidth?: number | string
     required?: boolean
     tip?: React.ReactNode
-    children: React.ReactNode
+    children: React.ReactNode | ((params: FormItemChildrenFuncParams) => React.ReactNode)
     style?: React.CSSProperties
     grid?: number
 
     name?: string | string[]
     defaultValue?: any
     flow?: string[] | true
+    noStyle?: boolean
 }
 
-export interface IFormItemProps extends FormItemProps, ValidateHocOutPutProps, WithFlowOutputProps {
+export interface FormItemErrorListContext {
+    onUpdateChildItemErrors?: (id: string, error: Error) => void
+}
+
+export interface IFormItemProps
+    extends FormItemProps,
+    ValidateHocOutPutProps,
+    WithFlowOutputProps,
+    FormItemErrorListContext {
     formDatum: FormDatum
 
     throttle?: number
@@ -43,8 +58,8 @@ export interface FormContextProps {
 
 export interface FormProps<T extends Record<string, any>>
     extends Omit<
-        React.FormHTMLAttributes<HTMLFormElement>,
-        'value' | 'onChange' | 'defaultValue' | 'onSubmit' | 'onError'
+    React.FormHTMLAttributes<HTMLFormElement>,
+    'value' | 'onChange' | 'defaultValue' | 'onSubmit' | 'onError'
     > {
     className?: string
     disabled?: boolean

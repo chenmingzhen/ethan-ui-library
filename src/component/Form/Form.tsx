@@ -20,6 +20,7 @@ export default class Form<T extends Record<string, any>> extends PureComponent<I
     static defaultProps = {
         scrollToError: false,
         throttle: 300,
+        animation: true,
     }
 
     componentDidMount() {

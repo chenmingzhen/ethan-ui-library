@@ -1,4 +1,4 @@
-import React, { cloneElement, isValidElement } from 'react'
+import React, { cloneElement, createContext, isValidElement } from 'react'
 import classnames from 'classnames'
 import { PureComponent } from '@/utils/component'
 import { formClass, inputClass } from '@/styles'
@@ -9,14 +9,25 @@ import immer from 'immer'
 import shallowEqual from '@/utils/shallowEqual'
 import { ERROR_ACTION } from '@/utils/Datum/types'
 import { compose } from '@/utils/func'
+import { getUidStr } from '@/utils/uid'
 import { getGrid } from '../Grid/util'
-import { IFormItemProps } from './type'
+import { FormItemErrorListContext, IFormItemProps } from './type'
 import FormHelp from './FormHelp'
 import { fieldSetConsumer } from './FieldSet'
 import withFlow from './Hoc/withFlow'
 
 interface FormItemState {
-    error: Error
+    errors: Record<string, Error>
+}
+
+const { Provider, Consumer } = createContext<FormItemErrorListContext>(undefined)
+
+function arrayNamesToStr(name: string | string[] = '') {
+    if (!isArray(name)) {
+        return name
+    }
+
+    return name.join('_ETHAN_JOIN_')
 }
 
 class FormItem extends PureComponent<IFormItemProps, FormItemState> {
@@ -24,10 +35,28 @@ class FormItem extends PureComponent<IFormItemProps, FormItemState> {
 
     validateTimer: NodeJS.Timeout
 
+    static defaultProps = {
+        name: '',
+    }
+
     constructor(props) {
         super(props)
 
-        const { defaultValue, formDatum, validate, name, onFlowUpdateBind } = this.props
+        const {
+            defaultValue,
+            formDatum,
+            validate,
+            name = '',
+            onFlowUpdateBind,
+            error,
+            onUpdateChildItemErrors,
+        } = this.props
+
+        this.state = {
+            errors: {
+                [arrayNamesToStr(name)]: undefined,
+            },
+        }
 
         if (formDatum && name) {
             if (!isArray(name)) {
@@ -39,6 +68,10 @@ class FormItem extends PureComponent<IFormItemProps, FormItemState> {
             }
         }
 
+        if (error && onUpdateChildItemErrors) {
+            onUpdateChildItemErrors(arrayNamesToStr(name), error)
+        }
+
         onFlowUpdateBind(this.forceUpdate)
     }
 
@@ -48,20 +81,58 @@ class FormItem extends PureComponent<IFormItemProps, FormItemState> {
         return formDatum && !isEmpty(name)
     }
 
+    static getDerivedStateFromProps(nextProps: IFormItemProps, state: FormItemState) {
+        const nextError = nextProps.error
+
+        return {
+            ...state,
+            errors: {
+                ...state.errors,
+                [arrayNamesToStr(nextProps.name)]: nextError,
+            },
+        }
+    }
+
     componentDidMount() {
         super.componentDidMount()
 
         this.lastValue = this.value
     }
 
+    componentDidUpdate(prevProps: Readonly<IFormItemProps>): void {
+        const prevError = prevProps.error
+        const { name, error, onUpdateChildItemErrors } = this.props
+
+        if (onUpdateChildItemErrors && !isSameError(prevError, error)) {
+            onUpdateChildItemErrors(arrayNamesToStr(name), error)
+        }
+    }
+
     componentWillUnmount() {
         super.componentWillUnmount()
 
-        const { formDatum, name } = this.props
+        const { formDatum, name, onUpdateChildItemErrors } = this.props
 
         if (formDatum && name) {
             formDatum.unbind(name)
         }
+
+        if (onUpdateChildItemErrors) {
+            onUpdateChildItemErrors(arrayNamesToStr(name), undefined)
+        } else {
+            /** Root */
+            this.updateChildItemErros(arrayNamesToStr(name), undefined)
+        }
+    }
+
+    updateChildItemErros = (nameStr: string, error: Error) => {
+        this.setImmerState(draft => {
+            if (error) {
+                draft.errors[nameStr] = error
+            } else {
+                delete draft.errors[nameStr]
+            }
+        })
     }
 
     handleUpdate = (data, name, type) => {
@@ -138,27 +209,62 @@ class FormItem extends PureComponent<IFormItemProps, FormItemState> {
     }
 
     renderChildren = () => {
-        const { children, error } = this.props
+        const { children, formDatum } = this.props
 
         const { value } = this
 
         if (!this.formable) return children
 
-        const className = error ? inputClass('invalid') : undefined
-
         if (typeof children === 'function') {
-            return children({ value, onChange: this.handleChange, className })
+            return children({ value, onChange: this.handleChange, formDatum })
         }
 
         if (isValidElement(children)) {
-            return cloneElement(children, { value, onChange: this.handleChange, className })
+            return cloneElement(children, { value, onChange: this.handleChange })
         }
 
         return children
     }
 
+    renderHelp = () => {
+        const { onUpdateChildItemErrors, animation } = this.props
+
+        const { errors } = this.state
+
+        /** 非顶层FormItem */
+        if (onUpdateChildItemErrors) {
+            return null
+        }
+
+        return Object.keys(errors).map(key => {
+            return <FormHelp error={errors[key]} animation={animation} key={key} />
+        })
+    }
+
     render() {
-        const { grid, label, labelAlign, labelWidth, required, style, error, animation } = this.props
+        const {
+            grid,
+            label,
+            labelAlign,
+            labelWidth,
+            required,
+            style,
+            error,
+            onUpdateChildItemErrors,
+            noStyle,
+        } = this.props
+
+        const { errors } = this.state
+
+        if (noStyle) {
+            return (
+                <>
+                    {this.renderChildren()}
+
+                    {this.renderHelp()}
+                </>
+            )
+        }
 
         const className = classnames(
             getGrid(grid),
@@ -166,25 +272,38 @@ class FormItem extends PureComponent<IFormItemProps, FormItemState> {
                 'item',
                 required && 'required',
                 error && 'invalid',
+                // Object.keys(errors).filter(key => !!errors[key]).length && 'invalid',
                 ['top', 'right'].indexOf(labelAlign) >= 0 && `label-align-${labelAlign}`
             ),
             this.props.className
         )
 
         return (
-            <div className={className} style={style}>
-                {label && (
-                    <div style={{ width: labelWidth }} className={formClass('label')}>
-                        {label}
+            <Provider value={{ onUpdateChildItemErrors: onUpdateChildItemErrors || this.updateChildItemErros }}>
+                <div className={className} style={style}>
+                    {label && (
+                        <div style={{ width: labelWidth }} className={formClass('label')}>
+                            {label}
+                        </div>
+                    )}
+                    <div className={formClass('control')}>
+                        {this.renderChildren()}
+
+                        {this.renderHelp()}
                     </div>
-                )}
-                <div className={formClass('control')}>
-                    {this.renderChildren()}
-                    <FormHelp error={error} animation={animation} />
                 </div>
-            </div>
+            </Provider>
         )
     }
 }
 
-export default compose(withValidate, fieldSetConsumer, withFlow)(FormItem)
+const withErrorList = Origin =>
+    React.memo(props => (
+        <Consumer>
+            {({ onUpdateChildItemErrors } = {}) => {
+                return <Origin onUpdateChildItemErrors={onUpdateChildItemErrors} {...props} />
+            }}
+        </Consumer>
+    ))
+
+export default compose(withValidate, fieldSetConsumer, withFlow, withErrorList)(FormItem)
