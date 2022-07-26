@@ -1,5 +1,6 @@
 import React, { PureComponent } from 'react'
 import { inputClass } from '@/styles'
+import { isNull, isString } from '@/utils/is'
 import icons from '../icons'
 import Input from './Input'
 import { InputNumberProps } from './type'
@@ -29,24 +30,23 @@ class Number extends PureComponent<InputNumberProps> {
         this.handleCalc(-this.props.step)
     }
 
-    handleChange = (value: string | number, check?: boolean, isEmpty?: boolean) => {
+    handleChange = (value: string | number) => {
         const { onChange, digits, step } = this.props
 
-        if (isEmpty) {
+        if (isNull(value)) {
             onChange(value)
 
             return
         }
 
         /** 处于手动输入状态 */
-        if (!check) {
-            if (new RegExp('^-?\\d*\\.?\\d*$').test(value as string)) {
+        if (isString(value)) {
+            if (new RegExp('^-?\\d*\\.?\\d*$').test(value)) {
                 onChange(value)
             }
+
             return
         }
-
-        value = value as number
 
         if (typeof digits === 'number') {
             value = parseFloat(value.toFixed(digits))
@@ -79,7 +79,7 @@ class Number extends PureComponent<InputNumberProps> {
         // eslint-disable-next-line no-restricted-globals
         if (isNaN(value)) value = 0
 
-        this.handleChange(value, true, value === null)
+        this.handleChange(value)
 
         this.props.onBlur(e)
     }
@@ -92,7 +92,7 @@ class Number extends PureComponent<InputNumberProps> {
         // eslint-disable-next-line
         if (isNaN(value)) value = 0
 
-        this.handleChange(value + mod, true)
+        this.handleChange(value + mod)
     }
 
     longPress = mod => {
