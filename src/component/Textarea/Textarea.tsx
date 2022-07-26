@@ -72,7 +72,7 @@ const Textarea: React.FC<TextareaProps> = props => {
         <>
             <textarea
                 {...cleanProps(otherProps)}
-                value={value}
+                value={value ?? ''}
                 className={className}
                 style={{ height: newHeight, maxHeight, overflow: 'auto' }}
                 onChange={handleChange}
