@@ -1,7 +1,6 @@
 import Datum from '@/utils/Datum'
 import { compose } from '@/utils/func'
 import Form from './Form'
-import withFormConsumer from './Hoc/withFormConsumer'
 import Item from './FormItem'
 import FieldSet from './FieldSet'
 
@@ -9,16 +8,8 @@ const FormComponent = compose(Datum.Hoc({ type: 'form', bindProps: ['removeUndef
     Form
 )
 
-FormComponent.Item = withFormConsumer([
-    'formDatum',
-    'labelWidth',
-    'labelAlign',
-    'labelVerticalAlign',
-    'keepErrorHeight',
-    'animation',
-    'throttle',
-])(Item)
+FormComponent.Item = Item
 
-FormComponent.FieldSet = withFormConsumer(['formDatum', 'animation'], FieldSet)
+FormComponent.FieldSet = FieldSet
 
 export default FormComponent

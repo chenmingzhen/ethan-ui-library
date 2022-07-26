@@ -15,6 +15,7 @@ import FormHelp from './FormHelp'
 import { fieldSetConsumer } from './FieldSet'
 import withFlow from './Hoc/withFlow'
 import { FormItemProvider } from './context/formItemContext'
+import withFormConsumer from './Hoc/withFormConsumer'
 
 interface FormItemState {
     errors: Record<string, Error>
@@ -318,4 +319,18 @@ const withCollectError = Origin =>
         </ErrorListConsumer>
     ))
 
-export default compose(withValidate, fieldSetConsumer, withFlow, withCollectError)(FormItem)
+export default compose(
+    withFormConsumer([
+        'formDatum',
+        'labelWidth',
+        'labelAlign',
+        'labelVerticalAlign',
+        'keepErrorHeight',
+        'animation',
+        'throttle',
+    ]),
+    withValidate,
+    fieldSetConsumer,
+    withFlow,
+    withCollectError
+)(FormItem)

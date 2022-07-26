@@ -5,7 +5,7 @@
  *    -- The form has a two-way binding mechanism built in, automatically sending and collecting data based on the name property of the form element.
  */
 import React, { PureComponent } from 'react'
-import { Form, Input, Checkbox, Radio, Textarea, Select, DatePicker, Upload, Rule } from 'ethan'
+import { Form, Input, Checkbox, Radio, Textarea, Select, DatePicker, Upload, Rule, Button } from 'ethan'
 
 const citys = [
     {
@@ -39,7 +39,7 @@ export default class extends PureComponent {
         })
         return (
             <Form error={this.state.error}>
-                <Form.Item label="Email" name="email" defaultValue="1" rules={[required]}>
+                <Form.Item label="Email" name="email" rules={[required]}>
                     <Input clearable popoverProps={{ placement: 'left-top' }} />
                 </Form.Item>
 
@@ -96,12 +96,7 @@ export default class extends PureComponent {
                 </Form.Item>
 
                 <Form.Item label="" name="file">
-                    <Upload.Image
-                        action="//jsonplaceholder.typicode.com/posts"
-                        accept="image/*"
-                        renderResult={f => f.data}
-                        limit={3}
-                    />
+                    <Upload.Image action="//jsonplaceholder.typicode.com/posts" accept="image/*" limit={3} />
                 </Form.Item>
 
                 <Form.Item label="Age" defaultValue={0}>
@@ -136,6 +131,16 @@ export default class extends PureComponent {
                 <Form.Item label="Description" name="desc">
                     <Textarea autoSize />
                 </Form.Item>
+
+                <div>
+                    <Button htmlType="submit" type="primary">
+                        Submit
+                    </Button>
+
+                    <Button htmlType="reset" type="primary" style={{ marginLeft: '10px' }}>
+                        Reset
+                    </Button>
+                </div>
             </Form>
         )
     }

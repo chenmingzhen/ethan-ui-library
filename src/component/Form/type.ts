@@ -55,7 +55,8 @@ export interface FormContextProps {
     animation?: boolean
 }
 
-export interface FormProps<T extends Record<string, any>>
+// eslint-disable-next-line @typescript-eslint/ban-types
+export interface FormProps<T extends Record<string, any> = {}>
     extends Omit<
         React.FormHTMLAttributes<HTMLFormElement>,
         'value' | 'onChange' | 'defaultValue' | 'onSubmit' | 'onError'
@@ -85,7 +86,6 @@ export interface FormProps<T extends Record<string, any>>
 }
 
 export interface IFormProps<T extends Record<string, any>> extends FormProps<T> {
-    setFormStatus
     datum: FormDatum
 }
 

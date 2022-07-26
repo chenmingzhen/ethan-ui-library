@@ -2,35 +2,27 @@ import React from 'react'
 import classnames from 'classnames'
 import { PureComponent } from '@/utils/component'
 import { formClass } from '@/styles'
-import { getUidStr } from '@/utils/uid'
-import { IGNORE_BIND } from '@/utils/Datum/types'
 import shallowEqual from '@/utils/shallowEqual'
+import { isEmpty } from '@/utils/is'
 import { IFormProps } from './type'
 import { FormProvider } from './context/formContext'
 
 export default class Form<T extends Record<string, any>> extends PureComponent<IFormProps<T>> {
     form: HTMLFormElement
 
-    id = getUidStr()
-
-    locked = false
-
-    validating = false
+    submitting = false
 
     static defaultProps = {
         scrollToError: false,
-        throttle: 300,
         animation: true,
     }
 
     componentDidMount() {
+        super.componentDidMount()
+
         const { formRef } = this.props
 
         if (formRef) formRef(this.form)
-
-        if (this.form) {
-            this.form.addEventListener('submit', this.handleSubmit)
-        }
     }
 
     componentDidUpdate(prevProps) {
@@ -38,60 +30,47 @@ export default class Form<T extends Record<string, any>> extends PureComponent<I
     }
 
     componentWillUnmount() {
-        if (this.form) {
-            this.form.removeEventListener('submit', this.handleSubmit)
-        }
+        super.componentWillUnmount()
     }
 
     bindElement = (form: HTMLFormElement) => {
         this.form = form
     }
 
-    handleSubmit = (evt: SubmitEvent) => {
-        if (evt) {
+    handleSubmit = (evt: React.FormEvent<HTMLFormElement>) => {
+        const { onSubmit, action, datum } = this.props
+
+        if (isEmpty(action)) {
             evt.preventDefault()
+
+            evt.stopPropagation()
+
+            this.submitting = true
+
+            datum
+                .validateForm()
+                .then(values => {
+                    onSubmit(values)
+                })
+                .catch(() => {
+                    /** @todo 滚动到错误中 */
+                })
+                .finally(() => {
+                    this.submitting = false
+                })
         }
 
-        if (evt && (evt.target as HTMLElement).getAttribute('data-id') !== this.id) return
-
-        if (this.validating || this.locked) return
-
-        this.validating = true
-
-        this.locked = true
-
-        setTimeout(() => {
-            this.locked = false
-        }, this.props.throttle)
-
-        const { datum, onSubmit } = this.props
-
-        const { activeElement } = document
-
-        if (activeElement) activeElement.blur()
-
-        datum
-            .validate(IGNORE_BIND)
-            .then(() => {
-                this.validating = false
-
-                if (onSubmit) onSubmit(datum.getValue())
-
-                if (activeElement) activeElement.focus()
-            })
-            .catch(err => {
-                this.validating = false
-
-                setTimeout(this.scrollToError.bind(this, err))
-            })
+        /** 存在action,使用原生的表单提交 */
     }
 
-    handleReset = () => {
-        const { datum, onReset } = this.props
+    handleReset = (evt: React.FormEvent<HTMLFormElement>) => {
+        const { onReset, datum } = this.props
 
         datum.reset()
 
-        if (onReset) onReset()
+        if (onReset) {
+            onReset()
+        }
     }
 
     render() {
@@ -137,9 +116,9 @@ export default class Form<T extends Record<string, any>> extends PureComponent<I
                 <form
                     ref={this.bindElement}
                     {...other}
+                    onSubmit={this.handleSubmit}
                     onReset={this.handleReset}
                     className={className}
-                    data-id={this.id}
                 >
                     {this.props.children}
                 </form>

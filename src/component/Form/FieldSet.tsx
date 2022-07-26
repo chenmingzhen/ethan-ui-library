@@ -7,6 +7,7 @@ import { IFieldSetProps } from './type'
 import { FieldSetConsumer, FieldSetProvider } from './context/fieldSetContext'
 import FormHelp from './FormHelp'
 import withFlow from './Hoc/withFlow'
+import withFormConsumer from './Hoc/withFormConsumer'
 
 function extendName(path = '', name: string | string[]) {
     if (name === undefined) return undefined
@@ -29,8 +30,6 @@ class FieldSet extends PureComponent<IFieldSetProps> {
         }
 
         onFlowUpdateBind(this.forceUpdate)
-
-        window.formDatum = formDatum
     }
 
     componentWillUnmount() {
@@ -117,4 +116,4 @@ export const fieldSetConsumer = Origin => props => (
     <FieldSetConsumer>{({ path } = {}) => <Origin {...props} name={extendName(path, props.name)} />}</FieldSetConsumer>
 )
 
-export default compose(withValidate, withFlow)(FieldSet)
+export default compose(withFormConsumer(['formDatum', 'animation']), withValidate, withFlow)(FieldSet)

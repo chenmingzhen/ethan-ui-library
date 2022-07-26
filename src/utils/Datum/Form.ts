@@ -326,6 +326,17 @@ export default class {
         })
     }
 
+    reset = () => {
+        this.setValue(unflatten(this.$defaultValues))
+
+        this.handleChange()
+        console.log(this.$inputNames)
+        console.log(this.$defaultValues)
+        Object.keys(this.$inputNames).forEach(name => {
+            this.dispatch(name)
+        })
+    }
+
     /** For FieldSet */
     insert = (name: string, index: number, value) => {
         const values = this.get(name) as any[]
