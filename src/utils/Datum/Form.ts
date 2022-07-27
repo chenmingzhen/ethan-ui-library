@@ -19,7 +19,7 @@ interface FormDatumOptions {
 
     initValidate?: boolean
 
-    defaultValue: any
+    defaultValue?: any
 }
 
 interface DatumSetParams {
@@ -131,7 +131,7 @@ export default class {
         }
 
         /** Form的defaultValue优先级高于FormItem的 */
-        if (!(name in this.$defaultValues) && value) this.$defaultValues[name] = fastClone(value)
+        if (!(name in this.$defaultValues) && value !== undefined) this.$defaultValues[name] = fastClone(value)
 
         this.$validator[name] = validate
 

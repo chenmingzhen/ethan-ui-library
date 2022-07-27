@@ -115,7 +115,7 @@ class Input extends PureComponent<IInputProps> {
         } = this.props
 
         const value = this.props.value == null ? '' : this.props.value
-
+        console.log(value)
         // https://blog.csdn.net/u013096088/article/details/52873562
         // 利用onCompositionStart,onCompositionEnd处理中文流的问题
         // 中文模式 有输入法 点击回车后内容才会填充到输入框，但是点击回车会触发onKeyUp code=13的情况

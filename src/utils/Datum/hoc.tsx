@@ -17,8 +17,6 @@ interface HocProps {
 interface Options {
     type?: 'list' | 'form'
 
-    key?: string
-
     limit?: number
 
     bindProps?: string[]
@@ -33,7 +31,7 @@ const types = {
  * Datum的高阶组件容器 通常给Group赋值Datum
  */
 export default curry((options: Options, Origin) => {
-    const { type = 'list', key = 'value', limit = 0, bindProps = [] } = options || {}
+    const { type = 'list', limit = 0, bindProps = [] } = options || {}
 
     const Datum = types[type]
 
@@ -51,28 +49,32 @@ export default curry((options: Options, Origin) => {
         constructor(props) {
             super(props)
 
-            const { onChange, initValidate, control } = props
+            const { onChange, initValidate, control, value, datum } = props
 
-            const value = props[key]
+            if (datum) {
+                datum.onChange = onChange
 
-            const ops: any = bindProps.reduce(
-                (o, k) => {
-                    o[k] = props[k]
-                    return o
-                },
-                // 初始值
-                { value, limit, initValidate, control }
-            )
+                this.datum = datum
+            } else {
+                const ops: any = bindProps.reduce(
+                    (o, k) => {
+                        o[k] = props[k]
+                        return o
+                    },
+                    // 初始值
+                    { value, limit, initValidate, control }
+                )
 
-            if (onChange) {
-                ops.onChange = onChange
+                if (onChange) {
+                    ops.onChange = onChange
+                }
+
+                this.datum = new Datum(Object.assign(ops))
             }
-
-            this.datum = new Datum(Object.assign(ops))
         }
 
         componentDidMount() {
-            this.prevValues = this.props[key]
+            this.prevValues = this.props.value
         }
 
         componentDidUpdate(prevProps) {
@@ -80,7 +82,7 @@ export default curry((options: Options, Origin) => {
                 this.datum.onChange = this.props.onChange
             }
 
-            const values = this.props[key]
+            const values = this.props.value
 
             if (
                 this.props.control &&

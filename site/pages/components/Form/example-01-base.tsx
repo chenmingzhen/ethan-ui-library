@@ -18,130 +18,102 @@ const citys = [
     },
 ]
 
-export default class extends PureComponent {
-    constructor(props) {
-        super(props)
+export default function App() {
+    const formDatum = Form.useFormDatum()
 
-        this.state = { value: undefined, error: undefined }
-    }
+    return (
+        <Form datum={formDatum}>
+            <Form.Item label="Email" name="email">
+                <Input clearable popoverProps={{ placement: 'left-top' }} />
+            </Form.Item>
 
-    componentDidMount() {}
+            <Form.Item label="Object.one" name="obj.one" defaultValue="one">
+                <Input clearable />
+            </Form.Item>
 
-    handleChange = value => {
-        this.setState({ value })
-    }
+            <Form.Item label="Object.two" name="obj.two" defaultValue="two">
+                <Input clearable />
+            </Form.Item>
 
-    render() {
-        const { test, required } = Rule({
-            test() {
-                return Promise.reject(new Error('Test'))
-            },
-        })
-        return (
-            <Form error={this.state.error}>
-                <Form.Item label="Email" name="email" rules={[required]}>
-                    <Input clearable popoverProps={{ placement: 'left-top' }} />
-                </Form.Item>
+            <Form.Item label="Password" name="password">
+                <Input.Password type="password" />
+            </Form.Item>
 
-                <Form.Item label="Object.one" name="obj.one" defaultValue="one">
-                    <Input clearable />
-                </Form.Item>
+            <Form.Item label="Number" name="number">
+                <Input.Number width={120} max={100} min={10} />
+            </Form.Item>
 
-                <Form.Item label="Object.two" name="obj.two" defaultValue="two">
-                    <Input clearable />
-                </Form.Item>
-
-                <Form.Item label="Password" name="password">
-                    <Input.Password type="password" />
-                </Form.Item>
-
-                <Form.Item label="Number" name="number">
-                    <Input.Number width={120} max={100} min={10} />
-                </Form.Item>
-
-                <Form.Item
-                    label="Name"
-                    name={['firstName', 'lastName']}
-                    defaultValue={['Ethan', 'Chen']}
-                    flow={['email']}
-                >
-                    {React.createElement<any>(({ value = [], onChange }) => {
-                        function handleChange(name, v) {
-                            if (name === 'firstName') {
-                                onChange([v, value[1]])
-                            } else {
-                                onChange([value[0], v])
-                            }
+            <Form.Item label="Name" name={['firstName', 'lastName']} defaultValue={['Ethan', 'Chen']} flow={['email']}>
+                {React.createElement<any>(({ value = [], onChange }) => {
+                    function handleChange(name, v) {
+                        if (name === 'firstName') {
+                            onChange([v, value[1]])
+                        } else {
+                            onChange([value[0], v])
                         }
+                    }
 
-                        return (
-                            <Input.Group style={{ width: 300 }}>
-                                <Input
-                                    name="firstName"
-                                    placeholder="First Name"
-                                    value={value[0]}
-                                    onChange={handleChange.bind(this, 'firstName')}
-                                    tip="firstName"
-                                />
-                                -
-                                <Input
-                                    name="lastName"
-                                    placeholder="Last Name"
-                                    value={value[1]}
-                                    onChange={handleChange.bind(this, 'lastName')}
-                                />
-                            </Input.Group>
-                        )
-                    })}
-                </Form.Item>
+                    return (
+                        <Input.Group style={{ width: 300 }}>
+                            <Input
+                                placeholder="First Name"
+                                value={value[0]}
+                                onChange={handleChange.bind(this, 'firstName')}
+                                tip="firstName"
+                            />
+                            -
+                            <Input
+                                placeholder="Last Name"
+                                value={value[1]}
+                                onChange={handleChange.bind(this, 'lastName')}
+                            />
+                        </Input.Group>
+                    )
+                })}
+            </Form.Item>
 
-                <Form.Item label={<></>} name="file">
-                    <Upload.Image action="//jsonplaceholder.typicode.com/posts" accept="image/*" limit={3} />
-                </Form.Item>
+            <Form.Item label={<></>} name="file">
+                <Upload.Image action="//jsonplaceholder.typicode.com/posts" accept="image/*" limit={3} />
+            </Form.Item>
 
-                <Form.Item label="Age" defaultValue={0}>
-                    <Input style={{ width: 100 }} type="number" digits={0} />
-                </Form.Item>
+            <Form.Item label="Age" defaultValue={0} name="age">
+                <Input style={{ width: 100 }} type="number" digits={0} />
+            </Form.Item>
 
-                <Form.Item label="Favorite Color" defaultValue={['yellow']} name="favoriteColor">
-                    <Checkbox.Group keygen data={['red', 'orange', 'yellow', 'green', 'cyan', 'blue', 'violet']} />
-                </Form.Item>
+            <Form.Item label="Favorite Color" defaultValue={['yellow']} name="favoriteColor">
+                <Checkbox.Group keygen data={['red', 'orange', 'yellow', 'green', 'cyan', 'blue', 'violet']} />
+            </Form.Item>
 
-                <Form.Item label="Other Color" defaultValue="green" name="otherColor">
-                    <Radio.Group keygen data={['red', 'orange', 'yellow', 'green', 'cyan', 'blue', 'violet']} />
-                </Form.Item>
+            <Form.Item label="Other Color" defaultValue="green" name="otherColor">
+                <Radio.Group keygen data={['red', 'orange', 'yellow', 'green', 'cyan', 'blue', 'violet']} />
+            </Form.Item>
 
-                <Form.Item label="Hate Color" name="hateColor" defaultValue="blue">
-                    <Select
-                        keygen
-                        style={{ width: 100 }}
-                        clearable
-                        data={['red', 'orange', 'yellow', 'green', 'cyan', 'blue', 'violet']}
-                    />
-                </Form.Item>
+            <Form.Item label="Hate Color" name="hateColor" defaultValue="blue">
+                <Select
+                    keygen
+                    style={{ width: 100 }}
+                    clearable
+                    data={['red', 'orange', 'yellow', 'green', 'cyan', 'blue', 'violet']}
+                />
+            </Form.Item>
 
-                <Form.Item
-                    label="Date"
-                    name={['startDate', 'endDate']}
-                    defaultValue={[Date.now() - 100000000, Date.now()]}
-                >
-                    <DatePicker type="datetime" range />
-                </Form.Item>
+            <Form.Item label="Date" name={['startDate', 'endDate']} defaultValue={[Date.now() - 100000000, Date.now()]}>
+                <DatePicker type="datetime" range />
+            </Form.Item>
 
-                <Form.Item label="Description" name="desc">
-                    <Textarea autoSize />
-                </Form.Item>
+            <Form.Item label="Description" name="desc">
+                <Textarea autoSize />
+            </Form.Item>
 
-                <Form.Item label={<></>}>
-                    <Button htmlType="submit" type="primary">
-                        Submit
-                    </Button>
+            <Form.Item label={<></>}>
+                <Button htmlType="submit" type="primary">
+                    Submit
+                </Button>
 
-                    <Button htmlType="reset" type="primary" style={{ marginLeft: '10px' }}>
-                        Reset
-                    </Button>
-                </Form.Item>
-            </Form>
-        )
-    }
+                <Button htmlType="reset" type="primary" style={{ marginLeft: '10px' }}>
+                    Reset
+                </Button>
+            </Form.Item>
+        </Form>
+    )
 }
