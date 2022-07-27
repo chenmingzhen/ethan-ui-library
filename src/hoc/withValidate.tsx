@@ -1,7 +1,7 @@
 import React from 'react'
 import { Rule } from '@/component/Rule/type'
 import { Component } from '@/utils/component'
-import { promiseAll } from '@/utils/errors'
+import { isSameError, promiseAll } from '@/utils/errors'
 import { curry } from '@/utils/func'
 import { isArray } from '@/utils/is'
 import { filterProps } from '@/utils/objects'
@@ -34,6 +34,8 @@ export default curry(
 
             handleError = error => {
                 const { onError } = this.props
+
+                if (isSameError(error, this.state.error)) return
 
                 if (onError) {
                     onError(error)

@@ -95,7 +95,7 @@ export default class extends PureComponent {
                     })}
                 </Form.Item>
 
-                <Form.Item label="" name="file">
+                <Form.Item label={<></>} name="file">
                     <Upload.Image action="//jsonplaceholder.typicode.com/posts" accept="image/*" limit={3} />
                 </Form.Item>
 
@@ -132,7 +132,7 @@ export default class extends PureComponent {
                     <Textarea autoSize />
                 </Form.Item>
 
-                <div>
+                <Form.Item label={<></>}>
                     <Button htmlType="submit" type="primary">
                         Submit
                     </Button>
@@ -140,7 +140,7 @@ export default class extends PureComponent {
                     <Button htmlType="reset" type="primary" style={{ marginLeft: '10px' }}>
                         Reset
                     </Button>
-                </div>
+                </Form.Item>
             </Form>
         )
     }

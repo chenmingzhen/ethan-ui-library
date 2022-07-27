@@ -63,7 +63,7 @@ export default class Form<T extends Record<string, any>> extends PureComponent<I
         /** 存在action,使用原生的表单提交 */
     }
 
-    handleReset = (evt: React.FormEvent<HTMLFormElement>) => {
+    handleReset = () => {
         const { onReset, datum } = this.props
 
         datum.reset()

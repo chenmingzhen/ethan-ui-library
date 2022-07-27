@@ -7,7 +7,7 @@ import { isArray, isEmpty, isFunc } from '@/utils/is'
 import withValidate from '@/hoc/withValidate'
 import immer from 'immer'
 import shallowEqual from '@/utils/shallowEqual'
-import { ERROR_ACTION } from '@/utils/Datum/types'
+import { ERROR_ACTION, IGNORE_VALIDATE_ACTION, RESET_ACTION } from '@/utils/Datum/types'
 import { compose } from '@/utils/func'
 import { getGrid } from '../Grid/util'
 import { FormItemErrorListContext, IFormItemProps } from './type'
@@ -136,7 +136,7 @@ class FormItem extends PureComponent<IFormItemProps, FormItemState> {
         })
     }
 
-    handleUpdate = (data, name, type) => {
+    handleUpdate = (name, data, type) => {
         const { name: propName, validate, error, onInternalError, throttle } = this.props
 
         /** ERROR_ACTION */
@@ -146,6 +146,10 @@ class FormItem extends PureComponent<IFormItemProps, FormItemState> {
             }
 
             return
+        }
+
+        if (type === RESET_ACTION) {
+            onInternalError(undefined)
         }
 
         const newValue = !Array.isArray(propName)
@@ -160,7 +164,7 @@ class FormItem extends PureComponent<IFormItemProps, FormItemState> {
 
         this.lastValue = newValue
 
-        if (validate) {
+        if (validate && type !== IGNORE_VALIDATE_ACTION && type !== RESET_ACTION) {
             if (this.validateTimer) {
                 clearTimeout(this.validateTimer)
 
@@ -185,9 +189,9 @@ class FormItem extends PureComponent<IFormItemProps, FormItemState> {
         }
 
         if (isArray(name)) {
-            name.forEach((n, i) => formDatum.set({ name: n, value: value[i] }))
+            name.forEach((n, i) => formDatum.set({ name: n, value: value[i], FOR_INTERNAL_USE_DISPATCH_CHANGE: true }))
         } else {
-            formDatum.set({ name, value })
+            formDatum.set({ name, value, FOR_INTERNAL_USE_DISPATCH_CHANGE: true })
         }
     }
 

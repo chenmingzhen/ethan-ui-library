@@ -1,5 +1,4 @@
 import { Component } from '@/utils/component'
-import { updateSubscribe } from '@/utils/Datum/types'
 import { isArray, isEmpty } from '@/utils/is'
 import React from 'react'
 import { WithFlowProps } from '../type'
@@ -18,13 +17,13 @@ const withFlow = Origin =>
 
             if (isArray(flow)) {
                 flow.forEach(n => {
-                    formDatum.subscribe(updateSubscribe(n), this.handleUpdate)
+                    formDatum.subscribe(n, this.handleUpdate)
                 })
             } else if (flow === true) {
                 const { $inputNames } = formDatum
 
                 Object.keys($inputNames).forEach(n => {
-                    formDatum.subscribe(updateSubscribe(n), this.handleUpdate)
+                    formDatum.subscribe(n, this.handleUpdate)
                 })
             }
         }
@@ -46,13 +45,13 @@ const withFlow = Origin =>
 
             if (isArray(flow)) {
                 flow.forEach(n => {
-                    formDatum.unsubscribe(updateSubscribe(n), this.handleUpdate)
+                    formDatum.unsubscribe(n, this.handleUpdate)
                 })
             } else if (flow === true) {
                 const { $inputNames } = formDatum
 
                 Object.keys($inputNames).forEach(n => {
-                    formDatum.unsubscribe(updateSubscribe(n), this.handleUpdate)
+                    formDatum.unsubscribe(n, this.handleUpdate)
                 })
             }
         }

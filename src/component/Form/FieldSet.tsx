@@ -3,6 +3,7 @@ import withValidate from '@/hoc/withValidate'
 import { PureComponent } from '@/utils/component'
 import { isFunc } from '@/utils/is'
 import { compose } from '@/utils/func'
+import { CHANGE_ACTION, IGNORE_VALIDATE_ACTION } from '@/utils/Datum/types'
 import { IFieldSetProps } from './type'
 import { FieldSetConsumer, FieldSetProvider } from './context/fieldSetContext'
 import FormHelp from './FormHelp'
@@ -40,12 +41,14 @@ class FieldSet extends PureComponent<IFieldSetProps> {
         }
     }
 
-    handleUpdate = () => {
+    handleUpdate = (_, __, type) => {
         const { validate, formDatum, name } = this.props
 
         const value = formDatum.get(name)
 
-        validate(value).catch(() => {})
+        if (type !== IGNORE_VALIDATE_ACTION) {
+            validate(value).catch(() => {})
+        }
 
         this.forceUpdate()
     }
@@ -55,7 +58,7 @@ class FieldSet extends PureComponent<IFieldSetProps> {
 
         formDatum.insert(name, index, value)
 
-        this.handleUpdate()
+        this.handleUpdate(undefined, undefined, CHANGE_ACTION)
     }
 
     handleRemove = (index: number) => {
@@ -63,7 +66,7 @@ class FieldSet extends PureComponent<IFieldSetProps> {
 
         formDatum.splice(name, index)
 
-        this.handleUpdate()
+        this.handleUpdate(undefined, undefined, CHANGE_ACTION)
     }
 
     render() {

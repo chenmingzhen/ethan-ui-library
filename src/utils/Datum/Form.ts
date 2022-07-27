@@ -4,7 +4,7 @@ import { fastClone, deepClone } from '@/utils/clone'
 import { deepGet, deepSet, deepRemove, deepHas } from '@/utils/objects'
 import { isObject, isArray, isEmpty, isError, isString } from '@/utils/is'
 import { Rule } from '@/component/Rule/type'
-import { updateSubscribe, errorSubscribe, ERROR_ACTION } from './types'
+import { ERROR_ACTION, IGNORE_VALIDATE_ACTION, RESET_ACTION, CHANGE_ACTION } from './types'
 import { warningOnce } from '../warning'
 import { FormError } from '../errors'
 
@@ -26,7 +26,7 @@ interface DatumSetParams {
     name: string | string[]
     value: any
     /** 是否触发onChange */
-    dispatchChange?: boolean
+    FOR_INTERNAL_USE_DISPATCH_CHANGE?: boolean
     /** 是否往下层触发更新 */
     publishToChildrenItem?: boolean
 }
@@ -73,12 +73,12 @@ export default class {
         if (initValue) this.setValue(initValue)
     }
 
-    private dispatch = (name: string, ...args) => {
+    private dispatch = (name: string, data, type) => {
         const event = this.$events[name]
 
         if (!event) return
 
-        event.forEach(callback => callback(...args))
+        event.forEach(callback => callback(name, data, type))
     }
 
     get = (name: string | string[]) => {
@@ -102,7 +102,7 @@ export default class {
         Object.keys(this.$inputNames)
             .sort((a, b) => a.length - b.length)
             .forEach(name => {
-                this.dispatch(updateSubscribe(name), this.get(name), name)
+                this.dispatch(name, this.get(name), IGNORE_VALIDATE_ACTION)
             })
     }
 
@@ -127,7 +127,7 @@ export default class {
         }
 
         if (value !== undefined && isEmpty(this.get(name))) {
-            this.set({ name, value, dispatchChange: false, publishToChildrenItem: true })
+            this.set({ name, value, FOR_INTERNAL_USE_DISPATCH_CHANGE: false, publishToChildrenItem: true })
         }
 
         /** Form的defaultValue优先级高于FormItem的 */
@@ -137,9 +137,7 @@ export default class {
 
         this.$inputNames[name] = true
 
-        this.subscribe(updateSubscribe(name), callback)
-
-        this.subscribe(errorSubscribe(name), callback)
+        this.subscribe(name, callback)
     }
 
     unbind = (name: string | string[]) => {
@@ -149,9 +147,9 @@ export default class {
             return
         }
 
-        this.unsubscribe(updateSubscribe(name))
+        this.unsubscribe(name)
 
-        this.unsubscribe(errorSubscribe(name))
+        this.unsubscribe(name)
 
         delete this.$inputNames[name]
 
@@ -175,12 +173,17 @@ export default class {
         Object.keys(this.$inputNames)
             .filter(n => n.indexOf(na) === 0 || n.indexOf(no) === 0)
             .forEach(n => {
-                this.dispatch(updateSubscribe(n), this.get(n), n, type)
+                this.dispatch(n, this.get(n), type)
             })
     }
 
     /** 设置（单个字段）的值，相当于ant setFields */
-    set = ({ name, value, dispatchChange = true, publishToChildrenItem = false }: DatumSetParams) => {
+    set = ({
+        name,
+        value,
+        FOR_INTERNAL_USE_DISPATCH_CHANGE = false,
+        publishToChildrenItem = false,
+    }: DatumSetParams) => {
         if (isArray(name)) {
             this.setArrayValue(name, value)
 
@@ -191,11 +194,11 @@ export default class {
 
         deepSet(this.$values, name, value, this.deepSetOptions)
 
-        this.dispatch(updateSubscribe(name), value, name)
+        this.dispatch(name, value, CHANGE_ACTION)
 
         if (isObject(value) || publishToChildrenItem) this.publishValue(name)
 
-        if (dispatchChange) {
+        if (FOR_INTERNAL_USE_DISPATCH_CHANGE) {
             this.handleChange()
         }
     }
@@ -225,7 +228,7 @@ export default class {
             }
         }
 
-        this.dispatch(errorSubscribe(name), wrapError, name, ERROR_ACTION)
+        this.dispatch(name, wrapError, ERROR_ACTION)
     }
 
     private setArrayValue = (names: string[], values) => {
@@ -235,7 +238,7 @@ export default class {
 
         names.forEach((name, index) => {
             if (this.$inputNames[name]) {
-                this.dispatch(updateSubscribe(name), values[index], name)
+                this.dispatch(name, values[index], CHANGE_ACTION)
             }
         })
 
@@ -326,15 +329,26 @@ export default class {
         })
     }
 
-    reset = () => {
-        this.setValue(unflatten(this.$defaultValues))
+    reset = (names?: string[]) => {
+        const empty = isEmpty(names)
+
+        const resetNames = empty ? Object.keys(this.$inputNames) : names
+
+        if (empty) {
+            this.setValue(unflatten(this.$defaultValues))
+        } else {
+            names.forEach(name => {
+                deepSet(this.$values, name, this.$defaultValues[name], this.deepSetOptions)
+
+                this.publishValue(name, RESET_ACTION)
+            })
+        }
+
+        resetNames.forEach(name => {
+            this.dispatch(name, this.$defaultValues[name], RESET_ACTION)
+        })
 
         this.handleChange()
-        console.log(this.$inputNames)
-        console.log(this.$defaultValues)
-        Object.keys(this.$inputNames).forEach(name => {
-            this.dispatch(name)
-        })
     }
 
     /** For FieldSet */
@@ -348,7 +362,7 @@ export default class {
             /** 在FieldSet中是使用index作为Key，此处强制Item的更新，使Item获得对应的value */
             this.publishValue(name)
         } else {
-            this.set({ name, value: [value] })
+            this.set({ name, value: [value], FOR_INTERNAL_USE_DISPATCH_CHANGE: true })
         }
     }
 
