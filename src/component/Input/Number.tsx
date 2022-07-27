@@ -5,7 +5,11 @@ import icons from '../icons'
 import Input from './Input'
 import { InputNumberProps } from './type'
 
-class Number extends PureComponent<InputNumberProps> {
+interface InputNumberState {
+    valueStr: string
+}
+
+class Number extends PureComponent<InputNumberProps, InputNumberState> {
     static defaultProps: InputNumberProps = {
         step: 1,
         allowNull: false,
@@ -15,6 +19,24 @@ class Number extends PureComponent<InputNumberProps> {
     hold: boolean
 
     keyPressTimeOut: NodeJS.Timeout
+
+    constructor(props) {
+        super(props)
+
+        this.state = {
+            valueStr: undefined,
+        }
+    }
+
+    componentDidUpdate(prevProps: Readonly<InputNumberProps>) {
+        const prevValue = prevProps.value
+
+        const { value } = this.props
+
+        if (value !== prevValue && this.state.valueStr !== undefined) {
+            this.setState({ valueStr: undefined })
+        }
+    }
 
     componentWillUnmount() {
         this.hold = false
@@ -30,20 +52,30 @@ class Number extends PureComponent<InputNumberProps> {
         this.handleCalc(-this.props.step)
     }
 
-    handleChange = (value: string | number) => {
-        const { onChange, digits, step } = this.props
+    beforeChange = (value: string) => {
+        const { onInput } = this.props
+
+        /** 处于手动输入状态 */
+        if (isString(value) && new RegExp('^-?\\d*\\.?\\d*$').test(value)) {
+            this.setState({ valueStr: value })
+
+            if (onInput) {
+                onInput(value)
+            }
+        }
+    }
+
+    handleChange = (value: number | null) => {
+        const { onChange, digits, step, onInput } = this.props
+
+        this.setState({ valueStr: undefined })
+
+        if (onInput) {
+            onInput(undefined)
+        }
 
         if (isNull(value)) {
             onChange(value)
-
-            return
-        }
-
-        /** 处于手动输入状态 */
-        if (isString(value)) {
-            if (new RegExp('^-?\\d*\\.?\\d*$').test(value)) {
-                onChange(value)
-            }
 
             return
         }
@@ -165,14 +197,17 @@ class Number extends PureComponent<InputNumberProps> {
     }
 
     render = () => {
-        const { onChange, allowNull, hideArrow, ...other } = this.props
+        const { onChange, allowNull, hideArrow, value, onInput, ...other } = this.props
+
+        const { valueStr } = this.state
 
         return [
             <Input
                 key="input"
+                value={valueStr !== undefined ? valueStr : value}
                 {...other}
                 className={inputClass({ number: !hideArrow })}
-                onChange={this.handleChange}
+                onChange={this.beforeChange}
                 onKeyDown={this.handleKeyDown}
                 onBlur={this.handleBlur}
                 type="number"

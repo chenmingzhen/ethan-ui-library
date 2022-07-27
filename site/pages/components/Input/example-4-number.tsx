@@ -8,5 +8,18 @@ import React from 'react'
 import { Input } from 'ethan/index'
 
 export default function() {
-    return <Input.Number width={120} min={23} max={100} digits={0} />
+    return (
+        <Input.Number
+            width={120}
+            min={23}
+            max={100}
+            digits={0}
+            onChange={value => {
+                console.log('onChange:', value)
+            }}
+            onInput={value => {
+                console.log('onInput:', value)
+            }}
+        />
+    )
 }

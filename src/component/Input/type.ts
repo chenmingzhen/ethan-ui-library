@@ -27,12 +27,13 @@ export interface InputProps<Value = string | number>
     forwardedRef?: React.MutableRefObject<HTMLInputElement> | React.RefCallback<HTMLInputElement>
 }
 
-export interface InputNumberProps extends InputProps<number | string> {
+export interface InputNumberProps extends Omit<InputProps<number>, 'onInput'> {
     allowNull?: boolean
     hideArrow?: boolean
     max?: number
     min?: number
     step?: number
+    onInput?: (str: string) => void
 }
 
 export interface InputPasswordProps extends InputProps<string> {
