@@ -19,10 +19,8 @@ const citys = [
 ]
 
 export default function App() {
-    const formDatum = Form.useFormDatum()
-
     return (
-        <Form datum={formDatum}>
+        <Form>
             <Form.Item label="Email" name="email">
                 <Input clearable popoverProps={{ placement: 'left-top' }} />
             </Form.Item>
