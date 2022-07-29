@@ -1,8 +1,8 @@
 /**
- * cn - hooks
- *    -- useFormValueState
- * en - hooks
- *    -- useFormValueState
+ * cn - Hooks
+ *    -- useFormValueState基本用法
+ * en - Hooks
+ *    -- UseFormValueState basic usage
  */
 import React from 'react'
 import { Form, Input } from 'ethan'

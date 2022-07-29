@@ -361,6 +361,9 @@ export default class {
             this.handleChange()
             /** 在FieldSet中是使用index作为Key，此处强制Item的更新，使Item获得对应的value */
             this.publishValue(name)
+
+            /** For useFormValuesEffect */
+            this.dispatch(name, this.get(name), CHANGE_ACTION)
         } else {
             this.set({ name, value: [value], FOR_INTERNAL_USE_DISPATCH_CHANGE: true })
         }
@@ -374,5 +377,8 @@ export default class {
         this.handleChange()
 
         this.publishValue(name)
+
+        /** For useFormValuesEffect */
+        this.dispatch(name, this.get(name), CHANGE_ACTION)
     }
 }
