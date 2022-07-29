@@ -54,8 +54,8 @@ export default class extends PureComponent {
                     <Input defaultValue="Harry Potter" />
                 </Form.Item>
 
-                <Form.Item label="Friends">
-                    <Form.FieldSet rules={[rules.isExist]} name="friends" emptyRender={this.renderEmpty} keygen="age">
+                <Form.Item label="Friends" noErrorInRoot>
+                    <Form.FieldSet rules={[rules.isExist]} name="friends" emptyRender={this.renderEmpty}>
                         {({ onAppend, onRemove }) => (
                             <div style={{ display: 'flex', marginBottom: 4 }}>
                                 <Form.Item name="name" rules={[rules.required]}>

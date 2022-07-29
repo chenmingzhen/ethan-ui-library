@@ -257,6 +257,7 @@ class FormItem extends PureComponent<IFormItemProps, FormItemState> {
             error,
             onUpdateChildItemErrors,
             noStyle,
+            noErrorInRoot,
         } = this.props
 
         const { errors } = this.state
@@ -292,7 +293,13 @@ class FormItem extends PureComponent<IFormItemProps, FormItemState> {
 
         return (
             <ErrorListProvider
-                value={{ onUpdateChildItemErrors: onUpdateChildItemErrors || this.updateChildItemErrors }}
+                value={{
+                    /** 根FormItem不收集错误 */
+                    onUpdateChildItemErrors:
+                        noErrorInRoot && !onUpdateChildItemErrors
+                            ? undefined
+                            : onUpdateChildItemErrors || this.updateChildItemErrors,
+                }}
             >
                 <FormItemProvider value={{ hasItemError: !!error }}>
                     <div className={className} style={style}>

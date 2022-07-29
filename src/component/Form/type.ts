@@ -26,6 +26,8 @@ export interface FormItemProps extends Pick<FormContextProps, 'animation'> {
     defaultValue?: any
     flow?: string[] | true
     noStyle?: boolean
+    /** 根FormItem设置不集中收集Error */
+    noErrorInRoot?: boolean
 }
 
 export interface FormItemErrorListContext {
