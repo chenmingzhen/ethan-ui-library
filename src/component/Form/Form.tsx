@@ -13,7 +13,7 @@ export default class Form<T extends Record<string, any>> extends PureComponent<I
     submitting = false
 
     static defaultProps = {
-        scrollToError: false,
+        scrollToError: true,
         animation: true,
     }
 
@@ -37,8 +37,22 @@ export default class Form<T extends Record<string, any>> extends PureComponent<I
         this.form = form
     }
 
+    scrollToError = () => {
+        const { scrollToError } = this.props
+
+        if (!scrollToError) return
+
+        const element = this.form.querySelector(`.${formClass('invalid')}`) as HTMLElement
+
+        if (!element) return
+
+        element.scrollIntoView()
+
+        if (element.focus) element.focus()
+    }
+
     handleSubmit = (evt: React.FormEvent<HTMLFormElement>) => {
-        const { onSubmit, action, datum } = this.props
+        const { onSubmit, action, datum, onError } = this.props
 
         if (isEmpty(action)) {
             evt.preventDefault()
@@ -52,8 +66,12 @@ export default class Form<T extends Record<string, any>> extends PureComponent<I
                 .then(values => {
                     onSubmit(values)
                 })
-                .catch(() => {
-                    /** @todo 滚动到错误中 */
+                .catch(error => {
+                    if (onError) {
+                        onError(error)
+                    }
+
+                    this.scrollToError()
                 })
                 .finally(() => {
                     this.submitting = false

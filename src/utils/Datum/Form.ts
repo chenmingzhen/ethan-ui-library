@@ -33,14 +33,14 @@ interface DatumSetParams {
 
 interface DatumSetErrorParams {
     name: string | string[]
-    error: Error | string
+    error: FormError | Error | string
 }
 
 /** 除$values外，其他的映射值均为扁平化存储  */
 export default class {
     $events: Record<string, ((...args) => void)[]> = {}
 
-    $errors: Record<string, Error> = {}
+    $errors: Record<string, FormError> = {}
 
     $defaultValues = {}
 
@@ -49,7 +49,7 @@ export default class {
 
     $inputNames = {}
 
-    $validator: Record<string, (value, data?) => Promise<true | Error>> = {}
+    $validator: Record<string, (value, data?) => Promise<true | FormError>> = {}
 
     rules: Rule[] = []
 
@@ -218,13 +218,15 @@ export default class {
             ;[name] = name
         }
 
-        let wrapError: Error
+        let wrapError: FormError
+
+        const value = this.get(name)
 
         if (this.$inputNames[name]) {
             if (isError(error)) {
-                wrapError = error
+                wrapError = new FormError(error.message, name, value)
             } else if (isString(error)) {
-                wrapError = new Error(error)
+                wrapError = new FormError(error, name, value)
             }
         }
 

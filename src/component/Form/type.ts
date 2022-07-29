@@ -67,13 +67,12 @@ export interface FormProps<T extends Record<string, any> = {}>
     disabled?: boolean
     defaultValue?: Partial<T>
     inline?: boolean
-    /** @todo */
     formRef?: (form: HTMLFormElement) => void
-    onError?: (error: FormError) => void
+    onError?: (error: any) => void
     onReset?: () => void
     onSubmit?: (value: T) => void
     rules: Rule[]
-    scrollToError?: boolean | number
+    scrollToError?: boolean
     style?: React.CSSProperties
     throttle?: number
     initValidate?: boolean
