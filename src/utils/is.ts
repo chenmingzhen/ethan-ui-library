@@ -36,6 +36,8 @@ export const isBuffer = val => {
     return false
 }
 
+export const isBlob = (val): val is Blob => val instanceof Blob
+
 export const isEmpty = val => {
     if (val === null) return true
 
@@ -61,7 +63,7 @@ export function isZero(num: number) {
 export const isMergeable = val => {
     if (!isObject(val)) return false
 
-    const fns = [isDate, isError, isRegexp, isMap, isSet, isBuffer]
+    const fns = [isDate, isError, isRegexp, isMap, isSet, isBuffer, isBlob]
 
     for (let i = 0; i < fns.length; i++) {
         if (fns[i](val)) return false

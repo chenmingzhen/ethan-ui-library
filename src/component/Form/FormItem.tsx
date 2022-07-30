@@ -232,18 +232,28 @@ class FormItem extends PureComponent<IFormItemProps, FormItemState> {
     }
 
     renderHelp = () => {
-        const { onUpdateChildItemErrors, animation } = this.props
+        const { onUpdateChildItemErrors, animation, tip } = this.props
 
         const { errors } = this.state
 
         /** 非顶层FormItem */
         if (onUpdateChildItemErrors) {
+            if (tip) {
+                return <FormHelp tip={tip} animation={animation} />
+            }
+
             return null
         }
 
-        return Object.keys(errors).map(key => {
-            return <FormHelp error={errors[key]} animation={animation} key={key} />
-        })
+        return (
+            <>
+                {Object.keys(errors).map(key => {
+                    return <FormHelp error={errors[key]} animation={animation} key={key} />
+                })}
+
+                {tip ? <FormHelp tip={tip} animation={animation} /> : null}
+            </>
+        )
     }
 
     render() {

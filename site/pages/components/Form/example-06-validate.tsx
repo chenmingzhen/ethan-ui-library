@@ -8,10 +8,14 @@ import React from 'react'
 import { Button, Checkbox, FontAwesome, Form, Input, Radio, Rate, Rule, Select, Slider, Upload } from 'ethan'
 
 const rule = Rule({
-    dragger(value) {
-        if (!value || value?.length < 3) {
-            return Promise.reject(new Error('You have to upload three files'))
-        }
+    uploadSize(value) {
+        if (!value || !value?.[0]) return Promise.reject(new Error('You have to upload file'))
+
+        const { blob } = value[0]
+
+        const { size } = blob
+
+        if (size >= 1024 * 60) return Promise.reject(new Error('The file is too large'))
 
         return Promise.resolve(true)
     },
@@ -19,16 +23,17 @@ const rule = Rule({
 
 export default function App() {
     return (
-        <Form>
+        <Form onChange={console.log} onSubmit={console.log} onError={console.log}>
             <Form.Item
                 name="select"
                 label="Select"
+                required
                 rules={[{ required: true, message: 'Please select your country!' }]}
             >
                 <Select placeholder="Please select a country" data={['China', 'U.S.A']} keygen clearable />
             </Form.Item>
 
-            <Form.Item name="select-multiple" label="Select[multiple]" rules={[rule.required]}>
+            <Form.Item name="select-multiple" label="Select[multiple]" rules={[rule.required]} required>
                 <Select
                     mode="multiple"
                     placeholder="Please select favorite colors"
@@ -54,12 +59,16 @@ export default function App() {
             <Form.Item
                 name="slider"
                 label="Slider"
-                rules={[{ min: 10, max: 80, type: 'number', message: 'It has to be between 10 and 80' }]}
+                required
+                rules={[
+                    rule.required('Can not be empty'),
+                    { min: 10, max: 80, type: 'number', message: 'It has to be between 10 and 80' },
+                ]}
             >
                 <Slider />
             </Form.Item>
 
-            <Form.Item name="radio-group" label="Radio.Group" rules={[rule.required]}>
+            <Form.Item name="radio-group" label="Radio.Group" rules={[rule.required]} required>
                 <Radio.Group>
                     <Radio value="a">item 1</Radio>
                     <Radio value="b">item 2</Radio>
@@ -67,7 +76,7 @@ export default function App() {
                 </Radio.Group>
             </Form.Item>
 
-            <Form.Item name="radio-button" label="Radio.Button" rules={[rule.required]}>
+            <Form.Item name="radio-button" label="Radio.Button" rules={[rule.required]} required>
                 <Radio.Group button>
                     <Radio value="a">item 1</Radio>
                     <Radio value="b">item 2</Radio>
@@ -75,7 +84,7 @@ export default function App() {
                 </Radio.Group>
             </Form.Item>
 
-            <Form.Item name="checkbox-group" label="Checkbox.Group" rules={[rule.required]}>
+            <Form.Item name="checkbox-group" label="Checkbox.Group" rules={[rule.required]} required>
                 <Checkbox.Group>
                     <Checkbox value="A" style={{ lineHeight: '32px' }}>
                         A
@@ -98,32 +107,28 @@ export default function App() {
                 </Checkbox.Group>
             </Form.Item>
 
-            <Form.Item name="rate" label="Rate" rules={[rule.required]}>
+            <Form.Item name="rate" label="Rate" rules={[rule.required]} required>
                 <Rate size={40} background={<FontAwesome name="star" />} front={<FontAwesome name="star" />} />
             </Form.Item>
 
             <Form.Item
                 name="upload"
                 label="Upload"
-                help="longgggggggggggggggggggggggggggggggggg"
-                rules={[rule.required]}
+                tip="longgggggggggggggggggggggggggggggggggg"
+                rules={[rule.uploadSize]}
             >
-                <Upload.Image name="logo" beforeUpload={() => Promise.resolve({ status: 'MANUAL' })} width={250}>
+                <Upload.Image
+                    name="logo"
+                    beforeUpload={() => Promise.resolve({ status: 'MANUAL' })}
+                    width={250}
+                    limit={1}
+                >
                     <div style={{ textAlign: 'center', width: '100%', padding: 20 }}>
                         <FontAwesome style={{ color: '#409dfd', fontSize: 20 }} name="image" />
                         <br />
                         Click to upload
                     </div>
                 </Upload.Image>
-            </Form.Item>
-
-            <Form.Item label="Dragger" name="dragger" rules={[rule.dragger]}>
-                <Upload action="/upload/" multiple name="file" limit={3} style={{ width: 200 }} drop>
-                    <Button style={{ width: '100%' }}>
-                        <FontAwesome name="file" />
-                        &nbsp; Drop file to upload
-                    </Button>
-                </Upload>
             </Form.Item>
 
             <Form.Item label={<></>}>
