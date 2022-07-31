@@ -1,11 +1,11 @@
 import { useCallback, useEffect } from 'react'
-import FormDatum from '@/utils/Datum/Form'
 import { warningOnce } from '@/utils/warning'
 import { isEmpty } from '@/utils/is'
 import { deepSet } from '@/utils/objects'
+import { FormInstance } from '../type'
 
 interface UseFormValueEffectParams {
-    formDatum: FormDatum
+    form: FormInstance
 
     deep: string[]
 }
@@ -14,10 +14,12 @@ type UseFormValueEffectCallback<V = any> = (values: V) => void
 
 /** 无法监听未存在的name */
 const useFormValueEffect = (callback: UseFormValueEffectCallback, params: UseFormValueEffectParams) => {
-    const { formDatum, deep = [] } = params || {}
+    const { form, deep = [] } = params || {}
 
     const trackPathDeep = useCallback((name: string, trackCallback, isSubscribe: boolean) => {
-        if (!formDatum) return
+        if (!form) return
+
+        const formDatum = form.GET_INTERNAL_FORM_DATUM()
 
         const { $inputNames } = formDatum
 
@@ -59,6 +61,8 @@ const useFormValueEffect = (callback: UseFormValueEffectCallback, params: UseFor
 
         const values = {}
 
+        const formDatum = form.GET_INTERNAL_FORM_DATUM()
+
         const valueList = formDatum.get(deep)
 
         deep.forEach((name, index) => {
@@ -69,8 +73,8 @@ const useFormValueEffect = (callback: UseFormValueEffectCallback, params: UseFor
     }, [deep, callback])
 
     useEffect(() => {
-        if (!formDatum) {
-            warningOnce('[Ethan UI:Form]:useFormValueEffect must provide formDatum')
+        if (!form) {
+            warningOnce('[Ethan UI:Form]:useFormValueEffect must provide form')
         }
 
         if (isEmpty(deep)) {

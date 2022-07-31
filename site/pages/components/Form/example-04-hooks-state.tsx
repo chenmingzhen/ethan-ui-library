@@ -8,13 +8,13 @@ import React from 'react'
 import { Form, Input } from 'ethan'
 
 export default function App() {
-    const formDatum = Form.useFormDatum()
+    const form = Form.useForm()
 
-    const [name, updateName] = Form.useFormValueState(formDatum, 'name')
+    const [name, updateName] = Form.useFormValueState(form, 'name')
 
     return (
         <>
-            <Form datum={formDatum} labelAlign="top">
+            <Form form={form} labelAlign="top">
                 <Form.Item name="name" label="Name">
                     <Input />
                 </Form.Item>

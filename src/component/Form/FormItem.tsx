@@ -221,7 +221,7 @@ class FormItem extends PureComponent<IFormItemProps, FormItemState> {
         if (!this.formable) return children
 
         if (typeof children === 'function') {
-            return children({ value, onChange: this.handleChange, formDatum, error })
+            return children({ value, onChange: this.handleChange, form: formDatum.getForm(), error })
         }
 
         if (isValidElement(children)) {

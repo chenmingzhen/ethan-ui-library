@@ -8,12 +8,12 @@ import React from 'react'
 import { Button, FontAwesome, Form, Input, Select } from 'ethan'
 
 export default function App() {
-    const formDatum = Form.useFormDatum()
+    const form = Form.useForm()
 
-    Form.useFormValueEffect(console.log, { formDatum, deep: ['name', 'contact.phone', 'address', 'friends'] })
+    Form.useFormValueEffect(console.log, { form, deep: ['name', 'contact.phone', 'address', 'friends'] })
 
     return (
-        <Form datum={formDatum}>
+        <Form form={form}>
             <Form.Item name="name" label="Name">
                 <Input />
             </Form.Item>

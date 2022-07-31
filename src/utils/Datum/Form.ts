@@ -3,33 +3,10 @@ import { flatten, unflatten } from '@/utils/flat'
 import { fastClone, deepClone } from '@/utils/clone'
 import { deepGet, deepSet, deepRemove, deepHas } from '@/utils/objects'
 import { isObject, isArray, isEmpty, isError, isString } from '@/utils/is'
-import { Rule } from '@/component/Rule/type'
+import { FormInstance, IDatumSetParams } from '@/component/Form/type'
 import { ERROR_ACTION, IGNORE_VALIDATE_ACTION, RESET_ACTION, CHANGE_ACTION } from './types'
 import { warningOnce } from '../warning'
 import { FormError } from '../errors'
-
-interface FormDatumOptions {
-    removeUndefined?: boolean
-
-    rules?: Rule[]
-
-    onChange?: (...args) => void
-
-    value?: any
-
-    initValidate?: boolean
-
-    defaultValue?: any
-}
-
-interface DatumSetParams {
-    name: string | string[]
-    value: any
-    /** 是否触发onChange */
-    FOR_INTERNAL_USE_DISPATCH_CHANGE?: boolean
-    /** 是否往下层触发更新 */
-    publishToChildrenItem?: boolean
-}
 
 interface DatumSetErrorParams {
     name: string | string[]
@@ -51,27 +28,9 @@ export default class {
 
     $validator: Record<string, (value, data?) => Promise<true | FormError>> = {}
 
-    rules: Rule[] = []
-
     onChange: (value) => void
 
     deepSetOptions = { forceSet: true, removeUndefined: undefined }
-
-    constructor(options: FormDatumOptions) {
-        const { removeUndefined = true, rules, onChange, value, defaultValue = {} } = options || {}
-
-        this.rules = rules
-
-        this.onChange = onChange
-
-        this.deepSetOptions.removeUndefined = removeUndefined
-
-        this.$defaultValues = { ...flatten(defaultValue) }
-
-        const initValue = value in options ? value : defaultValue
-
-        if (initValue) this.setValue(initValue)
-    }
 
     private dispatch = (name: string, data, type) => {
         const event = this.$events[name]
@@ -79,6 +38,31 @@ export default class {
         if (!event) return
 
         event.forEach(callback => callback(name, data, type))
+    }
+
+    getForm = (): FormInstance => {
+        return {
+            /** 外部使用 */
+            get: this.get,
+            getValue: this.getValue,
+            set: this.set,
+            setValue: this.setValue,
+            setError: this.setError,
+            setFormError: this.setFormError,
+            validate: this.validate,
+            validateForm: this.validateForm,
+            reset: this.reset,
+            /** 内部获取Datum实例 */
+            GET_INTERNAL_FORM_DATUM: () => this,
+        }
+    }
+
+    setDefaultValue = defaultValue => {
+        this.$defaultValues = { ...flatten(defaultValue || {}) }
+
+        if (defaultValue) {
+            this.setValue(defaultValue)
+        }
     }
 
     get = (name: string | string[]) => {
@@ -183,7 +167,7 @@ export default class {
         value,
         FOR_INTERNAL_USE_DISPATCH_CHANGE = false,
         publishToChildrenItem = false,
-    }: DatumSetParams) => {
+    }: IDatumSetParams) => {
         if (isArray(name)) {
             this.setArrayValue(name, value)
 

@@ -4,19 +4,8 @@
  * en - Base
  *    -- The form has a two-way binding mechanism built in, automatically sending and collecting data based on the name property of the form element.
  */
-import React, { PureComponent } from 'react'
+import React from 'react'
 import { Form, Input, Checkbox, Radio, Textarea, Select, DatePicker, Upload, Rule, Button } from 'ethan'
-
-const citys = [
-    {
-        name: 'JiangSu',
-        children: [{ name: 'NanJing' }, { name: 'SuZhou' }, { name: 'YangZhou' }],
-    },
-    {
-        name: 'ZheJiang',
-        children: [{ name: 'HangZhou' }, { name: 'JiaQing' }, { name: 'WenZhou' }],
-    },
-]
 
 export default function App() {
     return (
@@ -39,35 +28,6 @@ export default function App() {
 
             <Form.Item label="Number" name="number">
                 <Input.Number width={120} max={100} min={10} />
-            </Form.Item>
-
-            <Form.Item label="Name" name={['firstName', 'lastName']} defaultValue={['Ethan', 'Chen']} flow={['email']}>
-                {React.createElement<any>(({ value = [], onChange }) => {
-                    function handleChange(name, v) {
-                        if (name === 'firstName') {
-                            onChange([v, value[1]])
-                        } else {
-                            onChange([value[0], v])
-                        }
-                    }
-
-                    return (
-                        <Input.Group style={{ width: 300 }}>
-                            <Input
-                                placeholder="First Name"
-                                value={value[0]}
-                                onChange={handleChange.bind(this, 'firstName')}
-                                tip="firstName"
-                            />
-                            -
-                            <Input
-                                placeholder="Last Name"
-                                value={value[1]}
-                                onChange={handleChange.bind(this, 'lastName')}
-                            />
-                        </Input.Group>
-                    )
-                })}
             </Form.Item>
 
             <Form.Item label={<></>} name="file">

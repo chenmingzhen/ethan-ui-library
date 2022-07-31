@@ -2,7 +2,6 @@ import React from 'react'
 import classnames from 'classnames'
 import { PureComponent } from '@/utils/component'
 import { formClass } from '@/styles'
-import shallowEqual from '@/utils/shallowEqual'
 import { isEmpty } from '@/utils/is'
 import { IFormProps } from './type'
 import { FormProvider } from './context/formContext'
@@ -23,10 +22,6 @@ export default class Form<T extends Record<string, any>> extends PureComponent<I
         const { formRef } = this.props
 
         if (formRef) formRef(this.form)
-    }
-
-    componentDidUpdate(prevProps) {
-        if (!shallowEqual(prevProps.error, this.props.error)) this.props.datum.setFormError(this.props.error)
     }
 
     componentWillUnmount() {
@@ -111,10 +106,6 @@ export default class Form<T extends Record<string, any>> extends PureComponent<I
             onSubmit,
             ...other
         } = this.props
-
-        if (datum && rules && datum.rules !== rules) {
-            datum.rules = rules
-        }
 
         const className = classnames(formClass('_', disabled && 'disabled', inline && 'inline'), this.props.className)
 

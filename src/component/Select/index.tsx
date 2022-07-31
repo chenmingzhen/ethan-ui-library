@@ -1,8 +1,8 @@
 import React from 'react'
 import { compose } from '@/utils/func'
-import Datum from '@/utils/Datum'
 import inputBorder from '@/hoc/inputBorder'
 import { selectClass } from '@/styles'
+import withListDatum from '@/utils/Datum/withListDatum'
 import withControl from '../../hoc/withControl'
 import Select from './Select'
 import group from './group'
@@ -18,7 +18,7 @@ const SelectContainer = compose(
     withControl,
     inputBorder({ className: selectClass('_'), tag: 'div' }),
     limitWrap,
-    Datum.Hoc({ bindProps: ['disabled', 'limit', 'format', 'prediction', 'multiple'] }),
+    withListDatum({ bindProps: ['disabled', 'limit', 'format', 'prediction', 'multiple'] }),
     FilterHoc,
     group
 )(Select)

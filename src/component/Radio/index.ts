@@ -1,5 +1,5 @@
 import { compose } from '@/utils/func'
-import Datum from '@/utils/Datum'
+import withListDatum from '@/utils/Datum/withListDatum'
 import withControl from '../../hoc/withControl'
 import { consumer } from '../Checkbox/context'
 import Group from './Group'
@@ -10,7 +10,7 @@ const RadioContainer = compose(withControl, consumer)(Radio) as RadioComponent
 
 RadioContainer.Group = compose(
     withControl,
-    Datum.Hoc({ limit: 1, bindProps: ['disabled', 'format', 'prediction'] })
+    withListDatum({ limit: 1, bindProps: ['disabled', 'format', 'prediction'] })
 )(Group)
 
 RadioContainer.displayName = 'EthanRadio'

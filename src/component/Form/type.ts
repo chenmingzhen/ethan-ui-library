@@ -5,7 +5,7 @@ import React from 'react'
 import { Rule } from '../Rule/type'
 
 export interface FormItemChildrenFuncParams {
-    formDatum: FormDatum
+    form: FormInstance
     value: any
     onChange: (value: any, ...args) => void
     error: undefined | Error
@@ -36,9 +36,9 @@ export interface FormItemErrorListContext {
 
 export interface IFormItemProps
     extends FormItemProps,
-        ValidateHocOutPutProps,
-        WithFlowOutputProps,
-        FormItemErrorListContext {
+    ValidateHocOutPutProps,
+    WithFlowOutputProps,
+    FormItemErrorListContext {
     formDatum: FormDatum
 
     throttle?: number
@@ -60,8 +60,8 @@ export interface FormContextProps {
 // eslint-disable-next-line @typescript-eslint/ban-types
 export interface FormProps<T extends Record<string, any> = {}>
     extends Omit<
-        React.FormHTMLAttributes<HTMLFormElement>,
-        'value' | 'onChange' | 'defaultValue' | 'onSubmit' | 'onError'
+    React.FormHTMLAttributes<HTMLFormElement>,
+    'value' | 'onChange' | 'defaultValue' | 'onSubmit' | 'onError'
     > {
     className?: string
     disabled?: boolean
@@ -84,6 +84,7 @@ export interface FormProps<T extends Record<string, any> = {}>
     value?: T
     error?: Record<string, string | Error>
     animation?: boolean
+    form?: FormInstance
 }
 
 export interface IFormProps<T extends Record<string, any>> extends FormProps<T> {
@@ -126,4 +127,33 @@ export type WithFlowProps = IFieldSetProps | IFormItemProps
 
 export interface WithFlowOutputProps {
     onFlowUpdateBind: (update: () => void) => void
+}
+
+interface DatumSetParams {
+    name: string | string[]
+    value: any
+}
+
+export interface IDatumSetParams extends DatumSetParams {
+    /** 是否触发onChange */
+    FOR_INTERNAL_USE_DISPATCH_CHANGE?: boolean
+    /** 是否往下层触发更新 */
+    publishToChildrenItem?: boolean
+}
+
+interface DatumSetErrorParams {
+    name: string | string[]
+    error: FormError | Error | string
+}
+export interface FormInstance {
+    get(ame: string | string[]): any
+    getValue(): any
+    set(params: DatumSetParams): void
+    setValue(value: any): void
+    setError(params: DatumSetErrorParams): void
+    setFormError(errors: Record<string, string | Error>): void
+    validate(name): any
+    validateForm(names?: string[]): Promise<any>
+    reset(names?: string[]): void
+    GET_INTERNAL_FORM_DATUM(): FormDatum
 }

@@ -1,21 +1,18 @@
-import Datum from '@/utils/Datum'
-import { compose } from '@/utils/func'
 import Form from './Form'
 import Item from './FormItem'
 import FieldSet from './FieldSet'
-import useFormDatum from './hooks/useFormDatum'
+import useForm from './hooks/useForm'
 import useFormValueState from './hooks/useFormValueState'
 import useFormValueEffect from './hooks/useFormValueEffect'
+import forwardForm from './Hoc/forwardForm'
 
-const FormComponent = compose(Datum.Hoc({ type: 'form', bindProps: ['removeUndefined', 'error', 'defaultValue'] }))(
-    Form
-)
+const FormComponent = forwardForm(Form)
 
 FormComponent.Item = Item
 
 FormComponent.FieldSet = FieldSet
 
-FormComponent.useFormDatum = useFormDatum
+FormComponent.useForm = useForm
 
 FormComponent.useFormValueState = useFormValueState
 
