@@ -5,17 +5,29 @@ import useForm from './hooks/useForm'
 import useFormValueState from './hooks/useFormValueState'
 import useFormValueEffect from './hooks/useFormValueEffect'
 import forwardForm from './Hoc/forwardForm'
+import { FormInstance, FormProps } from './type'
 
-const FormComponent = forwardForm(Form)
+export interface FormComponent {
+    <Values = any>(
+        props: React.PropsWithChildren<FormProps<Values>> & { ref?: React.Ref<FormInstance<Values>> }
+    ): React.ReactElement<FormProps<Values>>
+    Item: typeof Item
+    FieldSet: typeof FieldSet
+    useForm: typeof useForm
+    useFormValueState: typeof useFormValueState
+    useFormValueEffect: typeof useFormValueEffect
+}
 
-FormComponent.Item = Item
+const ComputedFormComponent = forwardForm(Form) as FormComponent
 
-FormComponent.FieldSet = FieldSet
+ComputedFormComponent.Item = Item
 
-FormComponent.useForm = useForm
+ComputedFormComponent.FieldSet = FieldSet
 
-FormComponent.useFormValueState = useFormValueState
+ComputedFormComponent.useForm = useForm
 
-FormComponent.useFormValueEffect = useFormValueEffect
+ComputedFormComponent.useFormValueState = useFormValueState
 
-export default FormComponent
+ComputedFormComponent.useFormValueEffect = useFormValueEffect
+
+export default ComputedFormComponent

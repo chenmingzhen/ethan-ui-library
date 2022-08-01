@@ -92,7 +92,6 @@ export default class Form<T extends Record<string, any>> extends PureComponent<I
             inline,
             disabled,
             datum,
-            rules,
             onError,
             onReset,
             labelAlign,
@@ -115,7 +114,6 @@ export default class Form<T extends Record<string, any>> extends PureComponent<I
             labelAlign,
             labelVerticalAlign,
             labelWidth,
-            rules,
             animation,
             throttle,
         }

@@ -10,7 +10,10 @@ import { Button, FontAwesome, Form, Input, Select } from 'ethan'
 export default function App() {
     const form = Form.useForm()
 
-    Form.useFormValueEffect(console.log, { form, deep: ['name', 'contact.phone', 'address', 'friends'] })
+    Form.useFormValueEffect(console.log, {
+        form,
+        deep: ['name', 'contact.phone', 'address', 'friends'],
+    })
 
     return (
         <Form form={form}>

@@ -2,18 +2,20 @@ import { useCallback, useEffect } from 'react'
 import { warningOnce } from '@/utils/warning'
 import { isEmpty } from '@/utils/is'
 import { deepSet } from '@/utils/objects'
+import { LiteralUnion } from '@/utils/utilityTypes'
 import { FormInstance } from '../type'
 
-interface UseFormValueEffectParams {
+interface UseFormValueEffectParams<Value extends Record<string, any>> {
     form: FormInstance
 
-    deep: string[]
+    deep: LiteralUnion<Extract<keyof Value, string>, string>[]
 }
 
-type UseFormValueEffectCallback<V = any> = (values: V) => void
-
 /** 无法监听未存在的name */
-const useFormValueEffect = (callback: UseFormValueEffectCallback, params: UseFormValueEffectParams) => {
+const useFormValueEffect = <Value extends Record<string, any> = any>(
+    callback: (v: Value) => void,
+    params: UseFormValueEffectParams<Value>
+) => {
     const { form, deep = [] } = params || {}
 
     const trackPathDeep = useCallback((name: string, trackCallback, isSubscribe: boolean) => {
@@ -59,7 +61,7 @@ const useFormValueEffect = (callback: UseFormValueEffectCallback, params: UseFor
     const handleUpdate = useCallback(() => {
         if (isEmpty(deep)) return
 
-        const values = {}
+        const values: any = {}
 
         const formDatum = form.GET_INTERNAL_FORM_DATUM()
 

@@ -4,7 +4,7 @@ import { PureComponent } from '@/utils/component'
 import { isFunc } from '@/utils/is'
 import { compose } from '@/utils/func'
 import { CHANGE_ACTION, IGNORE_VALIDATE_ACTION } from '@/utils/Datum/types'
-import { IFieldSetProps } from './type'
+import { FieldSetProps, IFieldSetProps } from './type'
 import { FieldSetConsumer, FieldSetProvider } from './context/fieldSetContext'
 import FormHelp from './FormHelp'
 import withFlow from './Hoc/withFlow'
@@ -119,4 +119,12 @@ export const fieldSetConsumer = Origin => props => (
     <FieldSetConsumer>{({ path } = {}) => <Origin {...props} name={extendName(path, props.name)} />}</FieldSetConsumer>
 )
 
-export default compose(withFormConsumer(['formDatum', 'animation']), withValidate, withFlow)(FieldSet)
+interface FieldSetComponent {
+    new <Value = any>(props: FieldSetProps): React.Component<FieldSetProps<Value>>
+}
+
+export default compose(
+    withFormConsumer(['formDatum', 'animation']),
+    withValidate,
+    withFlow
+)(FieldSet) as FieldSetComponent

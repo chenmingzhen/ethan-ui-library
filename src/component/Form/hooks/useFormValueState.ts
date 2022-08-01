@@ -3,7 +3,7 @@ import { warningOnce } from '@/utils/warning'
 import useUpdate from '@/hooks/useUpdate'
 import { FormInstance } from '../type'
 
-const useFormValueState = (form: FormInstance, name: string) => {
+const useFormValueState = <Value = any>(form: FormInstance, name: string) => {
     const update = useUpdate()
 
     const setFormValue = useCallback(value => {
@@ -30,7 +30,10 @@ const useFormValueState = (form: FormInstance, name: string) => {
         warningOnce('[Ethan UI:Form]:UseFormValueState must provide formDatum')
     }
 
-    return [form ? form.GET_INTERNAL_FORM_DATUM().get(name) : undefined, setFormValue]
+    return [form ? form.GET_INTERNAL_FORM_DATUM().get(name) : undefined, setFormValue] as [
+        Value | undefined,
+        (value: Value) => void
+    ]
 }
 
 export default useFormValueState

@@ -16,7 +16,7 @@ export default curry((Origin: React.ClassicComponentClass<IFormProps<any>>) =>
 
         const formDatum = forwardForm.GET_INTERNAL_FORM_DATUM()
 
-        if (!hasInjectProps && forwardForm && forwardForm.GET_INTERNAL_FORM_DATUM) {
+        if (!hasInjectProps.current && formDatum) {
             formDatum.deepSetOptions.removeUndefined = props.removeUndefined
 
             formDatum.setDefaultValue(defaultValue)

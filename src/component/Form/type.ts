@@ -4,24 +4,24 @@ import { FormError } from '@/utils/errors'
 import React from 'react'
 import { Rule } from '../Rule/type'
 
-export interface FormItemChildrenFuncParams {
-    form: FormInstance
+export interface FormItemChildrenFuncParams<FormValue = any> {
+    form: FormInstance<FormValue>
     value: any
     onChange: (value: any, ...args) => void
     error: undefined | Error
 }
 
-export interface FormItemProps extends Pick<FormContextProps, 'animation'> {
+export interface FormItemProps<Value = any> extends Pick<FormContextProps, 'animation'> {
     className?: string
     label?: React.ReactNode
     labelAlign?: 'top' | 'right'
     labelWidth?: number | string
     required?: boolean
     tip?: React.ReactNode
-    children: React.ReactNode | ((params: FormItemChildrenFuncParams) => React.ReactNode)
+    children: React.ReactNode | ((params: FormItemChildrenFuncParams<Value>) => React.ReactNode)
     style?: React.CSSProperties
     grid?: number
-
+    rules?: Rule[]
     name?: string | string[]
     defaultValue?: any
     flow?: string[] | true
@@ -36,9 +36,9 @@ export interface FormItemErrorListContext {
 
 export interface IFormItemProps
     extends FormItemProps,
-    ValidateHocOutPutProps,
-    WithFlowOutputProps,
-    FormItemErrorListContext {
+        ValidateHocOutPutProps,
+        WithFlowOutputProps,
+        FormItemErrorListContext {
     formDatum: FormDatum
 
     throttle?: number
@@ -53,15 +53,14 @@ export interface FormContextProps {
     disabled?: boolean
     labelAlign?: 'top' | 'right' | 'left'
     labelWidth?: string | number
-    rules: Rule[]
     animation?: boolean
 }
 
 // eslint-disable-next-line @typescript-eslint/ban-types
 export interface FormProps<T extends Record<string, any> = {}>
     extends Omit<
-    React.FormHTMLAttributes<HTMLFormElement>,
-    'value' | 'onChange' | 'defaultValue' | 'onSubmit' | 'onError'
+        React.FormHTMLAttributes<HTMLFormElement>,
+        'value' | 'onChange' | 'defaultValue' | 'onSubmit' | 'onError'
     > {
     className?: string
     disabled?: boolean
@@ -71,11 +70,9 @@ export interface FormProps<T extends Record<string, any> = {}>
     onError?: (error: any) => void
     onReset?: () => void
     onSubmit?: (value: T) => void
-    rules: Rule[]
     scrollToError?: boolean
     style?: React.CSSProperties
     throttle?: number
-    initValidate?: boolean
     labelAlign?: 'top' | 'right' | 'left'
     labelVerticalAlign?: 'top' | 'middle' | 'bottom'
     labelWidth?: string | number
@@ -97,21 +94,21 @@ export interface FormHelpProps extends Pick<FormContextProps, 'animation'> {
     tip?: React.ReactNode
 }
 
-export interface FieldSetChildrenFuncParams {
-    onAppend(value): void
+export interface FieldSetChildrenFuncParams<Value = any> {
+    onAppend(value: Value): void
     onRemove(): void
-    onInsert(index: number, value): void
+    onInsert(index: number, value: Value): void
     list: any[]
     index: number
     value: any
 }
 
-export interface FieldSetProps extends Pick<FormContextProps, 'animation'> {
-    defaultValue?: any[]
-    emptyRender?: (insert: (value) => void) => React.ReactNode
+export interface FieldSetProps<Value = any> extends Pick<FormContextProps, 'animation'> {
+    defaultValue?: Value[]
+    emptyRender?: (insert: (value: Value) => void) => React.ReactNode
     name: string
     rules?: Rule[]
-    children: React.ReactNode | ((params: FieldSetChildrenFuncParams) => React.ReactNode)
+    children: React.ReactNode | ((params: FieldSetChildrenFuncParams<Value>) => React.ReactNode)
     flow?: string[]
 }
 
@@ -145,15 +142,15 @@ interface DatumSetErrorParams {
     name: string | string[]
     error: FormError | Error | string
 }
-export interface FormInstance {
-    get(ame: string | string[]): any
-    getValue(): any
+export interface FormInstance<Value = any> {
+    get(name: string | string[]): any
+    getValue(): Value
     set(params: DatumSetParams): void
-    setValue(value: any): void
+    setValue(value: Partial<Value>): void
     setError(params: DatumSetErrorParams): void
     setFormError(errors: Record<string, string | Error>): void
     validate(name): any
-    validateForm(names?: string[]): Promise<any>
+    validateForm(names?: string[]): Promise<Value>
     reset(names?: string[]): void
     GET_INTERNAL_FORM_DATUM(): FormDatum
 }

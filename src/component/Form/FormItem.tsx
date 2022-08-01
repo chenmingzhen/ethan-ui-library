@@ -10,7 +10,7 @@ import shallowEqual from '@/utils/shallowEqual'
 import { ERROR_ACTION, IGNORE_VALIDATE_ACTION, RESET_ACTION } from '@/utils/Datum/types'
 import { compose } from '@/utils/func'
 import { getGrid } from '../Grid/util'
-import { FormItemErrorListContext, IFormItemProps } from './type'
+import { FormItemErrorListContext, FormItemProps, IFormItemProps } from './type'
 import FormHelp from './FormHelp'
 import { fieldSetConsumer } from './FieldSet'
 import withFlow from './Hoc/withFlow'
@@ -184,14 +184,14 @@ class FormItem extends PureComponent<IFormItemProps, FormItemState> {
 
         const anyChildren = children as any
 
-        if (anyChildren && anyChildren.props && anyChildren.props.onChange && isFunc(anyChildren.props.onChange)) {
-            anyChildren.props.onChange(value, ...args)
-        }
-
         if (isArray(name)) {
             name.forEach((n, i) => formDatum.set({ name: n, value: value[i], FOR_INTERNAL_USE_DISPATCH_CHANGE: true }))
         } else {
             formDatum.set({ name, value, FOR_INTERNAL_USE_DISPATCH_CHANGE: true })
+        }
+
+        if (anyChildren && anyChildren.props && anyChildren.props.onChange && isFunc(anyChildren.props.onChange)) {
+            anyChildren.props.onChange(value, ...args)
         }
     }
 
@@ -340,6 +340,10 @@ const withCollectError = Origin =>
         </ErrorListConsumer>
     ))
 
+interface ComputedFormItem {
+    new <Value = any>(props: FormItemProps): React.PureComponent<FormItemProps<Value>>
+}
+
 export default compose(
     withFormConsumer([
         'formDatum',
@@ -354,4 +358,4 @@ export default compose(
     fieldSetConsumer,
     withFlow,
     withCollectError
-)(FormItem)
+)(FormItem) as ComputedFormItem
