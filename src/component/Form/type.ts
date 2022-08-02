@@ -73,7 +73,7 @@ export interface FormProps<T extends Record<string, any> = {}>
     style?: React.CSSProperties
     labelAlign?: 'top' | 'right' | 'left'
     labelWidth?: string | number
-    onChange?: (value: T) => void
+    onChange?: (changeValues: Partial<T> | T, value: T) => void
     removeUndefined?: boolean
     value?: T
     error?: Record<string, string | Error>

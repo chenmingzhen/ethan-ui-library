@@ -26,9 +26,9 @@ export default class {
 
     $inputNames = {}
 
-    $validator: Record<string, (value, data?) => Promise<true | FormError>> = {}
+    $validator: Record<string, (values, data?) => Promise<true | FormError>> = {}
 
-    onChange: (value) => void
+    onChange: (changeValues, values) => void
 
     deepSetOptions = { forceSet: true, removeUndefined: undefined }
 
@@ -173,7 +173,7 @@ export default class {
         publishToChildrenItem = false,
     }: IDatumSetParams) => {
         if (isArray(name)) {
-            this.setArrayValue(name, value)
+            this.setArrayValue(name, value, FOR_INTERNAL_USE_DISPATCH_CHANGE)
 
             return
         }
@@ -187,7 +187,7 @@ export default class {
         if (isObject(value) || publishToChildrenItem) this.publishValue(name)
 
         if (FOR_INTERNAL_USE_DISPATCH_CHANGE) {
-            this.handleChange()
+            this.handleChange(unflatten({ [name]: value }))
         }
     }
 
@@ -221,22 +221,32 @@ export default class {
         this.dispatch(name, wrapError, ERROR_ACTION)
     }
 
-    private setArrayValue = (names: string[], values) => {
-        names.forEach((name, index) => {
-            deepSet(this.$values, name, values[index], this.deepSetOptions)
-        })
+    private setArrayValue = (names: string[], values, FOR_INTERNAL_USE_DISPATCH_CHANGE) => {
+        const changeValues: Record<string, any> = {}
+
+        const currentValues = this.get(names) || []
 
         names.forEach((name, index) => {
+            const currentValue = currentValues[index]
+
+            deepSet(this.$values, name, values[index], this.deepSetOptions)
+
             if (this.$inputNames[name]) {
                 this.dispatch(name, values[index], CHANGE_ACTION)
             }
+
+            if (currentValue !== values[index]) {
+                changeValues[name] = values[index]
+            }
         })
 
-        this.handleChange()
+        if (FOR_INTERNAL_USE_DISPATCH_CHANGE) {
+            this.handleChange(unflatten(changeValues))
+        }
     }
 
-    private handleChange = () => {
-        if (this.onChange) this.onChange(this.getValue())
+    private handleChange = (changeValues: any) => {
+        if (this.onChange) this.onChange(changeValues, this.getValue())
     }
 
     getValue = () => {
@@ -338,7 +348,13 @@ export default class {
             this.dispatch(name, this.$defaultValues[name], RESET_ACTION)
         })
 
-        this.handleChange()
+        const changeValues: Record<string, any> = {}
+
+        Object.keys(this.$inputNames).forEach(name => {
+            changeValues[name] = this.$defaultValues[name] !== undefined ? this.$defaultValues[name] : undefined
+        })
+
+        this.handleChange(unflatten(changeValues))
     }
 
     /** For FieldSet */
@@ -348,7 +364,7 @@ export default class {
         if (values) {
             values.splice(index, 0, value)
 
-            this.handleChange()
+            this.handleChange({ [name]: values })
             /** 在FieldSet中是使用index作为Key，此处强制Item的更新，使Item获得对应的value */
             this.publishValue(name)
 
@@ -364,7 +380,7 @@ export default class {
 
         values.splice(index, 1)
 
-        this.handleChange()
+        this.handleChange({ [name]: values })
 
         this.publishValue(name)
 

@@ -21,11 +21,7 @@ interface FormValues {
 
 export default function App() {
     return (
-        <Form<FormValues>
-            onChange={values => {
-                console.log('Form onChange:', values)
-            }}
-        >
+        <Form<FormValues> onChange={console.log}>
             <Form.Item label="Email" name="email">
                 <Input clearable popoverProps={{ placement: 'left-top' }} />
             </Form.Item>
