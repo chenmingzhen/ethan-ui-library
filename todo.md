@@ -66,7 +66,7 @@
 
 -   [x] Form 校验错误与显示错误
 
--   [ ] 补全 Form，FormItem，DatumForm 的泛型
+-   [x] 补全 Form，FormItem，DatumForm 的泛型
 
 -   [ ] validateTrigger 实现
 
@@ -82,4 +82,4 @@
 
 -   [x] Form 滚动到错误中
 
--   [ ] Form 移除值时添加一个 props 是否移除 name 的值
+-   [x] Form 移除值时添加一个 props 是否移除 name 的值

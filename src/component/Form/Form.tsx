@@ -3,7 +3,7 @@ import classnames from 'classnames'
 import { PureComponent } from '@/utils/component'
 import { formClass } from '@/styles'
 import { isEmpty } from '@/utils/is'
-import { IFormProps } from './type'
+import { FormContextProps, IFormProps } from './type'
 import { FormProvider } from './context/formContext'
 
 export default class Form<T extends Record<string, any>> extends PureComponent<IFormProps<T>> {
@@ -95,10 +95,9 @@ export default class Form<T extends Record<string, any>> extends PureComponent<I
             onError,
             onReset,
             labelAlign,
-            labelVerticalAlign,
             labelWidth,
             animation,
-            throttle,
+            preserve,
             /** */
             defaultValue,
             onChange,
@@ -108,14 +107,13 @@ export default class Form<T extends Record<string, any>> extends PureComponent<I
 
         const className = classnames(formClass('_', disabled && 'disabled', inline && 'inline'), this.props.className)
 
-        const providerValue = {
+        const providerValue: FormContextProps = {
             formDatum: datum,
             disabled,
             labelAlign,
-            labelVerticalAlign,
             labelWidth,
             animation,
-            throttle,
+            preserve,
         }
 
         return (

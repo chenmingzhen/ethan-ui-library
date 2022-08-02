@@ -11,7 +11,7 @@ export interface FormItemChildrenFuncParams<FormValue = any> {
     error: undefined | Error
 }
 
-export interface FormItemProps<Value = any> extends Pick<FormContextProps, 'animation'> {
+export interface FormItemProps<Value = any> extends Pick<FormContextProps, 'animation' | 'preserve'> {
     className?: string
     label?: React.ReactNode
     labelAlign?: 'top' | 'right'
@@ -40,8 +40,6 @@ export interface IFormItemProps
         WithFlowOutputProps,
         FormItemErrorListContext {
     formDatum: FormDatum
-
-    throttle?: number
 }
 
 export interface FormItemContextProps {
@@ -54,6 +52,7 @@ export interface FormContextProps {
     labelAlign?: 'top' | 'right' | 'left'
     labelWidth?: string | number
     animation?: boolean
+    preserve?: boolean
 }
 
 // eslint-disable-next-line @typescript-eslint/ban-types
@@ -72,9 +71,7 @@ export interface FormProps<T extends Record<string, any> = {}>
     onSubmit?: (value: T) => void
     scrollToError?: boolean
     style?: React.CSSProperties
-    throttle?: number
     labelAlign?: 'top' | 'right' | 'left'
-    labelVerticalAlign?: 'top' | 'middle' | 'bottom'
     labelWidth?: string | number
     onChange?: (value: T) => void
     removeUndefined?: boolean
@@ -82,6 +79,7 @@ export interface FormProps<T extends Record<string, any> = {}>
     error?: Record<string, string | Error>
     animation?: boolean
     form?: FormInstance
+    preserve?: boolean
 }
 
 export interface IFormProps<T extends Record<string, any>> extends FormProps<T> {
@@ -110,6 +108,7 @@ export interface FieldSetProps<Value = any> extends Pick<FormContextProps, 'anim
     rules?: Rule[]
     children: React.ReactNode | ((params: FieldSetChildrenFuncParams<Value>) => React.ReactNode)
     flow?: string[]
+    preserve?: boolean
 }
 
 export interface IFieldSetProps extends FieldSetProps, ValidateHocOutPutProps, WithFlowOutputProps {

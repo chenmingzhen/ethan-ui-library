@@ -124,7 +124,9 @@ export default class {
         this.subscribe(name, callback)
     }
 
-    unbind = (name: string | string[]) => {
+    unbind = (name: string | string[], preserve = false) => {
+        if (!name) return
+
         if (Array.isArray(name)) {
             name.forEach(n => this.unbind(n))
 
@@ -145,7 +147,9 @@ export default class {
 
         if (!deepHas(this.$values, name)) return
 
-        deepRemove(this.$values, name)
+        if (!preserve) {
+            deepRemove(this.$values, name)
+        }
     }
 
     /** 往下层传递更新事件 */

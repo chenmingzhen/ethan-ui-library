@@ -1,9 +1,10 @@
 import React, { cloneElement, createContext, isValidElement } from 'react'
 import classnames from 'classnames'
+import deepEqual from 'deep-eql'
 import { PureComponent } from '@/utils/component'
 import { formClass } from '@/styles'
 import { isSameError } from '@/utils/errors'
-import { isArray, isEmpty, isFunc } from '@/utils/is'
+import { isArray, isFunc } from '@/utils/is'
 import withValidate from '@/hoc/withValidate'
 import immer from 'immer'
 import shallowEqual from '@/utils/shallowEqual'
@@ -34,8 +35,6 @@ function arrayNamesToStr(name: string | string[] = '') {
 class FormItem extends PureComponent<IFormItemProps, FormItemState> {
     lastValue
 
-    validateTimer: NodeJS.Timeout
-
     static defaultProps = {
         name: '',
     }
@@ -43,15 +42,7 @@ class FormItem extends PureComponent<IFormItemProps, FormItemState> {
     constructor(props) {
         super(props)
 
-        const {
-            defaultValue,
-            formDatum,
-            validate,
-            name = '',
-            onFlowUpdateBind,
-            error,
-            onUpdateChildItemErrors,
-        } = this.props
+        const { name = '', onFlowUpdateBind, error, onUpdateChildItemErrors } = this.props
 
         this.state = {
             errors: {
@@ -59,27 +50,13 @@ class FormItem extends PureComponent<IFormItemProps, FormItemState> {
             },
         }
 
-        if (formDatum && name) {
-            if (!isArray(name)) {
-                formDatum.bind(name, this.handleUpdate, defaultValue, validate)
-            } else {
-                const defaultValues = isArray(defaultValue) ? defaultValue : [defaultValue]
-
-                name.forEach((n, i) => formDatum.bind(n, this.handleUpdate, defaultValues[i], validate))
-            }
-        }
+        this.bindInput(this.props.name)
 
         if (error && onUpdateChildItemErrors) {
             onUpdateChildItemErrors(arrayNamesToStr(name), error)
         }
 
         onFlowUpdateBind(this.forceUpdate)
-    }
-
-    get formable() {
-        const { formDatum, name } = this.props
-
-        return formDatum && !isEmpty(name)
     }
 
     static getDerivedStateFromProps(nextProps: IFormItemProps, state: FormItemState) {
@@ -102,9 +79,13 @@ class FormItem extends PureComponent<IFormItemProps, FormItemState> {
 
     componentDidUpdate(prevProps: Readonly<IFormItemProps>): void {
         const prevError = prevProps.error
-        const { name, error, onUpdateChildItemErrors } = this.props
+        const { name, error, onUpdateChildItemErrors, formDatum } = this.props
 
-        if (onUpdateChildItemErrors && !isSameError(prevError, error)) {
+        if (!deepEqual(prevProps.name, this.props.name) && formDatum) {
+            this.unBindInput(prevProps.name)
+
+            this.bindInput(this.props.name)
+        } else if (onUpdateChildItemErrors && !isSameError(prevError, error)) {
             onUpdateChildItemErrors(arrayNamesToStr(name), error)
         }
     }
@@ -112,10 +93,28 @@ class FormItem extends PureComponent<IFormItemProps, FormItemState> {
     componentWillUnmount() {
         super.componentWillUnmount()
 
-        const { formDatum, name, onUpdateChildItemErrors } = this.props
+        this.unBindInput(this.props.name)
+    }
+
+    bindInput = (name: string | string[]) => {
+        const { defaultValue, formDatum, validate } = this.props
 
         if (formDatum && name) {
-            formDatum.unbind(name)
+            if (!isArray(name)) {
+                formDatum.bind(name, this.handleUpdate, defaultValue, validate)
+            } else {
+                const defaultValues = isArray(defaultValue) ? defaultValue : [defaultValue]
+
+                name.forEach((n, i) => formDatum.bind(n, this.handleUpdate, defaultValues[i], validate))
+            }
+        }
+    }
+
+    unBindInput = (name: string | string[]) => {
+        const { formDatum, onUpdateChildItemErrors, preserve } = this.props
+
+        if (formDatum && name) {
+            formDatum.unbind(name, preserve)
         }
 
         if (onUpdateChildItemErrors) {
@@ -137,7 +136,7 @@ class FormItem extends PureComponent<IFormItemProps, FormItemState> {
     }
 
     handleUpdate = (name, data, type) => {
-        const { name: propName, validate, error, onInternalError, throttle } = this.props
+        const { name: propName, validate, error, onInternalError } = this.props
 
         /** ERROR_ACTION */
         if (type === ERROR_ACTION) {
@@ -165,15 +164,7 @@ class FormItem extends PureComponent<IFormItemProps, FormItemState> {
         this.lastValue = newValue
 
         if (validate && type !== IGNORE_VALIDATE_ACTION && type !== RESET_ACTION) {
-            if (this.validateTimer) {
-                clearTimeout(this.validateTimer)
-
-                this.validateTimer = null
-            }
-
-            this.validateTimer = setTimeout(() => {
-                validate(newValue, undefined).catch(() => {})
-            }, throttle)
+            validate(newValue, undefined).catch(() => {})
         }
 
         this.forceUpdate()
@@ -217,8 +208,6 @@ class FormItem extends PureComponent<IFormItemProps, FormItemState> {
         const { children, formDatum, error } = this.props
 
         const { value } = this
-
-        if (!this.formable) return children
 
         if (typeof children === 'function') {
             return children({ value, onChange: this.handleChange, form: formDatum.getForm(), error })
@@ -345,15 +334,7 @@ interface ComputedFormItem {
 }
 
 export default compose(
-    withFormConsumer([
-        'formDatum',
-        'labelWidth',
-        'labelAlign',
-        'labelVerticalAlign',
-        'keepErrorHeight',
-        'animation',
-        'throttle',
-    ]),
+    withFormConsumer(['formDatum', 'labelWidth', 'labelAlign', 'keepErrorHeight', 'animation', 'preserve']),
     withValidate,
     fieldSetConsumer,
     withFlow,

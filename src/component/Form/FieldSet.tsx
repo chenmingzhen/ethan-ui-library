@@ -34,10 +34,10 @@ class FieldSet extends PureComponent<IFieldSetProps> {
     }
 
     componentWillUnmount() {
-        const { formDatum, name } = this.props
+        const { formDatum, name, preserve } = this.props
 
         if (formDatum && name) {
-            formDatum.unbind(name)
+            formDatum.unbind(name, preserve)
         }
     }
 
@@ -124,7 +124,7 @@ interface FieldSetComponent {
 }
 
 export default compose(
-    withFormConsumer(['formDatum', 'animation']),
+    withFormConsumer(['formDatum', 'animation', 'preserve']),
     withValidate,
     withFlow
 )(FieldSet) as FieldSetComponent

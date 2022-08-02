@@ -20,15 +20,47 @@ export default function App() {
                 <Input clearable />
             </Form.Item>
 
-            <Form.Item<FormValues> name="mobile" label="Mobile" flow={['name']}>
-                {({ onChange, value, form }) => {
+            <Form.Item<FormValues> noStyle flow={['name']}>
+                {({ form }) => {
                     const name = form.get('name')
 
                     if (!name) {
-                        return <span>Name is required</span>
+                        return (
+                            <Form.Item label={<></>}>
+                                <span>Enter your mobile after your name</span>
+                            </Form.Item>
+                        )
                     }
 
-                    return <Input value={value} onChange={onChange} type="number" />
+                    /** FormItem内部没有对添加key值，如果存在多种可能的实例，需要显式指名Key */
+                    return (
+                        <Form.Item name="mobile" label="Mobile" key="mobile">
+                            <Input type="number" />
+                        </Form.Item>
+                    )
+                }}
+            </Form.Item>
+
+            <Form.Item<FormValues> noStyle flow={['name']}>
+                {({ form }) => {
+                    const name = form.get('name')
+
+                    if (!name) {
+                        /** 改变组件的结构，使条件语句中的实例不一样 */
+                        return (
+                            <>
+                                <Form.Item label={<></>}>
+                                    <span>Enter your information after your name</span>
+                                </Form.Item>
+                            </>
+                        )
+                    }
+
+                    return (
+                        <Form.Item name="information" label="Information(preserve)" preserve>
+                            <Input />
+                        </Form.Item>
+                    )
                 }}
             </Form.Item>
 
