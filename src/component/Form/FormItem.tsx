@@ -136,7 +136,7 @@ class FormItem extends PureComponent<IFormItemProps, FormItemState> {
     }
 
     handleUpdate = (name, data, type) => {
-        const { name: propName, validate, error, onInternalError } = this.props
+        const { name: propName, validate, error, onInternalError, formDatum } = this.props
 
         /** ERROR_ACTION */
         if (type === ERROR_ACTION) {
@@ -163,8 +163,10 @@ class FormItem extends PureComponent<IFormItemProps, FormItemState> {
 
         this.lastValue = newValue
 
+        const formValue = formDatum.getValue()
+
         if (validate && type !== IGNORE_VALIDATE_ACTION && type !== RESET_ACTION) {
-            validate(newValue, undefined).catch(() => {})
+            validate(newValue, formValue).catch(() => {})
         }
 
         this.forceUpdate()

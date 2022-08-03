@@ -29,6 +29,16 @@ const withFlow = Origin =>
         }
 
         handleUpdate = () => {
+            const { formDatum, validate, name } = this.props
+
+            if (formDatum && !isEmpty(name)) {
+                const formValue = formDatum.getValue()
+
+                const value = formDatum.get(name)
+
+                validate(value, formValue)
+            }
+
             if (this.forceUpdateChildren) {
                 this.forceUpdateChildren()
             }

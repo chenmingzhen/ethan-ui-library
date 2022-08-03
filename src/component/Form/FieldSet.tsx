@@ -44,10 +44,12 @@ class FieldSet extends PureComponent<IFieldSetProps> {
     handleUpdate = (_, __, type) => {
         const { validate, formDatum, name } = this.props
 
+        const formValues = formDatum.getValue()
+
         const value = formDatum.get(name)
 
         if (type !== IGNORE_VALIDATE_ACTION) {
-            validate(value).catch(() => {})
+            validate(value, formValues).catch(() => {})
         }
 
         this.forceUpdate()

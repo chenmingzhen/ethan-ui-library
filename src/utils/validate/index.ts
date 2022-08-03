@@ -46,7 +46,7 @@ function getRule(rule: Rule, props: ValidatorProps) {
     throw error
 }
 
-const validate = (value: any, formData: any, rules: Rule[], props: ValidatorProps) =>
+const validate = (value: any, formValues: any, rules: Rule[], props: ValidatorProps) =>
     new Promise((resolve, reject) => {
         /** 扁平化后 递归调用 */
         const $rules = flattenArray(rules)
@@ -69,13 +69,13 @@ const validate = (value: any, formData: any, rules: Rule[], props: ValidatorProp
                 return
             }
 
-            validate(value, formData, $rules, mergeProps).then(resolve, reject)
+            validate(value, formValues, $rules, mergeProps).then(resolve, reject)
         }
 
         const validateFunction = getRule(rule, mergeProps)
 
         /** 处理自定义规则校验与内置规则校验 */
-        const promise = validateFunction(value, formData, runNextCallback)
+        const promise = validateFunction(value, formValues, runNextCallback, mergeProps)
 
         /** 处理自定义规则校验 返回是Promise的情况 */
         if (isPromise(promise)) {
