@@ -65,7 +65,7 @@ export interface FormProps<T extends Record<string, any> = {}>
     disabled?: boolean
     defaultValue?: Partial<T>
     inline?: boolean
-    formRef?: (form: HTMLFormElement) => void
+    forwardedRef?: (form: HTMLFormElement) => void
     onError?: (error: any) => void
     onReset?: () => void
     onSubmit?: (value: T) => void

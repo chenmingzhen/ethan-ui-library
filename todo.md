@@ -68,20 +68,18 @@
 
 -   [x] 补全 Form，FormItem，DatumForm 的泛型
 
--   [ ] validateTrigger 实现
+*   [x] FieldSet 处理数组或对象
 
--   [x] FieldSet 处理数组或对象
+*   [x] FieldSet rule 和触发校验
 
--   [x] FieldSet rule 和触发校验
+*   [x] FormItem 和 FieldSet 增加 flow 属性
 
--   [x] FormItem 和 FieldSet 增加 flow 属性
+*   [x] Form 顶层实现和 submit
 
--   [x] Form 顶层实现和 submit
+*   [x] Form hooks 实现
 
--   [x] Form hooks 实现
+*   [x] Form 滚动到错误中
 
--   [x] Form 滚动到错误中
+*   [x] Form 移除值时添加一个 props 是否移除 name 的值
 
--   [x] Form 移除值时添加一个 props 是否移除 name 的值
-
--   [x] Form 的 onChange 添加一个 changedValues 的参数
+*   [x] Form 的 onChange 添加一个 changedValues 的参数

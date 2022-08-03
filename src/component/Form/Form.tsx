@@ -19,7 +19,7 @@ export default class Form<T extends Record<string, any>> extends PureComponent<I
     componentDidMount() {
         super.componentDidMount()
 
-        const { formRef } = this.props
+        const { forwardedRef: formRef } = this.props
 
         if (formRef) formRef(this.form)
     }
@@ -47,6 +47,8 @@ export default class Form<T extends Record<string, any>> extends PureComponent<I
     }
 
     handleSubmit = (evt: React.FormEvent<HTMLFormElement>) => {
+        if (this.submitting) return
+
         const { onSubmit, action, datum, onError } = this.props
 
         if (isEmpty(action)) {
