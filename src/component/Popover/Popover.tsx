@@ -141,7 +141,7 @@ class Popover extends Component<IPopoverProps, PopoverState> {
             this.element.className = classnames(popoverClass('_', !showArrow && 'hide-arrow'), this.props.className)
         }
 
-        if (typeof visible === 'boolean') {
+        if (!isEmpty(visible)) {
             const isSame = prevState.show === this.state.show
 
             if (isSame) return
