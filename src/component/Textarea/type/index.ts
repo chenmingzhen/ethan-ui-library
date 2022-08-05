@@ -1,11 +1,11 @@
+import { Rule } from '@/component/Rule/type'
 import { InputBorderProps } from '@/hoc/inputBorder'
 import { TrimProps } from '@/hoc/trim'
 
 export interface TextareaProps
-    extends InputAbleProps,
-    Omit<React.TextareaHTMLAttributes<HTMLTextAreaElement>, 'size' | 'defaultValue' | 'onChange'>,
-    TrimProps,
-    InputBorderProps {
+    extends Omit<React.TextareaHTMLAttributes<HTMLTextAreaElement>, 'size' | 'defaultValue' | 'onChange' | 'width'>,
+        TrimProps,
+        InputBorderProps<HTMLTextAreaElement> {
     rules?: Rule[]
     autoSize?: boolean
     showCount?: boolean

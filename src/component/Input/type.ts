@@ -6,7 +6,7 @@ import { Rule } from '../Rule/type'
 export interface InputProps<Value = string | number>
     extends Omit<
             React.InputHTMLAttributes<HTMLInputElement>,
-            'size' | 'prefix' | 'type' | 'value' | 'onChange' | 'defaultValue'
+            'size' | 'prefix' | 'type' | 'value' | 'onChange' | 'defaultValue' | 'width'
         >,
         TrimProps,
         InputBorderProps {
@@ -37,15 +37,10 @@ export interface InputNumberProps extends Omit<InputProps<number>, 'onInput'> {
 }
 
 export interface InputPasswordProps extends InputProps<string> {
-    point?: string
+    iconRender?: (visible: boolean) => React.ReactNode
 }
 
-export interface InputGroupProps extends InputBorderProps {
-    style?: React.CSSProperties
-    className?: string
-}
-
-export type IInputGroupProps = Omit<InputGroupProps, 'className'>
+export interface InputGroupProps extends Pick<InputProps, 'size'>, InputBorderProps {}
 
 export interface IInputProps extends InputProps {
     htmlName?: string

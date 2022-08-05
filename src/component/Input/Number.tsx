@@ -1,9 +1,12 @@
 import React, { PureComponent } from 'react'
 import { inputClass } from '@/styles'
 import { isNull, isString } from '@/utils/is'
+import { compose } from '@/utils/func'
+import withControl from '@/hoc/withControl'
+import inputBorder from '@/hoc/inputBorder'
 import icons from '../icons'
 import Input from './Input'
-import { InputNumberProps } from './type'
+import { InputComponent, InputNumberProps } from './type'
 
 interface InputNumberState {
     valueStr: string
@@ -217,4 +220,4 @@ class Number extends PureComponent<InputNumberProps, InputNumberState> {
     }
 }
 
-export default Number
+export default compose(withControl, inputBorder({ popover: true }))(Number) as InputComponent['Number']

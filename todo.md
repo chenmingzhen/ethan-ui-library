@@ -83,3 +83,5 @@
 *   [x] Form 移除值时添加一个 props 是否移除 name 的值
 
 *   [x] Form 的 onChange 添加一个 changedValues 的参数
+
+-   [ ]InputBorder 的 label 去掉

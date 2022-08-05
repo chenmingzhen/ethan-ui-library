@@ -7,40 +7,38 @@ import { isEmpty, isFunc } from '@/utils/is'
 import { FormItemConsumer } from '@/component/Form/context/formItemContext'
 import { buttonClass, inputClass, popoverClass } from '../styles'
 
-export interface InputBorderProps {
+export interface InputBorderProps<Element = HTMLInputElement> {
     disabled?: boolean
 
     tip?: React.ReactNode | ((value: string) => React.ReactNode)
 
     popoverProps?: Omit<PopoverProps, 'children'>
+
+    className?: string
+
+    style?: React.CSSProperties
+
+    onBlur?: (e: React.FocusEvent<Element>) => void
+
+    onFocus?: (e: React.FocusEvent<Element>) => void
+
+    size?: 'small' | 'default' | 'large'
+
+    border?: boolean
+
+    width?: React.CSSProperties['width']
+
+    autoFocus?: boolean
 }
 
 interface IInputBorderProps extends InputBorderProps {
     value: any
 
-    autoFocus?: boolean
-
-    border?: boolean
-
-    className?: string
-
     error?: Error
-
-    onBlur?: (e: React.FocusEvent<HTMLInputElement>) => void
-
-    onFocus?: (e: React.FocusEvent<HTMLInputElement>) => void
-
-    style?: React.CSSProperties
-
-    width?: React.CSSProperties['width']
-
-    size?: 'small' | 'default' | 'large'
 }
 
 interface InputBorderState {
     focus: boolean
-
-    mounted: boolean
 }
 
 interface Options {
@@ -81,14 +79,7 @@ export default curry(
                 super(props)
                 this.state = {
                     focus: props.autoFocus,
-                    mounted: false,
                 }
-            }
-
-            componentDidMount() {
-                super.componentDidMount()
-
-                options.popover && this.setState({ mounted: true })
             }
 
             handleBlur = event => {
@@ -137,21 +128,68 @@ export default curry(
                 }
             }
 
+            renderChildren = () => {
+                const {
+                    border,
+                    size,
+                    tip,
+                    width,
+                    style,
+                    /** use */
+                    error,
+                    popoverProps,
+                    ...other
+                } = this.props
+
+                const { focus } = this.state
+
+                if (!options.popover || options.isGroup) {
+                    return <Origin {...other} size={size} onFocus={this.handleFocus} onBlur={this.handleBlur} />
+                }
+
+                const popoverClassList = ['input-tip']
+
+                const placement = popoverProps.placement || 'bottom-left'
+
+                const popoverStyles =
+                    popoverProps.style && popoverProps.style.width
+                        ? popoverProps.style
+                        : popoverProps.style
+                        ? Object.assign({}, { minWidth: 200, maxWidth: 400 }, popoverProps.style)
+                        : { minWidth: 200, maxWidth: 400 }
+
+                if (error) {
+                    popoverClassList.push('input-error')
+                }
+
+                const content = this.buildContent()
+
+                const popoverVisible = !!error || (!!content && focus)
+
+                return (
+                    <Popover
+                        animation={false}
+                        getPopupContainer={() => this.el.current}
+                        trigger="click"
+                        {...popoverProps}
+                        visible={popoverVisible}
+                        style={popoverStyles}
+                        className={popoverClass(...popoverClassList)}
+                        placement={placement}
+                        content={content || this.cacheContent}
+                        onVisibleChange={this.handleVisibleChange}
+                        innerAlwaysUpdate
+                    >
+                        <Origin {...other} size={size} onFocus={this.handleFocus} onBlur={this.handleBlur} />
+                    </Popover>
+                )
+            }
+
             render() {
                 return (
                     <FormItemConsumer>
                         {({ hasItemError } = {}) => {
-                            const {
-                                className,
-                                border,
-                                size,
-                                tip,
-                                width,
-                                style,
-                                error,
-                                popoverProps,
-                                ...other
-                            } = this.props
+                            const { border, size, tip, width, style, error, popoverProps, ...other } = this.props
 
                             const { focus } = this.state
 
@@ -182,29 +220,6 @@ export default curry(
                                 this.props.className
                             )
 
-                            const popoverClassList = ['input-tip']
-
-                            const placement = popoverProps.placement || 'bottom-left'
-
-                            const popoverStyles =
-                                popoverProps.style && popoverProps.style.width
-                                    ? popoverProps.style
-                                    : popoverProps.style
-                                    ? Object.assign({}, { minWidth: 200, maxWidth: 400 }, popoverProps.style)
-                                    : { minWidth: 200, maxWidth: 400 }
-
-                            const content = this.buildContent()
-
-                            const popoverVisible = !!error || !!(content && focus)
-
-                            if (error) {
-                                popoverClassList.push('input-error')
-                            }
-
-                            const originComponent = (
-                                <Origin {...other} size={size} onFocus={this.handleFocus} onBlur={this.handleBlur} />
-                            )
-
                             return (
                                 <Tag
                                     ref={this.el}
@@ -212,27 +227,7 @@ export default curry(
                                     style={tagStyle}
                                     tabIndex={options.enterPress ? '0' : undefined}
                                 >
-                                    {options.popover ? (
-                                        <>
-                                            {this.state.mounted && (
-                                                <Popover
-                                                    getPopupContainer={() => this.el.current}
-                                                    {...popoverProps}
-                                                    visible={popoverVisible}
-                                                    style={popoverStyles}
-                                                    className={popoverClass(...popoverClassList)}
-                                                    placement={placement}
-                                                    content={content || this.cacheContent}
-                                                    onVisibleChange={this.handleVisibleChange}
-                                                    innerAlwaysUpdate
-                                                >
-                                                    {originComponent}
-                                                </Popover>
-                                            )}
-                                        </>
-                                    ) : (
-                                        originComponent
-                                    )}
+                                    {this.renderChildren()}
                                 </Tag>
                             )
                         }}

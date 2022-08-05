@@ -14,11 +14,6 @@ export default function() {
         <div style={{ width: 300 }}>
             <Input style={style} placeholder="email" tip="enter you email." />
 
-            <Input.Group style={style} tip="enter you email.">
-                <FontAwesome name="envelope" />
-                <Input placeholder="email" />
-            </Input.Group>
-
             <Input.Group style={style}>
                 <FontAwesome name="envelope" />
                 <Input tip="enter you email." placeholder="email" />
