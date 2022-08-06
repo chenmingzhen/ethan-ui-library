@@ -50,7 +50,7 @@
 
 -   [x] Select OptionList 的 handleScroll 计算 scrollTopRatio 和 Scroll/Scroll 的 wheelOrTouchDispatchScroll 计算不一致，原因在于 wheelOrTouchDispatchScroll 的高度是使用 scrollHeight 而不是 contentHeight,到时统一使用 contentHeight 计算
 
--   [ ] Tree 改用 AnimationList 动画，并添加 Fade 的类型
+-   [x] Tree 改用 AnimationList 动画，并添加 Fade 的类型
 
 -   [x] cascader 的 index 编写，document 的 mouseDown 没有在捕获执行,可以验证一下
 
