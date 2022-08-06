@@ -259,6 +259,7 @@ class FormItem extends PureComponent<IFormItemProps, FormItemState> {
             onUpdateChildItemErrors,
             noStyle,
             noErrorInRoot,
+            disabled,
         } = this.props
 
         const { errors } = this.state
@@ -302,7 +303,7 @@ class FormItem extends PureComponent<IFormItemProps, FormItemState> {
                             : onUpdateChildItemErrors || this.updateChildItemErrors,
                 }}
             >
-                <FormItemProvider value={{ hasItemError: !!error }}>
+                <FormItemProvider value={{ hasItemError: !!error, disabled }}>
                     <div className={className} style={style}>
                         {label && (
                             <div style={{ width: labelWidth }} className={formClass('label')}>
@@ -336,7 +337,7 @@ interface ComputedFormItem {
 }
 
 export default compose(
-    withFormConsumer(['formDatum', 'labelWidth', 'labelAlign', 'keepErrorHeight', 'animation', 'preserve']),
+    withFormConsumer(['formDatum', 'labelWidth', 'labelAlign', 'keepErrorHeight', 'animation', 'preserve', 'disabled']),
     withValidate,
     fieldSetConsumer,
     withFlow,

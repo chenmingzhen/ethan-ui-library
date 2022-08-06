@@ -3,6 +3,7 @@ import { Component } from '@/utils/component'
 import { curry } from '@/utils/func'
 import shallowEqual from '@/utils/shallowEqual'
 import { ValidateHocOutPutProps } from '@/hoc/withValidate'
+import { FormItemConsumer } from '@/component/Form/context/formItemContext'
 
 interface WithControlProps extends ValidateHocOutPutProps {
     defaultValue: any
@@ -64,13 +65,20 @@ export default curry(
                 const { value, defaultValue, error, ...other } = this.props
 
                 return (
-                    <Origin
-                        {...other}
-                        error={error}
-                        value={this.getValue()}
-                        onChange={this.handleChange}
-                        control={this.control}
-                    />
+                    <FormItemConsumer>
+                        {({ disabled } = {}) => {
+                            return (
+                                <Origin
+                                    disabled={disabled}
+                                    {...other}
+                                    error={error}
+                                    value={this.getValue()}
+                                    onChange={this.handleChange}
+                                    control={this.control}
+                                />
+                            )
+                        }}
+                    </FormItemConsumer>
                 )
             }
         }

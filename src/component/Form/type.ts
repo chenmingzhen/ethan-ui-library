@@ -11,7 +11,7 @@ export interface FormItemChildrenFuncParams<FormValue = any> {
     error: undefined | Error
 }
 
-export interface FormItemProps<Value = any> extends Pick<FormContextProps, 'animation' | 'preserve'> {
+export interface FormItemProps<Value = any> extends Pick<FormContextProps, 'animation' | 'preserve' | 'disabled'> {
     className?: string
     label?: React.ReactNode
     labelAlign?: 'top' | 'right'
@@ -42,7 +42,7 @@ export interface IFormItemProps
     formDatum: FormDatum
 }
 
-export interface FormItemContextProps {
+export interface FormItemContextProps extends Pick<FormContextProps, 'disabled'> {
     hasItemError?: boolean
 }
 
