@@ -7,7 +7,7 @@ import { getPositionStr, getPosition } from '@/utils/dom/popover'
 import { popoverClass } from '@/styles/index'
 import isDOMElement from '@/utils/dom/isDOMElement'
 import { parsePxToNumber } from '@/utils/strings'
-import { isArray } from '@/utils/is'
+import { isArray, isEmpty } from '@/utils/is'
 import { LiteralUnion } from '@/utils/utilityTypes'
 
 export interface IPopoverProps extends PopoverProps {
@@ -141,7 +141,7 @@ class Popover extends Component<IPopoverProps, PopoverState> {
             this.element.className = classnames(popoverClass('_', !showArrow && 'hide-arrow'), this.props.className)
         }
 
-        if (typeof visible === 'boolean') {
+        if (!isEmpty(visible)) {
             const isSame = prevState.show === this.state.show
 
             if (isSame) return
@@ -268,7 +268,7 @@ class Popover extends Component<IPopoverProps, PopoverState> {
         }
 
         if (this.hasTrigger('click')) {
-            this.eventHandlerElement?.addEventListener('click', this.handleEventHandlerClick)
+            this.eventHandlerElement?.addEventListener('mousedown', this.handleEventHandlerClick)
         }
     }
 
@@ -286,7 +286,7 @@ class Popover extends Component<IPopoverProps, PopoverState> {
 
     removeTriggerEvent = () => {
         // remove click handler
-        this.eventHandlerElement?.removeEventListener('click', this.handleEventHandlerClick)
+        this.eventHandlerElement?.removeEventListener('mousedown', this.handleEventHandlerClick)
 
         // remove hover handler
         this.element.removeEventListener('mouseleave', this.handleHide)
@@ -359,7 +359,7 @@ class Popover extends Component<IPopoverProps, PopoverState> {
 
         const { onVisibleChange, visible } = this.props
 
-        if (typeof visible === 'boolean') {
+        if (!isEmpty(visible)) {
             if (onVisibleChange) {
                 onVisibleChange(true)
             }
@@ -390,7 +390,7 @@ class Popover extends Component<IPopoverProps, PopoverState> {
 
         const { onVisibleChange, visible } = this.props
 
-        if (typeof visible === 'boolean') {
+        if (!isEmpty(visible)) {
             if (onVisibleChange) {
                 onVisibleChange(false)
             }

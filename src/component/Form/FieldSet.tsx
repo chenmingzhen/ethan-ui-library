@@ -1,185 +1,132 @@
-// @ts-nocheck
 import React from 'react'
-import PropTypes from 'prop-types'
-import createReactContext from 'create-react-context'
-import { Component } from '@/utils/component'
-import { filterProps } from '@/utils/objects'
-import validate from '@/utils/validate'
-import { FormError, isSameError } from '@/utils/errors'
-import { ERROR_TYPE, FORCE_PASS, IGNORE_VALIDATE } from '@/utils/Datum/types'
-import FieldError from './FieldError'
+import withValidate from '@/hoc/withValidate'
+import { PureComponent } from '@/utils/component'
+import { isFunc } from '@/utils/is'
+import { compose } from '@/utils/func'
+import { CHANGE_ACTION, IGNORE_VALIDATE_ACTION } from '@/utils/Datum/types'
+import { FieldSetProps, IFieldSetProps } from './type'
+import { FieldSetConsumer, FieldSetProvider } from './context/fieldSetContext'
+import FormHelp from './FormHelp'
+import withFlow from './Hoc/withFlow'
+import withFormConsumer from './Hoc/withFormConsumer'
 
-const { Provider, Consumer } = createReactContext()
-
-const extendName = (path = '', name) => {
+function extendName(path = '', name: string | string[]) {
     if (name === undefined) return undefined
+
     if (name === '') return path
+
     if (Array.isArray(name)) return name.map(n => extendName(path, n))
+
     return `${path}${path.length > 0 ? '.' : ''}${name}`
 }
 
-class FieldSet extends Component {
-    constructor(props) {
+class FieldSet extends PureComponent<IFieldSetProps> {
+    constructor(props: IFieldSetProps) {
         super(props)
 
-        this.validate = this.validate.bind(this)
-        this.handleUpdate = this.handleUpdate.bind(this)
-    }
+        const { defaultValue, formDatum, validate, name, onFlowUpdateBind } = this.props
 
-    componentDidMount() {
-        super.componentDidMount()
-        const { formDatum, name, defaultValue } = this.props
-        formDatum.bind(name, this.handleUpdate, defaultValue, this.validate)
+        if (formDatum && name) {
+            formDatum.bind(name, this.handleUpdate, defaultValue, validate)
+        }
+
+        onFlowUpdateBind(this.forceUpdate)
     }
 
     componentWillUnmount() {
-        super.componentWillUnmount()
-        const { formDatum, name } = this.props
-        formDatum.unbind(name, this.handleUpdate)
+        const { formDatum, name, preserve } = this.props
+
+        if (formDatum && name) {
+            formDatum.unbind(name, preserve)
+        }
     }
 
-    validate() {
-        const { formDatum, name } = this.props
+    handleUpdate = (_, __, type) => {
+        const { validate, formDatum, name } = this.props
+
+        const formValues = formDatum.getValue()
+
         const value = formDatum.get(name)
-        const data = formDatum.getValue()
-        const validateProps = filterProps(this.props, v => typeof v === 'string' || typeof v === 'number')
-        validateProps.type = 'array'
-        let rules = [...this.props.rules]
-        rules = rules.concat(formDatum.getRule(name))
 
-        if (rules.length === 0) return Promise.resolve(true)
+        if (type !== IGNORE_VALIDATE_ACTION) {
+            validate(value, formValues).catch(() => {})
+        }
 
-        return validate(value, data, rules, validateProps).then(
-            () => {
-                this.handleError()
-                return true
-            },
-            e => {
-                this.handleError(e)
-                return new FormError(e)
-            }
-        )
+        this.forceUpdate()
     }
 
-    updateWithValidate() {
-        this.validate().then(() => {
-            this.forceUpdate()
-        })
-    }
+    handleInsert = (index: number, value) => {
+        const { name, formDatum } = this.props
 
-    handleError(error) {
-        const { formDatum, name, onError } = this.props
-        if (isSameError(error, formDatum.getError(name, true))) return
-        formDatum.setError(name, error, true)
-        if (onError) onError(error)
-    }
-
-    handleUpdate(v, n, type) {
-        if (this.updateTimer) clearTimeout(this.updateTimer)
-        this.updateTimer = setTimeout(() => {
-            if (type === ERROR_TYPE || type === FORCE_PASS || type === IGNORE_VALIDATE) {
-                this.forceUpdate()
-            } else {
-                this.updateWithValidate()
-            }
-        })
-    }
-
-    handleInsert(index, value) {
-        const { formDatum, name } = this.props
         formDatum.insert(name, index, value)
-        this.updateWithValidate()
+
+        this.handleUpdate(undefined, undefined, CHANGE_ACTION)
     }
 
-    handleRemove(index) {
+    handleRemove = (index: number) => {
         const { formDatum, name } = this.props
+
         formDatum.splice(name, index)
-        this.updateWithValidate()
-    }
 
-    handleChange(index, value, update) {
-        const { formDatum, name } = this.props
-        formDatum.set(`${name}[${index}]`, value)
-        if (update) this.updateWithValidate()
+        this.handleUpdate(undefined, undefined, CHANGE_ACTION)
     }
 
     render() {
-        const { children, formDatum, name, empty, defaultValue } = this.props
+        const { name, defaultValue, emptyRender, children, formDatum, error, animation } = this.props
 
-        const errors = formDatum.getError(name)
-        const result = []
-
-        if (typeof children !== 'function') {
+        if (!isFunc(children)) {
             return (
-                <Provider value={{ path: name, val: this.validate }}>
+                <FieldSetProvider value={{ path: name }}>
                     {children}
-                    {errors instanceof Error && <FieldError key="error" error={errors} />}
-                </Provider>
+                    <FormHelp error={error} animation={animation} />
+                </FieldSetProvider>
             )
         }
 
-        let values = formDatum.get(name) || defaultValue || []
-        if (values && !Array.isArray(values)) values = [values]
-        if (values.length === 0 && empty) {
-            result.push(empty(this.handleInsert.bind(this, 0)))
-        } else {
-            const errorList = Array.isArray(errors) ? errors : []
-            values.forEach((v, i) => {
-                const error = errorList[i]
-                result.push(
-                    <Provider key={i} value={{ path: `${name}[${i}]`, val: this.validate }}>
-                        {children({
-                            list: values,
-                            value: v,
-                            index: i,
-                            error,
-                            datum: formDatum,
-                            onChange: this.handleChange.bind(this, i),
-                            onInsert: this.handleInsert.bind(this, i),
-                            onAppend: this.handleInsert.bind(this, i + 1),
-                            onRemove: this.handleRemove.bind(this, i),
-                        })}
-                    </Provider>
-                )
-            })
+        const values = formDatum.get(name) || defaultValue || []
+
+        if (!values.length && emptyRender) {
+            return (
+                <>
+                    {emptyRender(this.handleInsert.bind(this, 0))}
+                    <FormHelp error={error} animation={animation} />
+                </>
+            )
         }
 
-        if (errors instanceof Error) {
-            result.push(<FieldError key="error" error={errors} />)
-        }
+        return (
+            <>
+                {values.map((value, i) => {
+                    return (
+                        <FieldSetProvider key={i} value={{ path: `${name}[${i}]` }}>
+                            {children({
+                                onAppend: this.handleInsert.bind(this, i + 1),
+                                onRemove: this.handleRemove.bind(this, i),
+                                onInsert: this.handleInsert.bind(this),
+                                list: values,
+                                index: i,
+                                value,
+                            })}
+                        </FieldSetProvider>
+                    )
+                })}
 
-        return result
+                <FormHelp error={error} animation={animation} />
+            </>
+        )
     }
 }
 
-FieldSet.propTypes = {
-    children: PropTypes.any,
-    defaultValue: PropTypes.array,
-    empty: PropTypes.func,
-    formDatum: PropTypes.object.isRequired,
-    name: PropTypes.string.isRequired,
-    onError: PropTypes.func,
-    rules: PropTypes.array,
-}
-
-FieldSet.defaultProps = {
-    rules: [],
-}
-
 export const fieldSetConsumer = Origin => props => (
-    <Consumer>
-        {({ path, val } = {}) => (
-            <Origin
-                {...props}
-                // eslint-disable-next-line
-        name={extendName(path, props.name)}
-                innerFormNamePath={path}
-                fieldSetValidate={val}
-            />
-        )}
-    </Consumer>
+    <FieldSetConsumer>{({ path } = {}) => <Origin {...props} name={extendName(path, props.name)} />}</FieldSetConsumer>
 )
 
-export const FieldSetProvider = Provider
+interface FieldSetComponent {
+    new <Value = any>(props: FieldSetProps): React.Component<FieldSetProps<Value>>
+}
 
-export default fieldSetConsumer(FieldSet)
+export default compose(
+    withFormConsumer(['formDatum', 'animation', 'preserve']),
+    withValidate,
+    withFlow
+)(FieldSet) as FieldSetComponent

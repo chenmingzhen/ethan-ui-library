@@ -1,6 +1,5 @@
 import { uploadClass } from '@/styles'
 import { PureComponent } from '@/utils/component'
-import { FormError } from '@/utils/errors'
 import { getUidStr } from '@/utils/uid'
 import classnames from 'classnames'
 import React, { createRef } from 'react'
@@ -69,16 +68,6 @@ class Upload extends PureComponent<IUploadProps, UploadState> {
         this.state = {
             fileList: props.value || [],
         }
-
-        props.validateHook(this.validate)
-    }
-
-    validate = () => {
-        return new Promise((resolve, reject) => {
-            if (this.state.fileList.length > 0) reject(new FormError(''))
-
-            resolve(true)
-        })
     }
 
     useValidator = (blob: File) => {

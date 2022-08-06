@@ -66,9 +66,17 @@ export default class Slider extends PureComponent<SliderProps, SliderState> {
     }
 
     handleDragEnd = () => {
+        const { onChange, index } = this.props
+
+        const { lengthPercent } = this.state
+
         this.setState({
             dragging: false,
         })
+
+        if (onChange) {
+            onChange(index, this.lengthPercentToValue(lengthPercent))
+        }
     }
 
     lengthPercentToValue = (length: number) => {

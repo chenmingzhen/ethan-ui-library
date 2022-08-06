@@ -1,45 +1,44 @@
 import React from 'react'
 import classnames from 'classnames'
-import { PureComponent } from '@/utils/component'
+import { Component } from '@/utils/component'
 import { curry } from '@/utils/func'
 import Popover, { PopoverProps } from '@/component/Popover/Popover'
-import { isEmpty } from '@/utils/is'
+import { isEmpty, isFunc } from '@/utils/is'
+import { FormItemConsumer } from '@/component/Form/context/formItemContext'
 import { buttonClass, inputClass, popoverClass } from '../styles'
 
-export interface InputBorderProps {
+export interface InputBorderProps<Element = HTMLInputElement> {
     disabled?: boolean
 
     tip?: React.ReactNode | ((value: string) => React.ReactNode)
 
     popoverProps?: Omit<PopoverProps, 'children'>
+
+    className?: string
+
+    style?: React.CSSProperties
+
+    onBlur?: (e: React.FocusEvent<Element>) => void
+
+    onFocus?: (e: React.FocusEvent<Element>) => void
+
+    size?: 'small' | 'default' | 'large'
+
+    border?: boolean
+
+    width?: React.CSSProperties['width']
+
+    autoFocus?: boolean
 }
 
 interface IInputBorderProps extends InputBorderProps {
     value: any
 
-    autoFocus?: boolean
-
-    border?: boolean
-
-    className?: string
-
     error?: Error
-
-    onBlur?: (e: React.FocusEvent<HTMLInputElement>) => void
-
-    onFocus?: (e: React.FocusEvent<HTMLInputElement>) => void
-
-    style?: React.CSSProperties
-
-    width?: React.CSSProperties['width']
-
-    size?: 'small' | 'default' | 'large'
 }
 
 interface InputBorderState {
     focus: boolean
-
-    mounted: boolean
 }
 
 interface Options {
@@ -63,11 +62,12 @@ interface Options {
  */
 export default curry(
     (options: Options, Origin) =>
-        class extends PureComponent<IInputBorderProps, InputBorderState> {
+        class extends Component<IInputBorderProps, InputBorderState> {
             static defaultProps = {
                 border: true,
                 style: {},
                 popoverProps: {},
+                errors: [],
             }
 
             el = React.createRef<HTMLElement>()
@@ -79,14 +79,7 @@ export default curry(
                 super(props)
                 this.state = {
                     focus: props.autoFocus,
-                    mounted: false,
                 }
-            }
-
-            componentDidMount() {
-                super.componentDidMount()
-
-                options.popover && this.setState({ mounted: true })
             }
 
             handleBlur = event => {
@@ -108,9 +101,17 @@ export default curry(
             buildContent = () => {
                 const { error, tip } = this.props
 
-                const content =
-                    error?.message ??
-                    (typeof tip === 'function' ? (!isEmpty(this.props.value) ? tip(this.props.value) : null) : tip)
+                let content
+
+                if (error) {
+                    content = error.message
+                } else if (isFunc(tip)) {
+                    if (!isEmpty(this.props.value)) {
+                        content = tip(this.props.value)
+                    }
+                } else {
+                    content = tip
+                }
 
                 if (!this.cacheContent) this.cacheContent = content
 
@@ -127,35 +128,24 @@ export default curry(
                 }
             }
 
-            render() {
-                const { className, border, size, tip, width, style, error, popoverProps, ...other } = this.props
+            renderChildren = () => {
+                const {
+                    border,
+                    size,
+                    tip,
+                    width,
+                    style,
+                    /** use */
+                    error,
+                    popoverProps,
+                    ...other
+                } = this.props
 
                 const { focus } = this.state
 
-                const Tag = ((options.tag || 'label') as unknown) as React.ElementType
-
-                const tagStyle = Object.assign({ width }, style)
-
-                const newClassName = classnames(
-                    inputClass(
-                        '_',
-                        focus && other.disabled !== true && 'focus',
-                        other.disabled === true && 'disabled',
-                        options.isGroup && 'group',
-                        size,
-                        tagStyle.width && 'inline',
-                        !border && 'no-border',
-                        options.overflow && `overflow-${options.overflow}`,
-                        error && 'invalid',
-                        popoverProps.placement && error && 'focus'
-                    ),
-                    buttonClass(
-                        options.isGroup && 'group',
-                        options.from === 'input' && options.isGroup && 'from-input-group'
-                    ),
-                    typeof options.className === 'function' ? options.className(this.props) : options.className,
-                    this.props.className
-                )
+                if (!options.popover || options.isGroup) {
+                    return <Origin {...other} size={size} onFocus={this.handleFocus} onBlur={this.handleBlur} />
+                }
 
                 const popoverClassList = ['input-tip']
 
@@ -168,47 +158,80 @@ export default curry(
                         ? Object.assign({}, { minWidth: 200, maxWidth: 400 }, popoverProps.style)
                         : { minWidth: 200, maxWidth: 400 }
 
-                const content = this.buildContent()
-
-                const popoverVisible = !!error || !!(content && focus)
-
                 if (error) {
                     popoverClassList.push('input-error')
                 }
 
-                const originComponent = (
-                    <Origin {...other} size={size} onFocus={this.handleFocus} onBlur={this.handleBlur} />
-                )
+                const content = this.buildContent()
+
+                const popoverVisible = !!error || (!!content && focus)
 
                 return (
-                    <Tag
-                        ref={this.el}
-                        className={newClassName}
-                        style={tagStyle}
-                        tabIndex={options.enterPress ? '0' : undefined}
+                    <Popover
+                        animation={false}
+                        getPopupContainer={() => this.el.current}
+                        trigger="click"
+                        {...popoverProps}
+                        visible={popoverVisible}
+                        style={popoverStyles}
+                        className={popoverClass(...popoverClassList)}
+                        placement={placement}
+                        content={content || this.cacheContent}
+                        onVisibleChange={this.handleVisibleChange}
+                        innerAlwaysUpdate
                     >
-                        {options.popover ? (
-                            <>
-                                {this.state.mounted && (
-                                    <Popover
-                                        getPopupContainer={() => this.el.current}
-                                        {...popoverProps}
-                                        visible={popoverVisible}
-                                        style={popoverStyles}
-                                        className={popoverClass(...popoverClassList)}
-                                        placement={placement}
-                                        content={content || this.cacheContent}
-                                        onVisibleChange={this.handleVisibleChange}
-                                        innerAlwaysUpdate
-                                    >
-                                        {originComponent}
-                                    </Popover>
-                                )}
-                            </>
-                        ) : (
-                            originComponent
-                        )}
-                    </Tag>
+                        <Origin {...other} size={size} onFocus={this.handleFocus} onBlur={this.handleBlur} />
+                    </Popover>
+                )
+            }
+
+            render() {
+                return (
+                    <FormItemConsumer>
+                        {({ hasItemError } = {}) => {
+                            const { border, size, tip, width, style, error, popoverProps, ...other } = this.props
+
+                            const { focus } = this.state
+
+                            const Tag = ((options.tag || 'label') as unknown) as React.ElementType
+
+                            const tagStyle = Object.assign({ width }, style)
+
+                            const newClassName = classnames(
+                                inputClass(
+                                    '_',
+                                    focus && other.disabled !== true && 'focus',
+                                    other.disabled === true && 'disabled',
+                                    options.isGroup && 'group',
+                                    size,
+                                    tagStyle.width && 'inline',
+                                    !border && 'no-border',
+                                    options.overflow && `overflow-${options.overflow}`,
+                                    (hasItemError || error) && 'invalid',
+                                    popoverProps.placement && error && 'focus'
+                                ),
+                                buttonClass(
+                                    options.isGroup && 'group',
+                                    options.from === 'input' && options.isGroup && 'from-input-group'
+                                ),
+                                typeof options.className === 'function'
+                                    ? options.className(this.props)
+                                    : options.className,
+                                this.props.className
+                            )
+
+                            return (
+                                <Tag
+                                    ref={this.el}
+                                    className={newClassName}
+                                    style={tagStyle}
+                                    tabIndex={options.enterPress ? '0' : undefined}
+                                >
+                                    {this.renderChildren()}
+                                </Tag>
+                            )
+                        }}
+                    </FormItemConsumer>
                 )
             }
         }

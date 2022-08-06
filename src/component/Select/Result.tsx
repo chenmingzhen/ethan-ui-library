@@ -4,7 +4,6 @@ import classnames from 'classnames'
 import { inputClass, selectClass } from '@/styles'
 import { stopPropagation } from '@/utils/func'
 import { warningOnce } from '@/utils/warning'
-import { SELECT_RENDER_RESULT } from '@/utils/warning/types'
 import { isNumber, isString } from '@/utils/is'
 import { SelectResultProps } from './type'
 import Caret from '../icons/Caret'
@@ -48,7 +47,7 @@ export default class Result extends PureComponent<SelectResultProps, { showInput
         }
 
         if (!isValidElement(node) && !isString(node) && !isNumber(node)) {
-            warningOnce(SELECT_RENDER_RESULT)
+            warningOnce('[Ethan UI:Select]:renderResult must be a string of a function that return ReactNode')
 
             return null
         }

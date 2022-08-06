@@ -1,10 +1,10 @@
 // @ts-nocheck
 import { compose } from '@/utils/func'
-import inputable from '../Form/inputable'
+import withControl from '../../hoc/withControl'
 import Switch from './Switch'
 import { consumer } from '../Checkbox/context'
 
-const SwitchContainer = compose(inputable, consumer)(Switch)
+const SwitchContainer = compose(withControl, consumer)(Switch)
 
 SwitchContainer.displayName = 'EthanSwitch'
 SwitchContainer.Switch = Switch

@@ -4,6 +4,7 @@ import classnames from 'classnames'
 import { transferClass } from '@/styles'
 import { isArray } from '@/utils/is'
 import { getKey } from '@/utils/uid'
+import { CHANGE_ACTION } from '@/utils/Datum/types'
 import { TransferBaseData, TransferDefaultData, TransferState, TransferProps } from './type'
 import splitSelecteds from './utils/select'
 import { Provider } from './context'
@@ -67,6 +68,18 @@ class Transfer<
         this.state = {
             selecteds,
         }
+    }
+
+    componentDidMount() {
+        super.componentDidMount()
+
+        this.props.datum.subscribe(CHANGE_ACTION, this.forceUpdate)
+    }
+
+    componentWillUnmount(): void {
+        super.componentDidMount()
+
+        this.props.datum.unsubscribe(CHANGE_ACTION, this.forceUpdate)
     }
 
     getKey = (item: FormatData, index: number) => {

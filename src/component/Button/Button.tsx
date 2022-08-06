@@ -59,7 +59,7 @@ const Button: React.FC<ButtonProps> = props => {
 
         return React.Children.map(wrapSpan(children), item => {
             // 对 loading情况做处理 如果是loading 去除Icon
-            if (loading && isValidElement(item) && item?.type?.isEthanIcon) return null
+            if (loading && isValidElement(item) && (item?.type as any)?.isEthanIcon) return null
 
             return item
         }).filter(v => v !== null)

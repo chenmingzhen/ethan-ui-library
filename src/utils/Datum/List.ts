@@ -1,5 +1,4 @@
 import { warning } from '../warning'
-import { DATUM_LIST_INVALID_VALUES } from '../warning/types'
 import { CHANGE_ACTION } from './types'
 
 export type FormatInfer<T> = T extends Record<string, any>
@@ -120,7 +119,7 @@ export default class List<T = string> {
     }
 
     /** 将数据转为Array格式 */
-    private arrayValue(values = []) {
+    arrayValue(values = []) {
         if (this.limit === 1 && !Array.isArray(values)) {
             return [values]
         }
@@ -132,12 +131,13 @@ export default class List<T = string> {
             return values
         }
 
-        warning(DATUM_LIST_INVALID_VALUES)
+        warning(
+            '[Ethan UI:Datum.List]:the defaultValue or value props is not a valid value.MayBe you should pass an array'
+        )
 
         return []
     }
 
-    // 设置disabled
     private setDisabled(disabled) {
         this.disabled = (...obj) => {
             switch (typeof disabled) {
@@ -151,16 +151,11 @@ export default class List<T = string> {
         }
     }
 
-    // 处理Change 并触发事件派发
+    /** 处理Change 并触发事件派发 */
     private handleChange(values, ...args) {
-        /** @bug  由于此处逻辑发生改变，导致transfer select的渲染响应不正确 */
-        if (!this.control) {
-            this.$values = values
+        this.$values = values
 
-            this.onChange?.(this.getValue(), ...args)
-        } else {
-            this.onChange?.(values, ...args)
-        }
+        this.onChange?.(this.getValue(), ...args)
 
         /** 执行一次更新的操作 */
         this.dispatch(CHANGE_ACTION)
@@ -172,7 +167,6 @@ export default class List<T = string> {
         let raws = Array.isArray(data) ? data : [data]
 
         raws = raws.filter(v => {
-            // 获取是否disabled
             const disabled = this.disabled(v)
 
             if (disabled) return false
@@ -199,6 +193,10 @@ export default class List<T = string> {
         this.$values = []
 
         this.add({ data })
+    }
+
+    clear() {
+        this.values = []
     }
 
     check(data) {

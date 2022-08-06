@@ -47,12 +47,23 @@
                 padding-left: 0;
             }
         }
+
+        &.@{form-prefix}-invalid {
+            .@{form-prefix}-control {
+                .@{input-prefix}-group {
+                    border-color: @form-feedback-invalid-color;
+
+                    &.@{input-prefix}-focus {
+                        .input-focus-color(@colors-danger);
+                    }
+                }
+            }
+        }
     }
 
     .@{form-prefix}-tip,
     .@{form-prefix}-error {
         margin-top: 5px;
-        margin-bottom: 8px;
         color: @form-tip-color;
         font-size: @form-tip-font-size;
     }
@@ -304,6 +315,26 @@
         }
     }
 
+    &-password-suffix {
+        position: absolute;
+        right: 0;
+        width: 22px;
+        padding: 0 4px;
+        line-height: 1;
+
+        svg path {
+            fill: @gray-500;
+        }
+
+        &:hover svg path {
+            fill: @colors-primary;
+        }
+    }
+
+    &-password-suffix {
+        height: 100%;
+    }
+
     &-number-up {
         top: 0;
         bottom: 50%;
@@ -546,6 +577,10 @@
                 right: 22px;
             }
         }
+    }
+
+    & .@{input-prefix}-btn-suffix {
+        padding-left: 0;
     }
 
     textarea&-shadow {

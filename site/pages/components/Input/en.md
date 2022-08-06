@@ -36,3 +36,5 @@ The basic API is the same as the above table, and the specific API is as follows
 | digits | number | - | the digits of number |
 | allowNull | boolean | false | allow value is null |
 | hideArrow | boolean | false | Whether to show increase/decrease buttons |
+| onChange | (value: string) => void | 无 | The callback function when the value is changing |
+| onInput | (value: string) => void | 无 | The callback function when the input component is changing |

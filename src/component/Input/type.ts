@@ -1,16 +1,16 @@
 import { InputBorderProps } from '@/hoc/inputBorder'
 import { TrimProps } from '@/hoc/trim'
 import React from 'react'
-import { InputAbleProps } from '../Form/inputable'
+import { Rule } from '../Rule/type'
 
 export interface InputProps<Value = string | number>
     extends Omit<
             React.InputHTMLAttributes<HTMLInputElement>,
-            'size' | 'prefix' | 'type' | 'value' | 'onChange' | 'defaultValue'
+            'size' | 'prefix' | 'type' | 'value' | 'onChange' | 'defaultValue' | 'width'
         >,
-        InputAbleProps,
         TrimProps,
         InputBorderProps {
+    rules?: Rule[]
     className?: string
     clearable?: boolean | (() => void)
     defaultValue?: Value
@@ -27,24 +27,20 @@ export interface InputProps<Value = string | number>
     forwardedRef?: React.MutableRefObject<HTMLInputElement> | React.RefCallback<HTMLInputElement>
 }
 
-export interface InputNumberProps extends InputProps<number> {
+export interface InputNumberProps extends Omit<InputProps<number>, 'onInput'> {
     allowNull?: boolean
     hideArrow?: boolean
     max?: number
     min?: number
     step?: number
+    onInput?: (str: string) => void
 }
 
 export interface InputPasswordProps extends InputProps<string> {
-    point?: string
+    iconRender?: (visible: boolean) => React.ReactNode
 }
 
-export interface InputGroupProps extends InputBorderProps {
-    style?: React.CSSProperties
-    className?: string
-}
-
-export type IInputGroupProps = Omit<InputGroupProps, 'className'>
+export interface InputGroupProps extends Pick<InputProps, 'size'>, InputBorderProps {}
 
 export interface IInputProps extends InputProps {
     htmlName?: string

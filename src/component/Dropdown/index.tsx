@@ -84,7 +84,7 @@ const Dropdown: React.FC<IDropDownProps> = props => {
     const toggleDocumentEvent = useCallback((isBind: boolean) => {
         const method = isBind ? 'addEventListener' : 'removeEventListener'
 
-        document[method]('click', clickAway, true)
+        document[method]('mousedown', clickAway)
     }, [])
 
     const handleFocus = useCallback(() => {

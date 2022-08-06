@@ -5,7 +5,7 @@ import {
     BaseOptions,
     Validator,
     BaseOptionKeys,
-    BaseOptionRuleOutput,
+    BaseOptionRule,
     RequiredOptions,
     MinOptions,
     MaxOptions,
@@ -22,7 +22,7 @@ function Rule<R extends Validator | BaseOptions>(propOptions?: R) {
     const deepMergeOptions = { skipUndefined: true }
 
     function required(msg: string) {
-        const { message, tip } = (options.required as RequiredOptions) || {}
+        const { message } = (options.required as RequiredOptions) || {}
 
         return deepMerge(
             {
@@ -31,37 +31,37 @@ function Rule<R extends Validator | BaseOptions>(propOptions?: R) {
                     return substitute(getLocale(`rules.required.${props.type === 'array' ? 'array' : 'string'}`), props)
                 },
             },
-            deepMerge({ message, tip }, { message: msg }, deepMergeOptions),
+            deepMerge({ message }, { message: msg }, deepMergeOptions),
             deepMergeOptions
         )
     }
 
-    function min(msg: string) {
-        const { message, len } = (options.min as MinOptions) || {}
+    function min(length: number, msg: string) {
+        const { message, min: optionsMin = 0 } = (options.min as MinOptions) || {}
 
         return deepMerge(
             { message: props => createLengthMessage('min', props) },
-            deepMerge({ message, min: len }, { message: msg }, deepMergeOptions),
+            deepMerge({ message, min: optionsMin }, { message: msg, min: length }, deepMergeOptions),
             deepMergeOptions
         )
     }
 
-    function max(msg: string) {
-        const { message, len } = (options.max as MaxOptions) || {}
+    function max(length: number, msg: string) {
+        const { message, max: optionsMax = Number.MAX_SAFE_INTEGER } = (options.max as MaxOptions) || {}
 
         return deepMerge(
             { message: props => createLengthMessage('max', props) },
-            deepMerge({ message, min: len }, { message: msg }, deepMergeOptions),
+            deepMerge({ message, max: optionsMax }, { message: msg, max: length }, deepMergeOptions),
             deepMergeOptions
         )
     }
 
-    function regExp(msg: string) {
+    function regExp(reg: string | RegExp, msg: string) {
         const { message, regExp: optionRegExp } = (options.regExp as RegExpOptions) || {}
 
         return deepMerge(
             { message: getLocale('rules.reg') },
-            deepMerge({ message, regExp: optionRegExp }, { message: msg }, deepMergeOptions),
+            deepMerge({ message, regExp: optionRegExp }, { message: msg, regExp: reg }, deepMergeOptions),
             deepMergeOptions
         )
     }
@@ -87,7 +87,7 @@ function Rule<R extends Validator | BaseOptions>(propOptions?: R) {
         })
     }
 
-    return rules as { [T in keyof Omit<R, BaseOptionKeys>]: R[T] } & BaseOptionRuleOutput
+    return (rules as unknown) as { [T in keyof Omit<R, BaseOptionKeys>]: R[T] } & BaseOptionRule
 }
 
 export default Rule

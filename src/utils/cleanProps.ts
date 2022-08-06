@@ -2,7 +2,6 @@ import immer from 'immer'
 
 const names = [
     'delay',
-    'onDatumBind',
     'rules',
     'formDatum',
     'forceChange',

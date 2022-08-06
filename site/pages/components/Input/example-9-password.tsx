@@ -8,5 +8,13 @@ import React from 'react'
 import { Input } from 'ethan/index'
 
 export default function() {
-    return <Input.Password placeholder="input password" />
+    return (
+        <>
+            <Input.Password placeholder="input password" style={{ width: '200px' }} />
+            <br />
+            <Input.Group>
+                <Input.Password placeholder="input password" style={{ width: '200px' }} clearable />
+            </Input.Group>
+        </>
+    )
 }

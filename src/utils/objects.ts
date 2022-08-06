@@ -56,32 +56,19 @@ interface DeepMergeOptionsParams {
     removeUndefined?: boolean
 
     skipUndefined?: boolean
-
-    clone
 }
 
-// 深度合并对象 不包括数组
-/** @todo */
-export const deepMerge = (
-    target = {},
-    source,
-    {
-        clone,
-        removeUndefined,
-        skipUndefined,
-    }: {
-        clone?: boolean
-        removeUndefined?: boolean
-        skipUndefined?: boolean
-    } = {}
-) => {
+/** 深度合并对象 不包括数组 */
+export const deepMerge = (target = {}, source, params: DeepMergeOptionsParams = {}) => {
     if (!isMergeable(source)) return source
+
+    const { removeUndefined, skipUndefined } = params
 
     const dest = {}
 
     if (isMergeable(target)) {
         Object.keys(target).forEach(k => {
-            dest[k] = clone ? deepMerge({}, target[k], clone) : target[k]
+            dest[k] = deepMerge({}, target[k], params)
 
             if (removeUndefined && dest[k] === undefined) delete dest[k]
         })
@@ -89,11 +76,11 @@ export const deepMerge = (
 
     Object.keys(source).forEach(k => {
         if (isMergeable(source[k]) && isMergeable(target[k])) {
-            dest[k] = deepMerge(target[k], source[k], clone)
+            dest[k] = deepMerge(target[k], source[k], params)
         } else {
             if (skipUndefined && source[k] === undefined) return
 
-            dest[k] = deepMerge({}, source[k], clone)
+            dest[k] = deepMerge({}, source[k], params)
 
             if (removeUndefined && dest[k] === undefined) delete dest[k]
         }
@@ -104,12 +91,15 @@ export const deepMerge = (
 
 export const deepGet = (target, path, options: any = {}) => {
     if (!isObject(target)) throw new Error('Target must be an object.')
+
     if (typeof path !== 'string') throw new Error('Path must be a string.')
 
     if (path === '') return target
+
     const { defaultValue, strictMode } = options
 
     let current = target
+
     for (const [prop, , mode] of pathGenerator(path)) {
         const isStrict =
             mode === PATH_MODE.strict || (strictMode && defaultValue === undefined && mode !== PATH_MODE.loose)
@@ -236,7 +226,7 @@ export const deepHas = (target, path) => {
     return true
 }
 
-export const filterUndefined = (obj: Object) => {
+export const filterUndefined = (obj: Record<string, any>) => {
     const newObj = {}
 
     Object.keys(obj).forEach(key => {

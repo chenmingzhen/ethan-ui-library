@@ -59,3 +59,29 @@
 -   [ ] 完成 Select 后实现 innerTitle
 
 -   [ ] 拆分构建过程到新的工具包
+
+-   [x] Inputable 拆分 Form 的逻辑
+
+-   [x] Form 支持简单的 defaultValue 和复杂的 defaultValue
+
+-   [x] Form 校验错误与显示错误
+
+-   [x] 补全 Form，FormItem，DatumForm 的泛型
+
+*   [x] FieldSet 处理数组或对象
+
+*   [x] FieldSet rule 和触发校验
+
+*   [x] FormItem 和 FieldSet 增加 flow 属性
+
+*   [x] Form 顶层实现和 submit
+
+*   [x] Form hooks 实现
+
+*   [x] Form 滚动到错误中
+
+*   [x] Form 移除值时添加一个 props 是否移除 name 的值
+
+*   [x] Form 的 onChange 添加一个 changedValues 的参数
+
+-   [ ]InputBorder 的 label 去掉

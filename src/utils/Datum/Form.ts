@@ -1,335 +1,390 @@
-// @ts-nocheck
 import deepEqual from 'deep-eql'
-import { unflatten, insertValue, spliceValue, getSthByName } from '@/utils/flat'
+import { flatten, unflatten } from '@/utils/flat'
 import { fastClone, deepClone } from '@/utils/clone'
-import { deepGet, deepSet, deepRemove, deepMerge, objectValues, deepHas } from '@/utils/objects'
-import { isObject, isArray } from '@/utils/is'
-import { promiseAll, FormError } from '@/utils/errors'
-import {
-    updateSubscribe,
-    errorSubscribe,
-    changeSubscribe,
-    VALIDATE_TOPIC,
-    RESET_TOPIC,
-    CHANGE_ACTION,
-    FORCE_PASS,
-    ERROR_TYPE,
-    IGNORE_VALIDATE,
-} from './types'
+import { deepGet, deepSet, deepRemove, deepHas } from '@/utils/objects'
+import { isObject, isArray, isEmpty, isError, isString } from '@/utils/is'
+import { FormInstance, IDatumSetParams } from '@/component/Form/type'
+import { ERROR_ACTION, IGNORE_VALIDATE_ACTION, RESET_ACTION, CHANGE_ACTION } from './types'
+import { warningOnce } from '../warning'
+import { FormError } from '../errors'
 
+interface DatumSetErrorParams {
+    name: string | string[]
+    error: FormError | Error | string
+}
+
+/** 除$values外，其他的映射值均为扁平化存储  */
 export default class {
-    constructor(options = {}) {
-        const { removeUndefined = true, rules, onChange, value, error, initValidate } = options
-        this.rules = rules
-        this.onChange = onChange
-        this.removeUndefined = removeUndefined
+    $events: Record<string, ((...args) => void)[]> = {}
 
-        // store names
-        this.$inputNames = {}
-        // store values
-        this.$values = {}
-        // store default value, for reset
-        this.$defaultValues = {}
-        this.$validator = {}
-        this.$events = {}
-        // handle global errors
-        this.$errors = {}
+    $errors: Record<string, FormError> = {}
 
-        this.deepSetOptions = { removeUndefined, forceSet: true }
+    $defaultValues = {}
 
-        if (value) this.setValue(value, initValidate ? undefined : IGNORE_VALIDATE)
-        if (error) this.resetFormError(error)
+    /** 非扁平化存储 */
+    $values = {}
+
+    $inputNames = {}
+
+    $validator: Record<string, (values, data?) => Promise<true | FormError>> = {}
+
+    onChange: (changeValues, values) => void
+
+    deepSetOptions = { forceSet: true, removeUndefined: undefined }
+
+    private dispatch = (name: string, data, type) => {
+        const event = this.$events[name]
+
+        if (!event) return
+
+        event.forEach(callback => callback(name, data, type))
     }
 
-    handleChange() {
-        if (this.onChange) this.onChange(this.getValue())
+    getForm = (): FormInstance => {
+        return {
+            /** 外部使用 */
+            get: this.get,
+            getValue: this.getValue,
+            set: this.set,
+            setValue: this.setValue,
+            setError: this.setError,
+            setFormError: this.setFormError,
+            validate: this.validate,
+            validateForm: this.validateForm,
+            reset: this.reset,
+            /** 内部获取Datum实例 */
+            GET_INTERNAL_FORM_DATUM: () => this,
+        }
     }
 
-    reset() {
-        this.$errors = {}
-        this.setValue(unflatten(fastClone(this.$defaultValues)), FORCE_PASS, true)
-        this.handleChange()
-        this.dispatch(RESET_TOPIC)
+    setDefaultValue = defaultValue => {
+        this.$defaultValues = { ...flatten(defaultValue || {}) }
+
+        if (defaultValue) {
+            this.setValue(defaultValue)
+        }
     }
 
-    get(name) {
+    get = (name: string | string[]) => {
         if (Array.isArray(name)) return name.map(n => this.get(n))
+
         return deepGet(this.$values, name)
     }
 
-    set(name, value, pub) {
-        if (isObject(name)) {
-            value = objectValues(name)
-            name = Object.keys(name)
+    /** 设置表单的值 相当于setFieldsValue */
+    setValue = value => {
+        const values = isObject(value) ? value : {}
+
+        if (values !== value) {
+            warningOnce('[Ethan UI:Form]:Form value must be an Object')
         }
 
+        if (deepEqual(this.$values, values)) return
+
+        this.$values = deepClone(values)
+
+        Object.keys(this.$inputNames)
+            .sort((a, b) => a.length - b.length)
+            .forEach(name => {
+                this.dispatch(name, this.get(name), IGNORE_VALIDATE_ACTION)
+            })
+    }
+
+    subscribe = (name: string, callback) => {
+        if (!this.$events[name]) this.$events[name] = []
+
+        const events = this.$events[name]
+
+        events.push(callback)
+    }
+
+    unsubscribe = (name: string, callback?) => {
+        if (!this.$events[name]) return
+
+        if (callback) this.$events[name] = this.$events[name].filter(fn => fn !== callback)
+        else delete this.$events[name]
+    }
+
+    bind = (name: string, callback, value, validate) => {
+        if (this.$inputNames[name]) {
+            warningOnce(`There is already an item with name "${name}" exists. The name props must be unique.`)
+        }
+
+        if (value !== undefined && isEmpty(this.get(name))) {
+            this.set({ name, value, FOR_INTERNAL_USE_DISPATCH_CHANGE: false, publishToChildrenItem: true })
+        }
+
+        /** Form的defaultValue优先级高于FormItem的 */
+        if (!(name in this.$defaultValues) && value !== undefined) this.$defaultValues[name] = fastClone(value)
+
+        this.$validator[name] = validate
+
+        this.$inputNames[name] = true
+
+        this.subscribe(name, callback)
+    }
+
+    unbind = (name: string | string[], preserve = false) => {
+        if (!name) return
+
+        if (Array.isArray(name)) {
+            name.forEach(n => this.unbind(n))
+
+            return
+        }
+
+        this.unsubscribe(name)
+
+        this.unsubscribe(name)
+
+        delete this.$inputNames[name]
+
+        delete this.$validator[name]
+
+        delete this.$errors[name]
+
+        delete this.$defaultValues[name]
+
+        if (!deepHas(this.$values, name)) return
+
+        if (!preserve) {
+            deepRemove(this.$values, name)
+        }
+    }
+
+    /** 往下层传递更新事件 */
+    private publishValue = (name, type?) => {
+        const na = `${name}[`
+
+        const no = `${name}.`
+
+        Object.keys(this.$inputNames)
+            .filter(n => n.indexOf(na) === 0 || n.indexOf(no) === 0)
+            .forEach(n => {
+                this.dispatch(n, this.get(n), type)
+            })
+    }
+
+    /** 设置（单个字段）的值，相当于ant setFields */
+    set = ({
+        name,
+        value,
+        FOR_INTERNAL_USE_DISPATCH_CHANGE = false,
+        publishToChildrenItem = false,
+    }: IDatumSetParams) => {
         if (isArray(name)) {
-            this.setArrayValue(name, value)
+            this.setArrayValue(name, value, FOR_INTERNAL_USE_DISPATCH_CHANGE)
+
             return
         }
 
         if (value === this.get(name)) return
+
         deepSet(this.$values, name, value, this.deepSetOptions)
 
-        if (this.$inputNames[name]) {
-            this.dispatch(updateSubscribe(name), value, name)
-            this.dispatch(changeSubscribe(name))
+        this.dispatch(name, value, CHANGE_ACTION)
+
+        if (isObject(value) || publishToChildrenItem) this.publishValue(name)
+
+        if (FOR_INTERNAL_USE_DISPATCH_CHANGE) {
+            this.handleChange(unflatten({ [name]: value }))
         }
-
-        if ((value !== null && typeof value === 'object') || pub) this.publishValue(name, FORCE_PASS)
-
-        this.dispatch(CHANGE_ACTION)
-        this.handleChange()
     }
 
-    setArrayValue(names, values) {
-        names.forEach((name, index) => {
-            deepSet(this.$values, name, values[index], this.deepSetOptions)
+    setFormError = (errors = {}) => {
+        const flattenErrors = flatten(errors)
+
+        Object.keys(flattenErrors).forEach(name => {
+            const error = flattenErrors[name]
+
+            this.setError({ name, error })
         })
+    }
+
+    setError = ({ name, error }: DatumSetErrorParams) => {
+        if (isArray(name)) {
+            ;[name] = name
+        }
+
+        let wrapError: FormError
+
+        const value = this.get(name)
+
+        if (this.$inputNames[name]) {
+            if (isError(error)) {
+                wrapError = new FormError(error.message, name, value)
+            } else if (isString(error)) {
+                wrapError = new FormError(error, name, value)
+            }
+        }
+
+        this.dispatch(name, wrapError, ERROR_ACTION)
+    }
+
+    private setArrayValue = (names: string[], values, FOR_INTERNAL_USE_DISPATCH_CHANGE) => {
+        const changeValues: Record<string, any> = {}
+
+        const currentValues = this.get(names) || []
 
         names.forEach((name, index) => {
+            const currentValue = currentValues[index]
+
+            deepSet(this.$values, name, values[index], this.deepSetOptions)
+
             if (this.$inputNames[name]) {
-                this.dispatch(updateSubscribe(name), values[index], name)
-                this.dispatch(changeSubscribe(name))
+                this.dispatch(name, values[index], CHANGE_ACTION)
+            }
+
+            if (currentValue !== values[index]) {
+                changeValues[name] = values[index]
             }
         })
 
-        this.dispatch(CHANGE_ACTION)
-        this.handleChange()
-    }
-
-    insert(name, index, value) {
-        this.insertError(name, index, undefined)
-        const val = this.get(name)
-        if (val) {
-            val.splice(index, 0, value)
-            this.publishValue(name, IGNORE_VALIDATE)
-            this.publishError(name)
-        } else {
-            this.set(name, [value])
+        if (FOR_INTERNAL_USE_DISPATCH_CHANGE) {
+            this.handleChange(unflatten(changeValues))
         }
     }
 
-    splice(name, index) {
-        this.spliceError(name, index)
-        const list = this.get(name)
-        list.splice(index, 1)
-        this.publishValue(name, IGNORE_VALIDATE)
-        this.publishError(name)
+    private handleChange = (changeValues: any) => {
+        if (this.onChange) this.onChange(changeValues, this.getValue())
     }
 
-    remove(name) {
-        deepRemove(this.$values, name)
-    }
-
-    publishValue(name, type) {
-        const na = `${name}[`
-        const no = `${name}.`
-        Object.keys(this.$inputNames)
-            .filter(n => n.indexOf(na) === 0 || n.indexOf(no) === 0)
-            .forEach(n => {
-                this.dispatch(updateSubscribe(n), this.get(n), n, type)
-            })
-    }
-
-    getError(name, firstHand) {
-        if (firstHand) return this.$errors[name]
-        return getSthByName(name, this.$errors)
-    }
-
-    resetFormError(error = {}) {
-        if (!this.$errors['']) this.$errors[''] = {}
-        let items
-        if (Object.keys(error).length) {
-            items = Object.keys(error).reduce((data, item) => {
-                data[item] = error[item] instanceof Error ? error[item] : new Error(error[item])
-                return data
-            }, {})
-        } else {
-            items = Object.keys(this.$errors['']).reduce((data, name) => {
-                data[name] = undefined
-                return data
-            }, {})
-        }
-        Object.keys(items).map(n => this.setFormError(n, items[n]))
-    }
-
-    removeFormError(name) {
-        if (!this.$errors[''] || !this.$errors[''][name]) return
-        this.setFormError(name)
-    }
-
-    setFormError(name, error) {
-        if (!this.$errors['']) return
-        if (error === undefined) delete this.$errors[''][name]
-        else this.$errors[''][name] = error
-        this.dispatch(errorSubscribe(name), this.getError(name), name, ERROR_TYPE)
-        this.dispatch(updateSubscribe(name))
-    }
-
-    setError(name, error, pub) {
-        if (error === undefined) delete this.$errors[name]
-        else this.$errors[name] = error
-
-        this.dispatch(errorSubscribe(name), this.getError(name), name, ERROR_TYPE)
-        if (pub) this.publishError(name)
-    }
-
-    insertError(name, index, error) {
-        insertValue(this.$errors, name, index, error)
-    }
-
-    spliceError(name, index) {
-        spliceValue(this.$errors, name, index)
-    }
-
-    publishError(name) {
-        const na = `${name}[`
-        const no = `${name}.`
-        Object.keys(this.$inputNames)
-            .filter(n => n.indexOf(na) === 0 || n.indexOf(no) === 0)
-            .forEach(n => {
-                this.dispatch(errorSubscribe(n), this.getError(n), n, ERROR_TYPE)
-            })
-    }
-
-    getRule(name) {
-        if (!this.rules) return []
-        return deepGet(this.rules, name) || []
-    }
-
-    getValue() {
+    getValue = () => {
         return deepClone(this.$values)
     }
 
-    setValue(values = {}, type, forceSet) {
-        if (!forceSet && deepEqual(values, this.$values)) return
-        this.$values = deepMerge({}, values, { clone: true })
-
-        // wait render end.
-        setTimeout(() => {
-            Object.keys(this.$inputNames)
-                .sort((a, b) => a.length - b.length)
-                .forEach(name => {
-                    this.dispatch(updateSubscribe(name), this.get(name), name, type)
-                    this.dispatch(changeSubscribe(name))
-                })
-
-            // for flow
-            this.dispatch(CHANGE_ACTION)
-        })
-    }
-
-    bind(name, fn, value, validate) {
-        if (this.$inputNames[name]) {
-            console.warn(`There is already an item with name "${name}" exists. The name props must be unique.`)
+    validateForm = async (names?: string[]) => {
+        if (!names) {
+            names = Object.keys(this.$validator)
         }
 
-        if (value !== undefined && this.get(name) == null) {
-            this.set(name, value, true)
-            this.dispatch(changeSubscribe(name))
-            this.dispatch(CHANGE_ACTION)
+        const validatePromise: Promise<any>[] = []
+
+        const successRecord: any = {}
+
+        const failResult = []
+
+        for (let i = 0; i < names.length; i++) {
+            validatePromise.push(this.validate(names[i]))
         }
 
-        if (value) this.$defaultValues[name] = fastClone(value)
+        let count = validatePromise.length
 
-        this.$validator[name] = validate
-        this.$inputNames[name] = true
-        this.subscribe(updateSubscribe(name), fn)
-        this.subscribe(errorSubscribe(name), fn)
-    }
+        await new Promise(next => {
+            validatePromise.forEach((promise, index) => {
+                const name = names[index]
 
-    unbind(name) {
-        if (Array.isArray(name)) {
-            name.forEach(n => this.unbind(n))
-            return
-        }
+                promise
+                    .then(value => {
+                        if (value === undefined && this.deepSetOptions.removeUndefined) return
 
-        this.unsubscribe(updateSubscribe(name))
-        this.unsubscribe(errorSubscribe(name))
-        delete this.$inputNames[name]
-        delete this.$validator[name]
-        delete this.$errors[name]
-        delete this.$defaultValues[name]
+                        successRecord[name] = value
+                    })
+                    .catch((error: FormError) => {
+                        const validateResult = unflatten({ [`${[error.name]}`]: error.message })
 
-        if (!deepHas(this.$values, name)) return
-        deepRemove(this.$values, name)
+                        failResult.push(validateResult)
+                    })
+                    .finally(() => {
+                        count -= 1
 
-        if (!this.formUnmount) {
-            setTimeout(() => {
-                this.handleChange()
+                        if (!count) {
+                            next(undefined)
+                        }
+                    })
             })
-        }
+        })
+
+        if (failResult.length) return Promise.reject(failResult)
+
+        /** 恢复到原本的格式 */
+        const validateResult = unflatten(successRecord)
+
+        return Promise.resolve(validateResult)
     }
 
-    dispatch(name, ...args) {
-        const event = this.$events[name]
-        if (!event) return
-        event.forEach(fn => fn(...args))
-    }
+    validate = (name: string) => {
+        const validator = this.$validator[name]
 
-    subscribe(name, fn) {
-        if (!this.$events[name]) this.$events[name] = []
-        const events = this.$events[name]
-        if (fn in events) return
-        events.push(fn)
-    }
-
-    unsubscribe(name, fn) {
-        if (!this.$events[name]) return
-
-        if (fn) this.$events[name] = this.$events[name].filter(e => e !== fn)
-        else delete this.$events[name]
-    }
-
-    validate(type) {
         return new Promise((resolve, reject) => {
-            const keys = Object.keys(this.$validator)
-            const values = this.getValue()
+            if (!validator) {
+                resolve({ [`${name}`]: undefined })
 
-            const validates = [
-                ...keys.map(k => this.$validator[k](this.get(k), values, type)),
-                ...(this.$events[VALIDATE_TOPIC] || []).map(fn => fn()),
-            ]
+                return
+            }
 
-            Promise.all(validates)
+            const value = this.get(name)
+
+            validator(value)
                 .then(res => {
-                    const error = res.find(r => r !== true)
-                    if (error === undefined) resolve(true)
-                    else reject(error)
+                    if (res !== true) {
+                        reject(new FormError(res.message, name, value))
+                    } else {
+                        resolve(value)
+                    }
                 })
                 .catch(e => {
-                    reject(new FormError(e))
+                    reject(new FormError(e.message, name, value))
                 })
         })
     }
 
-    validateFieldsByName(name, type) {
-        if (!name || typeof name !== 'string') {
-            return Promise.reject(new Error(`Name expect a string, get "${name}"`))
+    reset = (names?: string[]) => {
+        const empty = isEmpty(names)
+
+        const resetNames = empty ? Object.keys(this.$inputNames) : names
+
+        if (empty) {
+            this.setValue(unflatten(this.$defaultValues))
+        } else {
+            names.forEach(name => {
+                deepSet(this.$values, name, this.$defaultValues[name], this.deepSetOptions)
+
+                this.publishValue(name, RESET_ACTION)
+            })
         }
 
-        const validations = []
-        const values = this.getValue()
-        Object.keys(this.$validator).forEach(n => {
-            if (n === name || n.indexOf(name) === 0) {
-                validations.push(this.$validator[n](this.get(n), values, type))
-            }
+        resetNames.forEach(name => {
+            this.dispatch(name, this.$defaultValues[name], RESET_ACTION)
         })
 
-        return promiseAll(validations)
+        const changeValues: Record<string, any> = {}
+
+        Object.keys(this.$inputNames).forEach(name => {
+            changeValues[name] = this.$defaultValues[name] !== undefined ? this.$defaultValues[name] : undefined
+        })
+
+        this.handleChange(unflatten(changeValues))
     }
 
-    validateFields(names, type) {
-        if (!Array.isArray(names)) names = [names]
-        const validates = names.map(n => this.validateFieldsByName(n, type))
-        return promiseAll(validates)
+    /** For FieldSet */
+    insert = (name: string, index: number, value) => {
+        const values = this.get(name) as any[]
+
+        if (values) {
+            values.splice(index, 0, value)
+
+            this.handleChange({ [name]: values })
+            /** 在FieldSet中是使用index作为Key，此处强制Item的更新，使Item获得对应的value */
+            this.publishValue(name)
+
+            /** For useFormValuesEffect */
+            this.dispatch(name, this.get(name), CHANGE_ACTION)
+        } else {
+            this.set({ name, value: [value], FOR_INTERNAL_USE_DISPATCH_CHANGE: true })
+        }
     }
 
-    validateClear() {
-        const keys = Object.keys(this.$validator)
-        const validates = keys.map(k => this.$validator[k](FORCE_PASS))
-        Promise.all(validates)
-        this.$errors = {}
+    splice = (name: string, index: number) => {
+        const values = this.get(name)
+
+        values.splice(index, 1)
+
+        this.handleChange({ [name]: values })
+
+        this.publishValue(name)
+
+        /** For useFormValuesEffect */
+        this.dispatch(name, this.get(name), CHANGE_ACTION)
     }
 }

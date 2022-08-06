@@ -2,7 +2,7 @@
 import inputBorder from '@/hoc/inputBorder'
 import { compose } from '@/utils/func'
 import { datepickerClass } from '@/styles'
-import inputable from '../Form/inputable'
+import withControl from '../../hoc/withControl'
 import Container from './Container'
 import value from './value'
 import absolute from '../Table/context'
@@ -10,7 +10,7 @@ import absolute from '../Table/context'
 const getClassName = opt => datepickerClass('_', `${opt.range ? 'r' : 'c'}-${opt.type || 'date'}`)
 
 const Datepicker = compose(
-    inputable,
+    withControl,
     inputBorder({ className: getClassName, innerWidth: true }),
     value,
     absolute

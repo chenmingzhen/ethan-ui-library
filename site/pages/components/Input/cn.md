@@ -34,4 +34,6 @@
 | digits | number | 无 | 数值的精度 |
 | allowNull | boolean | false | 允许空值 |
 | hideArrow | boolean | false | 是否展示增减按钮 |
+| onChange | (value: number) => void | 无 | 值改变回调函数 |
+| onInput | (value: string) => void | 无 | 输入框改变时回调函数 |
 

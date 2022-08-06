@@ -1,16 +1,24 @@
+import React from 'react'
 import { compose } from '@/utils/func'
-import Datum from '@/utils/Datum'
 import inputBorder from '@/hoc/inputBorder'
 import { selectClass } from '@/styles'
-import inputable from '../Form/inputable'
+import withListDatum from '@/utils/Datum/withListDatum'
+import withControl from '../../hoc/withControl'
 import Select from './Select'
 import group from './group'
 import FilterHoc from './Hoc/FilterHoc'
 
+const limitWrap = Origin => props => {
+    const limit = props.multiple ? 0 : 1
+
+    return <Origin {...props} limit={limit} />
+}
+
 const SelectContainer = compose(
-    inputable,
+    withControl,
     inputBorder({ className: selectClass('_'), tag: 'div' }),
-    Datum.Hoc({ bindProps: ['disabled', 'limit', 'format', 'prediction', 'multiple'] }),
+    limitWrap,
+    withListDatum({ bindProps: ['disabled', 'limit', 'format', 'prediction', 'multiple'] }),
     FilterHoc,
     group
 )(Select)

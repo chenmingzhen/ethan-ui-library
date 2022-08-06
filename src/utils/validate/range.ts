@@ -1,7 +1,9 @@
+import { ValidatorProps } from '@/component/Rule/type'
+import { isNumber } from '../is'
 import nullable from './nullable'
 
-export default options =>
-    nullable((value, formdata, callback) => {
+export default (options: ValidatorProps) =>
+    nullable((value, _, callback) => {
         const { min, max, message } = options
 
         if (value === undefined || value === '') {
@@ -10,12 +12,12 @@ export default options =>
         }
 
         const val = parseFloat(value)
+
         if (Number.isNaN(val)) {
-            // console.error(new Error(`Can not convert value '${value}' to Number, validate failed.`))
             callback(new Error(message))
         }
 
-        if ((typeof min === 'number' && val < min) || (typeof max === 'number' && val > max)) {
+        if ((isNumber(min) && val < min) || (isNumber(max) && val > max)) {
             callback(new Error(message))
         } else {
             callback(true)

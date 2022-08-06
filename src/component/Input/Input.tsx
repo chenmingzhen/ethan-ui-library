@@ -1,7 +1,12 @@
 import React, { PureComponent } from 'react'
 import cleanProps from '@/utils/cleanProps'
 import { inputClass } from '@/styles'
-import { IInputProps } from './type'
+import { compose } from '@/utils/func'
+import withValidate from '@/hoc/withValidate'
+import withControl from '@/hoc/withControl'
+import inputBorder from '@/hoc/inputBorder'
+import trim from '@/hoc/trim'
+import { IInputProps, InputComponent } from './type'
 
 class Input extends PureComponent<IInputProps> {
     static defaultProps: IInputProps = {
@@ -144,4 +149,4 @@ class Input extends PureComponent<IInputProps> {
     }
 }
 
-export default Input
+export default compose(withValidate, withControl, inputBorder({ popover: true }), trim)(Input) as InputComponent

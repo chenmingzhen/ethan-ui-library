@@ -1,10 +1,18 @@
 import React, { PureComponent } from 'react'
 import { inputClass } from '@/styles'
+import { isNull, isString } from '@/utils/is'
+import { compose } from '@/utils/func'
+import withControl from '@/hoc/withControl'
+import inputBorder from '@/hoc/inputBorder'
 import icons from '../icons'
 import Input from './Input'
-import { InputNumberProps } from './type'
+import { InputComponent, InputNumberProps } from './type'
 
-class Number extends PureComponent<InputNumberProps> {
+interface InputNumberState {
+    valueStr: string
+}
+
+class Number extends PureComponent<InputNumberProps, InputNumberState> {
     static defaultProps: InputNumberProps = {
         step: 1,
         allowNull: false,
@@ -14,6 +22,24 @@ class Number extends PureComponent<InputNumberProps> {
     hold: boolean
 
     keyPressTimeOut: NodeJS.Timeout
+
+    constructor(props) {
+        super(props)
+
+        this.state = {
+            valueStr: undefined,
+        }
+    }
+
+    componentDidUpdate(prevProps: Readonly<InputNumberProps>) {
+        const prevValue = prevProps.value
+
+        const { value } = this.props
+
+        if (value !== prevValue && this.state.valueStr !== undefined) {
+            this.setState({ valueStr: undefined })
+        }
+    }
 
     componentWillUnmount() {
         this.hold = false
@@ -29,24 +55,33 @@ class Number extends PureComponent<InputNumberProps> {
         this.handleCalc(-this.props.step)
     }
 
-    handleChange = (value: string | number, check?: boolean, isEmpty?: boolean) => {
-        const { onChange, digits, step } = this.props
+    beforeChange = (value: string) => {
+        const { onInput } = this.props
 
-        if (isEmpty) {
+        /** 处于手动输入状态 */
+        if (isString(value) && new RegExp('^-?\\d*\\.?\\d*$').test(value)) {
+            this.setState({ valueStr: value })
+
+            if (onInput) {
+                onInput(value)
+            }
+        }
+    }
+
+    handleChange = (value: number | null) => {
+        const { onChange, digits, step, onInput } = this.props
+
+        this.setState({ valueStr: undefined })
+
+        if (onInput) {
+            onInput(undefined)
+        }
+
+        if (isNull(value)) {
             onChange(value)
 
             return
         }
-
-        /** 处于手动输入状态 */
-        if (!check) {
-            if (new RegExp('^-?\\d*\\.?\\d*$').test(value as string)) {
-                onChange(value)
-            }
-            return
-        }
-
-        value = value as number
 
         if (typeof digits === 'number') {
             value = parseFloat(value.toFixed(digits))
@@ -79,7 +114,7 @@ class Number extends PureComponent<InputNumberProps> {
         // eslint-disable-next-line no-restricted-globals
         if (isNaN(value)) value = 0
 
-        this.handleChange(value, true, value === null)
+        this.handleChange(value)
 
         this.props.onBlur(e)
     }
@@ -92,7 +127,7 @@ class Number extends PureComponent<InputNumberProps> {
         // eslint-disable-next-line
         if (isNaN(value)) value = 0
 
-        this.handleChange(value + mod, true)
+        this.handleChange(value + mod)
     }
 
     longPress = mod => {
@@ -165,14 +200,17 @@ class Number extends PureComponent<InputNumberProps> {
     }
 
     render = () => {
-        const { onChange, allowNull, hideArrow, ...other } = this.props
+        const { onChange, allowNull, hideArrow, value, onInput, ...other } = this.props
+
+        const { valueStr } = this.state
 
         return [
             <Input
                 key="input"
+                value={valueStr !== undefined ? valueStr : value}
                 {...other}
                 className={inputClass({ number: !hideArrow })}
-                onChange={this.handleChange}
+                onChange={this.beforeChange}
                 onKeyDown={this.handleKeyDown}
                 onBlur={this.handleBlur}
                 type="number"
@@ -182,4 +220,4 @@ class Number extends PureComponent<InputNumberProps> {
     }
 }
 
-export default Number
+export default compose(withControl, inputBorder({ popover: true }))(Number) as InputComponent['Number']

@@ -1,24 +1,21 @@
-// @ts-nocheck
-import { isArray, isEmpty, isObject } from './is'
+import { isArray, isEmpty, isObject, isPrimitive } from './is'
 import { deepClone } from './clone'
 
 export function insertPoint(name) {
     const reg = /(\[\d+\])/gi
+
     return name.replace(reg, (s, m, i) => s.replace(m, i === 0 ? m : `.${m}`))
 }
 
-export function flatten(data, skipArray) {
+export function flatten(data) {
     if (isEmpty(data)) return data
+
     const result = {}
+
     function recurse(cur, prop) {
-        if (
-            Object(cur) !== cur ||
-            typeof cur === 'function' ||
-            cur instanceof Date ||
-            cur instanceof Error ||
-            (skipArray && Array.isArray(cur))
-        ) {
-            if (!(cur === undefined && /\[\d+\]$/.test(prop))) {
+        /** 基本数据类型，方法，日期，错误 */
+        if (isPrimitive(cur) || typeof cur === 'function' || cur instanceof Date || cur instanceof Error) {
+            if (cur !== undefined) {
                 result[prop] = cur
             }
         } else if (Array.isArray(cur)) {
@@ -43,35 +40,36 @@ export function flatten(data, skipArray) {
     }
 
     recurse(data, '')
+
     return result
 }
 
-export function unflatten(rawdata) {
-    if (Object(rawdata) !== rawdata || isEmpty(rawdata) || Array.isArray(rawdata)) {
-        return rawdata
+export function unflatten(data: Record<string, any>) {
+    if (isEmpty(data) || Array.isArray(data)) {
+        return data
     }
 
-    const data = { ...rawdata }
-
     const result = {}
+
     let { cur, prop, idx, last, temp, match } = {}
 
-    // eslint-disable-next-line
-    Object.keys(data).sort().forEach((p) => {
-        const pathWithPoint = insertPoint(p)
-        cur = result
-        prop = ''
-        last = 0
-        do {
-            idx = pathWithPoint.indexOf('.', last)
-            temp = pathWithPoint.substring(last, idx !== -1 ? idx : undefined)
-            match = /^\[(\d+)\]$/.exec(temp)
-            cur = cur[prop] || (cur[prop] = match ? [] : {})
-            prop = match ? match[1] : temp
-            last = idx + 1
-        } while (idx >= 0)
-        cur[prop] = deepClone(data[p])
-    })
+    Object.keys(data)
+        .sort()
+        .forEach(p => {
+            const pathWithPoint = insertPoint(p)
+            cur = result
+            prop = ''
+            last = 0
+            do {
+                idx = pathWithPoint.indexOf('.', last)
+                temp = pathWithPoint.substring(last, idx !== -1 ? idx : undefined)
+                match = /^\[(\d+)\]$/.exec(temp)
+                cur = cur[prop] || (cur[prop] = match ? [] : {})
+                prop = match ? match[1] : temp
+                last = idx + 1
+            } while (idx >= 0)
+            cur[prop] = deepClone(data[p])
+        })
     return result['']
 }
 
@@ -131,13 +129,14 @@ const isNameWithPath = (name, path) => {
 export const getSthByName = (name, source = {}) => {
     if (source[name]) return source[name]
 
-    let result = unflatten(source)
+    let result = source
     name = insertPoint(name)
 
     name.split('.').forEach(n => {
         const match = /^\[(\d+)\]$/.exec(n)
-        // eslint-disable-next-line
+
         if (match) n = match[1]
+
         if (result) result = result[n]
         else result = undefined
     })

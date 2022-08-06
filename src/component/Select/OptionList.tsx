@@ -4,7 +4,6 @@ import classnames from 'classnames'
 import { selectClass } from '@/styles'
 import { getLocale } from '@/locale'
 import { getKey } from '@/utils/uid'
-import { CHANGE_ACTION } from '@/utils/Datum/types'
 import { isEmptyStr } from '@/utils/is'
 import { getRangeValue } from '@/utils/numbers'
 import { SelectListProps } from './type'
@@ -73,18 +72,6 @@ class OptionList extends PureComponent<SelectListProps, OptionListState> {
             hoverMove: this.hoverMove,
             getHoverIndex: () => this.state.hoverIndex,
         })
-    }
-
-    componentDidMount() {
-        super.componentDidMount()
-
-        this.props.datum.subscribe(CHANGE_ACTION, this.forceUpdate)
-    }
-
-    componentWillUnmount() {
-        super.componentWillUnmount()
-
-        this.props.datum.subscribe(CHANGE_ACTION, this.forceUpdate)
     }
 
     bindLazyList = (instance: LazyList) => {

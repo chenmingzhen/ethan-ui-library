@@ -8,15 +8,15 @@ const rootPath = path.resolve(__dirname, '../src')
 const componentsPath = path.join(rootPath, '/component')
 
 /**
- * @todo finish form and table then remove de filter for them
+ * @todo finish  table then remove de filter for them
  */
-const ignoreComponents = ['List', 'DataList', 'Form', 'Table']
+const ignoreComponents = ['List', 'DataList', 'Table']
 
 const files = fs
-  .readdirSync(componentsPath)
-  // lstat获取文件信息（不解析符号链接）。
-  .filter(n => fs.lstatSync(path.resolve(componentsPath, n)).isDirectory() && /^[A-Z]/.test(n))
-  .filter(v => !ignoreComponents.includes(v))
+    .readdirSync(componentsPath)
+    // lstat获取文件信息（不解析符号链接）。
+    .filter(n => fs.lstatSync(path.resolve(componentsPath, n)).isDirectory() && /^[A-Z]/.test(n))
+    .filter(v => !ignoreComponents.includes(v))
 
 const line = `/** Created by scripts/src-index.ts.  */
 /** Do not manually change. */

@@ -9,17 +9,15 @@ export const isObject = val => val && typeof val === 'object' && !isArray(val)
 
 export const isDate = val => val instanceof Date
 
-export const isFunc = f => typeof f === 'function'
+export const isFunc = (f): f is (...args) => any => typeof f === 'function'
 
-export function isString(s): s is string {
-    return typeof s === 'string'
-}
+export const isString = (s): s is string => typeof s === 'string'
 
-export function isNumber(n): n is number {
-    return typeof n === 'number'
-}
+export const isNumber = (n): n is number => typeof n === 'number'
 
-export const isError = val => val instanceof Error
+export const isError = (val): val is Error => val instanceof Error
+
+export const isNull = (val): val is null => val === null
 
 export const isRegexp = val => val instanceof RegExp
 
@@ -29,7 +27,7 @@ export const isSet = nameIs('Set')
 
 export const isSymbol = nameIs('Symbol')
 
-export const isPromise = p => p && (nameIs('Promise', p) || isFunc(p.then))
+export const isPromise = (p): p is Promise<any> => p && (nameIs('Promise', p) || isFunc(p.then))
 
 export const isBuffer = val => {
     if (val?.constructor && typeof val.constructor.isBuffer === 'function') {
@@ -37,6 +35,8 @@ export const isBuffer = val => {
     }
     return false
 }
+
+export const isBlob = (val): val is Blob => val instanceof Blob
 
 export const isEmpty = val => {
     if (val === null) return true
@@ -63,7 +63,7 @@ export function isZero(num: number) {
 export const isMergeable = val => {
     if (!isObject(val)) return false
 
-    const fns = [isDate, isError, isRegexp, isMap, isSet, isBuffer]
+    const fns = [isDate, isError, isRegexp, isMap, isSet, isBuffer, isBlob]
 
     for (let i = 0; i < fns.length; i++) {
         if (fns[i](val)) return false
