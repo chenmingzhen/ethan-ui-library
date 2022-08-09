@@ -23,7 +23,7 @@ export default function App() {
             <Form.Item<FormValues> noStyle flow={['name']}>
                 {({ form }) => {
                     const name = form.get('name')
-
+                    console.log('2:', name)
                     if (!name) {
                         return (
                             <Form.Item label={<></>}>
@@ -44,6 +44,7 @@ export default function App() {
             <Form.Item<FormValues> noStyle flow={['name']}>
                 {({ form }) => {
                     const name = form.get('name')
+                    console.log('3:', name)
 
                     if (!name) {
                         /** 改变组件的结构，使条件语句中的实例不一样 */

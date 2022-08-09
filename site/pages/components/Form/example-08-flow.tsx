@@ -1,7 +1,7 @@
 /**
- * cn -
+ * cn - 依赖更新
  *    -- 设置flow值时，不仅会重新渲染FormItem，还会进行校验操作
- * en -
+ * en - Flow update
  *    -- When the flow value is set, the FormItem is not only re-rendered, but also validated
  */
 import { FormItemProps } from '@/component/Form/type'

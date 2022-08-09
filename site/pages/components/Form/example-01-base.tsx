@@ -21,7 +21,11 @@ interface FormValues {
 
 export default function App() {
     return (
-        <Form<FormValues> onChange={console.log}>
+        <Form<FormValues>
+            onSubmit={values => {
+                console.log('submit:', values)
+            }}
+        >
             <Form.Item label="Email" name="email">
                 <Input clearable popoverProps={{ placement: 'left-top' }} />
             </Form.Item>

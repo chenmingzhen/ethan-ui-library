@@ -9,7 +9,7 @@ import { Form, Input, Checkbox, Button } from 'ethan'
 
 export default function() {
     return (
-        <Form inline onSubmit={console.log} action="https://www.w3school.com.cn/demo/demo_form.asp">
+        <Form inline onSubmit={console.log}>
             <Form.Item label="Email">
                 <Input name="email" />
             </Form.Item>

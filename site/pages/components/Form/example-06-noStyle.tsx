@@ -1,8 +1,8 @@
 /**
  * cn - 没样式
- *    -- 表单内置了类似双向绑定的机制，根据表单元素的 name 属性自动下发、收集数据
+ *    -- 无样式的FormItem可直接展示组件，但仍然保留收集数据的能力,实现更复杂的组件
  * en - NoStyle
- *    -- The form has a two-way binding mechanism built in, automatically sending and collecting data based on the name property of the form element.
+ *    -- FormItem without styles can directly display components, but still retain the ability to collect data and implement more complex components
  */
 import React from 'react'
 import { Button, FontAwesome, Form, Input, Select, Upload } from 'ethan'

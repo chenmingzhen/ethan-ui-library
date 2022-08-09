@@ -1,50 +1,110 @@
-# Checkbox _复选框_
+# Form _表单_
 
-Checkbox 可以单独使用。一组 Checkbox 使用时，使用一个 Array 类型的属性 data 来控制选项。
+表单组件，提供数据管理，校验，提交，交互等
 
 <example />
 
 ## API
 
-### Checkbox
+### Form
 
-| 属性           | 类型                       | 默认值 | 说明                     |
-| -------------- | -------------------------- | ------ | ------------------------ |
-| checked        | boolean \| 'indeterminate' | 无     | checked 传入时为受控组件 |
-| disabled       | boolean                    | false  | 是否禁用                 |
-| name           | string                     | 无     | Form 存取数据的名称      |
-| onChange       | (checked: boolean) => void | 无     | Checkbox 变化回调        |
-| defaultChecked | boolean                    |        | 默认值                   |
+| 属性            | 类型                                | 默认值  | 说明                                                       |
+| --------------- | ----------------------------------- | ------- | ---------------------------------------------------------- |
+| className       | string                              | -       | 样式名称                                                   |
+| disabled        | boolean                             | false   | 是否禁用                                                   |
+| defaultValue    | any                                 | -       | 表单默认值，只有初始化以及重置时生效                       |
+| inline          | boolean                             | false   | 是否水平布局                                               |
+| forwardedRef    | ()=>HTMLFormElement                 | -       | 获取 form 的 Dom                                           |
+| onError         | (error:Error)=>void                 | -       | 提交表单且数据验证失败后回调事件                           |
+| onReset         | ()=>void                            | -       | 重置表单回调事件                                           |
+| onSubmit        | (value:any)=>void                   | -       | 提交表单且数据验证成功后回调事件                           |
+| scrollToError   | boolean                             | -       | 提交失败自动滚动到第一个错误字段                           |
+| style           | React.CSSProperties                 | -       | 样式                                                       |
+| labelAlign      | 'top' \|'right' \|'left'            | -       | Label 的排序方式                                           |
+| labelWidth      | string \| number                    | '140px' | 标签宽度，labelAlign 为 'top' 时无效。                     |
+| onChange        | (changeValues:any,values:any)=>void | -       | 字段更新时触发回调事件                                     |
+| removeUndefined | boolean                             | false   | 是否删除值为 undefined 的字段，默认值为删除                |
+| errors          | Record<string,string\|number>       | -       | 表单的错误值                                               |
+| animation       | boolean                             | false   | 是否以动画展示 error                                       |
+| preserve        | boolean                             | false   | 当字段被删除时保留字段值                                   |
+| form            | FormInstance                        | -       | 经 Form.useForm() 创建的 form 控制实例，不提供时会自动创建 |
 
-### Checkbox.Group
+### Form.Item
 
-** Checkbox.Group 通用 Props **
+** 表单字段组件，用于数据双向绑定、校验、布局等。 **
 
-| 属性         | 类型                                                 | 默认值 | 说明                                                                                |
-| ------------ | ---------------------------------------------------- | ------ | ----------------------------------------------------------------------------------- |
-| defaultValue | FormatData[]                                         |        | 初始值                                                                              |
-| disabled     | (data: CheckItemGroupBaseData) => boolean \| boolean | false  | 如果 disabled 为 true，禁用全部选项，如果 disabled 为函数，根据函数反回结果禁用选项 |
-| onChange     | (value: CheckItemGroupBaseData[]) => void            | 无     | value 为 CheckItemGroupBaseData                                                     |
-| value        | CheckItemGroupBaseData[]                             |        | 在 Form 中，value 会被表单接管，value 无效                                          |
+| 属性          | 类型                                                               | 默认值 | 说明                                                                                               |
+| ------------- | ------------------------------------------------------------------ | ------ | -------------------------------------------------------------------------------------------------- |
+| className     | string                                                             | -      | 样式名称                                                                                           |
+| defaultValue  | any                                                                | -      | 表单字段的默认值，优先级低于 Form 的 defaultValue                                                  |
+| label         | ReactNode                                                          | -      | 未定义时，标签不会 render，也不会占位。                                                            |
+| labelAlign    | 'top' \|'right' \|'left'                                           | -      | Label 的排序方式                                                                                   |
+| labelWidth    | string \| number                                                   | -      | 标签宽度，labelAlign 为 'top' 时无效。                                                             |
+| required      | boolean                                                            | false  | 必填标记，纯展示用，不会触发校验                                                                   |
+| tip           | ReactNode                                                          | -      | 提示文案                                                                                           |
+| style         | React.CSSProperties                                                | -      | 样式                                                                                               |
+| grid          | number \| { width?: number; offset?: number; responsive?: number } | -      | 表单字段的栅格配置                                                                                 |
+| rules         | Rule[]                                                             | -      | 校验规则                                                                                           |
+| name          | string \| string[]                                                 | -      | 字段名，支持数组，支持多级嵌套数据                                                                 |
+| flow          | boolean \| string[]                                                | -      | 订阅对应字段的更新,如果 flow 的字段更新，会重新渲染 FormItem                                       |
+| noStyle       | boolean                                                            | false  | 不带样式，作为纯字段控件使用                                                                       |
+| noErrorInRoot | boolean                                                            | false  | 默认情况下，顶层的 FormItem 会收集所有 FormItem 的错误展示，设置为 true 的 FormItem 不收集错误信息 |
+| preserve      | boolean                                                            | false  | 当字段被删除时保留字段值                                                                           |
+| animation     | boolean                                                            | false  | 是否以动画展示 error                                                                               |
 
-** Checkbox.Group 中使用 data 时的 Props **
+### Form.FieldSet
 
-| 属性         | 类型                                                         | 默认值                      | 说明                                                                                                                                                                                          |
-| ------------ | ------------------------------------------------------------ | --------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| data         | CheckItemGroupBaseData[]                                     | 无                          | 数据项                                                                                                                                                                                        |
-| defaultValue | CheckItemGroupBaseData[]                                     |                             | 初始值                                                                                                                                                                                        |
-| disabled     | (data: CheckItemGroupBaseData) => boolean \| boolean         | false                       | 如果 disabled 为 true，禁用全部选项，如果 disabled 为函数，根据函数反回结果禁用选项                                                                                                           |
-| format       | (data: CheckItemGroupBaseData) => any \| string              | d => d                      | 格式化 value<br />默认值，返回原始数据<br />为 string 时，会作为 key 从原始数据中获取值，相当于 (d) => d[format]<br /> 为函数时，以函数返回结果作为 value                                     |
-| name         | string                                                       | 无                          | Form 存取数据的名称                                                                                                                                                                           |
-| keygen       | ((data: CheckItemGroupBaseData) => string) \| string \| true | 必填                        | 生成每一项 key 的辅助方法<br />为 true 时，以数据项本身作为 key，相当于 (d => d)<br />为函数时，使用此函数返回值<br />为 string 时，使用这个 string 对应的数据值。如 'id'，相当于 (d => d.id) |
-| onChange     | (value: FormatData[]) => void                                | 无                          | value 为 datum.getValue()                                                                                                                                                                     |
-| prediction   | (value: FormatData, data: FormatData) => boolean             | (val, d) => val===format(d) | 默认使用 format 函数执行的结果来比较是否匹配，在某些情况下（例如返回原始数据的对象，更新数据时，生成了一个值相同，非同一个对象的选项），需要借助 prediction 函数来判断是否匹配                |
-| renderItem   | (data: CheckItemGroupBaseData) => ReactNode \| string        | 必填                        | 为 string 时，返回 d\[string]<br />为 function 时，返回函数结果                                                                                                                               |
+** 用来处理 object 类型 字段和数组。 **
 
-** Checkbox 类型说明 **
+| 属性         | 类型                                     | 默认值 | 说明                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| ------------ | ---------------------------------------- | ------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| children     | (opts: object) => ReactNode \| ReactNode | 必填   | children 不为 function，用来处理 object 类型数据，children 内的 name 会拼接 FieldSet name，如 FieldSet name 为 'a', children 元素 name 为 b，children 实际处理的数据为 a.b; <br /> children 为 function 时，用来处理数组数据。options 属性为<br />list: name 下的全部数据<br />value：根据 name 获取的值的单条数据<br />onChange：子组件数据改变回调<br />onRemove：子组件删除回调<br />index：当前项索引<br />onInsert: 在当前项之前插入一条数据<br />onAppend: 在当前项之后附加一条数据 |
+| defaultValue | string \| number                         | -      | 默认值                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| emptyRender  | (onInsert: any) => ReactNode             | 无     | 数据为空时展示内容。（仅在 children 为 function 时有效）                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| name         | string                                   | 必填   | 从 Form 中存取数据的名称                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| rules        | any[]                                    | 无     | 校验规则                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| preserve     | boolean                                  | false  | 当字段被删除时保留字段值                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| flow         | boolean \| string[]                      | -      | 订阅对应字段的更新,如果 flow 的字段更新，会重新渲染白 FormItem                                                                                                                                                                                                                                                                                                                                                                                                                            |
+| animation    | boolean                                  | false  | 是否以动画展示 error                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+
+### FormInstance
+
+** 表单组件的实例，用于操作表单 Store **
+
+| 属性         | 类型                                                        | 说明                                 |
+| ------------ | ----------------------------------------------------------- | ------------------------------------ |
+| get          | (name:string\|string[])=>any                                | 获取特定字段的值                     |
+| getValue     | ()=>any                                                     | 获取表单所有的字段值                 |
+| set          | (params:{name:string\|string[],value:any})=>any             | 设置特定字段的值                     |
+| setValue     | (values:any)=>any                                           | 设置表单的值                         |
+| setError     | (params:{name:string\|string[],error:Error \| string})=>any | 设置表单特定字段的错误值             |
+| setFormError | (errors:Record<string,string\|Error>>)                      | 设置表单的错误值                     |
+| validate     | (name:string)=>any                                          | 校验特定字段的表单值，并且返回字段值 |
+| validateForm | (names?:string[])=>any                                      | 校验表单，并返回对应的值，默认为全部 |
+| reset        | (names?:string[])=>void                                     | 重置表单，默认为全部字段             |
+
+### Hooks
+
+#### Form.useForm
+
+创建 Form 实例，操作 Form 的 Store。
 
 ```typescript
-export type CheckItemGroupDefaultDataRecord = { label: React.ReactNode; value: string | number }
+type Form.useForm = (): [FormInstance]
+```
 
-export type CheckItemGroupBaseData = Record<string, any> | string | number
+#### Form.useFormValueState
+
+获取特定字段的状态，可以操作该字段的值
+
+```typescript
+type Form.useFormValueState = (name:string): [value:any,(value: any) => void]
+```
+
+#### Form.useFormValueEffect
+
+监听特定字段的值，发生变化时执行回调
+
+```typescript
+type FormComponent.useFormValueEffect = (callback: (v: any) => void, params: {form: FormInstance,deep: string[]}) => void
 ```

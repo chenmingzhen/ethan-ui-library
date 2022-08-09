@@ -211,19 +211,19 @@ class FormItem extends PureComponent<IFormItemProps, FormItemState> {
 
         const { value } = this
 
-        /** 避免react div嵌套Input可以实现onChange  */
-        /** 因为 React 并不是将 click 事件直接绑定在 dom 上面，而是采用事件冒泡的形式冒泡到 document 上面 */
-        if (!formDatum || !name) return children
-
         if (typeof children === 'function') {
             return children({ value, onChange: this.handleChange, form: formDatum.getForm(), error })
         }
+
+        /** 避免react div嵌套Input可以实现onChange  */
+        /** 因为 React 并不是将 click 事件直接绑定在 dom 上面，而是采用事件冒泡的形式冒泡到 document 上面 */
+        if (!formDatum || !name) return children
 
         if (isValidElement(children)) {
             return cloneElement(children, { value, onChange: this.handleChange })
         }
 
-        return children
+        return null
     }
 
     renderHelp = () => {
@@ -270,7 +270,7 @@ class FormItem extends PureComponent<IFormItemProps, FormItemState> {
 
         if (noStyle) {
             return (
-                <FormItemProvider value={{ hasItemError: !!error }}>
+                <FormItemProvider value={{ hasItemError: !!error, disabled }}>
                     {this.renderChildren()}
 
                     {this.renderHelp()}

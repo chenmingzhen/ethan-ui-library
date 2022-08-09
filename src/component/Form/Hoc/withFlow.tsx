@@ -36,7 +36,7 @@ const withFlow = Origin =>
 
                 const value = formDatum.get(name)
 
-                validate(value, formValue)
+                validate(value, formValue).catch(() => {})
             }
 
             if (this.forceUpdateChildren) {

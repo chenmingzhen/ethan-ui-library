@@ -1,8 +1,8 @@
 /**
  * cn - 校验
- *    -- 校验Form.Item
+ *    -- 更多组件的检验
  * en - Validate
- *    -- Validate Form.Item
+ *    -- More component validation
  */
 import React from 'react'
 import { Button, Checkbox, FontAwesome, Form, Input, Radio, Rate, Rule, Select, Slider, Upload } from 'ethan'

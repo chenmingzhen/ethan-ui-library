@@ -1,4 +1,4 @@
-import { isArray, isEmpty, isObject, isPrimitive } from './is'
+import { isArray, isEmpty, isPrimitive } from './is'
 import { deepClone } from './clone'
 
 export function insertPoint(name) {
@@ -51,7 +51,7 @@ export function unflatten(data: Record<string, any>) {
 
     const result = {}
 
-    let { cur, prop, idx, last, temp, match } = {}
+    let { cur, prop, idx, last, temp, match }: any = {}
 
     Object.keys(data)
         .sort()
@@ -73,90 +73,6 @@ export function unflatten(data: Record<string, any>) {
     return result['']
 }
 
-export function insertValue(obj, name, index, value) {
-    Object.keys(obj)
-        .filter(n => n.indexOf(`${name}[`) === 0)
-        .sort()
-        .reverse()
-        .forEach(n => {
-            // const reg = new RegExp(`${name}\\[(\\d+)\\]`)
-            const reg = new RegExp(`${name.replace(/\[/g, '\\[').replace(/\]/g, '\\]')}\\[(\\d+)\\]`)
-            const match = reg.exec(n)
-            const i = parseInt(match[1], 10)
-            if (i < index) return
-            const newName = n.replace(reg, `${name}[${i + 1}]`)
-            if (obj[n]) obj[newName] = obj[n]
-            delete obj[n]
-        })
-    const newValue = flatten({ [`${name}[${index}]`]: value })
-    Object.keys(newValue).forEach(k => {
-        if (newValue[k] !== undefined) obj[k] = newValue[k]
-    })
-}
-
-export function spliceValue(obj, name, index) {
-    const names = Object.keys(obj)
-        .filter(n => n === name || n.indexOf(`${name}[`) === 0)
-        .sort()
-    names.forEach(n => {
-        if (n === name && !Array.isArray(obj[name])) return
-
-        if (n === name) {
-            obj[name].splice(index, 1)
-            return
-        }
-
-        const reg = new RegExp(`${name.replace(/\[/g, '\\[').replace(/\]/g, '\\]')}\\[(\\d+)\\]`)
-        const match = reg.exec(n)
-        const i = parseInt(match[1], 10)
-        if (i < index) return
-        if (i === index) {
-            delete obj[n]
-            return
-        }
-        const newName = n.replace(reg, `${name}[${i - 1}]`)
-        obj[newName] = obj[n]
-        delete obj[n]
-    })
-}
-
-const isNameWithPath = (name, path) => {
-    if (name.indexOf(path) !== 0) return false
-    const remain = name.replace(path, '')[0]
-    return [undefined, '[', '.'].includes(remain)
-}
-
-export const getSthByName = (name, source = {}) => {
-    if (source[name]) return source[name]
-
-    let result = source
-    name = insertPoint(name)
-
-    name.split('.').forEach(n => {
-        const match = /^\[(\d+)\]$/.exec(n)
-
-        if (match) n = match[1]
-
-        if (result) result = result[n]
-        else result = undefined
-    })
-
-    // get from form-error
-    if (!result && isObject(source[''])) result = source[''][name]
-
-    return result
-}
-
-export const removeSthByName = (name, source) => {
-    const match = /(.*)\[(\d+)\]$/.exec(name)
-    if (match) {
-        spliceValue(source, match[1], parseInt(match[2], 10))
-    } else {
-        Object.keys(source).forEach(n => {
-            if (isNameWithPath(n, name)) delete source[n]
-        })
-    }
-}
 export function flattenArray<T>(arr: T[]) {
     return arr.reduce(
         (previousValue, currentValue) =>

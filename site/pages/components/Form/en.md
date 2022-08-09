@@ -1,50 +1,110 @@
-# Checkbox _复选框_
+# Form
 
-Checkbox 可以单独使用。一组 Checkbox 使用时，使用一个 Array 类型的属性 data 来控制选项。
+Form component, providing data management, validation, submission, interaction, etc
 
 <example />
 
 ## API
 
-### Checkbox
+### Form
 
-| 属性           | 类型                       | 默认值 | 说明                     |
-| -------------- | -------------------------- | ------ | ------------------------ |
-| checked        | boolean \| 'indeterminate' | 无     | checked 传入时为受控组件 |
-| disabled       | boolean                    | false  | 是否禁用                 |
-| name           | string                     | 无     | Form 存取数据的名称      |
-| onChange       | (checked: boolean) => void | 无     | Checkbox 变化回调        |
-| defaultChecked | boolean                    |        | 默认值                   |
+| Property        | Type                                | Default | Description                                                                                           |
+| --------------- | ----------------------------------- | ------- | ----------------------------------------------------------------------------------------------------- |
+| className       | string                              | -       | Extend className                                                                                      |
+| disabled        | boolean                             | false   | When disabled is true, all the elements in the form are disabled.                                     |
+| defaultValue    | any                                 | -       | Form default value                                                                                    |
+| inline          | boolean                             | false   | When inline is true, the form is horizontal layout                                                    |
+| forwardedRef    | ()=>HTMLFormElement                 | -       | Get the Dom of the Form                                                                               |
+| onError         | (error:Error)=>void                 | -       | Callback when the error happens                                                                       |
+| onReset         | ()=>void                            | -       | Reset the form callback event                                                                         |
+| onSubmit        | (value:any)=>void                   | -       | Callback events after the form is submitted and data validation is successful                         |
+| scrollToError   | boolean                             | -       | Submit failure automatically scrolls to the first error field                                         |
+| style           | React.CSSProperties                 | -       | Container element style                                                                               |
+| labelAlign      | 'top' \|'right' \|'left'            | -       | Label sort                                                                                            |
+| labelWidth      | string \| number                    | '140px' | Label width, invalid if labelAlign is 'top'.                                                          |
+| onChange        | (changeValues:any,values:any)=>void | -       | A callback event is triggered when a field is updated                                                 |
+| removeUndefined | boolean                             | false   | Whether to delete fields whose value is undefined, the default value is delete                        |
+| errors          | Record<string,string\|number>       | -       | Form errors                                                                                           |
+| animation       | boolean                             | false   | Whether to animate error                                                                              |
+| preserve        | boolean                             | false   | Preserve the field value when the field is deleted                                                    |
+| form            | FormInstance                        | -       | The Form control instance created by form.useForm () is automatically created when it is not provided |
 
-### Checkbox.Group
+### Form.Item
 
-** Checkbox.Group 通用 Props **
+** Form field components for bidirectional data binding, validation, layout, and so on. **
 
-| 属性         | 类型                                                 | 默认值 | 说明                                                                                |
-| ------------ | ---------------------------------------------------- | ------ | ----------------------------------------------------------------------------------- |
-| defaultValue | FormatData[]                                         |        | 初始值                                                                              |
-| disabled     | (data: CheckItemGroupBaseData) => boolean \| boolean | false  | 如果 disabled 为 true，禁用全部选项，如果 disabled 为函数，根据函数反回结果禁用选项 |
-| onChange     | (value: CheckItemGroupBaseData[]) => void            | 无     | value 为 CheckItemGroupBaseData                                                     |
-| value        | CheckItemGroupBaseData[]                             |        | 在 Form 中，value 会被表单接管，value 无效                                          |
+| Property      | Type                                                               | Default | Description                                                                                                                      |
+| ------------- | ------------------------------------------------------------------ | ------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| className     | string                                                             | -       | Extend className.                                                                                                                |
+| defaultValue  | any                                                                | -       | The defaultValue of the Form field, which has a lower priority than the defaultValue of the Form.                                |
+| label         | ReactNode                                                          | -       | When undefined, the tag will not render and will not hold space.                                                                 |
+| labelAlign    | 'top' \|'right' \|'left'                                           | -       | Label sort                                                                                                                       |
+| labelWidth    | string \| number                                                   | -       | Label width, invalid if labelAlign is 'top'.                                                                                     |
+| required      | boolean                                                            | false   | Required tag, for display only, does not trigger check                                                                           |
+| tip           | ReactNode                                                          | -       | Tip information                                                                                                                  |
+| style         | React.CSSProperties                                                | -       | FormItem style                                                                                                                   |
+| grid          | number \| { width?: number; offset?: number; responsive?: number } | -       | Configuration of rasters for FormItem                                                                                            |
+| rules         | Rule[]                                                             | -       | Rules of verification                                                                                                            |
+| name          | string \| string[]                                                 | -       | Field name, support array, support multilevel nested data                                                                        |
+| flow          | boolean \| string[]                                                | -       | Subscribe to the update of the corresponding field. If the Flow field is updated, the FormItem is re-rendered                    |
+| noStyle       | boolean                                                            | false   | No style, used as a pure field control                                                                                           |
+| noErrorInRoot | boolean                                                            | false   | By default, the top-level FormItem collects error displays for all FormItems. FormItem set to true do not collect error messages |
+| preserve      | boolean                                                            | false   | Preserve the field value when the field is deleted                                                                               |
+| animation     | boolean                                                            | false   | Whether to animate error                                                                                                         |
 
-** Checkbox.Group 中使用 data 时的 Props **
+### Form.FieldSet
 
-| 属性         | 类型                                                         | 默认值                      | 说明                                                                                                                                                                                          |
-| ------------ | ------------------------------------------------------------ | --------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| data         | CheckItemGroupBaseData[]                                     | 无                          | 数据项                                                                                                                                                                                        |
-| defaultValue | CheckItemGroupBaseData[]                                     |                             | 初始值                                                                                                                                                                                        |
-| disabled     | (data: CheckItemGroupBaseData) => boolean \| boolean         | false                       | 如果 disabled 为 true，禁用全部选项，如果 disabled 为函数，根据函数反回结果禁用选项                                                                                                           |
-| format       | (data: CheckItemGroupBaseData) => any \| string              | d => d                      | 格式化 value<br />默认值，返回原始数据<br />为 string 时，会作为 key 从原始数据中获取值，相当于 (d) => d[format]<br /> 为函数时，以函数返回结果作为 value                                     |
-| name         | string                                                       | 无                          | Form 存取数据的名称                                                                                                                                                                           |
-| keygen       | ((data: CheckItemGroupBaseData) => string) \| string \| true | 必填                        | 生成每一项 key 的辅助方法<br />为 true 时，以数据项本身作为 key，相当于 (d => d)<br />为函数时，使用此函数返回值<br />为 string 时，使用这个 string 对应的数据值。如 'id'，相当于 (d => d.id) |
-| onChange     | (value: FormatData[]) => void                                | 无                          | value 为 datum.getValue()                                                                                                                                                                     |
-| prediction   | (value: FormatData, data: FormatData) => boolean             | (val, d) => val===format(d) | 默认使用 format 函数执行的结果来比较是否匹配，在某些情况下（例如返回原始数据的对象，更新数据时，生成了一个值相同，非同一个对象的选项），需要借助 prediction 函数来判断是否匹配                |
-| renderItem   | (data: CheckItemGroupBaseData) => ReactNode \| string        | 必填                        | 为 string 时，返回 d\[string]<br />为 function 时，返回函数结果                                                                                                                               |
+** Handle a set(group) data from form by name. **
 
-** Checkbox 类型说明 **
+| Property     | Type                                     | Default  | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| ------------ | ---------------------------------------- | -------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| children     | (opts: object) => ReactNode \| ReactNode | required | When children type is not function, handle a set data type of object, When children type is function, handle a group of data type of array. options property: <br />list: all data of name <br />value：a single piece of data for the value obtained by name <br />onChange：a callback when the value is changing <br />onRemove：a callback when a child component is removed <br />index：the current index <br />onInsert: Insert a piece of data before the current item <br />onAppend: Insert a piece of data after the current item |
+| defaultValue | string \| number                         |          | Default value                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
+| emptyRender  | (onInsert: any) => ReactNode             | -        | Display content when data is empty. (Only valid if children is function)                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| name         | string                                   | required | The name to access data from the Form                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
+| rules        | any[]                                    | -        | Rules of verification                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
+| preserve     | boolean                                  | false    | Preserve the field value when the field is deleted 值                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
+| flow         | boolean \| string[]                      | -        | Subscribe to the update of the corresponding field. If the Flow field is updated, the FormItem is re-rendered                                                                                                                                                                                                                                                                                                                                                                                                                                |
+| animation    | boolean                                  | false    | Whether to animate error error                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+
+### FormInstance
+
+** An instance of the form component that manipulates the Form Store **
+
+| Property     | Type                                                        | Description                                                                   |
+| ------------ | ----------------------------------------------------------- | ----------------------------------------------------------------------------- |
+| get          | (name:string\|string[])=>any                                | Gets the value of a specific field                                            |
+| getValue     | ()=>any                                                     | Returns the values of the form                                                |
+| set          | (params:{name:string\|string[],value:any})=>any             | Sets the value of a specific field                                            |
+| setValue     | (values:any)=>any                                           | Sets the values of the form                                                   |
+| setError     | (params:{name:string\|string[],error:Error \| string})=>any | Sets the value of a specific field error                                      |
+| setFormError | (errors:Record<string,string\|Error>>)                      | Sets the errors of the form                                                   |
+| validate     | (name:string)=>any                                          | Verifies the form value for a particular field and returns the field value    |
+| validateForm | (names?:string[])=>any                                      | Validates the form and returns the corresponding value, which defaults to all |
+| reset        | (names?:string[])=>void                                     | Reset the form, which defaults to all fields                                  |
+
+### Hooks
+
+#### Form.useForm
+
+Create Form instance to maintain data store.
 
 ```typescript
-export type CheckItemGroupDefaultDataRecord = { label: React.ReactNode; value: string | number }
+type Form.useForm = (): [FormInstance]
+```
 
-export type CheckItemGroupBaseData = Record<string, any> | string | number
+#### Form.useFormValueState
+
+Gets the status of a specific field, the value of which can be manipulated
+
+```typescript
+type Form.useFormValueState = (name:string): [value:any,(value: any) => void]
+```
+
+#### Form.useFormValueEffect
+
+Subscribe for the value of a particular field and perform a callback when it changes
+
+```typescript
+type FormComponent.useFormValueEffect = (callback: (v: any) => void, params: {form: FormInstance,deep: string[]}) => void
 ```

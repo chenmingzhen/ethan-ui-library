@@ -6,13 +6,13 @@ import useForm from '../hooks/useForm'
 
 export default curry((Origin: React.ClassicComponentClass<IFormProps<any>>) =>
     React.forwardRef<FormInstance, FormProps>((props, ref) => {
-        const { form, onChange, defaultValue, error, ...other } = props
+        const { form, onChange, defaultValue, errors, ...other } = props
 
         const hasInjectProps = useRef(false)
 
         const forwardForm = useForm(form)
 
-        const prevError = useRef<FormProps['error']>()
+        const prevErrors = useRef<FormProps['errors']>()
 
         const formDatum = forwardForm.GET_INTERNAL_FORM_DATUM()
 
@@ -31,9 +31,9 @@ export default curry((Origin: React.ClassicComponentClass<IFormProps<any>>) =>
         }, [onChange])
 
         useEffect(() => {
-            if (!shallowEqual(prevError, error)) formDatum.setFormError(error)
+            if (!shallowEqual(prevErrors, errors)) formDatum.setFormError(errors)
 
-            prevError.current = error
+            prevErrors.current = errors
         })
 
         useImperativeHandle(ref, () => forwardForm)

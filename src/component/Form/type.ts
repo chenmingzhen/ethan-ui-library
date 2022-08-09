@@ -20,7 +20,7 @@ export interface FormItemProps<Value = any> extends Pick<FormContextProps, 'anim
     tip?: React.ReactNode
     children: React.ReactNode | ((params: FormItemChildrenFuncParams<Value>) => React.ReactNode)
     style?: React.CSSProperties
-    grid?: number
+    grid?: number | { width?: number; offset?: number; responsive?: number }
     rules?: Rule[]
     name?: string | string[]
     defaultValue?: any
@@ -75,8 +75,7 @@ export interface FormProps<T extends Record<string, any> = {}>
     labelWidth?: string | number
     onChange?: (changeValues: Partial<T> | T, value: T) => void
     removeUndefined?: boolean
-    value?: T
-    error?: Record<string, string | Error>
+    errors?: Record<string, string | Error>
     animation?: boolean
     form?: FormInstance
     preserve?: boolean

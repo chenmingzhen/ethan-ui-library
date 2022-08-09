@@ -9,7 +9,7 @@ import { Form, Input } from 'ethan'
 
 export default function() {
     return (
-        <Form labelWidth={200} labelAlign="right" style={{ maxWidth: 500 }}>
+        <Form labelAlign="right" labelWidth={200} style={{ maxWidth: 500 }}>
             <Form.Item label="Email" name="email">
                 <Input />
             </Form.Item>
