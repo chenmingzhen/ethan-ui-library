@@ -3,6 +3,7 @@ import { hidableClass } from '@/styles'
 import classnames from 'classnames'
 import { runInNextFrame } from '@/utils/nextFrame'
 import { isEmpty } from '@/utils/is'
+import cleanProps from '@/utils/cleanProps'
 
 export interface ListProps extends React.DetailedHTMLProps<React.HTMLAttributes<HTMLDivElement>, HTMLDivElement> {
     show: boolean
@@ -337,6 +338,6 @@ export default class AnimationList extends React.PureComponent<ListProps> {
 
         const ms = Object.assign({}, style)
 
-        return <div {...other} ref={this.bindListElement} className={className} style={ms} />
+        return <div {...cleanProps(other)} ref={this.bindListElement} className={className} style={ms} />
     }
 }
