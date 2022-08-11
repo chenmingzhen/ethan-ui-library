@@ -7,13 +7,25 @@
 import React from 'react'
 import { Button, FontAwesome, Form, Input, Select } from 'ethan'
 
-export default function App() {
-    const form = Form.useForm()
+interface FormValues {
+    name: string
+    contact: {
+        phone: string
+        telephone: string
+    }
+    address: string
+    friends: any[]
+}
 
-    Form.useFormValueEffect(console.log, {
-        form,
-        deep: ['name', 'contact.phone', 'address', 'friends'],
-    })
+export default function App() {
+    const form = Form.useForm<FormValues>()
+
+    Form.useFormValueEffect(
+        v => {
+            console.log('UseFormValueEffect callback:', v)
+        },
+        { form, deep: ['name', 'contact.phone', 'address', 'friends'] }
+    )
 
     return (
         <Form form={form}>

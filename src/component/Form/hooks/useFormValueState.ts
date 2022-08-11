@@ -1,9 +1,13 @@
 import { useCallback, useEffect } from 'react'
 import { warningOnce } from '@/utils/warning'
 import useUpdate from '@/hooks/useUpdate'
+import { NestedKeyOf } from '@/utils/utilityTypes'
 import { FormInstance } from '../type'
 
-const useFormValueState = <Value = any>(form: FormInstance, name: string) => {
+const useFormValueState = <S, FormValues extends Record<string, any> = Record<string, any>>(
+    form: FormInstance<FormValues>,
+    name: NestedKeyOf<FormValues>
+) => {
     const update = useUpdate()
 
     const setFormValue = useCallback(value => {
@@ -27,12 +31,12 @@ const useFormValueState = <Value = any>(form: FormInstance, name: string) => {
     }, [])
 
     if (!form) {
-        warningOnce('[Ethan UI:Form]:UseFormValueState must provide formDatum')
+        warningOnce('[Ethan UI:Form]:UseFormValueState must provide form')
     }
 
     return [form ? form.GET_INTERNAL_FORM_DATUM().get(name) : undefined, setFormValue] as [
-        Value | undefined,
-        (value: Value) => void
+        S | undefined,
+        (value: S) => void
     ]
 }
 

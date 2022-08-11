@@ -2,19 +2,22 @@ import { useCallback, useEffect } from 'react'
 import { warningOnce } from '@/utils/warning'
 import { isEmpty } from '@/utils/is'
 import { deepSet } from '@/utils/objects'
-import { LiteralUnion } from '@/utils/utilityTypes'
+import { NestedKeyOf } from '@/utils/utilityTypes'
 import { FormInstance } from '../type'
 
-interface UseFormValueEffectParams<Value extends Record<string, any>> {
-    form: FormInstance
+interface UseFormValueEffectParams<Values extends Record<string, any>> {
+    form: FormInstance<Values>
 
-    deep: LiteralUnion<Extract<keyof Value, string>, string>[]
+    deep: NestedKeyOf<Values>[]
 }
 
 /** 无法监听未存在的name */
-const useFormValueEffect = <Value extends Record<string, any> = any>(
-    callback: (v: Value) => void,
-    params: UseFormValueEffectParams<Value>
+const useFormValueEffect = <
+    Values extends Record<string, any>,
+    SelectedValues extends Record<string, any> = Partial<Values> | Values
+>(
+    callback: (v: SelectedValues) => void,
+    params: UseFormValueEffectParams<Values>
 ) => {
     const { form, deep = [] } = params || {}
 
@@ -94,7 +97,7 @@ const useFormValueEffect = <Value extends Record<string, any> = any>(
                 trackPathDeep(name, handleUpdate, false)
             })
         }
-    }, [deep])
+    }, [deep, callback])
 }
 
 export default useFormValueEffect
