@@ -3,7 +3,8 @@ import { TrimProps } from '@/hoc/trim'
 import React from 'react'
 import { Rule } from '../Rule/type'
 
-export interface InputProps<Value = string | number>
+/** 实际上Input组件的value都是string类型，泛型是给内部Input.Number使用的 */
+export interface InputProps<Value extends string | number = string>
     extends Omit<
             React.InputHTMLAttributes<HTMLInputElement>,
             'size' | 'prefix' | 'type' | 'value' | 'onChange' | 'defaultValue' | 'width'

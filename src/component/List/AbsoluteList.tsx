@@ -6,6 +6,7 @@ import { Component } from '@/utils/component'
 import { docScroll, docSize } from '@/utils/dom/document'
 
 export interface AbsoluteListProps {
+    /** @todo 此组件不应该考虑focus状态，考虑移除掉这个prop，使用新的prop代替 */
     focus: boolean
 
     fixed?: boolean | 'min'
