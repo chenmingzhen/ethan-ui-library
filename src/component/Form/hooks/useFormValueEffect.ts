@@ -3,7 +3,7 @@ import { warningOnce } from '@/utils/warning'
 import { isEmpty } from '@/utils/is'
 import { deepSet } from '@/utils/objects'
 import { LiteralUnion } from '@/utils/utilityTypes'
-import { FormInstance } from '../type'
+import { FormInstance, InternalFormInstance } from '../type'
 
 interface UseFormValueEffectParams<Value extends Record<string, any>> {
     form: FormInstance
@@ -18,10 +18,12 @@ const useFormValueEffect = <Value extends Record<string, any> = any>(
 ) => {
     const { form, deep = [] } = params || {}
 
-    const trackPathDeep = useCallback((name: string, trackCallback, isSubscribe: boolean) => {
-        if (!form) return
+    const internalForm = form as InternalFormInstance
 
-        const formDatum = form.GET_INTERNAL_FORM_DATUM()
+    const trackPathDeep = useCallback((name: string, trackCallback, isSubscribe: boolean) => {
+        if (!internalForm) return
+
+        const formDatum = internalForm.GET_INTERNAL_FORM_DATUM()
 
         const { $inputNames } = formDatum
 
@@ -63,7 +65,7 @@ const useFormValueEffect = <Value extends Record<string, any> = any>(
 
         const values: any = {}
 
-        const formDatum = form.GET_INTERNAL_FORM_DATUM()
+        const formDatum = internalForm.GET_INTERNAL_FORM_DATUM()
 
         const valueList = formDatum.get(deep)
 
@@ -75,7 +77,7 @@ const useFormValueEffect = <Value extends Record<string, any> = any>(
     }, [deep, callback])
 
     useEffect(() => {
-        if (!form) {
+        if (!internalForm) {
             warningOnce('[Ethan UI:Form]:useFormValueEffect must provide form')
         }
 

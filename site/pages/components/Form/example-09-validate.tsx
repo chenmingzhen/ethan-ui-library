@@ -5,7 +5,7 @@
  *    -- More component validation
  */
 import React from 'react'
-import { Button, Checkbox, FontAwesome, Form, Input, Radio, Rate, Rule, Select, Slider, Upload } from 'ethan'
+import { Button, Checkbox, FontAwesome, Form, Input, Radio, Rate, Rule, Select, Slider, Upload, Transfer } from 'ethan'
 
 const rule = Rule({
     uploadSize(value) {
@@ -20,6 +20,15 @@ const rule = Rule({
         return Promise.resolve(true)
     },
 })
+
+const transferData = []
+
+for (let i = 1; i < 20; i++) {
+    transferData.push({
+        id: i,
+        content: `content ${i}`,
+    })
+}
 
 export default function App() {
     return (
@@ -109,6 +118,16 @@ export default function App() {
 
             <Form.Item name="rate" label="Rate" rules={[rule.required]} required>
                 <Rate size={40} background={<FontAwesome name="star" />} front={<FontAwesome name="star" />} />
+            </Form.Item>
+
+            <Form.Item name="transfer" label="Transfer" rules={[rule.required]}>
+                <Transfer
+                    data={transferData}
+                    format="id"
+                    renderItem="content"
+                    keygen="id"
+                    titles={['Source', 'Target']}
+                />
             </Form.Item>
 
             <Form.Item

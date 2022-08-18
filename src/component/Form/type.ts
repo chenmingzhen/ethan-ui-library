@@ -150,5 +150,8 @@ export interface FormInstance<Value = any> {
     validate(name): any
     validateForm(names?: string[]): Promise<Value>
     reset(names?: string[]): void
+}
+
+export interface InternalFormInstance extends FormInstance {
     GET_INTERNAL_FORM_DATUM(): FormDatum
 }
