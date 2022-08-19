@@ -5,7 +5,7 @@
  *    -- When the flow value is set, the FormItem is not only re-rendered, but also validated
  */
 import { FormItemProps } from '@/component/Form/type'
-import { Input, Form, Rule } from 'ethan'
+import { Input, Form, Rule, Button } from 'ethan'
 import React from 'react'
 
 interface FormValues {
@@ -56,6 +56,16 @@ export default function() {
             </Form.Item>
             <Form.Item label="固话" name="telephone" rules={[mandatory]} flow={['mobile']} className="ml5">
                 <Input autoComplete="new-password" width={165} />
+            </Form.Item>
+
+            <Form.Item label={<></>}>
+                <Button htmlType="submit" type="primary">
+                    Submit
+                </Button>
+
+                <Button htmlType="reset" type="primary" style={{ marginLeft: '10px' }}>
+                    Reset
+                </Button>
             </Form.Item>
         </Form>
     )
