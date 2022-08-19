@@ -1,32 +1,21 @@
-// @ts-nocheck
-import { createElement, PureComponent } from 'react'
-import PropTypes from 'prop-types'
+import React, { createElement } from 'react'
 import { datepickerClass } from '@/styles'
 import icons from '../icons'
+import { DatePickerIconProps } from './type'
 
-class Icon extends PureComponent {
-    render() {
-        const { className, name, onClick, tag, disabled } = this.props
+const Icon: React.FC<DatePickerIconProps> = props => {
+    const { className, name, onClick, tag, disabled } = props
 
-        const newProps = {
-            className: datepickerClass(className, 'icon', disabled && 'disabled'),
-            onClick: disabled ? undefined : onClick,
-        }
-
-        return createElement(tag, newProps, icons[name])
+    const newProps = {
+        className: datepickerClass(className, 'icon', disabled && 'disabled'),
+        onClick: disabled ? undefined : onClick,
     }
-}
 
-Icon.propTypes = {
-    className: PropTypes.string,
-    disabled: PropTypes.bool,
-    name: PropTypes.string.isRequired,
-    onClick: PropTypes.func,
-    tag: PropTypes.string,
+    return createElement(tag, newProps, icons[name])
 }
 
 Icon.defaultProps = {
     tag: 'span',
 }
 
-export default Icon
+export default React.memo(Icon)
