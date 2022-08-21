@@ -28,7 +28,7 @@ export interface DatePickerProps {
     quickSelect?: QuickSelect[]
     min?: any
     max?: any
-    defaultRangeMonth?: any[]
+    defaultPickerValue?: number | number[] | Date | Date[]
     hourStep?: number
     minuteStep?: number
     secondStep?: number
@@ -51,7 +51,6 @@ export interface DatePickerTextProps {
     value: string
     size: 'small' | 'default' | 'large'
     format: string
-    onTextFocus(): void
 }
 
 export interface PickerProps extends Pick<DatePickerProps, 'type'> {

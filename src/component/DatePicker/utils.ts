@@ -13,6 +13,7 @@ import {
     startOfMonth,
     startOfWeek,
     toDate,
+    parseISO,
 } from 'date-fns'
 import { getLocale } from '@/locale'
 import { isString } from '@/utils/is'
@@ -242,4 +243,5 @@ export default {
     TIME_FORMAT,
     judgeTimeByRange,
     resetTimeByFormat,
+    parseISO,
 }

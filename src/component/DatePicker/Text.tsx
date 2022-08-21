@@ -13,7 +13,7 @@ const useMergeState = (propsValue = '') => {
 }
 
 const Text: React.FC<DatePickerTextProps> = props => {
-    const { disabled, className, index, inputAble, onTextBlur, format, placeholder, value, size, onFocus } = props
+    const { disabled, className, index, inputAble, onTextBlur, format, placeholder, value, size } = props
 
     const [textValue, updateTextValue] = useMergeState(value)
 
@@ -50,7 +50,6 @@ const Text: React.FC<DatePickerTextProps> = props => {
             value={textValue}
             onKeyDown={handleKeyDown}
             size={size}
-            onFocus={onFocus}
             trim
         />
     )

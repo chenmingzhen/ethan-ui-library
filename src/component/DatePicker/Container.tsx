@@ -15,7 +15,6 @@ import Picker from './Picker'
 import Range from './Range'
 import Text from './Text'
 import AnimationList from '../List'
-import DateFns from './utils'
 import { DatePickerContainerProps } from './type'
 import AbsoluteList from '../List/AbsoluteList'
 
@@ -67,21 +66,23 @@ class Container extends PureComponent<DatePickerContainerProps, DatePickerState>
     transformPropValueToPanelShowDate = (): Date | Date[] => {
         let panelShowDate
 
-        const { defaultRangeMonth, format } = this.props
+        const { defaultPickerValue, format, range, value } = this.props
 
-        if (this.props.range) {
-            panelShowDate = (this.props.value || []).map((v, i) => {
+        if (range) {
+            const defaultRangePicker = defaultPickerValue || []
+
+            panelShowDate = (value || []).map((v, i) => {
                 v = utils.toDateWithFormat(v, format)
 
-                if (utils.isInvalid(v)) v = utils.newDate(defaultRangeMonth[i])
+                if (utils.isInvalid(v)) v = utils.newDate(defaultRangePicker[i])
 
                 return v
             })
 
             if (panelShowDate.length === 0)
-                panelShowDate = [utils.newDate(defaultRangeMonth[0]), utils.newDate(defaultRangeMonth[1])]
+                panelShowDate = [utils.newDate(defaultRangePicker[0]), utils.newDate(defaultRangePicker[1])]
         } else {
-            panelShowDate = utils.toDateWithFormat(this.props.value, format)
+            panelShowDate = utils.toDateWithFormat(value || defaultPickerValue, format)
         }
 
         return panelShowDate
@@ -95,9 +96,9 @@ class Container extends PureComponent<DatePickerContainerProps, DatePickerState>
         return quickSelect.map(q => {
             if (!q.value || q.value.length !== 2) return { name: q.name, invalid: true }
 
-            const date = q.value.map(v => DateFns.toDateWithFormat(v, format))
+            const date = q.value.map(v => utils.toDateWithFormat(v, format))
 
-            if (DateFns.isInvalid(date[0]) || DateFns.isInvalid(date[1])) return { name: q.name, invalid: true }
+            if (utils.isInvalid(date[0]) || utils.isInvalid(date[1])) return { name: q.name, invalid: true }
 
             return {
                 name: q.name,
@@ -192,14 +193,14 @@ class Container extends PureComponent<DatePickerContainerProps, DatePickerState>
         })
     }
 
-    dateToCurrentShowDate = (date: Date | Date[]) => {
+    dateToPanelShowDate = (date: Date | Date[]) => {
         const { range } = this.props
 
         if (!range) return date
 
-        const { panelShowDate: selectedDateValue } = this.state
+        const { panelShowDate } = this.state
 
-        return [date[0] || selectedDateValue[0], date[1] || selectedDateValue[1]]
+        return [date[0] || panelShowDate[0], date[1] || panelShowDate[1]]
     }
 
     /** change为true 表示为最终选中 可以把date设为value而非current */
@@ -228,14 +229,14 @@ class Container extends PureComponent<DatePickerContainerProps, DatePickerState>
             this.handleToggleOpen(false)
         }
 
-        const newCurrentShowDate = this.dateToCurrentShowDate(date)
+        const newPanelShowDate = this.dateToPanelShowDate(date)
 
         if (change) {
-            this.setState({ panelShowDate: newCurrentShowDate })
+            this.setState({ panelShowDate: newPanelShowDate })
 
             onChange(value)
         } else {
-            this.setState({ panelShowDate: newCurrentShowDate })
+            this.setState({ panelShowDate: newPanelShowDate })
         }
     }
 
@@ -244,11 +245,11 @@ class Container extends PureComponent<DatePickerContainerProps, DatePickerState>
 
         const value = this.props.range ? [null, null] : null
 
-        this.props.onChange(value, () => {
-            this.handleToggleOpen(false)
+        this.props.onChange(value)
 
-            this.element.focus()
-        })
+        this.handleToggleOpen(false)
+
+        this.element.focus()
     }
 
     handleHover = (index: number, isHover: boolean) => {
@@ -299,7 +300,7 @@ class Container extends PureComponent<DatePickerContainerProps, DatePickerState>
         const val = date ? utils.format(date, format) : ''
 
         if (!this.props.range) {
-            this.props.onChange(val, () => {})
+            this.props.onChange(val)
             return
         }
 
@@ -310,12 +311,10 @@ class Container extends PureComponent<DatePickerContainerProps, DatePickerState>
         ]
 
         /** 比对时间 调整位置 */
-        if (utils.compareAsc(value[0], value[1]) > 0) value.push(value.shift())
+        if (utils.compareAsc(utils.parseISO(value[0]), utils.parseISO(value[1])) > 0) value.push(value.shift())
 
         this.props.onChange(value)
     }
-
-    handleTextFocus = () => {}
 
     renderText = (value, placeholder: React.ReactNode, key?: number) => {
         const { inputAble, disabled, size, format } = this.props
@@ -336,7 +335,6 @@ class Container extends PureComponent<DatePickerContainerProps, DatePickerState>
                 inputAble={inputAble}
                 placeholder={placeholder}
                 onTextBlur={this.handleTextBlur}
-                onTextFocus={this.handleTextFocus}
                 value={utils.isInvalid(date) ? undefined : utils.format(date, format)}
                 disabled={disabled === true}
                 size={size}
@@ -445,8 +443,8 @@ class Container extends PureComponent<DatePickerContainerProps, DatePickerState>
                 showTimePicker={!!value}
                 allowSingle={allowSingle}
                 handleHover={this.handleHover}
-                min={DateFns.toDateWithFormat(min, format)}
-                max={DateFns.toDateWithFormat(max, format)}
+                min={utils.toDateWithFormat(min, format)}
+                max={utils.toDateWithFormat(max, format)}
                 hourStep={hourStep}
                 minuteStep={minuteStep}
                 secondStep={secondStep}
