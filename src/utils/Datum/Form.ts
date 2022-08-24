@@ -54,7 +54,7 @@ export default class {
             reset: this.reset,
             /** 内部获取Datum实例 */
             GET_INTERNAL_FORM_DATUM: () => this,
-        }
+        } as FormInstance
     }
 
     setDefaultValue = defaultValue => {
@@ -315,7 +315,7 @@ export default class {
 
             const value = this.get(name)
 
-            validator(value)
+            validator(value, this.getValue())
                 .then(res => {
                     if (res !== true) {
                         reject(new FormError(res.message, name, value))
