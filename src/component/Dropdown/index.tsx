@@ -95,19 +95,26 @@ const Dropdown: React.FC<IDropDownProps> = props => {
 
         updateShow(true)
 
-        /** 延迟再绑定事件，避免马上触发clickAway方法 */
-        setTimeout(() => {
-            toggleDocumentEvent(true)
-        })
-    }, [])
+        if (trigger === 'click') {
+            /** 延迟再绑定事件，避免马上触发clickAway方法 */
+            setTimeout(() => {
+                toggleDocumentEvent(true)
+            })
+        }
+    }, [show, trigger])
 
-    const handleHide = useCallback((delay = 200) => {
-        closeTimer.current = setTimeout(() => {
-            updateShow(false)
+    const handleHide = useCallback(
+        (delay = 200) => {
+            closeTimer.current = setTimeout(() => {
+                updateShow(false)
 
-            toggleDocumentEvent(false)
-        }, delay)
-    }, [])
+                if (trigger === 'click') {
+                    toggleDocumentEvent(false)
+                }
+            }, delay)
+        },
+        [trigger]
+    )
 
     function handleToggle(isShow: boolean) {
         if (trigger === 'click') return
