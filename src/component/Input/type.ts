@@ -3,7 +3,7 @@ import { TrimProps } from '@/hoc/trim'
 import React from 'react'
 import { Rule } from '../Rule/type'
 
-export interface InputProps<Value = string | number>
+export interface BaseInputProps<Value = string | number>
     extends Omit<
             React.InputHTMLAttributes<HTMLInputElement>,
             'size' | 'prefix' | 'type' | 'value' | 'onChange' | 'defaultValue' | 'width'
@@ -27,7 +27,12 @@ export interface InputProps<Value = string | number>
     forwardedRef?: React.MutableRefObject<HTMLInputElement> | React.RefCallback<HTMLInputElement>
 }
 
-export interface InputNumberProps extends Omit<InputProps<number>, 'onInput'> {
+export interface InputProps extends Omit<BaseInputProps<string | number>, 'onChange' | 'onEnterPress'> {
+    onChange?: (value: string) => void
+    onEnterPress?: (value: string, evt: React.KeyboardEvent<HTMLInputElement>) => void
+}
+
+export interface InputNumberProps extends Omit<BaseInputProps<number>, 'onInput'> {
     allowNull?: boolean
     hideArrow?: boolean
     max?: number
@@ -36,13 +41,13 @@ export interface InputNumberProps extends Omit<InputProps<number>, 'onInput'> {
     onInput?: (str: string) => void
 }
 
-export interface InputPasswordProps extends InputProps<string> {
+export interface InputPasswordProps extends BaseInputProps<string> {
     iconRender?: (visible: boolean) => React.ReactNode
 }
 
-export interface InputGroupProps extends Pick<InputProps, 'size'>, InputBorderProps {}
+export interface InputGroupProps extends Pick<BaseInputProps, 'size'>, InputBorderProps {}
 
-export interface IInputProps extends InputProps {
+export interface IInputProps extends BaseInputProps {
     htmlName?: string
 }
 

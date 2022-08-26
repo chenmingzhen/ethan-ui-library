@@ -1,5 +1,5 @@
 import { curry } from '@/utils/func'
-import React, { isValidElement } from 'react'
+import React, { isValidElement, SyntheticEvent } from 'react'
 
 const nameIs = curry((name, val) => val?.constructor?.name === name)
 
@@ -28,6 +28,10 @@ export const isSet = nameIs('Set')
 export const isSymbol = nameIs('Symbol')
 
 export const isPromise = (p): p is Promise<any> => p && (nameIs('Promise', p) || isFunc(p.then))
+
+/** 是否为React的合成事件 */
+export const isSyntheticEvent = (event): event is SyntheticEvent =>
+    event && nameIs('SyntheticBaseEvent', event) && event.nativeEvent
 
 export const isBuffer = val => {
     if (val?.constructor && typeof val.constructor.isBuffer === 'function') {

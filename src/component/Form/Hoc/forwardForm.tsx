@@ -6,7 +6,7 @@ import useForm from '../hooks/useForm'
 
 export default curry((Origin: React.ClassicComponentClass<IFormProps<any>>) =>
     React.forwardRef<FormInstance, FormProps>((props, ref) => {
-        const { form, onChange, defaultValue, errors, ...other } = props
+        const { form, onChange, defaultValue, errors, removeUndefined = true, ...other } = props
 
         const hasInjectProps = useRef(false)
 
@@ -17,7 +17,7 @@ export default curry((Origin: React.ClassicComponentClass<IFormProps<any>>) =>
         const formDatum = forwardForm.GET_INTERNAL_FORM_DATUM()
 
         if (!hasInjectProps.current && formDatum) {
-            formDatum.deepSetOptions.removeUndefined = props.removeUndefined
+            formDatum.deepSetOptions.removeUndefined = removeUndefined
 
             formDatum.setDefaultValue(defaultValue)
 

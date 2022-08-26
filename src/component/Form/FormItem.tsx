@@ -4,7 +4,7 @@ import deepEqual from 'deep-eql'
 import { PureComponent } from '@/utils/component'
 import { formClass } from '@/styles'
 import { isSameError } from '@/utils/errors'
-import { isArray, isFunc } from '@/utils/is'
+import { isArray, isFunc, isSyntheticEvent } from '@/utils/is'
 import withValidate from '@/hoc/withValidate'
 import immer from 'immer'
 import shallowEqual from '@/utils/shallowEqual'
@@ -172,12 +172,14 @@ class FormItem extends PureComponent<IFormItemProps, FormItemState> {
         this.forceUpdate()
     }
 
-    handleChange = (value, ...args) => {
+    handleChange = (rawValue, ...args) => {
         const { name, formDatum, children } = this.props
 
         const anyChildren = children as any
 
-        if (isArray(name)) {
+        const value = isSyntheticEvent(rawValue) ? (rawValue.target as HTMLInputElement).value : rawValue
+
+        if (isArray(name) && isArray(value)) {
             name.forEach((n, i) => formDatum.set({ name: n, value: value[i], FOR_INTERNAL_USE_DISPATCH_CHANGE: true }))
         } else {
             formDatum.set({ name, value, FOR_INTERNAL_USE_DISPATCH_CHANGE: true })
