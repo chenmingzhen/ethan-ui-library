@@ -5,10 +5,10 @@ import Button from '@/component/Button'
 import { getUidStr } from '@/utils/uid'
 import { modalClass } from '@/styles'
 import { getLocale } from '@/locale'
-import { defer } from '@/utils/uid'
 import ready from '@/utils/dom/ready'
+import { runInNextFrame } from '@/utils/nextFrame'
 import Panel from './Panel'
-import ModalProps from './type'
+import { ModalProps, IModalProps, MethodModalProps } from './type'
 
 interface ContainerMap {
     [id: string]: {
@@ -16,16 +16,10 @@ interface ContainerMap {
 
         container: HTMLElement
 
-        props: EventOption
+        props: IModalProps
 
         visible?: boolean
     }
-}
-
-interface EventOption extends ModalProps {
-    content: React.ReactNode
-
-    id: string
 }
 
 const containers: ContainerMap = {}
@@ -42,7 +36,7 @@ const getContainer = id => containers[id]?.container
 const hasVisible = () => Object.keys(containers).some(k => containers[k].visible)
 
 // 是否为遮罩
-const shoudldAddMaskOpacity = id => {
+const shouldAddMaskOpacity = id => {
     const ids = Object.keys(containers).filter(k => containers[k].visible)
 
     return ids.length === 0 ? true : ids[0] === id
@@ -51,6 +45,7 @@ const shoudldAddMaskOpacity = id => {
 // portal状态直接移除
 const destroy = (id, unmount) => {
     const div = getDiv(id)
+
     const container = getContainer(id)
 
     if (!div || !container) return
@@ -66,10 +61,10 @@ const destroy = (id, unmount) => {
     container.removeChild(div)
 }
 
-const close = (props: Omit<EventOption, 'content'>) => {
-    const { id } = props
+const close = (id: string, props: IModalProps) => {
+    const { position, usePortal } = props
 
-    const modal = containers[props.id]
+    const modal = containers[id]
 
     if (!modal || modal.visible === false) return
 
@@ -79,13 +74,13 @@ const close = (props: Omit<EventOption, 'content'>) => {
 
     div.classList.remove(modalClass('show'), modalClass('start'))
 
-    if (!props.position) div.classList.add(modalClass('end'))
+    if (!position) div.classList.add(modalClass('end'))
 
     setTimeout(() => {
         div.style.display = 'none'
         div.classList.remove(modalClass('end'))
 
-        props.destroy && destroy(id, !props.usePortal)
+        props.destroyOnUnmounted && destroy(id, !usePortal)
 
         if (!hasVisible()) {
             const doc = document.body.parentNode as HTMLElement
@@ -97,8 +92,9 @@ const close = (props: Omit<EventOption, 'content'>) => {
 }
 
 // 创建divDOM
-const createDiv = (props: EventOption) => {
-    const { id, position, container = document.body, rootClassName } = props
+const createDiv = (id: string, props: IModalProps) => {
+    const { position, container = document.body, rootClassName } = props
+
     let div = getDiv(id)
 
     if (div) return div
@@ -109,7 +105,9 @@ const createDiv = (props: EventOption) => {
         throw new TypeError('Container must be HTMLElement,please check your attr of container')
 
     div = document.createElement('div')
+
     parent.appendChild(div)
+
     div.className = classnames(modalClass('_', position && 'position'), rootClassName)
 
     // 存储当前Modal的信息
@@ -118,10 +116,10 @@ const createDiv = (props: EventOption) => {
     return div
 }
 
-const open = (props: EventOption, usePortal?: boolean) => {
+const open = (id: string, props: IModalProps, usePortal?: boolean) => {
     const { content, onClose, zIndex, ...otherProps } = props
 
-    const div = createDiv(props)
+    const div = createDiv(id, props)
 
     div.style.display = 'block'
 
@@ -138,18 +136,18 @@ const open = (props: EventOption, usePortal?: boolean) => {
     const handleClose = () => {
         onClose?.()
 
-        !usePortal && close(props)
+        !usePortal && close(id, props)
     }
 
     const opacity = props.maskOpacity ?? 0.25
 
-    const maskOpacity = shoudldAddMaskOpacity(props.id) ? opacity : 0
+    const maskOpacity = shouldAddMaskOpacity(id) ? opacity : 0
 
     div.style.background = props.maskBackground || `rgba(0,0,0,${maskOpacity})`
 
-    containers[props.id].visible = true
+    containers[id].visible = true
 
-    defer(() => {
+    runInNextFrame(() => {
         !otherProps.position && div.classList.add(modalClass('start'))
     })
 
@@ -175,15 +173,16 @@ const open = (props: EventOption, usePortal?: boolean) => {
     return null
 }
 
-const createModalMethod = type => option => {
-    let props = Object.assign(
+const createModalMethod = (type: ModalProps['type']) => (option: ModalProps) => {
+    const id = getUidStr()
+
+    let props: MethodModalProps = Object.assign(
         {
             width: 420,
             esc: true,
         },
         option,
         {
-            id: getUidStr(),
             destroy: true,
             type,
             from: 'method',
@@ -197,14 +196,14 @@ const createModalMethod = type => option => {
 
         if (callback && typeof callback.then === 'function') {
             callback.then(() => {
-                close(props)
+                close(id, props)
             })
         } else {
-            close(props)
+            close(id, props)
         }
     }
 
-    function update(configUpdate: ModalProps | ((prevConfigUpdate: ModalProps) => void)) {
+    function update(configUpdate: IModalProps | ((prevConfigUpdate: IModalProps) => void)) {
         if (typeof configUpdate === 'function') {
             configUpdate(props)
         } else {
@@ -216,7 +215,7 @@ const createModalMethod = type => option => {
 
         buildFooter()
 
-        open(props)
+        open(id, props)
     }
 
     function buildFooter() {
@@ -224,7 +223,7 @@ const createModalMethod = type => option => {
             <Button
                 key="ok"
                 type="primary"
-                id={`${props.id}-ok`}
+                id={`${id}-ok`}
                 onClick={handleCloseCallback.bind(this, props.onOk)}
                 {...props.okButtonProps}
             >
@@ -235,7 +234,7 @@ const createModalMethod = type => option => {
         const btnCancel = (
             <Button
                 key="cancel"
-                id={`${props.id}-cancel`}
+                id={`${id}-cancel`}
                 onClick={handleCloseCallback.bind(this, props.onCancel)}
                 {...props.cancelButtonProps}
             >
@@ -252,11 +251,11 @@ const createModalMethod = type => option => {
 
     buildFooter()
 
-    open(props)
+    open(id, props)
 
     return {
         update,
-        close: close.bind(this, props) as () => void,
+        close: close.bind(this, id, props) as () => void,
     }
 }
 
@@ -276,8 +275,8 @@ ready(() => {
 
         onClose?.()
 
-        if (!usePortal) close(props)
+        if (!usePortal) close(opened, props)
     })
 })
 
-export { destroy, close, createDiv, open, createModalMethod }
+export { destroy, close, open, createModalMethod }

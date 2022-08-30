@@ -3,9 +3,9 @@ import classnames from 'classnames'
 import { modalClass } from '@/styles'
 import Icons from '../icons'
 import Card from '../Card'
-import ModalProps from './type'
+import { IModalProps } from './type'
 
-export interface ModalPanelProps extends ModalProps {
+export interface ModalPanelProps extends IModalProps {
     id?: string
 
     noPadding?: boolean
@@ -55,23 +55,28 @@ class ModalPanel extends PureComponent<ModalPanelProps> {
     }
 
     get style() {
-        const { width = 500, height, top = '10vh', position, style, resizable } = this.props
+        const { width = 500, height, top = '10vh', position, style: propStyle, resizable } = this.props
 
-        return Object.assign(
-            {
-                position: 'absolute',
-            },
-            position
-                ? {}
-                : {
-                      width,
-                      height,
-                      top,
-                      position: 'relative',
-                  },
-            resizable ? { left: '50%', marginLeft: '-15%' } : {},
-            style || {}
-        )
+        const style: React.CSSProperties = { position: 'absolute' }
+
+        if (!position) {
+            Object.assign(style, {
+                width,
+                height,
+                top,
+                position: 'relative',
+            })
+        }
+
+        if (resizable) {
+            Object.assign(style, { left: '50%', marginLeft: '-15%' })
+        }
+
+        if (propStyle) {
+            Object.assign(style, propStyle)
+        }
+
+        return style
     }
 
     renderIcon = () => {
@@ -134,19 +139,22 @@ class ModalPanel extends PureComponent<ModalPanelProps> {
         )
     }
 
+    renderFooter = () => {
+        const { footer, from } = this.props
+
+        if (footer) {
+            return (
+                <Card.Footer className={modalClass('footer', from)} align="right">
+                    {footer}
+                </Card.Footer>
+            )
+        }
+
+        return null
+    }
+
     render = () => {
-        const {
-            footer,
-            type,
-            onClose,
-            maskCloseAble = true,
-            position,
-            moveable,
-            zoom,
-            resizable,
-            hideClose,
-            from,
-        } = this.props
+        const { type, onClose, maskCloseAble = true, position, moveable, zoom, resizable, hideClose } = this.props
 
         const className = classnames(
             modalClass('panel', type, position, zoom && !moveable && 'zoom'),
@@ -176,11 +184,7 @@ class ModalPanel extends PureComponent<ModalPanelProps> {
 
                     {this.renderContent()}
 
-                    {footer && (
-                        <Card.Footer className={modalClass('footer', from)} align="right">
-                            {footer}
-                        </Card.Footer>
-                    )}
+                    {this.renderFooter()}
                 </Card>
             </>
         )
