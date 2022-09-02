@@ -8,52 +8,52 @@ import React from 'react'
 import { Modal, Button } from 'ethan/index'
 
 export default class extends React.Component {
-  constructor(props) {
-    super(props)
-    this.state = {
-      visible: false,
+    constructor(props) {
+        super(props)
+        this.state = {
+            visible: false,
+        }
+        this.show = this.show.bind(this)
     }
-    this.show = this.show.bind(this)
-  }
 
-  show() {
-    this.setState({
-      visible: true,
-    })
-  }
+    show() {
+        this.setState({
+            visible: true,
+        })
+    }
 
-  bindElement = ref => {
-    this.wrapper = ref
-  }
+    bindElement = ref => {
+        this.wrapper = ref
+    }
 
-  handleDismiss = () => {
-    this.setState({
-      visible: false,
-    })
-  }
+    handleDismiss = () => {
+        this.setState({
+            visible: false,
+        })
+    }
 
-  render() {
-    return (
-      <div ref={this.bindElement}>
-        <Button onClick={this.show}>click me</Button>
-        <Modal
-          container={() => this.wrapper}
-          visible={this.state.visible}
-          width={500}
-          title="Modal Title"
-          onClose={this.handleDismiss}
-          footer={[
-            <Button key="cancel" onClick={this.handleDismiss}>
-              Cancel
-            </Button>,
-            <Button key="ok" type="primary" onClick={this.handleDismiss}>
-              Ok
-            </Button>,
-          ]}
-        >
-          Modal mount after Button
-        </Modal>
-      </div>
-    )
-  }
+    render() {
+        return (
+            <div ref={this.bindElement}>
+                <Button onClick={this.show}>click me</Button>
+                <Modal
+                    getContainer={() => this.wrapper}
+                    visible={this.state.visible}
+                    width={500}
+                    title="Modal Title"
+                    onClose={this.handleDismiss}
+                    footer={[
+                        <Button key="cancel" onClick={this.handleDismiss}>
+                            Cancel
+                        </Button>,
+                        <Button key="ok" type="primary" onClick={this.handleDismiss}>
+                            Ok
+                        </Button>,
+                    ]}
+                >
+                    Modal mount after Button
+                </Modal>
+            </div>
+        )
+    }
 }

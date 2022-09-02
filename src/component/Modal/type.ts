@@ -9,9 +9,9 @@ export interface ModalProps {
     cancelButtonProps?: ButtonProps
     className?: string
     /* 渲染的目标节点 */
-    container?: HTMLElement | (() => HTMLElement)
+    getContainer?: () => HTMLElement
     /* 关闭时是否销毁元素 */
-    destroyOnUnmounted?: boolean
+    destroyOnClose?: boolean
     /* 是否支持esc关闭 */
     esc?: boolean
     /* 外层元素所接受的事件列表，可用于在 createPortal 场景中阻止冒泡 */
@@ -44,10 +44,6 @@ export interface ModalProps {
     title?: string
     /* Modal距离顶部的位置 */
     top?: string
-    /* Modal title 显示状态icon */
-    type?: 'info' | 'success' | 'warning' | 'error' | 'normal' | 'default' | 'confirm'
-    /* 为 true 时，使用 ReactDOM.createPortal 创建弹出层，为 false 时，使用 ReactDOM.render */
-    usePortal?: boolean
     /* 是否显示 */
     visible?: boolean
     /* 对话框宽度 */
@@ -67,8 +63,13 @@ export interface IModalProps extends ModalProps {
     from?: string
 }
 
-export interface MethodModalProps extends IModalProps {
+export interface ModalPanelProps extends Omit<IModalProps, 'getContainer'> {
+    container: HTMLElement
+}
+
+export interface MethodModalProps extends ModalProps {
+    type?: 'info' | 'success' | 'warning' | 'error' | 'normal' | 'default' | 'confirm'
+    text?: { ok?: React.ReactNode; cancel?: React.ReactNode }
     onOk?: () => void
     onCancel?: () => void
-    text?: { ok?: React.ReactNode; cancel?: React.ReactNode }
 }

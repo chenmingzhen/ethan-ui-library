@@ -15,6 +15,8 @@ export const isString = (s): s is string => typeof s === 'string'
 
 export const isNumber = (n): n is number => typeof n === 'number'
 
+export const isBoolean = (b): b is boolean => typeof b === 'boolean'
+
 export const isError = (val): val is Error => val instanceof Error
 
 export const isNull = (val): val is null => val === null
