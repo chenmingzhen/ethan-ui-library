@@ -1,8 +1,9 @@
 import React, { useRef, useCallback, useEffect, useImperativeHandle, memo } from 'react'
 import { alertClass } from '@/styles'
 import Spin from '@/component/Spin'
+import { capitalize } from '@/utils/strings'
 import useDismiss from './hooks/useDismiss'
-import useRender from './hooks/useRender'
+import icons from '../icons'
 
 export type AlertType = 'default' | 'success' | 'info' | 'warning' | 'danger' | 'error' | 'loading'
 export interface AlertProps {
@@ -24,9 +25,7 @@ export interface AlertProps {
 }
 
 export interface IAlertProps extends AlertProps {
-    internalOnClose: (duration?: number, height?: number) => void
-
-    outAnimation?: boolean
+    onDismiss: (duration?: number, height?: number) => void
 
     dismiss?: boolean
 
@@ -42,35 +41,72 @@ export default memo(
         const {
             className,
             style,
-            dismiss: outerDismiss,
+            dismiss: propDismiss,
             icon,
             iconSize = 16,
             onClose,
-            outAnimation,
             duration = 216,
             type = 'warning',
             closeItem,
             children,
-            internalOnClose,
+            onDismiss,
         } = props
-        const ref = useRef<HTMLDivElement>()
-        const { dismiss, handleClose } = useDismiss({ onClose, outAnimation, duration, el: ref, internalOnClose })
-        const { renderClose, renderIcon } = useRender({ icon, iconSize, handleClose, type, closeItem })
+        const alertContainerElementRef = useRef<HTMLDivElement>()
 
-        const clientHeight = useCallback(() => ref.current?.clientHeight, [])
+        const { dismiss, handleClose } = useDismiss({
+            onClose,
+            onDismiss,
+            duration,
+            alertContainerElementRef,
+        })
+
+        const clientHeight = useCallback(() => alertContainerElementRef.current?.clientHeight, [])
 
         useEffect(() => {
-            outerDismiss && handleClose()
-        }, [outerDismiss])
+            propDismiss && handleClose()
+        }, [propDismiss])
 
         useImperativeHandle(alertRef, () => ({ clientHeight }))
 
         if (dismiss === 2) return null
 
+        function renderIcon() {
+            let iconElement: React.ReactNode
+
+            if (typeof icon === 'boolean' && icon) {
+                iconElement = icons[capitalize(type)]
+            }
+
+            if (!iconElement) return null
+
+            return (
+                <div
+                    className={alertClass('icon')}
+                    style={{
+                        width: iconSize,
+                        height: iconSize,
+                        marginRight: iconSize / 2,
+                    }}
+                >
+                    {iconElement}
+                </div>
+            )
+        }
+
+        function renderClose() {
+            if (React.isValidElement(closeItem)) return React.cloneElement(closeItem, { onClick: handleClose })
+
+            return (
+                <a className={alertClass('close')} onClick={handleClose}>
+                    {closeItem || icons.Close}
+                </a>
+            )
+        }
+
         let wrapClassName = alertClass(
             '_',
             type,
-            !outAnimation && dismiss === 1 && 'dismissed',
+            !onDismiss && dismiss === 1 && 'dismissed',
             onClose && 'with-close',
             icon && 'with-icon'
         )
@@ -78,10 +114,10 @@ export default memo(
         if (className) wrapClassName = `${wrapClassName} ${className}`
 
         return (
-            <div ref={ref} className={wrapClassName} style={style}>
-                {onClose && renderClose}
+            <div ref={alertContainerElementRef} className={wrapClassName} style={style}>
+                {onClose && renderClose()}
                 {type !== 'loading' ? (
-                    renderIcon
+                    renderIcon()
                 ) : (
                     <Spin name="ring" size={18} className={alertClass('loading-icon')} color="#17a2b8" />
                 )}
