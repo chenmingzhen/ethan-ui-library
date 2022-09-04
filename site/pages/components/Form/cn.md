@@ -23,7 +23,7 @@
 | labelAlign      | 'top' \|'right' \|'left'            | -       | Label 的排序方式                                           |
 | labelWidth      | string \| number                    | '140px' | 标签宽度，labelAlign 为 'top' 时无效。                     |
 | onChange        | (changeValues:any,values:any)=>void | -       | 字段更新时触发回调事件                                     |
-| removeUndefined | boolean                             | false   | 是否删除值为 undefined 的字段，默认值为删除                |
+| removeUndefined | boolean                             | true    | 是否删除值为 undefined 的字段，默认值为删除                |
 | errors          | Record<string,string\|number>       | -       | 表单的错误值                                               |
 | animation       | boolean                             | false   | 是否以动画展示 error                                       |
 | preserve        | boolean                             | false   | 当字段被删除时保留字段值                                   |

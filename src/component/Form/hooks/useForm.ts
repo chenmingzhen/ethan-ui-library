@@ -2,7 +2,7 @@ import { useRef } from 'react'
 import FormDatum from '@/utils/Datum/Form'
 import { FormInstance } from '../type'
 
-function useForm<Value = any>(formInstance?: FormInstance<Value>) {
+function useForm<Value = any>(formInstance?: FormInstance<Value>): FormInstance<Value> {
     const formRef = useRef<FormInstance>()
 
     if (!formRef.current) {

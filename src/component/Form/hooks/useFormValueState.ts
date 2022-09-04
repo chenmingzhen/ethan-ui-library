@@ -1,9 +1,13 @@
 import { useCallback, useEffect } from 'react'
 import { warningOnce } from '@/utils/warning'
 import useUpdate from '@/hooks/useUpdate'
+import { NestedKeyOf } from '@/utils/utilityTypes'
 import { FormInstance, InternalFormInstance } from '../type'
 
-const useFormValueState = <Value = any>(form: FormInstance, name: string) => {
+const useFormValueState = <Value = any, FormValues extends Record<string, any> = Record<string, any>>(
+    form: FormInstance<FormValues>,
+    name: NestedKeyOf<FormValues>
+) => {
     const update = useUpdate()
 
     const internalForm = form as InternalFormInstance

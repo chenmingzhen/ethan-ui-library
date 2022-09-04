@@ -7,12 +7,13 @@ const names = [
     'forceChange',
     'trim',
     'beforeChange',
-    'validateHook',
-    'innerFormNamePath',
-    'fieldSetValidate',
-    'combineRules',
-    'popoverProps',
     'info',
+    'onInternalError',
+    'validate',
+    'control',
+    'focus',
+    'zIndex',
+    'scrollToError',
 ]
 
 // Warning: Invalid value for prop `info` on <input>

@@ -41,7 +41,6 @@ export interface UploadProps {
 
 export interface IUploadProps extends UploadProps {
     imageStyle?: React.CSSProperties
-    validateHook?: (hooks) => void
     customResult?: React.ElementType
 }
 

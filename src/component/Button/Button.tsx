@@ -4,7 +4,11 @@ import { wrapSpan } from '@/utils/dom/element'
 import { buttonClass } from '@/styles'
 import Spin from '../Spin'
 
-export interface ButtonProps {
+export interface ButtonProps
+    extends Omit<
+        React.DetailedHTMLProps<React.ButtonHTMLAttributes<HTMLButtonElement>, HTMLButtonElement>,
+        'type' | 'ref'
+    > {
     children: React.ReactNode
 
     className?: string
@@ -34,6 +38,8 @@ export interface ButtonProps {
     htmlType?: 'button' | 'submit' | 'reset'
 
     shape?: 'round' | 'circle'
+
+    target?: string
 }
 
 const Button: React.FC<ButtonProps> = props => {
@@ -51,6 +57,7 @@ const Button: React.FC<ButtonProps> = props => {
         text,
         children,
         onClick,
+        target,
         ...others
     } = props
 
@@ -86,15 +93,6 @@ const Button: React.FC<ButtonProps> = props => {
         props.className
     )
 
-    // 链接按钮
-    if (href) {
-        return (
-            <a href={href} {...others} className={className}>
-                {children}
-            </a>
-        )
-    }
-
     return (
         <button
             {...others}
@@ -109,7 +107,13 @@ const Button: React.FC<ButtonProps> = props => {
                     <Spin size={12} name="ring" color={color} />
                 </span>
             )}
-            {Children}
+            {href ? (
+                <a href={href} target={target}>
+                    {children}
+                </a>
+            ) : (
+                Children
+            )}
         </button>
     )
 }

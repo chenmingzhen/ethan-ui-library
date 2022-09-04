@@ -3,6 +3,7 @@ import classnames from 'classnames'
 import { PureComponent } from '@/utils/component'
 import { formClass } from '@/styles'
 import { isEmpty } from '@/utils/is'
+import cleanProps from '@/utils/cleanProps'
 import { FormContextProps, IFormProps } from './type'
 import { FormProvider } from './context/formContext'
 
@@ -122,7 +123,7 @@ export default class Form<T extends Record<string, any>> extends PureComponent<I
             <FormProvider value={providerValue}>
                 <form
                     ref={this.bindElement}
-                    {...other}
+                    {...cleanProps(other)}
                     onSubmit={this.handleSubmit}
                     onReset={this.handleReset}
                     className={className}

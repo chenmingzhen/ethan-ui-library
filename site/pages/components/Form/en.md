@@ -23,7 +23,7 @@ Form component, providing data management, validation, submission, interaction, 
 | labelAlign      | 'top' \|'right' \|'left'            | -       | Label sort                                                                                            |
 | labelWidth      | string \| number                    | '140px' | Label width, invalid if labelAlign is 'top'.                                                          |
 | onChange        | (changeValues:any,values:any)=>void | -       | A callback event is triggered when a field is updated                                                 |
-| removeUndefined | boolean                             | false   | Whether to delete fields whose value is undefined, the default value is delete                        |
+| removeUndefined | boolean                             | true    | Whether to delete fields whose value is undefined, the default value is delete                        |
 | errors          | Record<string,string\|number>       | -       | Form errors                                                                                           |
 | animation       | boolean                             | false   | Whether to animate error                                                                              |
 | preserve        | boolean                             | false   | Preserve the field value when the field is deleted                                                    |
