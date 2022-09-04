@@ -2,6 +2,7 @@ import React, { useRef, useCallback, useEffect, useImperativeHandle, memo } from
 import { alertClass } from '@/styles'
 import Spin from '@/component/Spin'
 import { capitalize } from '@/utils/strings'
+import classnames from 'classnames'
 import useDismiss from './hooks/useDismiss'
 import icons from '../icons'
 
@@ -103,18 +104,19 @@ export default memo(
             )
         }
 
-        let wrapClassName = alertClass(
-            '_',
-            type,
-            !onDismiss && dismiss === 1 && 'dismissed',
-            onClose && 'with-close',
-            icon && 'with-icon'
+        const mc = classnames(
+            alertClass(
+                '_',
+                type,
+                !onDismiss && dismiss === 1 && 'dismissed',
+                onClose && 'with-close',
+                icon && 'with-icon'
+            ),
+            className
         )
 
-        if (className) wrapClassName = `${wrapClassName} ${className}`
-
         return (
-            <div ref={alertContainerElementRef} className={wrapClassName} style={style}>
+            <div ref={alertContainerElementRef} className={mc} style={style}>
                 {onClose && renderClose()}
                 {type !== 'loading' ? (
                     renderIcon()
