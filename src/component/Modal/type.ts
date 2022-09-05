@@ -5,8 +5,6 @@ export interface ModalProps {
     autoFocusButton?: boolean
     /* ModalBody拓展样式 */
     bodyStyle?: React.CSSProperties
-    okButtonProps?: ButtonProps
-    cancelButtonProps?: ButtonProps
     className?: string
     /* 渲染的目标节点 */
     getContainer?: () => HTMLElement
@@ -56,6 +54,8 @@ export interface ModalProps {
     zoom?: boolean
     /** 等价于children */
     content?: React.ReactNode
+    /** 图标类型 */
+    type?: MethodModalProps['type']
 }
 
 export interface IModalProps extends ModalProps {
@@ -67,9 +67,11 @@ export interface ModalPanelProps extends Omit<IModalProps, 'getContainer'> {
     container: HTMLElement
 }
 
-export interface MethodModalProps extends ModalProps {
+export interface MethodModalProps extends Omit<ModalProps, 'onClose'> {
     type?: 'info' | 'success' | 'warning' | 'error' | 'normal' | 'default' | 'confirm'
     text?: { ok?: React.ReactNode; cancel?: React.ReactNode }
     onOk?: () => void
     onCancel?: () => void
+    okButtonProps?: ButtonProps
+    cancelButtonProps?: ButtonProps
 }

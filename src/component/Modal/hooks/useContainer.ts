@@ -13,11 +13,11 @@ const useContainer = (props: UseContainerProps) => {
 
     const portalContainer = useRef<HTMLDivElement>(document.createElement('div')).current
 
-    const propContainer = getContainer?.()
-
-    const container = isDOMElement(propContainer) ? propContainer : document.body
-
     const initContainer = useCallback(() => {
+        const propContainer = getContainer?.()
+
+        const container = isDOMElement(propContainer) ? propContainer : document.body
+
         if (!hasInitContainer.current) {
             container.appendChild(portalContainer)
 
@@ -29,8 +29,8 @@ const useContainer = (props: UseContainerProps) => {
 
     useEffect(() => {
         return () => {
-            if (portalContainer && container) {
-                container.removeChild(portalContainer)
+            if (portalContainer && portalContainer.parentElement) {
+                portalContainer.parentElement.removeChild(portalContainer)
             }
         }
     }, [])

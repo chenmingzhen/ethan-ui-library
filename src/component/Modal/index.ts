@@ -1,6 +1,6 @@
 import React from 'react'
 import Modal from './Modal'
-import { createModalMethod } from './events'
+import createModalMethod from './createMethodModal'
 import { ModalProps } from './type'
 
 export type ModalMethodType = ReturnType<typeof createModalMethod>

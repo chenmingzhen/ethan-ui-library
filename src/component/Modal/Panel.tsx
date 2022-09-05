@@ -26,6 +26,7 @@ const Panel: React.FC<ModalPanelProps> = props => {
         bodyStyle,
         children,
         footer,
+        from,
         style: propStyle,
     } = props
 
@@ -64,8 +65,14 @@ const Panel: React.FC<ModalPanelProps> = props => {
         return Icons[iconType]
     }
 
-    function renderTitle() {
+    function renderTitle(justRenderClassComponent = false) {
         if (isEmpty(title)) return null
+
+        if (from === 'method') {
+            if (justRenderClassComponent) return null
+
+            return <div className={modalClass('title')}>{title}</div>
+        }
 
         const icon = renderIcon()
 
@@ -85,6 +92,20 @@ const Panel: React.FC<ModalPanelProps> = props => {
 
         if (bodyStyle) Object.assign(contentStyle, bodyStyle)
 
+        if (from === 'method') {
+            const icon = renderIcon()
+
+            return (
+                <Card.Body className={modalClass('body')} style={contentStyle} onScroll={stopPropagation}>
+                    {icon && <div className={modalClass('icon')}>{icon}</div>}
+
+                    {renderTitle()}
+
+                    <div>{children}</div>
+                </Card.Body>
+            )
+        }
+
         return (
             <Card.Body style={contentStyle} onScroll={stopPropagation}>
                 {children}
@@ -96,7 +117,7 @@ const Panel: React.FC<ModalPanelProps> = props => {
         if (!footer) return null
 
         return (
-            <Card.Footer className={modalClass('footer')} align="right">
+            <Card.Footer className={modalClass('footer', from)} align="right">
                 {footer}
             </Card.Footer>
         )
@@ -120,7 +141,7 @@ const Panel: React.FC<ModalPanelProps> = props => {
                     </a>
                 )}
 
-                {renderTitle()}
+                {renderTitle(true)}
 
                 {renderContent()}
 

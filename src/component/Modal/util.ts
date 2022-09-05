@@ -1,6 +1,6 @@
 export const mousePosition: { x?: number; y?: number } = {}
 
-export const ANIMATION_DURATION = 3 * 100
+export const MODAL_ANIMATION_DURATION = 3 * 100
 
 export const setTransformOrigin = (node: HTMLElement, value) => {
     const { style } = node

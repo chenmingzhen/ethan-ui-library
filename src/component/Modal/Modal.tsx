@@ -5,7 +5,7 @@ import { runInNextFrame } from '@/utils/nextFrame'
 import { KeyboardKey } from '@/utils/keyboard'
 import { IModalProps } from './type'
 import useContainer from './hooks/useContainer'
-import { ANIMATION_DURATION } from './util'
+import { MODAL_ANIMATION_DURATION } from './util'
 import Panel from './Panel'
 
 const Modal: React.FC<IModalProps> = props => {
@@ -20,8 +20,6 @@ const Modal: React.FC<IModalProps> = props => {
     const mountedRef = useRef(false)
 
     function handleOpen() {
-        if (animationVisible) return
-
         updateAnimationVisible(true)
 
         const html = document.body.parentNode as HTMLElement
@@ -61,8 +59,6 @@ const Modal: React.FC<IModalProps> = props => {
     }
 
     function handleClose() {
-        if (!animationVisible) return
-
         portalContainer.classList.remove(modalClass('show'), modalClass('start'))
 
         if (!position) portalContainer.classList.add(modalClass('end'))
@@ -83,7 +79,7 @@ const Modal: React.FC<IModalProps> = props => {
             }
 
             updateAnimationVisible(false)
-        }, ANIMATION_DURATION)
+        }, MODAL_ANIMATION_DURATION)
     }
 
     useEffect(() => {
