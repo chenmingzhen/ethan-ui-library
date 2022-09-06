@@ -1,11 +1,27 @@
-import React, { useRef } from 'react'
+import React, { useEffect, useRef } from 'react'
 import classnames from 'classnames'
 import { modalClass } from '@/styles'
 import { isEmpty } from '@/utils/is'
 import { stopPropagation } from '@/utils/func'
+import { runInNextFrame } from '@/utils/nextFrame'
 import Card from '../Card'
 import { ModalPanelProps } from './type'
 import Icons from '../icons'
+
+let mousePosition: { x: number; y: number } = null
+
+function getClickPosition(evt: MouseEvent) {
+    mousePosition = {
+        x: evt.clientX,
+        y: evt.clientY,
+    }
+
+    setTimeout(() => {
+        mousePosition = null
+    }, 100)
+}
+
+window.addEventListener('click', getClickPosition, true)
 
 const Panel: React.FC<ModalPanelProps> = props => {
     const {
@@ -28,6 +44,7 @@ const Panel: React.FC<ModalPanelProps> = props => {
         footer,
         from,
         style: propStyle,
+        container,
     } = props
 
     const cardDomRef = useRef<HTMLDivElement>()
@@ -122,6 +139,36 @@ const Panel: React.FC<ModalPanelProps> = props => {
             </Card.Footer>
         )
     }
+
+    function updateOrigin() {
+        if (position || !zoom) return
+
+        const element = cardDomRef.current
+
+        if (!element) return
+
+        element.style.transformOrigin = ''
+
+        if (mousePosition) {
+            runInNextFrame(() => {
+                const { left: rectLeft, top: rectTop } = element.getBoundingClientRect()
+
+                const { x, y } = mousePosition
+
+                const originX = x - rectLeft
+
+                const originY = y - rectTop
+
+                element.style.transformOrigin = `${originX}px ${originY}px`
+            })
+        }
+    }
+
+    useEffect(() => {
+        if (container.classList.contains(modalClass('show'))) return
+
+        updateOrigin()
+    })
 
     return (
         <>

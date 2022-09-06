@@ -32,11 +32,11 @@ const Modal: React.FC<IModalProps> = props => {
 
         portalContainer.classList.remove(modalClass('end'))
 
+        portalContainer.style.display = 'block'
+
         initContainer()
 
         runInNextFrame(() => {
-            portalContainer.style.display = 'block'
-
             const opacity = props.maskOpacity ?? 0.25
 
             const hasVisible = !!document.body.querySelector(`.${modalClass('show')}`)
