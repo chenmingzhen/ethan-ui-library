@@ -128,7 +128,8 @@ class Input extends PureComponent<IInputProps> {
         return [
             <input
                 {...cleanProps(other)}
-                className={className}
+                // inputBorder中控制样式
+                // className={className}
                 name={other.name || htmlName}
                 type={type === 'password' ? type : 'text'}
                 value={value}

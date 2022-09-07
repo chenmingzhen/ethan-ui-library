@@ -6,14 +6,12 @@ import { resizableClass } from '@/styles'
 import { getUidStr } from '@/utils/uid'
 import { curry } from '@/utils/func'
 
-interface ResizableProps {
+export interface ResizableProps {
     style?: React.CSSProperties
 
     className?: string
 
     resizable?: boolean
-
-    [rest: string]: any
 }
 
 interface ResizableState {

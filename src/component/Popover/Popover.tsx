@@ -390,6 +390,8 @@ class Popover extends Component<IPopoverProps, PopoverState> {
 
         const { onVisibleChange, visible } = this.props
 
+        this.removeDocumentAndWindowEvents()
+
         if (!isEmpty(visible)) {
             if (onVisibleChange) {
                 onVisibleChange(false)
@@ -397,8 +399,6 @@ class Popover extends Component<IPopoverProps, PopoverState> {
 
             return
         }
-
-        this.removeDocumentAndWindowEvents()
 
         this.setShow(false)
     }

@@ -18,7 +18,7 @@
     vertical-align: middle;
     white-space: nowrap;
     .button-size(@btn-padding-y; @btn-padding-x; @button-font-size-base; @line-height-base; @btn-border-radius-base);
-    .user-select(none);
+    user-select: none;
 
     &-spin {
         display: inline-block;
@@ -190,7 +190,7 @@
         &[disabled],
         fieldset[disabled] & {
             background-color: transparent;
-            .box-shadow(none);
+            box-shadow: none;
         }
 
         &,
@@ -302,11 +302,13 @@
             }
 
             &:first-child:not(:last-child) {
-                .border-right-radius(0);
+                border-bottom-right-radius: 0;
+                border-top-right-radius: 0;
             }
 
             &:last-child:not(:first-child) {
-                .border-left-radius(0);
+                border-bottom-left-radius: 0;
+                border-top-left-radius: 0;
             }
         }
 

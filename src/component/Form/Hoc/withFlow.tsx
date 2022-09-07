@@ -1,4 +1,5 @@
 import { Component } from '@/utils/component'
+import { CHANGE_ACTION } from '@/utils/Datum/types'
 import { isArray, isEmpty } from '@/utils/is'
 import React from 'react'
 import { WithFlowProps } from '../type'
@@ -28,7 +29,7 @@ const withFlow = Origin =>
             }
         }
 
-        handleUpdate = () => {
+        handleUpdate = (_, __, type) => {
             const { formDatum, validate, name } = this.props
 
             if (formDatum && !isEmpty(name)) {
@@ -36,7 +37,9 @@ const withFlow = Origin =>
 
                 const value = formDatum.get(name)
 
-                validate(value, formValue).catch(() => {})
+                if (type === CHANGE_ACTION) {
+                    validate(value, formValue).catch(() => {})
+                }
             }
 
             if (this.forceUpdateChildren) {

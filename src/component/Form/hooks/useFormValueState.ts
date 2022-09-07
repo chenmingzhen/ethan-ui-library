@@ -2,26 +2,28 @@ import { useCallback, useEffect } from 'react'
 import { warningOnce } from '@/utils/warning'
 import useUpdate from '@/hooks/useUpdate'
 import { NestedKeyOf } from '@/utils/utilityTypes'
-import { FormInstance } from '../type'
+import { FormInstance, InternalFormInstance } from '../type'
 
-const useFormValueState = <S, FormValues extends Record<string, any> = Record<string, any>>(
+const useFormValueState = <Value = any, FormValues extends Record<string, any> = Record<string, any>>(
     form: FormInstance<FormValues>,
     name: NestedKeyOf<FormValues>
 ) => {
     const update = useUpdate()
 
-    const setFormValue = useCallback(value => {
-        if (!form) return
+    const internalForm = form as InternalFormInstance
 
-        const formDatum = form.GET_INTERNAL_FORM_DATUM()
+    const setFormValue = useCallback(value => {
+        if (!internalForm) return
+
+        const formDatum = internalForm.GET_INTERNAL_FORM_DATUM()
 
         formDatum.set({ name, value, FOR_INTERNAL_USE_DISPATCH_CHANGE: true })
     }, [])
 
     useEffect(() => {
-        if (!form) return
+        if (!internalForm) return
 
-        const formDatum = form.GET_INTERNAL_FORM_DATUM()
+        const formDatum = internalForm.GET_INTERNAL_FORM_DATUM()
 
         formDatum.subscribe(name, update)
 
@@ -30,13 +32,13 @@ const useFormValueState = <S, FormValues extends Record<string, any> = Record<st
         }
     }, [])
 
-    if (!form) {
-        warningOnce('[Ethan UI:Form]:UseFormValueState must provide form')
+    if (!internalForm) {
+        warningOnce('[Ethan UI:Form]:UseFormValueState must provide formDatum')
     }
 
-    return [form ? form.GET_INTERNAL_FORM_DATUM().get(name) : undefined, setFormValue] as [
-        S | undefined,
-        (value: S) => void
+    return [internalForm ? internalForm.GET_INTERNAL_FORM_DATUM().get(name) : undefined, setFormValue] as [
+        Value | undefined,
+        (value: Value) => void
     ]
 }
 

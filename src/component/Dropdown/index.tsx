@@ -9,7 +9,6 @@ import Button from '../Button'
 import AnimationList from '../List'
 import Item from './Item'
 import AbsoluteList from '../List/AbsoluteList'
-import absoluteConsumer from '../Table/context'
 import Caret from '../icons/Caret'
 import Position from './enum/Position'
 import { ComplicatedDropDownData, IDropDownProps } from './type'
@@ -52,7 +51,7 @@ const Dropdown: React.FC<IDropDownProps> = props => {
 
         if (!dropdownParentElementRef.current) return 'bottom-left'
 
-        // 如果position是auto 计算位置给出最合适的position
+        /** 如果position是auto 计算位置给出最合适的position */
         const windowHeight = docSize.height
 
         const windowWidth = docSize.width
@@ -84,10 +83,10 @@ const Dropdown: React.FC<IDropDownProps> = props => {
     const toggleDocumentEvent = useCallback((isBind: boolean) => {
         const method = isBind ? 'addEventListener' : 'removeEventListener'
 
-        document[method]('mousedown', clickAway)
+        document[method]('click', clickAway)
     }, [])
 
-    const handleFocus = useCallback(() => {
+    const handleShow = useCallback(() => {
         if (closeTimer.current) {
             clearTimeout(closeTimer.current)
         }
@@ -96,21 +95,31 @@ const Dropdown: React.FC<IDropDownProps> = props => {
 
         updateShow(true)
 
-        toggleDocumentEvent(true)
-    }, [])
+        if (trigger === 'click') {
+            /** 延迟再绑定事件，避免马上触发clickAway方法 */
+            setTimeout(() => {
+                toggleDocumentEvent(true)
+            })
+        }
+    }, [show, trigger])
 
-    const handleHide = useCallback((delay = 200) => {
-        closeTimer.current = setTimeout(() => {
-            updateShow(false)
+    const handleHide = useCallback(
+        (delay = 200) => {
+            closeTimer.current = setTimeout(() => {
+                updateShow(false)
 
-            toggleDocumentEvent(false)
-        }, delay)
-    }, [])
+                if (trigger === 'click') {
+                    toggleDocumentEvent(false)
+                }
+            }, delay)
+        },
+        [trigger]
+    )
 
     function handleToggle(isShow: boolean) {
         if (trigger === 'click') return
 
-        if (isShow) handleFocus()
+        if (isShow) handleShow()
         else {
             handleHide()
         }
@@ -134,7 +143,7 @@ const Dropdown: React.FC<IDropDownProps> = props => {
                 <a
                     className={dropdownClass('button', 'item', show && 'active')}
                     data-role="item"
-                    onClick={handleFocus}
+                    onClick={handleShow}
                     key="button"
                 >
                     <span className={spanClassName}>{placeholder}</span>
@@ -144,11 +153,11 @@ const Dropdown: React.FC<IDropDownProps> = props => {
         }
 
         if (renderPlaceholder) {
-            return renderPlaceholder(disabled, handleFocus)
+            return renderPlaceholder(disabled, handleShow)
         }
 
         return (
-            <Button disabled={disabled} onClick={handleFocus} className={buttonClassName} key="button" {...buttonProps}>
+            <Button disabled={disabled} onClick={handleShow} className={buttonClassName} key="button" {...buttonProps}>
                 <span className={spanClassName}>{placeholder}</span>
                 {caret}
             </Button>
@@ -249,4 +258,4 @@ Dropdown.defaultProps = {
 
 Dropdown.displayName = 'EthanDropdown'
 
-export default absoluteConsumer(React.memo(Dropdown)) as typeof Dropdown
+export default Dropdown

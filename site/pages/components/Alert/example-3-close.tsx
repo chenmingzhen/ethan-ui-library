@@ -8,36 +8,25 @@
  *    -- When the onClose property is true, only hide the component.
  *    -- When the onClose is a function, call this function after hiding it.
  */
-import React, { PureComponent } from 'react'
-import { Alert } from 'ethan/index'
+import React from 'react'
+import { Alert } from 'ethan'
 
-export default class extends PureComponent {
-  constructor(props) {
-    super(props)
+export default function() {
+    const [placeholder, setPlaceholder] = React.useState('')
 
-    this.state = {
-      placeholder: '',
-    }
-
-    this.handleClose = this.handleClose.bind(this)
-  }
-
-  handleClose() {
-    this.setState({
-      placeholder: 'Alert was dismissed.',
-    })
-  }
-
-  render() {
-    const { placeholder } = this.state
     return (
-      <div>
-        <Alert onClose>Alert onClose=true</Alert>
+        <div>
+            <Alert onClose>Alert onClose=true</Alert>
 
-        <Alert onClose={this.handleClose}>Alert onClose=function</Alert>
+            <Alert
+                onClose={() => {
+                    setPlaceholder('Alert was dismissed.')
+                }}
+            >
+                Alert onClose=function
+            </Alert>
 
-        {placeholder && <Alert type="info">{placeholder}</Alert>}
-      </div>
+            {placeholder && <Alert type="info">{placeholder}</Alert>}
+        </div>
     )
-  }
 }

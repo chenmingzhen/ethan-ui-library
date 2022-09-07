@@ -1,7 +1,9 @@
 import { MoveableProps } from '@/hoc/moveable'
+import { ResizableProps } from '@/hoc/resizable'
+
 import React from 'react'
 
-export interface CardProps extends MoveableProps {
+export interface CardProps extends MoveableProps, ResizableProps {
     /** 是否显示阴影 */
     shadow?: boolean | 'hover'
     /** 初始折叠状态（仅在 collapsible 为 true 时有效） */
@@ -19,7 +21,7 @@ export interface CardProps extends MoveableProps {
     /** 最外层扩展样式 */
     style?: React.CSSProperties
     /** ref 穿透多重转发 */
-    forwardedRef?: (el: HTMLDivElement) => void
+    forwardedRef?: React.LegacyRef<HTMLDivElement>
 }
 
 export interface CardBodyProps extends React.DetailedHTMLProps<React.HTMLAttributes<HTMLDivElement>, HTMLDivElement> {

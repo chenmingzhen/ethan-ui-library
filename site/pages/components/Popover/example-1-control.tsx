@@ -18,7 +18,13 @@ export default () => {
                 content="some text"
                 title="control"
                 trigger="click"
-                onVisibleChange={updateVisible}
+                onVisibleChange={v => {
+                    console.log('onVisibleChange:', v)
+
+                    if (v) {
+                        updateVisible(true)
+                    }
+                }}
             >
                 <Button>Control</Button>
             </Popover>

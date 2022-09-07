@@ -1,5 +1,5 @@
-import deepEqual from 'deep-eql' // 深度比较值
-import { isEmpty } from './is'
+import deepEqual from 'deep-eql'
+import { isArray, isEmpty } from './is'
 
 interface ShallowEqualOptions {
     skip?: string[]
@@ -21,15 +21,18 @@ function getOption(options, key) {
     return Array.isArray(val) ? val : [val]
 }
 
-/** 浅比较(+选择性比较)
- *  skip 跳过比较的值 deep 需要深度比较的值
- */
+/** 比较值是否相同 */
 export default function shallowEqual(
-    objA: Record<string, any>,
-    objB: Record<string, any>,
+    objA: Record<string, any> | Array<any> | any,
+    objB: Record<string, any> | Array<any> | any,
     options: ShallowEqualOptions = {}
 ) {
+    /** 基本数据类型比较 */
     if (is(objA, objB)) {
+        return true
+    }
+
+    if (isArray(objA) && isArray(objB) && objA.length === 0 && objB.length === 0) {
         return true
     }
 
