@@ -1,11 +1,11 @@
 import React from 'react'
 import Modal from './Modal'
-import createModalMethod from './createMethodModal'
+import createMethodModal from './createMethodModal'
 import { ModalProps } from './type'
 
-export type ModalMethodType = ReturnType<typeof createModalMethod>
+export type ModalMethodType = ReturnType<typeof createMethodModal>
 
-export interface ModalComponent extends React.ComponentClass<ModalProps> {
+export interface ModalComponent extends React.FunctionComponent<ModalProps> {
     success: ModalMethodType
     info: ModalMethodType
     warn: ModalMethodType
@@ -16,11 +16,11 @@ export interface ModalComponent extends React.ComponentClass<ModalProps> {
 
 const exportModal = (Modal as unknown) as ModalComponent
 
-exportModal.success = createModalMethod('success')
-exportModal.info = createModalMethod('info')
-exportModal.warn = createModalMethod('warning')
-exportModal.error = createModalMethod('error')
-exportModal.confirm = createModalMethod('confirm')
-exportModal.show = createModalMethod('normal')
+exportModal.success = createMethodModal('success')
+exportModal.info = createMethodModal('info')
+exportModal.warn = createMethodModal('warning')
+exportModal.error = createMethodModal('error')
+exportModal.confirm = createMethodModal('confirm')
+exportModal.show = createMethodModal('normal')
 
 export default exportModal

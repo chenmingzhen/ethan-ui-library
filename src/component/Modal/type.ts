@@ -55,7 +55,7 @@ export interface ModalProps {
     /** 等价于children */
     content?: React.ReactNode
     /** 图标类型 */
-    type?: MethodModalProps['type']
+    type?: 'info' | 'success' | 'warning' | 'error' | 'normal' | 'default' | 'confirm'
 }
 
 export interface IModalProps extends ModalProps {
@@ -67,8 +67,8 @@ export interface ModalPanelProps extends Omit<IModalProps, 'getContainer'> {
     container: HTMLElement
 }
 
-export interface MethodModalProps extends Omit<ModalProps, 'onClose'> {
-    type?: 'info' | 'success' | 'warning' | 'error' | 'normal' | 'default' | 'confirm'
+export interface MethodModalProps
+    extends Omit<ModalProps, 'onClose' | 'type' | 'visible' | 'children' | 'destroyOnClose'> {
     text?: { ok?: React.ReactNode; cancel?: React.ReactNode }
     onOk?: () => void
     onCancel?: () => void

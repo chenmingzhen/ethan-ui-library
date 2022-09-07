@@ -95,7 +95,7 @@
         overflow-y: hidden;
         transition: opacity 0.3s @zoom-out;
 
-        .@{modal-prefix}-panel {
+        .@{modal-prefix}-panel:not(.@{moveable-prefix}-dragging) {
             transition: transform 0.3s @zoom-out;
         }
     }
@@ -118,8 +118,11 @@
         transition: opacity 0.3s @zoom-in;
 
         .@{modal-prefix}-panel {
-            transition: transform 0.3s @zoom-in;
             transform: scale(1) translate(0, 0);
+
+            &:not(.@{moveable-prefix}-dragging) {
+                transition: transform 0.3s @zoom-in;
+            }
         }
     }
 

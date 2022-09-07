@@ -1,6 +1,7 @@
+import { MoveableProps } from '@/hoc/moveable'
 import React from 'react'
 
-export interface CardProps {
+export interface CardProps extends MoveableProps {
     /** 是否显示阴影 */
     shadow?: boolean | 'hover'
     /** 初始折叠状态（仅在 collapsible 为 true 时有效） */

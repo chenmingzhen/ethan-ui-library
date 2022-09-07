@@ -7,7 +7,7 @@ import Modal from './Modal'
 import { MethodModalProps, ModalProps } from './type'
 import { MODAL_ANIMATION_DURATION } from './util'
 
-const createMethodModal = (type: MethodModalProps['type']) => (options: MethodModalProps) => {
+const createMethodModal = (type: ModalProps['type']) => (options: MethodModalProps) => {
     let props: MethodModalProps = Object.assign(
         {
             width: 420,
@@ -78,13 +78,13 @@ const createMethodModal = (type: MethodModalProps['type']) => (options: MethodMo
         }, MODAL_ANIMATION_DURATION)
     }
 
-    function update(configUpdate: ModalProps | ((prevConfigUpdate: ModalProps) => ModalProps)) {
-        if (isFunc(configUpdate)) {
-            props = configUpdate(props)
+    function update(nextProps: ModalProps | ((prevProps: ModalProps) => ModalProps)) {
+        if (isFunc(nextProps)) {
+            props = nextProps(props)
         } else {
             props = {
                 ...props,
-                ...configUpdate,
+                ...nextProps,
             }
         }
 

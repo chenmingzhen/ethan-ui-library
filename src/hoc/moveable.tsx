@@ -6,7 +6,7 @@ import { moveableClass } from '@/styles'
 import { getUidStr } from '@/utils/uid'
 import { curry } from '@/utils/func'
 
-interface MoveableProps {
+export interface MoveableProps {
     style?: React.CSSProperties
 
     className?: string
@@ -14,19 +14,17 @@ interface MoveableProps {
     moveable?: boolean
 }
 
-interface MoveabledState {
+interface MoveableState {
     x: number
 
     y: number
 
-    draging: boolean
+    dragging: boolean
 }
-
-// TODO  优化移动速度
 
 export default curry(
     (handler, Origin) =>
-        class Moveable extends PureComponent<MoveableProps, MoveabledState> {
+        class Moveable extends PureComponent<MoveableProps, MoveableState> {
             moveabledId: string = getUidStr()
 
             el: HTMLElement
@@ -40,7 +38,7 @@ export default curry(
                 this.state = {
                     x: 0,
                     y: 0,
-                    draging: false,
+                    dragging: false,
                 }
             }
 
@@ -66,7 +64,6 @@ export default curry(
                 // button 事件属性可返回一个整数，指示当事件被触发时哪个鼠标按键被点击。
                 // https://www.w3school.com.cn/jsref/event_button.asp
                 if (e.button !== 0 || !this.el) return
-
                 // 拖拽handler才移动 Card的header
                 // handler存在且该元素还是handler的子元素时才继续
                 if (handler && !(e.target as HTMLElement).matches(handler)) return
@@ -82,7 +79,7 @@ export default curry(
                 }
 
                 this.setState({
-                    draging: true,
+                    dragging: true,
                 })
             }
 
@@ -125,7 +122,7 @@ export default curry(
                 document.removeEventListener('mouseleave', this.handleMouseUp)
 
                 this.setState({
-                    draging: false,
+                    dragging: false,
                 })
             }
 
@@ -147,7 +144,7 @@ export default curry(
                 const ms = Object.assign({}, this.props.style, this.getStyle())
                 const mc = classnames(
                     this.props.className,
-                    moveableClass('_', this.moveabledId, this.state.draging && 'draging')
+                    moveableClass('_', this.moveabledId, this.state.dragging && 'dragging')
                 )
 
                 return <Origin {...others} style={ms} className={mc} />

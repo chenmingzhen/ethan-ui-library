@@ -1,8 +1,10 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react'
+import React, { useCallback, useEffect, useRef } from 'react'
 import ReactDOM from 'react-dom'
 import { modalClass } from '@/styles'
 import { runInNextFrame } from '@/utils/nextFrame'
 import { KeyboardKey } from '@/utils/keyboard'
+import useSafeState from '@/hooks/useSafeState'
+import useUpdate from '@/hooks/useUpdate'
 import { IModalProps } from './type'
 import useContainer from './hooks/useContainer'
 import { MODAL_ANIMATION_DURATION } from './util'
@@ -11,15 +13,18 @@ import Panel from './Panel'
 const Modal: React.FC<IModalProps> = props => {
     const { visible, destroyOnClose, getContainer, rootClassName, position, zIndex, esc, onClose } = props
 
-    const [animationVisible, updateAnimationVisible] = useState(visible)
+    /** 在使用MethodModal的时候，外层已经执行unmountComponentAtNode,内层handleClose仍会执行state的操作 */
+    const [animationVisible, updateAnimationVisible] = useSafeState(false)
 
-    const animationRaf = useRef<NodeJS.Timeout>()
-
-    const { portalContainer, initContainer } = useContainer({ getContainer, rootClassName, position })
+    const { portalContainerRef, initPortalContainer } = useContainer({ getContainer, rootClassName, position })
 
     const mountedRef = useRef(false)
 
+    const update = useUpdate()
+
     function handleOpen() {
+        if (animationVisible) return
+
         updateAnimationVisible(true)
 
         const html = document.body.parentNode as HTMLElement
@@ -30,11 +35,13 @@ const Modal: React.FC<IModalProps> = props => {
 
         html.style.paddingRight = `${scrollWidth}px`
 
+        initPortalContainer()
+
+        const portalContainer = portalContainerRef.current
+
         portalContainer.classList.remove(modalClass('end'))
 
         portalContainer.style.display = 'block'
-
-        initContainer()
 
         runInNextFrame(() => {
             const opacity = props.maskOpacity ?? 0.25
@@ -59,6 +66,8 @@ const Modal: React.FC<IModalProps> = props => {
     }
 
     function handleClose() {
+        const portalContainer = portalContainerRef.current
+
         portalContainer.classList.remove(modalClass('show'), modalClass('start'))
 
         if (!position) portalContainer.classList.add(modalClass('end'))
@@ -79,16 +88,13 @@ const Modal: React.FC<IModalProps> = props => {
             }
 
             updateAnimationVisible(false)
+
+            /** 有可能前后的animationVisible一致，无法触发更新，添加强制更新(eg:默认visible是true，导致无法关闭) */
+            update()
         }, MODAL_ANIMATION_DURATION)
     }
 
     useEffect(() => {
-        if (animationRaf.current) {
-            clearTimeout(animationRaf.current)
-
-            animationRaf.current = null
-        }
-
         /** 仅处理动画和DOM相关，不会执行事件的回调 */
         if (visible) {
             handleOpen()
@@ -123,7 +129,13 @@ const Modal: React.FC<IModalProps> = props => {
 
     if (!animationVisible && destroyOnClose) return null
 
-    return ReactDOM.createPortal(<Panel {...props} container={portalContainer} />, portalContainer)
+    /** 防止提前渲染Panel，触发初始化Panel的状态 */
+    if (!portalContainerRef.current) return null
+
+    return ReactDOM.createPortal(
+        <Panel {...props} container={portalContainerRef.current} />,
+        portalContainerRef.current
+    )
 }
 
 export default React.memo(Modal)

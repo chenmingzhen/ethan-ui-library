@@ -11,14 +11,18 @@ const useContainer = (props: UseContainerProps) => {
 
     const hasInitContainer = useRef(false)
 
-    const portalContainer = useRef<HTMLDivElement>(document.createElement('div')).current
+    const portalContainerRef = useRef<HTMLDivElement>()
 
-    const initContainer = useCallback(() => {
+    const initPortalContainer = useCallback(() => {
         const propContainer = getContainer?.()
 
         const container = isDOMElement(propContainer) ? propContainer : document.body
 
         if (!hasInitContainer.current) {
+            portalContainerRef.current = document.createElement('div')
+
+            const portalContainer = portalContainerRef.current
+
             container.appendChild(portalContainer)
 
             portalContainer.className = classnames(modalClass('_', position && 'position'), rootClassName)
@@ -29,13 +33,15 @@ const useContainer = (props: UseContainerProps) => {
 
     useEffect(() => {
         return () => {
+            const portalContainer = portalContainerRef.current
+
             if (portalContainer && portalContainer.parentElement) {
                 portalContainer.parentElement.removeChild(portalContainer)
             }
         }
     }, [])
 
-    return { portalContainer, initContainer }
+    return { portalContainerRef, initPortalContainer }
 }
 
 export default useContainer
