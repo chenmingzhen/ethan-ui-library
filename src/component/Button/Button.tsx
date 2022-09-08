@@ -1,4 +1,4 @@
-import React, { isValidElement } from 'react'
+import React, { isValidElement, useEffect } from 'react'
 import classnames from 'classnames'
 import { wrapSpan } from '@/utils/dom/element'
 import { buttonClass } from '@/styles'
@@ -40,6 +40,8 @@ export interface ButtonProps
     shape?: 'round' | 'circle'
 
     target?: string
+
+    autoFocus?: boolean
 }
 
 const Button: React.FC<ButtonProps> = props => {
@@ -58,6 +60,7 @@ const Button: React.FC<ButtonProps> = props => {
         children,
         onClick,
         target,
+        autoFocus,
         ...others
     } = props
 
@@ -92,6 +95,12 @@ const Button: React.FC<ButtonProps> = props => {
         }),
         props.className
     )
+
+    useEffect(() => {
+        if (autoFocus) {
+            buttonRef.current.focus()
+        }
+    }, [])
 
     return (
         <button

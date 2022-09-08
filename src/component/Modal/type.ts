@@ -2,7 +2,6 @@ import React from 'react'
 import { ButtonProps } from '../Button'
 
 export interface ModalProps {
-    autoFocusButton?: boolean
     /* ModalBody拓展样式 */
     bodyStyle?: React.CSSProperties
     className?: string
@@ -12,8 +11,6 @@ export interface ModalProps {
     destroyOnClose?: boolean
     /* 是否支持esc关闭 */
     esc?: boolean
-    /* 外层元素所接受的事件列表，可用于在 createPortal 场景中阻止冒泡 */
-    events?: any
     /* 底部内容 */
     footer?: React.ReactNode
     /* 是否隐藏关闭按钮 */
