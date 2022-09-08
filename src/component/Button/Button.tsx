@@ -9,7 +9,7 @@ export interface ButtonProps
         React.DetailedHTMLProps<React.ButtonHTMLAttributes<HTMLButtonElement>, HTMLButtonElement>,
         'type' | 'ref'
     > {
-    children: React.ReactNode
+    children?: React.ReactNode
 
     className?: string
 

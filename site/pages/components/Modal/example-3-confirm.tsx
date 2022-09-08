@@ -4,18 +4,20 @@
  * en - Confirm
  *    -- The confirmation modal dialog.
  */
-import React, { Component } from 'react'
+import React from 'react'
 import { Modal, Button } from 'ethan/index'
 
-export default class extends Component {
-    confirm = () => {
+export default function() {
+    function confirm() {
         const { update } = Modal.confirm({
             title: 'This is a confirm message',
             content: <p>this is some information that user confirm</p>,
             onOk: () => {
                 update({ okButtonProps: { loading: true } })
+
                 return new Promise(resolve => {
                     console.log('yes i know')
+
                     setTimeout(() => resolve(true), 2000)
                 })
             },
@@ -23,11 +25,9 @@ export default class extends Component {
         })
     }
 
-    render() {
-        return (
-            <div>
-                <Button onClick={this.confirm}>confirm</Button>
-            </div>
-        )
-    }
+    return (
+        <div>
+            <Button onClick={confirm}>confirm</Button>
+        </div>
+    )
 }

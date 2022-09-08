@@ -4,59 +4,42 @@
  * en - Position
  *    -- Set position property to specify the pop-up position.
  */
-import React, { Component } from 'react'
+import React, { useState } from 'react'
 import { Modal, Button, Select } from 'ethan/index'
 
-export default class extends Component {
-    constructor(props) {
-        super(props)
-        this.state = {
-            visible: false,
-            position: 'right',
-        }
+export default function() {
+    const [visible, updateVisible] = useState(false)
+
+    const [position, updatePosition] = useState<'top' | 'right' | 'bottom' | 'left'>('right')
+
+    function toggle(newVisible: boolean) {
+        updateVisible(newVisible)
     }
 
-    handleClose = () => {
-        this.setState({
-            visible: false,
-        })
-    }
-
-    toggle = visible => {
-        this.setState({ visible })
-    }
-
-    renderFooter() {
-        return (
-            <div>
-                <Button onClick={this.toggle.bind(this, false)}>Cancel</Button>
-            </div>
-        )
-    }
-
-    render() {
-        const { position } = this.state
-        return (
-            <div>
-                <Select
-                    data={['top', 'right', 'bottom', 'left']}
-                    value={position}
-                    style={{ width: 100, marginRight: 12 }}
-                    keygen
-                    onChange={p => this.setState({ position: p })}
-                />
-                <Button onClick={this.toggle.bind(this, true)}>click me</Button>
-                <Modal
-                    visible={this.state.visible}
-                    title="Form"
-                    key={position}
-                    position={position}
-                    onClose={this.toggle.bind(this, false)}
-                    footer={this.renderFooter()}
-                >
-                    <div>Util Form Finish</div>
-                </Modal>
-            </div>
-        )
-    }
+    return (
+        <div>
+            <Select
+                data={['top', 'right', 'bottom', 'left']}
+                value={position}
+                style={{ width: 100, marginRight: 12 }}
+                keygen
+                onChange={updatePosition}
+            />
+            <Button onClick={toggle.bind(this, true)}>click me</Button>
+            <Modal
+                visible={visible}
+                title="Form"
+                key={position}
+                position={position}
+                onClose={toggle.bind(this, false)}
+                footer={
+                    <div>
+                        <Button onClick={toggle.bind(this, false)}>Cancel</Button>
+                    </div>
+                }
+            >
+                <div>Util Form Finish</div>
+            </Modal>
+        </div>
+    )
 }

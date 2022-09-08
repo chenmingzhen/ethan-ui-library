@@ -4,56 +4,42 @@
  * en - Target
  *    -- set container to render target node
  */
-import React from 'react'
+import React, { useRef, useState } from 'react'
 import { Modal, Button } from 'ethan/index'
 
-export default class extends React.Component {
-    constructor(props) {
-        super(props)
-        this.state = {
-            visible: false,
-        }
-        this.show = this.show.bind(this)
+export default function() {
+    const [visible, setVisible] = useState(false)
+
+    const containerRef = useRef<HTMLDivElement>()
+
+    function show() {
+        setVisible(true)
     }
 
-    show() {
-        this.setState({
-            visible: true,
-        })
+    function hide() {
+        setVisible(false)
     }
 
-    bindElement = ref => {
-        this.wrapper = ref
-    }
-
-    handleDismiss = () => {
-        this.setState({
-            visible: false,
-        })
-    }
-
-    render() {
-        return (
-            <div ref={this.bindElement}>
-                <Button onClick={this.show}>click me</Button>
-                <Modal
-                    getContainer={() => this.wrapper}
-                    visible={this.state.visible}
-                    width={500}
-                    title="Modal Title"
-                    onClose={this.handleDismiss}
-                    footer={[
-                        <Button key="cancel" onClick={this.handleDismiss}>
-                            Cancel
-                        </Button>,
-                        <Button key="ok" type="primary" onClick={this.handleDismiss}>
-                            Ok
-                        </Button>,
-                    ]}
-                >
-                    Modal mount after Button
-                </Modal>
-            </div>
-        )
-    }
+    return (
+        <div ref={containerRef}>
+            <Button onClick={show}>click me</Button>
+            <Modal
+                getContainer={() => containerRef.current}
+                visible={visible}
+                width={500}
+                title="Modal Title"
+                onClose={hide}
+                footer={[
+                    <Button key="cancel" onClick={hide}>
+                        Cancel
+                    </Button>,
+                    <Button key="ok" type="primary" onClick={hide}>
+                        Ok
+                    </Button>,
+                ]}
+            >
+                Modal mount after Button
+            </Modal>
+        </div>
+    )
 }

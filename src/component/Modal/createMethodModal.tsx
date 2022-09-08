@@ -78,7 +78,7 @@ const createMethodModal = (type: ModalProps['type']) => (options: MethodModalPro
         }, MODAL_ANIMATION_DURATION)
     }
 
-    function update(nextProps: ModalProps | ((prevProps: ModalProps) => ModalProps)) {
+    function update(nextProps: MethodModalProps | ((prevProps: MethodModalProps) => MethodModalProps)) {
         if (isFunc(nextProps)) {
             props = nextProps(props)
         } else {

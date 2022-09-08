@@ -18,17 +18,16 @@ You can use Modal to display secondary content or actions without jumping to the
 | position | string | - | Pop-up position, one of \['top', 'right', 'bottom', 'left'] | |
 | style | object | - | Extend style | |
 | title | ReactNode | - | the title of the pop-up layer | |
-| usePortal | boolean | true | When the usePortal is true, use ReactDOM.createPortal to create the pop-up layer, otherwise use ReactDOM.render. | |
 | visible | boolean | false |  | |
 | width | number \| string | 500 | the width of the Modal | |
 | zIndex | number | 1050 | Modal z-index | |
 | rootClassName | string | - | the root element of modal, the mask parent element | 1.4.2 |
-| container | () => HTMLElement \| HTMLElement | document.body | target element | |
+| container | () => HTMLElement  | document.body | target element | |
 | moveable | boolean | false | modal support move | |
 | resizable | boolean | false | modal resizable | |
 | maskBackground | string | null | mask background | |
 | onClose | () => void | none | modal close callback | |
-| destroy | boolean | false | Whether to destroy elements when it is closed | |
+| destroyOnClose | boolean | false | Whether to destroy elements when it is closed | |
 | hideClose | boolean | none | hide the close button | |
 | type | 'info' \| 'success' \| 'warning' \| 'error' \| 'normal' | null | Modal Title show status icon | 1.6.1 |
 | zoom | boolean | false | toggle zoom animation |
@@ -49,8 +48,6 @@ Modal.confirm(options)
 Modal.show(options)
 
 #### Options Parameter
-
-** *options support Modal in addition to any other properties of usePortal and destory, there are additional properties as follows **
 
 
 | Property | Type | Default | Description |

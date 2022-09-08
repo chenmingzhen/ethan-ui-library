@@ -12,50 +12,52 @@ import React from 'react'
 import { Modal, Button, Select } from 'ethan/index'
 
 const list = [
-  {
-    title: 'false',
-    value: false,
-  },
-  {
-    title: 'true',
-    value: true,
-  },
-  {
-    title: 'null',
-    value: null,
-  },
+    {
+        title: 'false',
+        value: false,
+    },
+    {
+        title: 'true',
+        value: true,
+    },
+    {
+        title: 'null',
+        value: null,
+    },
 ]
 export default () => {
-  const [visible, setVisible] = React.useState(false)
-  const [selected, setSelected] = React.useState(list[0])
-  return (
-    <div>
-      <Select
-        data={list}
-        keygen="title"
-        renderItem="title"
-        prediction={(v, d) => v.title === d.title}
-        value={selected}
-        onChange={c => {
-          setSelected(c)
-        }}
-        style={{ width: 200, marginRight: 20 }}
-      />
-      <Button onClick={() => setVisible(true)}>Open</Button>
-      <Modal
-        visible={visible}
-        maskCloseAble={selected.value}
-        width={500}
-        title="Modal Title"
-        onClose={() => setVisible(false)}
-        footer={<Button onClick={() => setVisible(false)}>Close</Button>}
-      >
-        The prop maskCloseAble is &nbsp;
-        {selected.title}
-        .
-        <br />
-        You must click the button to close the Modal.
-      </Modal>
-    </div>
-  )
+    const [visible, setVisible] = React.useState(false)
+
+    const [selected, setSelected] = React.useState(list[0])
+
+    return (
+        <div>
+            <Select
+                data={list}
+                keygen="title"
+                renderItem="title"
+                prediction={(v, d) => v.title === d.title}
+                value={selected}
+                onChange={c => {
+                    setSelected(c)
+                }}
+                style={{ width: 200, marginRight: 20 }}
+            />
+            <Button onClick={() => setVisible(true)}>Open</Button>
+            <Modal
+                visible={visible}
+                maskCloseAble={selected.value}
+                width={500}
+                title="Modal Title"
+                onClose={() => setVisible(false)}
+                footer={<Button onClick={() => setVisible(false)}>Close</Button>}
+            >
+                The prop maskCloseAble is &nbsp;
+                {selected.title}
+                .
+                <br />
+                You must click the button to close the Modal.
+            </Modal>
+        </div>
+    )
 }

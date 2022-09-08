@@ -9,6 +9,7 @@ import { Modal, Button } from 'ethan/index'
 
 export default () => {
     const [visible, setVisible] = React.useState(false)
+
     return (
         <div>
             <Button onClick={() => setVisible(true)}>Open</Button>
