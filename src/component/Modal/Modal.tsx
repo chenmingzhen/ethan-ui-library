@@ -68,6 +68,8 @@ const Modal: React.FC<IModalProps> = props => {
     function handleClose() {
         const portalContainer = portalContainerRef.current
 
+        if (!portalContainer) return
+
         portalContainer.classList.remove(modalClass('show'), modalClass('start'))
 
         if (!position) portalContainer.classList.add(modalClass('end'))
