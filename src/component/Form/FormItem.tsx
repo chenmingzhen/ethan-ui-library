@@ -173,11 +173,17 @@ class FormItem extends PureComponent<IFormItemProps, FormItemState> {
     }
 
     handleChange = (rawValue, ...args) => {
-        const { name, formDatum, children } = this.props
+        const { name, formDatum, children, beforeChange } = this.props
 
         const anyChildren = children as any
 
-        const value = isSyntheticEvent(rawValue) ? (rawValue.target as HTMLInputElement).value : rawValue
+        const prevValue = formDatum.get(name)
+
+        const value = beforeChange
+            ? beforeChange(rawValue, prevValue, formDatum.getForm())
+            : isSyntheticEvent(rawValue)
+            ? (rawValue.target as HTMLInputElement).value
+            : rawValue
 
         if (isArray(name) && isArray(value)) {
             name.forEach((n, i) => formDatum.set({ name: n, value: value[i], FOR_INTERNAL_USE_DISPATCH_CHANGE: true }))
@@ -222,7 +228,7 @@ class FormItem extends PureComponent<IFormItemProps, FormItemState> {
         if (!formDatum || !name) return children
 
         if (isValidElement(children)) {
-            return cloneElement(children, { value, onChange: this.handleChange })
+            return cloneElement<any>(children, { value, onChange: this.handleChange })
         }
 
         return null

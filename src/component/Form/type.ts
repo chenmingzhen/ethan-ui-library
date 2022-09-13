@@ -26,6 +26,7 @@ export interface FormItemProps<Value = any> extends Pick<FormContextProps, 'anim
     defaultValue?: any
     flow?: string[] | true
     noStyle?: boolean
+    beforeChange?: (value: any, prevValue: any, form: FormInstance<Value>) => any
     /** 根FormItem设置不集中收集Error */
     noErrorInRoot?: boolean
 }
