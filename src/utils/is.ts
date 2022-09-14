@@ -1,5 +1,6 @@
 import { curry } from '@/utils/func'
 import React, { isValidElement, SyntheticEvent } from 'react'
+import { KeyboardKey } from './keyboard'
 
 const nameIs = curry((name, val) => val?.constructor?.name === name)
 
@@ -103,7 +104,7 @@ export const isLink = (el: React.ReactElement<{ to?: string }>) => {
     return false
 }
 
-export const isEnterPress = (e: React.KeyboardEvent) => e.keyCode === 13
+export const isEnterPress = (e: React.KeyboardEvent) => e.key === KeyboardKey.Enter
 
 /** 是否为原始数据 */
 export const isPrimitive = val => Object(val) !== val

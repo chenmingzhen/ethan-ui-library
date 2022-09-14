@@ -9,8 +9,6 @@ type UseContainerProps = Pick<ModalProps, 'getContainer' | 'position' | 'rootCla
 const useContainer = (props: UseContainerProps) => {
     const { getContainer, position, rootClassName } = props
 
-    const hasInitContainer = useRef(false)
-
     const portalContainerRef = useRef<HTMLDivElement>()
 
     const initPortalContainer = useCallback(() => {
@@ -18,7 +16,7 @@ const useContainer = (props: UseContainerProps) => {
 
         const container = isDOMElement(propContainer) ? propContainer : document.body
 
-        if (!hasInitContainer.current) {
+        if (!portalContainerRef.current) {
             portalContainerRef.current = document.createElement('div')
 
             const portalContainer = portalContainerRef.current
@@ -26,8 +24,6 @@ const useContainer = (props: UseContainerProps) => {
             container.appendChild(portalContainer)
 
             portalContainer.className = classnames(modalClass('_', position && 'position'), rootClassName)
-
-            hasInitContainer.current = true
         }
     }, [rootClassName])
 
