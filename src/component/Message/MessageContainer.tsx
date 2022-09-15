@@ -23,12 +23,12 @@ const MessageContainer: React.ForwardRefRenderFunction<MessageContainerInstance,
     React.useImperativeHandle(ref, () => ({ removeAllMessage, addMessage }))
 
     // 退场动画
-    function handleClassName(position = 'top', dismiss) {
+    function getClassName(position = 'top', dismiss: boolean) {
         return messageClass('item', `item-${dismiss ? 'dismissed' : 'show'}-${position}`)
     }
 
     // 退场动画的高度等问题
-    function handleStyle(dismiss, h, position) {
+    function getStyle(dismiss: boolean, h: number, position: Message['position']) {
         if (!dismiss || h == null) {
             return null
         }
@@ -56,8 +56,8 @@ const MessageContainer: React.ForwardRefRenderFunction<MessageContainerInstance,
             {messages.map(({ id, type, content, dismiss, h, title, className, position, closeable }) => (
                 <div
                     key={id}
-                    className={`${handleClassName(position, dismiss)} ${className}`}
-                    style={handleStyle(dismiss, h, position)}
+                    className={`${getClassName(position, dismiss)} ${className}`}
+                    style={getStyle(dismiss, h, position)}
                 >
                     <Alert
                         onClose={closeable}
