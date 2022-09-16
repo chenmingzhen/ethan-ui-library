@@ -11,7 +11,7 @@ interface LazyListProps<T extends any = any> {
     data: T[]
     lineHeight: number
     height: number
-    renderItem: (data, index: number) => React.ReactNode
+    renderItem: (data: T, index: number) => React.ReactNode
     /** 当数据源的长度发生变化且数据源长度大于1时，传入判断函数是否允许重新计算对应的滚动值 */
     shouldRecomputed?: (prevData: T[], nextData: T[]) => boolean
     /** 数据源起始的Index,默认hover的位置，视图会滚动到此处 */
@@ -26,13 +26,12 @@ export interface LazyListState {
     lastScrollTop: number
 }
 
-/** 预留两个位置的偏差值 */
+/** 预留前后两个位置的偏差值 */
 const LAZY_LIST_DATA_OFFSET = 2
 
 /** 不能使用PureComponent，因为Item的部分状态是在上层中使用的，例如Select OptionList Option的hoverIndex prop， */
 export default class LazyList<T extends any = any> extends Component<LazyListProps<T>, LazyListState> {
     static defaultProps = {
-        lineHeight: 32,
         data: [],
         shouldRecomputed: () => true,
         defaultIndex: 0,

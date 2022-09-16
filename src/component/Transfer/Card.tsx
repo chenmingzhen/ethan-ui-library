@@ -9,7 +9,7 @@ import ECard from '../Card'
 import Spin from '../Spin'
 import Checkbox from '../Checkbox'
 import Input from '../Input'
-import LazyList from '../List/LazyList'
+import LazyList from '../LazyList'
 import Item from './Item'
 
 interface CardState {

@@ -11,7 +11,7 @@ import Spin from '../Spin'
 import Option from './Option'
 import AnimationList from '../List'
 import { transformSizeToPx } from './util'
-import LazyList, { LazyListState } from '../List/LazyList'
+import LazyList, { LazyListState } from '../LazyList'
 
 interface OptionListState {
     /* 目前选中的index */
