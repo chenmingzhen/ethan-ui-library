@@ -1,5 +1,6 @@
 import React from 'react'
 import { messageClass } from '@/styles'
+import classnames from 'classnames'
 import Alert from '../Alert/alert'
 import useMessage from './hooks/useMessage'
 import Message from './type'
@@ -56,7 +57,7 @@ const MessageContainer: React.ForwardRefRenderFunction<MessageContainerInstance,
             {messages.map(({ id, type, content, dismiss, h, title, className, position, closeable }) => (
                 <div
                     key={id}
-                    className={`${getClassName(position, dismiss)} ${className}`}
+                    className={classnames(getClassName(position, dismiss), className)}
                     style={getStyle(dismiss, h, position)}
                 >
                     <Alert
