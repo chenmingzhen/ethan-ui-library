@@ -4,38 +4,33 @@
  * en - Notification
  *    -- Set position property to specify the pop-up layer location, optional value: top, middle, top-left, top-right, bottom-left, bottom-right.
  */
-import React from 'react'
+import React, { useState } from 'react'
 import { Button, Message, Select } from 'ethan/index'
 
-export default class extends React.Component {
-    constructor(props) {
-        super(props)
-        this.state = { position: 'top-right' }
-    }
+const positions = ['top', 'middle', 'top-left', 'top-right', 'bottom-left', 'bottom-right']
 
-    setPosition = position => this.setState({ position })
+export default function() {
+    const [position, updatePosition] = useState(positions[0])
 
-    show = () => {
+    function show() {
         Message.info(<div style={{ width: 240 }}>some message.</div>, 3, {
-            position: this.state.position,
+            position,
             title: 'notify title',
         })
     }
 
-    render() {
-        return (
-            <div>
-                position:
-                <Select
-                    keygen
-                    data={['top', 'middle', 'top-left', 'top-right', 'bottom-left', 'bottom-right']}
-                    onChange={this.setPosition}
-                    value={this.state.position}
-                    width={200}
-                    style={{ margin: '0 20px' }}
-                />
-                <Button onClick={this.show}>Show message.</Button>
-            </div>
-        )
-    }
+    return (
+        <div>
+            position:
+            <Select
+                keygen
+                data={positions}
+                onChange={updatePosition}
+                value={position}
+                width={200}
+                style={{ margin: '0 20px' }}
+            />
+            <Button onClick={show}>Show message.</Button>
+        </div>
+    )
 }
