@@ -13,7 +13,10 @@ export default function() {
             width={120}
             min={23}
             max={100}
-            digits={0}
+            digits={2}
+            onEnterPress={value => {
+                console.log('onEnterPress:', value)
+            }}
             onChange={value => {
                 console.log('onChange:', value)
             }}

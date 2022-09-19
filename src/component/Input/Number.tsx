@@ -103,16 +103,21 @@ class Number extends PureComponent<InputNumberProps, InputNumberState> {
         }
     }
 
-    handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
-        let value = parseFloat(e.target.value)
+    parseValue = (value: string) => {
+        let parsedValue = parseFloat(value)
 
-        // for the empty
-        if (e.target.value === '' && this.props.allowNull) {
-            value = null
+        if (value === '' && this.props.allowNull) {
+            parsedValue = null
         }
 
         // eslint-disable-next-line no-restricted-globals
-        if (isNaN(value)) value = 0
+        if (isNaN(parsedValue)) parsedValue = 0
+
+        return parsedValue
+    }
+
+    handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
+        const value = this.parseValue(e.target.value)
 
         this.handleChange(value)
 
@@ -168,6 +173,21 @@ class Number extends PureComponent<InputNumberProps, InputNumberState> {
         if (this.keyPressTimeOut) clearTimeout(this.keyPressTimeOut)
     }
 
+    handleEnterPress = (_, evt: React.KeyboardEvent<HTMLInputElement>) => {
+        const { onEnterPress } = this.props
+
+        if (onEnterPress) {
+            const parsedValue = this.parseValue(this.state.valueStr)
+
+            // eslint-disable-next-line
+            if (!isNaN(parsedValue)) {
+                onEnterPress(parsedValue, evt)
+            } else {
+                onEnterPress(null, evt)
+            }
+        }
+    }
+
     renderArrowGroup = () => {
         const { hideArrow } = this.props
 
@@ -200,7 +220,7 @@ class Number extends PureComponent<InputNumberProps, InputNumberState> {
     }
 
     render = () => {
-        const { onChange, allowNull, hideArrow, value, onInput, ...other } = this.props
+        const { onChange, allowNull, hideArrow, value, onInput, onEnterPress, ...other } = this.props
 
         const { valueStr } = this.state
 
@@ -208,6 +228,7 @@ class Number extends PureComponent<InputNumberProps, InputNumberState> {
             <Input
                 key="input"
                 value={valueStr !== undefined ? valueStr : value}
+                onEnterPress={onEnterPress ? this.handleEnterPress : undefined}
                 {...other}
                 className={inputClass({ number: !hideArrow })}
                 onChange={this.beforeChange}

@@ -32,13 +32,14 @@ export interface InputProps extends Omit<BaseInputProps<string | number>, 'onCha
     onEnterPress?: (value: string, evt: React.KeyboardEvent<HTMLInputElement>) => void
 }
 
-export interface InputNumberProps extends Omit<BaseInputProps<number>, 'onInput'> {
+export interface InputNumberProps extends Omit<BaseInputProps<number>, 'onInput' | 'onEnterPress'> {
     allowNull?: boolean
     hideArrow?: boolean
     max?: number
     min?: number
     step?: number
     onInput?: (str: string) => void
+    onEnterPress?: (value: number, evt: React.KeyboardEvent<HTMLInputElement>) => void
 }
 
 export interface InputPasswordProps extends BaseInputProps<string> {
