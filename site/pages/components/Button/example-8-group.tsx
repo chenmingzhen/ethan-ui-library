@@ -9,50 +9,50 @@ import { Button } from 'ethan/index'
 import { FontAwesome } from 'ethan/index'
 
 export default function() {
-  return (
-    <div>
-      <Button.Group>
-        <Button>Left</Button>
-        <Button>Center</Button>
-        <Button>Right</Button>
-      </Button.Group>
+    return (
+        <div>
+            <Button.Group>
+                <Button>Left</Button>
+                <Button>Center</Button>
+                <Button>Right</Button>
+            </Button.Group>
 
-      <br />
+            <br />
 
-      <Button.Group outline type="primary">
-        <Button>Left</Button>
-        <Button>Center</Button>
-        <Button>Right</Button>
-      </Button.Group>
+            <Button.Group outline type="primary">
+                <Button>Left</Button>
+                <Button>Center</Button>
+                <Button>Right</Button>
+            </Button.Group>
 
-      <br />
-      <Button.Group outline type="primary">
-        <Button disabled>disabled</Button>
-        <Button disabled>Center</Button>
-        <Button>Right</Button>
-      </Button.Group>
+            <br />
+            <Button.Group outline type="primary">
+                <Button disabled>disabled</Button>
+                <Button disabled>Center</Button>
+                <Button>Right</Button>
+            </Button.Group>
 
-      <br />
+            <br />
 
-      <Button.Group type="primary">
-        <Button>
-          <FontAwesome name="angle-left" style={{ marginRight: 4 }} />
-          Left
-        </Button>
-        <Button>Center</Button>
-        <Button>
-          Right
-          <FontAwesome name="angle-right" style={{ marginLeft: 4 }} />
-        </Button>
-      </Button.Group>
+            <Button.Group type="primary">
+                <Button>
+                    <FontAwesome name="angle-left" style={{ marginRight: 4 }} />
+                    Left
+                </Button>
+                <Button>Center</Button>
+                <Button>
+                    Right
+                    <FontAwesome name="angle-right" style={{ marginLeft: 4 }} />
+                </Button>
+            </Button.Group>
 
-      <br />
+            <br />
 
-      <Button.Group size="large">
-        <Button>Left</Button>
-        <Button>Center</Button>
-        <Button>Right</Button>
-      </Button.Group>
-    </div>
-  )
+            <Button.Group size="large">
+                <Button>Left</Button>
+                <Button>Center</Button>
+                <Button>Right</Button>
+            </Button.Group>
+        </div>
+    )
 }

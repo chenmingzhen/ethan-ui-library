@@ -248,26 +248,21 @@
     fill: @color;
     transition: background 0.15s ease-in-out;
 
-    @keyname: ~'btn-focus-@{name}';
+    @keyName: ~'btn-focus-@{name}';
 
-    @keyframes @keyname {
+    @keyframes @keyName {
         0% {
             .button-case-box-shadow(@outline, 0, 60%);
         }
 
         50% {
-            .button-case-box-shadow(@outline, @btn-focus-width / 2, 0%);
+            .button-case-box-shadow(@outline, (@btn-focus-width / 2), 0%);
         }
 
         100% {
             .button-case-box-shadow(@outline, @btn-focus-width, 0%);
         }
     }
-
-    // &:focus {
-    //   // color: @color;
-    //   // box-shadow: 0 0 0 @btn-focus-width fade(@border, 50%);
-    // }
 
     &:focus,
     &:hover {
@@ -280,19 +275,14 @@
     &:active {
         .button-case-border-color(@outline);
 
-        animation: @keyname 0.4s ease-out;
+        animation: @keyName 0.4s ease-out;
         .button-case-background(@background);
 
         color: @color;
     }
 
-    &:active {
-        background-image: none;
-    }
-
     &[disabled],
     fieldset[disabled] & {
-
         &:hover,
         &:focus {
             border-color: @border;
@@ -318,14 +308,13 @@
     }
 
     &:active {
-        animation: @keyname 0.4s ease-out;
+        animation: @keyName 0.4s ease-out;
         background-color: @background;
         color: @color;
     }
 
     &[disabled],
     fieldset[disabled] & {
-
         &:hover,
         &:focus {
             border-color: @border;

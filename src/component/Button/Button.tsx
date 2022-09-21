@@ -4,11 +4,7 @@ import { wrapSpan } from '@/utils/dom/element'
 import { buttonClass } from '@/styles'
 import Spin from '../Spin'
 
-export interface ButtonProps
-    extends Omit<
-        React.DetailedHTMLProps<React.ButtonHTMLAttributes<HTMLButtonElement>, HTMLButtonElement>,
-        'type' | 'ref'
-    > {
+export interface ButtonProps extends React.RefAttributes<HTMLElement> {
     children?: React.ReactNode
 
     className?: string
@@ -31,7 +27,7 @@ export interface ButtonProps
 
     text?: boolean
 
-    type?: 'default' | 'primary' | 'secondary' | 'success' | 'warning' | 'danger' | 'link'
+    type?: 'default' | 'primary' | 'success' | 'warning' | 'danger' | 'link'
 
     loading?: boolean
 
@@ -45,11 +41,11 @@ export interface ButtonProps
 }
 
 const Button: React.FC<ButtonProps> = props => {
-    const buttonRef = React.useRef<HTMLButtonElement>()
+    const buttonRef = React.useRef<HTMLButtonElement | HTMLAnchorElement>()
 
     const {
-        outline: outlineProp = false,
-        type: typeProp = 'default',
+        outline,
+        type,
         size,
         href,
         htmlType = 'button',
@@ -81,16 +77,12 @@ const Button: React.FC<ButtonProps> = props => {
         onClick?.(e)
     }
 
-    // 区分 type为secondary的类型  secondary底色为透明
-    const isSecondary = typeProp === 'secondary' && !outlineProp && !text
-    const type = isSecondary ? 'primary' : typeProp
-    const outline = outlineProp || isSecondary
     const color = outline || type === 'default' ? undefined : '#fff'
+
     const className = classnames(
-        buttonClass('_', shape, type, outline && 'outline', {
+        buttonClass('_', shape, type, outline && 'outline', text && 'text', {
             large: size === 'large',
             small: size === 'small',
-            text: text && 'text',
             disabled,
         }),
         props.className
@@ -102,10 +94,23 @@ const Button: React.FC<ButtonProps> = props => {
         }
     }, [])
 
+    if (href) {
+        return (
+            <a
+                href={href}
+                {...others}
+                ref={buttonRef as React.MutableRefObject<HTMLAnchorElement>}
+                className={className}
+            >
+                {Children}
+            </a>
+        )
+    }
+
     return (
         <button
             {...others}
-            ref={buttonRef}
+            ref={buttonRef as React.MutableRefObject<HTMLButtonElement>}
             disabled={disabled || loading}
             type={htmlType}
             className={className}
@@ -116,17 +121,16 @@ const Button: React.FC<ButtonProps> = props => {
                     <Spin size={12} name="ring" color={color} />
                 </span>
             )}
-            {href ? (
-                <a href={href} target={target}>
-                    {children}
-                </a>
-            ) : (
-                Children
-            )}
+            {Children}
         </button>
     )
 }
 
 Button.displayName = 'EthanButton'
+
+Button.defaultProps = {
+    outline: false,
+    type: 'default',
+}
 
 export default React.memo(Button)

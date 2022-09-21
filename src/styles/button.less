@@ -6,41 +6,22 @@
 
 .@{button-prefix} {
     display: inline-block;
-    margin-bottom: 0; // For input.btn
+    margin-bottom: 0;
     border: 1px solid transparent;
-    background-image: none; // Reset unusual Firefox-on-Android default style; see https://github.com/necolas/normalize.css/issues/214
     cursor: pointer;
     font-weight: @btn-font-weight;
     outline: none;
     text-align: center;
-    // touch-action，解决移动端点击事件延迟
-    touch-action: manipulation;
+    touch-action: manipulation; // 解决移动端点击事件延迟
     vertical-align: middle;
     white-space: nowrap;
-    .button-size(@btn-padding-y; @btn-padding-x; @button-font-size-base; @line-height-base; @btn-border-radius-base);
     user-select: none;
+
+    .button-size(@btn-padding-y; @btn-padding-x; @button-font-size-base; @line-height-base; @btn-border-radius-base);
 
     &-spin {
         display: inline-block;
         margin-right: @button-spin-margin;
-    }
-
-    &:hover,
-    &:focus {
-        z-index: 10;
-        color: @link-hover-color;
-        outline: none;
-        text-decoration: none;
-    }
-
-    &::-moz-focus-inner {
-        border: 0;
-    }
-
-    &.active {
-        background-image: none;
-        outline: 0;
-        // .box-shadow(inset 0 3px 5px rgba(0,0,0,.125));
     }
 
     & + & {
@@ -53,12 +34,6 @@
         box-shadow: none;
         cursor: @cursor-disabled;
         opacity: 0.65;
-    }
-
-    a& {
-        fieldset[disabled] & {
-            pointer-events: none; // Future-proof disabling of clicks on `<a>` elements
-        }
     }
 
     &-default {
@@ -88,14 +63,6 @@
 
         &.@{button-prefix}-outline:not(@{button-disabled}) {
             .button-outline(@btn-primary-color; @btn-primary-bg; @colors-primary;);
-        }
-    }
-
-    &-secondary {
-        .button-variant(@btn-secondary-color; @btn-secondary-bg; @btn-secondary-border; 'secondary');
-
-        &.@{button-prefix}-outline:not(@{button-disabled}) {
-            .button-outline(@btn-secondary-color; @btn-secondary-bg; @colors-secondary;);
         }
     }
 
@@ -174,16 +141,12 @@
         &.@{button-prefix}-warning {
             color: @btn-warning-bg;
         }
-
-        &.@{button-prefix}-secondary {
-            color: @btn-secondary-bg;
-        }
     }
 
     &-link {
         border-radius: 0;
-        color: @link-color;
         font-weight: normal;
+        color: @link-color;
 
         &,
         &:active,

@@ -8,27 +8,25 @@ import React from 'react'
 import { Button } from 'ethan/index'
 
 export default function() {
-  return (
-    <div>
-      <Button text>Default</Button>
-      <Button text type="primary">
-        Primary
-      </Button>
-      <Button text type="secondary">
-        Secondary
-      </Button>
-      <Button text type="success">
-        Success
-      </Button>
-      <Button text type="warning">
-        Warning
-      </Button>
-      <Button text type="danger">
-        Danger
-      </Button>
-      <Button text type="link">
-        Link
-      </Button>
-    </div>
-  )
+    return (
+        <div>
+            <Button text>Default</Button>
+            <Button text type="primary">
+                Primary
+            </Button>
+
+            <Button text type="success">
+                Success
+            </Button>
+            <Button text type="warning">
+                Warning
+            </Button>
+            <Button text type="danger">
+                Danger
+            </Button>
+            <Button text type="link">
+                Link
+            </Button>
+        </div>
+    )
 }

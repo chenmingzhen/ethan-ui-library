@@ -9,21 +9,21 @@ import { Button } from 'ethan/index'
 import { FontAwesome } from 'ethan/index'
 
 export default function() {
-  return (
-    <div>
-      <Button type="primary">
-        <FontAwesome name="home" style={{ marginRight: 4 }} />
-        left
-      </Button>
-      <Button type="primary">
-        right
-        <FontAwesome name="home" style={{ marginLeft: 4 }} />
-      </Button>
-      <Button type="primary">
-        ce
-        <FontAwesome name="home" style={{ margin: '0 4px' }} />
-        ter
-      </Button>
-    </div>
-  )
+    return (
+        <div>
+            <Button type="primary">
+                <FontAwesome name="home" style={{ marginRight: 4 }} />
+                left
+            </Button>
+            <Button type="primary">
+                right
+                <FontAwesome name="home" style={{ marginLeft: 4 }} />
+            </Button>
+            <Button type="primary">
+                ce
+                <FontAwesome name="home" style={{ margin: '0 4px' }} />
+                ter
+            </Button>
+        </div>
+    )
 }

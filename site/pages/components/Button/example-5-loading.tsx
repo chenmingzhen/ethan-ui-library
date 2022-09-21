@@ -8,17 +8,17 @@ import React from 'react'
 import { Button } from 'ethan/index'
 
 export default function() {
-  return (
-    <div>
-      <Button loading size="small" type="primary">
-        Small
-      </Button>
-      <Button loading type="primary">
-        Default
-      </Button>
-      <Button loading size="large" type="primary">
-        Large
-      </Button>
-    </div>
-  )
+    return (
+        <div>
+            <Button loading size="small" type="primary">
+                Small
+            </Button>
+            <Button loading type="primary">
+                Default
+            </Button>
+            <Button loading size="large" type="primary">
+                Large
+            </Button>
+        </div>
+    )
 }

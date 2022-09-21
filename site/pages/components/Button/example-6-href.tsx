@@ -8,9 +8,9 @@ import React from 'react'
 import { Button } from 'ethan/index'
 
 export default function() {
-  return (
-    <Button href="#home" target="_blank" type="primary">
-      Home
-    </Button>
-  )
+    return (
+        <Button href="#home" target="_blank" type="primary">
+            Home
+        </Button>
+    )
 }
