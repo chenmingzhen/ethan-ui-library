@@ -1,8 +1,8 @@
 /**
  * cn - 改变前回调
- *    --
+ *    -- 使用beforeChange可以在改变回传到onChange中的value
  * en - beforeChange
- *    --
+ *    -- Use beforeChange to set the value in the change back to onChange
  */
 import React from 'react'
 import { Form, Input, Select } from 'ethan'

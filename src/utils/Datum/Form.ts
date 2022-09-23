@@ -28,9 +28,15 @@ export default class {
 
     $validator: Record<string, (values, data?) => Promise<true | FormError>> = {}
 
+    deepSetOptions = { forceSet: true, removeUndefined: undefined }
+
     onChange: (changeValues, values) => void
 
-    deepSetOptions = { forceSet: true, removeUndefined: undefined }
+    onSubmit: (values) => void
+
+    onError: (errors) => void
+
+    onReset: () => void
 
     private dispatch = (name: string, data, type) => {
         const event = this.$events[name]
@@ -52,6 +58,7 @@ export default class {
             validate: this.validate,
             validateForm: this.validateForm,
             reset: this.reset,
+            submit: this.submit,
             /** 内部获取Datum实例 */
             GET_INTERNAL_FORM_DATUM: () => this,
         } as FormInstance
@@ -329,6 +336,20 @@ export default class {
         })
     }
 
+    submit = () => {
+        this.validateForm()
+            .then(values => {
+                if (this.onSubmit) {
+                    this.onSubmit(values)
+                }
+            })
+            .catch(error => {
+                if (this.onError) {
+                    this.onError(error)
+                }
+            })
+    }
+
     reset = (names?: string[]) => {
         const empty = isEmpty(names)
 
@@ -355,6 +376,10 @@ export default class {
         })
 
         this.handleChange(unflatten(changeValues))
+
+        if (this.onReset) {
+            this.onReset()
+        }
     }
 
     /** For FieldSet */

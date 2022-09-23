@@ -14,7 +14,6 @@ Form component, providing data management, validation, submission, interaction, 
 | disabled        | boolean                             | false   | When disabled is true, all the elements in the form are disabled.                                     |
 | defaultValue    | any                                 | -       | Form default value                                                                                    |
 | inline          | boolean                             | false   | When inline is true, the form is horizontal layout                                                    |
-| forwardedRef    | ()=>HTMLFormElement                 | -       | Get the Dom of the Form                                                                               |
 | onError         | (error:Error)=>void                 | -       | Callback when the error happens                                                                       |
 | onReset         | ()=>void                            | -       | Reset the form callback event                                                                         |
 | onSubmit        | (value:any)=>void                   | -       | Callback events after the form is submitted and data validation is successful                         |

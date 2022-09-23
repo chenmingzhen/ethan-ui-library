@@ -66,7 +66,6 @@ export interface FormProps<T extends Record<string, any> = {}>
     disabled?: boolean
     defaultValue?: Partial<T>
     inline?: boolean
-    forwardedRef?: (form: HTMLFormElement) => void
     onError?: (error: any) => void
     onReset?: () => void
     onSubmit?: (value: T) => void
@@ -80,10 +79,6 @@ export interface FormProps<T extends Record<string, any> = {}>
     animation?: boolean
     form?: FormInstance
     preserve?: boolean
-}
-
-export interface IFormProps<T extends Record<string, any>> extends FormProps<T> {
-    datum: FormDatum
 }
 
 export interface FormHelpProps extends Pick<FormContextProps, 'animation'> {
@@ -151,6 +146,7 @@ export interface FormInstance<Value = any> {
     validate(name): any
     validateForm(names?: string[]): Promise<Value>
     reset(names?: string[]): void
+    submit(): void
 }
 
 export interface InternalFormInstance extends FormInstance {

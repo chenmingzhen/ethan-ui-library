@@ -1,10 +1,9 @@
-import Form from './Form'
 import Item from './FormItem'
 import FieldSet from './FieldSet'
 import useForm from './hooks/useForm'
 import useFormValueState from './hooks/useFormValueState'
 import useFormValueEffect from './hooks/useFormValueEffect'
-import forwardForm from './Hoc/forwardForm'
+import ForwardForm from './ForwardForm'
 import { FormInstance, FormProps } from './type'
 
 export interface FormComponent {
@@ -18,7 +17,7 @@ export interface FormComponent {
     useFormValueEffect: typeof useFormValueEffect
 }
 
-const ComputedFormComponent = forwardForm(Form) as FormComponent
+const ComputedFormComponent = (ForwardForm as unknown) as FormComponent
 
 ComputedFormComponent.Item = Item
 

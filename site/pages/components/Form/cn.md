@@ -14,7 +14,6 @@
 | disabled        | boolean                             | false   | 是否禁用                                                   |
 | defaultValue    | any                                 | -       | 表单默认值，只有初始化以及重置时生效                       |
 | inline          | boolean                             | false   | 是否水平布局                                               |
-| forwardedRef    | ()=>HTMLFormElement                 | -       | 获取 form 的 Dom                                           |
 | onError         | (error:Error)=>void                 | -       | 提交表单且数据验证失败后回调事件                           |
 | onReset         | ()=>void                            | -       | 重置表单回调事件                                           |
 | onSubmit        | (value:any)=>void                   | -       | 提交表单且数据验证成功后回调事件                           |
