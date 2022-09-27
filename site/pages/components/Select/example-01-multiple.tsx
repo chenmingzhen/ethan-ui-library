@@ -22,7 +22,7 @@ const data: Value[] = [
 ]
 
 export default () => {
-    const [value, updateValue] = useState<string>('blue')
+    const [value, updateValue] = useState<string[]>(['blue'])
 
     return (
         <Select<Value, string>

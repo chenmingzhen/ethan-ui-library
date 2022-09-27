@@ -26,7 +26,6 @@ export interface SelectProps<D extends SelectBaseData = DefaultSelectDefaultData
     // columns 大于 1 时，选项展示为多列布局模式
     columns?: number
     data?: D[]
-    treeData?: D[]
     disabled?: boolean | ((data: D) => boolean)
     filterText?: string
     height?: number

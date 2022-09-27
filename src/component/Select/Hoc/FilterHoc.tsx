@@ -117,17 +117,15 @@ export default function FilterHoc(Origin) {
                 computedData = [createData, ...computedData]
             }
 
-            return {
-                data: computedData,
-            }
+            return computedData
         }
 
         render() {
-            const { onFilter, onCreate, treeData, ...other } = this.props
+            const { onFilter, onCreate, ...other } = this.props
 
             const { filterText } = this.state
 
-            const dataGenerator = treeData ? () => [] : this.getFilterData
+            const data = this.getFilterData()
 
             return (
                 <Origin
@@ -135,7 +133,7 @@ export default function FilterHoc(Origin) {
                     result={this.getResultByValues()}
                     filterText={filterText}
                     onInput={onFilter || onCreate ? this.handleInput : undefined}
-                    {...dataGenerator.call(this)}
+                    data={data}
                 />
             )
         }
