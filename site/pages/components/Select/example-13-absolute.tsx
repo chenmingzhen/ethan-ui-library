@@ -12,28 +12,28 @@ const users = fetchUser(10000)
 const data = ['red', 'orange', 'yellow', 'green', 'cyan', 'blue', 'violet']
 
 export default function() {
-  return (
-    <div style={{ padding: 10, height: 100, overflow: 'hidden' }}>
-      <Select
-        absolute
-        data={data}
-        keygen
-        style={{ width: 100, marginRight: 12 }}
-        onFilter={text => d => d.indexOf(text) > -1}
-        placeholder="default"
-      />
+    return (
+        <div style={{ padding: 10, height: 100, overflow: 'hidden' }}>
+            <Select
+                absolute
+                data={data}
+                keygen
+                style={{ width: 100, marginRight: 12 }}
+                onFilter={(text, d) => d.indexOf(text) > -1}
+                placeholder="default"
+            />
 
-      <Select
-        multiple
-        data={users}
-        keygen="id"
-        absolute
-        style={{ width: 300 }}
-        placeholder="Select user"
-        onFilter={text => d => d.firstName.indexOf(text) > -1}
-        format="id"
-        renderItem={user => `${user.firstName} ${user.lastName}`}
-      />
-    </div>
-  )
+            <Select
+                multiple
+                data={users}
+                keygen="id"
+                absolute
+                style={{ width: 300 }}
+                placeholder="Select user"
+                onFilter={(text, d) => d.firstName.indexOf(text) > -1}
+                format="id"
+                renderItem={user => `${user.firstName} ${user.lastName}`}
+            />
+        </div>
+    )
 }

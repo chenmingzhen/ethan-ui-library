@@ -8,26 +8,26 @@ import React from 'react'
 import { Select } from 'ethan/index'
 
 const data = [
-  { id: 'red' },
-  { id: 'orange' },
-  { id: 'yellow' },
-  { id: 'green' },
-  { id: 'cyan' },
-  { id: 'blue' },
-  { id: 'violet' },
+    { id: 'red' },
+    { id: 'orange' },
+    { id: 'yellow' },
+    { id: 'green' },
+    { id: 'cyan' },
+    { id: 'blue' },
+    { id: 'violet' },
 ]
 
 export default function() {
-  return (
-    <Select
-      compressed
-      style={{ width: 300 }}
-      data={data}
-      keygen="id"
-      multiple
-      placeholder="Multiple select Compressed"
-      renderItem="id"
-      format="id"
-    />
-  )
+    return (
+        <Select
+            compressed
+            style={{ width: 300 }}
+            data={data}
+            keygen="id"
+            multiple
+            placeholder="Multiple select Compressed"
+            renderItem="id"
+            format="id"
+        />
+    )
 }

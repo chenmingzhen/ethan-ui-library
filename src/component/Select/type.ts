@@ -17,29 +17,28 @@ export interface ISelectProps extends Omit<SelectProps<any, any>, 'filterDelay' 
     onInput?: (text: string) => void
 }
 
-export interface SelectProps<
-    D extends SelectBaseData = DefaultSelectDefaultDataRecord,
-    FormatData extends SelectBaseData = SelectBaseData
-> {
+export interface SelectProps<D extends SelectBaseData = DefaultSelectDefaultDataRecord, FormatData = D> {
     placeholder?: ReactNode
-    keygen?: (data: D) => string | keyof D | true
+    style?: React.CSSProperties
+    keygen?: ((data: D) => string) | keyof D | boolean
     absolute?: boolean
     clearable?: boolean
     // columns 大于 1 时，选项展示为多列布局模式
     columns?: number
     data?: D[]
     treeData?: D[]
-    disabled?: boolean | ((data: FormatData) => boolean)
+    disabled?: boolean | ((data: D) => boolean)
     filterText?: string
     height?: number
     loading?: boolean
     multiple?: boolean
     onBlur?: (evt: React.FocusEvent<HTMLDivElement>) => void
     onCreate?: ((text: string) => D) | boolean
-    onFilter?: (text: string, data: D) => void
+    onFilter?: (text: string, data: D) => boolean
     onFocus?(evt: React.FocusEvent<HTMLDivElement>): void
+    onChange?: (values: any, value: FormatData, selected: boolean) => void
     position?: SelectState['position']
-    renderItem: keyof D | ((data: D, index: number) => ReactNode)
+    renderItem?: keyof D | ((data: D, index: number) => ReactNode)
     result?: D[]
     size?: 'large' | 'default' | 'small'
     text?
@@ -50,7 +49,7 @@ export interface SelectProps<
     onCollapse?(focus: boolean): string
     resultClassName?: string | ((data: D) => string)
     prediction?: (formatValue: FormatData, value: D) => boolean
-    renderResult: keyof D | ((data: D) => ReactNode)
+    renderResult?: keyof D | ((data: D) => ReactNode)
     lineHeight?: number
     value?: any
     defaultValue?: any
@@ -62,7 +61,8 @@ export interface SelectProps<
         header?: React.ReactNode
         footer?: React.ReactNode
     }
-    columnWidth: number
+    columnWidth?: number
+    format?: keyof D
 }
 
 export interface SelectState {
@@ -180,4 +180,12 @@ export interface BoxListTitleProps {
     title: React.ReactNode
 
     style?: React.CSSProperties
+}
+
+export interface SelectClassComponent {
+    <D extends SelectBaseData = DefaultSelectDefaultDataRecord, FormatData extends SelectBaseData = SelectBaseData>(
+        props: SelectProps<D, FormatData>
+    ): React.ReactElement
+
+    displayName: string
 }

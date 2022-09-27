@@ -10,22 +10,22 @@ import { Select } from 'ethan/index'
 const data = ['red', 'orange', 'yellow', 'green', 'cyan', 'blue', 'violet']
 
 export default function() {
-  return (
-    <div>
-      <Select style={{ width: 240, marginBottom: 12 }} clearable keygen data={data} placeholder="Select color" />
-      <br />
-      <Select
-        style={{ width: 300 }}
-        data={data}
-        clearable
-        keygen
-        multiple
-        placeholder="Multiple select"
-        resultClassName={value => {
-          console.log('resultClassName value: ', value)
-          return `result-class-name-${value}`
-        }}
-      />
-    </div>
-  )
+    return (
+        <div>
+            <Select style={{ width: 240, marginBottom: 12 }} clearable keygen data={data} placeholder="Select color" />
+            <br />
+            <Select
+                style={{ width: 300 }}
+                data={data}
+                clearable
+                keygen
+                multiple
+                placeholder="Multiple select"
+                resultClassName={value => {
+                    console.log('resultClassName value: ', value)
+                    return `result-class-name-${value}`
+                }}
+            />
+        </div>
+    )
 }

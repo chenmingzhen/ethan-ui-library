@@ -12,33 +12,33 @@ const citys = fetchCity(200)
 const style = { width: 300, marginBottom: 12, display: 'block' }
 
 export default function() {
-  return (
-    <div>
-      <Select
-        data={citys}
-        format="id"
-        keygen="id"
-        columns={3}
-        prediction={(v, d) => v === d.id}
-        style={style}
-        placeholder="Select a city"
-        renderItem="city"
-      />
+    return (
+        <div>
+            <Select
+                data={citys}
+                format="id"
+                keygen="id"
+                columns={3}
+                prediction={(v, d) => v === d.id}
+                style={style}
+                placeholder="Select a city"
+                renderItem="city"
+            />
 
-      <Select
-        data={citys}
-        format="id"
-        keygen="id"
-        columns={4}
-        columnWidth={180}
-        multiple
-        prediction={(v, d) => v === d.id}
-        style={style}
-        placeholder="Select citys"
-        renderItem="city"
-        onFilter={text => d => d.city.toLowerCase().indexOf(text.toLowerCase()) >= 0}
-        absolute
-      />
-    </div>
-  )
+            <Select
+                data={citys}
+                format="id"
+                keygen="id"
+                columns={4}
+                columnWidth={180}
+                multiple
+                prediction={(v, d) => v === d.id}
+                style={style}
+                placeholder="Select citys"
+                renderItem="city"
+                onFilter={(text, d) => d.city.toLowerCase().indexOf(text.toLowerCase()) >= 0}
+                absolute
+            />
+        </div>
+    )
 }

@@ -7,6 +7,7 @@ import withControl from '../../hoc/withControl'
 import Select from './Select'
 import group from './group'
 import FilterHoc from './Hoc/FilterHoc'
+import { SelectClassComponent } from './type'
 
 const limitWrap = Origin => props => {
     const limit = props.multiple ? 0 : 1
@@ -21,7 +22,7 @@ const SelectContainer = compose(
     withListDatum({ bindProps: ['disabled', 'limit', 'format', 'prediction', 'multiple'] }),
     FilterHoc,
     group
-)(Select)
+)(Select) as SelectClassComponent
 
 SelectContainer.displayName = 'EthanSelect'
 

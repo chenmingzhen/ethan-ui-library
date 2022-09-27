@@ -11,20 +11,19 @@ import { fetchSync as fetchCity } from 'doc/data/city'
 const citys = fetchCity(200)
 
 export default function() {
-  return (
-    <Select
-      data={citys}
-      width={300}
-      format="id"
-      keygen="id"
-      columns={-1}
-      columnWidth={500}
-      multiple
-      prediction={(v, d) => v === d.id}
-      placeholder="Select citys"
-      renderItem="city"
-      onFilter={text => d => d.city.toLowerCase().indexOf(text.toLowerCase()) >= 0}
-      absolute
-    />
-  )
+    return (
+        <Select
+            data={citys}
+            format="id"
+            keygen="id"
+            columns={-1}
+            columnWidth={500}
+            multiple
+            prediction={(v, d) => v === d.id}
+            placeholder="Select citys"
+            renderItem="city"
+            onFilter={(text, d) => d.city.toLowerCase().indexOf(text.toLowerCase()) >= 0}
+            absolute
+        />
+    )
 }

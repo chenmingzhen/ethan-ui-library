@@ -4,10 +4,14 @@
  * en - Multiple
  *    -- Set the multiple property to true, it is multi-selection.
  */
-import React, { Component } from 'react'
+import React, { useState } from 'react'
 import { Select } from 'ethan/index'
 
-const data = [
+interface Value {
+    id: string
+}
+
+const data: Value[] = [
     { id: 'red' },
     { id: 'orange' },
     { id: 'yellow' },
@@ -17,32 +21,23 @@ const data = [
     { id: 'violet' },
 ]
 
-export default class extends Component {
-    constructor(props) {
-        super(props)
-        this.state = { value: ['blue'] }
-    }
+export default () => {
+    const [value, updateValue] = useState<string>('blue')
 
-    handleChange = (value, d, c) => {
-        this.setState({ value })
-    }
-
-    render() {
-        return (
-            <Select
-                style={{ width: 300, marginBottom: 15 }}
-                data={data}
-                keygen="id"
-                multiple
-                placeholder="Multiple select"
-                onChange={this.handleChange}
-                value={this.state.value}
-                renderItem="id"
-                format="id"
-                disabled={({ id }) => {
-                    return id === 'blue'
-                }}
-            />
-        )
-    }
+    return (
+        <Select<Value, string>
+            style={{ width: 300, marginBottom: 15 }}
+            data={data}
+            keygen="id"
+            multiple
+            placeholder="Multiple select"
+            onChange={updateValue}
+            value={value}
+            renderItem="id"
+            format="id"
+            disabled={({ id }) => {
+                return id === 'blue'
+            }}
+        />
+    )
 }

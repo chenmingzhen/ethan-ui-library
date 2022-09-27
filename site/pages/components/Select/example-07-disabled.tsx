@@ -10,19 +10,19 @@ import { Select } from 'ethan/index'
 const data = ['red', 'orange', 'yellow', 'green', 'cyan', 'blue', 'violet']
 
 export default function() {
-  return (
-    <div>
-      <Select style={{ width: 240, marginBottom: 12 }} disabled keygen data={data} placeholder="Select color" />
-      <br />
-      <Select
-        style={{ width: 300 }}
-        data={data}
-        disabled={d => d === 'green'}
-        keygen
-        multiple
-        defaultValue={['orange', 'green']}
-        placeholder="Multiple select"
-      />
-    </div>
-  )
+    return (
+        <div>
+            <Select style={{ width: 240, marginBottom: 12 }} disabled keygen data={data} placeholder="Select color" />
+            <br />
+            <Select
+                style={{ width: 300 }}
+                data={data}
+                disabled={d => d === 'green'}
+                keygen
+                multiple
+                defaultValue={['orange', 'green']}
+                placeholder="Multiple select"
+            />
+        </div>
+    )
 }

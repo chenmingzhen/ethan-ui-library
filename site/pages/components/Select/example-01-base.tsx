@@ -18,10 +18,10 @@ export default function() {
             style={{ width: 240 }}
             data={data}
             value={value}
-            // onChange={(c, v, b) => {
-            //     updateValue(c)
-            //     console.log(c, v, b)
-            // }}
+            onChange={(c: string, v, b) => {
+                updateValue(c)
+                console.log(c, v, b)
+            }}
         />
     )
 }
