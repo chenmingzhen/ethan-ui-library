@@ -5,7 +5,7 @@
  *    -- The form has a two-way binding mechanism built in, automatically sending and collecting data based on the name property of the FormItem.
  */
 import React from 'react'
-import { Form, Input, Checkbox, Radio, Textarea, Select, DatePicker, Upload, Button } from 'ethan'
+import { Form, Input, Checkbox, Radio, Textarea, Select, Upload, Button } from 'ethan'
 import { EthanFile } from '@/component/Upload/type'
 
 interface FormValues {
@@ -63,10 +63,6 @@ export default function App() {
                     clearable
                     data={['red', 'orange', 'yellow', 'green', 'cyan', 'blue', 'violet']}
                 />
-            </Form.Item>
-
-            <Form.Item label="Date" name={['startDate', 'endDate']}>
-                <DatePicker type="datetime" range />
             </Form.Item>
 
             <Form.Item label="Description" name="desc">

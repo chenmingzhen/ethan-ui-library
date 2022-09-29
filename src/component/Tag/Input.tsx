@@ -1,6 +1,7 @@
 import React, { useRef } from 'react'
 import inputBorder from '@/hoc/inputBorder'
 import { tagClass } from '@/styles'
+import { KeyboardKey } from '@/utils/keyboard'
 
 export interface TagInputProps {
     value?: string
@@ -24,10 +25,12 @@ const TagInput: React.FC<TagInputProps> = ({ value, onBlur, onChange, onEnterPre
     }
 
     function handleKeyUp(e: React.KeyboardEvent<HTMLInputElement>) {
-        if (e.keyCode === 13) {
-            onEnterPress?.(e.target.value, e)
+        const val = (e.target as any).value
 
-            onBlur?.(e.target.value, e)
+        if (e.key === KeyboardKey.Enter) {
+            onEnterPress?.(val, e)
+
+            onBlur?.(val, e)
         }
 
         onKeyUp?.(e)

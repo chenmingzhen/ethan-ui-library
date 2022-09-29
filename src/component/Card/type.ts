@@ -2,6 +2,7 @@ import { MoveableProps } from '@/hoc/moveable'
 import { ResizableProps } from '@/hoc/resizable'
 
 import React from 'react'
+import { ButtonProps } from '../Button'
 
 export interface CardProps extends MoveableProps, ResizableProps {
     /** 是否显示阴影 */
@@ -66,6 +67,6 @@ export interface CardHeaderProps {
     children?: React.ReactNode
 }
 
-export interface CardSubmitProps extends React.DetailedHTMLProps<React.HTMLAttributes<HTMLDivElement>, HTMLDivElement> {
+export interface CardSubmitProps extends ButtonProps {
     loading?: boolean
 }

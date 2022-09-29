@@ -5,18 +5,16 @@
  *    -- Set collapsible can collapse the Card panel.
  */
 import React from 'react'
-import { Card, DatePicker } from 'ethan/index'
+import { Card } from 'ethan/index'
 
 export default function() {
-  return (
-    <Card collapsible>
-      <Card.Header>Header</Card.Header>
+    return (
+        <Card collapsible>
+            <Card.Header>Header</Card.Header>
 
-      <Card.Body>
-        <div style={{ height: 100 }}>
-          <DatePicker />
-        </div>
-      </Card.Body>
-    </Card>
-  )
+            <Card.Body>
+                <div style={{ height: 100 }} />
+            </Card.Body>
+        </Card>
+    )
 }

@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React from 'react'
 import { datepickerClass } from '@/styles'
 import { getLocale } from '@/locale'

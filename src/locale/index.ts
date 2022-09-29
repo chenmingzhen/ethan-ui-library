@@ -9,7 +9,7 @@ export function setLocale(arg) {
     if (typeof arg === 'string') {
         locale = arg === 'zh-CN' ? cn : en
     } else if (typeof arg === 'object') {
-        locale = deepMerge(locale, arg, { clone: true })
+        locale = deepMerge(locale, arg)
     }
 }
 

@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useCallback } from 'react'
 import { paginationClass } from '@/styles'
 import Input from '../Input'
 import { JumperProps } from './type'
@@ -57,6 +57,10 @@ const Jumper: React.FC<JumperProps> = props => {
         ]
     }
 
+    const handleInputChange = useCallback((val: string) => {
+        updateInputValue(Number(val))
+    }, [])
+
     return (
         <div className={paginationClass('section')}>
             {txt[0]}
@@ -64,13 +68,12 @@ const Jumper: React.FC<JumperProps> = props => {
             <Input
                 value={inputValue}
                 onKeyDown={handleKeyDown}
-                onChange={updateInputValue}
+                onChange={handleInputChange}
                 digits={0}
                 type="number"
                 style={inputStyle}
                 size={size}
                 className={paginationClass(isSimple && 'simple-input')}
-                delay={400}
             />
 
             {txt[1]}

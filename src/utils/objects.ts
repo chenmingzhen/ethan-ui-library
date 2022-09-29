@@ -116,7 +116,7 @@ export const deepGet = (target, path, options: any = {}) => {
     return current
 }
 
-export function filterProps(obj, props: (p: Record<string, any>) => boolean | string[] = []): Record<string, any> {
+export function filterProps(obj, props: ((p: Record<string, any>) => boolean) | string[] = []): Record<string, any> {
     if (!isObject(obj)) return obj
 
     const newProps = []

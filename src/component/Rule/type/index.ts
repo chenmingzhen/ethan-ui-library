@@ -34,7 +34,7 @@ export type ValidatorFunc = (
     val: any,
     formValues: any,
     callback: (res: true | Error) => void,
-    props: Record<string, any>
+    props?: Record<string, any>
 ) => void | Promise<true>
 
 export type Validator = {

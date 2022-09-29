@@ -62,9 +62,6 @@ const Avatar: React.FC<AvatarProps> = props => {
         // 自适应大小
         const textTransformString = `scale(${textScale})`
         textStyle = {
-            msTransform: textTransformString,
-            WebkitTransform: textTransformString,
-            MozTransform: textTransformString,
             transform: textTransformString,
             position: 'absolute',
             display: 'inline-block',

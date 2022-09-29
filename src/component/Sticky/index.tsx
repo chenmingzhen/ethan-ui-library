@@ -74,7 +74,7 @@ class Sticky extends PureComponent<StickyProps, StickyState> {
 
         const { target } = this.props
 
-        this.targetElement = getParent(this.element.current, target)
+        this.targetElement = getParent(this.element.current, target) as HTMLDivElement
 
         this.handlePosition()
 
