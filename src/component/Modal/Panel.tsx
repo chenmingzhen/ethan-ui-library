@@ -23,7 +23,7 @@ function setTransformOrigin(node: HTMLElement, value) {
     style.transformOrigin = value
 }
 
-function handleStop(e: MouseEvent) {
+function handleStop(e) {
     e.stopPropagation()
 }
 

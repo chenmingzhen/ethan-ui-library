@@ -5,13 +5,13 @@
  *    -- Basic usage
  */
 import React from 'react'
-import { Alert } from 'ethan/index'
+import { Alert } from 'ethan'
 
 export default function() {
-  return (
-    <Alert>
-      <h3>Title</h3>
-      Some content.
-    </Alert>
-  )
+    return (
+        <Alert>
+            <h3>Title</h3>
+            Some content.
+        </Alert>
+    )
 }

@@ -60,10 +60,8 @@ const MessageContainer: React.ForwardRefRenderFunction<MessageContainerInstance,
                     style={handleStyle(dismiss, h, position)}
                 >
                     <Alert
-                        /* 自行处理动画效果 */
-                        outAnimation
                         onClose={closeable}
-                        internalOnClose={closeMessageForAnimation.bind(this, id)}
+                        onDismiss={closeMessageForAnimation.bind(this, id)}
                         className={messageClass('msg')}
                         dismiss={dismiss}
                         icon

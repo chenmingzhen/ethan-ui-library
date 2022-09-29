@@ -5,15 +5,15 @@
  *    -- There are four built-in types (styles), [success, info, warning, danger], the default value is warning.
  */
 import React from 'react'
-import { Alert } from 'ethan/index'
+import { Alert } from 'ethan'
 
 export default function() {
-  return (
-    <div>
-      <Alert type="success">Success Type.</Alert>
-      <Alert type="info">Info Type.</Alert>
-      <Alert type="warning">Warning Type.</Alert>
-      <Alert type="danger">Danger Type.</Alert>
-    </div>
-  )
+    return (
+        <div>
+            <Alert type="success">Success Type.</Alert>
+            <Alert type="info">Info Type.</Alert>
+            <Alert type="warning">Warning Type.</Alert>
+            <Alert type="danger">Danger Type.</Alert>
+        </div>
+    )
 }

@@ -16,7 +16,13 @@ export interface ScrollAlertProps extends AlertProps {
     className?: string
 }
 
-const ScrollAlert: React.FC<ScrollAlertProps> = ({ scrollInterval = 5000, children, onClose, className, ...rest }) => {
+const ScrollAlert: React.FC<ScrollAlertProps> = ({
+    scrollInterval = 5 * 1000,
+    children,
+    onClose,
+    className,
+    ...rest
+}) => {
     const { items: i, renderItems: ri } = useMemo(() => getRenderChildrenFromProps(children), [])
     const [activeIndex, setActive] = useState(0)
     const [containerHeight, setHeight] = useState(0)
@@ -92,7 +98,9 @@ const ScrollAlert: React.FC<ScrollAlertProps> = ({ scrollInterval = 5000, childr
 
     const scrollCls = alertClass('scroll', className)
 
-    return renderItems.length > 0 ? (
+    if (!renderItems.length) return null
+
+    return (
         <div className={scrollCls}>
             <div
                 className={alertClass('scroll-container')}
@@ -123,7 +131,7 @@ const ScrollAlert: React.FC<ScrollAlertProps> = ({ scrollInterval = 5000, childr
                 })}
             </div>
         </div>
-    ) : null
+    )
 }
 
 export default ScrollAlert
