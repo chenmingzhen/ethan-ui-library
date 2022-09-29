@@ -45,12 +45,10 @@
         "Badge": "徽标数",
         "Carousel": "轮播",
         "Swiper": "轮播2.0",
-        "Datum.Form": "表单处理",
-        "Datum.List": "数据处理",
         "Pagination": "分页",
-        "Table": "表格",
         "Tree": "树",
-        "Timeline": "时间轴"
+        "Timeline": "时间轴",
+        "LazyList": "高性能列表"
     },
     "Feedback": {
         "Alert": "提示框",
