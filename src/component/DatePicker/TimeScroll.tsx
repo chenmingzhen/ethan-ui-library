@@ -1,9 +1,8 @@
-// @ts-nocheck
 import React, { PureComponent } from 'react'
-import PropTypes from 'prop-types'
 import { range } from '@/utils/numbers'
 import { datepickerClass } from '@/styles'
 import utils from './utils'
+import { TimeScrollProps } from './type'
 
 const lineHeight = 30
 const grayStyle = {
@@ -12,14 +11,12 @@ const grayStyle = {
     3: { color: '#eee' },
 }
 
-class TimeScroll extends PureComponent {
-    constructor(props) {
-        super(props)
-
-        this.bindElement = this.bindElement.bind(this)
-        this.handleMouseLeave = this.handleMouseLeave.bind(this)
-        this.handleScroll = this.handleScroll.bind(this)
+class TimeScroll extends PureComponent<TimeScrollProps> {
+    defaultProps = {
+        total: 60,
     }
+
+    element: HTMLDivElement
 
     componentDidMount() {
         this.updateScrollTop()
@@ -29,30 +26,37 @@ class TimeScroll extends PureComponent {
         this.updateScrollTop()
     }
 
-    getValue(v) {
+    getValue = v => {
         const { step, ampm } = this.props
+
         if (!step || ampm) return v
+
         return Math.ceil(v / step)
     }
 
     // 获取数字项的样式
-    getItemStyle(num, isDisabled) {
+    getItemStyle = (num, isDisabled) => {
         if (isDisabled) return null
+
         if (this.props.ampm || (typeof this.props.step === 'number' && this.props.step > 0)) {
             if (this.props.value % this.props.step) return null
             return grayStyle[Math.ceil(Math.abs(this.props.value - num) / this.props.step)]
         }
+
         return grayStyle[Math.abs(this.props.value - num)]
     }
 
-    bindElement(el) {
+    bindElement = el => {
         this.element = el
     }
 
-    updateScrollTop() {
+    updateScrollTop = () => {
         const { value } = this.props
+
         if (!this.element) return
+
         if (typeof this.props.step === 'number' && this.props.step > 0 && value % this.props.step) return
+
         if (this.element.scrollTop !== lineHeight * value) {
             setTimeout(() => {
                 if (this.element) this.scrollToValue()
@@ -62,29 +66,35 @@ class TimeScroll extends PureComponent {
 
     scrollToValue() {
         const { value } = this.props
+
         this.element.scrollTop = lineHeight * this.getValue(value)
     }
 
     // 点击数字
     handleClick(value) {
         this.props.onChange(value)
+
         this.element.scrollTop = lineHeight * this.getValue(value)
     }
 
     // 鼠标离开后需要重置到指定的位置
     handleMouseLeave() {
         const value = Math.round(this.element.scrollTop / lineHeight)
+
         this.element.scrollTop = lineHeight * value
     }
 
     // 处理滚动 步长在此计算
     handleScroll() {
         const { step, ampm } = this.props
+
         const value = Math.round(this.element.scrollTop / lineHeight)
+
         if (typeof step === 'number' && step > 0 && !ampm && value !== this.props.value) {
             this.props.onChange(value * step)
             return
         }
+
         if (value !== this.props.value) this.props.onChange(value)
     }
 
@@ -131,24 +141,6 @@ class TimeScroll extends PureComponent {
             </div>
         )
     }
-}
-
-TimeScroll.propTypes = {
-    ampm: PropTypes.bool,
-    onChange: PropTypes.func.isRequired,
-    total: PropTypes.number,
-    value: PropTypes.number.isRequired,
-    step: PropTypes.number,
-    disabled: PropTypes.func,
-    min: PropTypes.oneOfType([PropTypes.object, PropTypes.string]),
-    max: PropTypes.oneOfType([PropTypes.object, PropTypes.string]),
-    range: PropTypes.number,
-    current: PropTypes.object,
-    mode: PropTypes.string,
-}
-
-TimeScroll.defaultProps = {
-    total: 60,
 }
 
 export default TimeScroll

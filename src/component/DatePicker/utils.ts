@@ -67,6 +67,8 @@ function toDateWithFormat(rawDate: string | number | Date, fmt: string) {
          * Date.parse() 方法解析一个表示某个日期的字符串，并返回从1970-1-1 00:00:00 UTC 到该日期对象（该日期对象的UTC时间）的毫秒数，
          * 如果该字符串无法识别，或者一些情况下，包含了不合法的日期数值（如：2015-02-31），则返回值为NaN。
          */
+        // var result = parse('02/11/2014', 'MM/dd/yyyy', new Date())
+        //= > Tue Feb 11 2014 00:00:00
         date = parse(rawDate, fmt, new Date(), {
             weekStartsOn: getLocale('startOfWeek'),
         })
@@ -103,38 +105,33 @@ function setTime(date: Date, old: Date) {
     return date
 }
 
-function cloneTime(date, old, fmt) {
+function cloneTime(date: Date, old: Date, fmt: string) {
     if (!date) return date
+
     old = toDateWithFormat(old, fmt)
+
     if (isInvalid(old)) return date
 
     return setTime(date, old)
 }
 
-function formatDateWithDefaultTime(date, value, defaultTime, fmt) {
-    if (!date) return date
-    if (value) return setTime(date, value)
-    if (!defaultTime) return date
-
-    const dateHMS = toDateWithFormat(defaultTime, TIME_FORMAT)
-    if (isInvalid(dateHMS)) return date
-
-    const nDate = cloneTime(date, defaultTime, TIME_FORMAT)
-    return format(nDate, fmt)
-}
-
 /** 清除时分秒 */
-function clearHMS(date: Date): Date {
-    if (!isValid(date)) return date
+function clearHMS(rawDate: Date | number): Date {
+    if (!isValid(rawDate)) return rawDate as never
+
+    const date = new Date(rawDate)
 
     return new Date(new Date(date.toLocaleDateString()).getTime())
 }
 
 function compareDateArray(arr1, arr2, type = 'date') {
     if (!arr1 || !arr2 || arr1.length !== arr2.length) return false
+
     return arr1.every((v, i) => {
         if (!v || !arr2[i]) return false
+
         if (type === 'week') return format(v, 'RRRR II') === format(arr2[i], 'RRR II')
+
         return v.getTime() === arr2[i].getTime()
     })
 }
@@ -190,28 +187,33 @@ function judgeTimeByRange(...args) {
     return [false, date]
 }
 
-function getFormat(fo) {
+function getFormat(formatStr: string) {
     let defaultFormat = 'yyyy-MM-dd HH:mm:ss.SSS'
     ;['H', 'm', 's', 'S', 'h'].map(v => {
-        if (fo.indexOf(v) <= -1) {
+        if (formatStr.indexOf(v) <= -1) {
             const reg = new RegExp(`${v}`, 'g')
+
             defaultFormat = defaultFormat.replace(reg, '0')
         }
+
         return v
     })
+
     return defaultFormat
 }
 
-function resetTimeByFormat(value, fo) {
+function resetTimeByFormat(value: string | Date, formatStr: string) {
     if (!value) return null
+
     let date = null
+
     if (typeof value === 'string') {
         date = new Date(value)
     } else {
         date = new Date(value.getTime())
     }
     return new Date(
-        format(date, getFormat(fo), {
+        format(date, getFormat(formatStr), {
             weekStartsOn: getLocale('startOfWeek'),
         })
     )
@@ -238,7 +240,6 @@ export default {
     setTime,
     toDate,
     toDateWithFormat,
-    formatDateWithDefaultTime,
     compareDateArray,
     TIME_FORMAT,
     judgeTimeByRange,

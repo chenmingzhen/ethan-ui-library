@@ -1,48 +1,62 @@
-// @ts-nocheck
 import React from 'react'
-import PropTypes from 'prop-types'
 import { datepickerClass } from '@/styles'
 import { getLocale } from '@/locale'
 import { PureComponent } from '@/utils/component'
+import { isFunc } from '@/utils/is'
 import utils from './utils'
 import Icon from './Icon'
 import Time from './Time'
+import { DatePickerDayProps } from './type'
+
+interface DatePickerDayState {
+    hover: Date
+}
 
 const minStr = 'yyyy-MM-dd 00:00:00'
+
 const maxStr = 'yyyy-MM-dd 23:59:59'
 
-class Day extends PureComponent {
+class Day extends PureComponent<DatePickerDayProps, DatePickerDayState> {
+    today = utils.newDate()
+
+    get days() {
+        const { current } = this.props
+
+        const date = utils.clearHMS(current)
+
+        return utils.getDaysOfMonth(date)
+    }
+
     constructor(props) {
         super(props)
 
         this.state = {
             hover: null,
         }
-
-        this.handleNextMonth = this.handleMonth.bind(this, 1)
-        this.handlePrevMonth = this.handleMonth.bind(this, -1)
-        this.handleNextYear = this.handleMonth.bind(this, 12)
-        this.handlePrevYear = this.handleMonth.bind(this, -12)
-        this.handleMonthMode = this.handleModeChange.bind(this, 'month')
-        this.handleYearMode = this.handleModeChange.bind(this, 'year')
-        this.handleWeekLeave = this.handleWeek.bind(this, null)
-        this.handleTimeChange = this.handleTimeChange.bind(this)
-        this.formatWithDefaultTime = this.formatWithDefaultTime.bind(this)
     }
 
-    // 获取Day的数组
-    getDays() {
-        const { current } = this.props
+    handlePrevYear = () => {
+        this.handleMonth(-12)
+    }
 
-        if (!current) return this.cachedDays
-        const date = utils.clearHMS(current)
-        if (this.cachedDate && utils.isSameMonth(this.cachedDate, date) && this.cachedDays) {
-            return this.cachedDays
-        }
-        this.cachedDays = utils.getDaysOfMonth(date)
-        this.cachedDate = date
+    handleNextYear = () => {
+        this.handleMonth(12)
+    }
 
-        return this.cachedDays
+    handleNextMonth = () => {
+        this.handleMonth(1)
+    }
+
+    handlePrevMonth = () => {
+        this.handleMonth(-1)
+    }
+
+    handleYearModeChange = () => {
+        this.props.onModeChange('year')
+    }
+
+    handleMonthModeChange = () => {
+        this.props.onModeChange('month')
     }
 
     // 格式化时间
@@ -101,72 +115,82 @@ class Day extends PureComponent {
         this.props.onChange(time, true, false, mode)
     }
 
-    // type week 模式 滑进或滑出
-    handleWeek(hover) {
+    handleWeek(hover: Date) {
         this.setState({ hover })
     }
 
-    // 点击double箭头 处理月份的变化
-    handleMonth(month) {
+    handleMonth(month: number) {
         const { current, onChange } = this.props
 
         onChange(utils.addMonths(current, month))
     }
 
-    handleModeChange(mode) {
-        this.props.onModeChange(mode)
-    }
-
-    handleDayHover(date) {
+    handleDayHover(date: Date) {
         this.props.onDayHover(date)
     }
 
-    // 渲染day
-    renderDay(date, minD, maxD) {
+    renderDay(date: Date, minDate: Date, maxDate: Date) {
         const { current, disabled, value, index, type, rangeDate, range, rangeTemp, min, max } = this.props
+
         const { hover } = this.state
+
         const hmsDate = new Date(date)
 
         utils.setTime(hmsDate, current)
-        let isDisabled = disabled ? disabled(date) : false
 
-        // only for single, single picker don't has index
-        if (index === undefined && !isDisabled) {
-            if ((minD && utils.compareAsc(date, minD) < 0) || (maxD && utils.compareAsc(date, maxD) > 0))
-                isDisabled = true
+        let isDisabled = false
+
+        if (isFunc(disabled)) {
+            disabled(date)
+        } else if (disabled) {
+            isDisabled = disabled
         }
-        if (!isDisabled && index === 1) {
-            if (
-                (typeof range === 'number' && utils.compareAsc(date, utils.addSeconds(rangeTemp, range)) > 0) ||
+
+        if (
+            (index === undefined && !isDisabled && minDate && utils.compareAsc(date, minDate) < 0) ||
+            (maxDate && utils.compareAsc(date, maxDate) > 0)
+        ) {
+            isDisabled = true
+        }
+
+        if (
+            !isDisabled &&
+            index === 1 &&
+            ((typeof range === 'number' && utils.compareAsc(date, utils.addSeconds(rangeTemp, range)) > 0) ||
                 utils.compareAsc(date, utils.clearHMS(rangeTemp)) < 0 ||
                 utils.compareAsc(date, utils.clearHMS(min)) < 0 ||
-                utils.compareAsc(date, max) > 0
-            ) {
-                isDisabled = true
-            }
+                utils.compareAsc(date, max) > 0)
+        ) {
+            isDisabled = true
         }
 
-        if (!isDisabled && index === 0) {
-            if (utils.compareAsc(date, utils.clearHMS(min)) < 0 || utils.compareAsc(date, max) > 0) {
-                isDisabled = true
-            }
+        if (
+            !isDisabled &&
+            index === 0 &&
+            (utils.compareAsc(date, utils.clearHMS(min)) < 0 || utils.compareAsc(date, max) > 0)
+        ) {
+            isDisabled = true
         }
 
         const classList = [
             utils.isSameDay(date, this.today) && 'today',
-            // 其他月份的日期 灰色显示
             current.getMonth() !== date.getMonth() && 'other-month',
             isDisabled && 'disabled',
         ]
 
         let hoverClass
-        const hoverProps = {}
+
+        const hoverProps: React.DetailedHTMLProps<React.HTMLAttributes<HTMLDivElement>, HTMLDivElement> = {}
+
         const weekStart = getLocale('startOfWeek')
+
         const weekEnd = weekStart ? 0 : 6
 
         if (type === 'week') {
             hoverProps.onMouseEnter = this.handleWeek.bind(this, date)
-            hoverProps.onMouseLeave = this.handleWeekLeave
+
+            hoverProps.onMouseLeave = this.handleWeek.bind(this, null)
+
             if (
                 utils.isSameWeek(date, value, {
                     weekStartsOn: weekStart,
@@ -174,7 +198,6 @@ class Day extends PureComponent {
             ) {
                 hoverClass = datepickerClass(
                     'active',
-                    // week模式下 选中后 左右点
                     date.getDay() === weekStart && 'hover-start',
                     date.getDay() === weekEnd && 'hover-end'
                 )
@@ -186,14 +209,11 @@ class Day extends PureComponent {
             ) {
                 hoverClass = datepickerClass(
                     'hover',
-                    // hover下classname
                     date.getDay() === weekStart && 'hover-start',
                     date.getDay() === weekEnd && 'hover-end'
                 )
             }
-        }
-        // range 模式
-        else if (rangeDate && current.getMonth() === date.getMonth()) {
+        } else if (rangeDate && current.getMonth() === date.getMonth()) {
             hoverProps.onMouseEnter = this.handleDayHover.bind(this, date)
 
             classList.push(utils.isSameDay(date, rangeDate[index]) && 'active')
@@ -212,7 +232,7 @@ class Day extends PureComponent {
             <div
                 key={date.getTime()}
                 className={hoverClass}
-                onClick={isDisabled ? undefined : this.handleDayClick.bind(this, date, minD, maxD)}
+                onClick={isDisabled ? undefined : this.handleDayClick.bind(this, date, minDate, maxDate)}
                 onDoubleClick={isDisabled ? undefined : this.handleDayDoubleClick.bind(this, date)}
                 {...hoverProps}
             >
@@ -222,21 +242,23 @@ class Day extends PureComponent {
     }
 
     // 渲染HMS组件
-    renderTimepicker() {
+    renderTimePicker() {
         const { rangeDate, index, showTimePicker } = this.props
-        if (this.props.type !== 'datetime') return undefined
+
+        if (this.props.type !== 'date-time') return undefined
+
         if (!showTimePicker) return undefined
 
         let { format } = this.props
+
         if (/^[T|t]$/.test(format)) {
             format = 'HH:mm:ss'
         } else {
-            const match = format.match(/[H|h].*/)
-            // eslint-disable-next-line
-            if (match) format = match[0]
+            ;[format] = format.match(/[H|h].*/)
         }
 
         const value = rangeDate ? utils.toDateWithFormat(rangeDate[index], format) : this.props.value
+
         if (!value) return undefined
 
         return (
@@ -249,14 +271,12 @@ class Day extends PureComponent {
 
     render() {
         const { current, min, index, max } = this.props
-        const days = this.getDays()
 
-        this.today = utils.newDate()
+        const { days } = this
 
-        // 最小日期
-        const minDate = min && new Date(utils.format(min, minStr, new Date()))
-        // 最大日期
-        const maxDate = max && new Date(utils.format(max, maxStr, new Date()))
+        const minDate = min && new Date(utils.format(min, minStr))
+
+        const maxDate = max && new Date(utils.format(max, maxStr))
 
         return (
             <div className={datepickerClass('day-picker')}>
@@ -264,18 +284,20 @@ class Day extends PureComponent {
                 <div className={datepickerClass('header')}>
                     <Icon
                         name="AngleDoubleLeft"
-                        disabled={!!(min && current.getFullYear() <= min.getFullYear())}
+                        disabled={!!(min && current.getFullYear() <= minDate.getFullYear())}
                         onClick={this.handlePrevYear}
                     />
                     <Icon
                         name="AngleLeft"
-                        disabled={!!(min && utils.compareMonth(current, min) <= 0)}
+                        disabled={!!(min && utils.compareMonth(current, minDate) <= 0)}
                         onClick={this.handlePrevMonth}
                     />
 
                     <span className={datepickerClass('ym')}>
-                        <span onClick={this.handleYearMode}>{current.getFullYear()}</span>
-                        <span onClick={this.handleMonthMode}>{getLocale('monthValues.short')[current.getMonth()]}</span>
+                        <span onClick={this.handleYearModeChange}>{current.getFullYear()}</span>
+                        <span onClick={this.handleMonthModeChange}>
+                            {getLocale('monthValues.short')[current.getMonth()]}
+                        </span>
                     </span>
 
                     <Icon name="AngleRight" onClick={this.handleNextMonth} />
@@ -292,31 +314,10 @@ class Day extends PureComponent {
 
                 <div style={{ flex: 1 }} />
 
-                {this.renderTimepicker()}
+                {this.renderTimePicker()}
             </div>
         )
     }
-}
-
-Day.propTypes = {
-    current: PropTypes.object.isRequired,
-    disabled: PropTypes.func,
-    format: PropTypes.string,
-    index: PropTypes.number,
-    max: PropTypes.oneOfType([PropTypes.object, PropTypes.string]),
-    min: PropTypes.oneOfType([PropTypes.object, PropTypes.string]),
-    onChange: PropTypes.func.isRequired,
-    onChangeSync: PropTypes.func,
-    onDayHover: PropTypes.func,
-    onModeChange: PropTypes.func.isRequired,
-    range: PropTypes.number,
-    rangeDate: PropTypes.array,
-    rangeTemp: PropTypes.oneOfType([PropTypes.object, PropTypes.string]),
-    showTimePicker: PropTypes.bool,
-    type: PropTypes.string.isRequired,
-    value: PropTypes.object,
-    defaultTime: PropTypes.array,
-    allowSingle: PropTypes.bool,
 }
 
 export default Day

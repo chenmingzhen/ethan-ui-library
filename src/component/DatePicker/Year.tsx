@@ -1,39 +1,30 @@
-// @ts-nocheck
-import React, { useCallback } from 'react'
-import PropTypes from 'prop-types'
-import { range } from '@/utils/numbers'
+import React from 'react'
 import { datepickerClass } from '@/styles'
+import { range } from '@/utils/numbers'
 import Icon from './Icon'
+import { DatePickerYearProps } from './type'
 import utils from './utils'
 
-// 选择年份
-const Year = ({ current, onChange, onModeChange, value }) => {
-    const handleChange = useCallback(
-        year => {
-            const date = new Date(current.getTime())
+const Year: React.FC<DatePickerYearProps> = function(props) {
+    const { current, onChange, onModeChange, value } = props
 
-            // 在当前日期设置year
-            date.setFullYear(year)
+    function handleChange(year: number) {
+        const date = new Date(current.getTime())
 
-            // 回调date
-            onChange(date)
+        date.setFullYear(year)
 
-            // 下一个模式
-            onModeChange('month')
-        },
-        [current, onChange, onModeChange]
-    )
+        onChange(date)
 
-    // 年份调整;
-    const handleRangeChange = useCallback(
-        year => {
-            onChange(utils.addYears(current, year))
-        },
-        [current, onChange]
-    )
+        onModeChange('month')
+    }
 
-    // 而可选的范围为当前年份的前后7年
+    function handleRangeChange(year: number) {
+        onChange(utils.addYears(current, year))
+    }
+
+    /** 可选的范围为当前年份的前后7年 */
     const cy = current.getFullYear() - 7
+
     const years = range(15, 0).map(i => cy + i)
 
     return (
@@ -61,11 +52,4 @@ const Year = ({ current, onChange, onModeChange, value }) => {
     )
 }
 
-Year.propTypes = {
-    current: PropTypes.object.isRequired,
-    onChange: PropTypes.func.isRequired,
-    onModeChange: PropTypes.func.isRequired,
-    value: PropTypes.object,
-}
-
-export default Year
+export default React.memo(Year)

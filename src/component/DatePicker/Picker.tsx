@@ -1,105 +1,103 @@
-// @ts-nocheck
-import React from 'react'
-import PropTypes from 'prop-types'
-import { PureComponent } from '@/utils/component'
+import React, { useCallback, useState } from 'react'
+import Day from './Day'
+import Month from './Month'
+import Time from './Time'
+import { PickerProps } from './type'
 import utils from './utils'
 import Year from './Year'
-import Month from './Month'
-import Day from './Day'
-import Time from './Time'
 
-class Picker extends PureComponent {
-    constructor(props) {
-        super(props)
+function getInitMode(type: PickerProps['type']) {
+    let mode: string
 
-        let mode
-        switch (props.type) {
-            case 'month':
-                mode = 'month'
-                break
-            case 'time':
-                mode = 'time'
-                break
-            default:
-                mode = 'day'
-        }
-
-        this.state = { mode }
-        //  默认current
-        this.defaultCurrent = new Date(
-            utils.formatDateWithDefaultTime(utils.newDate(), undefined, props.defaultTime[0], 'yyyy-MM-dd HH:mm:ss')
-        )
-        this.handleModeChange = this.handleModeChange.bind(this)
-        this.handleEnter = this.handleMouse.bind(this, true)
-        this.handleLeave = this.handleMouse.bind(this, false)
+    switch (type) {
+        case 'month':
+            mode = 'month'
+            break
+        case 'time':
+            mode = 'time'
+            break
+        default:
+            mode = 'day'
     }
 
-    handleMouse(isEnter, e) {
-        // stop
-        e.stopPropagation()
+    return mode
+}
 
-        const { index, handleHover } = this.props
+function getDefaultCurrent(rawDate: string | number | Date, format: string) {
+    const date = utils.toDateWithFormat(rawDate, format)
 
-        handleHover(index, isEnter)
+    return date ? new Date(date) : new Date()
+}
+
+const Picker: React.FC<PickerProps> = props => {
+    const { type, format, index, children, current, handleHover, ...other } = props
+
+    const [mode, updateMode] = useState(getInitMode(type))
+
+    const [defaultCurrent] = useState(getDefaultCurrent(props.defaultTime[0], format))
+
+    let Component = null
+
+    switch (mode) {
+        case 'year':
+            Component = Year
+            break
+        case 'month':
+            Component = Month
+            break
+        case 'time':
+            Component = Time
+            break
+        default:
+            Component = Day
     }
 
-    handleModeChange(mode) {
+    const handleModeChange = useCallback((newMode: string) => {
         setTimeout(() => {
-            this.setState({ mode })
-        }, 10)
-    }
+            updateMode(newMode)
+        })
+    }, [])
 
-    render() {
-        const { mode } = this.state
-        const { current, index, children, ...otherProps } = this.props
+    const handleMouseEnter: React.MouseEventHandler<HTMLDivElement> = useCallback(
+        evt => {
+            evt.stopPropagation()
 
-        let Render
-        switch (mode) {
-            case 'year':
-                Render = Year
-                break
-            case 'month':
-                Render = Month
-                break
-            case 'time':
-                Render = Time
-                break
-            default:
-                Render = Day
-        }
+            handleHover(index, true)
+        },
+        [handleHover, index]
+    )
 
-        // only range has index prop
-        if (index === undefined)
-            return (
-                <Render {...otherProps} current={current || this.defaultCurrent} onModeChange={this.handleModeChange} />
-            )
+    const handleMouseLeave: React.MouseEventHandler<HTMLDivElement> = useCallback(
+        evt => {
+            evt.stopPropagation()
 
+            handleHover(index, false)
+        },
+        [handleHover, index]
+    )
+
+    if (index === undefined)
         return (
-            <div onMouseEnter={this.handleEnter} onMouseLeave={this.handleLeave}>
-                <Render
-                    {...otherProps}
-                    index={index}
-                    current={current || this.defaultCurrent}
-                    onModeChange={this.handleModeChange}
-                />
-            </div>
+            <Component
+                {...other}
+                format={format}
+                type={type}
+                current={current || defaultCurrent}
+                onModeChange={handleModeChange}
+            />
         )
-    }
+
+    return (
+        <div onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
+            <Component
+                {...other}
+                format={format}
+                index={index}
+                current={current || defaultCurrent}
+                onModeChange={handleModeChange}
+            />
+        </div>
+    )
 }
 
-Picker.propTypes = {
-    current: PropTypes.object,
-    disabled: PropTypes.func,
-    format: PropTypes.string,
-    max: PropTypes.oneOfType([PropTypes.object, PropTypes.string]),
-    min: PropTypes.oneOfType([PropTypes.object, PropTypes.string]),
-    onChange: PropTypes.func.isRequired,
-    value: PropTypes.object,
-    type: PropTypes.string.isRequired,
-    index: PropTypes.number,
-    children: PropTypes.oneOfType([PropTypes.string, PropTypes.object]),
-    handleHover: PropTypes.func,
-    defaultTime: PropTypes.array,
-}
-
-export default Picker
+export default React.memo(Picker)

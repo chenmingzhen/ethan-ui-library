@@ -28,7 +28,6 @@ class Range extends PureComponent {
         this.handleDisabledStart = this.handleDisabled.bind(this, 'start')
         this.handleDisabledEnd = this.handleDisabled.bind(this, 'end')
         this.changeDateSmart = this.changeDateSmart.bind(this)
-        this.fillTime = this.fillTime.bind(this)
     }
 
     componentDidUpdate(prevProps) {
@@ -39,7 +38,7 @@ class Range extends PureComponent {
             !shallowEqual(this.state.rangeDate, this.props.value)
         ) {
             // eslint-disable-next-line
-      this.setState({ rangeDate: this.props.value })
+            this.setState({ rangeDate: this.props.value })
         }
     }
 
@@ -135,7 +134,7 @@ class Range extends PureComponent {
 
         if (type === 'month') {
             // eslint-disable-next-line
-      const rangeDate = [...this.state.rangeDate]
+            const rangeDate = [...this.state.rangeDate]
             rangeDate[index] = date
             rangeDate[1 - index] = rangeDate[1 - index] || ''
 
@@ -167,11 +166,6 @@ class Range extends PureComponent {
                 this.props.onChange(this.state.rangeDate, true, type !== 'datetime', index === 1)
             }
         )
-    }
-
-    fillTime(date, index) {
-        const { defaultTime, format, value } = this.props
-        return utils.formatDateWithDefaultTime(date, value[index], defaultTime[index], format)
     }
 
     handleDisabled(type, date) {
