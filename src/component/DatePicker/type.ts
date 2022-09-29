@@ -26,13 +26,14 @@ export interface DatePickerProps {
     children?: React.ReactNode
     onValueBlur?: () => void
     quickSelect?: QuickSelect[]
-    min?: any
-    max?: any
+    min?: number | Date
+    max?: number | Date
     defaultPickerValue?: number | number[] | Date | Date[]
     hourStep?: number
     minuteStep?: number
     secondStep?: number
     defaultValue?: number | Date | number[] | Date[]
+    formatResult?: string
 }
 
 export interface DatePickerContainerProps extends Omit<DatePickerProps, 'onChange'> {
@@ -41,7 +42,7 @@ export interface DatePickerContainerProps extends Omit<DatePickerProps, 'onChang
 
 export type WithValueProps = DatePickerProps
 
-export interface DatePickerTextProps {
+export interface DatePickerTextProps extends Pick<DatePickerProps, 'formatResult'> {
     disabled: boolean
     className: string
     index: number
@@ -62,20 +63,20 @@ export interface PickerProps extends Pick<DatePickerProps, 'type'> {
     onChange: () => void
     value: any
     index: number
-    handleHover: () => void
+    handleHover: (index: number, isEnter: boolean) => void
     defaultTime: any
 }
 
-export interface DayProps extends Pick<PickerProps, 'type'> {
+export interface DatePickerDayProps extends Pick<PickerProps, 'type'> {
     current: Date
-    disabled: (disabled: Date) => boolean
+    disabled: boolean | ((date: Date) => boolean)
+    onChange: (date: Date, change?: boolean, blur?: boolean, isEnd?: boolean) => void
     format: string
     index: number
     max: Date
     min: Date
-    onChange: (newDate: Date) => void
     onChangeSync: () => void
-    onDayHover: () => void
+    onDayHover: (date: Date) => void
     onModeChange: (mode: string) => void
     range: number
     rangeDate: Date[]
@@ -92,4 +93,49 @@ export interface DatePickerIconProps {
     onClick?: (e) => void
     tag?: keyof HTMLElementTagNameMap
     disabled?: boolean
+}
+
+export interface DatePickerYearProps {
+    current: Date
+    onChange: (date: Date) => void
+    onModeChange: (mode: string) => void
+    value: Date
+}
+
+export interface DatePickerMonthProps extends Pick<DatePickerProps, 'min'> {
+    current: Date
+    disabled: boolean | ((date: Date) => boolean)
+    onChange: (date: Date, change?: boolean, blur?: boolean) => void
+    onModeChange: (mode: string) => void
+    value: Date
+    range: number
+    type: string
+}
+
+export interface DatePickerTimeProps extends Pick<DatePickerProps, 'format'> {
+    disabled: boolean | ((date: Date) => boolean)
+    onChange
+    range
+    value: Date
+    defaultTime
+    index: number
+    hourStep: number
+    minuteStep: number
+    secondStep: number
+    min
+    max
+}
+
+export interface TimeScrollProps {
+    ampm?: boolean
+    onChange
+    total?
+    value
+    step?
+    disabled
+    min
+    max
+    range
+    current
+    mode
 }

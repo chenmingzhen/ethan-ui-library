@@ -193,19 +193,11 @@ class Container extends PureComponent<DatePickerContainerProps, DatePickerState>
         })
     }
 
-    dateToPanelShowDate = (date: Date | Date[]) => {
-        const { range } = this.props
-
-        if (!range) return date
-
-        const { panelShowDate } = this.state
-
-        return [date[0] || panelShowDate[0], date[1] || panelShowDate[1]]
-    }
-
     /** change为true 表示为最终选中 可以把date设为value而非current */
     handleChange = (date: Date | Date[], change: boolean, blur: boolean, isEnd: boolean) => {
         const { range, onChange, format } = this.props
+
+        const { panelShowDate } = this.state
 
         const rangeOne = range && !(date[0] && date[1])
 
@@ -229,7 +221,7 @@ class Container extends PureComponent<DatePickerContainerProps, DatePickerState>
             this.handleToggleOpen(false)
         }
 
-        const newPanelShowDate = this.dateToPanelShowDate(date)
+        const newPanelShowDate = range ? [date[0] || panelShowDate[0], date[1] || panelShowDate[1]] : date
 
         if (change) {
             this.setState({ panelShowDate: newPanelShowDate })
@@ -258,7 +250,7 @@ class Container extends PureComponent<DatePickerContainerProps, DatePickerState>
         })
     }
 
-    /** 存在模式模式下使用 */
+    /** 存在输入模式下使用 */
     lockFocusEvent = () => {
         const { inputAble } = this.props
 
@@ -317,7 +309,7 @@ class Container extends PureComponent<DatePickerContainerProps, DatePickerState>
     }
 
     renderText = (value, placeholder: React.ReactNode, key?: number) => {
-        const { inputAble, disabled, size, format } = this.props
+        const { inputAble, disabled, size, format, formatResult } = this.props
 
         const date = utils.toDateWithFormat(value, format)
 
@@ -335,7 +327,7 @@ class Container extends PureComponent<DatePickerContainerProps, DatePickerState>
                 inputAble={inputAble}
                 placeholder={placeholder}
                 onTextBlur={this.handleTextBlur}
-                value={utils.isInvalid(date) ? undefined : utils.format(date, format)}
+                value={utils.isInvalid(date) ? undefined : utils.format(date, formatResult || format)}
                 disabled={disabled === true}
                 size={size}
             />
@@ -426,7 +418,7 @@ class Container extends PureComponent<DatePickerContainerProps, DatePickerState>
 
         return (
             <Component
-                ref={this.bindPicker}
+                // ref={this.bindPicker}
                 defaultTime={this.getDefaultTime()}
                 current={this.state.panelShowDate}
                 format={format}
