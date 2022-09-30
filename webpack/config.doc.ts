@@ -10,10 +10,7 @@ const cssConfig = config.themes.map(name =>
     getThemeWebpackConfig({
         name,
         entry: [
-            './src/styles/normalize.less',
-            './src/styles/expose.ts',
-            './src/styles/index.ts',
-            './src/styles/spin.ts',
+            './src/styles/style/ts',
             // site style
             './site/styles/index.ts',
             './site/less-entry.ts',

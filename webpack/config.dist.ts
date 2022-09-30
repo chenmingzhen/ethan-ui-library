@@ -7,12 +7,7 @@ import { getCommonConfig, getThemeWebpackConfig } from './utils'
 const cssConfig = config.themes.map(name =>
     getThemeWebpackConfig({
         name,
-        entry: [
-            './src/styles/normalize.less',
-            './src/styles/expose.ts',
-            './src/styles/index.ts',
-            './src/styles/spin.ts',
-        ],
+        entry: ['./src/styles/style.ts'],
         output: { path: path.join(__dirname, '../publish/dist') },
     })
 )

@@ -21,7 +21,6 @@ const files = fs
 const line = `/** Created by scripts/src-index.ts.  */
 /** Do not manually change. */
 /** Please run build-index to build index.ts */
-import './styles/normalize.less'
 
 export { setLocale } from './locale'
 export { default as config, setConfig } from './config'

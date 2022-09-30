@@ -1,14 +1,14 @@
-import * as exampleLess from './example.less'
-import * as homeLess from './home.less'
-import * as mainLess from './index.less'
-import * as markDownLess from './markdown.less'
-import * as navLess from './nav.less'
-import * as headerless from './header.less'
-import classGenerate from '../utils/classnames'
+import './example.less'
+import './home.less'
+import './index.less'
+import './markdown.less'
+import './nav.less'
+import './header.less'
+import classnames from '@/utils/classnames'
 
-export const exampleClass = classGenerate(exampleLess, 'example')
-export const headerClass = classGenerate(headerless, 'header')
-export const homeClass = classGenerate(homeLess, 'home')
-export const mainClass = classGenerate(mainLess, 'main')
-export const markdownClass = classGenerate(markDownLess, 'markdown')
-export const navClass = classGenerate(navLess, 'nav')
+export const exampleClass = classnames('example', 'doc')
+export const headerClass = classnames('header', 'doc')
+export const homeClass = classnames('home', 'doc')
+export const mainClass = classnames('main', 'doc')
+export const markdownClass = classnames('markdown', 'doc')
+export const navClass = classnames('nav', 'doc')
