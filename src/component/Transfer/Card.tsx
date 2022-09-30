@@ -10,7 +10,7 @@ import Spin from '../Spin'
 import Checkbox from '../Checkbox'
 import Input from '../Input'
 import LazyList from '../LazyList'
-import Item from './Item'
+import Item from './TransferItem'
 
 interface CardState {
     lazyHeight: number
