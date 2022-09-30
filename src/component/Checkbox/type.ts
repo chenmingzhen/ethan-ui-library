@@ -24,6 +24,7 @@ export interface CheckItemProps<V = any> extends Omit<CheckHandlerContext<V>, 'c
     disabled?: boolean
     style?: React.CSSProperties
     className?: string
+    children?: React.ReactNode
 }
 
 export interface ICheckedItemProps extends CheckItemProps {
