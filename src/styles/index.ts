@@ -1,4 +1,5 @@
-import genaration from '@/utils/classnames'
+/** 由于此文件会被cp到publish中，不能使用别名 */
+import genaration from '../utils/classnames'
 
 // 注意 这里的引入顺序会影响后面的样式叠加
 import * as alertLess from './alert.less'

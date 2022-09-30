@@ -1,11 +1,11 @@
 import { entries } from './utils/objects'
 
 const config = {
-    cssModule: process.env.CSS_MODULE || false,
+    cssModule: false,
 
-    prefix: process.env.ETHAN_PREFIX || 'ethan',
+    prefix: 'ethan',
 
-    locale: process.env.LOCALE || 'en-US',
+    locale: 'en-US',
 
     delay: undefined,
 

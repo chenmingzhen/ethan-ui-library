@@ -1,4 +1,4 @@
-import genaration from '@/utils/classnames'
+import genaration from '../utils/classnames'
 
 import * as defaultLess from './spin/default.less'
 import * as ringLess from './spin/ring.less'
