@@ -10,7 +10,7 @@ import { headerClass } from '../styles'
 import history from './history'
 import locate, { getLanguage, setItem, STORAGE_KEY } from '../utils/locate'
 
-const { default: Logo } = require('../images/ui.png')
+const { default: Logo } = require('https://chenmingzhen.github.io/ethan-ui-library/images/ui.png')
 
 const findLangs = () => {
     const prevLang = locate('cn', 'en')

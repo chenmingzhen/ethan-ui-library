@@ -1,3 +1,0 @@
-# PhotoView
-
-<example />
