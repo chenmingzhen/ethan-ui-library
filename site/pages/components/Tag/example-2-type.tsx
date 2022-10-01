@@ -5,16 +5,16 @@
  *    -- There are four built-in types (styles), [default,success, info, warning, danger], the default value is default.
  */
 import React from 'react'
-import { Tag } from 'ethan'
+import { Tag } from 'ethan-ui'
 
 export default function() {
-  return (
-    <div>
-      <Tag>Default</Tag>
-      <Tag type="success">Success</Tag>
-      <Tag type="info">Info</Tag>
-      <Tag type="warning">Warning</Tag>
-      <Tag type="danger">Danger</Tag>
-    </div>
-  )
+    return (
+        <div>
+            <Tag>Default</Tag>
+            <Tag type="success">Success</Tag>
+            <Tag type="info">Info</Tag>
+            <Tag type="warning">Warning</Tag>
+            <Tag type="danger">Danger</Tag>
+        </div>
+    )
 }

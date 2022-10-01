@@ -5,7 +5,7 @@
  *    -- Set position property to specify the pop-up layer location, optional value: top, middle, top-left, top-right, bottom-left, bottom-right.
  */
 import React, { useState } from 'react'
-import { Button, Message, Select } from 'ethan/index'
+import { Button, Message, Select } from 'ethan-ui'
 
 const positions = ['top', 'middle', 'top-left', 'top-right', 'bottom-left', 'bottom-right']
 

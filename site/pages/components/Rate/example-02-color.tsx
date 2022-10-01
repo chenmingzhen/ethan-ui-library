@@ -5,7 +5,7 @@
  *    -- Set the color when the component is created.
  */
 import React from 'react'
-import { Rate, FontAwesome } from 'ethan'
+import { Rate, FontAwesome } from 'ethan-ui'
 
 const heartBg = <FontAwesome name="heart-o" />
 const heart = <FontAwesome name="heart" style={{ color: '#ff4d4f' }} />

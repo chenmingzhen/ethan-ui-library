@@ -5,7 +5,7 @@
  *    -- Render a group of checkboxes from data.
  */
 import React from 'react'
-import { Checkbox } from 'ethan/index'
+import { Checkbox } from 'ethan-ui'
 
 const data = ['red', 'orange', 'yellow', 'green', 'cyan', 'blue', 'violet']
 

@@ -5,7 +5,7 @@
  *    -- Modal has 4 built in style.
  */
 import React from 'react'
-import { Modal, Button } from 'ethan/index'
+import { Modal, Button } from 'ethan-ui'
 
 export default function() {
     function info() {

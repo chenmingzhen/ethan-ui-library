@@ -5,7 +5,7 @@
  *    -- Set columns property over 1, options will display in multiple columns.
  */
 import React from 'react'
-import { Select } from 'ethan/index'
+import { Select } from 'ethan-ui'
 import { fetchSync as fetchCity } from 'doc/data/city'
 
 const citys = fetchCity(200)

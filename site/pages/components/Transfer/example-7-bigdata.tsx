@@ -5,17 +5,17 @@
  *    -- Transfer uses a lazy loading to optimize performance. This example loads 10,000 pieces of data.
  */
 import React from 'react'
-import { Transfer } from 'ethan'
+import { Transfer } from 'ethan-ui'
 
 const data = []
 
 for (let i = 0; i < 10000; i++) {
-  data.push({
-    id: i,
-    content: `content ${i}`,
-  })
+    data.push({
+        id: i,
+        content: `content ${i}`,
+    })
 }
 
 export default function() {
-  return <Transfer data={data} format="id" renderItem="content" keygen="id" titles={['Source', 'Target']} />
+    return <Transfer data={data} format="id" renderItem="content" keygen="id" titles={['Source', 'Target']} />
 }

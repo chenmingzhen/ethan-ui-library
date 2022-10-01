@@ -5,16 +5,16 @@
  *    -- Set columns property can make the option multi-column tiled.
  */
 import React from 'react'
-import { Dropdown } from 'ethan/index'
+import { Dropdown } from 'ethan-ui'
 
 export default function() {
-  const menu = []
-  for (let i = 1; i <= 30; i++) {
-    menu.push({
-      id: `${i}`,
-      content: `item${i}`,
-    })
-  }
+    const menu = []
+    for (let i = 1; i <= 30; i++) {
+        menu.push({
+            id: `${i}`,
+            content: `item${i}`,
+        })
+    }
 
-  return <Dropdown placeholder="Dropdown" width={500} columns={5} data={menu} />
+    return <Dropdown placeholder="Dropdown" width={500} columns={5} data={menu} />
 }

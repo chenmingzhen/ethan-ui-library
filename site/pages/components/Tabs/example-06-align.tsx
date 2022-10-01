@@ -5,7 +5,7 @@
  *    -- set align
  */
 import React from 'react'
-import { Tabs, Select } from 'ethan'
+import { Tabs, Select } from 'ethan-ui'
 
 const panelStyle = { padding: '12px 0' }
 

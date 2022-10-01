@@ -5,7 +5,7 @@
  *    -- The title property is displayed when the alt property is invalid or there is no alt property.
  */
 import React from 'react'
-import { Image } from 'ethan/index'
+import { Image } from 'ethan-ui'
 
 export default function() {
     return <Image width={200} height={125} src="notfound" title="Image not exist" />

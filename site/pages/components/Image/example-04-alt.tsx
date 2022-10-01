@@ -5,7 +5,7 @@
  *    -- If the src address fails to load, use the alt property instead.
  */
 import React from 'react'
-import { Image } from 'ethan/index'
+import { Image } from 'ethan-ui'
 
 export default function() {
     return (

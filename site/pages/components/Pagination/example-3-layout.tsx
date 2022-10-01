@@ -5,11 +5,11 @@
  *    -- Use the layout property to control whether the child elements is displayed and where is displayed.
  */
 import React from 'react'
-import { Pagination } from 'ethan/index'
+import { Pagination } from 'ethan-ui'
 
 const info = ({ total }) => `total ${total}`
 
-export default function () {
+export default function() {
     return (
         <Pagination
             total={128}

@@ -9,7 +9,7 @@
  *    -- When the onClose is a function, call this function after hiding it.
  */
 import React from 'react'
-import { Alert } from 'ethan'
+import { Alert } from 'ethan-ui'
 
 export default function() {
     const [placeholder, setPlaceholder] = React.useState('')

@@ -5,7 +5,7 @@
  *    -- set container to render target node
  */
 import React, { useRef, useState } from 'react'
-import { Modal, Button } from 'ethan/index'
+import { Modal, Button } from 'ethan-ui'
 
 export default function() {
     const [visible, setVisible] = useState(false)

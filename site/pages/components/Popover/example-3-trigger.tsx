@@ -5,7 +5,7 @@
  *    -- Set the trigger property to change the trigger event.
  */
 import React from 'react'
-import { Button, Popover, Card } from 'ethan/index'
+import { Button, Popover, Card } from 'ethan-ui'
 
 export default function() {
     return (

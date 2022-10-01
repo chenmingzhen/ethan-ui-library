@@ -5,7 +5,7 @@
  *    -- The most basic image.
  */
 import React from 'react'
-import { Image } from 'ethan/index'
+import { Image } from 'ethan-ui'
 
 export default function() {
     return <Image width={200} height={125} src="https://chenmingzhen.github.io/ethan-ui-library/images/1_b.jpg" />

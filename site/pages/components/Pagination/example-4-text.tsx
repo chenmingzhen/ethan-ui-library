@@ -5,7 +5,7 @@
  *    -- Set text property to replace the default text..
  */
 import React from 'react'
-import { Pagination } from 'ethan/index'
+import { Pagination } from 'ethan-ui'
 
 function info({ current, pageSize, total }) {
     const from = (current - 1) * pageSize + 1

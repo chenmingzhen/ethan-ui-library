@@ -5,7 +5,7 @@
  *    -- Set the maximum value of the option through the max attribute. The default value is 5.
  */
 import React from 'react'
-import { Rate, FontAwesome } from 'ethan'
+import { Rate, FontAwesome } from 'ethan-ui'
 
 const star = <FontAwesome name="star" />
 

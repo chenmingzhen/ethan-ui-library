@@ -6,7 +6,7 @@
 
  */
 import React, { useState } from 'react'
-import { Upload, Button, FontAwesome } from 'ethan/index'
+import { Upload, Button, FontAwesome } from 'ethan-ui'
 
 export default () => {
     const [fileList, updateFileList] = useState([])

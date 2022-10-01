@@ -5,7 +5,7 @@
  *    -- Set format property to format the data object to the specified value.
  */
 import React from 'react'
-import { Select } from 'ethan/index'
+import { Select } from 'ethan-ui'
 
 const citys = [
     { id: 1, city: 'Osaka-Kobe-Kyoto' },

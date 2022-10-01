@@ -6,7 +6,7 @@
  */
 
 import React from 'react'
-import { TimeLine } from 'ethan/index'
+import { TimeLine } from 'ethan-ui'
 
 export default () => (
     <TimeLine>

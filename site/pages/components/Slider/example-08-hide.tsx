@@ -5,7 +5,7 @@
  *    -- Set formatValue and fotmatScale to false to hide the scale and current values completely.
  */
 import React from 'react'
-import { Slider } from 'ethan'
+import { Slider } from 'ethan-ui'
 
 export default function() {
     return <Slider defaultValue={4} step={1} formatValue={false} formatScale={false} />

@@ -5,7 +5,7 @@
  *    -- You can customize an icon in <a target="_blank" href="http://iconfont.cn">iconfont.cn</a> or <a target="_blank" href="http://fontastic.me/">fontastic.me</a>, support font and svg.
  */
 import React from 'react'
-import { Icon } from 'ethan/index'
+import { Icon } from 'ethan-ui'
 
 // 资源管理=》我的项目=》Font class (css)|Symbol (js)
 const FontIconfont = Icon('//at.alicdn.com/t/font_550076_uyvw3e8ul8w4gqfr.css')

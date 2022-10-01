@@ -5,7 +5,7 @@
  *    -- There are 4 ways to display the original image, pop-up layer, new window open, current window open, download.
  */
 import React from 'react'
-import { Image } from 'ethan/index'
+import { Image } from 'ethan-ui'
 
 export default function() {
     return (

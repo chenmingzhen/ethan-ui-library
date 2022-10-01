@@ -5,7 +5,7 @@
  *    -- set text to use text button
  */
 import React from 'react'
-import { Button } from 'ethan/index'
+import { Button } from 'ethan-ui'
 
 export default function() {
     return (

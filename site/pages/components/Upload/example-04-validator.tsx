@@ -5,7 +5,7 @@
  *    -- Set validator to validate the file.
  */
 import React from 'react'
-import { Upload, FontAwesome, Button } from 'ethan'
+import { Upload, FontAwesome, Button } from 'ethan-ui'
 
 export default function() {
     return (

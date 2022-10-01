@@ -5,7 +5,7 @@
  *    -- Use visible to control the show or hidden
  */
 import React from 'react'
-import { Button, Popover } from 'ethan/index'
+import { Button, Popover } from 'ethan-ui'
 
 export default () => {
     const [visible, updateVisible] = React.useState(true)

@@ -5,7 +5,7 @@
  *    --Disable the option by the disabled property.
  */
 import React from 'react'
-import { Menu } from 'ethan/index'
+import { Menu } from 'ethan-ui'
 
 const data = [
     {

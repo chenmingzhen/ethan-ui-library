@@ -5,7 +5,7 @@
  *    -- Set the content property to a function, you can handle the close event inside the popup panel.
  */
 import React from 'react'
-import { Button, Popover, Message } from 'ethan/index'
+import { Button, Popover, Message } from 'ethan-ui'
 
 export default function() {
     return (

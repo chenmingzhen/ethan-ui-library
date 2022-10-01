@@ -5,7 +5,7 @@
  *    -- Set request property to use your own XMLHttpRequest.
  */
 import React from 'react'
-import { Upload, Button, FontAwesome } from 'ethan/index'
+import { Upload, Button, FontAwesome } from 'ethan-ui'
 
 const request = options => {
     const { file, onLoad, onProgress } = options

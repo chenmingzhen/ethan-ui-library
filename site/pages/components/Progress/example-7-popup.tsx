@@ -5,7 +5,7 @@
  *    -- After setting the popup property, children will be displayed through a popup box
  */
 import React from 'react'
-import { Progress, Button } from 'ethan'
+import { Progress, Button } from 'ethan-ui'
 
 const PopupProgress = () => {
     const [value, updateValue] = React.useState(0)

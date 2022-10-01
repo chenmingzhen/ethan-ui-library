@@ -6,7 +6,7 @@
  */
 
 import React from 'react'
-import { FontAwesome, TimeLine } from 'ethan/index'
+import { FontAwesome, TimeLine } from 'ethan-ui'
 
 const { Item } = TimeLine
 

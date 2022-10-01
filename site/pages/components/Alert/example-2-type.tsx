@@ -5,7 +5,7 @@
  *    -- There are four built-in types (styles), [success, info, warning, danger], the default value is warning.
  */
 import React from 'react'
-import { Alert } from 'ethan'
+import { Alert } from 'ethan-ui'
 
 export default function() {
     return (

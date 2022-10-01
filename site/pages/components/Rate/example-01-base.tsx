@@ -5,7 +5,7 @@
  *    -- Rate is a function that creates a new custom Rate component that specifies an icon or text.
  */
 import React from 'react'
-import { Rate, FontAwesome } from 'ethan'
+import { Rate, FontAwesome } from 'ethan-ui'
 
 const star = <FontAwesome name="star" />
 

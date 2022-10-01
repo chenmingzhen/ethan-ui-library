@@ -5,7 +5,7 @@
  *    -- Set the pile property to show the image stack.
  */
 import React from 'react'
-import { Image } from 'ethan/index'
+import { Image } from 'ethan-ui'
 
 export default function() {
     return (

@@ -5,22 +5,22 @@
  *    -- editable when onCompleted is not empty
  */
 import React, { useState } from 'react'
-import { Tag } from 'ethan'
+import { Tag } from 'ethan-ui'
 
 export default function() {
-  const [value, setValue] = useState('abc')
-  return (
-    <div>
-      <Tag
-        onCompleted={val => {
-          setValue(val)
-        }}
-        onClose={() => {
-          console.log('close')
-        }}
-      >
-        {value}
-      </Tag>
-    </div>
-  )
+    const [value, setValue] = useState('abc')
+    return (
+        <div>
+            <Tag
+                onCompleted={val => {
+                    setValue(val)
+                }}
+                onClose={() => {
+                    console.log('close')
+                }}
+            >
+                {value}
+            </Tag>
+        </div>
+    )
 }

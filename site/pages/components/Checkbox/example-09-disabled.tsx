@@ -5,7 +5,7 @@
  *    -- Set the disabled property of Checkbox.Group to true, disable all the checkboxes.
  */
 import React from 'react'
-import { Checkbox } from 'ethan/index'
+import { Checkbox } from 'ethan-ui'
 
 const data = ['red', 'orange', 'yellow', 'green', 'cyan', 'blue', 'violet']
 

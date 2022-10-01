@@ -7,7 +7,7 @@
  *    -- When the disabled property is true, disable all nodes.
  */
 import React, { Component } from 'react'
-import { Tree } from 'ethan/index'
+import { Tree } from 'ethan-ui'
 import data from 'doc/data/tree'
 
 export default class extends Component {

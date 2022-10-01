@@ -5,7 +5,7 @@
  *    -- When the disabled is a function, disbale the option that the function to return true.
  */
 import React from 'react'
-import { Radio } from 'ethan'
+import { Radio } from 'ethan-ui'
 
 const data = ['red', 'orange', 'yellow', 'green', 'cyan', 'blue', 'violet']
 

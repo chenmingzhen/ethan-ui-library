@@ -5,7 +5,7 @@
  *    -- Set position property to specify the pop-up position.
  */
 import React, { useState } from 'react'
-import { Modal, Button, Select } from 'ethan/index'
+import { Modal, Button, Select } from 'ethan-ui'
 
 export default function() {
     const [visible, updateVisible] = useState(false)

@@ -6,19 +6,19 @@
  */
 
 import React from 'react'
-import { Breadcrumb } from 'ethan/index'
+import { Breadcrumb } from 'ethan-ui'
 
 function Separator() {
-  return <span>~</span>
+    return <span>~</span>
 }
 
 const data = [{ title: 'Home', url: '/' }, { title: 'Self' }]
 
 export default function() {
-  return (
-    <div>
-      <Breadcrumb data={data} separator="|" />
-      <Breadcrumb data={data} separator={<Separator />} />
-    </div>
-  )
+    return (
+        <div>
+            <Breadcrumb data={data} separator="|" />
+            <Breadcrumb data={data} separator={<Separator />} />
+        </div>
+    )
 }

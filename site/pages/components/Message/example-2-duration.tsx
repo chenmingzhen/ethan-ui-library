@@ -6,7 +6,7 @@
  *    -- When duration is set to 0, the message will not hide automatically.
  */
 import React from 'react'
-import { Button, Message } from 'ethan/index'
+import { Button, Message } from 'ethan-ui'
 
 export default function() {
     return (

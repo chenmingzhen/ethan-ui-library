@@ -5,7 +5,7 @@
  *    -- There are three sizes, ['small', 'default', 'large'], default value is 'default'.
  */
 import React from 'react'
-import { Button } from 'ethan/index'
+import { Button } from 'ethan-ui'
 
 export default function() {
     return (

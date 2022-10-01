@@ -5,7 +5,7 @@
  *    -- Set the zoom property to enable zoom animation
  */
 import React from 'react'
-import { Modal, Button } from 'ethan/index'
+import { Modal, Button } from 'ethan-ui'
 
 export default () => {
     const [visible, setVisible] = React.useState(false)

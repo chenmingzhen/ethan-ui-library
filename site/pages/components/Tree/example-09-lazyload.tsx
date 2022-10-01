@@ -6,7 +6,7 @@
  */
 import React, { Component } from 'react'
 import immer from 'immer'
-import { Tree } from 'ethan/index'
+import { Tree } from 'ethan-ui'
 
 const initData = ['0', '1', '2', '3', '4'].map(i => ({ id: i }))
 const createRange = () => Array.from({ length: Math.round(Math.random() * 4) }, (_, i) => i)

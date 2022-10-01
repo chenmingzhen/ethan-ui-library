@@ -5,7 +5,7 @@
  *    -- Set onClose to handle close event. Set closeable to show close icon
  */
 import React from 'react'
-import { Button, Message } from 'ethan/index'
+import { Button, Message } from 'ethan-ui'
 
 export default function() {
     const close = () => {

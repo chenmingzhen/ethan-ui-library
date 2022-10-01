@@ -5,7 +5,7 @@
  *    -- Set the clearable to clear value when click again.
  */
 import React from 'react'
-import { Rate, FontAwesome } from 'ethan'
+import { Rate, FontAwesome } from 'ethan-ui'
 
 const star = <FontAwesome name="star" />
 

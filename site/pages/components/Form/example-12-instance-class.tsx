@@ -5,7 +5,7 @@
  *    -- Get Form component instance.(Class component)
  */
 import React from 'react'
-import { Button, Form, Input } from 'ethan'
+import { Button, Form, Input } from 'ethan-ui'
 import { FormInstance } from '@/component/Form/type'
 
 interface FormValues {

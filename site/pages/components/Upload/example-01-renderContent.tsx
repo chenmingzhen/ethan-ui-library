@@ -6,7 +6,7 @@
 
  */
 import React from 'react'
-import { Upload, Button, FontAwesome, Message } from 'ethan/index'
+import { Upload, Button, FontAwesome, Message } from 'ethan-ui'
 
 export default function() {
     return (

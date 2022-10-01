@@ -1,6 +1,6 @@
 import React, { Suspense, useEffect, useState, useRef } from 'react'
 import { Route, Switch, NavLink } from 'react-router-dom'
-import { Sticky } from 'ethan/index'
+import { Sticky } from 'ethan-ui'
 import locate from 'doc/utils/locate'
 import Loading from 'docs/Loading'
 import { mainClass } from 'doc/styles'

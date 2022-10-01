@@ -5,7 +5,7 @@
  *    -- Set the inline property to true to make the Form horizontal.
  */
 import React from 'react'
-import { Form, Input, Checkbox, Button } from 'ethan'
+import { Form, Input, Checkbox, Button } from 'ethan-ui'
 
 export default function() {
     return (

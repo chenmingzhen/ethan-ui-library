@@ -5,23 +5,23 @@
  *    -- Put a group of Card in the Card.Accordion, only one panel can be expanded at the same time.
  */
 import React from 'react'
-import { Card } from 'ethan/index'
+import { Card } from 'ethan-ui'
 
 export default function() {
-  return (
-    <Card.Accordion defaultActive={1}>
-      <Card>
-        <Card.Header>Header 1</Card.Header>
-        <Card.Body>Body</Card.Body>
-      </Card>
-      <Card>
-        <Card.Header>Header 2</Card.Header>
-        <Card.Body>Body</Card.Body>
-      </Card>
-      <Card>
-        <Card.Header>Header 3</Card.Header>
-        <Card.Body>Body</Card.Body>
-      </Card>
-    </Card.Accordion>
-  )
+    return (
+        <Card.Accordion defaultActive={1}>
+            <Card>
+                <Card.Header>Header 1</Card.Header>
+                <Card.Body>Body</Card.Body>
+            </Card>
+            <Card>
+                <Card.Header>Header 2</Card.Header>
+                <Card.Body>Body</Card.Body>
+            </Card>
+            <Card>
+                <Card.Header>Header 3</Card.Header>
+                <Card.Body>Body</Card.Body>
+            </Card>
+        </Card.Accordion>
+    )
 }

@@ -5,7 +5,7 @@
  *    -- Set onError to handle exceptions returned by uploading to the server.
  */
 import React from 'react'
-import { Upload, Button, FontAwesome } from 'ethan/index'
+import { Upload, Button, FontAwesome } from 'ethan-ui'
 
 export default function() {
     return (

@@ -5,7 +5,7 @@
  *    -- Set the compressed property to compress values, hover to show all values.
  */
 import React from 'react'
-import { Select } from 'ethan/index'
+import { Select } from 'ethan-ui'
 
 const data = [
     { id: 'red' },

@@ -5,7 +5,7 @@
  *    -- Base
  */
 import React from 'react'
-import { Swiper } from 'ethan'
+import { Swiper } from 'ethan-ui'
 
 const style: React.CSSProperties = {
     background: '#6c98d6',

@@ -7,7 +7,7 @@
  *    -- If the style.width is set, the default display is inline-flex.
  */
 import React from 'react'
-import { Input } from 'ethan/index'
+import { Input } from 'ethan-ui'
 
 export default function() {
     return <Input placeholder="input something" />

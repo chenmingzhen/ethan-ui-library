@@ -5,7 +5,7 @@
  *    -- Set disabled to true make it be read-only. When disabled, value can be passed in decimals.
  */
 import React from 'react'
-import { Rate, FontAwesome } from 'ethan'
+import { Rate, FontAwesome } from 'ethan-ui'
 
 const star = <FontAwesome name="star" />
 

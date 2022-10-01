@@ -5,7 +5,7 @@
  *    -- The default is horizontal layout, and setting the block property can change it to be vertical layout.
  */
 import React from 'react'
-import { Checkbox } from 'ethan/index'
+import { Checkbox } from 'ethan-ui'
 
 const data = [
     { id: 1, color: 'red' },

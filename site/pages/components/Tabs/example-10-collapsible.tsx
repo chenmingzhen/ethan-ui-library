@@ -5,7 +5,7 @@
  *    -- Set the collapsible property to true, will show the arrow icon. User can click icon to expand/collapse the content.
  */
 import React from 'react'
-import { Tabs } from 'ethan'
+import { Tabs } from 'ethan-ui'
 
 const panelStyle = { padding: '12px 0' }
 

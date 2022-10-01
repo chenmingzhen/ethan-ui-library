@@ -5,7 +5,7 @@
  *    -- BeforeUpload return a Promise Object and resolve an EthanFile with MANUAL status
  */
 import React from 'react'
-import { Upload, Button, FontAwesome } from 'ethan/index'
+import { Upload, Button, FontAwesome } from 'ethan-ui'
 
 export default function() {
     return (

@@ -6,10 +6,10 @@
  */
 
 import React from 'react'
-import { Badge } from 'ethan/index'
+import { Badge } from 'ethan-ui'
 
 export default () => (
-  <Badge count="3">
-    <div style={{ width: 50, height: 50, backgroundColor: '#ddd' }} />
-  </Badge>
+    <Badge count="3">
+        <div style={{ width: 50, height: 50, backgroundColor: '#ddd' }} />
+    </Badge>
 )

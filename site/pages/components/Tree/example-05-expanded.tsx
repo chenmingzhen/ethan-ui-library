@@ -5,7 +5,7 @@
  *    -- Controlled expansion (Because the data in this example is too large, it will be slower for the first time.)
  */
 import React, { Component } from 'react'
-import { Tree, Button } from 'ethan/index'
+import { Tree, Button } from 'ethan-ui'
 import data, { allIds } from 'doc/data/tree'
 
 export default class extends Component {

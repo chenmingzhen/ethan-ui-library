@@ -5,7 +5,7 @@
  *    -- Set both the current and onChange properties for being used as a controlled component.
  */
 import React, { PureComponent } from 'react'
-import { Pagination } from 'ethan/index'
+import { Pagination } from 'ethan-ui'
 
 const info = ({ current }) => `Current page ${current}`
 

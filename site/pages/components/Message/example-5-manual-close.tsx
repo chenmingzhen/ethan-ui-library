@@ -5,7 +5,7 @@
  *    -- Message return close func
  */
 import React from 'react'
-import { Button, Message } from 'ethan/index'
+import { Button, Message } from 'ethan-ui'
 
 export default () => {
     const msg = async () => {

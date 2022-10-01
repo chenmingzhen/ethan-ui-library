@@ -5,7 +5,7 @@
  *    -- There are three size of input, small, default, large.
  */
 import React from 'react'
-import { Input } from 'ethan/index'
+import { Input } from 'ethan-ui'
 
 const style = { width: 120, marginRight: 12 }
 

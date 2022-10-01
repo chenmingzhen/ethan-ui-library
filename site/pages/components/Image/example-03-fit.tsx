@@ -5,7 +5,7 @@
  *    -- There are four built ways that fit the container, fill, center, original, stretch.
  */
 import React from 'react'
-import { Image } from 'ethan/index'
+import { Image } from 'ethan-ui'
 
 export default function() {
     return (

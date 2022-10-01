@@ -5,7 +5,7 @@
  *    -- By default, the item corresponding to the current value is displayed repeatedly. Set repeat property to false to display different item by value.
  */
 import React from 'react'
-import { Rate } from 'ethan'
+import { Rate } from 'ethan-ui'
 
 const text = ['A', 'B', 'C', 'D', 'E']
 const front = text.map(t => <span style={{ color: 'red' }}>{t}</span>)

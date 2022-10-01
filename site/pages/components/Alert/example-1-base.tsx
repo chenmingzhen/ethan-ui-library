@@ -5,7 +5,7 @@
  *    -- Basic usage
  */
 import React from 'react'
-import { Alert } from 'ethan'
+import { Alert } from 'ethan-ui'
 
 export default function() {
     return (

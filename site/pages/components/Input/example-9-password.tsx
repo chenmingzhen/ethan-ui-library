@@ -5,7 +5,7 @@
  *    -- Input.Password is a mock input of type 'password', used for disable Chrome autofill.
  */
 import React from 'react'
-import { Input } from 'ethan/index'
+import { Input } from 'ethan-ui'
 
 export default function() {
     return (

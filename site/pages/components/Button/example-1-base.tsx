@@ -5,7 +5,7 @@
  *    -- Button has several built-in type, default, primary, secondary, success, warning, dange, and link.
  */
 import React from 'react'
-import { Button } from 'ethan/index'
+import { Button } from 'ethan-ui'
 
 export default function() {
     return (

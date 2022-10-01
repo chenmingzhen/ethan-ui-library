@@ -5,7 +5,7 @@
  *    -- The form has a two-way binding mechanism built in, automatically sending and collecting data based on the name property of the FormItem.
  */
 import React from 'react'
-import { Form, Input, Checkbox, Radio, Textarea, Select, Upload, Button } from 'ethan'
+import { Form, Input, Checkbox, Radio, Textarea, Select, Upload, Button } from 'ethan-ui'
 import { EthanFile } from '@/component/Upload/type'
 
 interface FormValues {

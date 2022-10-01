@@ -5,17 +5,17 @@
  *    -- Loading
  */
 import React from 'react'
-import { Transfer } from 'ethan'
+import { Transfer } from 'ethan-ui'
 
 const data = []
 
 for (let i = 1; i < 20; i++) {
-  data.push({
-    id: i,
-    content: `content ${i}`,
-  })
+    data.push({
+        id: i,
+        content: `content ${i}`,
+    })
 }
 
 export default function() {
-  return <Transfer loading data={data} format="id" renderItem="content" keygen="id" titles={['Source', 'Target']} />
+    return <Transfer loading data={data} format="id" renderItem="content" keygen="id" titles={['Source', 'Target']} />
 }

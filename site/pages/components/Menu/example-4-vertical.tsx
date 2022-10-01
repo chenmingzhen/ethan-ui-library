@@ -7,7 +7,7 @@
  *    -- set 'vertical-auto' auto popup position
  */
 import React from 'react'
-import { Menu } from 'ethan/index'
+import { Menu } from 'ethan-ui'
 
 const data = [
     {

@@ -5,7 +5,7 @@
  *    -- The basic usage for component.
  */
 import React from 'react'
-import { Modal, Button } from 'ethan/index'
+import { Modal, Button } from 'ethan-ui'
 
 export default function() {
     const [visible, setVisible] = React.useState(false)

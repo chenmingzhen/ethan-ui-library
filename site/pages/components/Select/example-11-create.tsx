@@ -5,7 +5,7 @@
  *    -- Set the onCreate property can create options by inputting.
  */
 import React from 'react'
-import { Select } from 'ethan/index'
+import { Select } from 'ethan-ui'
 
 const data = ['red', 'orange', 'yellow', 'green', 'cyan', 'blue', 'violet']
 

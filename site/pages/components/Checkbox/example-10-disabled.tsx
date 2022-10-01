@@ -5,7 +5,7 @@
  *    -- When the disabled is a function, disbale the option that the function to return true.
  */
 import React from 'react'
-import { Checkbox } from 'ethan/index'
+import { Checkbox } from 'ethan-ui'
 
 const baseData = ['red', 'orange', 'yellow', 'green', 'cyan', 'blue', 'violet']
 

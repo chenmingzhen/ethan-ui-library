@@ -5,7 +5,7 @@
  *    -- Set the range property to display double sliders, and value is an array of length 2.
  */
 import React from 'react'
-import { Slider } from 'ethan'
+import { Slider } from 'ethan-ui'
 
 export default function() {
     return <Slider range defaultValue={[25, 75]} />

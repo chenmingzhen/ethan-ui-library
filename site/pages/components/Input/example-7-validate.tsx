@@ -9,7 +9,7 @@
  *    -- If input is invalid, the message will not be hidden.
  */
 import React from 'react'
-import { Input, Rule } from 'ethan/index'
+import { Input, Rule } from 'ethan-ui'
 
 const rules = Rule()
 

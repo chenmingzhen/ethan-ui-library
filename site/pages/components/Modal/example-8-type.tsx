@@ -5,7 +5,7 @@
  *    -- use type display type icon
  */
 import React, { useState } from 'react'
-import { Modal, Button, Select } from 'ethan/index'
+import { Modal, Button, Select } from 'ethan-ui'
 
 export default function() {
     const [visible, updateVisible] = useState(false)

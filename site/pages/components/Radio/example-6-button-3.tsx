@@ -5,7 +5,7 @@
  *    -- size to set button style size
  */
 import React from 'react'
-import { Radio } from 'ethan'
+import { Radio } from 'ethan-ui'
 
 const data = ['red', 'orange', 'yellow']
 

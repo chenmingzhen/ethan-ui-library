@@ -5,7 +5,7 @@
  *    -- Set the font color, border color, and background color for each label.
  */
 import React from 'react'
-import { Tabs, FontAwesome } from 'ethan'
+import { Tabs, FontAwesome } from 'ethan-ui'
 
 const panelStyle = { padding: 15 }
 

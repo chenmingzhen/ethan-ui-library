@@ -5,7 +5,7 @@
  *    -- Base
  */
 import React from 'react'
-import { LazyList, Alert } from 'ethan'
+import { LazyList, Alert } from 'ethan-ui'
 import { range } from '@/utils/numbers'
 
 const dataSource = range(50000)

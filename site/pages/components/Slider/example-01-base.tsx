@@ -5,7 +5,7 @@
  *    -- The basic usage.
  */
 import React from 'react'
-import { Slider } from 'ethan'
+import { Slider } from 'ethan-ui'
 
 export default function() {
     return <Slider defaultValue={50} />

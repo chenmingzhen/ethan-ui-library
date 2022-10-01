@@ -5,7 +5,7 @@
  *    -- The checked has three values: true(checked), false(not checked), 'indeterminate'(half-checked).
  */
 import React from 'react'
-import { Checkbox } from 'ethan/index'
+import { Checkbox } from 'ethan-ui'
 
 export default function() {
     return (

@@ -5,7 +5,7 @@
  *    -- Setting autoFocus of buttonProps can focus on a button by default when you open it, and then press Enter to trigger the click event of the button, which is convenient for the user to perform keyboard operation. This property only takes effect in Modal methods
  */
 import React from 'react'
-import { Modal, Button, Message } from 'ethan/index'
+import { Modal, Button, Message } from 'ethan-ui'
 
 export default function() {
     function confirm(type) {

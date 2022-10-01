@@ -5,7 +5,7 @@
  *    -- Basic Checkbox
  */
 import React from 'react'
-import { Checkbox } from 'ethan/index'
+import { Checkbox } from 'ethan-ui'
 
 export default function() {
     return <Checkbox>Checkbox</Checkbox>

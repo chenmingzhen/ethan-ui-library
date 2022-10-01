@@ -1,5 +1,5 @@
 import React, { useState, useRef, createElement } from 'react'
-import { Lazyload, Spin } from 'ethan/index'
+import { Lazyload, Spin } from 'ethan-ui'
 import Icon from 'doc/icons/Icon'
 import { exampleClass } from 'doc/styles'
 import AnimationHeight from '@/component/List/AnimationHeight'

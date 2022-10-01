@@ -5,7 +5,7 @@
  *    -- When form. Item children is a function, it provides some parameters to manipulate the Form.
  */
 import React from 'react'
-import { Button, Form, Input } from 'ethan'
+import { Button, Form, Input } from 'ethan-ui'
 
 interface FormValues {
     mobile: number

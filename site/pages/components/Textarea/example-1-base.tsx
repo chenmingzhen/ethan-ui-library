@@ -5,7 +5,7 @@
  *    -- Multi-line text input box
  */
 import React from 'react'
-import { Textarea } from 'ethan'
+import { Textarea } from 'ethan-ui'
 
 export default function() {
     return <Textarea rows={6} placeholder="input something" />

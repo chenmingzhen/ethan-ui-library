@@ -13,7 +13,7 @@
  *    -- 3: Return only the parent node, if the parent node is selected.
  */
 import React, { Component } from 'react'
-import { Tree, Radio } from 'ethan/index'
+import { Tree, Radio } from 'ethan-ui'
 import data from 'doc/data/tree'
 
 const resultStyle = {

@@ -7,7 +7,7 @@ import { CleanWebpackPlugin } from 'clean-webpack-plugin'
 import ReactRefreshWebpackPlugin from '@pmmmwh/react-refresh-webpack-plugin'
 import config from '../../config'
 
-export function getLessLoader(name: string) {
+export function getLessLoader(name: string): Configuration['loader'] {
     const loaders: Configuration['loader'] = [
         {
             loader: MiniCssExtractPlugin.loader,

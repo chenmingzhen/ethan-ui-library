@@ -5,7 +5,7 @@
  *    -- Twelve pop-up positions are built in.
  */
 import React from 'react'
-import { Button, Popover } from 'ethan/index'
+import { Button, Popover } from 'ethan-ui'
 
 const positions = [
     [null, 'bottom-left', 'bottom', 'bottom-right', null],

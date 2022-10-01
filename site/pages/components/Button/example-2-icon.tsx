@@ -5,8 +5,8 @@
  *    -- shineout does not provide built-in icons, you can add it to the content by yourself.
  */
 import React from 'react'
-import { Button } from 'ethan/index'
-import { FontAwesome } from 'ethan/index'
+import { Button } from 'ethan-ui'
+import { FontAwesome } from 'ethan-ui'
 
 export default function() {
     return (

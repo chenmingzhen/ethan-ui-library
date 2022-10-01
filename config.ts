@@ -37,7 +37,7 @@ const config = {
         },
         devtool: 'cheap-module-source-map',
         alias: {
-            ethan: path.resolve(__dirname, 'src'),
+            'ethan-ui': path.resolve(__dirname, 'src'),
             docs: path.resolve(__dirname, 'site/Components'),
             doc: path.resolve(__dirname, 'site'),
             '@': path.resolve(__dirname, 'src'),

@@ -5,7 +5,7 @@
  *    -- Use Upload.Button to show the upload progress of individual files
  */
 import React from 'react'
-import { Upload } from 'ethan/index'
+import { Upload } from 'ethan-ui'
 
 export default function() {
     return <Upload.Button action="/upload/" name="file" loading="正在上传..." placeholder="点击上传" type="primary" />

@@ -5,7 +5,20 @@
  *    -- More component validation
  */
 import React from 'react'
-import { Button, Checkbox, FontAwesome, Form, Input, Radio, Rate, Rule, Select, Slider, Upload, Transfer } from 'ethan'
+import {
+    Button,
+    Checkbox,
+    FontAwesome,
+    Form,
+    Input,
+    Radio,
+    Rate,
+    Rule,
+    Select,
+    Slider,
+    Upload,
+    Transfer,
+} from 'ethan-ui'
 
 const rule = Rule({
     uploadSize(value) {

@@ -5,7 +5,7 @@
  *    -- can increase the maximum infinitely while dragging
  */
 import React from 'react'
-import { Slider } from 'ethan'
+import { Slider } from 'ethan-ui'
 
 export default class extends React.Component<null, { scale1: [number, number]; scale2: [number, number] }> {
     constructor(props) {

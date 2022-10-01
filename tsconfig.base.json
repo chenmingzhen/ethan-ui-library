@@ -9,7 +9,7 @@
             "doc/*": ["./site/*"],
             "docs/*": ["./site/Components/*"],
             "ethan/*": ["./src/*"],
-            "ethan": ["./src/index.ts"]
+            "ethan-ui": ["./src/index.ts"]
         },
         // https://webpack.docschina.org/guides/typescript/#source-maps
         "sourceMap": true,

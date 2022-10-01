@@ -14,7 +14,7 @@
  */
 
 import React from 'react'
-import { Cascader, Radio } from 'ethan'
+import { Cascader, Radio } from 'ethan-ui'
 import { cascader as data } from 'doc/data/tree'
 
 const modeList = [

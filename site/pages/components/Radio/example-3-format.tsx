@@ -5,7 +5,7 @@
  *    -- Complex data can use format to process value.
  */
 import React from 'react'
-import { Radio } from 'ethan'
+import { Radio } from 'ethan-ui'
 
 const data = [
     { id: 1, color: 'red' },

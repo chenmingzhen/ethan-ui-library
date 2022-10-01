@@ -5,7 +5,7 @@
  *    -- If the parent container of the pop-up layer is occluded, you can set the absolute property to make the pop-up options rendered in a separate layer. (not recommended if not necessary)
  */
 import React from 'react'
-import { Select } from 'ethan/index'
+import { Select } from 'ethan-ui'
 import { fetchSync as fetchUser } from 'doc/data/user'
 
 const users = fetchUser(10000)

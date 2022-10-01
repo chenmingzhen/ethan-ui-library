@@ -5,7 +5,7 @@
  *    -- When the step is set to 0, only the value defined in scale can be taken.
  */
 import React from 'react'
-import { Slider } from 'ethan'
+import { Slider } from 'ethan-ui'
 
 export default function() {
     return (

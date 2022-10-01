@@ -5,7 +5,7 @@
  *    -- set moveable/resizable mark modal move of resize by header, set resizable to resize modal
  */
 import React from 'react'
-import { Modal, Button } from 'ethan/index'
+import { Modal, Button } from 'ethan-ui'
 
 export default () => {
     const [show, setShow] = React.useState(false)

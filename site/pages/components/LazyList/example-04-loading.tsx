@@ -5,7 +5,7 @@
  *    -- Scroll to the bottom to load the data
  */
 import React, { useEffect, useState } from 'react'
-import { LazyList, Alert, Spin } from 'ethan'
+import { LazyList, Alert, Spin } from 'ethan-ui'
 import { range } from '@/utils/numbers'
 
 export default () => {

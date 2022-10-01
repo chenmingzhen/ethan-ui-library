@@ -5,7 +5,7 @@
  *    -- Some drag settings can be defined by dragImageSelector, dragImageStyle, dragHoverExpand
  */
 import React, { Component } from 'react'
-import { Tree } from 'ethan/index'
+import { Tree } from 'ethan-ui'
 import tree from 'doc/data/tree'
 
 export default class extends Component {

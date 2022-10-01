@@ -5,7 +5,7 @@
  *    -- Providing controlled values and onChange makes the component a customized form component.
  */
 import React from 'react'
-import { Button, Form, Input, Select } from 'ethan'
+import { Button, Form, Input, Select } from 'ethan-ui'
 
 interface PriceInputProps {
     value?: { number?: number; currency?: string }

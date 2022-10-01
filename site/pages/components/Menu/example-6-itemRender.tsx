@@ -5,7 +5,7 @@
  *    -- Set the renderItem property to show format content.
  */
 import React from 'react'
-import { Menu, FontAwesome } from 'ethan'
+import { Menu, FontAwesome } from 'ethan-ui'
 
 const Icons = {
     1: <FontAwesome name="home" />,

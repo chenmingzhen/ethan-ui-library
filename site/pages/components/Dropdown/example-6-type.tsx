@@ -5,7 +5,7 @@
  *    -- Button style
  */
 import React, { Component } from 'react'
-import { Dropdown, Message, Select, Checkbox } from 'ethan/index'
+import { Dropdown, Message, Select, Checkbox } from 'ethan-ui'
 
 const menu = [
     {

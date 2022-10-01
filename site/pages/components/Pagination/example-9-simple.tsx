@@ -5,7 +5,7 @@
  *    -- layout set to simple; Note: simple mode does not coexist with other layouts.
  */
 import React from 'react'
-import { Pagination } from 'ethan/index'
+import { Pagination } from 'ethan-ui'
 
 export default function() {
     return <Pagination layouts={['simple']} pageSize={20} total={100} />

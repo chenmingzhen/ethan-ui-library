@@ -5,15 +5,15 @@
  *    -- Sticky 20px to top
  */
 import React from 'react'
-import { Alert, Sticky } from 'ethan'
+import { Alert, Sticky } from 'ethan-ui'
 
 export default function() {
-  return (
-    <Sticky top={20}>
-      <Alert onClose>
-        <h3>Some content.</h3>
-        Sticky 20px to top.
-      </Alert>
-    </Sticky>
-  )
+    return (
+        <Sticky top={20}>
+            <Alert onClose>
+                <h3>Some content.</h3>
+                Sticky 20px to top.
+            </Alert>
+        </Sticky>
+    )
 }

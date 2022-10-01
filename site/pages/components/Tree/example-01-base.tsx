@@ -5,7 +5,7 @@
  *   -- Basic usage of Tree
  */
 import React from 'react'
-import { Tree } from 'ethan/index'
+import { Tree } from 'ethan-ui'
 
 const data = [
     {

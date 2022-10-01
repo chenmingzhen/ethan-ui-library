@@ -6,7 +6,7 @@
  */
 
 import React from 'react'
-import { Loading, Button } from 'ethan/index'
+import { Loading, Button } from 'ethan-ui'
 
 export default () => {
     const globalLoading = React.useCallback(type => {

@@ -5,7 +5,7 @@
  *    -- Set active and onChange property to control active state.
  */
 import React, { Component } from 'react'
-import { Radio, Tabs, FontAwesome } from 'ethan'
+import { Radio, Tabs, FontAwesome } from 'ethan-ui'
 
 const panelStyle = { padding: 15 }
 const contact = (

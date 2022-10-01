@@ -5,7 +5,7 @@
  *    -- Can render the corresponding link by setting linkKey
  */
 import React from 'react'
-import { Menu } from 'ethan/index'
+import { Menu } from 'ethan-ui'
 
 const data = [
     {

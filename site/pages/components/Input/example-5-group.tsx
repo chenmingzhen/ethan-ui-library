@@ -5,7 +5,7 @@
  *  . -- The Icon, span, string and Button types can be placed directly into the Input.Group. Use b tag can change the background color.
  */
 import React from 'react'
-import { Input, Button, FontAwesome } from 'ethan/index'
+import { Input, Button, FontAwesome } from 'ethan-ui'
 
 const style = { width: 300, marginBottom: 12 }
 

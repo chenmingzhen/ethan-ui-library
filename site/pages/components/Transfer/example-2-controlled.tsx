@@ -5,7 +5,7 @@
  *    -- Component controlled
  */
 import React, { Component } from 'react'
-import { Transfer } from 'ethan'
+import { Transfer } from 'ethan-ui'
 
 const data = []
 

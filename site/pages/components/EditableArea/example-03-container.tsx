@@ -5,7 +5,7 @@
  *    -- use getPopupContainer return target container
  */
 import React from 'react'
-import { EditableArea } from 'ethan/index'
+import { EditableArea } from 'ethan-ui'
 
 export default function() {
     return (

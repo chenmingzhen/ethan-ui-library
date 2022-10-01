@@ -5,8 +5,8 @@
  *    -- A series of buttons can group by Button.Group, set styles by Button.Group's size, type, and outline property.
  */
 import React from 'react'
-import { Button } from 'ethan/index'
-import { FontAwesome } from 'ethan/index'
+import { Button } from 'ethan-ui'
+import { FontAwesome } from 'ethan-ui'
 
 export default function() {
     return (

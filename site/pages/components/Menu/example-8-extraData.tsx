@@ -5,7 +5,7 @@
  *    -- Extend more attributes by inheriting MenuBaseData.
  */
 import React from 'react'
-import { Menu } from 'ethan/index'
+import { Menu } from 'ethan-ui'
 import { MenuBaseData } from '@/component/Menu/type'
 
 interface ExtraMenuData extends MenuBaseData {

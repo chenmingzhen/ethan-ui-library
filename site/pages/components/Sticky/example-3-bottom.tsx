@@ -5,14 +5,14 @@
  *    -- Sticky to bottom
  */
 import React from 'react'
-import { Alert, Sticky } from 'ethan'
+import { Alert, Sticky } from 'ethan-ui'
 
 export default function() {
-  return (
-    <Sticky bottom={0}>
-      <Alert style={{ marginBottom: 0 }} onClose>
-        Sticky at bottom.
-      </Alert>
-    </Sticky>
-  )
+    return (
+        <Sticky bottom={0}>
+            <Alert style={{ marginBottom: 0 }} onClose>
+                Sticky at bottom.
+            </Alert>
+        </Sticky>
+    )
 }

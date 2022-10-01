@@ -5,7 +5,7 @@
  *    -- Set the onDrop property to drag nodes.
  */
 import React, { Component } from 'react'
-import { Tree } from 'ethan/index'
+import { Tree } from 'ethan-ui'
 import tree from 'doc/data/tree'
 
 export default class extends Component {

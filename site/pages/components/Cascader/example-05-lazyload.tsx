@@ -6,7 +6,7 @@
  */
 import React, { Component } from 'react'
 import immer from 'immer'
-import { Cascader } from 'ethan'
+import { Cascader } from 'ethan-ui'
 
 const initData = ['0', '1', '2', '3', '4', '5', '6', '7', '8'].map(i => ({ id: i }))
 const createRange = () => Array.from({ length: Math.round(Math.random() * 4) }, (_, i) => i)

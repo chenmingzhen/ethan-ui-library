@@ -6,7 +6,7 @@
  */
 
 import React from 'react'
-import { Cascader } from 'ethan'
+import { Cascader } from 'ethan-ui'
 
 const data = [
     {

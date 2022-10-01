@@ -5,7 +5,7 @@
  *    -- Adding outline property can set background to transparent. Outline type can not be default and link.
  */
 import React from 'react'
-import { Button } from 'ethan/index'
+import { Button } from 'ethan-ui'
 
 export default function() {
     return (

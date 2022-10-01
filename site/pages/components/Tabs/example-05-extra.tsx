@@ -5,7 +5,7 @@
  *    -- Can add extra content on the right side of the tab
  */
 import React from 'react'
-import { Tabs, Button } from 'ethan'
+import { Tabs, Button } from 'ethan-ui'
 
 const panelStyle = { padding: '12px 0' }
 

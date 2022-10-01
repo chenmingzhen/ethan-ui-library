@@ -5,7 +5,7 @@
  *    -- When the lazy property is true, the image will load when it enter the visual area of the screen.
  */
 import React from 'react'
-import { Image } from 'ethan/index'
+import { Image } from 'ethan-ui'
 
 export default function() {
     return (

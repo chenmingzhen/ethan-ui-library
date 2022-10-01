@@ -5,7 +5,7 @@
  *    -- Set the multiple property to true, it is multi-selection.
  */
 import React, { useState } from 'react'
-import { Select } from 'ethan/index'
+import { Select } from 'ethan-ui'
 
 interface Value {
     id: string

@@ -5,7 +5,7 @@
  *    -- Set disabledChild make disabled child work
  */
 import React from 'react'
-import { Tooltip, Button } from 'ethan'
+import { Tooltip, Button } from 'ethan-ui'
 
 export default function() {
     return (

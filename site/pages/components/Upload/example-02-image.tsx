@@ -5,7 +5,7 @@
  *    -- Use Upload.Image to upload and preview images.
  */
 import React from 'react'
-import { Upload } from 'ethan/index'
+import { Upload } from 'ethan-ui'
 
 export default function() {
     return <Upload.Image drop action="/upload/" accept="image/*" name="file" limit={3} width={300} height={300} />

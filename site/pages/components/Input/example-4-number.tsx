@@ -5,7 +5,7 @@
  *  . -- Input.Number component can be assisted by mouse and up and down keyboard.
  */
 import React from 'react'
-import { Input } from 'ethan/index'
+import { Input } from 'ethan-ui'
 
 export default function() {
     return (

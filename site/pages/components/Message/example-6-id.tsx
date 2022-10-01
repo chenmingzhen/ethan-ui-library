@@ -5,7 +5,7 @@
  *    -- Message can be updated with a unique ID
  */
 import React from 'react'
-import { Button, Message } from 'ethan'
+import { Button, Message } from 'ethan-ui'
 
 export default () => {
     const id = React.useRef(new Date().getTime()).current

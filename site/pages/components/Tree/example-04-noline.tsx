@@ -5,7 +5,7 @@
  *    -- Set the line property to false to hid the connecting line.
  */
 import React from 'react'
-import { Tree } from 'ethan/index'
+import { Tree } from 'ethan-ui'
 import data from 'doc/data/tree'
 
 export default function() {

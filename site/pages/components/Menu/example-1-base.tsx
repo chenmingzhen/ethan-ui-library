@@ -5,7 +5,7 @@
  *    -- Menu generates menu items through data.
  */
 import React from 'react'
-import { Menu } from 'ethan/index'
+import { Menu } from 'ethan-ui'
 
 const data = [
     {

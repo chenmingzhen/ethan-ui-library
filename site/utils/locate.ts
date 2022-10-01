@@ -1,4 +1,4 @@
-import { setLocale } from 'ethan'
+import { setLocale } from 'ethan-ui'
 
 export const STORAGE_KEY = 'ETHAN_UI'
 const storage = window.localStorage || null
@@ -37,6 +37,6 @@ export function getLanguage() {
     return language
 }
 
-export default function (cn, en = null) {
+export default function(cn, en = null) {
     return language === 'zh-CN' ? cn : en
 }

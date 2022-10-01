@@ -5,7 +5,7 @@
  *    -- There are three built-in styles, rounded, cricle, thumbnail.
  */
 import React from 'react'
-import { Image } from 'ethan/index'
+import { Image } from 'ethan-ui'
 
 export default function() {
     return (

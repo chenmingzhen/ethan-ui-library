@@ -5,7 +5,7 @@
  *    -- Use the disabled property to make the Form support to disable component.
  */
 import React from 'react'
-import { Form, Input, Checkbox, Button } from 'ethan'
+import { Form, Input, Checkbox, Button } from 'ethan-ui'
 
 export default function() {
     return (

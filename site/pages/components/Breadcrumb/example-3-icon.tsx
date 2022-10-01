@@ -6,14 +6,14 @@
  */
 
 import React from 'react'
-import { Breadcrumb, FontAwesome } from 'ethan/index'
+import { Breadcrumb, FontAwesome } from 'ethan-ui'
 
 const data = [
-  { icon: <FontAwesome name="home" />, title: 'Home', url: '#home' },
-  { title: 'Menu' },
-  { title: 'Self', url: 'https://www.google.com' },
+    { icon: <FontAwesome name="home" />, title: 'Home', url: '#home' },
+    { title: 'Menu' },
+    { title: 'Self', url: 'https://www.google.com' },
 ]
 
 export default function() {
-  return <Breadcrumb data={data} />
+    return <Breadcrumb data={data} />
 }

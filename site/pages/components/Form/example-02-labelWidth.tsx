@@ -5,7 +5,7 @@
  *    -- Set labelWidth and labelAlign to change label with and alignment.
  */
 import React from 'react'
-import { Form, Input } from 'ethan'
+import { Form, Input } from 'ethan-ui'
 
 export default function() {
     return (

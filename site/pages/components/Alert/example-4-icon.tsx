@@ -5,7 +5,7 @@
  *    -- Set the icon property to display the built-in icon.
  */
 import React from 'react'
-import { Alert } from 'ethan'
+import { Alert } from 'ethan-ui'
 
 export default function() {
     return (

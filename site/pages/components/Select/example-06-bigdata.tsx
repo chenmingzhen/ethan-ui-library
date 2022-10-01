@@ -5,7 +5,7 @@
  *    -- Select uses a lazy loading to optimize performance. This example loads 10,000 pieces of data.
  */
 import React from 'react'
-import { Select } from 'ethan/index'
+import { Select } from 'ethan-ui'
 import { fetchSync as fetchUser } from 'doc/data/user'
 
 const users = fetchUser(10000)

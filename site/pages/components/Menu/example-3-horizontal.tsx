@@ -5,7 +5,7 @@
  *    -- Set mode to "horizontal" to display it as horizontal layout (submenu pops up on the right).
  */
 import React from 'react'
-import { Menu } from 'ethan/index'
+import { Menu } from 'ethan-ui'
 
 const data = [
     {

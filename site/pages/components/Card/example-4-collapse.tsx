@@ -5,7 +5,7 @@
  *    -- Set collapsible can collapse the Card panel.
  */
 import React from 'react'
-import { Card } from 'ethan/index'
+import { Card } from 'ethan-ui'
 
 export default function() {
     return (

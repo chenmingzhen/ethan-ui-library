@@ -5,28 +5,28 @@
  *    -- Set the shadow property to determined how to display the shadow.
  */
 import React from 'react'
-import { Card } from 'ethan/index'
+import { Card } from 'ethan-ui'
 
 const cardStyle = {
-  width: 140,
-  display: 'inline-flex',
-  marginRight: 20,
+    width: 140,
+    display: 'inline-flex',
+    marginRight: 20,
 }
 
 export default function() {
-  return (
-    <div>
-      <Card style={cardStyle}>
-        <Card.Body>Never</Card.Body>
-      </Card>
+    return (
+        <div>
+            <Card style={cardStyle}>
+                <Card.Body>Never</Card.Body>
+            </Card>
 
-      <Card style={cardStyle} shadow="hover">
-        <Card.Body>Hover</Card.Body>
-      </Card>
+            <Card style={cardStyle} shadow="hover">
+                <Card.Body>Hover</Card.Body>
+            </Card>
 
-      <Card style={cardStyle} shadow>
-        <Card.Body>Always</Card.Body>
-      </Card>
-    </div>
-  )
+            <Card style={cardStyle} shadow>
+                <Card.Body>Always</Card.Body>
+            </Card>
+        </div>
+    )
 }

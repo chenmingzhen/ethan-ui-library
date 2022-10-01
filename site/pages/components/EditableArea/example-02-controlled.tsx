@@ -6,7 +6,7 @@
  */
 
 import React, { useState } from 'react'
-import { EditableArea } from 'ethan'
+import { EditableArea } from 'ethan-ui'
 
 export default function() {
     const [value, setValue] = useState('')

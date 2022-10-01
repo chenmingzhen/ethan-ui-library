@@ -5,7 +5,7 @@
  *    -- When the flow value is set, the FormItem is not only re-rendered, but also validated
  */
 import { FormItemProps } from '@/component/Form/type'
-import { Input, Form, Rule, Button } from 'ethan'
+import { Input, Form, Rule, Button } from 'ethan-ui'
 import React from 'react'
 
 interface FormValues {

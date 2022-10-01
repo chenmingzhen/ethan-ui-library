@@ -5,45 +5,45 @@
  *    -- The animation for changing value.
  */
 import React, { Component } from 'react'
-import { Button, Progress } from 'ethan/index'
+import { Button, Progress } from 'ethan-ui'
 
 export default class extends Component {
-  constructor(props) {
-    super(props)
-    this.state = { value: 0 }
-  }
-
-  handleClick = (value = this.state.value) => {
-    value += Math.random() * 12
-    if (value >= 100) {
-      value = 100
-      this.setState({ value })
-    } else {
-      this.setState({ value }, () => {
-        setTimeout(this.handleClick, 320)
-      })
+    constructor(props) {
+        super(props)
+        this.state = { value: 0 }
     }
-  }
 
-  render() {
-    const { value } = this.state
+    handleClick = (value = this.state.value) => {
+        value += Math.random() * 12
+        if (value >= 100) {
+            value = 100
+            this.setState({ value })
+        } else {
+            this.setState({ value }, () => {
+                setTimeout(this.handleClick, 320)
+            })
+        }
+    }
 
-    return (
-      <div>
-        <Progress style={{ width: 400 }} value={value}>
-          <div style={{ width: 50 }}>{value.toFixed(0)}</div>
-        </Progress>
+    render() {
+        const { value } = this.state
 
-        <br />
+        return (
+            <div>
+                <Progress style={{ width: 400 }} value={value}>
+                    <div style={{ width: 50 }}>{value.toFixed(0)}</div>
+                </Progress>
 
-        <Progress shape="circle" type="success" value={value}>
-          {value.toFixed(0)}%
-        </Progress>
+                <br />
 
-        <Button style={{ marginLeft: 80 }} onClick={this.handleClick.bind(this, 0)}>
-          Start
-        </Button>
-      </div>
-    )
-  }
+                <Progress shape="circle" type="success" value={value}>
+                    {value.toFixed(0)}%
+                </Progress>
+
+                <Button style={{ marginLeft: 80 }} onClick={this.handleClick.bind(this, 0)}>
+                    Start
+                </Button>
+            </div>
+        )
+    }
 }

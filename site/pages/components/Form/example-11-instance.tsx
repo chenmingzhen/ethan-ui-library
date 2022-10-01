@@ -6,7 +6,7 @@
  *    -- And then use the form instance to operate some methods of the form, including validate, submit, etc(Function component)
  */
 import React from 'react'
-import { Button, Form, Input } from 'ethan'
+import { Button, Form, Input } from 'ethan-ui'
 
 interface FormValues {
     name: string

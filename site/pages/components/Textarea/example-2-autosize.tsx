@@ -5,7 +5,7 @@
  *    -- When the autoSize property is true, component will change height to fit the content. Set maxHeight to limit maximum height.
  */
 import React from 'react'
-import { Textarea } from 'ethan'
+import { Textarea } from 'ethan-ui'
 
 const text = `a
 u

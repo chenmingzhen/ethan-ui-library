@@ -5,14 +5,14 @@
  *    -- Basic progress bar
  */
 import React from 'react'
-import { Progress } from 'ethan/index'
+import { Progress } from 'ethan-ui'
 
 export default function() {
-  return (
-    <div style={{ width: 400 }}>
-      <Progress value={50} />
-      <br />
-      <Progress value={50}>50%</Progress>
-    </div>
-  )
+    return (
+        <div style={{ width: 400 }}>
+            <Progress value={50} />
+            <br />
+            <Progress value={50}>50%</Progress>
+        </div>
+    )
 }

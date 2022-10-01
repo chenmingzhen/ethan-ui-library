@@ -5,7 +5,7 @@
  *    -- Multi-layer Modal
  */
 import React, { useState } from 'react'
-import { Modal, Button } from 'ethan/index'
+import { Modal, Button } from 'ethan-ui'
 
 const pickNumber = (max = 65555, min = 0, fixed = 2) => {
     if (typeof max === 'string') max = parseInt(max, 10)

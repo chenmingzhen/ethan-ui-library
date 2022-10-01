@@ -7,7 +7,7 @@
  *    -- The component will group the content by the return value of the function. If the return is empty, the default is not grouped. To prevent ambiguity, it is recommended to have a default grouping.
  */
 import React from 'react'
-import { Select } from 'ethan/index'
+import { Select } from 'ethan-ui'
 
 const data = [
     { value: 'Beijing', tag: '1' },

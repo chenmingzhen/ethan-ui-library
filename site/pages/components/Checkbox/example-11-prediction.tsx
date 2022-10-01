@@ -5,7 +5,7 @@
  *    -- Complex data can use prediction to determine whether item should be checked
  */
 import React from 'react'
-import { Checkbox } from 'ethan/index'
+import { Checkbox } from 'ethan-ui'
 
 const data = [
     { value: 1, label: 'red' },

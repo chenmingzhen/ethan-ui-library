@@ -5,7 +5,7 @@
  *    -- When type is number, it is forbidden to input non-numeric characters, and the number of decimal places is limited according to the digits property
  */
 import React from 'react'
-import { Input } from 'ethan/index'
+import { Input } from 'ethan-ui'
 
 const style = { marginBottom: 12 }
 

@@ -5,32 +5,32 @@
  *    -- Dropdown is rendered through data and supports json formatted data and React components.
  */
 import React from 'react'
-import { Dropdown, Message } from 'ethan/index'
+import { Dropdown, Message } from 'ethan-ui'
 
 const data = [
-  {
-    content: 'Submenu',
-    children: [
-      {
-        content: 'Link to Google',
-        target: '_blank',
-        url: 'https://google.com',
-      },
-      {
-        content: 'Disabled',
-        disabled: true,
-      },
-    ],
-  },
-  <a href="/">Home</a>,
-  {
-    content: 'Message',
-    onClick: () => {
-      Message.info('Some message.')
+    {
+        content: 'Submenu',
+        children: [
+            {
+                content: 'Link to Google',
+                target: '_blank',
+                url: 'https://google.com',
+            },
+            {
+                content: 'Disabled',
+                disabled: true,
+            },
+        ],
     },
-  },
+    <a href="/">Home</a>,
+    {
+        content: 'Message',
+        onClick: () => {
+            Message.info('Some message.')
+        },
+    },
 ]
 
 export default function() {
-  return <Dropdown placeholder="Dropdown" data={data} />
+    return <Dropdown placeholder="Dropdown" data={data} />
 }

@@ -5,7 +5,7 @@
  *    -- Set the vertical property to change the component vertical.
  */
 import React from 'react'
-import { Slider } from 'ethan'
+import { Slider } from 'ethan-ui'
 
 const formatTemp = v => `${v}℃`
 

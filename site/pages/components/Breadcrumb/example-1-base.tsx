@@ -7,18 +7,18 @@
 
 import React from 'react'
 import { Link } from 'react-router-dom'
-import { Breadcrumb, Message } from 'ethan/index'
+import { Breadcrumb, Message } from 'ethan-ui'
 
 const data = [
-  [
-    { title: 'Home', url: '#home' },
-    { title: 'aaa', url: '#aaa' },
-    { title: 'bbb', url: '#bbb' },
-  ],
-  { title: <Link to="/components/Button">Button</Link> },
-  { title: 'Self', onClick: () => Message.show('Clicked self') },
+    [
+        { title: 'Home', url: '#home' },
+        { title: 'aaa', url: '#aaa' },
+        { title: 'bbb', url: '#bbb' },
+    ],
+    { title: <Link to="/components/Button">Button</Link> },
+    { title: 'Self', onClick: () => Message.show('Clicked self') },
 ]
 
 export default function() {
-  return <Breadcrumb data={data} />
+    return <Breadcrumb data={data} />
 }

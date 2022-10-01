@@ -5,7 +5,7 @@
  *    -- Set the disabled property to disable the component.
  */
 import React from 'react'
-import { Input } from 'ethan/index'
+import { Input } from 'ethan-ui'
 
 const style = { width: 300, marginBottom: 12 }
 

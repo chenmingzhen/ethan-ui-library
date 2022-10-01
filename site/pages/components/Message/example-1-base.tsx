@@ -5,7 +5,7 @@
  *    -- Message has 6 static functions that are convenient to call anywhere, includes normal(with/without icon)、success、warn、error、loading and close all messages
  */
 import React from 'react'
-import { Button, Message } from 'ethan/index'
+import { Button, Message } from 'ethan-ui'
 
 export default function() {
     return (

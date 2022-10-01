@@ -5,7 +5,7 @@
  *    -- The default is horizontal layout and setting the block property can changed it to be vertical layout.
  */
 import React from 'react'
-import { Radio } from 'ethan'
+import { Radio } from 'ethan-ui'
 
 const data = [
     { id: 1, color: 'red' },

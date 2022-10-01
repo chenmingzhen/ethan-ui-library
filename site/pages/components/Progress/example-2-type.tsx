@@ -5,18 +5,18 @@
  *    -- There are 4 built-in style.
  */
 import React from 'react'
-import { Progress } from 'ethan/index'
+import { Progress } from 'ethan-ui'
 
 export default function() {
-  return (
-    <div style={{ width: 400 }}>
-      <Progress value={100} type="success" />
-      <br />
-      <Progress value={90} type="info" />
-      <br />
-      <Progress value={80} type="warning" />
-      <br />
-      <Progress value={70} type="danger" />
-    </div>
-  )
+    return (
+        <div style={{ width: 400 }}>
+            <Progress value={100} type="success" />
+            <br />
+            <Progress value={90} type="info" />
+            <br />
+            <Progress value={80} type="warning" />
+            <br />
+            <Progress value={70} type="danger" />
+        </div>
+    )
 }

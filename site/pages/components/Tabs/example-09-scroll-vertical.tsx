@@ -5,7 +5,7 @@
  *    -- Vertical scroll
  */
 import React from 'react'
-import { Tabs } from 'ethan'
+import { Tabs } from 'ethan-ui'
 
 const panelStyle = { padding: '12px 0' }
 

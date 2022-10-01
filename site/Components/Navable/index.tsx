@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { Sticky } from 'ethan/index'
+import { Sticky } from 'ethan-ui'
 import { useLocation } from 'react-use'
 import { navClass } from 'doc/styles'
 import { Heading } from 'doc/type'

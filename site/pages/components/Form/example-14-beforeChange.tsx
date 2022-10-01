@@ -5,7 +5,7 @@
  *    -- Use beforeChange to set the value in the change back to onChange
  */
 import React from 'react'
-import { Form, Input, Select } from 'ethan'
+import { Form, Input, Select } from 'ethan-ui'
 
 interface FormValues {
     money: string

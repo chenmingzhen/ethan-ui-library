@@ -5,7 +5,7 @@
  *    --  options auto adapt width
  */
 import React from 'react'
-import { Select } from 'ethan/index'
+import { Select } from 'ethan-ui'
 
 const data = ['red', 'orange', 'this option is so long long long long long', 'green', 'cyan', 'blue', 'violet']
 

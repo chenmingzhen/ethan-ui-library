@@ -5,7 +5,7 @@
  *    -- A group of images can be placed in the Image.Group .
  */
 import React from 'react'
-import { Image } from 'ethan/index'
+import { Image } from 'ethan-ui'
 
 export default function() {
     return (

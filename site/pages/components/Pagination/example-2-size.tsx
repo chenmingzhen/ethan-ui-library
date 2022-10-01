@@ -5,7 +5,7 @@
  *    -- Three sizes are built in for selection: small, default, large, default value is default.
  */
 import React from 'react'
-import { Pagination } from 'ethan/index'
+import { Pagination } from 'ethan-ui'
 
 export default function() {
     return (

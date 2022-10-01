@@ -5,7 +5,7 @@
  *    -- UseFormValueState basic usage
  */
 import React from 'react'
-import { Form, Input } from 'ethan'
+import { Form, Input } from 'ethan-ui'
 
 interface FormValues {
     name: string

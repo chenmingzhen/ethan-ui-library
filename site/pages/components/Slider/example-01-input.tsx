@@ -5,7 +5,7 @@
  *    -- change with number input
  */
 import React from 'react'
-import { Slider, Input } from 'ethan'
+import { Slider, Input } from 'ethan-ui'
 
 const container = {
     display: 'flex',

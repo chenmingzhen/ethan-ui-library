@@ -5,7 +5,7 @@
  *    -- When then autoHide property is true, automatically hide current values and scales.
  */
 import React from 'react'
-import { Slider } from 'ethan'
+import { Slider } from 'ethan-ui'
 
 export default function() {
     return <Slider autoHide defaultValue={4} scale={[1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144]} step={1} />

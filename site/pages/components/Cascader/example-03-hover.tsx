@@ -7,7 +7,7 @@
  */
 
 import React from 'react'
-import { Cascader } from 'ethan'
+import { Cascader } from 'ethan-ui'
 import { cascader as data } from 'doc/data/tree'
 
 export default function() {

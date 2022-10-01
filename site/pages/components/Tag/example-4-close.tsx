@@ -9,25 +9,25 @@
  *    -- When the onClose is a function, call this function after hiding it.
  */
 import React from 'react'
-import { Tag } from 'ethan'
+import { Tag } from 'ethan-ui'
 
 export default () => (
-  <div>
-    <Tag onClose>onClose=true</Tag>
+    <div>
+        <Tag onClose>onClose=true</Tag>
 
-    <Tag onClose={() => console.log('close')}>onClose=function</Tag>
+        <Tag onClose={() => console.log('close')}>onClose=function</Tag>
 
-    <Tag
-      onClose={() =>
-        new Promise(resolve => {
-          setTimeout(() => {
-            console.log('promise close')
-            resolve(true)
-          }, 3000)
-        })
-      }
-    >
-      onClose=promise
-    </Tag>
-  </div>
+        <Tag
+            onClose={() =>
+                new Promise(resolve => {
+                    setTimeout(() => {
+                        console.log('promise close')
+                        resolve(true)
+                    }, 3000)
+                })
+            }
+        >
+            onClose=promise
+        </Tag>
+    </div>
 )

@@ -1,5 +1,5 @@
 import React from 'react'
-import { Button, FontAwesome } from 'ethan/index'
+import { Button, FontAwesome } from 'ethan-ui'
 import { homeClass } from 'doc/styles'
 import history from 'docs/history'
 

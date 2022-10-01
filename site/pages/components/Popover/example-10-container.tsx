@@ -5,7 +5,7 @@
  *    -- use getPopupContainer return target container
  */
 import React from 'react'
-import { Button, Popover } from 'ethan/index'
+import { Button, Popover } from 'ethan-ui'
 
 export default function() {
     return (

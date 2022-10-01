@@ -5,7 +5,7 @@
  *    -- LazyList can change as dataSource changes
  */
 import React from 'react'
-import { LazyList, Alert } from 'ethan'
+import { LazyList, Alert } from 'ethan-ui'
 import { range } from '@/utils/numbers'
 
 const ALERT_ANIMATION_DURATION = 216

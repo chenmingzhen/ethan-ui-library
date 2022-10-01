@@ -5,7 +5,7 @@
  *    -- Set showCount to true, set the maximum length, and the user's focus shows the length of text that the user has entered.
  */
 import React from 'react'
-import { Textarea } from 'ethan'
+import { Textarea } from 'ethan-ui'
 
 export default function() {
     return <Textarea rows={4} trim placeholder="input something" showCount maxLength={10} />

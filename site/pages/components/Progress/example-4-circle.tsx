@@ -5,22 +5,22 @@
  *    -- Set the shape property to circle to display circular progress bar.
  */
 import React from 'react'
-import { Progress } from 'ethan/index'
+import { Progress } from 'ethan-ui'
 
 export default function() {
-  return (
-    <div>
-      <Progress shape="circle" style={{ marginRight: 20 }} value={30} />
+    return (
+        <div>
+            <Progress shape="circle" style={{ marginRight: 20 }} value={30} />
 
-      <Progress shape="circle" style={{ marginRight: 20 }} value={70}>
-        70%
-      </Progress>
+            <Progress shape="circle" style={{ marginRight: 20 }} value={70}>
+                70%
+            </Progress>
 
-      <Progress shape="circle" type="success" style={{ marginRight: 20 }} value={100}>
-        Success
-      </Progress>
+            <Progress shape="circle" type="success" style={{ marginRight: 20 }} value={100}>
+                Success
+            </Progress>
 
-      <Progress shape="circle" strokeLinecap="butt" color="#531dab" value={70} />
-    </div>
-  )
+            <Progress shape="circle" strokeLinecap="butt" color="#531dab" value={70} />
+        </div>
+    )
 }

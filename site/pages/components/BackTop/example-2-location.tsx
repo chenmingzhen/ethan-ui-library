@@ -6,6 +6,6 @@
  */
 
 import React from 'react'
-import { BackTop } from 'ethan/index'
+import { BackTop } from 'ethan-ui'
 
 export default () => <BackTop bottom="90" right="100" />

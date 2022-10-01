@@ -5,7 +5,7 @@
  *    -- Set columns -1, options will display end by end， columnsWidth is the width of the option box
  */
 import React from 'react'
-import { Select } from 'ethan/index'
+import { Select } from 'ethan-ui'
 import { fetchSync as fetchCity } from 'doc/data/city'
 
 const citys = fetchCity(200)

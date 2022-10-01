@@ -5,7 +5,7 @@
  *    -- A series of checkboxes group by Checkbox.Group.
  */
 import React from 'react'
-import { Checkbox } from 'ethan/index'
+import { Checkbox } from 'ethan-ui'
 
 const data = [
     { id: 1, color: 'red' },

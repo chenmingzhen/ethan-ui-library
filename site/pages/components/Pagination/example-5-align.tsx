@@ -5,7 +5,7 @@
  *    -- Options: 'left', 'center', 'right', the default value is left.
  */
 import React from 'react'
-import { Pagination } from 'ethan/index'
+import { Pagination } from 'ethan-ui'
 
 const info = ({ total }) => `Total ${total}`
 

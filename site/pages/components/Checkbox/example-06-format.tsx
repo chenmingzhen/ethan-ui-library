@@ -5,7 +5,7 @@
  *    -- Complex data can use format to process value.
  */
 import React, { Component } from 'react'
-import { Checkbox } from 'ethan/index'
+import { Checkbox } from 'ethan-ui'
 
 const data = [
     { id: 1, color: 'red' },

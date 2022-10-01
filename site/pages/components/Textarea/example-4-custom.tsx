@@ -7,7 +7,7 @@
  *    -- if the functio return an Error , the info doesn't hide
  */
 import React from 'react'
-import { Textarea } from 'ethan'
+import { Textarea } from 'ethan-ui'
 
 const renderInfo = value => {
     if (!value || value.length === 0) return null

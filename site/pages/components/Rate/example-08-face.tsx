@@ -5,7 +5,7 @@
  *    -- You can use arrays to display items with different scores when creating components. In this case, values with decimals are not supported.
  */
 import React from 'react'
-import { Rate, Icon } from 'ethan'
+import { Rate, Icon } from 'ethan-ui'
 
 const FaceIcon = Icon('https://at.alicdn.com/t/font_662584_hfkafvbgwurkvs4i.css', 'facefont')
 const background = <FaceIcon name="question" />

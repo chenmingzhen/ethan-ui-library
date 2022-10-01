@@ -9,7 +9,7 @@
  *    -- Set maskCloseAbel to null to disable the function that click mask to close and the close icon in the upper right corner will be preserved.
  */
 import React from 'react'
-import { Modal, Button, Select } from 'ethan/index'
+import { Modal, Button, Select } from 'ethan-ui'
 
 const list = [
     {

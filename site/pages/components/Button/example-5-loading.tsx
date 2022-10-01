@@ -5,7 +5,7 @@
  *    -- Set loading property can add a loading indicator to button.
  */
 import React from 'react'
-import { Button } from 'ethan/index'
+import { Button } from 'ethan-ui'
 
 export default function() {
     return (

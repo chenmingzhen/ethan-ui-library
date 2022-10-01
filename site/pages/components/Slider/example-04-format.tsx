@@ -7,7 +7,7 @@
  *    -- Set the formatValue property to customize the display value.
  */
 import React from 'react'
-import { Slider } from 'ethan'
+import { Slider } from 'ethan-ui'
 
 const pad = i => (i < 10 ? `0${i}` : i)
 const format = v => {

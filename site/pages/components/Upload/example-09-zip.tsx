@@ -5,7 +5,7 @@
  *    -- Zip file and upload.
  */
 import React from 'react'
-import { Upload, Button, FontAwesome, Message } from 'ethan/index'
+import { Upload, Button, FontAwesome, Message } from 'ethan-ui'
 
 const request = options => {
     const { file, onLoad, onError, onProgress } = options
