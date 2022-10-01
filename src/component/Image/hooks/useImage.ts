@@ -42,6 +42,8 @@ const useImage = (
     const markToRender = () => {
         if (!src) {
             handleAlt()
+
+            return
         }
 
         const rawImage = new window.Image()
@@ -57,6 +59,7 @@ const useImage = (
     const handleAlt = () => {
         if (!alt) {
             setStatus(ERROR)
+
             return
         }
 
