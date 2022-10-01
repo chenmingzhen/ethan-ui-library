@@ -10,8 +10,6 @@ import { headerClass } from '../styles'
 import history from './history'
 import locate, { getLanguage, setItem, STORAGE_KEY } from '../utils/locate'
 
-const { default: Logo } = require('https://chenmingzhen.github.io/ethan-ui-library/images/ui.png')
-
 const findLangs = () => {
     const prevLang = locate('cn', 'en')
     const nextLang = locate('en', 'cn')
@@ -46,7 +44,7 @@ const Header = () => {
     return (
         <div className={headerClass('_')}>
             <div className={headerClass('logo')}>
-                <img src={Logo} alt="" />
+                <img src="https://chenmingzhen.github.io/ethan-ui-library/images/ui.png" alt="" />
                 <Link to="/index/">Ethan</Link>
             </div>
             <div className={headerClass('nav')}>
