@@ -6,14 +6,19 @@
  */
 import React from 'react'
 import { Image } from 'ethan/index'
-import src from '../../../images/1_b.jpg'
 
 export default function() {
     return (
         <div>
             {['fill', 'center', 'fit', 'stretch'].map(fit => (
                 <div key={fit} style={{ width: '25%', padding: 4, display: 'inline-block' }}>
-                    <Image width="100%" height="75%" src={src} shape="thumbnail" fit={fit} />
+                    <Image
+                        width="100%"
+                        height="75%"
+                        shape="thumbnail"
+                        fit={fit}
+                        src="https://chenmingzhen.github.io/ethan-ui-library/images/1_b.jpg"
+                    />
                     <div style={{ textAlign: 'center', paddingTop: 4 }}>{fit}</div>
                 </div>
             ))}

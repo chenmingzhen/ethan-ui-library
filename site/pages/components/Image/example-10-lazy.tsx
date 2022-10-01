@@ -10,14 +10,14 @@ import { Image } from 'ethan/index'
 export default function() {
     return (
         <div id="image-container" style={{ height: '300px', overflowY: 'scroll' }}>
-            {[1, 2, 3, 4].map((i) => (
+            {[1, 2, 3, 4].map(i => (
                 <Image
                     lazy
                     container="#image-container"
                     key={i}
                     fit="fill"
                     height="66%"
-                    src={`../../../images/${i}_b.jpg`}
+                    src={`https://chenmingzhen.github.io/ethan-ui-library/images/${i}_b.jpg`}
                 />
             ))}
         </div>

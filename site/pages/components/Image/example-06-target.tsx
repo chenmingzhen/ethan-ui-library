@@ -6,14 +6,21 @@
  */
 import React from 'react'
 import { Image } from 'ethan/index'
-import src from '../../../images/1_s.jpg'
 
 export default function() {
     return (
         <div>
             {['_modal', '_blank', '_self', '_download'].map(target => (
                 <div key={target} style={{ display: 'inline-block', marginRight: 12, textAlign: 'center' }}>
-                    <Image width={80} height={80} target={target} shape="thumbnail" fit="fill" src={src} href={src} />
+                    <Image
+                        width={80}
+                        height={80}
+                        target={target}
+                        shape="thumbnail"
+                        fit="fill"
+                        src="https://chenmingzhen.github.io/ethan-ui-library/images/1_s.jpg"
+                        href="https://chenmingzhen.github.io/ethan-ui-library/images/1_s.jpg"
+                    />
                     <br />
                     {target}
                 </div>

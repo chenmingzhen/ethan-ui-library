@@ -44,7 +44,7 @@ export default function App() {
 
             <Form.Item name="select-multiple" label="Select[multiple]" rules={[rule.required]} required>
                 <Select
-                    mode="multiple"
+                    multiple
                     placeholder="Please select favorite colors"
                     data={['red', 'green', 'blur']}
                     keygen

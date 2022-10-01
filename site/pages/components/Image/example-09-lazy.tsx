@@ -10,8 +10,14 @@ import { Image } from 'ethan/index'
 export default function() {
     return (
         <div>
-            {[1, 2, 3, 4].map((i) => (
-                <Image lazy key={i} fit="fill" height="66%" src={`../../../images/${i}_b.jpg`} />
+            {[1, 2, 3, 4].map(i => (
+                <Image
+                    lazy
+                    key={i}
+                    fit="fill"
+                    height="66%"
+                    src={`https://chenmingzhen.github.io/ethan-ui-library/images/${i}_b.jpg`}
+                />
             ))}
         </div>
     )

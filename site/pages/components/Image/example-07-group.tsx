@@ -17,8 +17,8 @@ export default function() {
                     height={80}
                     fit="fill"
                     shape="thumbnail"
-                    src={`../../../images/${i}_s.jpg`}
-                    href={`../../../images/${i}_s.jpg`}
+                    src={`https://chenmingzhen.github.io/ethan-ui-library/images/${i}_s.jpg`}
+                    href={`https://chenmingzhen.github.io/ethan-ui-library/images/${i}_s.jpg`}
                 />
             ))}
         </Image.Group>
