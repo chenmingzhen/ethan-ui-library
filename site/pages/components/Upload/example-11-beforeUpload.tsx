@@ -6,12 +6,13 @@
  */
 import React from 'react'
 import { Upload } from 'ethan-ui'
+import { action } from 'doc/config'
 
 export default function() {
     return (
         <div>
             <Upload.Image
-                action="/upload/"
+                action={action}
                 name="file"
                 limit={3}
                 style={{ width: 300 }}

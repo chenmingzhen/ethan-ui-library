@@ -7,12 +7,13 @@
  */
 import React from 'react'
 import { Upload, Button, FontAwesome, Message } from 'ethan-ui'
+import { action } from 'doc/config'
 
 export default function() {
     return (
         <>
             <Upload
-                action="/upload/"
+                action={action}
                 accept="image/*"
                 name="file"
                 renderContent={f => <span style={{ fontSize: '16px' }}>{f.name}</span>}

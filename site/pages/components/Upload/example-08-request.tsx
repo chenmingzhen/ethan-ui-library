@@ -6,11 +6,12 @@
  */
 import React from 'react'
 import { Upload, Button, FontAwesome } from 'ethan-ui'
+import { action } from 'doc/config'
 
 const request = options => {
     const { file, onLoad, onProgress } = options
     const xhr = new XMLHttpRequest()
-    xhr.open('post', '/upload/')
+    xhr.open('post', action)
 
     const data = new FormData()
     data.append('file', file)

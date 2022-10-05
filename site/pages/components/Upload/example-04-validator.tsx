@@ -6,12 +6,13 @@
  */
 import React from 'react'
 import { Upload, FontAwesome, Button } from 'ethan-ui'
+import { action } from 'doc/config'
 
 export default function() {
     return (
         <div>
             <Upload
-                action="/upload/"
+                action={action}
                 accept="image/*"
                 multiple
                 name="file"

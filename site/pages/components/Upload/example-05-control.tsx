@@ -7,13 +7,14 @@
  */
 import React, { useState } from 'react'
 import { Upload, Button, FontAwesome } from 'ethan-ui'
+import { action } from 'doc/config'
 
 export default () => {
     const [fileList, updateFileList] = useState([])
 
     return (
         <Upload
-            action="/upload/"
+            action={action}
             accept="image/*"
             name="file"
             value={fileList}

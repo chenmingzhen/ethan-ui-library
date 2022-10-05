@@ -6,7 +6,8 @@
  */
 import React from 'react'
 import { Upload } from 'ethan-ui'
+import { action } from 'doc/config'
 
 export default function() {
-    return <Upload.Button action="/upload/" name="file" loading="正在上传..." placeholder="点击上传" type="primary" />
+    return <Upload.Button action={action} name="file" loading="正在上传..." placeholder="点击上传" type="primary" />
 }

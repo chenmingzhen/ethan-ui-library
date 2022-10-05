@@ -6,12 +6,13 @@
  */
 import React from 'react'
 import { Upload, Button, FontAwesome, Message } from 'ethan-ui'
+import { action } from 'doc/config'
 
 const request = options => {
     const { file, onLoad, onError, onProgress } = options
 
     const xhr = new XMLHttpRequest()
-    xhr.open('post', '/upload/')
+    xhr.open('post', action)
 
     const zip = new window.JSZip()
 

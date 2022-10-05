@@ -1,21 +1,9 @@
 import { entries } from './utils/objects'
 
 const config = {
-    cssModule: false,
-
     prefix: 'ethan',
 
     locale: 'en-US',
-
-    delay: undefined,
-
-    scrollRatio: 100,
-
-    trim: undefined,
-
-    spin: undefined,
-
-    caret: undefined,
 }
 
 export function set(name, value) {
