@@ -216,7 +216,7 @@ interface GetThemeWebpackConfigParams {
 }
 
 export function getThemeWebpackConfig(options: GetThemeWebpackConfigParams) {
-    const { name, entry, output, prefix = 'theme', mode = 'production', clean = false, Dev = false } = options
+    const { name, entry, output, prefix = 'theme', mode = 'production' } = options
 
     const themeConfig: Configuration = {
         mode,
@@ -261,8 +261,8 @@ export function getThemeWebpackConfig(options: GetThemeWebpackConfigParams) {
             new webpack.ProvidePlugin({
                 process: 'process/browser',
             }),
-            clean && new CleanWebpackPlugin(),
-            Dev && new ReactRefreshWebpackPlugin({ overlay: { sockPort: config.dev.webpackPort } }),
+            mode === 'production' && new CleanWebpackPlugin(),
+            mode === 'development' && new ReactRefreshWebpackPlugin({ overlay: { sockPort: config.dev.webpackPort } }),
         ].filter(Boolean),
     }
 

@@ -4,19 +4,18 @@ import config from '../config'
 import { getCommonConfig, getThemeWebpackConfig } from './utils'
 import pkg from '../package.json'
 
-const dir = pkg.version
+const dir = pkg.version.substring(0, pkg.version.lastIndexOf('.') + 1)
 
 const cssConfig = config.themes.map(name =>
     getThemeWebpackConfig({
         name,
         entry: [
-            './src/styles/style/ts',
+            './src/styles/style.ts',
             // site style
             './site/styles/index.ts',
             './site/less-entry.ts',
         ],
-        output: { path: path.join(__dirname, `../docs-pages/${dir}`) },
-        clean: true,
+        output: { path: path.join(__dirname, `../docs-pages/${dir}x`) },
         prefix: '',
     })
 )
