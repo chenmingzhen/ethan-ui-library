@@ -1,10 +1,8 @@
-<h1 align="center">🎨🎨Ethan ui library</h1>
+<p align="center"><img width="160px" src="https://chenmingzhen.github.io/ethan-ui-library/images/ui.png"/></p>
+
+<h1 align="center">Ethan ui</h1>
 
 <div align="center">
-
-<h2>Make Component Easy</h2>
-
-<h3>A Practice React Component Project</h3>
 
 ![Stars](https://img.shields.io/github/stars/chenmingzhen/ethan-ui-library.svg?style=social)
 ![Forks](https://img.shields.io/github/forks/chenmingzhen/ethan-ui-library.svg?style=social)
@@ -12,50 +10,52 @@
 
 </div>
 
+## 💻 支持环境
 
-# 🚀支持库
+-   React >= 17
+-   除 IE 外的浏览器
 
-- 🍇 immer 
+## 🚀 CDN
 
-- 📖 deep-eql
+```html
+<link rel="stylesheet" href="https://unpkg.com/ethan-ui/dist/theme.default.css" />
+<script src="https://unpkg.com/ethan-ui/dist/Ethan.min.js"></script>
+```
 
-- 🎓 create-react-context
+## 📦 安装
 
-# 🎉完成
+```bash
+npm install ethan-ui
 
-- [x] Alert
-- [x] Button
-- [x] Card
-- [x] Carousel
-- [x] Dropdown
-- [x] icons
-- [x] Image
-- [x] Input
-- [x] List
-- [x] Message
-- [x] Popover
-- [x] Spin
-- [x] Tooltip
+or
 
+yarn add ethan-ui
+```
 
+## 📋 文档
 
+[https://chenmingzhen.github.io/ethan-ui-library](https://chenmingzhen.github.io/ethan-ui-library)
 
-# 📦 运行
+## ⌨️ 本地调试运行
 
 ```bash
 npm install
 
+npm run start
+
 or
 
 yarn install
-```
-
-# 💻 Open web site
-```bash
-npm run start
-
-or 
 
 yarn start
 ```
 
+## 🔗 参考链接
+
+-   [shineout](https://github.com/sheinsight/shineout)
+
+-   [antd](https://github.com/ant-design/ant-design)
+
+-   [zent](https://github.com/youzan/zent)
+
+-   [react-photo-view](https://github.com/MinJieLiu/react-photo-view)
