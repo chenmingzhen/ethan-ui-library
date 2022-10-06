@@ -4,7 +4,6 @@ import { getCommonConfig, getThemeWebpackConfig } from './utils'
 
 const cssConfig = config.themes.map(name =>
     getThemeWebpackConfig({
-        Dev: true,
         mode: 'development',
         name,
         entry: ['./src/styles/style.ts', './site/styles/index.ts', './site/less-entry.ts'],
