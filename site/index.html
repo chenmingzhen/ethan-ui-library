@@ -11,27 +11,12 @@
             href="https://chenmingzhen.github.io/ethan-ui-library/images/favicon.ico"
             type="image/x-icon"
         />
-        <% styles.forEach(function(link) { -%>
-        <link rel="stylesheet" href="<%= link %>" />
-        <% }) -%>
     </head>
     <body>
         <noscript>
             You need to enable JavaScript to run this app.
         </noscript>
         <div id="root"></div>
-        <script>
-            if (window.ActiveXObject || 'ActiveXObject' in window) {
-                document.write(
-                    '<scr' +
-                        'ipt src="https://cdnjs.cloudflare.com/ajax/libs/babel-polyfill/7.0.0-beta.49/polyfill.min.js"></scr' +
-                        'ipt>'
-                )
-                document.write(
-                    '<scr' + 'ipt src="https://cdnjs.cloudflare.com/ajax/libs/fetch/2.0.4/fetch.min.js"></scr' + 'ipt>'
-                )
-            }
-        </script>
         <% scripts.forEach(function(script) { -%>
         <script src="<%= script %>"></script>
         <% }) -%>

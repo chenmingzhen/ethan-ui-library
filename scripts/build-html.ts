@@ -13,29 +13,30 @@ const componentPaths = path.resolve(__dirname, '../site/pages/components')
 // 创建目录
 function createDir(lang) {
     if (!lang) return
+
     fs.mkdirSync(`${dir}/${lang}`)
     fs.mkdirSync(`${dir}/${lang}/index`)
     fs.mkdirSync(`${dir}/${lang}/components`)
 }
 
-const renderEjs = (scripts, styles, description, lang = 'en') =>
+const renderEjs = (scripts, description, lang = 'en') =>
     ejs.renderFile('./site/index.html', {
         description,
         scripts,
         env: 'production',
-        styles,
         appName: lang === 'cn' ? 'Ethan UI 组件库' : 'Ethan UI Library',
     })
 
 async function buildRedirect(lang) {
-    // TODO 无用 考虑去除
     const inner = await ejs.renderFile('./site/redirect.html', {
         inner: true,
     })
+
     // 对window.location.href 转发 到 cn/en
     const outer = await ejs.renderFile('./site/redirect.html', {
         inner: false,
     })
+
     fs.writeFileSync(`${dir}/index.html`, outer)
     fs.writeFileSync(`${dir}/${lang}/index.html`, inner)
 }
@@ -44,9 +45,7 @@ async function buildHtml(lang) {
     createDir(lang)
 
     const components = fs.readdirSync(componentPaths).map(c => c.split('.')[0])
-    // const documents = getDocumentation()
-    // no style
-    const styles = config.dev.styles.map(p => cdn + p)
+
     const scripts = config.dev.scripts.map(p => cdn + p)
 
     // push 入口文件
@@ -54,14 +53,16 @@ async function buildHtml(lang) {
         scripts.push(`../../${s}.js`)
     })
 
-    const html = await renderEjs(scripts, styles, '', lang)
+    const html = await renderEjs(scripts, '', lang)
 
     fs.writeFileSync(`${dir}/${lang}/index/index.html`, html)
 
     components.forEach(async c => {
         if (c === 'group') return
-        const comHtml = await renderEjs(scripts, styles, `react-${c}`, lang)
-        fs.writeFileSync(`${dir}/${lang}/components/${c}.html`, comHtml)
+
+        const componentHtml = await renderEjs(scripts, `react-${c}`, lang)
+
+        fs.writeFileSync(`${dir}/${lang}/components/${c}.html`, componentHtml)
     })
 
     buildRedirect(lang)

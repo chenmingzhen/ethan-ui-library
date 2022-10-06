@@ -122,7 +122,7 @@ router.get('/*', async ctx => {
         ...Object.keys(config.webpack.entry).map(s => prepath.replace('*.*', `${s}.js`)),
         '/__css_hot_loader.js',
     ]
-    const styles = config.dev.styles || []
+
     ctx.type = 'text/html; charset=utf-8'
     // 页面真正的渲染处理 通过ejs渲染处理 将参数传给模板
     // 页面中引入/site/index.js 进而显示web页面
@@ -130,7 +130,6 @@ router.get('/*', async ctx => {
         scripts,
         env: 'development',
         appName: config.appName,
-        styles,
         description: '',
     })
 })

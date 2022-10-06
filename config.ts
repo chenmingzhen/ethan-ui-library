@@ -24,7 +24,6 @@ const config = {
             /** upload examples中使用jszip 将jsZip打包进来 window中即存在 window.jszip */
             `/jszip@${versions.jszip}/dist/jszip.min.js`,
         ],
-        styles: [],
     },
     themes: ['default', 'ethan', 'antd'],
     webpack: {
