@@ -1,11 +1,8 @@
 import fs from 'fs'
-import fsExtra from 'fs-extra'
 import path from 'path'
 import ejs from './ejs'
-import pkg from '../package.json'
-import config from '../config'
+import config, { version } from '../config'
 
-const { version } = pkg
 const cdn = 'https://unpkg.com'
 const dir = `docs-pages/${version}`
 const componentPaths = path.resolve(__dirname, '../site/pages/components')
@@ -14,9 +11,9 @@ const componentPaths = path.resolve(__dirname, '../site/pages/components')
 function createDir(lang) {
     if (!lang) return
 
-    fs.mkdirSync(`${dir}/${lang}`)
-    fs.mkdirSync(`${dir}/${lang}/index`)
-    fs.mkdirSync(`${dir}/${lang}/components`)
+    fs.mkdirSync(`${process.cwd()}/${dir}/${lang}`, { recursive: true })
+    fs.mkdirSync(`${process.cwd()}/${dir}/${lang}/index`, { recursive: true })
+    fs.mkdirSync(`${process.cwd()}/${dir}/${lang}/components`, { recursive: true })
 }
 
 const renderEjs = (scripts, description, lang = 'en') =>
@@ -70,7 +67,3 @@ async function buildHtml(lang) {
 
 buildHtml('en')
 buildHtml('cn')
-
-// copy 404
-const errorPath = path.resolve(__dirname, '../site/404.html')
-fsExtra.copySync(errorPath, `${dir}/404.html`)

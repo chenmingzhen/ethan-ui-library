@@ -211,8 +211,6 @@ interface GetThemeWebpackConfigParams {
     output: Configuration['output']
     prefix?: string
     mode?: 'production' | 'development'
-    clean?: boolean
-    Dev?: boolean
 }
 
 export function getThemeWebpackConfig(options: GetThemeWebpackConfigParams) {

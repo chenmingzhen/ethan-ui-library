@@ -1,10 +1,7 @@
 import path from 'path'
 import { merge } from 'webpack-merge'
-import config from '../config'
+import config, { version } from '../config'
 import { getCommonConfig, getThemeWebpackConfig } from './utils'
-import pkg from '../package.json'
-
-const dir = pkg.version.substring(0, pkg.version.lastIndexOf('.') + 1)
 
 const cssConfig = config.themes.map(name =>
     getThemeWebpackConfig({
@@ -15,7 +12,7 @@ const cssConfig = config.themes.map(name =>
             './site/styles/index.ts',
             './site/less-entry.ts',
         ],
-        output: { path: path.join(__dirname, `../docs-pages/${dir}x`) },
+        output: { path: path.join(__dirname, `../docs-pages/${version}`) },
         prefix: '',
     })
 )
@@ -24,7 +21,7 @@ const jsConfig = merge(getCommonConfig({ Dev: false }), {
     devtool: config.webpack.devtool,
     entry: config.webpack.entry,
     output: {
-        path: path.join(__dirname, `../docs-pages/${dir}`),
+        path: path.join(__dirname, `../docs-pages/${version}`),
         /** @see https://webpack.docschina.org/configuration/output/#outputpublicpath */
         publicPath: '../../',
         libraryTarget: 'umd',

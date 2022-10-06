@@ -1,13 +1,17 @@
 import path from 'path'
 import fs from 'fs'
+import pkg from './package.json'
+
+/** docs版本号 */
+export const version = `${pkg.version.substring(0, pkg.version.lastIndexOf('.') + 1)}x`
 
 const versions: { react?: string; 'react-dom'?: string; jszip?: string } = {}
 ;['react', 'react-dom', 'jszip'].forEach(lib => {
     const libPackageBuffer = fs.readFileSync(path.resolve(__dirname, 'node_modules/', lib, 'package.json')).toString()
 
-    const pkg = JSON.parse(libPackageBuffer.toString())
+    const libPkg = JSON.parse(libPackageBuffer.toString())
 
-    versions[lib] = pkg.version
+    versions[lib] = libPkg.version
 })
 
 const config = {
