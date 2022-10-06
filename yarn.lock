@@ -2776,16 +2776,6 @@ babel-plugin-transform-react-remove-prop-types@0.4.18:
   resolved "https://registry.yarnpkg.com/babel-plugin-transform-react-remove-prop-types/-/babel-plugin-transform-react-remove-prop-types-0.4.18.tgz#85ff79d66047b34288c6f7cc986b8854ab384f8c"
   integrity sha512-azed2nHo8vmOy7EY26KH+om5oOcWRs0r1U8wOmhwta+SBMMnmJ4H6yaBZRCcHBtMeWp9AVhvBTL/lpR1kEx+Xw==
 
-babel-plugin-transform-react-remove-prop-types@^0.4.12:
-  version "0.4.24"
-  resolved "https://registry.yarnpkg.com/babel-plugin-transform-react-remove-prop-types/-/babel-plugin-transform-react-remove-prop-types-0.4.24.tgz#f2edaf9b4c6a5fbe5c1d678bfb531078c1555f3a"
-  integrity sha512-eqj0hVcJUR57/Ug2zE1Yswsw4LhuqqHhD+8v120T1cl3kjg76QwtyBrdIk4WVwK+lAhBJVYCd/v+4nc4y+8JsA==
-
-babel-plugin-transform-remove-console@^6.9.0:
-  version "6.9.4"
-  resolved "https://registry.yarnpkg.com/babel-plugin-transform-remove-console/-/babel-plugin-transform-remove-console-6.9.4.tgz#b980360c067384e24b357a588d807d3c83527780"
-  integrity sha1-uYA2DAZzhOJLNXpYjYB9PINSd4A=
-
 babel-plugin-webpack-alias@^2.1.2:
   version "2.1.2"
   resolved "https://registry.yarnpkg.com/babel-plugin-webpack-alias/-/babel-plugin-webpack-alias-2.1.2.tgz#05a1ba23c28595660fb6ea5736424fc596b4a247"
@@ -3970,14 +3960,6 @@ create-jest-runner@^0.5.3:
     chalk "^2.4.2"
     jest-worker "^24.0.0"
     throat "^4.1.0"
-
-create-react-context@^0.3.0:
-  version "0.3.0"
-  resolved "https://registry.npm.taobao.org/create-react-context/download/create-react-context-0.3.0.tgz#546dede9dc422def0d3fc2fe03afe0bc0f4f7d8c"
-  integrity sha1-VG3t6dxCLe8NP8L+A6/gvA9PfYw=
-  dependencies:
-    gud "^1.0.0"
-    warning "^4.0.3"
 
 cross-env@^5.1.3:
   version "5.2.1"
@@ -6098,11 +6080,6 @@ graceful-fs@^4.2.6:
   version "4.2.10"
   resolved "https://registry.npmjs.org/graceful-fs/-/graceful-fs-4.2.10.tgz#147d3a006da4ca3ce14728c7aefc287c367d7a6c"
   integrity sha512-9ByhssR2fPVsNZj478qUUbKfmL0+t5BDVyjShtyZZLiK7ZDAArFFfopyOTj0M05wE2tJPisA4iTnnXl2YoPvOA==
-
-gud@^1.0.0:
-  version "1.0.0"
-  resolved "https://registry.npm.taobao.org/gud/download/gud-1.0.0.tgz#a489581b17e6a70beca9abe3ae57de7a499852c0"
-  integrity sha1-pIlYGxfmpwvsqavjrlfeekmYUsA=
 
 handle-thing@^2.0.0:
   version "2.0.0"
@@ -9841,7 +9818,7 @@ promise-inflight@^1.0.1:
   resolved "https://registry.yarnpkg.com/promise-inflight/-/promise-inflight-1.0.1.tgz#98472870bf228132fcbdd868129bad12c3c029e3"
   integrity sha1-mEcocL8igTL8vdhoEputEsPAKeM=
 
-prop-types@^15.5.10, prop-types@^15.6.0, prop-types@^15.6.1, prop-types@^15.6.2, prop-types@^15.7.2:
+prop-types@^15.5.10, prop-types@^15.6.1, prop-types@^15.6.2, prop-types@^15.7.2:
   version "15.7.2"
   resolved "https://registry.yarnpkg.com/prop-types/-/prop-types-15.7.2.tgz#52c41e75b8c87e72b9d9360e0206b99dcbffa6c5"
   integrity sha512-8QQikdH7//R2vurIJSutZ1smHYTcLpRWEOlHnzcWHmBYrOGUysKwSsrC89BCiFj3CbrfJ/nXFdJepOVrY1GCHQ==
@@ -12718,13 +12695,6 @@ vm-browserify@^1.0.1:
   version "1.1.2"
   resolved "https://registry.yarnpkg.com/vm-browserify/-/vm-browserify-1.1.2.tgz#78641c488b8e6ca91a75f511e7a3b32a86e5dda0"
   integrity sha512-2ham8XPWTONajOR0ohOKOHXkm3+gaBmGut3SRuu75xLd/RRaY6vqgh8NBYYk7+RW3u5AtzPQZG8F10LHkl0lAQ==
-
-warning@^4.0.3:
-  version "4.0.3"
-  resolved "https://registry.npm.taobao.org/warning/download/warning-4.0.3.tgz#16e9e077eb8a86d6af7d64aa1e05fd85b4678ca3"
-  integrity sha1-Fungd+uKhtavfWSqHgX9hbRnjKM=
-  dependencies:
-    loose-envify "^1.0.0"
 
 watchpack@^2.2.0:
   version "2.2.0"

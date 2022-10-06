@@ -1,6 +1,5 @@
 // @ts-nocheck
 import React from 'react'
-import PropTypes from 'prop-types'
 import immer from 'immer'
 import { PureComponent } from '@/utils/component'
 import shallowEqual from '@/utils/shallowEqual'
@@ -257,21 +256,6 @@ class Range extends PureComponent {
             </div>
         )
     }
-}
-
-Range.propTypes = {
-    current: PropTypes.array,
-    disabled: PropTypes.func,
-    children: PropTypes.oneOfType([PropTypes.string, PropTypes.object]),
-    format: PropTypes.string,
-    onChange: PropTypes.func.isRequired,
-    range: PropTypes.oneOfType([PropTypes.bool, PropTypes.number]),
-    value: PropTypes.array,
-    type: PropTypes.string.isRequired,
-    defaultTime: PropTypes.array,
-    quicks: PropTypes.array,
-    min: PropTypes.object,
-    max: PropTypes.object,
 }
 
 Range.defaultProps = {
