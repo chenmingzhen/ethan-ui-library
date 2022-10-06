@@ -8,13 +8,12 @@
             var __inner = false
 
             function __getLanguage() {
+                if (localStorage && localStorage.getItem) return localStorage.getItem(__storage)
 
-            if (localStorage && localStorage.getItem) return localStorage.getItem(__storage)
-
-            return window.navigator.language || window.navigator.userLanguage
-
+                return window.navigator.language
             }
-            window.location.href = (__inner ? '' :  (__getLanguage() === 'zh-CN' ? 'cn/' : 'en/')) + 'index/'
+
+            window.location.href = (__inner ? '' : __getLanguage() === 'zh-CN' ? 'cn/' : 'en/') + 'index/'
         </script>
     </head>
     <body></body>
