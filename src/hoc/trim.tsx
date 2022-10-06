@@ -1,5 +1,4 @@
 import React, { PureComponent } from 'react'
-import config from '../config'
 
 export interface TrimProps {
     trim?: boolean
@@ -17,8 +16,6 @@ export default Origin =>
             const { trim } = this.props
 
             if (trim !== undefined) return trim
-
-            if (config.trim !== undefined) return config.trim
 
             return false
         }
