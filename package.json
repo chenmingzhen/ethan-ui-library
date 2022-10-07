@@ -3,6 +3,18 @@
     "version": "1.1.0",
     "main": "./lib/index.js",
     "license": "MIT",
+    "homepage": "https://chenmingzhen.github.io/ethan-ui-library",
+    "keywords": [
+        "ethan",
+        "ethan-ui",
+        "react",
+        "component",
+        "components",
+        "ui",
+        "frontend",
+        "react-component"
+    ],
+    "repository": "https://github.com/chenmingzhen/ethan-ui-library",
     "peerDependencies": {
         "react": ">=17.0.0",
         "react-dom": ">=17.0.0"

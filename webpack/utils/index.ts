@@ -213,6 +213,9 @@ interface GetThemeWebpackConfigParams {
     mode?: 'production' | 'development'
 }
 
+/** 打包css生成的无用js文件 */
+const CSS_TEMP_JS = 'temp_js'
+
 export function getThemeWebpackConfig(options: GetThemeWebpackConfigParams) {
     const { name, entry, output, prefix = 'theme', mode = 'production' } = options
 
@@ -229,7 +232,10 @@ export function getThemeWebpackConfig(options: GetThemeWebpackConfigParams) {
             alias: config.webpack.alias,
             extensions: ['.ts', '.tsx', '.js', '.json', '.jsx'],
         },
-        output,
+        output: {
+            ...output,
+            filename: mode === 'production' ? CSS_TEMP_JS : output.filename,
+        },
         module: {
             rules: [
                 {
@@ -259,7 +265,12 @@ export function getThemeWebpackConfig(options: GetThemeWebpackConfigParams) {
             new webpack.ProvidePlugin({
                 process: 'process/browser',
             }),
-            mode === 'production' && new CleanWebpackPlugin(),
+            /** @see https://www.npmjs.com/package/clean-webpack-plugin */
+            mode === 'production' &&
+                new CleanWebpackPlugin({
+                    protectWebpackAssets: false,
+                    cleanAfterEveryBuildPatterns: [CSS_TEMP_JS],
+                }),
             mode === 'development' && new ReactRefreshWebpackPlugin({ overlay: { sockPort: config.dev.webpackPort } }),
         ].filter(Boolean),
     }
