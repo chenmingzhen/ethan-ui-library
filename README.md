@@ -32,6 +32,22 @@ or
 yarn add ethan-ui
 ```
 
+## 🔨 使用
+
+```tsx
+import { Button } from 'ethan-ui'
+
+const App = () => <Button type="primary">PRESS ME</Button>
+```
+
+**引入其中一个样式文件**
+
+```typescript
+import 'ethan-ui/dist/theme.default.css'
+import 'ethan-ui/dist/theme.ethan.css'
+import 'ethan-ui/dist/theme.antd.css'
+```
+
 ## 📋 文档
 
 [https://chenmingzhen.github.io/ethan-ui-library](https://chenmingzhen.github.io/ethan-ui-library)
