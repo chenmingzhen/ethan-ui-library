@@ -11,9 +11,9 @@ import config from './config'
 import { version } from './package.json'
 import ejs from './scripts/ejs'
 import Log from './scripts/utils/log'
+import initSite from './scripts/dev-site'
 
-/** 通过ejs生成模板 */
-import './scripts/dev-site'
+initSite()
 
 const devServer = new WebpackDevServer(
     { port: config.dev.webpackPort, client: { overlay: false } },
@@ -113,7 +113,7 @@ router.get('/*', async ctx => {
     if (ctx.url === '/') ctx.redirect('/cn/index/')
     const reactVersion = ctx.query.v
     if (reactVersion) {
-        ctx.body = await ejs.renderFile('./site/index-v.html', { version: reactVersion })
+        ctx.body = await ejs.asyncRenderFile('./site/index-v.html', { version: reactVersion })
         return
     }
     const prepath = config.dev.scriptPath.replace('**', version)
@@ -126,7 +126,7 @@ router.get('/*', async ctx => {
     ctx.type = 'text/html; charset=utf-8'
     // 页面真正的渲染处理 通过ejs渲染处理 将参数传给模板
     // 页面中引入/site/index.js 进而显示web页面
-    ctx.body = await ejs.renderFile('./site/index.html', {
+    ctx.body = await ejs.asyncRenderFile('./site/index.html', {
         scripts,
         env: 'development',
         appName: config.appName,

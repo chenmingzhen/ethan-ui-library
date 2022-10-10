@@ -1,4 +1,4 @@
-const chalk = require('chalk')
+import chalk from 'chalk'
 
 function info(...args) {
     console.log(chalk.blue(args))
@@ -18,4 +18,4 @@ const Log = {
     success,
 }
 
-module.exports = Log
+export default Log

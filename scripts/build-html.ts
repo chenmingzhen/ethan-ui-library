@@ -17,7 +17,7 @@ function createDir(lang) {
 }
 
 const renderEjs = (scripts, description, lang = 'en') =>
-    ejs.renderFile('./site/index.html', {
+    ejs.asyncRenderFile('./site/index.html', {
         description,
         scripts,
         env: 'production',
@@ -25,12 +25,12 @@ const renderEjs = (scripts, description, lang = 'en') =>
     })
 
 async function buildRedirect(lang) {
-    const inner = await ejs.renderFile('./site/redirect.html', {
+    const inner = await ejs.asyncRenderFile('./site/redirect.html', {
         inner: true,
     })
 
     // 对window.location.href 转发 到 cn/en
-    const outer = await ejs.renderFile('./site/redirect.html', {
+    const outer = await ejs.asyncRenderFile('./site/redirect.html', {
         inner: false,
     })
 
