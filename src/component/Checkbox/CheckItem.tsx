@@ -10,7 +10,6 @@ export default function(type: CheckType) {
     return class extends PureComponent<ICheckedItemProps, CheckItemState> {
         static defaultProps: ICheckedItemProps = {
             content: [],
-            defaultChecked: false,
         }
 
         id = getUidStr()
@@ -21,7 +20,7 @@ export default function(type: CheckType) {
             super(props)
 
             this.state = {
-                checked: props.checked ?? props.defaultChecked,
+                checked: props.checked ?? props.defaultChecked ?? props.value ?? false,
             }
         }
 
@@ -33,6 +32,9 @@ export default function(type: CheckType) {
 
             /** 受控 */
             if (checked !== undefined) return checked
+
+            /** 表单控制 */
+            if (this.state.checked === undefined) return value
 
             return this.state.checked
         }
