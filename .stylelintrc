@@ -1,60 +1,38 @@
 {
-  "extends": [
-    "stylelint-config-idiomatic-order",
-    "./node_modules/prettier-stylelint/config.js"
-  ],
-  "rules": {
-    "order/properties-order": null,
-    "at-rule-empty-line-before": [
-      "always",
-      {
-        "except": [
-          "blockless-after-same-name-blockless"
-        ],
-        "ignore": [
-          "after-comment",
-          "first-nested"
-        ],
-        "severity": "warning"
-      }
+    "customSyntax": "postcss-less",
+    "extends": [
+        "stylelint-config-standard",
+        "stylelint-config-prettier"
     ],
-    "custom-property-empty-line-before": [
-      "always",
-      {
-        "except": [
-          "after-custom-property"
-        ],
-        "ignore": [
-          "after-comment",
-          "first-nested",
-          "inside-single-line-block"
-        ],
-        "severity": "warning"
-      }
+    "plugins": [
+        "stylelint-order",
+        "stylelint-prettier"
     ],
-    "declaration-empty-line-before": [
-      "always",
-      {
-        "except": [
-          "after-declaration"
+    "rules": {
+        "order/order": [
+            "custom-properties",
+            "declarations"
         ],
-        "ignore": [
-          "after-comment",
-          "first-nested",
-          "inside-single-line-block"
+        "order/properties-order": [
+            "width",
+            "height"
         ],
-        "severity": "warning"
-      }
-    ],
-    "rule-empty-line-before": [
-      "always",
-      {
-        "ignore": [
-          "after-comment",
-          "first-nested"
+        "prettier/prettier": true,
+        "selector-pseudo-element-no-unknown": [
+            true,
+            {
+                "ignorePseudoElements": [
+                    "input-placeholder"
+                ]
+            }
         ],
-        "severity": "warning"
-      }
-    ]
-  }
+        "function-no-unknown": [
+            true,
+            {
+                "ignoreFunctions": [
+                    "fade"
+                ]
+            }
+        ]
+    }
 }
