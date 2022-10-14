@@ -21,12 +21,6 @@
     transition: transform 0.216s, opacity 0.216s ease-out;
     font-size: @alert-font-size;
 
-    h2,
-    h3,
-    h4 {
-        margin-top: 0.3em;
-    }
-
     &-with-close {
         padding-right: @alert-padding-x + 22;
     }
@@ -127,7 +121,7 @@
         margin: 0 auto 20px;
         border-color: var(--message-border-color, var(--gray-200, #e9ecef));
         background: #fff;
-        box-shadow: var(--message-box-shadow, 0 6px 12px rgba(0, 0, 0, 0.175));
+        box-shadow: var(--message-box-shadow, 0 6px 12px rgb(0 0 0 / 17.5%));
         color: var(--message-text-color, #333);
         font-weight: var(--message-font-weight, 400);
         align-items: center;

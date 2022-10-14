@@ -1,9 +1,10 @@
 @import './bootstrap.less';
 @import './cssvar.less';
 
-@font-family-sans-serif: -apple-system, system-ui, "Segoe UI", Roboto, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Helvetica Neue", Helvetica, Arial, sans-serif;
+@font-family-sans-serif: -apple-system, system-ui, 'Segoe UI', Roboto, 'PingFang SC', 'Hiragino Sans GB',
+    'Microsoft YaHei', 'Helvetica Neue', Helvetica, Arial, sans-serif;
 
-@colors-primary-value: #197AFA;
+@colors-primary-value: #197afa;
 @colors-primary: var(--primary-color, @colors-primary-value);
 @colors-blue: @colors-primary;
 
@@ -14,7 +15,7 @@
 @colors-success-value: @colors-green;
 @colors-success: var(--success-color, @colors-success-value);
 
-@colors-cyan: #197AFA;
+@colors-cyan: #197afa;
 @colors-info-value: @colors-cyan;
 @colors-info: var(--info-color, @colors-info-value);
 
@@ -39,7 +40,6 @@
 @common-spin-default-name: var(--common-spin-default-name, ring);
 @common-caret-style: var(--common-caret-style, line);
 
-
 @state-success-text: @gray-700;
 @state-success-bg: #f1faeb;
 @state-success-border: rgba(116, 209, 61, 0.1);
@@ -55,7 +55,6 @@
 @state-danger-text: @gray-700;
 @state-danger-bg: #ffeded;
 @state-danger-border: rgba(255, 77, 80, 0.1);
-
 
 // button
 // Button
@@ -88,7 +87,6 @@
 @button-spin-margin-value: 4px;
 @button-spin-margin: var(--button-spin-margin, @button-spin-margin-value);
 
-
 // button padding base
 @padding-base-horizontal: 8px;
 @padding-base-vertical: 5px;
@@ -105,7 +103,6 @@
 @button-padding-large-vertical-value: @padding-large-vertical;
 @btn-padding-large-y: var(--button-padding-large-vertical, @button-padding-large-vertical-value);
 
-
 // button padding small
 @padding-small-horizontal: 8px;
 @padding-small-vertical: 2px;
@@ -114,7 +111,6 @@
 @btn-padding-small-x: var(--button-padding-small-horizontal, @button-padding-small-horizontal-value);
 @button-padding-small-vertical-value: @padding-small-vertical;
 @btn-padding-small-y: var(--button-padding-small-vertical, @button-padding-small-vertical-value);
-
 
 // button disabled background
 @button-disabled-bg-value: #b3b7c1;
@@ -131,7 +127,6 @@
 @button-disabled-opacity: 0.65;
 // button default text color
 @btn-default-color: #333e59;
-
 
 // dropdown
 // dropdown border width
@@ -160,12 +155,10 @@
 @dropdown-link-color: rgba(0, 0, 0, 0.65);
 @dropdown-arrow-vertical: auto;
 
-
 // cascader
 // active
-@cascader-active-background-color: var(--cascader-active-background-color, #E6F5FF);
+@cascader-active-background-color: var(--cascader-active-background-color, #e6f5ff);
 @cascader-active-color: var(--cascader-active-color, @colors-primary);
-
 
 // checkbox
 // border width
@@ -178,11 +171,9 @@
 @checkbox-border-color-value: #cccfd7;
 @checkbox-border-color: var(--checkbox-border-color, @checkbox-border-color-value);
 
-
 // datepicker
 // @datepicker-day-hover-bg: #e6f7ff;
 @datepicker-day-hover-bgc-value: #e6f7ff;
-
 
 // form
 // form item margin bottom
@@ -201,7 +192,6 @@
 // form label x align
 @form-item-label-align-value: right;
 
-
 // input
 // disabled background color
 @input-bg-disabled-value: #f5f6fb;
@@ -212,7 +202,7 @@
 @input-border: var(--input-border-color, @input-border-value);
 
 // hover / focus / active
-@input-border-focus-value: #197AFA;
+@input-border-focus-value: #197afa;
 @input-border-focus: var(--input-border-focus-color, @input-border-focus-value);
 
 // placeholder color
@@ -221,7 +211,6 @@
 
 @input-focus-width-value: 0px;
 @input-focus-width: var(--input-focus-width, @input-focus-width-value);
-
 
 // radio
 // size
@@ -238,7 +227,6 @@
 
 // color
 @radio-text-color: var(--radio-text-color, @gray-900-value);
-
 
 // select
 // item color
@@ -270,7 +258,6 @@
 // clear icon bgc
 @select-clear-bg-color: var(--select-clear-bg-color, @gray-400-value);
 
-
 // slider
 // indicator bgc
 @slider-indicator-bg: var(--slider-indicator-bg, #fff);
@@ -297,7 +284,6 @@
 
 // border radius
 @slider-border-radius: var(--slider-border-radius, 8px);
-
 
 // switch
 @switch-type: inner;
@@ -332,7 +318,6 @@
 // uncheck bgc
 @switch-uncheck-bg: var(--switch-unchecked-bg, @gray-300-value);
 
-
 // pagination
 @pagination-hover-border-value: @colors-primary;
 @pagination-hover-border: var(--pagination-hover-border, @pagination-hover-border-value);
@@ -345,7 +330,6 @@
 
 @pagination-border-width-value: 0px;
 @pagination-border-width: var(--pagination-border-width, @pagination-border-width-value);
-
 
 // table
 // head bgc
@@ -402,7 +386,6 @@
 @table-head-border: 1px;
 @table-condensed-cell-padding: 10px 16px;
 
-
 // tree
 // indicator color
 @tree-indicator-color: var(--tree-indicator-color, @gray-400-value);
@@ -410,7 +393,6 @@
 // node margin / padding bottom
 @tree-node-margin-bottom-value: 8px;
 @tree-node-margin-bottom: var(--tree-node-margin-bottom, @tree-node-margin-bottom-value);
-
 
 // Alert
 @alert-padding-y: 8px;
@@ -491,7 +473,6 @@
 @alert-danger-border-darken-5-value: darken(@alert-danger-border-value, 5%);
 @alert-danger-border-darken-5: var(--alert-danger-border-darken-5-color, @alert-danger-border-darken-5-value);
 
-
 // message
 // box-shadow
 @message-box-shadow-value: 0px 4px 8px 0px rgba(20, 23, 55, 0.15);
@@ -506,7 +487,6 @@
 
 // border color
 @message-border-color: var(--message-border-color, @gray-200-value);
-
 
 // modal
 // font family
@@ -599,7 +579,6 @@
 // text font size
 @popover-text-font-size: var(--popover-text-font-size, 12px);
 
-
 // tag
 // bgc
 @tag-bg-color: var(--tag-bg, @gray-200-value);
@@ -612,7 +591,6 @@
 @tag-warning-bg: var(--tag-warning-bg, rgba(255, 140, 0, 0.1));
 // danger
 @tag-danger-bg: var(--tag-danger-bg, rgba(255, 77, 80, 0.1));
-
 
 // color
 @tag-color: var(--tag-color, @gray-700-value);
@@ -656,12 +634,10 @@
 @tag-font-size: 80%;
 @tag-input-padding-y: 2px;
 
-
 // tooltip
 // bgc
 @tooltip-bg-value: rgba(20, 23, 55, 0.9);
 @tooltip-bg: var(--tooltip-bg, @tooltip-bg-value);
-
 
 // card
 // font size
@@ -723,7 +699,6 @@
 @card-footer-color-value: @gray-700-value;
 @card-footer-color: var(--card-footer-color, @card-footer-color-value);
 
-
 // menu
 // dark bgc
 @menu-dark-bg-value: rgb(0, 21, 41);
@@ -756,12 +731,10 @@
 @menu-title-open-transform: translateY(-65%) rotate(225deg);
 @menu-title-vertical-transform: translateY(-60%) rotate(-45deg);
 
-
 //breadcrumb
 @breadcrumb-bg: transparent;
 @breadcrumb-a-color: rgba(0, 0, 0, 0.45);
 @breadcrumb-active-color: rgba(0, 0, 0, 0.85);
-
 
 @caret-width: 6px;
 

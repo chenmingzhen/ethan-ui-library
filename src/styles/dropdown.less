@@ -31,7 +31,7 @@
         background: @dropdown-bg;
         background-clip: padding-box;
         border-radius: @input-dropdown-border-radius;
-        box-shadow: 0 0 1px 1px rgba(0, 0, 0, 0.02), @dropdown-box-shadow;
+        box-shadow: 0 0 1px 1px rgb(0 0 0 / 2%), @dropdown-box-shadow;
     }
 
     &-menu .@{dropdown-prefix}-button {
@@ -89,6 +89,10 @@
 
     &-left-bottom,
     &-left-top {
+        .@{dropdown-prefix}-button {
+            direction: rtl;
+        }
+
         > .@{dropdown-prefix}-menu {
             right: 100%;
             margin-right: 2px;
@@ -115,13 +119,6 @@
 
         > .@{dropdown-prefix}-button .@{dropdown-prefix}-caret {
             transform: rotate(270deg);
-        }
-    }
-
-    &-left-bottom,
-    &-left-top {
-        .@{dropdown-prefix}-button {
-            direction: rtl;
         }
     }
 

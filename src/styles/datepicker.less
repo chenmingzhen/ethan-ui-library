@@ -32,7 +32,7 @@
     }
 
     &-title {
-        padding: 0 0 8px 0;
+        padding: 0 0 8px;
         text-align: center;
         // border-bottom: 1px solid @table-border-color;
     }
@@ -123,7 +123,7 @@
         background: #fff;
         background-clip: padding-box;
         border-radius: @input-dropdown-border-radius;
-        box-shadow: 0 0 1px 1px rgba(0, 0, 0, 0.02), @datepicker-box-shadow;
+        box-shadow: 0 0 1px 1px rgb(0 0 0 / 2%), @datepicker-box-shadow;
         font-size: @font-size-base;
 
         span {
@@ -219,14 +219,14 @@
         bottom: 100%;
         left: 0;
         margin-bottom: 4px;
-        box-shadow: 0 0 1px 1px rgba(0, 0, 0, 0.02), @datepicker-box-shadow-up;
+        box-shadow: 0 0 1px 1px rgb(0 0 0 / 2%), @datepicker-box-shadow-up;
     }
 
     &-right-top &-picker {
         right: 0;
         bottom: 100%;
         margin-bottom: 4px;
-        box-shadow: 0 0 1px 1px rgba(0, 0, 0, 0.02), @datepicker-box-shadow-up;
+        box-shadow: 0 0 1px 1px rgb(0 0 0 / 2%), @datepicker-box-shadow-up;
     }
 
     &-right-bottom &-picker {
@@ -255,7 +255,7 @@
         & > div:last-child {
             position: relative;
 
-            &:before {
+            &::before {
                 content: ' ';
                 position: absolute;
                 left: -6px;
@@ -363,7 +363,7 @@
                 bottom: 100%;
                 left: 50%;
                 background: #fff;
-                box-shadow: 0 0 1px 1px rgba(0, 0, 0, 0.02), @datepicker-box-shadow-up;
+                box-shadow: 0 0 1px 1px rgb(0 0 0 / 2%), @datepicker-box-shadow-up;
                 transform: translate(-50%);
                 visibility: hidden;
             }
@@ -468,11 +468,11 @@
 
     &-absolute {
         .@{datepicker-prefix}-absolute-left-top {
-            box-shadow: 0 0 1px 1px rgba(0, 0, 0, 0.02), @datepicker-box-shadow-up;
+            box-shadow: 0 0 1px 1px rgb(0 0 0 / 2%), @datepicker-box-shadow-up;
         }
 
         .@{datepicker-prefix}-absolute-right-top {
-            box-shadow: 0 0 1px 1px rgba(0, 0, 0, 0.02), @datepicker-box-shadow-up;
+            box-shadow: 0 0 1px 1px rgb(0 0 0 / 2%), @datepicker-box-shadow-up;
         }
     }
 

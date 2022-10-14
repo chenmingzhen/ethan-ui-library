@@ -25,11 +25,10 @@
         }
 
         &.@{form-prefix}-required .@{form-prefix}-label {
-            &:before {
+            &::before {
                 margin-right: 4px;
                 color: @colors-danger;
                 content: '*';
-                font-family: SimSun;
             }
         }
 
@@ -319,6 +318,7 @@
         position: absolute;
         right: 0;
         width: 22px;
+        height: 100%;
         padding: 0 4px;
         line-height: 1;
 
@@ -329,10 +329,6 @@
         &:hover svg path {
             fill: @colors-primary;
         }
-    }
-
-    &-password-suffix {
-        height: 100%;
     }
 
     &-number-up {
@@ -408,11 +404,11 @@
         padding: @padding-base-vertical @padding-base-horizontal;
         background: @gray-100;
         border-radius: @input-border-radius;
-        box-shadow: 0 0 0 1px @input-border, 0 2px 8px rgba(0, 0, 0, 0.15);
+        box-shadow: 0 0 0 1px @input-border, 0 2px 8px rgb(0 0 0 / 15%);
         color: @gray-900-lighten-40;
         font-size: 12px;
 
-        &:before {
+        &::before {
             position: absolute;
             width: 6px;
             height: 6px;
@@ -429,7 +425,7 @@
             margin-top: 10px;
             transform-origin: 0 0;
 
-            &:before {
+            &::before {
                 bottom: 100%;
                 transform: rotate(45deg) translateY(3px);
             }
@@ -442,7 +438,7 @@
             margin-bottom: 10px;
             transform-origin: 0 100%;
 
-            &:before {
+            &::before {
                 top: 100%;
                 transform: rotate(225deg) translate(3px);
             }
@@ -454,7 +450,7 @@
             animation: @tip-fade-center @duration ease-in;
             transform: translateX(-50%);
 
-            &:before {
+            &::before {
                 left: 50%;
             }
         }
@@ -470,7 +466,7 @@
             right: 0;
             animation: @tip-fade @duration ease-in;
 
-            &:before {
+            &::before {
                 right: @padding-base-horizontal - 3;
             }
         }
@@ -489,10 +485,10 @@
     }
 
     &-error {
-        box-shadow: 0 0 0 1px @state-danger-border, 0 2px 8px rgba(0, 0, 0, 0.15);
+        box-shadow: 0 0 0 1px @state-danger-border, 0 2px 8px rgb(0 0 0 / 15%);
         color: @form-feedback-invalid-color;
 
-        &:before {
+        &::before {
             border-color: @state-danger-border;
         }
     }
@@ -565,7 +561,7 @@
     textarea {
         position: relative;
         z-index: 2;
-        line-height: var(--common-line-height, 1.42857143);
+        line-height: var(--common-line-height, 1.4286);
         resize: none;
     }
 

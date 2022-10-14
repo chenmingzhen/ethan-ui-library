@@ -17,8 +17,11 @@
             display: flex;
             justify-content: center;
             align-items: center;
+
             /* https://www.hangge.com/blog/cache/detail_1859.html */
+
             /* https://developer.mozilla.org/en-US/docs/Web/CSS/pointer-events */
+
             /* https://stackoverflow.com/questions/1009753/pass-mouse-events-through-absolutely-positioned-element */
             // pointer-events: none;
         }
@@ -27,7 +30,7 @@
             position: relative;
             z-index: 2;
 
-            &:after {
+            &::after {
                 position: absolute;
                 top: 0;
                 right: 0;
@@ -45,7 +48,7 @@
         }
     }
 
-    &-show &-content:after {
+    &-show &-content::after {
         opacity: 0.5;
     }
 }

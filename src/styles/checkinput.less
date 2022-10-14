@@ -85,7 +85,7 @@
             );
             .button-variant(@btn-default-color; @btn-default-bg; @btn-default-border; 'default' ; @btn-default-border);
 
-            border-radius: 0px;
+            border-radius: 0;
 
             & > .@{checkinput-prefix}-indicator,
             & > input {
@@ -93,9 +93,9 @@
             }
 
             &:not(:first-child) {
-                border-left-width: 0px;
+                border-left-width: 0;
 
-                &:before {
+                &::before {
                     position: absolute;
                     top: -1px;
                     left: -1px;
@@ -115,7 +115,7 @@
                 }
                 .button-variant(@btn-primary-color; @btn-primary-bg; @btn-primary-border; 'primary');
 
-                &:before {
+                &::before {
                     background: @btn-primary-bg;
                 }
 
@@ -278,7 +278,7 @@
             vertical-align: middle;
         }
 
-        &:after {
+        &::after {
             position: absolute;
             z-index: 10;
             display: block;
@@ -289,7 +289,7 @@
     i&-checkbox&-indicator {
         background: #fff;
 
-        &:after {
+        &::after {
             top: 50%;
             left: 50%;
             width: @checkbox-size - 4;
@@ -310,7 +310,7 @@
         height: @radio-width;
         border-width: @radio-border-width;
 
-        &:after {
+        &::after {
             margin: auto;
             position: static;
             width: @radio-inner-width;
@@ -352,7 +352,7 @@
         border-color: @checkbox-active-color;
         background: @checkbox-active-color;
 
-        &:after {
+        &::after {
             border-color: #fff;
             transform: translate(-50%, -65%) rotate(-45deg);
         }
@@ -361,7 +361,7 @@
     &-checked i&-radio&-indicator {
         border-color: @checkbox-active-color;
 
-        &:after {
+        &::after {
             background: @checkbox-active-color;
         }
     }
@@ -370,7 +370,7 @@
         border-color: @checkbox-active-color;
         background: @checkbox-active-color;
 
-        &:after {
+        &::after {
             border-color: #fff;
             border-left-width: 0;
             transform: translate(-50%, -50%);
@@ -393,13 +393,13 @@
         }
     }
 
-    &-disabled&-checked i&-radio:after {
+    &-disabled&-checked i&-radio::after {
         background-color: @gray-500;
     }
 
     &-disabled&-checked i&-indicator,
     &-disabled&-indeterminate i&-indicator {
-        &:after {
+        &::after {
             border-color: @checkbox-border-color;
         }
     }

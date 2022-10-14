@@ -4,6 +4,8 @@
 @backTop-prefix: ~'@{ethan-prefix}-backTop';
 
 .@{backTop-prefix} {
+    width: @backTop-width;
+    height: @backTop-height;
     box-sizing: border-box;
     margin: 0;
     padding: 0;
@@ -12,8 +14,6 @@
     position: fixed;
     right: @backTop-right;
     bottom: @backTop-bottom;
-    height: @backTop-height;
-    width: @backTop-width;
     cursor: pointer;
     display: block;
     overflow: hidden;
@@ -37,11 +37,9 @@
         display: flex;
         justify-content: center;
         align-items: center;
+
         &:hover {
             opacity: 1;
         }
-    }
-
-    &-up {
     }
 }

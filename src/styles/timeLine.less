@@ -4,49 +4,49 @@
 @timeline-prefix: ~'@{ethan-prefix}-timeline';
 
 .@{timeline-prefix} {
-  background-color: #fff;
-  font-size: 13px;
-  overflow: hidden;
-  position: relative;
-  z-index: 1;
-  list-style: none;
-
-  ul {
+    background-color: #fff;
+    font-size: 13px;
+    overflow: hidden;
+    position: relative;
+    z-index: 1;
     list-style: none;
-    margin: 0;
-    padding: 0;
-  }
 
-  &-item {
-    position: relative;
-
-    &:not(:last-child):before {
-      position: absolute;
-      width: 1px;
-      background: #ddd;
-      left: 7px;
-      content: '';
-      height: 100%;
-      top: 5px;
+    ul {
+        list-style: none;
+        margin: 0;
+        padding: 0;
     }
-  }
 
-  &-dot {
-    position: absolute;
-    background: #fff;
-    top: 2px;
-    left: 1px;
-    font-size: 16px;
-    width: auto;
-    height: 16px;
-    line-height: 16px;
-    color: @colors-primary;
-  }
+    &-item {
+        position: relative;
 
-  &-content {
-    padding: 1px 1px 10px 24px;
-    font-size: 12px;
-    position: relative;
-    top: -3px;
-  }
+        &:not(:last-child)::before {
+            position: absolute;
+            width: 1px;
+            background: #ddd;
+            left: 7px;
+            content: '';
+            height: 100%;
+            top: 5px;
+        }
+    }
+
+    &-dot {
+        position: absolute;
+        background: #fff;
+        top: 2px;
+        left: 1px;
+        font-size: 16px;
+        width: auto;
+        height: 16px;
+        line-height: 16px;
+        color: @colors-primary;
+    }
+
+    &-content {
+        padding: 1px 1px 10px 24px;
+        font-size: 12px;
+        position: relative;
+        top: -3px;
+    }
 }

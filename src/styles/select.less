@@ -17,6 +17,7 @@
         max-height: 80px;
         flex-flow: wrap;
         cursor: pointer;
+        user-select: none;
         padding: @padding-base-vertical @padding-base-horizontal+12 0 @padding-base-horizontal;
 
         span {
@@ -34,7 +35,7 @@
         .@{select-prefix}-ellipsis {
             margin-bottom: @padding-base-vertical;
 
-            &:after {
+            &::after {
                 content: '\feff ';
             }
         }
@@ -68,7 +69,7 @@
             color: inherit;
             text-overflow: ellipsis;
 
-            &:after {
+            &::after {
                 content: '\feff ';
             }
 
@@ -97,8 +98,8 @@
                 display: block;
                 background-color: transparent;
 
-                &:before,
-                &:after {
+                &::before,
+                &::after {
                     background-color: @gray-500;
                     width: 8px;
                 }
@@ -106,8 +107,8 @@
                 &:hover {
                     background-color: transparent;
 
-                    &:before,
-                    &:after {
+                    &::before,
+                    &::after {
                         background-color: @gray-600;
                     }
                 }
@@ -117,8 +118,7 @@
 
     &-compressed {
         display: flex;
-        flex-direction: row;
-        flex-wrap: nowrap;
+        flex-flow: row nowrap;
 
         .@{select-prefix}-ban {
             padding-right: @select-result-space;
@@ -182,8 +182,8 @@
             transform: translate(-3px, 100%);
             text-align: left;
 
-            &:after,
-            &:before {
+            &::after,
+            &::before {
                 display: inline-block;
                 content: '';
                 width: 3px;
@@ -193,11 +193,11 @@
                 position: absolute;
             }
 
-            &:before {
+            &::before {
                 transform: translateX(-5px);
             }
 
-            &:after {
+            &::after {
                 transform: translateX(-10px);
             }
         }
@@ -268,7 +268,7 @@
     &-drop-down &-box-list {
         top: 100%;
         margin-top: 4px;
-        box-shadow: 0 0 1px 1px rgba(0, 0, 0, 0.02), @dropdown-box-shadow;
+        box-shadow: 0 0 1px 1px rgb(0 0 0 / 2%), @dropdown-box-shadow;
         transform-origin: 0 0;
     }
 
@@ -276,7 +276,7 @@
     &-drop-up &-box-list {
         bottom: 100%;
         margin-bottom: 4px;
-        box-shadow: 0 0 1px 1px rgba(0, 0, 0, 0.1), @dropup-box-shadow;
+        box-shadow: 0 0 1px 1px rgb(0 0 0 / 10%), @dropup-box-shadow;
         transform-origin: 0 100%;
     }
 
@@ -342,7 +342,7 @@
     }
 
     &-option + &-group {
-        &:before {
+        &::before {
             content: '';
             position: absolute;
             left: @dropdown-padding-x;
@@ -350,10 +350,6 @@
             right: 2px;
             border-top: 1px solid @select-split-color;
         }
-    }
-
-    &-result {
-        user-select: none;
     }
 
     &-small &-result {
@@ -430,14 +426,14 @@
             max-height: 112px;
             max-width: 300px;
             cursor: default;
-            padding: 0px;
+            padding: 0;
 
             .@{select-prefix}-item {
                 max-width: 100%;
                 color: @gray-600;
                 font-size: 16px;
                 cursor: default;
-                margin-bottom: 0px;
+                margin-bottom: 0;
             }
         }
     }

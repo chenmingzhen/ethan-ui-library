@@ -6,8 +6,8 @@
         background: @input-clear-bg-hover-color;
     }
 
-    &:after,
-    &:before {
+    &::after,
+    &::before {
         position: absolute;
         top: (@size / 2) - @width;
         left: 3px;
@@ -18,11 +18,11 @@
         content: ' ';
     }
 
-    &:after {
+    &::after {
         transform: rotate(45deg);
     }
 
-    &:before {
+    &::before {
         transform: rotate(315deg);
     }
 }

@@ -195,7 +195,7 @@
     &-normal,
     &-confirm {
         .@{modal-prefix}-footer.@{modal-prefix}-method {
-            &:after {
+            &::after {
                 display: none;
             }
         }
@@ -269,9 +269,9 @@
 
         > .@{card-prefix}-header,
         > .@{card-prefix}-footer {
-            &:after {
-                height: @modal-divider-height;
+            &::after {
                 width: @modal-divider-width;
+                height: @modal-divider-height;
                 background: @modal-divider-color;
             }
         }
