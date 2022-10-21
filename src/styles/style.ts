@@ -50,6 +50,7 @@ import './badge.less'
 import './timeLine.less'
 import './photoView.less'
 import './swiper.less'
+import './colorPicker.less'
 
 /** Spin */
 import './spin/default.less'

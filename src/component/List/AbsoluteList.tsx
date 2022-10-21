@@ -206,7 +206,7 @@ export default class AbsoluteList extends Component<AbsoluteListProps, AbsoluteL
     renderChildren = () => {
         const { zIndex, children, absolute } = this.props
 
-        const ms = Object.assign(
+        const ms: React.CSSProperties = Object.assign(
             { zIndex },
             this.style,
             this.props.style,
@@ -221,7 +221,7 @@ export default class AbsoluteList extends Component<AbsoluteListProps, AbsoluteL
             })
         }
 
-        if (isValidElement(children)) {
+        if (isValidElement<any>(children)) {
             return React.cloneElement(children, { style: absolute ? ms : this.props.style })
         }
 
