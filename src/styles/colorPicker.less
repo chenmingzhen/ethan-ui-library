@@ -56,18 +56,65 @@
         background: #fff;
     }
 
-    &-paint {
-        &-dot {
-            width: 15px;
-            height: 15px;
-            display: block;
-            position: absolute;
-            background: #fff;
-            box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+    &-dot {
+        width: 15px;
+        height: 15px;
+        display: block;
+        position: absolute;
+        background: #fff;
+        border-radius: 50%;
+        box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+        pointer-events: none;
+    }
+
+    &-box {
+        padding: 14px 16px 0 16px;
+        display: flex;
+
+        canvas {
+            height: 13px;
+            width: 170px;
+            border-radius: 2px;
+        }
+
+        .@{colorPicker-prefix}-circle {
+            width: 36px;
+            height: 36px;
             border-radius: 50%;
-            top: 10px;
-            left: 10px;
-            pointer-events: none;
+            background-image: linear-gradient(-45deg, #cdcdcd 25%, transparent 0),
+                linear-gradient(45deg, #cdcdcd 25%, transparent 0), linear-gradient(-45deg, transparent 75%, #cdcdcd 0),
+                linear-gradient(45deg, transparent 75%, #cdcdcd 0);
+            background-size: 11px 11px;
+            background-position: 0 0, 0 -5.5px, -5.5px 5.5px, 5.5px 0;
+
+            .@{colorPicker-prefix}-avatar {
+                border-radius: 50%;
+                width: 100%;
+                height: 100%;
+            }
+        }
+
+        .@{colorPicker-prefix}-panel-area {
+            flex: 1;
+            margin-left: 16px;
+            position: relative;
+        }
+
+        .@{colorPicker-prefix}-alpha-panel {
+            margin-top: 10px;
+            background-image: linear-gradient(-45deg, #cdcdcd 25%, transparent 0),
+                linear-gradient(45deg, #cdcdcd 25%, transparent 0), linear-gradient(-45deg, transparent 75%, #cdcdcd 0),
+                linear-gradient(45deg, transparent 75%, #cdcdcd 0);
+            background-size: 11px 11px;
+            background-position: 0 0, 0 -5.5px, -5.5px 5.5px, 5.5px 0;
+        }
+
+        .@{colorPicker-prefix}-dot[data-dot='hue'] {
+            top: -1px;
+        }
+
+        .@{colorPicker-prefix}-dot[data-dot='alpha'] {
+            top: 22px;
         }
     }
 }

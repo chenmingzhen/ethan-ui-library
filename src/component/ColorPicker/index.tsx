@@ -2,12 +2,15 @@ import React from 'react'
 import { colorPickerClass } from '@/styles'
 import { PureComponent } from '@/utils/component'
 import classnames from 'classnames'
-import { parseColor, rgbaArray2HexFormat, rgbaArray2HslArray } from '@/utils/color'
+import { hslArray2RgbArray, parseColor, rgbaArray2HexFormat, rgbaArray2HslArray } from '@/utils/color'
 import { ColorPickerProps, ColorPickerState } from './type'
 import Caret from '../icons/Caret'
 import AbsoluteList from '../List/AbsoluteList'
-import Paint, { PaintInstance } from './Paint'
+import Paint, { RgbPanelInstance } from './RgbPanel'
 import AnimationList from '../List'
+import HuePanel, { HuePanelInstance } from './HuePanel'
+import { PANEL_CANVAS_WIDTH } from './config'
+import AlphaPanel, { AlphaPanelInstance } from './AlphaPanel'
 
 class ColorPicker extends PureComponent<ColorPickerProps, ColorPickerState> {
     static defaultProps = {
@@ -17,7 +20,11 @@ class ColorPicker extends PureComponent<ColorPickerProps, ColorPickerState> {
 
     container: HTMLDivElement
 
-    paintInstanceRef = React.createRef<PaintInstance>()
+    paintInstanceRef = React.createRef<RgbPanelInstance>()
+
+    huePanelInstanceRef = React.createRef<HuePanelInstance>()
+
+    alphaPanelInstanceRef = React.createRef<AlphaPanelInstance>()
 
     isRender = false
 
@@ -54,6 +61,20 @@ class ColorPicker extends PureComponent<ColorPickerProps, ColorPickerState> {
         this.setState({ currentColor: value || currentColor, focus: !focus })
     }
 
+    updatePosition = () => {
+        const { r, g, b, h, a } = this.state
+
+        const huePosition = (PANEL_CANVAS_WIDTH * h) / 360
+
+        const alphaPosition = PANEL_CANVAS_WIDTH * (a ?? 1)
+
+        this.huePanelInstanceRef.current.setHuePanelPosition(huePosition)
+
+        this.paintInstanceRef.current.rgbToPosition([r, g, b])
+
+        this.alphaPanelInstanceRef.current.setAlphaPanelPosition(alphaPosition)
+    }
+
     setHex = ([r, g, b, a]: number[]) => {
         const hex = rgbaArray2HexFormat([r, g, b, a])
 
@@ -63,8 +84,6 @@ class ColorPicker extends PureComponent<ColorPickerProps, ColorPickerState> {
     handleColorValueChange = (value: string) => {
         const [r, g, b, a] = parseColor(value as string) || []
         const [h, s, l] = rgbaArray2HslArray([r, g, b, a])
-
-        this.setHex([r, g, b, a])
 
         this.setImmerState(
             state => {
@@ -77,8 +96,10 @@ class ColorPicker extends PureComponent<ColorPickerProps, ColorPickerState> {
                 state.l = l
             },
             () => {
-                this.paintInstanceRef.current.setHue(h)
-                this.paintInstanceRef.current.rgbToPosition([r, g, b])
+                this.paintInstanceRef.current.setRgbPanelHue(h)
+                this.alphaPanelInstanceRef.current.setAlphaPanelHsl([h, s, l])
+                this.setHex([r, g, b, a])
+                this.updatePosition()
             }
         )
     }
@@ -87,20 +108,50 @@ class ColorPicker extends PureComponent<ColorPickerProps, ColorPickerState> {
         const [r, g, b] = value as Uint8ClampedArray
         const [h, s, l] = rgbaArray2HslArray([r, g, b])
 
-        this.setHex([r, g, b])
-
-        this.setImmerState(state => {
-            state.r = r
-            state.g = g
-            state.b = b
-            state.h = h
-            state.s = s
-            state.l = l
-        })
+        this.setImmerState(
+            state => {
+                state.r = r
+                state.g = g
+                state.b = b
+                state.h = h
+                state.s = s
+                state.l = l
+            },
+            () => {
+                this.setHex([r, g, b])
+                this.alphaPanelInstanceRef.current.setAlphaPanelHsl([h, s, l])
+            }
+        )
     }
 
-    handlePaintMouseMove = (x: number, y: number, color: Uint8ClampedArray) => {
-        this.handleRgbValueChange(color)
+    handleHueValueChange = (h: number) => {
+        const { s, l } = this.state
+
+        const [r, g, b] = hslArray2RgbArray([h, s, l])
+
+        this.setImmerState(
+            state => {
+                state.r = r
+                state.g = g
+                state.b = b
+                state.h = h
+                state.s = s
+                state.l = l
+            },
+            () => {
+                this.setHex([r, g, b])
+                this.paintInstanceRef.current.setRgbPanelHue(h)
+                this.alphaPanelInstanceRef.current.setAlphaPanelHsl([h, s, l])
+            }
+        )
+    }
+
+    handleAlphaValueChange = (alpha: number) => {
+        const { r, g, b } = this.state
+
+        this.setState({ a: alpha })
+
+        this.setHex([r, g, b, alpha])
     }
 
     handlePaintInit = () => {
@@ -108,7 +159,7 @@ class ColorPicker extends PureComponent<ColorPickerProps, ColorPickerState> {
     }
 
     renderPanel = () => {
-        const { focus } = this.state
+        const { focus, r, g, b, a } = this.state
 
         const { absolute, position } = this.props
 
@@ -126,10 +177,23 @@ class ColorPicker extends PureComponent<ColorPickerProps, ColorPickerState> {
                     duration="fast"
                 >
                     <Paint
-                        onMouseMove={this.handlePaintMouseMove}
+                        onMouseMove={this.handleRgbValueChange}
                         ref={this.paintInstanceRef}
                         onInit={this.handlePaintInit}
                     />
+                    <div className={colorPickerClass('box')}>
+                        <div className={colorPickerClass('circle')}>
+                            <div
+                                className={colorPickerClass('avatar')}
+                                style={{ backgroundColor: `rgba(${r}, ${g}, ${b}, ${a ?? 1})` }}
+                            />
+                        </div>
+
+                        <div className={colorPickerClass('panel-area')}>
+                            <HuePanel onMouseMove={this.handleHueValueChange} ref={this.huePanelInstanceRef} />
+                            <AlphaPanel onMouseMove={this.handleAlphaValueChange} ref={this.alphaPanelInstanceRef} />
+                        </div>
+                    </div>
                 </AnimationList>
             </AbsoluteList>
         )

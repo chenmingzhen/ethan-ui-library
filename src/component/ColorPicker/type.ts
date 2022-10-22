@@ -29,8 +29,16 @@ export interface ColorPickerState {
     hex: string
 }
 
-export interface PaintProps {
-    onMouseMove(x: number, y: number, color: Uint8ClampedArray)
+export interface RgbPanelProps {
+    onMouseMove(color: Uint8ClampedArray)
 
     onInit(): void
+}
+
+export interface HuePanelProps {
+    onMouseMove(hue: number): void
+}
+
+export interface AlphaPanelProps {
+    onMouseMove(alpha: number): void
 }

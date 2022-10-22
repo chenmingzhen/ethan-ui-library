@@ -3,19 +3,15 @@ import { rgbArray2HsvArray } from '@/utils/color'
 import { getRangeValue } from '@/utils/numbers'
 import React, { forwardRef, useCallback, useEffect, useImperativeHandle, useRef, useState } from 'react'
 import { COLOR_PICKER_DOT_LENGTH, COLOR_EDGE_OFFSET } from './config'
-import { PaintProps } from './type'
+import { RgbPanelProps } from './type'
 
-export interface PaintInstance {
-    setHue(hue: number): void
+export interface RgbPanelInstance {
+    setRgbPanelHue(hue: number): void
 
     rgbToPosition(arr: [number, number, number]): void
 }
 
-/**
- * 仅处理位置与位置颜色
- * 如果计算canvas imageData直接用canvas的宽高计算，会出现无法算到边界的情况，
- */
-const Paint: React.ForwardRefRenderFunction<PaintInstance, PaintProps> = function(props, ref) {
+const RgbPanel: React.ForwardRefRenderFunction<RgbPanelInstance, RgbPanelProps> = function(props, ref) {
     const { onMouseMove, onInit } = props
 
     const [dotPosition, updateDotPosition] = useState<{ x: number; y: number }>({ x: 0, y: 0 })
@@ -47,7 +43,7 @@ const Paint: React.ForwardRefRenderFunction<PaintInstance, PaintProps> = functio
 
         const color = ctx.getImageData(x, y, 1, 1).data
 
-        onMouseMove(positionX, positionY, color)
+        onMouseMove(color)
 
         updateDotPosition({ x: positionX, y: positionY })
     }, [])
@@ -57,12 +53,14 @@ const Paint: React.ForwardRefRenderFunction<PaintInstance, PaintProps> = functio
     }, [])
 
     /** 设置色相 */
-    const setHue = useCallback((hue: number) => {
+    const setRgbPanelHue = useCallback((hue: number) => {
         const canvas = paintElementRef.current
 
         const ctx = ctxRef.current
 
         const { width, height } = canvas
+
+        addVerticalWhite2BlackLinearGradient()
 
         /** 添加左右渐变 */
         // const colorGradient = ctx.createLinearGradient(0, 0, width, 0)
@@ -139,14 +137,10 @@ const Paint: React.ForwardRefRenderFunction<PaintInstance, PaintProps> = functio
 
         ctxRef.current = ctx
 
-        addVerticalWhite2BlackLinearGradient()
-    }, [])
-
-    useEffect(() => {
         onInit()
     }, [])
 
-    useImperativeHandle(ref, () => ({ setHue, rgbToPosition }))
+    useImperativeHandle(ref, () => ({ setRgbPanelHue, rgbToPosition }))
 
     function handleMouseDown(evt) {
         handleMouseMove(evt)
@@ -159,16 +153,16 @@ const Paint: React.ForwardRefRenderFunction<PaintInstance, PaintProps> = functio
     return (
         <>
             <canvas
-                className={colorPickerClass('paint')}
+                className={colorPickerClass('rgb-panel')}
                 width={255}
                 height={136}
                 ref={paintElementRef}
                 onMouseDown={handleMouseDown}
             />
 
-            <span className={colorPickerClass('paint-dot')} style={{ left: dotPosition.x, top: dotPosition.y }} />
+            <span className={colorPickerClass('dot')} style={{ left: dotPosition.x, top: dotPosition.y }} />
         </>
     )
 }
 
-export default React.memo(forwardRef(Paint))
+export default React.memo(forwardRef(RgbPanel))

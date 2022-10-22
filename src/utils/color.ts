@@ -328,7 +328,7 @@ export function rgbArray2HsvArray([r, g, b]: number[]) {
 /** ---------------------------------------- */
 
 /** ----------Hsl转化成其他格式---------- */
-export function HslArray2RgbArray([h, s, l]: number[]) {
+export function hslArray2RgbArray([h, s, l]: number[]) {
     let r: number
     let g: number
     let b: number
