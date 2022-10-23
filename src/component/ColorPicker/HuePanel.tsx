@@ -15,7 +15,7 @@ const HuePanel: React.ForwardRefRenderFunction<HuePanelInstance, HuePanelProps> 
 
     const ctxRef = useRef<CanvasRenderingContext2D>()
 
-    const { onMouseMove } = props
+    const { onMouseMove, onMouseUp } = props
 
     useEffect(() => {
         const canvas = canvasRef.current
@@ -67,6 +67,9 @@ const HuePanel: React.ForwardRefRenderFunction<HuePanelInstance, HuePanelProps> 
 
     const handleMouseUp = useCallback(() => {
         document.removeEventListener('mousemove', handleMouseMove)
+        document.removeEventListener('mouseup', handleMouseUp)
+
+        onMouseUp()
     }, [])
 
     function handleMouseDown(evt) {

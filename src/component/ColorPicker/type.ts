@@ -16,8 +16,6 @@ export interface ColorPickerProps {
 }
 
 export interface ColorPickerState {
-    currentColor: string
-    focus: boolean
     r: number
     g: number
     b: number
@@ -25,20 +23,29 @@ export interface ColorPickerState {
     h: number
     l: number
     s: number
-    /** 16进制表示的颜色 #fafafa  */
     hex: string
+    /** true:不允许props的value改变currentValue */
+    locaking: boolean
+    currentValue: string
+    focus: boolean
 }
 
 export interface RgbPanelProps {
     onMouseMove(color: Uint8ClampedArray)
+
+    onMouseUp(): void
 
     onInit(): void
 }
 
 export interface HuePanelProps {
     onMouseMove(hue: number): void
+
+    onMouseUp(): void
 }
 
 export interface AlphaPanelProps {
     onMouseMove(alpha: number): void
+
+    onMouseUp(): void
 }

@@ -17,7 +17,7 @@ const AlphaPanel: React.ForwardRefRenderFunction<AlphaPanelInstance, AlphaPanelP
 
     const ctxRef = useRef<CanvasRenderingContext2D>()
 
-    const { onMouseMove } = props
+    const { onMouseMove, onMouseUp } = props
 
     const setAlphaPanelHsl = useCallback(([h, s, l]) => {
         const canvas = canvasRef.current
@@ -69,6 +69,9 @@ const AlphaPanel: React.ForwardRefRenderFunction<AlphaPanelInstance, AlphaPanelP
 
     const handleMouseUp = useCallback(() => {
         document.removeEventListener('mousemove', handleMouseMove)
+        document.removeEventListener('mouseup', handleMouseUp)
+
+        onMouseUp()
     }, [])
 
     const setAlphaPanelPosition = useCallback((x: number) => {

@@ -12,7 +12,7 @@ export interface RgbPanelInstance {
 }
 
 const RgbPanel: React.ForwardRefRenderFunction<RgbPanelInstance, RgbPanelProps> = function(props, ref) {
-    const { onMouseMove, onInit } = props
+    const { onMouseMove, onInit, onMouseUp } = props
 
     const [dotPosition, updateDotPosition] = useState<{ x: number; y: number }>({ x: 0, y: 0 })
 
@@ -50,6 +50,9 @@ const RgbPanel: React.ForwardRefRenderFunction<RgbPanelInstance, RgbPanelProps> 
 
     const handleMouseUp = useCallback(() => {
         document.removeEventListener('mousemove', handleMouseMove)
+        document.removeEventListener('mouseup', handleMouseUp)
+
+        onMouseUp()
     }, [])
 
     /** 设置色相 */

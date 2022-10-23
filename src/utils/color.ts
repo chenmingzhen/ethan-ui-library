@@ -366,9 +366,10 @@ export function hslArray2RgbArray([h, s, l]: number[]) {
 
 /** ----------格式化---------- */
 export function hslArray2HslFormat(arr: number[]) {
-    const [h, s, l, a] = arr
+    // eslint-disable-next-line prefer-const
+    let [h, s, l, a] = arr
 
-    return a ? `hsla(${h}, ${s}, ${l}, ${a})` : `hsl(${h}, ${s}, ${l})`
+    return !isEmpty(a) && a !== 1 ? `hsla(${h}, ${s}%, ${l}%, ${a})` : `hsl(${h}, ${s}%, ${l}%)`
 }
 
 export function rgbaArray2HexFormat([r, g, b, a]: number[]) {
@@ -385,5 +386,9 @@ export function rgbaArray2HexFormat([r, g, b, a]: number[]) {
     if (calAlpha) o = floor(a * 255).toString(16)
 
     return calAlpha ? `#${rr}${gg}${bb}${o}` : `#${rr}${gg}${bb}`
+}
+
+export function rgbaArray2RgbFormat([r, g, b, a]: number[]) {
+    return !isEmpty(a) && a !== 1 ? `rgba(${r}, ${g}, ${b}, ${a})` : `rgb(${r}, ${g}, ${b})`
 }
 /** ------------------------------ */
