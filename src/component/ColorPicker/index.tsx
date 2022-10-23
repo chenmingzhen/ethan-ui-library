@@ -3,19 +3,21 @@ import { colorPickerClass } from '@/styles'
 import { PureComponent } from '@/utils/component'
 import classnames from 'classnames'
 import { hslArray2RgbArray, parseColor, rgbaArray2HexFormat, rgbaArray2HslArray } from '@/utils/color'
+import { isEmpty } from '@/utils/is'
 import { ColorPickerProps, ColorPickerState } from './type'
 import Caret from '../icons/Caret'
 import AbsoluteList from '../List/AbsoluteList'
 import Paint, { RgbPanelInstance } from './RgbPanel'
 import AnimationList from '../List'
 import HuePanel, { HuePanelInstance } from './HuePanel'
-import { PANEL_CANVAS_WIDTH } from './config'
+import { DEFAULT_COLORS, PANEL_CANVAS_WIDTH } from './config'
 import AlphaPanel, { AlphaPanelInstance } from './AlphaPanel'
 
 class ColorPicker extends PureComponent<ColorPickerProps, ColorPickerState> {
     static defaultProps = {
         position: 'left-bottom',
         absolute: true,
+        defaultColors: DEFAULT_COLORS,
     }
 
     container: HTMLDivElement
@@ -158,7 +160,25 @@ class ColorPicker extends PureComponent<ColorPickerProps, ColorPickerState> {
         this.handleColorValueChange(this.state.currentColor)
     }
 
-    renderPanel = () => {
+    renderDefaultColors = () => {
+        const { defaultColors } = this.props
+
+        if (isEmpty(defaultColors)) return null
+
+        return (
+            <div className={colorPickerClass('default-colors-panel')}>
+                {defaultColors.map((color, i) => (
+                    <span
+                        key={i}
+                        style={{ backgroundColor: color }}
+                        onClick={this.handleColorValueChange.bind(this, color)}
+                    />
+                ))}
+            </div>
+        )
+    }
+
+    renderDropDown = () => {
         const { focus, r, g, b, a } = this.state
 
         const { absolute, position } = this.props
@@ -171,9 +191,9 @@ class ColorPicker extends PureComponent<ColorPickerProps, ColorPickerState> {
             <AbsoluteList absolute={absolute} focus={focus} position={position} getParentElement={() => this.container}>
                 <AnimationList
                     lazyDom
-                    className={colorPickerClass('panel')}
+                    className={colorPickerClass('drop-down')}
                     show={focus}
-                    animationTypes={['collapse', 'fade']}
+                    animationTypes={['scale-y', 'fade']}
                     duration="fast"
                 >
                     <Paint
@@ -194,6 +214,8 @@ class ColorPicker extends PureComponent<ColorPickerProps, ColorPickerState> {
                             <AlphaPanel onMouseMove={this.handleAlphaValueChange} ref={this.alphaPanelInstanceRef} />
                         </div>
                     </div>
+
+                    {this.renderDefaultColors()}
                 </AnimationList>
             </AbsoluteList>
         )
@@ -217,7 +239,7 @@ class ColorPicker extends PureComponent<ColorPickerProps, ColorPickerState> {
                 <span className={colorPickerClass('caret')} onClick={this.togglePanel}>
                     <Caret />
                 </span>
-                {this.renderPanel()}
+                {this.renderDropDown()}
             </div>
         )
     }
