@@ -299,7 +299,7 @@ export function rgbaArray2HslArray([r, g, b, a]: number[]) {
 
     const hslResult = [h * 360, s * 100, l * 100].map(Math.round)
 
-    return a ? [...hslResult, a] : hslResult
+    return !isEmpty(a) ? [...hslResult, a] : hslResult
 }
 
 export function rgbArray2HsvArray([r, g, b]: number[]) {
@@ -387,7 +387,7 @@ export function hslaFormatArray2HslaNumArray([hh, ss, ll, aa]: string[]) {
 
     const a = isEmpty(aa) ? undefined : toNumber(aa)
 
-    return a ? [h, s, l] : [h, s, l, a]
+    return a ? [h, s, l, a] : [h, s, l]
 }
 
 /** ---------------------------------------- */
