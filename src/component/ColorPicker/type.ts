@@ -23,9 +23,8 @@ export interface ColorPickerState {
     h: number
     l: number
     s: number
-    hex: string
     /** true:不允许props的value改变currentValue */
-    locaking: boolean
+    locking: boolean
     currentValue: string
     focus: boolean
 }

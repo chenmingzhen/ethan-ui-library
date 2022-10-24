@@ -9,7 +9,7 @@
  *   5.色相(Hue):决定了是什么颜色
  */
 
-import { isEmpty } from './is'
+import { isEmpty, isOne } from './is'
 import { getRangeValue } from './numbers'
 
 const CSS_INTEGER = '[-\\+]?\\d+%?'
@@ -198,6 +198,7 @@ const convertHexToDecimal = h => {
 const toNumber = (val: string) => {
     return Number(val)
 }
+
 /** -------------------------- */
 
 /** ----------解析color字符串成rgba数组---------- */
@@ -241,6 +242,20 @@ export function parseColor(color: string): [number, number, number] | [number, n
             decimalConvert16(`${match[2]}${match[2]}`),
             decimalConvert16(`${match[3]}${match[3]}`),
         ]
+    }
+    if ((match = MATCH.hsl.exec(color))) {
+        const [h, s, l] = hslaFormatArray2HslaNumArray([match[1], match[2], match[3]])
+
+        const [r, g, b] = hslaArray2RgbaArray([h, s, l])
+
+        return [r, g, b]
+    }
+    if ((match = MATCH.hsla.exec(color))) {
+        const [h, s, l, a] = hslaFormatArray2HslaNumArray([match[1], match[2], match[3], match[4]])
+
+        const [r, g, b] = hslaArray2RgbaArray([h, s, l])
+
+        return [r, g, b, a]
     }
 
     return undefined
@@ -328,7 +343,7 @@ export function rgbArray2HsvArray([r, g, b]: number[]) {
 /** ---------------------------------------- */
 
 /** ----------Hsl转化成其他格式---------- */
-export function hslArray2RgbArray([h, s, l]: number[]) {
+export function hslaArray2RgbaArray([h, s, l, a]: [number, number, number, number?]) {
     let r: number
     let g: number
     let b: number
@@ -360,8 +375,21 @@ export function hslArray2RgbArray([h, s, l]: number[]) {
         b = hue2rgb(p, q, h - 1 / 3)
     }
 
-    return [r * 255, g * 255, b * 255].map(Math.round)
+    const rgbRes = [r * 255, g * 255, b * 255].map(Math.round)
+
+    return !isEmpty(a) && !isOne(a) ? [...rgbRes, Number(a)] : rgbRes
 }
+
+export function hslaFormatArray2HslaNumArray([hh, ss, ll, aa]: string[]) {
+    const h = parseInt(hh, 10)
+    const s = parseInt(ss, 10)
+    const l = parseInt(ll, 10)
+
+    const a = isEmpty(aa) ? undefined : toNumber(aa)
+
+    return a ? [h, s, l] : [h, s, l, a]
+}
+
 /** ---------------------------------------- */
 
 /** ----------格式化---------- */

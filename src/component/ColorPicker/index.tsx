@@ -4,7 +4,7 @@ import { PureComponent } from '@/utils/component'
 import classnames from 'classnames'
 import {
     hslArray2HslFormat,
-    hslArray2RgbArray,
+    hslaArray2RgbaArray,
     parseColor,
     rgbaArray2HexFormat,
     rgbaArray2HslArray,
@@ -36,6 +36,8 @@ class ColorPicker extends PureComponent<ColorPickerProps, ColorPickerState> {
 
     alphaPanelInstanceRef = React.createRef<AlphaPanelInstance>()
 
+    prevPropValue = null
+
     isRender = false
 
     constructor(props: ColorPickerProps) {
@@ -51,11 +53,12 @@ class ColorPicker extends PureComponent<ColorPickerProps, ColorPickerState> {
             h: 0,
             s: 0,
             l: 0,
-            hex: '',
             currentValue: value ?? defaultValue ?? '#FF0000',
             focus: false,
-            locaking: false,
+            locking: false,
         }
+
+        this.prevPropValue = value ?? defaultValue ?? null
     }
 
     componentDidUpdate() {
@@ -64,12 +67,8 @@ class ColorPicker extends PureComponent<ColorPickerProps, ColorPickerState> {
          * 1.面板处于拖动中
          * 2.鼠标点下（未抬起）默认值的时候
          */
-        if (!this.state.locaking && this.props.value && this.props.value !== this.state.currentValue) {
-            const hexPropValue = rgbaArray2HexFormat(parseColor(this.props.value))
-
-            if (hexPropValue !== this.state.currentValue) {
-                this.handleColorValueChange(this.props.value)
-            }
+        if (!this.state.locking && this.props.value && this.props.value !== this.state.currentValue) {
+            this.handleColorValueChange(this.props.value)
         }
     }
 
@@ -101,29 +100,34 @@ class ColorPicker extends PureComponent<ColorPickerProps, ColorPickerState> {
         this.alphaPanelInstanceRef.current.setAlphaPanelPosition(alphaPosition)
     }
 
-    setCurrentValueAndHex = ([r, g, b, a]: number[]) => {
+    setCurrentValue = ([r, g, b, a]: number[]) => {
         const { mode } = this.props
 
-        const hex = rgbaArray2HexFormat([r, g, b, a])
-
-        let value = ''
+        let currentValue = ''
 
         if (mode === 'hex') {
-            value = hex
+            const hex = rgbaArray2HexFormat([r, g, b, a])
+
+            currentValue = hex
         } else if (mode === 'hsla') {
-            value = hslArray2HslFormat(rgbaArray2HslArray([r, g, b, a]))
+            currentValue = hslArray2HslFormat(rgbaArray2HslArray([r, g, b, a]))
         } else {
-            value = rgbaArray2RgbFormat([r, g, b, a])
+            currentValue = rgbaArray2RgbFormat([r, g, b, a])
         }
 
-        this.setState({ currentValue: value, hex })
+        this.setState({ currentValue })
     }
 
     handleColorValueChange = (value: string) => {
-        const [r, g, b, a] = parseColor(value as string) || []
+        const rgbaArray = parseColor(value as string)
+
+        if (!rgbaArray) return
+
+        const [r, g, b, a] = rgbaArray
+
         const [h, s, l] = rgbaArray2HslArray([r, g, b, a])
 
-        this.setCurrentValueAndHex([r, g, b, a])
+        this.setCurrentValue([r, g, b, a])
 
         this.setImmerState(
             state => {
@@ -148,8 +152,9 @@ class ColorPicker extends PureComponent<ColorPickerProps, ColorPickerState> {
     handleRgbValueChange = (value: Uint8ClampedArray) => {
         const [r, g, b] = value as Uint8ClampedArray
         const [h, s, l] = rgbaArray2HslArray([r, g, b])
+        const { a } = this.state
 
-        this.setCurrentValueAndHex([r, g, b])
+        this.setCurrentValue([r, g, b, a])
 
         this.setImmerState(
             state => {
@@ -169,11 +174,11 @@ class ColorPicker extends PureComponent<ColorPickerProps, ColorPickerState> {
     }
 
     handleHueValueChange = (h: number) => {
-        const { s, l } = this.state
+        const { s, l, a } = this.state
 
-        const [r, g, b] = hslArray2RgbArray([h, s, l])
+        const [r, g, b] = hslaArray2RgbaArray([h, s, l])
 
-        this.setCurrentValueAndHex([r, g, b])
+        this.setCurrentValue([r, g, b, a])
 
         this.setImmerState(
             state => {
@@ -198,7 +203,7 @@ class ColorPicker extends PureComponent<ColorPickerProps, ColorPickerState> {
 
         this.setState({ a: alpha })
 
-        this.setCurrentValueAndHex([r, g, b, alpha])
+        this.setCurrentValue([r, g, b, alpha])
     }
 
     handlePaintInit = () => {
@@ -206,19 +211,19 @@ class ColorPicker extends PureComponent<ColorPickerProps, ColorPickerState> {
     }
 
     handleRgbPanelMouseMove = (value: Uint8ClampedArray) => {
-        this.setState({ locaking: true })
+        this.setState({ locking: true })
 
         this.handleRgbValueChange(value)
     }
 
     handleHuePanelMouseMove = (h: number) => {
-        this.setState({ locaking: true })
+        this.setState({ locking: true })
 
         this.handleHueValueChange(h)
     }
 
     handleAlphaPanelMouseMove = (alpha: number) => {
-        this.setState({ locaking: true })
+        this.setState({ locking: true })
 
         this.handleAlphaValueChange(alpha)
     }
@@ -226,31 +231,35 @@ class ColorPicker extends PureComponent<ColorPickerProps, ColorPickerState> {
     dispatchPropChange = () => {
         const { mode, onChange } = this.props
 
-        const { hex, r, b, g, a, h, s, l } = this.state
+        const { r, b, g, a, h, s, l } = this.state
 
         if (!onChange) return
 
         let value = ''
 
         if (mode === 'hex') {
-            value = hex
+            value = rgbaArray2HexFormat([r, g, b, a])
         } else if (mode === 'hsla') {
             value = hslArray2HslFormat([h, s, l, a])
         } else {
             value = rgbaArray2RgbFormat([r, g, b, a])
         }
 
-        onChange(value)
+        if (value !== this.prevPropValue) {
+            onChange(value)
+
+            this.prevPropValue = value
+        }
     }
 
     handlePanelMouseUp = () => {
         this.dispatchPropChange()
 
-        this.setState({ locaking: false })
+        this.setState({ locking: false })
     }
 
     handleDefaultColorSpanMouseDown = (color: string) => {
-        this.setState({ locaking: true })
+        this.setState({ locking: true })
 
         this.handleColorValueChange(color)
     }
@@ -258,7 +267,7 @@ class ColorPicker extends PureComponent<ColorPickerProps, ColorPickerState> {
     handleDefaultColorSpanMouseUp = () => {
         this.dispatchPropChange()
 
-        this.setState({ locaking: false })
+        this.setState({ locking: false })
     }
 
     renderDefaultColors = () => {

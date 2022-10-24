@@ -140,6 +140,8 @@ const RgbPanel: React.ForwardRefRenderFunction<RgbPanelInstance, RgbPanelProps> 
 
         ctxRef.current = ctx
 
+        addVerticalWhite2BlackLinearGradient()
+
         onInit()
     }, [])
 
