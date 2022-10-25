@@ -21,7 +21,7 @@ const PERMISSIVE_MATCH4 = `[\\s|\\(]+(${CSS_UNIT})[,|\\s]+(${CSS_UNIT})[,|\\s]+(
 const { floor } = Math
 
 // all color RegExp
-const MATCH = {
+export const COLOR_MATCH = {
     CSS_UNIT: new RegExp(CSS_UNIT),
     rgb: new RegExp(`rgb${PERMISSIVE_MATCH3}`),
     rgba: new RegExp(`rgba${PERMISSIVE_MATCH4}`),
@@ -209,15 +209,15 @@ export function parseColor(color: string): [number, number, number] | [number, n
 
     let match: RegExpExecArray
 
-    if ((match = MATCH.rgb.exec(color))) {
+    if ((match = COLOR_MATCH.rgb.exec(color))) {
         return [toNumber(match[1]), toNumber(match[2]), toNumber(match[3])]
     }
 
-    if ((match = MATCH.rgba.exec(color))) {
+    if ((match = COLOR_MATCH.rgba.exec(color))) {
         return [toNumber(match[1]), toNumber(match[2]), toNumber(match[3]), toNumber(match[4])]
     }
 
-    if ((match = MATCH.hex8.exec(color))) {
+    if ((match = COLOR_MATCH.hex8.exec(color))) {
         return [
             decimalConvert16(match[1]),
             decimalConvert16(match[2]),
@@ -225,10 +225,10 @@ export function parseColor(color: string): [number, number, number] | [number, n
             convertHexToDecimal(match[4]),
         ]
     }
-    if ((match = MATCH.hex6.exec(color))) {
+    if ((match = COLOR_MATCH.hex6.exec(color))) {
         return [decimalConvert16(match[1]), decimalConvert16(match[2]), decimalConvert16(match[3])]
     }
-    if ((match = MATCH.hex4.exec(color))) {
+    if ((match = COLOR_MATCH.hex4.exec(color))) {
         return [
             decimalConvert16(`${match[1]}${match[1]}`),
             decimalConvert16(`${match[2]}${match[2]}`),
@@ -236,21 +236,21 @@ export function parseColor(color: string): [number, number, number] | [number, n
             convertHexToDecimal(`${match[4]}${match[4]}`),
         ]
     }
-    if ((match = MATCH.hex3.exec(color))) {
+    if ((match = COLOR_MATCH.hex3.exec(color))) {
         return [
             decimalConvert16(`${match[1]}${match[1]}`),
             decimalConvert16(`${match[2]}${match[2]}`),
             decimalConvert16(`${match[3]}${match[3]}`),
         ]
     }
-    if ((match = MATCH.hsl.exec(color))) {
+    if ((match = COLOR_MATCH.hsl.exec(color))) {
         const [h, s, l] = hslaFormatArray2HslaNumArray([match[1], match[2], match[3]])
 
         const [r, g, b] = hslaArray2RgbaArray([h, s, l])
 
         return [r, g, b]
     }
-    if ((match = MATCH.hsla.exec(color))) {
+    if ((match = COLOR_MATCH.hsla.exec(color))) {
         const [h, s, l, a] = hslaFormatArray2HslaNumArray([match[1], match[2], match[3], match[4]])
 
         const [r, g, b] = hslaArray2RgbaArray([h, s, l])

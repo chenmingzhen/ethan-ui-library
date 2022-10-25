@@ -19,7 +19,7 @@ export default function() {
 
     return (
         <div>
-            <ColorPicker value={color} onChange={handleChange} mode="hsla" />
+            <ColorPicker value={color} onChange={handleChange} format="hsla" />
 
             <Select<string>
                 defaultValue="red"

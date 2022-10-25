@@ -5,7 +5,7 @@ export interface ColorPickerProps {
     disabled?: boolean
     showMode?: boolean
     size?: 'small' | 'large' | 'default'
-    mode?: 'rgba' | 'hex' | 'hsla'
+    format?: 'rgba' | 'hex' | 'hsla'
     defaultColors?: string[]
     style?: React.CSSProperties
     className?: string
@@ -26,6 +26,7 @@ export interface ColorPickerState {
     /** true:不允许props的value改变currentValue */
     locking: boolean
     currentValue: string
+    mode: 'rgba' | 'hex' | 'hsla'
     focus: boolean
 }
 
@@ -47,4 +48,22 @@ export interface AlphaPanelProps {
     onMouseMove(alpha: number): void
 
     onMouseUp(): void
+}
+
+export type OnModalPanelInputValueChangeParams = Omit<ColorPickerState, 'locking' | 'currentValue' | 'mode' | 'focus'>
+
+export interface ModePanelProps {
+    mode: ColorPickerState['mode']
+
+    onModeChange: (mode: ColorPickerState['mode']) => void
+
+    onInputValueChange(record: OnModalPanelInputValueChangeParams): void
+
+    r: number
+    g: number
+    b: number
+    a: number
+    h: number
+    s: number
+    l: number
 }
