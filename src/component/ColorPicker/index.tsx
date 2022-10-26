@@ -296,12 +296,19 @@ class ColorPicker extends PureComponent<ColorPickerProps, ColorPickerState> {
     }
 
     handleModeInputChange = (params: OnModalPanelInputValueChangeParams) => {
+        const { r, g, b, a } = params
+
+        this.setCurrentValue([r, g, b, a])
+
         this.setState({ ...params }, () => {
-            const { h, s, l } = this.state
+            console.log(this.state)
+            const { h, s, l, r, g, b } = this.state
 
             this.updatePosition()
 
             this.rgbPanelInstanceRef.current.setRgbPanelHue(h)
+
+            this.rgbPanelInstanceRef.current.rgbToPosition([r, g, b])
 
             this.alphaPanelInstanceRef.current.setAlphaPanelHsl([h, s, l])
         })

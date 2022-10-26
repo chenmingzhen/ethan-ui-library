@@ -401,7 +401,7 @@ export function hslArray2HslFormat(arr: number[]) {
 }
 
 export function rgbaArray2HexFormat([r, g, b, a]: number[]) {
-    const calAlpha = !isEmpty(a)
+    const calAlpha = !isEmpty(a) && a !== 1
     let o
     let rr = floor(r).toString(16)
     let gg = floor(g).toString(16)

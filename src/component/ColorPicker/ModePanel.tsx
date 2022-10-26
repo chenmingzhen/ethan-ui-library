@@ -30,8 +30,6 @@ const ModePanel: React.FC<ModePanelProps> = function(props) {
     )
 
     function handleHexInputChange(inputValue: string) {
-        inputValue = inputValue.replace('%', '')
-
         if (!inputValue) return
 
         let { r, g, b, a, h, s, l } = props
@@ -52,30 +50,47 @@ const ModePanel: React.FC<ModePanelProps> = function(props) {
     }
 
     function handleSingleInputChange(key: string, inputValue: string) {
-        inputValue = inputValue.replace('%', '')
-
-        if (!inputValue) return
+        if (!inputValue) {
+            inputValue = ''
+        }
 
         let { r, g, b, h, s, l } = props
 
         const { a } = props
 
+        const numValue = Number(inputValue)
+
         if (key === 'a') {
             /** 透明度校验 */
-            if (!/^\d(.)\d*$/.test(inputValue) || Number(inputValue) > 1) return
+            if (!/^\d(.)\d*$/.test(inputValue) || Number(inputValue) > 1 || Number(inputValue) < 0) return
         } else if (!/^\d*$/.test(inputValue)) {
-            /** r g b h s l 校验 */
+            /** r g b h s l 是否为数字校验 */
+
             return
+        } else if ('sl'.indexOf(key) >= 0) {
+            if (numValue > 100 || numValue < 0) return
+        } else if (key === 'h') {
+            if (numValue > 360 || numValue < 0) return
+        } else if ('rgb'.indexOf(key) >= 0) {
+            if (numValue > 255 || numValue < 0) return
         }
 
         const data = {}
 
-        data[key] = inputValue
+        data[key] = Number(inputValue) || 0
 
-        if ('rgb'.indexOf(key) >= 0) {
-            ;[h, s, l] = rgbaArray2HslArray([r, g, b])
-        } else if ('hsl'.indexOf(key) >= 0) {
-            ;[r, g, b] = hslaArray2RgbaArray([h, s, l])
+        if (key === 'r') {
+            ;[h, s, l] = rgbaArray2HslArray([data[key], g, b])
+        } else if (key === 'g') {
+            ;[h, s, l] = rgbaArray2HslArray([r, data[key], b])
+        } else if (key === 'b') {
+            ;[h, s, l] = rgbaArray2HslArray([r, g, data[key]])
+        } else if (key === 'h') {
+            ;[r, g, b] = hslaArray2RgbaArray([data[key], s, l])
+        } else if (key === 's') {
+            ;[r, g, b] = hslaArray2RgbaArray([h, data[key], l])
+        } else if (key === 'l') {
+            ;[r, g, b] = hslaArray2RgbaArray([h, s, data[key]])
         }
 
         onInputValueChange({ r, g, b, a, h, s, l, ...data })
@@ -96,12 +111,26 @@ const ModePanel: React.FC<ModePanelProps> = function(props) {
     }
 
     function buildSingleKeyInput(key: string) {
+        if ('sl'.indexOf(key) >= 0) {
+            return (
+                <Input.Group width={50} style={{ display: 'inline-flex', marginRight: 4 }} key={key}>
+                    <Input
+                        onChange={handleSingleInputChange.bind(this, key)}
+                        size="small"
+                        value={props[key]}
+                        className={colorPickerClass('input')}
+                    />
+                    <b>%</b>
+                </Input.Group>
+            )
+        }
+
         return (
             <Input
                 onChange={handleSingleInputChange.bind(this, key)}
                 size="small"
                 key={key}
-                value={props[key] + ('sl'.indexOf(key) >= 0 ? '%' : '')}
+                value={props[key]}
                 maxLength={4}
                 width={50}
                 className={colorPickerClass('input')}
