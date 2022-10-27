@@ -6,7 +6,7 @@
  */
 
 import React, { useCallback, useState } from 'react'
-import { ColorPicker, Select } from 'ethan-ui'
+import { ColorPicker, Input } from 'ethan-ui'
 
 export default function() {
     const [color, updateColor] = useState('red')
@@ -21,28 +21,12 @@ export default function() {
         <div>
             <ColorPicker value={color} onChange={handleChange} format="hsla" />
 
-            <Select<string>
-                defaultValue="red"
-                data={[
-                    'red',
-                    'aliceblue',
-                    'antiquewhite',
-                    'aqua',
-                    'aquamarine',
-                    'azure',
-                    'beige',
-                    'bisque',
-                    'black',
-                    'blanchedalmond',
-                    'blue',
-                    'blueviolet',
-                    'brown',
-                    'burlywood',
-                    'cadetblue',
-                ]}
-                style={{ marginTop: 10, width: 150, display: 'block' }}
-                placeholder="change color"
-                onChange={updateColor}
+            <Input
+                placeholder="Input the color"
+                value={color}
+                onChange={handleChange}
+                width={200}
+                style={{ display: 'block' }}
             />
         </div>
     )

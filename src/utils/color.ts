@@ -191,8 +191,9 @@ const decimalConvert16 = (val: string | number) => {
     return parseInt(val as string, 16)
 }
 
+/** 最多三位小数 */
 const convertHexToDecimal = h => {
-    return decimalConvert16(h) / 255
+    return Number((decimalConvert16(h) / 255).toFixed(3))
 }
 
 const toNumber = (val: string) => {

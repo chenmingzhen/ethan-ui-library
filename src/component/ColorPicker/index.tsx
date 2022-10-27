@@ -11,6 +11,8 @@ import {
     rgbaArray2RgbFormat,
 } from '@/utils/color'
 import { isEmpty } from '@/utils/is'
+import { getUidStr } from '@/utils/uid'
+import { isDescendent } from '@/utils/dom/element'
 import { ColorPickerProps, ColorPickerState, OnModalPanelInputValueChangeParams } from './type'
 import Caret from '../icons/Caret'
 import AbsoluteList from '../List/AbsoluteList'
@@ -39,6 +41,12 @@ class ColorPicker extends PureComponent<ColorPickerProps, ColorPickerState> {
     prevPropValue = null
 
     isRender = false
+
+    colorPickerId = getUidStr()
+
+    get hasValue() {
+        return 'value' in this.props
+    }
 
     constructor(props: ColorPickerProps) {
         super(props)
@@ -77,12 +85,36 @@ class ColorPicker extends PureComponent<ColorPickerProps, ColorPickerState> {
         this.container = el
     }
 
+    handleClickAway = (evt: MouseEvent) => {
+        const desc = isDescendent(evt.target as HTMLElement, this.colorPickerId)
+
+        if (desc) return
+
+        this.setState({ focus: false })
+
+        this.clearClickAway()
+    }
+
+    bindClickAway = () => {
+        document.addEventListener('click', this.handleClickAway)
+    }
+
+    clearClickAway = () => {
+        document.removeEventListener('click', this.handleClickAway)
+    }
+
     togglePanel = () => {
         const { disabled } = this.props
 
         const { focus } = this.state
 
         if (disabled) return
+
+        if (!focus) {
+            this.bindClickAway()
+        } else {
+            this.clearClickAway()
+        }
 
         this.setState({ focus: !focus })
     }
@@ -296,13 +328,17 @@ class ColorPicker extends PureComponent<ColorPickerProps, ColorPickerState> {
     }
 
     handleModeInputChange = (params: OnModalPanelInputValueChangeParams) => {
-        const { r, g, b, a } = params
-
-        this.setCurrentValue([r, g, b, a])
+        this.setCurrentValue([params.r, params.g, params.b, params.a])
 
         this.setState({ ...params }, () => {
-            console.log(this.state)
             const { h, s, l, r, g, b } = this.state
+
+            /** 受控不处理 */
+            if (this.hasValue) {
+                this.dispatchPropChange()
+
+                return
+            }
 
             this.updatePosition()
 
@@ -350,6 +386,7 @@ class ColorPicker extends PureComponent<ColorPickerProps, ColorPickerState> {
                     show={focus}
                     animationTypes={['scale-y', 'fade']}
                     duration="fast"
+                    data-id={this.colorPickerId}
                 >
                     <RgbPanel
                         onMouseMove={this.handleRgbPanelMouseMove}
@@ -412,7 +449,7 @@ class ColorPicker extends PureComponent<ColorPickerProps, ColorPickerState> {
         )
 
         return (
-            <div className={className} style={style} ref={this.bindContainer}>
+            <div className={className} style={style} ref={this.bindContainer} data-id={this.colorPickerId}>
                 <div className={colorPickerClass('result')} onClick={this.togglePanel}>
                     <div className={colorPickerClass('color')} style={{ backgroundColor: currentValue }} />
                 </div>

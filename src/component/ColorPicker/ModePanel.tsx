@@ -1,6 +1,6 @@
 import { colorPickerClass } from '@/styles'
 import { COLOR_MATCH, hslaArray2RgbaArray, parseColor, rgbaArray2HexFormat, rgbaArray2HslArray } from '@/utils/color'
-import React, { useCallback } from 'react'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
 import Button from '../Button'
 import { FontAwesome } from '../Icon'
 import Input from '../Input'
@@ -8,6 +8,38 @@ import { ModePanelProps } from './type'
 
 const ModePanel: React.FC<ModePanelProps> = function(props) {
     const { mode, onModeChange, onInputValueChange } = props
+
+    /** ModalModal单独维护hex和alpha */
+    const [hex, updateHex] = useState(rgbaArray2HexFormat([props.r, props.g, props.b, props.a]))
+
+    const [alpha, updateAlpha] = useState<string | number>(props.a)
+
+    /** 输入中，不允许props改变hex alpha */
+    const [inputting, updateInputting] = useState(false)
+
+    const lockTimer = useRef<NodeJS.Timeout>()
+
+    useEffect(() => {
+        if (inputting) return
+
+        updateHex(rgbaArray2HexFormat([props.r, props.g, props.b, props.a]))
+
+        updateAlpha(props.a)
+    }, [props.r, props.g, props.b, props.a])
+
+    function addLock() {
+        updateInputting(true)
+
+        if (lockTimer.current) {
+            clearTimeout(lockTimer.current)
+
+            lockTimer.current = null
+        }
+
+        lockTimer.current = setTimeout(() => {
+            updateInputting(false)
+        }, 0)
+    }
 
     const handleModeChange = useCallback(() => {
         let newMode = mode
@@ -23,13 +55,11 @@ const ModePanel: React.FC<ModePanelProps> = function(props) {
         onModeChange(newMode)
     }, [mode])
 
-    const btn = (
-        <Button size="small" className={colorPickerClass('mode-btn')} onClick={handleModeChange} key="btn">
-            <FontAwesome name="exchange" />
-        </Button>
-    )
-
     function handleHexInputChange(inputValue: string) {
+        updateHex(inputValue)
+
+        addLock()
+
         if (!inputValue) return
 
         let { r, g, b, a, h, s, l } = props
@@ -43,7 +73,7 @@ const ModePanel: React.FC<ModePanelProps> = function(props) {
             return
         }
 
-        ;[r, g, b, a] = parseColor(inputValue)
+        ;[r, g, b, a = 1] = parseColor(inputValue)
         ;[h, s, l] = rgbaArray2HslArray([r, g, b, a])
 
         onInputValueChange({ r, g, b, a, h, s, l })
@@ -60,14 +90,12 @@ const ModePanel: React.FC<ModePanelProps> = function(props) {
 
         const numValue = Number(inputValue)
 
-        if (key === 'a') {
-            /** 透明度校验 */
-            if (!/^\d(.)\d*$/.test(inputValue) || Number(inputValue) > 1 || Number(inputValue) < 0) return
-        } else if (!/^\d*$/.test(inputValue)) {
+        if (!/^\d*$/.test(inputValue)) {
             /** r g b h s l 是否为数字校验 */
-
             return
-        } else if ('sl'.indexOf(key) >= 0) {
+        }
+
+        if ('sl'.indexOf(key) >= 0) {
             if (numValue > 100 || numValue < 0) return
         } else if (key === 'h') {
             if (numValue > 360 || numValue < 0) return
@@ -77,7 +105,7 @@ const ModePanel: React.FC<ModePanelProps> = function(props) {
 
         const data = {}
 
-        data[key] = Number(inputValue) || 0
+        data[key] = numValue || 0
 
         if (key === 'r') {
             ;[h, s, l] = rgbaArray2HslArray([data[key], g, b])
@@ -96,16 +124,47 @@ const ModePanel: React.FC<ModePanelProps> = function(props) {
         onInputValueChange({ r, g, b, a, h, s, l, ...data })
     }
 
-    function buildHexInput() {
-        const { r, g, b, a } = props
+    function handleAlphaInputChange(inputValue: string) {
+        if (!inputValue) {
+            inputValue = ''
+        }
 
+        const numValue = Number(inputValue)
+
+        addLock()
+
+        updateAlpha(inputValue || numValue)
+
+        if ((!/^\d(.)\d*$/.test(inputValue) && inputValue !== '') || numValue > 1 || numValue < 0) return
+
+        const { r, g, b, h, s, l } = props
+
+        onInputValueChange({ r, g, b, h, s, l, a: numValue })
+    }
+
+    function handleHexInputBlur() {
+        if (!parseColor(hex)) {
+            const { r, g, b, a } = props
+
+            updateHex(rgbaArray2HexFormat([r, g, b, a]))
+        }
+    }
+
+    function handleAlphaInputBlur() {
+        if (!/^\d(.)\d*$/.test(alpha as string) || Number(alpha) > 1 || Number(alpha) < 0) {
+            updateAlpha(props.a)
+        }
+    }
+
+    function buildHexInput() {
         return (
             <Input
                 onChange={handleHexInputChange}
                 size="small"
-                value={rgbaArray2HexFormat([r, g, b, a])}
+                value={hex}
                 maxLength={9}
                 width={200}
+                onBlur={handleHexInputBlur}
             />
         )
     }
@@ -122,6 +181,21 @@ const ModePanel: React.FC<ModePanelProps> = function(props) {
                     />
                     <b>%</b>
                 </Input.Group>
+            )
+        }
+
+        if (key === 'a') {
+            return (
+                <Input
+                    onChange={handleAlphaInputChange}
+                    size="small"
+                    key={key}
+                    value={alpha}
+                    maxLength={4}
+                    width={50}
+                    className={colorPickerClass('input')}
+                    onBlur={handleAlphaInputBlur}
+                />
             )
         }
 
@@ -177,7 +251,11 @@ const ModePanel: React.FC<ModePanelProps> = function(props) {
         )
     }
 
-    node.push(btn)
+    node.push(
+        <Button size="small" className={colorPickerClass('mode-btn')} onClick={handleModeChange} key="btn">
+            <FontAwesome name="exchange" />
+        </Button>
+    )
 
     return <div className={colorPickerClass('mode', mode)}>{node}</div>
 }
