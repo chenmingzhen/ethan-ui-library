@@ -1,17 +1,17 @@
 /**
- * cn - 基本用法
+ * cn - 色版
  *    -- 基本的使用
- * en - Base
+ * en - ColorBoard
  *    -- Basic usage
  */
 
 import React from 'react'
-import ColorPicker from '@/component/ColorPicker/ColorPicker'
+import ColorBoard from '@/component/ColorPicker/ColorBoard'
 
 export default function() {
     return (
         <>
-            <ColorPicker defaultValue="red" />
+            <ColorBoard showMode />
         </>
     )
 }

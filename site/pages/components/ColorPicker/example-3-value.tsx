@@ -6,7 +6,8 @@
  */
 
 import React, { useCallback, useState } from 'react'
-import { ColorPicker, Input } from 'ethan-ui'
+import { Input } from 'ethan-ui'
+import ColorPicker from '@/component/ColorPicker/ColorPicker'
 
 export default function() {
     const [color, updateColor] = useState('red')

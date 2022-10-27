@@ -15,7 +15,9 @@ export interface ColorPickerProps {
     onChange?: (color: string) => void
 }
 
-export interface ColorPickerState {
+export type ColorBoardProps = Omit<ColorPickerProps, 'disabled' | 'position' | 'size'>
+
+export interface ColorBoardState {
     r: number
     g: number
     b: number
@@ -27,6 +29,9 @@ export interface ColorPickerState {
     locking: boolean
     currentValue: string
     mode: 'rgba' | 'hex' | 'hsla'
+}
+
+export interface ColorPickerState {
     focus: boolean
 }
 
@@ -50,12 +55,12 @@ export interface AlphaPanelProps {
     onMouseUp(): void
 }
 
-export type OnModalPanelInputValueChangeParams = Omit<ColorPickerState, 'locking' | 'currentValue' | 'mode' | 'focus'>
+export type OnModalPanelInputValueChangeParams = Omit<ColorBoardState, 'locking' | 'currentValue' | 'mode'>
 
 export interface ModePanelProps {
-    mode: ColorPickerState['mode']
+    mode: ColorBoardState['mode']
 
-    onModeChange: (mode: ColorPickerState['mode']) => void
+    onModeChange: (mode: ColorBoardState['mode']) => void
 
     onInputValueChange(record: OnModalPanelInputValueChangeParams): void
 
