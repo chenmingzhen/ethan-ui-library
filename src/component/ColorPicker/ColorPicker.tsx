@@ -1,9 +1,9 @@
-import React, { useCallback, useRef, useState } from 'react'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
 import classnames from 'classnames'
 import { colorPickerClass } from '@/styles'
 import { isDescendent } from '@/utils/dom/element'
 import { getUidStr } from '@/utils/uid'
-import { useUpdateEffect } from 'react-use'
+import withControl from '@/hoc/withControl'
 import { ColorPickerProps } from './type'
 import Caret from '../icons/Caret'
 import AbsoluteList from '../List/AbsoluteList'
@@ -18,14 +18,11 @@ const ColorPicker: React.FC<ColorPickerProps> = function(props) {
         className,
         style,
         value,
-        defaultValue,
         position = 'left-bottom',
         onChange,
         format = 'rgba',
         ...other
     } = props
-
-    const [currentValue, updateCurrentValue] = useState(value || defaultValue || getDefaultColor(format))
 
     const [show, updateShow] = useState(false)
 
@@ -35,9 +32,11 @@ const ColorPicker: React.FC<ColorPickerProps> = function(props) {
 
     const containerRef = useRef<HTMLDivElement>()
 
-    useUpdateEffect(() => {
-        updateCurrentValue(value)
-    }, [value])
+    useEffect(() => {
+        if (!value) {
+            onChange(getDefaultColor(format))
+        }
+    }, [])
 
     const cls = classnames(className, colorPickerClass('_', 'preview-btn', size && 'size', disabled && 'disabled'))
 
@@ -71,14 +70,6 @@ const ColorPicker: React.FC<ColorPickerProps> = function(props) {
         updateShow(!show)
     }
 
-    function handleColorBoardChange(color: string) {
-        updateCurrentValue(color)
-
-        if (onChange) {
-            onChange(color)
-        }
-    }
-
     function renderColorBoard() {
         if (!show && !isRenderRef.current) return
 
@@ -87,7 +78,7 @@ const ColorPicker: React.FC<ColorPickerProps> = function(props) {
         return (
             <AbsoluteList absolute focus={show} position={position} getParentElement={() => containerRef.current}>
                 <AnimationList lazyDom show={show} animationTypes={['fade']} duration="fast" data-id={colorPickerId}>
-                    <ColorBoard {...other} format={format} value={value} onChange={handleColorBoardChange} />
+                    <ColorBoard {...other} format={format} value={value} onChange={onChange} />
                 </AnimationList>
             </AbsoluteList>
         )
@@ -96,7 +87,7 @@ const ColorPicker: React.FC<ColorPickerProps> = function(props) {
     return (
         <div className={cls} style={style} ref={containerRef} data-id={colorPickerId}>
             <div className={colorPickerClass('result')} onClick={togglePanel}>
-                <div className={colorPickerClass('color')} style={{ backgroundColor: currentValue }} />
+                <div className={colorPickerClass('color')} style={{ backgroundColor: value }} />
             </div>
             <span className={colorPickerClass('caret')} onClick={togglePanel}>
                 <Caret />
@@ -107,4 +98,4 @@ const ColorPicker: React.FC<ColorPickerProps> = function(props) {
     )
 }
 
-export default React.memo(ColorPicker)
+export default withControl(React.memo(ColorPicker))

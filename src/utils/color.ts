@@ -376,7 +376,7 @@ export function hslaArray2RgbaArray([h, s, l, a]: [number, number, number, numbe
         b = hue2rgb(p, q, h - 1 / 3)
     }
 
-    const rgbRes = [r * 255, g * 255, b * 255].map(Math.round)
+    const rgbRes = [r * 255, g * 255, b * 255].map(Math.floor)
 
     return !isEmpty(a) && !isOne(a) ? [...rgbRes, Number(a)] : rgbRes
 }

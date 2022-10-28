@@ -1,23 +1,19 @@
 import { colorPickerClass } from '@/styles'
 import { getRangeValue } from '@/utils/numbers'
-import React, { forwardRef, useCallback, useEffect, useImperativeHandle, useRef, useState } from 'react'
+import React, { useCallback, useLayoutEffect, useRef, useState } from 'react'
 import { COLOR_PICKER_DOT_LENGTH, PANEL_CANVAS_WIDTH } from './config'
 import { HuePanelProps } from './type'
 
-export interface HuePanelInstance {
-    setHuePanelPosition(x: number): void
-}
-
-const HuePanel: React.ForwardRefRenderFunction<HuePanelInstance, HuePanelProps> = (props, ref) => {
+const HuePanel: React.FC<HuePanelProps> = props => {
     const [xPosition, updateXPosition] = useState<number>(0)
 
     const canvasRef = useRef<HTMLCanvasElement>()
 
     const ctxRef = useRef<CanvasRenderingContext2D>()
 
-    const { onMouseMove, onMouseUp } = props
+    const { hue, onChange } = props
 
-    useEffect(() => {
+    useLayoutEffect(() => {
         const canvas = canvasRef.current
 
         const ctx = canvas.getContext('2d', { willReadFrequently: true })
@@ -39,11 +35,11 @@ const HuePanel: React.ForwardRefRenderFunction<HuePanelInstance, HuePanelProps> 
         ctx.fillRect(0, 0, width, height)
     }, [])
 
-    const setHuePanelPosition = useCallback((x: number) => {
-        updateXPosition(x - COLOR_PICKER_DOT_LENGTH / 2)
-    }, [])
+    useLayoutEffect(() => {
+        const huePosition = (PANEL_CANVAS_WIDTH * hue) / 360
 
-    useImperativeHandle(ref, () => ({ setHuePanelPosition }))
+        updateXPosition(huePosition - COLOR_PICKER_DOT_LENGTH / 2)
+    }, [hue])
 
     const handleMouseMove = useCallback((evt: MouseEvent) => {
         evt.stopPropagation()
@@ -58,18 +54,14 @@ const HuePanel: React.ForwardRefRenderFunction<HuePanelInstance, HuePanelProps> 
 
         const x = getRangeValue({ current: evt.clientX - left, max: width })
 
-        const hue = Math.round((x * 360) / width)
+        const h = Math.round((x * 360) / width)
 
-        updateXPosition(x - COLOR_PICKER_DOT_LENGTH / 2)
-
-        onMouseMove(hue)
+        onChange(h)
     }, [])
 
     const handleMouseUp = useCallback(() => {
         document.removeEventListener('mousemove', handleMouseMove)
         document.removeEventListener('mouseup', handleMouseUp)
-
-        onMouseUp()
     }, [])
 
     function handleMouseDown(evt) {
@@ -95,4 +87,4 @@ const HuePanel: React.ForwardRefRenderFunction<HuePanelInstance, HuePanelProps> 
     )
 }
 
-export default React.memo(forwardRef(HuePanel))
+export default React.memo(HuePanel)

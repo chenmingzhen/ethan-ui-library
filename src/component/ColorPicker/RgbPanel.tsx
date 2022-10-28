@@ -1,24 +1,36 @@
 import { colorPickerClass } from '@/styles'
 import { rgbArray2HsvArray } from '@/utils/color'
 import { getRangeValue } from '@/utils/numbers'
-import React, { forwardRef, useCallback, useEffect, useImperativeHandle, useRef, useState } from 'react'
+import React, { useCallback, useLayoutEffect, useRef, useState } from 'react'
 import { COLOR_PICKER_DOT_LENGTH, COLOR_EDGE_OFFSET } from './config'
 import { RgbPanelProps } from './type'
 
-export interface RgbPanelInstance {
-    setRgbPanelHue(hue: number): void
-
-    rgbToPosition(arr: [number, number, number]): void
-}
-
-const RgbPanel: React.ForwardRefRenderFunction<RgbPanelInstance, RgbPanelProps> = function(props, ref) {
-    const { onMouseMove, onInit, onMouseUp } = props
+const RgbPanel: React.FC<RgbPanelProps> = function(props) {
+    const { rgb, onChange, hue } = props
 
     const [dotPosition, updateDotPosition] = useState<{ x: number; y: number }>({ x: 0, y: 0 })
 
     const paintElementRef = useRef<HTMLCanvasElement>()
 
     const ctxRef = useRef<CanvasRenderingContext2D>()
+
+    useLayoutEffect(() => {
+        const canvas = paintElementRef.current
+
+        const ctx = canvas.getContext('2d', { willReadFrequently: true })
+
+        ctxRef.current = ctx
+
+        addVerticalWhite2BlackLinearGradient()
+    }, [])
+
+    useLayoutEffect(() => {
+        rgbToPosition(rgb)
+    }, [rgb])
+
+    useLayoutEffect(() => {
+        setRgbPanelHue(hue)
+    }, [hue])
 
     const handleMouseMove = useCallback((evt: MouseEvent) => {
         evt.stopPropagation()
@@ -37,26 +49,18 @@ const RgbPanel: React.ForwardRefRenderFunction<RgbPanelInstance, RgbPanelProps> 
 
         const ctx = ctxRef.current
 
-        /** 让点的中心落在鼠标的顶部，减去dot自身宽高的一半 */
-        const positionX = x - COLOR_PICKER_DOT_LENGTH / 2
-        const positionY = y - COLOR_PICKER_DOT_LENGTH / 2
-
         const color = ctx.getImageData(x, y, 1, 1).data
 
-        onMouseMove(color)
-
-        updateDotPosition({ x: positionX, y: positionY })
+        onChange(color)
     }, [])
 
     const handleMouseUp = useCallback(() => {
         document.removeEventListener('mousemove', handleMouseMove)
         document.removeEventListener('mouseup', handleMouseUp)
-
-        onMouseUp()
     }, [])
 
     /** 设置色相 */
-    const setRgbPanelHue = useCallback((hue: number) => {
+    const setRgbPanelHue = (h: number) => {
         const canvas = paintElementRef.current
 
         const ctx = ctxRef.current
@@ -74,9 +78,9 @@ const RgbPanel: React.ForwardRefRenderFunction<RgbPanelInstance, RgbPanelProps> 
             COLOR_EDGE_OFFSET
         )
 
-        colorGradient.addColorStop(0, `hsla(${hue},100%,50%,0)`)
+        colorGradient.addColorStop(0, `hsla(${h},100%,50%,0)`)
 
-        colorGradient.addColorStop(1, `hsla(${hue},100%,50%,1)`)
+        colorGradient.addColorStop(1, `hsla(${h},100%,50%,1)`)
 
         ctx.fillStyle = colorGradient
 
@@ -85,7 +89,7 @@ const RgbPanel: React.ForwardRefRenderFunction<RgbPanelInstance, RgbPanelProps> 
         ctx.fillRect(0, 0, width, height)
 
         ctx.globalCompositeOperation = 'source-over'
-    }, [])
+    }
 
     const rgbToPosition = useCallback(([r, g, b]) => {
         const canvas = paintElementRef.current
@@ -99,6 +103,7 @@ const RgbPanel: React.ForwardRefRenderFunction<RgbPanelInstance, RgbPanelProps> 
         const y = height - v * height
 
         if (x >= 0 && y >= 0) {
+            /** 让点的中心落在鼠标的顶部，减去dot自身宽高的一半 */
             const positionX = x - COLOR_PICKER_DOT_LENGTH / 2
 
             const positionY = y - COLOR_PICKER_DOT_LENGTH / 2
@@ -133,20 +138,6 @@ const RgbPanel: React.ForwardRefRenderFunction<RgbPanelInstance, RgbPanelProps> 
         ctx.fillRect(0, 0, width, height)
     }
 
-    useEffect(() => {
-        const canvas = paintElementRef.current
-
-        const ctx = canvas.getContext('2d', { willReadFrequently: true })
-
-        ctxRef.current = ctx
-
-        addVerticalWhite2BlackLinearGradient()
-
-        onInit()
-    }, [])
-
-    useImperativeHandle(ref, () => ({ setRgbPanelHue, rgbToPosition }))
-
     function handleMouseDown(evt) {
         handleMouseMove(evt)
 
@@ -170,4 +161,4 @@ const RgbPanel: React.ForwardRefRenderFunction<RgbPanelInstance, RgbPanelProps> 
     )
 }
 
-export default React.memo(forwardRef(RgbPanel))
+export default React.memo(RgbPanel)

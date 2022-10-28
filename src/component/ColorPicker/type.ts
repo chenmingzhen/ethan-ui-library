@@ -25,9 +25,7 @@ export interface ColorBoardState {
     h: number
     l: number
     s: number
-    /** true:不允许props的value改变currentValue */
-    locking: boolean
-    currentValue: string
+
     mode: 'rgba' | 'hex' | 'hsla'
 }
 
@@ -36,23 +34,29 @@ export interface ColorPickerState {
 }
 
 export interface RgbPanelProps {
-    onMouseMove(color: Uint8ClampedArray)
+    rgb: [number, number, number]
 
-    onMouseUp(): void
+    hue: number
 
-    onInit(): void
+    onChange(color: Uint8ClampedArray): void
 }
 
 export interface HuePanelProps {
-    onMouseMove(hue: number): void
+    hue: number
 
-    onMouseUp(): void
+    onChange(hue: number): void
 }
 
 export interface AlphaPanelProps {
-    onMouseMove(alpha: number): void
+    alpha: number
 
-    onMouseUp(): void
+    onChange(alpha: number): void
+
+    h: number
+
+    s: number
+
+    l: number
 }
 
 export type OnModalPanelInputValueChangeParams = Omit<ColorBoardState, 'locking' | 'currentValue' | 'mode'>

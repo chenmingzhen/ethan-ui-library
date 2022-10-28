@@ -1,25 +1,33 @@
 import { colorPickerClass } from '@/styles'
 import { getRangeValue } from '@/utils/numbers'
-import React, { forwardRef, useCallback, useEffect, useImperativeHandle, useRef, useState } from 'react'
+import React, { useCallback, useLayoutEffect, useRef, useState } from 'react'
 import { COLOR_PICKER_DOT_LENGTH, PANEL_CANVAS_WIDTH } from './config'
 import { AlphaPanelProps } from './type'
 
-export interface AlphaPanelInstance {
-    setAlphaPanelHsl(hsl: number[]): void
-
-    setAlphaPanelPosition(x: number): void
-}
-
-const AlphaPanel: React.ForwardRefRenderFunction<AlphaPanelInstance, AlphaPanelProps> = (props, ref) => {
+const AlphaPanel: React.FC<AlphaPanelProps> = props => {
     const [xPosition, updateXPosition] = useState<number>(0)
 
     const canvasRef = useRef<HTMLCanvasElement>()
 
     const ctxRef = useRef<CanvasRenderingContext2D>()
 
-    const { onMouseMove, onMouseUp } = props
+    const { onChange, alpha, h, s, l } = props
 
-    const setAlphaPanelHsl = useCallback(([h, s, l]) => {
+    useLayoutEffect(() => {
+        const canvas = canvasRef.current
+
+        const ctx = canvas.getContext('2d', { willReadFrequently: true })
+
+        ctxRef.current = ctx
+    }, [])
+
+    useLayoutEffect(() => {
+        const alphaPosition = PANEL_CANVAS_WIDTH * (alpha ?? 1)
+
+        updateXPosition(alphaPosition - COLOR_PICKER_DOT_LENGTH / 2)
+    }, [alpha])
+
+    useLayoutEffect(() => {
         const canvas = canvasRef.current
 
         const ctx = ctxRef.current
@@ -37,15 +45,7 @@ const AlphaPanel: React.ForwardRefRenderFunction<AlphaPanelInstance, AlphaPanelP
         ctx.fillStyle = grd
 
         ctx.fillRect(0, 0, width, height)
-    }, [])
-
-    useEffect(() => {
-        const canvas = canvasRef.current
-
-        const ctx = canvas.getContext('2d', { willReadFrequently: true })
-
-        ctxRef.current = ctx
-    }, [])
+    }, [h, s, l])
 
     const handleMouseMove = useCallback((evt: MouseEvent) => {
         evt.stopPropagation()
@@ -60,22 +60,14 @@ const AlphaPanel: React.ForwardRefRenderFunction<AlphaPanelInstance, AlphaPanelP
 
         const x = getRangeValue({ current: evt.clientX - left, max: width })
 
-        const alpha = +(x / width).toFixed(2)
+        const a = +(x / width).toFixed(2)
 
-        updateXPosition(x - COLOR_PICKER_DOT_LENGTH / 2)
-
-        onMouseMove(alpha)
+        onChange(a)
     }, [])
 
     const handleMouseUp = useCallback(() => {
         document.removeEventListener('mousemove', handleMouseMove)
         document.removeEventListener('mouseup', handleMouseUp)
-
-        onMouseUp()
-    }, [])
-
-    const setAlphaPanelPosition = useCallback((x: number) => {
-        updateXPosition(x - COLOR_PICKER_DOT_LENGTH / 2)
     }, [])
 
     function handleMouseDown(evt) {
@@ -85,8 +77,6 @@ const AlphaPanel: React.ForwardRefRenderFunction<AlphaPanelInstance, AlphaPanelP
 
         document.addEventListener('mouseup', handleMouseUp)
     }
-
-    useImperativeHandle(ref, () => ({ setAlphaPanelHsl, setAlphaPanelPosition }))
 
     return (
         <>
@@ -103,4 +93,4 @@ const AlphaPanel: React.ForwardRefRenderFunction<AlphaPanelInstance, AlphaPanelP
     )
 }
 
-export default React.memo(forwardRef(AlphaPanel))
+export default React.memo(AlphaPanel)

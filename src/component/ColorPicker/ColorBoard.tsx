@@ -12,11 +12,12 @@ import {
 } from '@/utils/color'
 import { isEmpty } from '@/utils/is'
 import { ColorBoardProps, ColorBoardState, OnModalPanelInputValueChangeParams } from './type'
-import RgbPanel, { RgbPanelInstance } from './RgbPanel'
-import HuePanel, { HuePanelInstance } from './HuePanel'
-import { DEFAULT_COLORS, PANEL_CANVAS_WIDTH } from './config'
-import AlphaPanel, { AlphaPanelInstance } from './AlphaPanel'
+import RgbPanel from './RgbPanel'
+import HuePanel from './HuePanel'
+import { DEFAULT_COLORS } from './config'
+import AlphaPanel from './AlphaPanel'
 import ModePanel from './ModePanel'
+import { getDefaultColor } from './util'
 
 class ColorBoard extends PureComponent<ColorBoardProps, ColorBoardState> {
     static defaultProps: ColorBoardProps = {
@@ -25,14 +26,9 @@ class ColorBoard extends PureComponent<ColorBoardProps, ColorBoardState> {
         format: 'rgba',
     }
 
-    rgbPanelInstanceRef = React.createRef<RgbPanelInstance>()
+    prevValue = this.props.value
 
-    huePanelInstanceRef = React.createRef<HuePanelInstance>()
-
-    alphaPanelInstanceRef = React.createRef<AlphaPanelInstance>()
-
-    prevPropValue = null
-
+    /** 是否受控 */
     get hasValue() {
         return 'value' in this.props && this.props.value !== undefined
     }
@@ -40,7 +36,7 @@ class ColorBoard extends PureComponent<ColorBoardProps, ColorBoardState> {
     constructor(props: ColorBoardProps) {
         super(props)
 
-        const { value, defaultValue, format } = props
+        const { format } = props
 
         this.state = {
             r: 0,
@@ -50,82 +46,29 @@ class ColorBoard extends PureComponent<ColorBoardProps, ColorBoardState> {
             h: 0,
             s: 0,
             l: 0,
-            currentValue: value ?? defaultValue ?? '#FF0000',
-            locking: false,
             mode: format || 'rgba',
         }
-
-        this.prevPropValue = value ?? defaultValue ?? null
     }
 
     componentDidMount() {
-        this.handleColorValueChange(this.state.currentValue)
+        const { value, defaultValue, format } = this.props
 
-        if (this.state.currentValue !== this.props.value && this.props.onChange) {
-            this.props.onChange(this.state.currentValue)
-        }
+        this.handleColorValueChange(value || defaultValue || getDefaultColor(format), true)
     }
 
-    componentDidUpdate() {
-        /**
-         * 下面的情况，不允许props的value改变state中的currentValue
-         * 1.面板处于拖动中
-         * 2.鼠标点下（未抬起）默认值的时候
-         */
-        if (!this.state.locking && this.props.value && this.props.value !== this.state.currentValue) {
-            this.handleColorValueChange(this.props.value)
+    componentDidUpdate(prevProps: ColorBoardProps) {
+        if (this.props.value !== prevProps.value) {
+            this.prevValue = prevProps.value
+
+            this.handleColorValueChange(this.props.value, true)
         }
-    }
-
-    updatePosition = () => {
-        const { r, g, b, h, a } = this.state
-
-        const huePosition = (PANEL_CANVAS_WIDTH * h) / 360
-
-        const alphaPosition = PANEL_CANVAS_WIDTH * (a ?? 1)
-
-        this.huePanelInstanceRef.current.setHuePanelPosition(huePosition)
-
-        this.rgbPanelInstanceRef.current.rgbToPosition([r, g, b])
-
-        this.alphaPanelInstanceRef.current.setAlphaPanelPosition(alphaPosition)
-    }
-
-    setCurrentValue = ([r, g, b, a]: number[]) => {
-        const { format } = this.props
-
-        const { mode } = this.state
-
-        let currentValue = ''
-
-        if (!format) {
-            if (mode === 'hex') {
-                const hex = rgbaArray2HexFormat([r, g, b, a])
-
-                currentValue = hex
-            } else if (mode === 'hsla') {
-                currentValue = hslArray2HslFormat(rgbaArray2HslArray([r, g, b, a]))
-            } else {
-                currentValue = rgbaArray2RgbFormat([r, g, b, a])
-            }
-        } else if (format === 'hex') {
-            const hex = rgbaArray2HexFormat([r, g, b, a])
-
-            currentValue = hex
-        } else if (format === 'hsla') {
-            currentValue = hslArray2HslFormat(rgbaArray2HslArray([r, g, b, a]))
-        } else {
-            currentValue = rgbaArray2RgbFormat([r, g, b, a])
-        }
-
-        this.setState({ currentValue })
     }
 
     handleModeChange = (mode: ColorBoardState['mode']) => {
         this.setState({ mode })
     }
 
-    handleColorValueChange = (value: string) => {
+    handleColorValueChange = (value: string, force?: boolean) => {
         const rgbaArray = parseColor(value as string)
 
         if (!rgbaArray) return
@@ -134,105 +77,50 @@ class ColorBoard extends PureComponent<ColorBoardProps, ColorBoardState> {
 
         const [h, s, l] = rgbaArray2HslArray([r, g, b, a])
 
-        this.setCurrentValue([r, g, b, a])
+        if (force || !this.hasValue) {
+            this.setState({ r, g, b, a, h, s, l })
+        }
 
-        this.setImmerState(
-            state => {
-                state.r = r
-                state.g = g
-                state.b = b
-                state.a = a
-                state.h = h
-                state.s = s
-                state.l = l
-            },
-            () => {
-                this.rgbPanelInstanceRef.current.setRgbPanelHue(h)
-                this.alphaPanelInstanceRef.current.setAlphaPanelHsl([h, s, l])
-                this.updatePosition()
-            }
-        )
+        this.dispatchPropChange([r, g, b, a, h, s, l])
     }
 
     handleRgbValueChange = (value: Uint8ClampedArray) => {
         const [r, g, b] = value as Uint8ClampedArray
         const [h, s, l] = rgbaArray2HslArray([r, g, b])
-        const { a } = this.state
 
-        this.setCurrentValue([r, g, b, a])
+        if (!this.hasValue) {
+            this.setState({ r, g, b, h, s, l })
+        }
 
-        this.setImmerState(
-            state => {
-                state.r = r
-                state.g = g
-                state.b = b
-                state.h = h
-                state.s = s
-                state.l = l
-            },
-            () => {
-                this.alphaPanelInstanceRef.current.setAlphaPanelHsl([h, s, l])
-            }
-        )
+        this.dispatchPropChange([r, g, b, this.state.a, h, s, l])
     }
 
     handleHueValueChange = (h: number) => {
-        const { s, l, a } = this.state
+        const { s, l } = this.state
 
         const [r, g, b] = hslaArray2RgbaArray([h, s, l])
 
-        this.setCurrentValue([r, g, b, a])
+        if (!this.hasValue) {
+            this.setState({ r, g, b, h, s, l })
+        }
 
-        this.setImmerState(
-            state => {
-                state.r = r
-                state.g = g
-                state.b = b
-                state.h = h
-                state.s = s
-                state.l = l
-            },
-            () => {
-                this.rgbPanelInstanceRef.current.setRgbPanelHue(h)
-                this.alphaPanelInstanceRef.current.setAlphaPanelHsl([h, s, l])
-            }
-        )
+        this.dispatchPropChange([r, g, b, this.state.a, h, s, l])
     }
 
     handleAlphaValueChange = (alpha: number) => {
-        const { r, g, b } = this.state
+        const { r, g, b, h, s, l } = this.state
 
-        this.setState({ a: alpha })
+        if (!this.hasValue) {
+            this.setState({ a: alpha })
+        }
 
-        this.setCurrentValue([r, g, b, alpha])
+        this.dispatchPropChange([r, g, b, alpha, h, s, l])
     }
 
-    handlePaintInit = () => {
-        this.handleColorValueChange(this.state.currentValue)
-    }
-
-    handleRgbPanelMouseMove = (value: Uint8ClampedArray) => {
-        this.setState({ locking: true })
-
-        this.handleRgbValueChange(value)
-    }
-
-    handleHuePanelMouseMove = (h: number) => {
-        this.setState({ locking: true })
-
-        this.handleHueValueChange(h)
-    }
-
-    handleAlphaPanelMouseMove = (alpha: number) => {
-        this.setState({ locking: true })
-
-        this.handleAlphaValueChange(alpha)
-    }
-
-    dispatchPropChange = () => {
+    dispatchPropChange = ([r, b, g, a, h, s, l]: number[]) => {
         const { format, onChange } = this.props
 
-        const { r, b, g, a, h, s, l, mode } = this.state
+        const { mode } = this.state
 
         if (!onChange) return
 
@@ -254,52 +142,17 @@ class ColorBoard extends PureComponent<ColorBoardProps, ColorBoardState> {
             value = rgbaArray2RgbFormat([r, g, b, a])
         }
 
-        if (value !== this.prevPropValue) {
+        if (value !== this.prevValue) {
             onChange(value)
-
-            this.prevPropValue = value
         }
     }
 
-    handlePanelMouseUp = () => {
-        this.dispatchPropChange()
-
-        this.setState({ locking: false })
-    }
-
-    handleDefaultColorSpanMouseDown = (color: string) => {
-        this.setState({ locking: true })
-
+    handleDefaultColorSpanClick = (color: string) => {
         this.handleColorValueChange(color)
     }
 
-    handleDefaultColorSpanMouseUp = () => {
-        this.dispatchPropChange()
-
-        this.setState({ locking: false })
-    }
-
     handleModeInputChange = (params: OnModalPanelInputValueChangeParams) => {
-        this.setCurrentValue([params.r, params.g, params.b, params.a])
-
-        this.setState({ ...params }, () => {
-            const { h, s, l, r, g, b } = this.state
-
-            /** 受控不处理 */
-            if (this.hasValue) {
-                this.dispatchPropChange()
-
-                return
-            }
-
-            this.updatePosition()
-
-            this.rgbPanelInstanceRef.current.setRgbPanelHue(h)
-
-            this.rgbPanelInstanceRef.current.rgbToPosition([r, g, b])
-
-            this.alphaPanelInstanceRef.current.setAlphaPanelHsl([h, s, l])
-        })
+        this.setState({ ...params })
     }
 
     renderDefaultColors = () => {
@@ -313,8 +166,7 @@ class ColorBoard extends PureComponent<ColorBoardProps, ColorBoardState> {
                     <span
                         key={i}
                         style={{ backgroundColor: color }}
-                        onMouseUp={this.handleDefaultColorSpanMouseUp}
-                        onMouseDown={this.handleDefaultColorSpanMouseDown.bind(this, color)}
+                        onClick={this.handleDefaultColorSpanClick.bind(this, color)}
                     />
                 ))}
             </div>
@@ -330,12 +182,7 @@ class ColorBoard extends PureComponent<ColorBoardProps, ColorBoardState> {
 
         return (
             <div className={className} style={style}>
-                <RgbPanel
-                    onMouseMove={this.handleRgbPanelMouseMove}
-                    ref={this.rgbPanelInstanceRef}
-                    onInit={this.handlePaintInit}
-                    onMouseUp={this.handlePanelMouseUp}
-                />
+                <RgbPanel onChange={this.handleRgbValueChange} hue={h} rgb={[r, g, b]} />
 
                 {showMode && (
                     <ModePanel
@@ -361,16 +208,8 @@ class ColorBoard extends PureComponent<ColorBoardProps, ColorBoardState> {
                     </div>
 
                     <div className={colorPickerClass('panel-area')}>
-                        <HuePanel
-                            onMouseMove={this.handleHuePanelMouseMove}
-                            ref={this.huePanelInstanceRef}
-                            onMouseUp={this.handlePanelMouseUp}
-                        />
-                        <AlphaPanel
-                            onMouseMove={this.handleAlphaPanelMouseMove}
-                            ref={this.alphaPanelInstanceRef}
-                            onMouseUp={this.handlePanelMouseUp}
-                        />
+                        <HuePanel onChange={this.handleHueValueChange} hue={h} />
+                        <AlphaPanel onChange={this.handleAlphaValueChange} alpha={a} h={h} s={s} l={l} />
                     </div>
                 </div>
 
