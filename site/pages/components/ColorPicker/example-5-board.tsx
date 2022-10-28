@@ -6,12 +6,12 @@
  */
 
 import React from 'react'
-import ColorBoard from '@/component/ColorPicker/ColorBoard'
+import { ColorPicker } from 'ethan-ui'
 
 export default function() {
     return (
         <>
-            <ColorBoard showMode />
+            <ColorPicker.ColorBoard showMode value="#7e3c54" />
         </>
     )
 }

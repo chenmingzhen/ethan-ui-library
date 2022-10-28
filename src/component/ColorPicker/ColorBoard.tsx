@@ -19,10 +19,10 @@ import AlphaPanel, { AlphaPanelInstance } from './AlphaPanel'
 import ModePanel from './ModePanel'
 
 class ColorBoard extends PureComponent<ColorBoardProps, ColorBoardState> {
-    static defaultProps = {
-        position: 'left-bottom',
-
+    static defaultProps: ColorBoardProps = {
         defaultColors: DEFAULT_COLORS,
+
+        format: 'rgba',
     }
 
     rgbPanelInstanceRef = React.createRef<RgbPanelInstance>()
@@ -326,7 +326,7 @@ class ColorBoard extends PureComponent<ColorBoardProps, ColorBoardState> {
 
         const { r, g, b, a, h, s, l, mode } = this.state
 
-        const className = classnames(this.props.className)
+        const className = classnames(this.props.className, colorPickerClass('_', 'board'))
 
         return (
             <div className={className} style={style}>

@@ -4,40 +4,42 @@
 @colorPicker-prefix: ~'@{ethan-prefix}-colorPicker';
 
 .@{colorPicker-prefix} {
-    width: 55px;
-    height: 30px;
-    border: 1px solid #d8d8d8;
-    border-radius: 2px;
-    display: inline-block;
-    position: relative;
-
-    &-result {
-        background-image: linear-gradient(-45deg, #cdcdcd 25%, transparent 0),
-            linear-gradient(45deg, #cdcdcd 25%, transparent 0), linear-gradient(-45deg, transparent 75%, #cdcdcd 0),
-            linear-gradient(45deg, transparent 75%, #cdcdcd 0);
-        background-position: 0 0, 0 -5.5px, -5.5px 5.5px, 5.5px 0;
-        background-size: 11px 11px;
+    &-preview-btn {
+        width: 55px;
+        height: 30px;
+        border: 1px solid #d8d8d8;
         border-radius: 2px;
-        width: 26px;
-        height: 26px;
-        margin: 2px;
-        overflow: hidden;
+        display: inline-block;
+        position: relative;
 
-        .@{colorPicker-prefix}-color {
-            width: 100%;
-            height: 100%;
+        .@{colorPicker-prefix}-result {
+            background-image: linear-gradient(-45deg, #cdcdcd 25%, transparent 0),
+                linear-gradient(45deg, #cdcdcd 25%, transparent 0), linear-gradient(-45deg, transparent 75%, #cdcdcd 0),
+                linear-gradient(45deg, transparent 75%, #cdcdcd 0);
+            background-position: 0 0, 0 -5.5px, -5.5px 5.5px, 5.5px 0;
+            background-size: 11px 11px;
+            border-radius: 2px;
+            width: 26px;
+            height: 26px;
+            margin: 2px;
+            overflow: hidden;
+
+            .@{colorPicker-prefix}-color {
+                width: 100%;
+                height: 100%;
+            }
         }
-    }
 
-    &-caret {
-        width: 14px;
-        height: 14px;
-        position: absolute;
-        right: 10%;
-        top: 25%;
+        .@{colorPicker-prefix}-caret {
+            width: 14px;
+            height: 14px;
+            position: absolute;
+            right: 10%;
+            top: 25%;
 
-        svg {
-            fill: var(--gray-500, #adb5bd);
+            svg {
+                fill: var(--gray-500, #adb5bd);
+            }
         }
     }
 
@@ -47,14 +49,13 @@
         border-color: #d0d0d0;
     }
 
-    &-dropdown {
+    &-board {
         width: 255px;
         font-size: 0;
         box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-        position: absolute;
         border-radius: 2px;
         background: #fff;
-        transform-origin: 0 0;
+        position: relative;
 
         .@{colorPicker-prefix}-mode {
             position: relative;

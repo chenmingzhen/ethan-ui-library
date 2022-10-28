@@ -9,6 +9,7 @@ import Caret from '../icons/Caret'
 import AbsoluteList from '../List/AbsoluteList'
 import AnimationList from '../List'
 import ColorBoard from './ColorBoard'
+import { getDefaultColor } from './util'
 
 const ColorPicker: React.FC<ColorPickerProps> = function(props) {
     const {
@@ -20,10 +21,11 @@ const ColorPicker: React.FC<ColorPickerProps> = function(props) {
         defaultValue,
         position = 'left-bottom',
         onChange,
+        format = 'rgba',
         ...other
     } = props
 
-    const [currentValue, updateCurrentValue] = useState(value || defaultValue || '#FF0000')
+    const [currentValue, updateCurrentValue] = useState(value || defaultValue || getDefaultColor(format))
 
     const [show, updateShow] = useState(false)
 
@@ -37,7 +39,7 @@ const ColorPicker: React.FC<ColorPickerProps> = function(props) {
         updateCurrentValue(value)
     }, [value])
 
-    const cls = classnames(className, colorPickerClass('_', size && 'size', disabled && 'disabled'))
+    const cls = classnames(className, colorPickerClass('_', 'preview-btn', size && 'size', disabled && 'disabled'))
 
     const handleClickAway = useCallback((evt: MouseEvent) => {
         const desc = isDescendent(evt.target as HTMLElement, colorPickerId)
@@ -84,15 +86,8 @@ const ColorPicker: React.FC<ColorPickerProps> = function(props) {
 
         return (
             <AbsoluteList absolute focus={show} position={position} getParentElement={() => containerRef.current}>
-                <AnimationList
-                    lazyDom
-                    show={show}
-                    animationTypes={['scale-y', 'fade']}
-                    duration="fast"
-                    data-id={colorPickerId}
-                    className={colorPickerClass('dropdown')}
-                >
-                    <ColorBoard {...other} value={value} onChange={handleColorBoardChange} />
+                <AnimationList lazyDom show={show} animationTypes={['fade']} duration="fast" data-id={colorPickerId}>
+                    <ColorBoard {...other} format={format} value={value} onChange={handleColorBoardChange} />
                 </AnimationList>
             </AbsoluteList>
         )

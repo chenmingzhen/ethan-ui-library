@@ -7,7 +7,7 @@
 
 import React, { useCallback, useState } from 'react'
 import { Input } from 'ethan-ui'
-import ColorPicker from '@/component/ColorPicker/ColorPicker'
+import { ColorPicker } from 'ethan-ui'
 
 export default function() {
     const [color, updateColor] = useState('red')
@@ -15,12 +15,12 @@ export default function() {
     const handleChange = useCallback(c => {
         console.log('onChange:', c)
 
-        updateColor(c)
+        // updateColor(c)
     }, [])
 
     return (
         <div>
-            <ColorPicker value={color} onChange={handleChange} format="hsla" />
+            <ColorPicker value={color} onChange={handleChange} format="hsla" showMode />
 
             <Input
                 placeholder="Input the color"

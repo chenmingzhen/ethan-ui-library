@@ -6,7 +6,7 @@
  */
 
 import React from 'react'
-import ColorPicker from '@/component/ColorPicker/ColorPicker'
+import { ColorPicker } from 'ethan-ui'
 
 export default function() {
     return (
