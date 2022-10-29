@@ -404,15 +404,24 @@ export function hslArray2HslFormat(arr: number[]) {
 export function rgbaArray2HexFormat([r, g, b, a]: number[]) {
     const calAlpha = !isEmpty(a) && a !== 1
     let o
-    let rr = floor(r).toString(16)
-    let gg = floor(g).toString(16)
-    let bb = floor(b).toString(16)
+    let rr = floor(r)
+        .toString(16)
+        .toUpperCase()
+    let gg = floor(g)
+        .toString(16)
+        .toUpperCase()
+    let bb = floor(b)
+        .toString(16)
+        .toUpperCase()
 
     if (rr.length !== 2) rr = `0${rr}`
     if (gg.length !== 2) gg = `0${gg}`
     if (bb.length !== 2) bb = `0${bb}`
 
-    if (calAlpha) o = floor(a * 255).toString(16)
+    if (calAlpha)
+        o = floor(a * 255)
+            .toString(16)
+            .toUpperCase()
 
     return calAlpha ? `#${rr}${gg}${bb}${o}` : `#${rr}${gg}${bb}`
 }

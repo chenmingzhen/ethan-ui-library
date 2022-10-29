@@ -1,6 +1,6 @@
 import { colorPickerClass } from '@/styles'
 import { getRangeValue } from '@/utils/numbers'
-import React, { useCallback, useLayoutEffect, useRef, useState } from 'react'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { COLOR_PICKER_DOT_LENGTH, PANEL_CANVAS_WIDTH } from './config'
 import { HuePanelProps } from './type'
 
@@ -13,7 +13,7 @@ const HuePanel: React.FC<HuePanelProps> = props => {
 
     const { hue, onChange } = props
 
-    useLayoutEffect(() => {
+    useEffect(() => {
         const canvas = canvasRef.current
 
         const ctx = canvas.getContext('2d', { willReadFrequently: true })
@@ -35,7 +35,7 @@ const HuePanel: React.FC<HuePanelProps> = props => {
         ctx.fillRect(0, 0, width, height)
     }, [])
 
-    useLayoutEffect(() => {
+    useEffect(() => {
         const huePosition = (PANEL_CANVAS_WIDTH * hue) / 360
 
         updateXPosition(huePosition - COLOR_PICKER_DOT_LENGTH / 2)

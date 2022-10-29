@@ -1,6 +1,6 @@
 import { colorPickerClass } from '@/styles'
 import { COLOR_MATCH, hslaArray2RgbaArray, parseColor, rgbaArray2HexFormat, rgbaArray2HslArray } from '@/utils/color'
-import React, { useCallback, useEffect, useRef, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import Button from '../Button'
 import { FontAwesome } from '../Icon'
 import Input from '../Input'
@@ -14,32 +14,19 @@ const ModePanel: React.FC<ModePanelProps> = function(props) {
 
     const [alpha, updateAlpha] = useState<string | number>(props.a)
 
-    /** 输入中，不允许props改变hex alpha */
-    const [inputting, updateInputting] = useState(false)
-
-    const lockTimer = useRef<NodeJS.Timeout>()
+    const [focus, updateFocus] = useState(false)
 
     useEffect(() => {
-        if (inputting) return
+        if (focus) return
 
         updateHex(rgbaArray2HexFormat([props.r, props.g, props.b, props.a]))
 
         updateAlpha(props.a)
-    }, [props.r, props.g, props.b, props.a])
+    }, [focus, props.r, props.g, props.b, props.a])
 
-    function addLock() {
-        updateInputting(true)
-
-        if (lockTimer.current) {
-            clearTimeout(lockTimer.current)
-
-            lockTimer.current = null
-        }
-
-        lockTimer.current = setTimeout(() => {
-            updateInputting(false)
-        }, 0)
-    }
+    const handleFocus = useCallback(() => {
+        updateFocus(true)
+    }, [])
 
     const handleModeChange = useCallback(() => {
         let newMode = mode
@@ -58,9 +45,11 @@ const ModePanel: React.FC<ModePanelProps> = function(props) {
     function handleHexInputChange(inputValue: string) {
         updateHex(inputValue)
 
-        addLock()
-
         if (!inputValue) return
+
+        const color = parseColor(inputValue)
+
+        if (!color) return
 
         let { r, g, b, a, h, s, l } = props
 
@@ -131,8 +120,6 @@ const ModePanel: React.FC<ModePanelProps> = function(props) {
 
         const numValue = Number(inputValue)
 
-        addLock()
-
         updateAlpha(inputValue || numValue)
 
         if ((!/^\d(.)\d*$/.test(inputValue) && inputValue !== '') || numValue > 1 || numValue < 0) return
@@ -143,6 +130,8 @@ const ModePanel: React.FC<ModePanelProps> = function(props) {
     }
 
     function handleHexInputBlur() {
+        updateFocus(false)
+
         if (!parseColor(hex)) {
             const { r, g, b, a } = props
 
@@ -151,6 +140,8 @@ const ModePanel: React.FC<ModePanelProps> = function(props) {
     }
 
     function handleAlphaInputBlur() {
+        updateFocus(false)
+
         if (!/^\d(.)\d*$/.test(alpha as string) || Number(alpha) > 1 || Number(alpha) < 0) {
             updateAlpha(props.a)
         }
@@ -165,6 +156,7 @@ const ModePanel: React.FC<ModePanelProps> = function(props) {
                 maxLength={9}
                 width={200}
                 onBlur={handleHexInputBlur}
+                onFocus={handleFocus}
             />
         )
     }
@@ -195,6 +187,9 @@ const ModePanel: React.FC<ModePanelProps> = function(props) {
                     width={50}
                     className={colorPickerClass('input')}
                     onBlur={handleAlphaInputBlur}
+                    onFocus={handleFocus}
+                    type="number"
+                    digits={3}
                 />
             )
         }

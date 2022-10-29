@@ -117,7 +117,7 @@ class ColorBoard extends PureComponent<ColorBoardProps, ColorBoardState> {
         this.dispatchPropChange([r, g, b, alpha, h, s, l])
     }
 
-    dispatchPropChange = ([r, b, g, a, h, s, l]: number[]) => {
+    dispatchPropChange = ([r, g, b, a, h, s, l]: [number, number, number, number, number, number, number]) => {
         const { format, onChange } = this.props
 
         const { mode } = this.state
@@ -152,7 +152,13 @@ class ColorBoard extends PureComponent<ColorBoardProps, ColorBoardState> {
     }
 
     handleModeInputChange = (params: OnModalPanelInputValueChangeParams) => {
-        this.setState({ ...params })
+        const { r, g, b, a, h, s, l } = params
+
+        if (!this.hasValue) {
+            this.setState({ ...params })
+        }
+
+        this.dispatchPropChange([r, g, b, a, h, s, l])
     }
 
     renderDefaultColors = () => {

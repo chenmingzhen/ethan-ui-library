@@ -1,9 +1,11 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react'
+import React, { useCallback, useRef, useState } from 'react'
 import classnames from 'classnames'
 import { colorPickerClass } from '@/styles'
 import { isDescendent } from '@/utils/dom/element'
 import { getUidStr } from '@/utils/uid'
-import withControl from '@/hoc/withControl'
+import { useUpdateEffect } from 'react-use'
+import { debounce } from '@/utils/func'
+import useSafeState from '@/hooks/useSafeState'
 import { ColorPickerProps } from './type'
 import Caret from '../icons/Caret'
 import AbsoluteList from '../List/AbsoluteList'
@@ -18,6 +20,7 @@ const ColorPicker: React.FC<ColorPickerProps> = function(props) {
         className,
         style,
         value,
+        defaultValue,
         position = 'left-bottom',
         onChange,
         format = 'rgba',
@@ -26,17 +29,23 @@ const ColorPicker: React.FC<ColorPickerProps> = function(props) {
 
     const [show, updateShow] = useState(false)
 
+    const [currentValue, updateCurrentValue] = useSafeState(value || defaultValue || getDefaultColor(format))
+
     const colorPickerId = useRef(getUidStr()).current
 
     const isRenderRef = useRef(false)
 
     const containerRef = useRef<HTMLDivElement>()
 
-    useEffect(() => {
-        if (!value) {
-            onChange(getDefaultColor(format))
-        }
-    }, [])
+    const caller = useRef(
+        debounce(color => {
+            updateCurrentValue(color)
+        }, 3)
+    ).current
+
+    useUpdateEffect(() => {
+        caller(value)
+    }, [value])
 
     const cls = classnames(className, colorPickerClass('_', 'preview-btn', size && 'size', disabled && 'disabled'))
 
@@ -49,6 +58,18 @@ const ColorPicker: React.FC<ColorPickerProps> = function(props) {
 
         clearClickAway()
     }, [])
+
+    const handleChange = (color: string) => {
+        if (onChange) {
+            onChange(color)
+        }
+
+        const hasValue = 'value' in props && props.value !== undefined
+
+        if (hasValue) return
+
+        updateCurrentValue(color)
+    }
 
     const bindClickAway = () => {
         document.addEventListener('click', handleClickAway)
@@ -78,7 +99,7 @@ const ColorPicker: React.FC<ColorPickerProps> = function(props) {
         return (
             <AbsoluteList absolute focus={show} position={position} getParentElement={() => containerRef.current}>
                 <AnimationList lazyDom show={show} animationTypes={['fade']} duration="fast" data-id={colorPickerId}>
-                    <ColorBoard {...other} format={format} value={value} onChange={onChange} />
+                    <ColorBoard {...other} format={format} value={currentValue} onChange={handleChange} />
                 </AnimationList>
             </AbsoluteList>
         )
@@ -87,7 +108,7 @@ const ColorPicker: React.FC<ColorPickerProps> = function(props) {
     return (
         <div className={cls} style={style} ref={containerRef} data-id={colorPickerId}>
             <div className={colorPickerClass('result')} onClick={togglePanel}>
-                <div className={colorPickerClass('color')} style={{ backgroundColor: value }} />
+                <div className={colorPickerClass('color')} style={{ backgroundColor: currentValue }} />
             </div>
             <span className={colorPickerClass('caret')} onClick={togglePanel}>
                 <Caret />
@@ -98,4 +119,4 @@ const ColorPicker: React.FC<ColorPickerProps> = function(props) {
     )
 }
 
-export default withControl(React.memo(ColorPicker))
+export default React.memo(ColorPicker)
