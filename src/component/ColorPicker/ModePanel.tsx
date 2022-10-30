@@ -120,7 +120,7 @@ const ModePanel: React.FC<ModePanelProps> = function(props) {
 
         const numValue = Number(inputValue)
 
-        updateAlpha(inputValue || numValue)
+        updateAlpha(inputValue)
 
         if ((!/^\d(.)\d*$/.test(inputValue) && inputValue !== '') || numValue > 1 || numValue < 0) return
 
@@ -183,7 +183,6 @@ const ModePanel: React.FC<ModePanelProps> = function(props) {
                     size="small"
                     key={key}
                     value={alpha}
-                    maxLength={4}
                     width={50}
                     className={colorPickerClass('input')}
                     onBlur={handleAlphaInputBlur}

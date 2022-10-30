@@ -36,7 +36,17 @@ class ColorBoard extends PureComponent<ColorBoardProps, ColorBoardState> {
     constructor(props: ColorBoardProps) {
         super(props)
 
-        const { format } = props
+        let mode
+
+        if (props.mode) {
+            if (props.mode === 'hsla') {
+                mode = 'hsla'
+            } else if (props.mode === 'hex') {
+                mode = 'hex'
+            } else {
+                mode = 'rgba'
+            }
+        }
 
         this.state = {
             r: 0,
@@ -46,7 +56,7 @@ class ColorBoard extends PureComponent<ColorBoardProps, ColorBoardState> {
             h: 0,
             s: 0,
             l: 0,
-            mode: format || 'rgba',
+            mode,
         }
     }
 
@@ -81,7 +91,9 @@ class ColorBoard extends PureComponent<ColorBoardProps, ColorBoardState> {
             this.setState({ r, g, b, a, h, s, l })
         }
 
-        this.dispatchPropChange([r, g, b, a, h, s, l])
+        if (!force) {
+            this.dispatchPropChange([r, g, b, a, h, s, l])
+        }
     }
 
     handleRgbValueChange = (value: Uint8ClampedArray) => {
@@ -142,7 +154,12 @@ class ColorBoard extends PureComponent<ColorBoardProps, ColorBoardState> {
             value = rgbaArray2RgbFormat([r, g, b, a])
         }
 
-        if (value !== this.prevValue) {
+        if (this.hasValue) {
+            if (value !== this.props.value) {
+                onChange(value)
+            }
+        } else if (value !== this.prevValue) {
+            this.prevValue = value
             onChange(value)
         }
     }
@@ -180,7 +197,7 @@ class ColorBoard extends PureComponent<ColorBoardProps, ColorBoardState> {
     }
 
     render() {
-        const { style, showMode } = this.props
+        const { style } = this.props
 
         const { r, g, b, a, h, s, l, mode } = this.state
 
@@ -190,7 +207,7 @@ class ColorBoard extends PureComponent<ColorBoardProps, ColorBoardState> {
             <div className={className} style={style}>
                 <RgbPanel onChange={this.handleRgbValueChange} hue={h} rgb={[r, g, b]} />
 
-                {showMode && (
+                {mode && (
                     <ModePanel
                         r={r}
                         g={g}

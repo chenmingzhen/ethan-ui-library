@@ -3,7 +3,6 @@ import React from 'react'
 export interface ColorPickerProps {
     value?: string
     disabled?: boolean
-    showMode?: boolean
     size?: 'small' | 'large' | 'default'
     format?: 'rgba' | 'hex' | 'hsla'
     defaultColors?: string[]
@@ -13,6 +12,7 @@ export interface ColorPickerProps {
     position?: 'left-bottom' | 'left-top' | 'right-bottom' | 'right-top'
     defaultValue?: string
     onChange?: (color: string) => void
+    mode?: 'rgba' | 'hex' | 'hsla' | boolean
 }
 
 export type ColorBoardProps = Omit<ColorPickerProps, 'disabled' | 'position' | 'size'>
