@@ -93,7 +93,14 @@ const ColorPicker: React.FC<ColorPickerProps> = function(props) {
         return (
             <AbsoluteList absolute focus={show} position={position} getParentElement={() => containerRef.current}>
                 <AnimationList lazyDom show={show} animationTypes={['fade']} duration="fast" data-id={colorPickerId}>
-                    <ColorBoard {...other} mode={mode} format={format} value={currentValue} onChange={handleChange} />
+                    <ColorBoard
+                        {...other}
+                        disabled={disabled}
+                        mode={mode}
+                        format={format}
+                        value={currentValue}
+                        onChange={handleChange}
+                    />
                 </AnimationList>
             </AbsoluteList>
         )

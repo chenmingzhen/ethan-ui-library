@@ -78,7 +78,7 @@ class ColorBoard extends PureComponent<ColorBoardProps, ColorBoardState> {
         this.setState({ mode })
     }
 
-    handleColorValueChange = (value: string, force?: boolean) => {
+    handleColorValueChange = (value: string, propUpdate?: boolean) => {
         const rgbaArray = parseColor(value as string)
 
         if (!rgbaArray) return
@@ -87,16 +87,18 @@ class ColorBoard extends PureComponent<ColorBoardProps, ColorBoardState> {
 
         const [h, s, l] = rgbaArray2HslArray([r, g, b, a])
 
-        if (force || !this.hasValue) {
+        if (propUpdate || (!this.hasValue && !this.props.disabled)) {
             this.setState({ r, g, b, a, h, s, l })
         }
 
-        if (!force) {
+        if (!propUpdate && !this.props.disabled) {
             this.dispatchPropChange([r, g, b, a, h, s, l])
         }
     }
 
     handleRgbValueChange = (value: Uint8ClampedArray) => {
+        if (this.props.disabled) return
+
         const [r, g, b] = value as Uint8ClampedArray
         const [h, s, l] = rgbaArray2HslArray([r, g, b])
 
@@ -108,6 +110,8 @@ class ColorBoard extends PureComponent<ColorBoardProps, ColorBoardState> {
     }
 
     handleHueValueChange = (h: number) => {
+        if (this.props.disabled) return
+
         const { s, l } = this.state
 
         const [r, g, b] = hslaArray2RgbaArray([h, s, l])
@@ -120,6 +124,8 @@ class ColorBoard extends PureComponent<ColorBoardProps, ColorBoardState> {
     }
 
     handleAlphaValueChange = (alpha: number) => {
+        if (this.props.disabled) return
+
         const { r, g, b, h, s, l } = this.state
 
         if (!this.hasValue) {
@@ -169,6 +175,8 @@ class ColorBoard extends PureComponent<ColorBoardProps, ColorBoardState> {
     }
 
     handleModeInputChange = (params: OnModalPanelInputValueChangeParams) => {
+        if (this.props.disabled) return
+
         const { r, g, b, a, h, s, l } = params
 
         if (!this.hasValue) {

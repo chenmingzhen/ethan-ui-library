@@ -19,3 +19,7 @@
 | absolute      | boolean                                                      | true          | Whether a drop-down box is displayed in the body |
 | defaultValue  | string                                                       | -             | The default selected color                       |
 | onChange      | (color:string)=>void                                         | -             | Callback when color changes                      |
+
+### ColorPicker.ColorBoard
+
+**_ColorPicker.ColorBoard props consistent with ColorPicker, but does not contain position,size _**

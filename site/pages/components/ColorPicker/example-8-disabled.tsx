@@ -10,8 +10,10 @@ import { ColorPicker } from 'ethan-ui'
 
 export default function() {
     return (
-        <>
-            <ColorPicker disabled />
-        </>
+        <div style={{ display: 'flex' }}>
+            <ColorPicker disabled defaultValue="#23B613" />
+
+            <ColorPicker.ColorBoard disabled defaultValue="#23B613" mode style={{ marginLeft: 20 }} />
+        </div>
     )
 }

@@ -22,4 +22,4 @@
 
 ### ColorPicker.ColorBoard
 
-**_ColorPicker.ColorBoard 与 ColorPicker 保持一致的 props，但是不包含 disabled,position,size _**
+**_ColorPicker.ColorBoard 与 ColorPicker 保持一致的 props，但是不包含 position,size _**

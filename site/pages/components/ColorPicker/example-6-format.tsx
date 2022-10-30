@@ -9,7 +9,7 @@ import React, { useState } from 'react'
 import { ColorPicker, Select } from 'ethan-ui'
 
 export default function() {
-    const [color, updateColor] = useState('#C940C6')
+    const [color, updateColor] = useState('#3F51B5')
 
     const [format, updateFormat] = useState<'rgba' | 'hex' | 'hsla'>('hex')
 

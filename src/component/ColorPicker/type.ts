@@ -15,7 +15,7 @@ export interface ColorPickerProps {
     mode?: 'rgba' | 'hex' | 'hsla' | boolean
 }
 
-export type ColorBoardProps = Omit<ColorPickerProps, 'disabled' | 'position' | 'size'>
+export type ColorBoardProps = Omit<ColorPickerProps, 'position' | 'size'>
 
 export interface ColorBoardState {
     r: number
