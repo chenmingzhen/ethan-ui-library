@@ -59,7 +59,7 @@ export interface AlphaPanelProps {
     l: number
 }
 
-export type OnModalPanelInputValueChangeParams = Omit<ColorBoardState, 'locking' | 'currentValue' | 'mode'>
+export type OnModalPanelInputValueChangeParams = Omit<ColorBoardState, 'mode'>
 
 export interface ModePanelProps {
     mode: ColorBoardState['mode']

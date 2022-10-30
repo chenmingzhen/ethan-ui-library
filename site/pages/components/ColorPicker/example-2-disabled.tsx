@@ -1,8 +1,8 @@
 /**
  * cn - 禁用
- *    -- 基本的使用
+ *    -- 设置 disabled 属性禁用组件
  * en - Disabled
- *    -- Basic usage
+ *    -- Set the disabled property to disable the component.
  */
 
 import React from 'react'

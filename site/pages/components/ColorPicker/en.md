@@ -10,7 +10,6 @@
 | ------------- | ------------------------------------------------------------ | ------------- | ------------------------------------------------ |
 | value         | string                                                       | -             | The selected color                               |
 | disabled      | boolean                                                      | false         | Whether to disabled                              |
-| showMode      | boolean                                                      | false         | Whether to display color modes                   |
 | size          | 'small' \| 'large' \| 'default'                              | 'default'     | Size                                             |
 | mode          | 'rgba' \| 'hex' \| 'hsla'                                    | 'rgba'        | Show patterns of color                           |
 | defaultColors | string[]                                                     | []            | Customize the color tray                         |

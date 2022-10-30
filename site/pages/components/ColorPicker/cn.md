@@ -10,7 +10,6 @@
 | ------------- | ------------------------------------------------------------ | ------------- | ------------------------ |
 | value         | string                                                       | -             | 选中的颜色               |
 | disabled      | boolean                                                      | false         | 是否禁止                 |
-| showMode      | boolean                                                      | false         | 是否展示颜色模式         |
 | size          | 'small' \| 'large' \| 'default'                              | 'default'     | 大小                     |
 | mode          | 'rgba' \| 'hex' \| 'hsla'                                    | 'rgba'        | 颜色展示模式             |
 | defaultColors | string[]                                                     | []            | 自定义颜色盘             |
@@ -20,3 +19,7 @@
 | absolute      | boolean                                                      | true          | 是否在 body 中弹出下拉框 |
 | defaultValue  | string                                                       | -             | 默认选中的颜色           |
 | onChange      | (color:string)=>void                                         | -             | 颜色改变时回调           |
+
+### ColorPicker.ColorBoard
+
+**_ColorPicker.ColorBoard 与 ColorPicker 保持一致的 props，但是不包含 disabled,position,size _**

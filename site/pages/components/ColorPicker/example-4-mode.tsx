@@ -1,8 +1,8 @@
 /**
  * cn - 模式
- *    -- 基本的使用
+ *    -- ColorPicker提供三种模式(rgba,hsla,hex)切换
  * en - Mode
- *    -- Basic usage
+ *    -- ColorPicker provides three modes (rgba,hsla,hex) toggle
  */
 
 import React from 'react'
@@ -11,7 +11,7 @@ import { ColorPicker } from 'ethan-ui'
 export default function() {
     return (
         <>
-            <ColorPicker showMode />
+            <ColorPicker mode="hex" defaultValue="#004dcf" />
         </>
     )
 }

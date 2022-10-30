@@ -11,7 +11,7 @@ import { ColorPicker } from 'ethan-ui'
 export default function() {
     return (
         <>
-            <ColorPicker defaultValue="red" />
+            <ColorPicker defaultValue="#ECC626" />
         </>
     )
 }

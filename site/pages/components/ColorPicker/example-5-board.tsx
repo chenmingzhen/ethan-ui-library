@@ -1,17 +1,25 @@
 /**
  * cn - 色版
- *    -- 基本的使用
+ *    -- 使用ColorBoard组件单独显示色板
  * en - ColorBoard
- *    -- Basic usage
+ *    -- Display ColorBoard separately
  */
 
-import React from 'react'
+import React, { useCallback } from 'react'
 import { ColorPicker } from 'ethan-ui'
 
+const style = { marginRight: 20, display: 'inline-block' }
+
 export default function() {
+    const handleChange = useCallback(console.log, [])
+
     return (
         <>
-            <ColorPicker.ColorBoard showMode value="#7e3c54" />
+            <ColorPicker.ColorBoard defaultValue="#C940C6" mode onChange={handleChange} style={style} />
+
+            <ColorPicker.ColorBoard defaultValue="#7E3C54" mode="hsla" onChange={handleChange} style={style} />
+
+            <ColorPicker.ColorBoard defaultValue="#517B3B" mode="hex" onChange={handleChange} style={style} />
         </>
     )
 }
