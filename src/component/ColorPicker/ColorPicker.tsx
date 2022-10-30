@@ -24,6 +24,7 @@ const ColorPicker: React.FC<ColorPickerProps> = function(props) {
         onChange,
         mode,
         format = 'rgba',
+        showIcon = true,
         ...other
     } = props
 
@@ -41,7 +42,7 @@ const ColorPicker: React.FC<ColorPickerProps> = function(props) {
         updateCurrentValue(value)
     }, [value])
 
-    const cls = classnames(className, colorPickerClass('_', 'preview-btn', size && 'size', disabled && 'disabled'))
+    const cls = classnames(className, colorPickerClass('_', 'preview-btn', size && size, disabled && 'disabled'))
 
     const handleClickAway = useCallback((evt: MouseEvent) => {
         const desc = isDescendent(evt.target as HTMLElement, colorPickerId)
@@ -111,9 +112,11 @@ const ColorPicker: React.FC<ColorPickerProps> = function(props) {
             <div className={colorPickerClass('result')} onClick={togglePanel}>
                 <div className={colorPickerClass('color')} style={{ backgroundColor: currentValue }} />
             </div>
-            <span className={colorPickerClass('caret')} onClick={togglePanel}>
-                <Caret />
-            </span>
+            {showIcon && (
+                <span className={colorPickerClass('caret')} onClick={togglePanel}>
+                    <Caret />
+                </span>
+            )}
 
             {renderColorBoard()}
         </div>

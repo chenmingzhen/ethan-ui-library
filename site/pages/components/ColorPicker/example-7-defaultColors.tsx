@@ -23,5 +23,5 @@ for (let i = 0; i < 50; i++) {
 const defaultColors = rgb.map(group => `rgb(${group.join(',')})`)
 
 export default function() {
-    return <ColorPicker.ColorBoard defaultColors={defaultColors} />
+    return <ColorPicker.ColorBoard defaultColors={defaultColors} defaultValue="#FFC107" />
 }

@@ -13,9 +13,10 @@ export interface ColorPickerProps {
     defaultValue?: string
     onChange?: (color: string) => void
     mode?: 'rgba' | 'hex' | 'hsla' | boolean
+    showIcon?: boolean
 }
 
-export type ColorBoardProps = Omit<ColorPickerProps, 'position' | 'size'>
+export type ColorBoardProps = Omit<ColorPickerProps, 'position' | 'size' | 'showIcon'>
 
 export interface ColorBoardState {
     r: number

@@ -19,6 +19,7 @@
 | absolute      | boolean                                                      | true          | Whether a drop-down box is displayed in the body |
 | defaultValue  | string                                                       | -             | The default selected color                       |
 | onChange      | (color:string)=>void                                         | -             | Callback when color changes                      |
+| showIcon      | boolean                                                      | true          | Whether to display the drop-down icon            |
 
 ### ColorPicker.ColorBoard
 
