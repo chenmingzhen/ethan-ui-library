@@ -1,7 +1,8 @@
 import { colorPickerClass } from '@/styles'
 import { rgbArray2HsvArray } from '@/utils/color'
 import { getRangeValue } from '@/utils/numbers'
-import React, { useCallback, useEffect, useRef, useState } from 'react'
+import React, { useCallback, useRef, useState } from 'react'
+import { useIsomorphicLayoutEffect } from 'react-use'
 import { COLOR_PICKER_DOT_LENGTH, COLOR_EDGE_OFFSET } from './config'
 import { RgbPanelProps } from './type'
 
@@ -14,7 +15,7 @@ const RgbPanel: React.FC<RgbPanelProps> = function(props) {
 
     const ctxRef = useRef<CanvasRenderingContext2D>()
 
-    useEffect(() => {
+    useIsomorphicLayoutEffect(() => {
         const canvas = paintElementRef.current
 
         const ctx = canvas.getContext('2d', { willReadFrequently: true })
@@ -24,11 +25,11 @@ const RgbPanel: React.FC<RgbPanelProps> = function(props) {
         addVerticalWhite2BlackLinearGradient()
     }, [])
 
-    useEffect(() => {
+    useIsomorphicLayoutEffect(() => {
         rgbToPosition(rgb)
     }, [rgb])
 
-    useEffect(() => {
+    useIsomorphicLayoutEffect(() => {
         setRgbPanelHue(hue)
     }, [hue])
 

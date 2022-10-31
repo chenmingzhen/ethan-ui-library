@@ -1,6 +1,7 @@
 import { colorPickerClass } from '@/styles'
 import { COLOR_MATCH, hslaArray2RgbaArray, parseColor, rgbaArray2HexFormat, rgbaArray2HslArray } from '@/utils/color'
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { useCallback, useState } from 'react'
+import { useIsomorphicLayoutEffect } from 'react-use'
 import Button from '../Button'
 import { FontAwesome } from '../Icon'
 import Input from '../Input'
@@ -16,7 +17,7 @@ const ModePanel: React.FC<ModePanelProps> = function(props) {
 
     const [focus, updateFocus] = useState(false)
 
-    useEffect(() => {
+    useIsomorphicLayoutEffect(() => {
         if (focus) return
 
         updateHex(rgbaArray2HexFormat([props.r, props.g, props.b, props.a]))

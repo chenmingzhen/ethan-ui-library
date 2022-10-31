@@ -1,6 +1,7 @@
 import { colorPickerClass } from '@/styles'
 import { getRangeValue } from '@/utils/numbers'
-import React, { useCallback, useEffect, useRef, useState } from 'react'
+import React, { useCallback, useRef, useState } from 'react'
+import { useIsomorphicLayoutEffect } from 'react-use'
 import { COLOR_PICKER_DOT_LENGTH, PANEL_CANVAS_WIDTH } from './config'
 import { AlphaPanelProps } from './type'
 
@@ -13,7 +14,7 @@ const AlphaPanel: React.FC<AlphaPanelProps> = props => {
 
     const { onChange, alpha, h, s, l } = props
 
-    useEffect(() => {
+    useIsomorphicLayoutEffect(() => {
         const canvas = canvasRef.current
 
         const ctx = canvas.getContext('2d', { willReadFrequently: true })
@@ -21,13 +22,13 @@ const AlphaPanel: React.FC<AlphaPanelProps> = props => {
         ctxRef.current = ctx
     }, [])
 
-    useEffect(() => {
+    useIsomorphicLayoutEffect(() => {
         const alphaPosition = PANEL_CANVAS_WIDTH * (alpha ?? 1)
 
         updateXPosition(alphaPosition - COLOR_PICKER_DOT_LENGTH / 2)
     }, [alpha])
 
-    useEffect(() => {
+    useIsomorphicLayoutEffect(() => {
         const canvas = canvasRef.current
 
         const ctx = ctxRef.current
