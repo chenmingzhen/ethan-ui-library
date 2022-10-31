@@ -1,8 +1,9 @@
 import { colorPickerClass } from '@/styles'
 import { getRangeValue } from '@/utils/numbers'
-import React, { useCallback, useRef, useState } from 'react'
+import React, { useCallback, useContext, useRef, useState } from 'react'
 import { useIsomorphicLayoutEffect } from 'react-use'
 import { COLOR_PICKER_DOT_LENGTH, PANEL_CANVAS_WIDTH } from './config'
+import { ColorBoardContext } from './context'
 import { HuePanelProps } from './type'
 
 const HuePanel: React.FC<HuePanelProps> = props => {
@@ -13,6 +14,8 @@ const HuePanel: React.FC<HuePanelProps> = props => {
     const ctxRef = useRef<CanvasRenderingContext2D>()
 
     const { hue, onChange } = props
+
+    const { moving } = useContext(ColorBoardContext)
 
     useIsomorphicLayoutEffect(() => {
         const canvas = canvasRef.current
@@ -37,9 +40,11 @@ const HuePanel: React.FC<HuePanelProps> = props => {
     }, [])
 
     useIsomorphicLayoutEffect(() => {
-        const huePosition = (PANEL_CANVAS_WIDTH * hue) / 360
+        if (!moving) {
+            const huePosition = (PANEL_CANVAS_WIDTH * hue) / 360
 
-        updateXPosition(huePosition - COLOR_PICKER_DOT_LENGTH / 2)
+            updateXPosition(huePosition - COLOR_PICKER_DOT_LENGTH / 2)
+        }
     }, [hue])
 
     const handleMouseMove = useCallback((evt: MouseEvent) => {

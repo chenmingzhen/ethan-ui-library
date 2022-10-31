@@ -1,15 +1,18 @@
 import { colorPickerClass } from '@/styles'
 import { rgbArray2HsvArray } from '@/utils/color'
 import { getRangeValue } from '@/utils/numbers'
-import React, { useCallback, useRef, useState } from 'react'
+import React, { useCallback, useContext, useRef, useState } from 'react'
 import { useIsomorphicLayoutEffect } from 'react-use'
 import { COLOR_PICKER_DOT_LENGTH, COLOR_EDGE_OFFSET } from './config'
+import { ColorBoardContext } from './context'
 import { RgbPanelProps } from './type'
 
 const RgbPanel: React.FC<RgbPanelProps> = function(props) {
     const { rgb, onChange, hue } = props
 
     const [dotPosition, updateDotPosition] = useState<{ x: number; y: number }>({ x: 0, y: 0 })
+
+    const { moving, updateMoving } = useContext(ColorBoardContext)
 
     const paintElementRef = useRef<HTMLCanvasElement>()
 
@@ -30,13 +33,17 @@ const RgbPanel: React.FC<RgbPanelProps> = function(props) {
     }, [rgb])
 
     useIsomorphicLayoutEffect(() => {
-        setRgbPanelHue(hue)
+        if (!moving) {
+            setRgbPanelHue(hue)
+        }
     }, [hue])
 
     const handleMouseMove = useCallback((evt: MouseEvent) => {
         evt.stopPropagation()
 
         evt.preventDefault()
+
+        updateMoving(true)
 
         const canvas = paintElementRef.current
 
@@ -58,6 +65,7 @@ const RgbPanel: React.FC<RgbPanelProps> = function(props) {
     const handleMouseUp = useCallback(() => {
         document.removeEventListener('mousemove', handleMouseMove)
         document.removeEventListener('mouseup', handleMouseUp)
+        updateMoving(false)
     }, [])
 
     /** 设置色相 */

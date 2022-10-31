@@ -26,7 +26,7 @@ export interface ColorBoardState {
     h: number
     l: number
     s: number
-
+    moving: boolean
     mode: 'rgba' | 'hex' | 'hsla'
 }
 
@@ -76,4 +76,9 @@ export interface ModePanelProps {
     h: number
     s: number
     l: number
+}
+
+export interface ColorBoardContextProps {
+    moving: boolean
+    updateMoving(moving: boolean): void
 }

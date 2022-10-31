@@ -3,8 +3,8 @@ import classnames from 'classnames'
 import { colorPickerClass } from '@/styles'
 import { isDescendent } from '@/utils/dom/element'
 import { getUidStr } from '@/utils/uid'
-import { useUpdateEffect } from 'react-use'
 import useSafeState from '@/hooks/useSafeState'
+import useIsomorphicLayoutUpdateEffect from '@/hooks/useIsomorphicLayoutUpdateEffect'
 import { ColorPickerProps } from './type'
 import Caret from '../icons/Caret'
 import AbsoluteList from '../List/AbsoluteList'
@@ -38,7 +38,7 @@ const ColorPicker: React.FC<ColorPickerProps> = function(props) {
 
     const containerRef = useRef<HTMLDivElement>()
 
-    useUpdateEffect(() => {
+    useIsomorphicLayoutUpdateEffect(() => {
         updateCurrentValue(value)
     }, [value])
 

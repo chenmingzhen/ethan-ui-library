@@ -18,6 +18,7 @@ import { DEFAULT_COLORS } from './config'
 import AlphaPanel from './AlphaPanel'
 import ModePanel from './ModePanel'
 import { getDefaultColor } from './util'
+import { ColorBoardContext } from './context'
 
 class ColorBoard extends PureComponent<ColorBoardProps, ColorBoardState> {
     static defaultProps: ColorBoardProps = {
@@ -56,6 +57,7 @@ class ColorBoard extends PureComponent<ColorBoardProps, ColorBoardState> {
             h: 0,
             s: 0,
             l: 0,
+            moving: false,
             mode,
         }
     }
@@ -207,45 +209,54 @@ class ColorBoard extends PureComponent<ColorBoardProps, ColorBoardState> {
     render() {
         const { style } = this.props
 
-        const { r, g, b, a, h, s, l, mode } = this.state
+        const { r, g, b, a, h, s, l, mode, moving } = this.state
 
         const className = classnames(this.props.className, colorPickerClass('_', 'board'))
 
         return (
-            <div className={className} style={style}>
-                <RgbPanel onChange={this.handleRgbValueChange} hue={h} rgb={[r, g, b]} />
+            <ColorBoardContext.Provider
+                value={{
+                    moving,
+                    updateMoving: m => {
+                        this.setState({ moving: m })
+                    },
+                }}
+            >
+                <div className={className} style={style}>
+                    <RgbPanel onChange={this.handleRgbValueChange} hue={h} rgb={[r, g, b]} />
 
-                {mode && (
-                    <ModePanel
-                        r={r}
-                        g={g}
-                        b={b}
-                        a={a}
-                        h={h}
-                        s={s}
-                        l={l}
-                        mode={mode}
-                        onModeChange={this.handleModeChange}
-                        onInputValueChange={this.handleModeInputChange}
-                    />
-                )}
-
-                <div className={colorPickerClass('box')}>
-                    <div className={colorPickerClass('circle')}>
-                        <div
-                            className={colorPickerClass('avatar')}
-                            style={{ backgroundColor: `rgba(${r}, ${g}, ${b}, ${a ?? 1})` }}
+                    {mode && (
+                        <ModePanel
+                            r={r}
+                            g={g}
+                            b={b}
+                            a={a}
+                            h={h}
+                            s={s}
+                            l={l}
+                            mode={mode}
+                            onModeChange={this.handleModeChange}
+                            onInputValueChange={this.handleModeInputChange}
                         />
+                    )}
+
+                    <div className={colorPickerClass('box')}>
+                        <div className={colorPickerClass('circle')}>
+                            <div
+                                className={colorPickerClass('avatar')}
+                                style={{ backgroundColor: `rgba(${r}, ${g}, ${b}, ${a ?? 1})` }}
+                            />
+                        </div>
+
+                        <div className={colorPickerClass('panel-area')}>
+                            <HuePanel onChange={this.handleHueValueChange} hue={h} />
+                            <AlphaPanel onChange={this.handleAlphaValueChange} alpha={a} h={h} s={s} l={l} />
+                        </div>
                     </div>
 
-                    <div className={colorPickerClass('panel-area')}>
-                        <HuePanel onChange={this.handleHueValueChange} hue={h} />
-                        <AlphaPanel onChange={this.handleAlphaValueChange} alpha={a} h={h} s={s} l={l} />
-                    </div>
+                    {this.renderDefaultColors()}
                 </div>
-
-                {this.renderDefaultColors()}
-            </div>
+            </ColorBoardContext.Provider>
         )
     }
 }
