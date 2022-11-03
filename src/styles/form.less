@@ -164,7 +164,7 @@
         .input-focus-color(@color);
     }
 
-    &:focus {
+    &:focus:not(.@{input-prefix}-disabled) {
         outline: none;
         .input-focus();
     }
