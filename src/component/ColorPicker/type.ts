@@ -26,8 +26,8 @@ export interface ColorBoardState {
     h: number
     l: number
     s: number
-    moving: boolean
     mode: 'rgba' | 'hex' | 'hsla'
+    isRgbPanelMoving: boolean
 }
 
 export interface ColorPickerState {
@@ -36,39 +36,35 @@ export interface ColorPickerState {
 
 export interface RgbPanelProps {
     rgb: [number, number, number]
-
     hue: number
-
+    isRgbPanelMoving: boolean
+    onRgbPanelMoveChange(moving: boolean): void
     onChange(color: Uint8ClampedArray): void
+    disabled: boolean
 }
 
 export interface HuePanelProps {
     hue: number
-
+    isRgbPanelMoving: boolean
     onChange(hue: number): void
+    disabled: boolean
 }
 
 export interface AlphaPanelProps {
     alpha: number
-
     onChange(alpha: number): void
-
     h: number
-
     s: number
-
     l: number
+    disabled: boolean
 }
 
-export type OnModalPanelInputValueChangeParams = Omit<ColorBoardState, 'mode'>
+export type OnModalPanelInputValueChangeParams = Omit<ColorBoardState, 'mode' | 'isRgbPanelMoving'>
 
 export interface ModePanelProps {
     mode: ColorBoardState['mode']
-
     onModeChange: (mode: ColorBoardState['mode']) => void
-
     onInputValueChange(record: OnModalPanelInputValueChangeParams): void
-
     r: number
     g: number
     b: number
@@ -76,9 +72,13 @@ export interface ModePanelProps {
     h: number
     s: number
     l: number
+    disabled: boolean
 }
 
-export interface ColorBoardContextProps {
-    moving: boolean
-    updateMoving(moving: boolean): void
+export enum ColorBoardEventKey {
+    OnHuePanelLocalHueChange,
+}
+
+export interface ColorBoardEvent {
+    [ColorBoardEventKey.OnHuePanelLocalHueChange]: number
 }

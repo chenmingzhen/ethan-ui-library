@@ -1,18 +1,17 @@
 import { colorPickerClass } from '@/styles'
 import { rgbArray2HsvArray } from '@/utils/color'
 import { getRangeValue } from '@/utils/numbers'
-import React, { useCallback, useContext, useRef, useState } from 'react'
-import { useIsomorphicLayoutEffect } from 'react-use'
+import React, { useCallback, useRef, useState } from 'react'
+import { useIsomorphicLayoutEffect, useShallowCompareEffect } from 'react-use'
 import { COLOR_PICKER_DOT_LENGTH, COLOR_EDGE_OFFSET } from './config'
-import { ColorBoardContext } from './context'
-import { RgbPanelProps } from './type'
+import { useColorBoardEventSubscribe } from './context'
+import { ColorBoardEventKey, RgbPanelProps } from './type'
 
-const RgbPanel: React.FC<RgbPanelProps> = function(props) {
-    const { rgb, onChange, hue } = props
+const RgbPanel: React.FC<RgbPanelProps> = function (props) {
+    const { rgb, onChange, hue, isRgbPanelMoving, onRgbPanelMoveChange, disabled } = props
 
-    const [dotPosition, updateDotPosition] = useState<{ x: number; y: number }>({ x: 0, y: 0 })
-
-    const { moving, updateMoving } = useContext(ColorBoardContext)
+    /** 在移动的过程中，使用自身组件的position，停止移动后，使用prop的rgb计算position(防止由于value的变动导致抖动) */
+    const [position, updatePosition] = useState<{ x: number; y: number }>({ x: 0, y: 0 })
 
     const paintElementRef = useRef<HTMLCanvasElement>()
 
@@ -28,48 +27,62 @@ const RgbPanel: React.FC<RgbPanelProps> = function(props) {
         addVerticalWhite2BlackLinearGradient()
     }, [])
 
-    useIsomorphicLayoutEffect(() => {
+    useShallowCompareEffect(() => {
+        if (isRgbPanelMoving) return
+
         rgbToPosition(rgb)
     }, [rgb])
 
     useIsomorphicLayoutEffect(() => {
-        if (!moving) {
-            setRgbPanelHue(hue)
-        }
+        if (isRgbPanelMoving) return
+
+        setRgbPanelHue(hue)
     }, [hue])
 
-    const handleMouseMove = useCallback((evt: MouseEvent) => {
-        evt.stopPropagation()
+    const handleMouseMove = useCallback(
+        (evt: MouseEvent) => {
+            if (disabled) return
 
-        evt.preventDefault()
+            evt.stopPropagation()
 
-        updateMoving(true)
+            evt.preventDefault()
 
-        const canvas = paintElementRef.current
+            onRgbPanelMoveChange(true)
 
-        const { width, height } = canvas
+            const canvas = paintElementRef.current
 
-        const rect = canvas.getBoundingClientRect()
+            const { width, height } = canvas
 
-        const x = getRangeValue({ current: evt.clientX - rect.left, max: width - COLOR_EDGE_OFFSET })
+            const rect = canvas.getBoundingClientRect()
 
-        const y = getRangeValue({ current: evt.clientY - rect.top, max: height - COLOR_EDGE_OFFSET })
+            const x = getRangeValue({ current: evt.clientX - rect.left, max: width - COLOR_EDGE_OFFSET })
 
-        const ctx = ctxRef.current
+            const y = getRangeValue({ current: evt.clientY - rect.top, max: height - COLOR_EDGE_OFFSET })
 
-        const color = ctx.getImageData(x, y, 1, 1).data
+            const ctx = ctxRef.current
 
-        onChange(color)
-    }, [])
+            const color = ctx.getImageData(x, y, 1, 1).data
+
+            const positionX = x - COLOR_PICKER_DOT_LENGTH / 2
+
+            const positionY = y - COLOR_PICKER_DOT_LENGTH / 2
+
+            updatePosition({ x: positionX, y: positionY })
+
+            onChange(color)
+        },
+        [disabled]
+    )
 
     const handleMouseUp = useCallback(() => {
         document.removeEventListener('mousemove', handleMouseMove)
         document.removeEventListener('mouseup', handleMouseUp)
-        updateMoving(false)
-    }, [])
+
+        onRgbPanelMoveChange(false)
+    }, [handleMouseMove])
 
     /** 设置色相 */
-    const setRgbPanelHue = (h: number) => {
+    const setRgbPanelHue = useCallback((h: number) => {
         const canvas = paintElementRef.current
 
         const ctx = ctxRef.current
@@ -98,7 +111,9 @@ const RgbPanel: React.FC<RgbPanelProps> = function(props) {
         ctx.fillRect(0, 0, width, height)
 
         ctx.globalCompositeOperation = 'source-over'
-    }
+    }, [])
+
+    useColorBoardEventSubscribe(ColorBoardEventKey.OnHuePanelLocalHueChange, setRgbPanelHue)
 
     const rgbToPosition = useCallback(([r, g, b]) => {
         const canvas = paintElementRef.current
@@ -117,7 +132,7 @@ const RgbPanel: React.FC<RgbPanelProps> = function(props) {
 
             const positionY = y - COLOR_PICKER_DOT_LENGTH / 2
 
-            updateDotPosition({ x: positionX, y: positionY })
+            updatePosition({ x: positionX, y: positionY })
         }
     }, [])
 
@@ -165,7 +180,7 @@ const RgbPanel: React.FC<RgbPanelProps> = function(props) {
                 onMouseDown={handleMouseDown}
             />
 
-            <span className={colorPickerClass('dot')} style={{ left: dotPosition.x, top: dotPosition.y }} />
+            <span className={colorPickerClass('dot')} style={{ left: position.x, top: position.y }} />
         </>
     )
 }

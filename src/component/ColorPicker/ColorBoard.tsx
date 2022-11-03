@@ -18,7 +18,7 @@ import { DEFAULT_COLORS } from './config'
 import AlphaPanel from './AlphaPanel'
 import ModePanel from './ModePanel'
 import { getDefaultColor } from './util'
-import { ColorBoardContext } from './context'
+import { ColorBoardEventProvider } from './context'
 
 class ColorBoard extends PureComponent<ColorBoardProps, ColorBoardState> {
     static defaultProps: ColorBoardProps = {
@@ -57,8 +57,8 @@ class ColorBoard extends PureComponent<ColorBoardProps, ColorBoardState> {
             h: 0,
             s: 0,
             l: 0,
-            moving: false,
             mode,
+            isRgbPanelMoving: false,
         }
     }
 
@@ -188,6 +188,10 @@ class ColorBoard extends PureComponent<ColorBoardProps, ColorBoardState> {
         this.dispatchPropChange([r, g, b, a, h, s, l])
     }
 
+    handleRgbPanelMoveChange = (isRgbPanelMoving: boolean) => {
+        this.setState({ isRgbPanelMoving })
+    }
+
     renderDefaultColors = () => {
         const { defaultColors } = this.props
 
@@ -207,23 +211,23 @@ class ColorBoard extends PureComponent<ColorBoardProps, ColorBoardState> {
     }
 
     render() {
-        const { style } = this.props
+        const { style, disabled } = this.props
 
-        const { r, g, b, a, h, s, l, mode, moving } = this.state
+        const { r, g, b, a, h, s, l, mode, isRgbPanelMoving } = this.state
 
         const className = classnames(this.props.className, colorPickerClass('_', 'board'))
 
         return (
-            <ColorBoardContext.Provider
-                value={{
-                    moving,
-                    updateMoving: m => {
-                        this.setState({ moving: m })
-                    },
-                }}
-            >
+            <ColorBoardEventProvider>
                 <div className={className} style={style}>
-                    <RgbPanel onChange={this.handleRgbValueChange} hue={h} rgb={[r, g, b]} />
+                    <RgbPanel
+                        onChange={this.handleRgbValueChange}
+                        hue={h}
+                        rgb={[r, g, b]}
+                        isRgbPanelMoving={isRgbPanelMoving}
+                        onRgbPanelMoveChange={this.handleRgbPanelMoveChange}
+                        disabled={disabled}
+                    />
 
                     {mode && (
                         <ModePanel
@@ -237,6 +241,7 @@ class ColorBoard extends PureComponent<ColorBoardProps, ColorBoardState> {
                             mode={mode}
                             onModeChange={this.handleModeChange}
                             onInputValueChange={this.handleModeInputChange}
+                            disabled={disabled}
                         />
                     )}
 
@@ -249,14 +254,26 @@ class ColorBoard extends PureComponent<ColorBoardProps, ColorBoardState> {
                         </div>
 
                         <div className={colorPickerClass('panel-area')}>
-                            <HuePanel onChange={this.handleHueValueChange} hue={h} />
-                            <AlphaPanel onChange={this.handleAlphaValueChange} alpha={a} h={h} s={s} l={l} />
+                            <HuePanel
+                                onChange={this.handleHueValueChange}
+                                hue={h}
+                                isRgbPanelMoving={isRgbPanelMoving}
+                                disabled={disabled}
+                            />
+                            <AlphaPanel
+                                onChange={this.handleAlphaValueChange}
+                                alpha={a}
+                                h={h}
+                                s={s}
+                                l={l}
+                                disabled={disabled}
+                            />
                         </div>
                     </div>
 
                     {this.renderDefaultColors()}
                 </div>
-            </ColorBoardContext.Provider>
+            </ColorBoardEventProvider>
         )
     }
 }

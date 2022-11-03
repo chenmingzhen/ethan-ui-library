@@ -1,4 +1,8 @@
-import React from 'react'
-import { ColorBoardContextProps } from './type'
+import { createEventBusContainer } from '@/utils/EventBus'
+import { ColorBoardEvent } from './type'
 
-export const ColorBoardContext = React.createContext<ColorBoardContextProps>(undefined)
+export const {
+    Provider: ColorBoardEventProvider,
+    useSubscribe: useColorBoardEventSubscribe,
+    usePublish: useColorBoardEventPublish,
+} = createEventBusContainer<ColorBoardEvent>()

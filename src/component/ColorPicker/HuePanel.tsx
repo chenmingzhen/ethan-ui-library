@@ -1,21 +1,25 @@
 import { colorPickerClass } from '@/styles'
 import { getRangeValue } from '@/utils/numbers'
-import React, { useCallback, useContext, useRef, useState } from 'react'
+import React, { useCallback, useRef, useState } from 'react'
 import { useIsomorphicLayoutEffect } from 'react-use'
 import { COLOR_PICKER_DOT_LENGTH, PANEL_CANVAS_WIDTH } from './config'
-import { ColorBoardContext } from './context'
-import { HuePanelProps } from './type'
+import { useColorBoardEventPublish } from './context'
+import { ColorBoardEventKey, HuePanelProps } from './type'
 
-const HuePanel: React.FC<HuePanelProps> = props => {
-    const [xPosition, updateXPosition] = useState<number>(0)
+const HuePanel: React.FC<HuePanelProps> = (props) => {
+    const { hue, onChange, isRgbPanelMoving, disabled } = props
+
+    const [position, updatePosition] = useState<number>(0)
 
     const canvasRef = useRef<HTMLCanvasElement>()
 
     const ctxRef = useRef<CanvasRenderingContext2D>()
 
-    const { hue, onChange } = props
+    /** 移动的过程中，使用Local的Hue，不是移动的过程中的时候,如果Prop的Hue为0，则使用Local的,否则使用Prop的 */
+    /** 当Prop的Hue为0时候,(算法中:当S和L相同的时候，H会是0)，移动Hue的滑块时候，需要发布LocalHue改变的事件到RGBPanel的，让RGBPanel更新Hue  */
+    const [localHue, updateLocalHue] = useState(hue)
 
-    const { moving } = useContext(ColorBoardContext)
+    const publish = useColorBoardEventPublish()
 
     useIsomorphicLayoutEffect(() => {
         const canvas = canvasRef.current
@@ -40,35 +44,58 @@ const HuePanel: React.FC<HuePanelProps> = props => {
     }, [])
 
     useIsomorphicLayoutEffect(() => {
-        if (!moving) {
+        if (isRgbPanelMoving) return
+
+        if (hue) {
             const huePosition = (PANEL_CANVAS_WIDTH * hue) / 360
 
-            updateXPosition(huePosition - COLOR_PICKER_DOT_LENGTH / 2)
+            updateLocalHue(hue)
+
+            updatePosition(huePosition - COLOR_PICKER_DOT_LENGTH / 2)
+        } else {
+            const huePosition = (PANEL_CANVAS_WIDTH * localHue) / 360
+
+            updatePosition(huePosition - COLOR_PICKER_DOT_LENGTH / 2)
         }
-    }, [hue])
+    }, [hue, localHue])
 
-    const handleMouseMove = useCallback((evt: MouseEvent) => {
-        evt.stopPropagation()
+    useIsomorphicLayoutEffect(() => {
+        /** 如果HUE存在，则RGBPanel会自身响应HUE的改变 */
+        if (hue) return
 
-        evt.preventDefault()
+        /** 发送事件给RGBPanel，让RGBPanel改变HUE */
+        publish(ColorBoardEventKey.OnHuePanelLocalHueChange, localHue)
+    }, [hue, localHue])
 
-        const canvas = canvasRef.current
+    const handleMouseMove = useCallback(
+        (evt: MouseEvent) => {
+            if (disabled) return
 
-        const { width } = canvas
+            evt.stopPropagation()
 
-        const { left } = canvas.getBoundingClientRect()
+            evt.preventDefault()
 
-        const x = getRangeValue({ current: evt.clientX - left, max: width })
+            const canvas = canvasRef.current
 
-        const h = Math.round((x * 360) / width)
+            const { width } = canvas
 
-        onChange(h)
-    }, [])
+            const { left } = canvas.getBoundingClientRect()
+
+            const x = getRangeValue({ current: evt.clientX - left, max: width })
+
+            const h = Math.round((x * 360) / width)
+
+            updateLocalHue(h)
+
+            onChange(h)
+        },
+        [disabled]
+    )
 
     const handleMouseUp = useCallback(() => {
         document.removeEventListener('mousemove', handleMouseMove)
         document.removeEventListener('mouseup', handleMouseUp)
-    }, [])
+    }, [handleMouseMove])
 
     function handleMouseDown(evt) {
         handleMouseMove(evt)
@@ -88,7 +115,7 @@ const HuePanel: React.FC<HuePanelProps> = props => {
                 onMouseDown={handleMouseDown}
             />
 
-            <span className={colorPickerClass('dot')} style={{ left: xPosition }} data-dot="hue" />
+            <span className={colorPickerClass('dot')} style={{ left: position }} data-dot="hue" />
         </>
     )
 }

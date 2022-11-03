@@ -7,8 +7,8 @@ import { FontAwesome } from '../Icon'
 import Input from '../Input'
 import { ModePanelProps } from './type'
 
-const ModePanel: React.FC<ModePanelProps> = function(props) {
-    const { mode, onModeChange, onInputValueChange } = props
+const ModePanel: React.FC<ModePanelProps> = function (props) {
+    const { mode, onModeChange, onInputValueChange, disabled } = props
 
     /** ModalModal单独维护hex和alpha */
     const [hex, updateHex] = useState(rgbaArray2HexFormat([props.r, props.g, props.b, props.a]))
@@ -158,6 +158,7 @@ const ModePanel: React.FC<ModePanelProps> = function(props) {
                 width={200}
                 onBlur={handleHexInputBlur}
                 onFocus={handleFocus}
+                disabled={disabled}
             />
         )
     }
@@ -165,12 +166,18 @@ const ModePanel: React.FC<ModePanelProps> = function(props) {
     function buildSingleKeyInput(key: string) {
         if ('sl'.indexOf(key) >= 0) {
             return (
-                <Input.Group width={50} style={{ display: 'inline-flex', marginRight: 4 }} key={key}>
+                <Input.Group
+                    width={50}
+                    style={{ display: 'inline-flex', marginRight: 4 }}
+                    key={key}
+                    disabled={disabled}
+                >
                     <Input
                         onChange={handleSingleInputChange.bind(this, key)}
                         size="small"
                         value={props[key]}
                         className={colorPickerClass('input')}
+                        disabled={disabled}
                     />
                     <b>%</b>
                 </Input.Group>
@@ -190,6 +197,7 @@ const ModePanel: React.FC<ModePanelProps> = function(props) {
                     onFocus={handleFocus}
                     type="number"
                     digits={3}
+                    disabled={disabled}
                 />
             )
         }
@@ -203,6 +211,7 @@ const ModePanel: React.FC<ModePanelProps> = function(props) {
                 maxLength={4}
                 width={50}
                 className={colorPickerClass('input')}
+                disabled={disabled}
             />
         )
     }
@@ -214,10 +223,10 @@ const ModePanel: React.FC<ModePanelProps> = function(props) {
 
         node.push(
             <div className={colorPickerClass('value-container')} key="value">
-                {keys.map(k => buildSingleKeyInput(k))}
+                {keys.map((k) => buildSingleKeyInput(k))}
             </div>,
             <div className={colorPickerClass('key-container')} key="key">
-                {keys.map(k => (
+                {keys.map((k) => (
                     <span key={k}>{k.toUpperCase()}</span>
                 ))}
             </div>
@@ -227,10 +236,10 @@ const ModePanel: React.FC<ModePanelProps> = function(props) {
 
         node.push(
             <div className={colorPickerClass('value-container')} key="value">
-                {keys.map(k => buildSingleKeyInput(k))}
+                {keys.map((k) => buildSingleKeyInput(k))}
             </div>,
             <div className={colorPickerClass('key-container')} key="key">
-                {keys.map(k => (
+                {keys.map((k) => (
                     <span key={k}>{k.toUpperCase()}</span>
                 ))}
             </div>

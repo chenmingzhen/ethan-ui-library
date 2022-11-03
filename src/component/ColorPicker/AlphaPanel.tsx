@@ -5,14 +5,14 @@ import { useIsomorphicLayoutEffect } from 'react-use'
 import { COLOR_PICKER_DOT_LENGTH, PANEL_CANVAS_WIDTH } from './config'
 import { AlphaPanelProps } from './type'
 
-const AlphaPanel: React.FC<AlphaPanelProps> = props => {
+const AlphaPanel: React.FC<AlphaPanelProps> = (props) => {
     const [xPosition, updateXPosition] = useState<number>(0)
 
     const canvasRef = useRef<HTMLCanvasElement>()
 
     const ctxRef = useRef<CanvasRenderingContext2D>()
 
-    const { onChange, alpha, h, s, l } = props
+    const { onChange, alpha, h, s, l, disabled } = props
 
     useIsomorphicLayoutEffect(() => {
         const canvas = canvasRef.current
@@ -48,28 +48,33 @@ const AlphaPanel: React.FC<AlphaPanelProps> = props => {
         ctx.fillRect(0, 0, width, height)
     }, [h, s, l])
 
-    const handleMouseMove = useCallback((evt: MouseEvent) => {
-        evt.stopPropagation()
+    const handleMouseMove = useCallback(
+        (evt: MouseEvent) => {
+            if (disabled) return
 
-        evt.preventDefault()
+            evt.stopPropagation()
 
-        const canvas = canvasRef.current
+            evt.preventDefault()
 
-        const { width } = canvas
+            const canvas = canvasRef.current
 
-        const { left } = canvas.getBoundingClientRect()
+            const { width } = canvas
 
-        const x = getRangeValue({ current: evt.clientX - left, max: width })
+            const { left } = canvas.getBoundingClientRect()
 
-        const a = +(x / width).toFixed(2)
+            const x = getRangeValue({ current: evt.clientX - left, max: width })
 
-        onChange(a)
-    }, [])
+            const a = +(x / width).toFixed(2)
+
+            onChange(a)
+        },
+        [disabled]
+    )
 
     const handleMouseUp = useCallback(() => {
         document.removeEventListener('mousemove', handleMouseMove)
         document.removeEventListener('mouseup', handleMouseUp)
-    }, [])
+    }, [handleMouseMove])
 
     function handleMouseDown(evt) {
         handleMouseMove(evt)
