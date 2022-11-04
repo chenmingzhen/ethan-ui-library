@@ -34,8 +34,8 @@ function getStyleAttr(className, key = 'color') {
 // obj {setButton:()=>setOptions.call(value, options, "setButton"}
 // data injects["button"]
 function genAccessors(obj, data) {
-    data.conf.forEach(item => {
-        const { name, className, attr, parser = v => v } = item
+    data.conf.forEach((item) => {
+        const { name, className, attr, parser = (v) => v } = item
         Object.defineProperty(obj, name, {
             enumerable: true,
             get: () => {
@@ -44,7 +44,7 @@ function genAccessors(obj, data) {
                 return parser(res)
             },
             // eslint-disable-next-line no-return-assign
-            set: v => {
+            set: (v) => {
                 if (item.value) item.value = v
                 data[name] = v
             },
@@ -52,7 +52,7 @@ function genAccessors(obj, data) {
     })
 }
 
-const accessors = {
+const accessors: Record<string, Record<string, any>> = {
     table: {},
     tag: {},
     pagination: {},
@@ -80,11 +80,11 @@ const accessors = {
 
 for (const [key, value] of entries(accessors)) {
     const setterName = `set${capitalize(key)}`
-    value[setterName] = options => setOptions.call(value, options, setterName)
+    value[setterName] = (options) => setOptions.call(value, options, setterName)
     genAccessors(value, cssInject[key])
 }
 
 // open seeing inject
-// console.log(accessors)
+console.log(accessors)
 
 export default accessors

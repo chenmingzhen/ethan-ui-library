@@ -192,7 +192,7 @@ const decimalConvert16 = (val: string | number) => {
 }
 
 /** 最多三位小数 */
-const convertHexToDecimal = h => {
+const convertHexToDecimal = (h) => {
     return Number((decimalConvert16(h) / 255).toFixed(3))
 }
 
@@ -404,15 +404,9 @@ export function hslArray2HslFormat(arr: number[]) {
 export function rgbaArray2HexFormat([r, g, b, a]: number[]) {
     const calAlpha = !isEmpty(a) && a !== 1
     let o
-    let rr = floor(r)
-        .toString(16)
-        .toUpperCase()
-    let gg = floor(g)
-        .toString(16)
-        .toUpperCase()
-    let bb = floor(b)
-        .toString(16)
-        .toUpperCase()
+    let rr = floor(r).toString(16).toUpperCase()
+    let gg = floor(g).toString(16).toUpperCase()
+    let bb = floor(b).toString(16).toUpperCase()
 
     if (rr.length !== 2) rr = `0${rr}`
     if (gg.length !== 2) gg = `0${gg}`
@@ -430,3 +424,23 @@ export function rgbaArray2RgbFormat([r, g, b, a]: number[]) {
     return !isEmpty(a) && a !== 1 ? `rgba(${r}, ${g}, ${b}, ${a})` : `rgb(${r}, ${g}, ${b})`
 }
 /** ------------------------------ */
+
+/** -------------功能性------------ */
+
+export function darken(color: string, value) {
+    if (!color) return ''
+
+    if (!value) value = 0
+
+    console.log('color:', color)
+
+    return ''
+}
+
+export function fade(color, alpha = 1) {
+    if (!color) return ''
+
+    console.log('color:', color)
+
+    return ''
+}

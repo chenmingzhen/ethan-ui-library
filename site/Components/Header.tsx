@@ -9,6 +9,7 @@ import Icon from '../icons/Icon'
 import { headerClass } from '../styles'
 import history from './history'
 import locate, { getLanguage, setItem, STORAGE_KEY } from '../utils/locate'
+import ThemeEditor from './ThemeEditor'
 
 const findLangs = () => {
     const prevLang = locate('cn', 'en')
@@ -18,7 +19,7 @@ const findLangs = () => {
     return [prevLang, nextLang, itemLang]
 }
 
-const handleThemeClick = data => {
+const handleThemeClick = (data) => {
     window.location.href = `?theme=${data.content}${window.location.hash}`
 }
 
@@ -27,7 +28,7 @@ const Header = () => {
 
     const [version, versions] = useVersion()
 
-    const handleNavClick = useCallback(nav => {
+    const handleNavClick = useCallback((nav) => {
         history.push(`${nav.path}`)
     }, [])
 
@@ -38,7 +39,7 @@ const Header = () => {
 
         setItem(STORAGE_KEY, langs[2])
 
-        window.location = (href as unknown) as Location
+        window.location = href as unknown as Location
     }
 
     return (
@@ -51,7 +52,7 @@ const Header = () => {
                 <Menu<NavMenuData>
                     mode="horizontal"
                     data={navs}
-                    renderItem={d => (getLanguage() === 'zh-CN' ? d.cn : d.en)}
+                    renderItem={(d) => (getLanguage() === 'zh-CN' ? d.cn : d.en)}
                     onClick={handleNavClick}
                     inlineIndent={24}
                     style={{ background: 'transparent', border: 'none' }}
@@ -87,6 +88,8 @@ const Header = () => {
                     <Icon name="github" />
                     &nbsp;GitHub
                 </Button>
+
+                <ThemeEditor />
             </div>
         </div>
     )
