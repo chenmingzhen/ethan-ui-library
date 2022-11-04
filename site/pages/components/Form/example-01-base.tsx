@@ -5,8 +5,9 @@
  *    -- The form has a two-way binding mechanism built in, automatically sending and collecting data based on the name property of the FormItem.
  */
 import React from 'react'
-import { Form, Input, Checkbox, Radio, Textarea, Select, Upload, Button } from 'ethan-ui'
+import { Form, Input, Checkbox, Radio, Textarea, Select, Upload, Button, ColorPicker } from 'ethan-ui'
 import { EthanFile } from '@/component/Upload/type'
+import { action } from 'doc/config'
 
 interface FormValues {
     email: string
@@ -17,6 +18,7 @@ interface FormValues {
     favoriteColor: string[]
     otherColor: string
     hateColor: string
+    currentColor: string
 }
 
 export default function App() {
@@ -40,10 +42,6 @@ export default function App() {
                 <Input.Number width={120} max={100} min={10} />
             </Form.Item>
 
-            <Form.Item label={<></>} name="file">
-                <Upload.Image action="//jsonplaceholder.typicode.com/posts" accept="image/*" limit={3} />
-            </Form.Item>
-
             <Form.Item label="Age" name="age">
                 <Input style={{ width: 100 }} type="number" digits={0} />
             </Form.Item>
@@ -65,8 +63,16 @@ export default function App() {
                 />
             </Form.Item>
 
+            <Form.Item label="CurrentColor" name="currentColor">
+                <ColorPicker />
+            </Form.Item>
+
             <Form.Item label="Description" name="desc">
                 <Textarea autoSize />
+            </Form.Item>
+
+            <Form.Item label={<></>} name="file">
+                <Upload.Image action={action} accept="image/*" limit={3} />
             </Form.Item>
 
             <Form.Item label={<></>}>

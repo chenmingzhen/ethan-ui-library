@@ -74,10 +74,11 @@
     &-board {
         width: 255px;
         font-size: 0;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+        box-shadow: 0 2px 8px rgb(0 0 0 / 15%);
         border-radius: 2px;
         background: #fff;
         position: relative;
+        z-index: 1000;
 
         .@{colorPicker-prefix}-mode {
             position: relative;
@@ -139,7 +140,7 @@
         }
 
         .@{colorPicker-prefix}-value-container {
-            margin: 0 0 9px 0;
+            margin: 0 0 9px;
         }
 
         .@{colorPicker-prefix}-input {
@@ -154,17 +155,17 @@
         position: absolute;
         background: #fff;
         border-radius: 50%;
-        box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+        box-shadow: 0 0 5px rgb(0 0 0 / 20%);
         pointer-events: none;
     }
 
     &-box {
-        padding: 14px 16px 13px 16px;
+        padding: 14px 16px 13px;
         display: flex;
 
         canvas {
-            height: 13px;
             width: 170px;
+            height: 13px;
             border-radius: 2px;
         }
 

@@ -7,7 +7,7 @@ import { COLOR_PICKER_DOT_LENGTH, COLOR_EDGE_OFFSET } from './config'
 import { useColorBoardEventSubscribe } from './context'
 import { ColorBoardEventKey, RgbPanelProps } from './type'
 
-const RgbPanel: React.FC<RgbPanelProps> = function(props) {
+const RgbPanel: React.FC<RgbPanelProps> = function (props) {
     const { rgb, onChange, hue, isRgbPanelMoving, onRgbPanelMoveChange, disabled } = props
 
     /** 在移动的过程中，使用自身组件的position，停止移动后，使用prop的rgb计算position(防止由于value的变动导致抖动) */
