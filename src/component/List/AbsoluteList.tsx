@@ -140,10 +140,7 @@ export default class AbsoluteList extends Component<AbsoluteListProps, AbsoluteL
         }
 
         if (dropdownPosition.includes(position)) {
-            position = position
-                .split('-')
-                .reverse()
-                .join('-')
+            position = position.split('-').reverse().join('-')
         }
 
         if (listPosition.includes(position)) {
@@ -208,6 +205,7 @@ export default class AbsoluteList extends Component<AbsoluteListProps, AbsoluteL
 
         const ms: React.CSSProperties = Object.assign(
             { zIndex },
+            (children as any)?.props?.style ?? {},
             this.style,
             this.props.style,
             this.state.overDoc ? { right: 0, left: 'auto' } : undefined
