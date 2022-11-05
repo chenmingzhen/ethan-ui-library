@@ -14,9 +14,14 @@ export interface ColorPickerProps {
     onChange?: (color: string) => void
     mode?: 'rgba' | 'hex' | 'hsla' | boolean
     showIcon?: boolean
+    dropdownClassName?: string
+    dropdownStyle?: React.CSSProperties
 }
 
-export type ColorBoardProps = Omit<ColorPickerProps, 'position' | 'size' | 'showIcon'>
+export type ColorBoardProps = Omit<
+    ColorPickerProps,
+    'position' | 'size' | 'showIcon' | 'dropdownClassName' | 'dropdownStyle'
+>
 
 export interface ColorBoardState {
     r: number

@@ -12,7 +12,7 @@ import AnimationList from '../List'
 import ColorBoard from './ColorBoard'
 import { getDefaultColor } from './util'
 
-const ColorPicker: React.FC<ColorPickerProps> = function(props) {
+const ColorPicker: React.FC<ColorPickerProps> = function (props) {
     const {
         size,
         disabled,
@@ -25,6 +25,8 @@ const ColorPicker: React.FC<ColorPickerProps> = function(props) {
         mode,
         format = 'rgba',
         showIcon = true,
+        dropdownClassName,
+        dropdownStyle,
         ...other
     } = props
 
@@ -93,7 +95,15 @@ const ColorPicker: React.FC<ColorPickerProps> = function(props) {
 
         return (
             <AbsoluteList absolute focus={show} position={position} getParentElement={() => containerRef.current}>
-                <AnimationList lazyDom show={show} animationTypes={['fade']} duration="fast" data-id={colorPickerId}>
+                <AnimationList
+                    lazyDom
+                    show={show}
+                    style={dropdownStyle}
+                    className={dropdownClassName}
+                    animationTypes={['fade']}
+                    duration="fast"
+                    data-id={colorPickerId}
+                >
                     <ColorBoard
                         {...other}
                         disabled={disabled}
