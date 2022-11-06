@@ -4,7 +4,7 @@
 
 export { setLocale } from './locale'
 export { default as config, setConfig } from './config'
-
+export { style } from './utils/style'
 export { FontAwesome } from './component/Icon'
 export { default as Lazyload } from './component/LazyLoad'
 
@@ -29,6 +29,7 @@ export { default as Image } from './component/Image'
 export { default as Input } from './component/Input'
 export { default as LazyList } from './component/LazyList'
 export { default as LazyLoad } from './component/LazyLoad'
+export { default as List } from './component/List'
 export { default as Loading } from './component/Loading'
 export { default as Menu } from './component/Menu'
 export { default as Message } from './component/Message'

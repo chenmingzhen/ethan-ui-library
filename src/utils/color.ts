@@ -187,18 +187,12 @@ const COLOR_NAMES = {
 }
 
 /** ----------通用工具---------- */
-const decimalConvert16 = (val: string | number) => {
-    return parseInt(val as string, 16)
-}
+const decimalConvert16 = (val: string | number) => parseInt(val as string, 16)
 
 /** 最多三位小数 */
-const convertHexToDecimal = (h) => {
-    return Number((decimalConvert16(h) / 255).toFixed(3))
-}
+const convertHexToDecimal = (h) => Number((decimalConvert16(h) / 255).toFixed(3))
 
-const toNumber = (val: string) => {
-    return Number(val)
-}
+const toNumber = (val: string) => Number(val)
 
 /** -------------------------- */
 
@@ -427,20 +421,34 @@ export function rgbaArray2RgbFormat([r, g, b, a]: number[]) {
 
 /** -------------功能性------------ */
 
-export function darken(color: string, value) {
+export function darken(color: string, value: number) {
     if (!color) return ''
 
     if (!value) value = 0
 
-    console.log('color:', color)
+    const rgbaArray = parseColor(color)
 
-    return ''
+    if (!rgbaArray) return ''
+
+    value = parseInt(value as any, 10)
+
+    const [r, g, b, a] = rgbaArray
+
+    const [h, s, l] = rgbaArray2HslArray([r, g, b])
+
+    return hslArray2HslFormat([h, s, l - value, a])
 }
 
 export function fade(color, alpha = 1) {
     if (!color) return ''
 
-    console.log('color:', color)
+    const rgbaArray = parseColor(color)
 
-    return ''
+    if (!rgbaArray) return ''
+
+    const [r, g, b] = rgbaArray
+
+    const [h, s, l] = rgbaArray2HslArray([r, g, b])
+
+    return hslArray2HslFormat([h, s, l, alpha])
 }

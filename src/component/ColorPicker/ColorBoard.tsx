@@ -69,7 +69,7 @@ class ColorBoard extends PureComponent<ColorBoardProps, ColorBoardState> {
     }
 
     componentDidUpdate(prevProps: ColorBoardProps) {
-        if (this.props.value !== prevProps.value) {
+        if (this.props.value !== prevProps.value && this.props.value) {
             this.prevValue = prevProps.value
 
             this.handleColorValueChange(this.props.value, true)

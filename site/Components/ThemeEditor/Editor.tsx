@@ -1,16 +1,17 @@
-import React, { useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { Button, ColorPicker, Form, Input, Select } from 'ethan-ui'
-import cssAccessors from '@/utils/css-accessors'
+import cssAccessors from '@/utils/style/css-accessors'
 import { editorClass } from 'doc/styles'
-import CssInject from '@/utils/vars-inject'
+import CssInject from '@/utils/style/vars-inject'
 import locate from 'doc/utils/locate'
 import { isArray } from '@/utils/is'
 import { compose } from '@/utils/func'
-import moveable from '@/hoc/moveable'
+import moveable, { MoveableProps } from '@/hoc/moveable'
 import resizable from '@/hoc/resizable'
-import { style } from '@/utils/expose'
+import { style } from '@/utils/style'
+import classnames from 'classnames'
 
-interface EditorProps {
+interface EditorProps extends MoveableProps {
     visible: boolean
 
     onClose(): void
@@ -18,12 +19,14 @@ interface EditorProps {
 
 const modules = Object.keys(cssAccessors).sort((a, b) => a.localeCompare(b))
 
-const defaultTheme = JSON.parse(JSON.stringify(cssAccessors))
+setTimeout(() => {}, 20)
 
 const Editor: React.FC<EditorProps> = function (props) {
-    const { visible, onClose } = props
+    const { visible, onClose, className, ...other } = props
 
-    const [module, updateModule] = useState('color')
+    const defaultTheme = useRef(JSON.parse(JSON.stringify(cssAccessors))).current
+
+    const [componentModule, updateModule] = useState('color')
 
     const form = Form.useForm()
 
@@ -36,19 +39,15 @@ const Editor: React.FC<EditorProps> = function (props) {
     }
 
     function handleChange(value) {
-        const setterName = `set${module.replace(/^\S/, (s) => s.toUpperCase())}`
+        const setterName = `set${componentModule.replace(/^\S/, (s) => s.toUpperCase())}`
 
-        console.log(value, setterName)
-
-        return
-
-        if (value[setterName]) value[setterName](value)
+        cssAccessors[componentModule][setterName](value)
     }
 
     function handleReset() {
-        form.reset()
-
         style.setStyle(defaultTheme)
+
+        form.setValue(defaultTheme[componentModule])
     }
 
     function handleDownload() {
@@ -71,68 +70,70 @@ const Editor: React.FC<EditorProps> = function (props) {
         document.body.removeChild(a)
     }
 
-    const attributes = CssInject[module].conf
+    useEffect(() => {
+        form.setValue(cssAccessors[componentModule])
+    }, [componentModule])
+
+    const attributes = CssInject[componentModule].conf
 
     return (
-        <div className={editorClass('_', visible && 'show')}>
+        <div className={classnames(editorClass('_'), className)} {...other}>
             <div className={editorClass('content')}>
-                <div className={editorClass('zone')}>
-                    <div className={editorClass('header')}>
-                        <Select<string>
-                            onFilter={(text, d) => d.indexOf(text.toLowerCase()) >= 0}
-                            className={editorClass('select')}
-                            data={modules}
-                            value={module}
-                            onChange={handleModuleSelectChange}
-                        />
-                    </div>
-                    <div className={editorClass('body')}>
-                        <Form labelAlign="top" defaultValue={cssAccessors[module]} onChange={handleChange}>
-                            {attributes.map((attribute) => {
-                                const { name, type, max, min, desc } = attribute
+                <div className={editorClass('header')}>
+                    <Select<string>
+                        onFilter={(text, d) => d.indexOf(text.toLowerCase()) >= 0}
+                        className={editorClass('select')}
+                        data={modules}
+                        value={componentModule}
+                        onChange={handleModuleSelectChange}
+                    />
+                </div>
+                <div className={editorClass('body')}>
+                    <Form labelAlign="top" onChange={handleChange} form={form}>
+                        {attributes.map((attribute) => {
+                            const { name, type, max, min } = attribute
 
-                                return (
-                                    <Form.Item label={locate(desc, name)} key={name} name={name}>
-                                        {({ onChange, value }) => {
-                                            let element: React.ReactNode = null
+                            return (
+                                <Form.Item label={name} key={name} name={name}>
+                                    {({ onChange, value }) => {
+                                        let element: React.ReactNode = null
 
-                                            if (type === 'color') {
-                                                element = (
-                                                    <div className={editorClass('attr-item')}>
-                                                        <Input value={value} width={180} onChange={onChange} />
-                                                        <ColorPicker
-                                                            format="rgba"
-                                                            showIcon={false}
-                                                            value={value}
-                                                            onChange={onChange}
-                                                            position="right-bottom"
-                                                        />
-                                                    </div>
-                                                )
-                                            } else if (type === 'number') {
-                                                element = (
-                                                    <Input.Number
-                                                        min={min || 0}
-                                                        max={max || 50}
+                                        if (type === 'color') {
+                                            element = (
+                                                <div className={editorClass('attr-item')}>
+                                                    <Input value={value} width={180} onChange={onChange} />
+                                                    <ColorPicker
+                                                        format="rgba"
+                                                        showIcon={false}
                                                         value={value}
                                                         onChange={onChange}
+                                                        position="right-bottom"
+                                                        dropdownStyle={{ zIndex: 9999 }}
+                                                        mode
                                                     />
-                                                )
-                                            } else if (isArray(type)) {
-                                                element = (
-                                                    <Select keygen data={type} value={value} onChange={onChange} />
-                                                )
-                                            } else {
-                                                element = <Input value={value} onChange={onChange} />
-                                            }
+                                                </div>
+                                            )
+                                        } else if (type === 'number') {
+                                            element = (
+                                                <Input.Number
+                                                    min={min || 0}
+                                                    max={max || 50}
+                                                    value={value}
+                                                    onChange={onChange}
+                                                />
+                                            )
+                                        } else if (isArray(type)) {
+                                            element = <Select keygen data={type} value={value} onChange={onChange} />
+                                        } else {
+                                            element = <Input value={value} onChange={onChange} />
+                                        }
 
-                                            return element
-                                        }}
-                                    </Form.Item>
-                                )
-                            })}
-                        </Form>
-                    </div>
+                                        return element
+                                    }}
+                                </Form.Item>
+                            )
+                        })}
+                    </Form>
                 </div>
             </div>
             <div className={editorClass('extra')}>
@@ -151,6 +152,6 @@ const Editor: React.FC<EditorProps> = function (props) {
     )
 }
 
-const MixinEditor = compose(moveable(`.${editorClass('main')}`), resizable)(Editor)
+const MixinEditor = compose(moveable(`.${editorClass('_')}`), resizable)(Editor)
 
 export default React.memo(MixinEditor) as typeof Editor

@@ -1,7 +1,7 @@
 /** 暴露api */
 import cssAccessors from './css-accessors'
-import { capitalize } from './strings'
-import { entries } from './objects'
+import { capitalize } from '../strings'
+import { entries } from '../objects'
 
 function setStyle(options) {
     if (!options) {
