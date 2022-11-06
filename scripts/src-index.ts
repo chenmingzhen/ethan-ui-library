@@ -10,7 +10,7 @@ const componentsPath = path.join(rootPath, '/component')
 /**
  * @todo finish  table then remove de filter for them
  */
-const ignoreComponents = ['Table']
+const ignoreComponents = ['List', 'Table']
 
 const files = fs
     .readdirSync(componentsPath)
