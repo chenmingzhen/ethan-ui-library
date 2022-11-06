@@ -14,7 +14,7 @@ function Separator() {
 
 const data = [{ title: 'Home', url: '/' }, { title: 'Self' }]
 
-export default function() {
+export default function () {
     return (
         <div>
             <Breadcrumb data={data} separator="|" />

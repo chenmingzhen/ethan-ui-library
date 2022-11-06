@@ -1,4 +1,4 @@
-export default function(resource) {
+export default function (resource) {
     /** import chasingDotsLess from './spin/chasing-dots.less'; */
     /** Demo: style/index classnames style */
     const nameLessReg = /import * as ([a-zA-Z]+) from '[a-zA-Z\/\.\-]+.less';/g

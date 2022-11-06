@@ -11,7 +11,7 @@
 import React from 'react'
 import { Alert } from 'ethan-ui'
 
-export default function() {
+export default function () {
     const [placeholder, setPlaceholder] = React.useState('')
 
     return (

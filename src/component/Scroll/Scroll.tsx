@@ -55,7 +55,7 @@ class Scroll extends PureComponent<ScrollProps> {
         this.wheelElement.removeEventListener('touchmove', this.handleTouchMove)
     }
 
-    bindWheelElement = wheelElement => {
+    bindWheelElement = (wheelElement) => {
         this.wheelElement = wheelElement
     }
 
@@ -80,14 +80,14 @@ class Scroll extends PureComponent<ScrollProps> {
     }
 
     // 设置点击的起始点
-    resetStartPoint = position => {
+    resetStartPoint = (position) => {
         this.touchStartX = position.clientX
         this.touchStartY = position.clientY
     }
 
     /** contentDocument 属性能够以 HTML 对象来返回 iframe 中的文档。 */
     /** @see https://www.runoob.com/jsref/prop-frame-contentwindow.html  */
-    handleIframeResize = el => {
+    handleIframeResize = (el) => {
         if (el && el.contentWindow) {
             el.contentWindow.onresize = throttleWrapper(this.recomputedScrollRect)
         }
@@ -139,7 +139,7 @@ class Scroll extends PureComponent<ScrollProps> {
         /** innerScrollAttr 包含当前e的attr 不处理 */
         /** 注意currentTarget与Target的区别 */
         /** 当前滚动组件里面还有原生滚动，应阻止当前组件的滚动 */
-        if (innerScrollAttr.find(attr => (event.target as HTMLElement).hasAttribute(attr))) {
+        if (innerScrollAttr.find((attr) => (event.target as HTMLElement).hasAttribute(attr))) {
             event.stopPropagation()
 
             return
@@ -183,12 +183,12 @@ class Scroll extends PureComponent<ScrollProps> {
     }
 
     /** 移动端 开始点击 */
-    handleTouchStart = e => {
+    handleTouchStart = (e) => {
         this.resetStartPoint(e.changedTouches[0])
     }
 
     /** 移动端 移动 */
-    handleTouchMove = e => {
+    handleTouchMove = (e) => {
         const { scrollX, scrollY } = this.props
 
         e.preventDefault()
@@ -223,7 +223,7 @@ class Scroll extends PureComponent<ScrollProps> {
                 {/* iframe用于占位计算onresize */}
                 <iframe tabIndex={-1} title="scroll" ref={this.handleIframeResize} className={scrollClass('iframe')} />
                 <div
-                    ref={innerElement => {
+                    ref={(innerElement) => {
                         /** 实际渲染内容的容器(children的父容器) 可以去掉此容器 */
                         /** 无实际意义 返回给调用者 调用者展无使用 可以去掉此容器 */
                         this.innerElement = innerElement

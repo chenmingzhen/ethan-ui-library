@@ -10,6 +10,6 @@ import { Rate, FontAwesome } from 'ethan-ui'
 const heartBg = <FontAwesome name="heart-o" />
 const heart = <FontAwesome name="heart" style={{ color: '#ff4d4f' }} />
 
-export default function() {
+export default function () {
     return <Rate defaultValue={2} background={heartBg} front={heart} />
 }

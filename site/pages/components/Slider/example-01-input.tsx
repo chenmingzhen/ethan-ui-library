@@ -17,7 +17,7 @@ const slider = {
     marginRight: 28,
 }
 
-export default function() {
+export default function () {
     const [value, setValue] = React.useState(50)
     return (
         <div style={container}>

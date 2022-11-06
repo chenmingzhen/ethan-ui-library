@@ -62,7 +62,7 @@ const Links: React.FC = () => {
         <div className={paginationClass('links', 'section')}>
             <Prev />
 
-            {links.map(p => {
+            {links.map((p) => {
                 if (typeof p === 'number') {
                     return (
                         <Item key={p} disabled={disabled} isCurrent={current === p} page={p} onClick={onChange}>

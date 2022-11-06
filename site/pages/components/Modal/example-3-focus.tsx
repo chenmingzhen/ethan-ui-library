@@ -7,7 +7,7 @@
 import React from 'react'
 import { Modal, Button, Message } from 'ethan-ui'
 
-export default function() {
+export default function () {
     function confirm(type) {
         Modal.confirm({
             title: 'This is a confirm message',

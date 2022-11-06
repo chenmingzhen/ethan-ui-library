@@ -33,8 +33,8 @@ const useFormValueEffect = <
         const JOIN_PATTERN = '__ETHAN_PATTERN__'
         const regExp = new RegExp(/(\[\d{1,}\])|\./g)
 
-        Object.keys($inputNames).forEach(inputName => {
-            const paths = inputName.split(regExp).filter(it => !isEmpty(it))
+        Object.keys($inputNames).forEach((inputName) => {
+            const paths = inputName.split(regExp).filter((it) => !isEmpty(it))
 
             let prevPath = ''
 
@@ -47,7 +47,7 @@ const useFormValueEffect = <
                 /** 使用连接符join掉要操作的name，使它的格式与eventName的格式保持一致，然后做比较 */
                 const splitAndJoin = name
                     .split(regExp)
-                    .filter(it => !isEmpty(it))
+                    .filter((it) => !isEmpty(it))
                     .join(JOIN_PATTERN)
 
                 if (eventName === splitAndJoin) {
@@ -90,12 +90,12 @@ const useFormValueEffect = <
     }, [])
 
     useEffect(() => {
-        deep.forEach(name => {
+        deep.forEach((name) => {
             trackPathDeep(name, handleUpdate, true)
         })
 
         return () => {
-            deep.forEach(name => {
+            deep.forEach((name) => {
                 trackPathDeep(name, handleUpdate, false)
             })
         }

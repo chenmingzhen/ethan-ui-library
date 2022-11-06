@@ -9,7 +9,7 @@ import { FontAwesome } from 'ethan-ui'
 
 const margin = { marginRight: 20 }
 
-export default function() {
+export default function () {
     return (
         <div>
             <FontAwesome style={margin} name="cab" />

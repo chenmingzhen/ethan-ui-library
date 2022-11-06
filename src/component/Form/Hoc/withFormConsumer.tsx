@@ -13,7 +13,7 @@ const withFormConsumer = curry((keys: Array<keyof FormContextProps>, Origin: typ
     const formContextProps: any = {}
 
     if (!isEmpty(value)) {
-        keys.forEach(k => {
+        keys.forEach((k) => {
             const val = value[k]
 
             if (val !== undefined) {

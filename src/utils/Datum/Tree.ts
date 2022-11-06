@@ -100,7 +100,7 @@ export default class {
 
         /** 0:不选中 1:选中 2:indeterminate选中 */
         let checked
-        ids.forEach(id => {
+        ids.forEach((id) => {
             const { children } = this.nodeInfoMap.get(id)
 
             if (forceCheck) {
@@ -247,7 +247,7 @@ export default class {
         const { path, children } = this.nodeInfoMap.get(id)
 
         if (direction !== 'asc') {
-            children.forEach(cid => {
+            children.forEach((cid) => {
                 this.set(cid, checked, 'desc')
             })
         }
@@ -258,7 +258,7 @@ export default class {
             let parentChecked = checked
 
             /** 设置父节点是否为indeterminate */
-            this.nodeInfoMap.get(parentId).children.forEach(cid => {
+            this.nodeInfoMap.get(parentId).children.forEach((cid) => {
                 if (parentChecked !== this.valueMap.get(cid)) {
                     parentChecked = 2
                 }

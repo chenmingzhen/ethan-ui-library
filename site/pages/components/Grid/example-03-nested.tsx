@@ -14,7 +14,7 @@ const style = {
     background: '#3399ff',
 }
 
-export default function() {
+export default function () {
     return (
         <Grid style={{ textAlign: 'center' }}>
             <Grid width={1 / 2} style={style}>

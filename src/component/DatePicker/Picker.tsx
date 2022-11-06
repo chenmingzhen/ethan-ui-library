@@ -29,7 +29,7 @@ function getDefaultCurrent(rawDate: string | number | Date, format: string) {
     return date ? new Date(date) : new Date()
 }
 
-const Picker: React.FC<PickerProps> = props => {
+const Picker: React.FC<PickerProps> = (props) => {
     const { type, format, index, children, current, handleHover, ...other } = props
 
     const [mode, updateMode] = useState(getInitMode(type))
@@ -59,7 +59,7 @@ const Picker: React.FC<PickerProps> = props => {
     }, [])
 
     const handleMouseEnter: React.MouseEventHandler<HTMLDivElement> = useCallback(
-        evt => {
+        (evt) => {
             evt.stopPropagation()
 
             handleHover(index, true)
@@ -68,7 +68,7 @@ const Picker: React.FC<PickerProps> = props => {
     )
 
     const handleMouseLeave: React.MouseEventHandler<HTMLDivElement> = useCallback(
-        evt => {
+        (evt) => {
             evt.stopPropagation()
 
             handleHover(index, false)

@@ -17,7 +17,7 @@ export interface BadgeProps {
     onClick?: (e: React.MouseEvent<HTMLElement, MouseEvent>) => void
 }
 
-const Badge: React.FC<BadgeProps> = props => {
+const Badge: React.FC<BadgeProps> = (props) => {
     const { style, children, dot, color, count, maxCount, onClick } = props
 
     const subStyle = useMemo(() => (color ? { backgroundColor: color } : {}), [color])

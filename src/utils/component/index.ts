@@ -38,7 +38,7 @@ function create(name: 'PureComponent' | 'Component') {
     }
 }
 
-export const Component = (create('Component') as unknown) as typeof EComponent
-export const PureComponent = (create('PureComponent') as unknown) as typeof EPureComponent
+export const Component = create('Component') as unknown as typeof EComponent
+export const PureComponent = create('PureComponent') as unknown as typeof EPureComponent
 
 export default create

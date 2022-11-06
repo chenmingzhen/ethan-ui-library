@@ -4,7 +4,7 @@ import Select from '../Select'
 import paginationContext from './context'
 import { PageSizeListProps } from './type'
 
-const PageSizeList: React.FC<PageSizeListProps> = props => {
+const PageSizeList: React.FC<PageSizeListProps> = (props) => {
     const { current, onChange, pageSize, text, disabled } = React.useContext(paginationContext)
 
     const { pageSizeList, size, sizeListProps } = props
@@ -26,7 +26,7 @@ const PageSizeList: React.FC<PageSizeListProps> = props => {
             size={size}
             className={paginationClass('section', 'pagesize')}
             data={pageSizeList}
-            renderItem={d => `${d} ${text.page || ''}`}
+            renderItem={(d) => `${d} ${text.page || ''}`}
             {...sizeListProps}
         />
     )

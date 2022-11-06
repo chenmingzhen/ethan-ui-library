@@ -14,6 +14,6 @@ const data = [
     { title: 'Self', url: 'https://www.google.com' },
 ]
 
-export default function() {
+export default function () {
     return <Breadcrumb data={data} />
 }

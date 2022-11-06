@@ -7,6 +7,6 @@
 import React from 'react'
 import { Pagination } from 'ethan-ui'
 
-export default function() {
+export default function () {
     return <Pagination disabled layouts={['links', 'list']} total={1000} />
 }

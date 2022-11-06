@@ -99,7 +99,7 @@ export default class Node extends PureComponent<CascaderNodeProps, CascaderNodeS
     renderContent = () => {
         const { renderItem, data, active } = this.props
 
-        const render = typeof renderItem === 'function' ? renderItem : d => d[renderItem]
+        const render = typeof renderItem === 'function' ? renderItem : (d) => d[renderItem]
 
         return render(data, active)
     }

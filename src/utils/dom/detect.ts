@@ -40,7 +40,7 @@ export function has3d() {
     // Add it to the body to get the computed style.
     document.body.insertBefore(el, null)
 
-    Object.keys(TRANSFORMS).forEach(t => {
+    Object.keys(TRANSFORMS).forEach((t) => {
         // 每个浏览器有自己的前缀 如chrome 则webkitTransform有 transform为undefined
         if (el.style[t] !== undefined) {
             el.style[t] = 'translate3d(1px,1px,1px)'

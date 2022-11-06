@@ -11,7 +11,7 @@ import { fetchSync as fetchUser } from 'doc/data/user'
 const users = fetchUser(10000)
 const style = { width: 240, marginBottom: 12, display: 'block' }
 
-export default function() {
+export default function () {
     return (
         <Select
             data={users}
@@ -21,7 +21,7 @@ export default function() {
             style={style}
             placeholder="Select a user"
             renderItem={(user, i) => `${user.firstName} ${user.lastName} (${i + 1})`}
-            renderResult={user => `${user.firstName} ${user.lastName}`}
+            renderResult={(user) => `${user.firstName} ${user.lastName}`}
         />
     )
 }

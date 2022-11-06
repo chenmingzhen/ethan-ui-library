@@ -166,7 +166,7 @@ export default class List<T = string> {
 
         let raws = Array.isArray(data) ? data : [data]
 
-        raws = raws.filter(v => {
+        raws = raws.filter((v) => {
             const disabled = this.disabled(v)
 
             if (disabled) return false
@@ -221,19 +221,19 @@ export default class List<T = string> {
 
         if (!event) return
 
-        event.forEach(fn => fn(...args))
+        event.forEach((fn) => fn(...args))
     }
 
     private initFormat(f) {
         switch (typeof f) {
             case 'string':
-                this.format = value => value[f]
+                this.format = (value) => value[f]
                 break
             case 'function':
-                this.format = value => f(value)
+                this.format = (value) => f(value)
                 break
             default:
-                this.format = a => a
+                this.format = (a) => a
                 break
         }
     }
@@ -243,7 +243,7 @@ export default class List<T = string> {
 
         let raws = Array.isArray(data) ? data : [data]
 
-        raws = raws.filter(r => !this.disabled(r))
+        raws = raws.filter((r) => !this.disabled(r))
 
         const newValues = []
 
@@ -282,6 +282,6 @@ export default class List<T = string> {
     unsubscribe(name, fn) {
         if (!this.$events[name]) return
 
-        this.$events[name] = this.$events[name].filter(e => e !== fn)
+        this.$events[name] = this.$events[name].filter((e) => e !== fn)
     }
 }

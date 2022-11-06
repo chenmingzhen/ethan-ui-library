@@ -121,9 +121,9 @@ function twelveCircle(props: SpinProps, type) {
     )
 }
 
-export const ScaleCircle = opt => twelveCircle(opt, 'scale')
+export const ScaleCircle = (opt) => twelveCircle(opt, 'scale')
 
-export const FadingCircle = opt => twelveCircle(opt, 'fade')
+export const FadingCircle = (opt) => twelveCircle(opt, 'fade')
 
 export function ThreeBounce(props: SpinProps) {
     const { value, unit } = formatSize(props.size)

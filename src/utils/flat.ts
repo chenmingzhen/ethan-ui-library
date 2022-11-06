@@ -55,7 +55,7 @@ export function unflatten(data: Record<string, any>) {
 
     Object.keys(data)
         .sort()
-        .forEach(p => {
+        .forEach((p) => {
             const pathWithPoint = insertPoint(p)
             cur = result
             prop = ''

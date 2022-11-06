@@ -24,7 +24,7 @@ export default class extends Component {
         }
     }
 
-    onChange = v => {
+    onChange = (v) => {
         console.log(v)
         this.setState({ value: v })
     }
@@ -38,7 +38,7 @@ export default class extends Component {
                 format="id"
                 renderItem="content"
                 keygen="id"
-                disabled={d => d.content.indexOf('1') > -1}
+                disabled={(d) => d.content.indexOf('1') > -1}
             />
         )
     }

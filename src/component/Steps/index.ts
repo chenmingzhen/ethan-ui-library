@@ -6,7 +6,7 @@ export interface StepsComponents extends MemoExoticComponent<React.FC<StepsProps
     StepItem: typeof StepItem
 }
 
-const ComputedSteps = (Steps as unknown) as StepsComponents
+const ComputedSteps = Steps as unknown as StepsComponents
 
 ComputedSteps.StepItem = StepItem
 

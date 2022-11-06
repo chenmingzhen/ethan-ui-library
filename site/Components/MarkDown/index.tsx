@@ -31,7 +31,7 @@ function MarkDown({ onHeadingSet, examples, source }: MarkdownProps) {
         onHeadingSet?.(headings)
     }, [])
 
-    const appendHeading = heading => {
+    const appendHeading = (heading) => {
         headings.push(heading)
     }
 
@@ -73,8 +73,8 @@ function MarkDown({ onHeadingSet, examples, source }: MarkdownProps) {
         return examplesComponents
     }
 
-    const renderExample = name => {
-        const example = (examples || []).find(e => e.name === name)
+    const renderExample = (name) => {
+        const example = (examples || []).find((e) => e.name === name)
 
         if (!example) return null
 
@@ -105,7 +105,7 @@ function MarkDown({ onHeadingSet, examples, source }: MarkdownProps) {
                 code: CodeBlock,
                 // markdown header 渲染方式
                 heading: renderHeading,
-                html: prop => {
+                html: (prop) => {
                     if (prop.value === '<example />') return renderExamples()
 
                     const example = prop.value.match(exampleReg)
@@ -119,7 +119,7 @@ function MarkDown({ onHeadingSet, examples, source }: MarkdownProps) {
                 // markdown table 渲染方式
                 table: Table,
                 // markdown link 渲染方式
-                link: prop => {
+                link: (prop) => {
                     const target = prop.href.indexOf('http') === 0 ? '_blank' : undefined
                     if (target)
                         return (

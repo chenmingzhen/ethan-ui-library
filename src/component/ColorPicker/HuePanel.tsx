@@ -6,7 +6,7 @@ import { COLOR_PICKER_DOT_LENGTH, PANEL_CANVAS_WIDTH } from './config'
 import { useColorBoardEventPublish } from './context'
 import { ColorBoardEventKey, HuePanelProps } from './type'
 
-const HuePanel: React.FC<HuePanelProps> = props => {
+const HuePanel: React.FC<HuePanelProps> = (props) => {
     const { hue, onChange, isRgbPanelMoving, disabled } = props
 
     const [position, updatePosition] = useState<number>(0)

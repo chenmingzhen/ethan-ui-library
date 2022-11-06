@@ -6,7 +6,7 @@ import { ERROR, UPLOADING, REMOVED } from './utils/request'
 import { FileProps } from './type'
 import Spin from '../Spin'
 
-const File: React.FC<FileProps> = props => {
+const File: React.FC<FileProps> = (props) => {
     const { id, message, name, onRemove, process, status, showRecover, onRecover, renderContent, file } = props
 
     const handleRemove = useCallback(() => {

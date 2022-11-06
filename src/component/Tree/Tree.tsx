@@ -125,7 +125,7 @@ class Tree<T = any> extends PureComponent<ITreeProps<T>, TreeState> {
         }
     }
 
-    handleExpanded = expanded => {
+    handleExpanded = (expanded) => {
         const expandedSet = new Set(expanded)
 
         for (const [id, updateNodeExpandedState] of this.lists) {
@@ -163,7 +163,7 @@ class Tree<T = any> extends PureComponent<ITreeProps<T>, TreeState> {
         }
 
         if (expanded.indexOf(id) >= 0) {
-            newExpanded = expanded.filter(e => e !== id)
+            newExpanded = expanded.filter((e) => e !== id)
         } else {
             newExpanded = [...expanded, id]
         }
@@ -241,7 +241,6 @@ class Tree<T = any> extends PureComponent<ITreeProps<T>, TreeState> {
             data,
             disabled,
             line,
-            keygen,
             onExpand,
             onChange,
             renderItem,

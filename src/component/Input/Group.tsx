@@ -2,7 +2,7 @@ import inputBorder from '@/hoc/inputBorder'
 import React, { Children, cloneElement } from 'react'
 import { InputComponent, InputGroupProps } from './type'
 
-const Group: React.FC<InputGroupProps> = React.memo(props => {
+const Group: React.FC<InputGroupProps> = React.memo((props) => {
     const { children, style, className, tip, ...other } = props
 
     return (

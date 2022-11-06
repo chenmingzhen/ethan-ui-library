@@ -37,7 +37,7 @@ interface InnerProps {
     onClick?: () => void
 }
 
-const Tooltip: React.FC<ToolTipProps> = props => {
+const Tooltip: React.FC<ToolTipProps> = (props) => {
     const {
         children,
         disabledChild,
@@ -150,13 +150,14 @@ const Tooltip: React.FC<ToolTipProps> = props => {
         }
     }, [visible])
 
-    useEffect(() => {
-        return () => {
+    useEffect(
+        () => () => {
             if (uuidRef.current) {
                 destroyDiv(uuidRef.current, getContainer)
             }
-        }
-    }, [])
+        },
+        []
+    )
 
     return (
         <>

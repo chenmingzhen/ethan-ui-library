@@ -12,8 +12,8 @@ const useMessage = (onDestroy?: () => void) => {
     function dispatchDismiss(id: React.Key, duration: number) {
         if (duration > 0) {
             const timeout = setTimeout(() => {
-                setMessages(draft => {
-                    draft.forEach(m => {
+                setMessages((draft) => {
+                    draft.forEach((m) => {
                         if (m.id === id) {
                             m.dismiss = true
                         }
@@ -32,7 +32,7 @@ const useMessage = (onDestroy?: () => void) => {
 
         const messages = getMessages()
 
-        const hasIdMessageIndex = messages.findIndex(message => message.id === id)
+        const hasIdMessageIndex = messages.findIndex((message) => message.id === id)
 
         /** 存在Key 直接修改Props更新Message */
         if (hasIdMessageIndex > -1) {
@@ -42,7 +42,7 @@ const useMessage = (onDestroy?: () => void) => {
                 durationTimerMap.delete(id)
             }
 
-            setMessages(draft => {
+            setMessages((draft) => {
                 const origin = draft[hasIdMessageIndex]
 
                 draft[hasIdMessageIndex] = { ...origin, ...options }
@@ -53,7 +53,7 @@ const useMessage = (onDestroy?: () => void) => {
             return
         }
 
-        setMessages(draft => {
+        setMessages((draft) => {
             draft.push(Object.assign(options, { id }))
         })
 
@@ -63,8 +63,8 @@ const useMessage = (onDestroy?: () => void) => {
     }
 
     function manualCloseMsg(id) {
-        setMessages(draft => {
-            draft.filter(m => {
+        setMessages((draft) => {
+            draft.filter((m) => {
                 if (m.id !== id) return true
 
                 m.dismiss = true
@@ -76,8 +76,8 @@ const useMessage = (onDestroy?: () => void) => {
 
     // 根据alert的动画处理回调函数 手动处理动画
     function closeMessageForAnimation(id: React.Key, transitionDuration: number, msgHeight: number) {
-        setMessages(draft => {
-            draft.forEach(m => {
+        setMessages((draft) => {
+            draft.forEach((m) => {
                 if (m.id === id) {
                     m.dismiss = true
                     // messageHeight + messageMargin
@@ -101,7 +101,7 @@ const useMessage = (onDestroy?: () => void) => {
         // immer深拷贝，getset获取最新的值
         const messages = getMessages()
 
-        const currentMessages = messages.filter(m => {
+        const currentMessages = messages.filter((m) => {
             if (m.id !== id) return true
 
             if (m.onClose) {
@@ -129,8 +129,8 @@ const useMessage = (onDestroy?: () => void) => {
             const { id } = messages[i]
 
             setTimeout(() => {
-                setMessages(draft => {
-                    const find = draft.find(m => m.id === id)
+                setMessages((draft) => {
+                    const find = draft.find((m) => m.id === id)
 
                     if (find) {
                         find.dismiss = true

@@ -43,11 +43,11 @@ export default class {
 
         if (!event) return
 
-        event.forEach(callback => callback(name, data, type))
+        event.forEach((callback) => callback(name, data, type))
     }
 
-    getForm = (): FormInstance => {
-        return {
+    getForm = (): FormInstance =>
+        ({
             /** 外部使用 */
             get: this.get,
             getValue: this.getValue,
@@ -61,10 +61,9 @@ export default class {
             submit: this.submit,
             /** 内部获取Datum实例 */
             GET_INTERNAL_FORM_DATUM: () => this,
-        } as FormInstance
-    }
+        } as FormInstance)
 
-    setDefaultValue = defaultValue => {
+    setDefaultValue = (defaultValue) => {
         this.$defaultValues = { ...flatten(defaultValue || {}) }
 
         if (defaultValue) {
@@ -73,13 +72,13 @@ export default class {
     }
 
     get = (name: string | string[]) => {
-        if (Array.isArray(name)) return name.map(n => this.get(n))
+        if (Array.isArray(name)) return name.map((n) => this.get(n))
 
         return deepGet(this.$values, name)
     }
 
     /** 设置表单的值 相当于setFieldsValue */
-    setValue = value => {
+    setValue = (value) => {
         const values = isObject(value) ? value : {}
 
         if (values !== value) {
@@ -92,7 +91,7 @@ export default class {
 
         Object.keys(this.$inputNames)
             .sort((a, b) => a.length - b.length)
-            .forEach(name => {
+            .forEach((name) => {
                 this.dispatch(name, this.get(name), IGNORE_VALIDATE_ACTION)
             })
     }
@@ -108,7 +107,7 @@ export default class {
     unsubscribe = (name: string, callback?) => {
         if (!this.$events[name]) return
 
-        if (callback) this.$events[name] = this.$events[name].filter(fn => fn !== callback)
+        if (callback) this.$events[name] = this.$events[name].filter((fn) => fn !== callback)
         else delete this.$events[name]
     }
 
@@ -135,7 +134,7 @@ export default class {
         if (!name) return
 
         if (Array.isArray(name)) {
-            name.forEach(n => this.unbind(n))
+            name.forEach((n) => this.unbind(n))
 
             return
         }
@@ -166,8 +165,8 @@ export default class {
         const no = `${name}.`
 
         Object.keys(this.$inputNames)
-            .filter(n => n.indexOf(na) === 0 || n.indexOf(no) === 0)
-            .forEach(n => {
+            .filter((n) => n.indexOf(na) === 0 || n.indexOf(no) === 0)
+            .forEach((n) => {
                 this.dispatch(n, this.get(n), type)
             })
     }
@@ -201,7 +200,7 @@ export default class {
     setFormError = (errors = {}) => {
         const flattenErrors = flatten(errors)
 
-        Object.keys(flattenErrors).forEach(name => {
+        Object.keys(flattenErrors).forEach((name) => {
             const error = flattenErrors[name]
 
             this.setError({ name, error })
@@ -256,9 +255,7 @@ export default class {
         if (this.onChange) this.onChange(changeValues, this.getValue())
     }
 
-    getValue = () => {
-        return deepClone(this.$values)
-    }
+    getValue = () => deepClone(this.$values)
 
     validateForm = async (names?: string[]) => {
         if (!names) {
@@ -277,12 +274,12 @@ export default class {
 
         let count = validatePromise.length
 
-        await new Promise(next => {
+        await new Promise((next) => {
             validatePromise.forEach((promise, index) => {
                 const name = names[index]
 
                 promise
-                    .then(value => {
+                    .then((value) => {
                         if (value === undefined && this.deepSetOptions.removeUndefined) return
 
                         successRecord[name] = value
@@ -323,14 +320,14 @@ export default class {
             const value = this.get(name)
 
             validator(value, this.getValue())
-                .then(res => {
+                .then((res) => {
                     if (res !== true) {
                         reject(new FormError(res.message, name, value))
                     } else {
                         resolve(value)
                     }
                 })
-                .catch(e => {
+                .catch((e) => {
                     reject(new FormError(e.message, name, value))
                 })
         })
@@ -338,12 +335,12 @@ export default class {
 
     submit = () => {
         this.validateForm()
-            .then(values => {
+            .then((values) => {
                 if (this.onSubmit) {
                     this.onSubmit(values)
                 }
             })
-            .catch(error => {
+            .catch((error) => {
                 if (this.onError) {
                     this.onError(error)
                 }
@@ -358,20 +355,20 @@ export default class {
         if (empty) {
             this.setValue(unflatten(this.$defaultValues))
         } else {
-            names.forEach(name => {
+            names.forEach((name) => {
                 deepSet(this.$values, name, this.$defaultValues[name], this.deepSetOptions)
 
                 this.publishValue(name, RESET_ACTION)
             })
         }
 
-        resetNames.forEach(name => {
+        resetNames.forEach((name) => {
             this.dispatch(name, this.$defaultValues[name], RESET_ACTION)
         })
 
         const changeValues: Record<string, any> = {}
 
-        Object.keys(this.$inputNames).forEach(name => {
+        Object.keys(this.$inputNames).forEach((name) => {
             changeValues[name] = this.$defaultValues[name] !== undefined ? this.$defaultValues[name] : undefined
         })
 

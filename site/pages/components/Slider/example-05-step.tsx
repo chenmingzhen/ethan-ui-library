@@ -7,6 +7,6 @@
 import React from 'react'
 import { Slider } from 'ethan-ui'
 
-export default function() {
+export default function () {
     return <Slider range defaultValue={[0.05, 0.25]} scale={[0, 1]} step={0.05} />
 }

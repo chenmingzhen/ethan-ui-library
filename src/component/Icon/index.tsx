@@ -35,7 +35,7 @@ function createIcon(url = '', fontFamily = 'iconfont', prefix = 'icon') {
         document.body.appendChild(script)
     }
 
-    const wrapperIcon: EthanFC<IconProps> = props => (
+    const wrapperIcon: EthanFC<IconProps> = (props) => (
         <Icon ext={ext} fontFamily={fontFamily} prefix={prefix} {...props} />
     )
 

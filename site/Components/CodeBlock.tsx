@@ -13,7 +13,7 @@ interface CodeBlockProps {
     value: string
 }
 
-const CodeBlock: React.FC<CodeBlockProps> = props => {
+const CodeBlock: React.FC<CodeBlockProps> = (props) => {
     const { language = 'lang-jsx', onHighLight, value } = props
 
     const elRef = useRef<HTMLPreElement>(null)

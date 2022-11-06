@@ -9,14 +9,14 @@ import React from 'react'
 import { Upload, Button, FontAwesome, Message } from 'ethan-ui'
 import { action } from 'doc/config'
 
-export default function() {
+export default function () {
     return (
         <>
             <Upload
                 action={action}
                 accept="image/*"
                 name="file"
-                renderContent={f => <span style={{ fontSize: '16px' }}>{f.name}</span>}
+                renderContent={(f) => <span style={{ fontSize: '16px' }}>{f.name}</span>}
                 limit={3}
                 style={{ width: 300, marginBottom: 30 }}
             >
@@ -31,13 +31,11 @@ export default function() {
                 accept="image/*"
                 name="file"
                 limit={3}
-                renderContent={file => {
-                    return (
-                        <div onClick={() => Message.info('i am click')}>
-                            <img width="100%" src={file.data} alt="not found" />
-                        </div>
-                    )
-                }}
+                renderContent={(file) => (
+                    <div onClick={() => Message.info('i am click')}>
+                        <img width="100%" src={file.data} alt="not found" />
+                    </div>
+                )}
             />
         </>
     )

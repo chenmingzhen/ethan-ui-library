@@ -34,7 +34,7 @@ const { mandatory } = Rule({
     },
 })
 
-export default function() {
+export default function () {
     return (
         <Form labelWidth={60} labelAlign="right">
             <Form.Item

@@ -42,7 +42,7 @@ function getComponentPage(componentName: string, file: string) {
     }
 
     /** 左侧栏分类逻辑 */
-    Object.keys(ComponentsGroups).forEach(group => {
+    Object.keys(ComponentsGroups).forEach((group) => {
         /** Layout|Form|Feedback */
         const classifyGroup = ComponentsGroups[group]
 
@@ -55,9 +55,9 @@ function getComponentPage(componentName: string, file: string) {
 
     /** 获取实例代码 */
 
-    const exampleNames = fs.readdirSync(componentPagePath).filter(n => n.indexOf('example-') === 0)
+    const exampleNames = fs.readdirSync(componentPagePath).filter((n) => n.indexOf('example-') === 0)
 
-    exampleNames.forEach(exampleName => {
+    exampleNames.forEach((exampleName) => {
         const text = fs.readFileSync(path.resolve(componentPagePath, exampleName)).toString()
         // 获取example内注释说明
         const comment = /(^|\n|\r)\s*\/\*[\s\S]*?\*\/\s*(?:\r|\n|$)/.exec(text)
@@ -66,7 +66,7 @@ function getComponentPage(componentName: string, file: string) {
         if (comment) {
             let langLabel = ''
 
-            comment[0].split('\n').forEach(line => {
+            comment[0].split('\n').forEach((line) => {
                 // Demo：site/pages/components/Alert/example-1-base.js
                 // 获取当前中英文状态
 
@@ -123,11 +123,11 @@ function generateComponents(file = '') {
 
     const groups = {}
 
-    Object.keys(ComponentsGroups).forEach(key => {
+    Object.keys(ComponentsGroups).forEach((key) => {
         groups[key] = []
     })
 
-    fs.readdirSync(componentPath).forEach(dirName => {
+    fs.readdirSync(componentPath).forEach((dirName) => {
         /** lstatSync 获取文件信息 */
         const state = fs.lstatSync(`${componentPath}/${dirName}`)
 
@@ -146,7 +146,7 @@ function generateComponents(file = '') {
         Log.success('write file chunks/Components/index.js')
 
         /** 将模板内容写入chunks/Components/index */
-        fs.writeFile(path.resolve(chunkPath, './Components/index.js'), text, err => {
+        fs.writeFile(path.resolve(chunkPath, './Components/index.js'), text, (err) => {
             if (err) Log.error(err.message)
         })
 

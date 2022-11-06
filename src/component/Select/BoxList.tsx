@@ -27,9 +27,7 @@ class BoxList extends PureComponent<SelectListProps> {
         return columnWidth * columns
     }
 
-    getText = key => {
-        return this.props.text[key] || getLocale(key)
-    }
+    getText = (key) => this.props.text[key] || getLocale(key)
 
     handleSelectAll = (checked: boolean) => {
         const { datum, data } = this.props
@@ -80,7 +78,7 @@ class BoxList extends PureComponent<SelectListProps> {
 
         let checked: Checked = 'indeterminate'
 
-        const checkedCount = data.filter(d => datum.check(d)).length
+        const checkedCount = data.filter((d) => datum.check(d)).length
 
         if (checkedCount === 0) checked = false
         else if (checkedCount === data.length) checked = true
@@ -133,17 +131,15 @@ class BoxList extends PureComponent<SelectListProps> {
 
         return (
             <FormatBoxListDataHandler data={data} datum={datum} columns={columns} groupKey={groupKey}>
-                {({ defaultIndex, sliceData }) => {
-                    return (
-                        <LazyList
-                            defaultIndex={defaultIndex}
-                            lineHeight={lineHeight}
-                            data={sliceData}
-                            height={height}
-                            renderItem={this.handleRenderItem}
-                        />
-                    )
-                }}
+                {({ defaultIndex, sliceData }) => (
+                    <LazyList
+                        defaultIndex={defaultIndex}
+                        lineHeight={lineHeight}
+                        data={sliceData}
+                        height={height}
+                        renderItem={this.handleRenderItem}
+                    />
+                )}
             </FormatBoxListDataHandler>
         )
     }

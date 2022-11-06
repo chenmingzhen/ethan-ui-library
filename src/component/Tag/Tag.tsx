@@ -39,7 +39,7 @@ export interface TagProps {
     style?: React.CSSProperties
 }
 
-const Tag: React.FC<TagProps> = props => {
+const Tag: React.FC<TagProps> = (props) => {
     const { className, style, backgroundColor, onClose, disabled, onClick, children, type, onCompleted } = props
 
     const [inputVisible, setInputVisible] = useState(false)

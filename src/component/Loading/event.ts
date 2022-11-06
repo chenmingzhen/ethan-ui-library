@@ -63,7 +63,7 @@ function dispatchLineLoading() {
     const { updatePercent } = lineLoadingRef.current
 
     lineTimer = setInterval(() => {
-        updatePercent(lastPercent => {
+        updatePercent((lastPercent) => {
             const percent = Math.min(Math.floor(Math.random() * +5) + lastPercent, 99.9)
 
             return percent

@@ -14,8 +14,8 @@ export default class extends Component {
         inputVisible: false,
     }
 
-    remove = removedTag => {
-        const tags = this.state.tags.filter(tag => tag !== removedTag)
+    remove = (removedTag) => {
+        const tags = this.state.tags.filter((tag) => tag !== removedTag)
         this.setState({ tags })
     }
 
@@ -23,7 +23,7 @@ export default class extends Component {
         this.setState({ inputVisible: true })
     }
 
-    handleInputBlur = value => {
+    handleInputBlur = (value) => {
         const { tags } = this.state
         let newTags = tags
         if (value && tags.indexOf(value) === -1) {
@@ -40,7 +40,7 @@ export default class extends Component {
         const { tags, inputVisible } = this.state
         return (
             <div>
-                {tags.map(a => (
+                {tags.map((a) => (
                     <Tag key={a} onClose={() => this.remove(a)}>
                         {a}
                     </Tag>

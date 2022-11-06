@@ -8,7 +8,7 @@ const useVersion = () => {
     const [versions, setVersions] = useState([])
 
     const version = useMemo(() => {
-        const find = versions.find(v => window.location.pathname.indexOf(v.content) >= 0)
+        const find = versions.find((v) => window.location.pathname.indexOf(v.content) >= 0)
 
         if (find) return find.content
 
@@ -25,11 +25,11 @@ const useVersion = () => {
         if (process.env.NODE_ENV === 'development') return
 
         fetch('https://chenmingzhen.github.io/ethan-ui-library/versions.json')
-            .then(ver => ver.json())
-            .then(json => {
+            .then((ver) => ver.json())
+            .then((json) => {
                 const language = locate('cn', 'en')
 
-                const jsonVersions = json.map(v => ({
+                const jsonVersions = json.map((v) => ({
                     content: v,
                     url: transformVersionUrl(v, language),
                 }))

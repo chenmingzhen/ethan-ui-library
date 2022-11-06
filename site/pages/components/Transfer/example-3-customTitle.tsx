@@ -16,7 +16,7 @@ for (let i = 1; i < 30; i++) {
     })
 }
 
-export default function() {
+export default function () {
     return (
         <Transfer
             titles={['I am left', 'I am right']}

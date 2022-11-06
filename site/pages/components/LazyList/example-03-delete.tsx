@@ -15,7 +15,7 @@ export default () => {
 
     function handleClose(index: number) {
         setTimeout(() => {
-            updateDataSource(prev => {
+            updateDataSource((prev) => {
                 prev.splice(index, 1)
 
                 return [...prev]
@@ -28,18 +28,16 @@ export default () => {
             height={300}
             data={dataSource}
             lineHeight={43}
-            renderItem={(data, index) => {
-                return (
-                    <Alert
-                        type={data % 2 === 0 ? 'info' : 'success'}
-                        key={data}
-                        style={{ margin: '5px 0' }}
-                        onClose={handleClose.bind(this, index)}
-                    >
-                        {data}
-                    </Alert>
-                )
-            }}
+            renderItem={(data, index) => (
+                <Alert
+                    type={data % 2 === 0 ? 'info' : 'success'}
+                    key={data}
+                    style={{ margin: '5px 0' }}
+                    onClose={handleClose.bind(this, index)}
+                >
+                    {data}
+                </Alert>
+            )}
         />
     )
 }

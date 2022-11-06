@@ -146,7 +146,7 @@ export default class Rate extends PureComponent<RateProps, RateState> {
 
         return (
             <div className={rateClass('front')}>
-                {range(max).map(v => (
+                {range(max).map((v) => (
                     <span
                         key={v}
                         onClick={this.handleRateClick.bind(this, v + 1)}
@@ -169,7 +169,7 @@ export default class Rate extends PureComponent<RateProps, RateState> {
 
         return (
             <div className={rateClass('static')}>
-                {range(max).map(v => (
+                {range(max).map((v) => (
                     <span key={v} style={this.InnerStyle}>
                         {value > v && this.buildIcon(front, v)}
                     </span>
@@ -184,7 +184,7 @@ export default class Rate extends PureComponent<RateProps, RateState> {
 
         return (
             <div className={rateClass('background')}>
-                {range(max).map(v => {
+                {range(max).map((v) => {
                     const style = Object.assign(
                         {
                             visibility: !allowHalf && !disabled && this.computedValue > v ? 'hidden' : 'visible',

@@ -8,7 +8,7 @@
 import React from 'react'
 import { ColorPicker } from 'ethan-ui'
 
-export default function() {
+export default function () {
     return (
         <>
             <ColorPicker mode="hex" defaultValue="#004dcf" />

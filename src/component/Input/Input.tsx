@@ -17,7 +17,7 @@ class Input extends PureComponent<IInputProps> {
 
     ref: HTMLInputElement
 
-    bindRef = el => {
+    bindRef = (el) => {
         const { forwardedRef } = this.props
 
         this.ref = el
@@ -107,17 +107,8 @@ class Input extends PureComponent<IInputProps> {
     }
 
     render() {
-        const {
-            type,
-            defaultValue,
-            digits,
-            className,
-            clearable,
-            htmlName,
-            onEnterPress,
-            forwardedRef,
-            ...other
-        } = this.props
+        const { type, defaultValue, digits, className, clearable, htmlName, onEnterPress, forwardedRef, ...other } =
+            this.props
 
         const value = this.props.value == null ? '' : this.props.value
 

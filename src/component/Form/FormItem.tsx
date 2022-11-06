@@ -126,7 +126,7 @@ class FormItem extends PureComponent<IFormItemProps, FormItemState> {
     }
 
     updateChildItemErrors = (nameStr: string, error: Error) => {
-        this.setImmerState(draft => {
+        this.setImmerState((draft) => {
             if (error) {
                 draft.errors[nameStr] = error
             } else {
@@ -153,7 +153,7 @@ class FormItem extends PureComponent<IFormItemProps, FormItemState> {
 
         const newValue = !Array.isArray(propName)
             ? data
-            : immer(this.value, draft => {
+            : immer(this.value, (draft) => {
                   propName.forEach((n, i) => {
                       if (n === name) draft[i] = data
                   })
@@ -203,9 +203,7 @@ class FormItem extends PureComponent<IFormItemProps, FormItemState> {
 
         if (formDatum && name) {
             if (isArray(name)) {
-                value = name.map(n => {
-                    return formDatum.get(n)
-                })
+                value = name.map((n) => formDatum.get(n))
             } else {
                 value = formDatum.get(name)
             }
@@ -250,9 +248,9 @@ class FormItem extends PureComponent<IFormItemProps, FormItemState> {
 
         return (
             <>
-                {Object.keys(errors).map(key => {
-                    return <FormHelp error={errors[key]} animation={animation} key={key} />
-                })}
+                {Object.keys(errors).map((key) => (
+                    <FormHelp error={errors[key]} animation={animation} key={key} />
+                ))}
 
                 {tip ? <FormHelp tip={tip} animation={animation} /> : null}
             </>
@@ -299,7 +297,7 @@ class FormItem extends PureComponent<IFormItemProps, FormItemState> {
                  * 如果想让InputGroup获取样式，需要在formless中添加InputGroup的invalid的样式，并且要封装一下InputGroup，例如使用children函数的形式
                  * 如果包裹InputGroup的顶层FormItem是noStyle.则error下InputGroup的样式会失效
                  */
-                Object.keys(errors).filter(key => !!errors[key]).length && 'invalid',
+                Object.keys(errors).filter((key) => !!errors[key]).length && 'invalid',
                 ['top', 'right'].indexOf(labelAlign) >= 0 && `label-align-${labelAlign}`
             ),
             this.props.className
@@ -335,12 +333,12 @@ class FormItem extends PureComponent<IFormItemProps, FormItemState> {
 }
 
 /** 顶层FormItem收集Error统一显示 */
-const withCollectError = Origin =>
-    React.memo(props => (
+const withCollectError = (Origin) =>
+    React.memo((props) => (
         <ErrorListConsumer>
-            {({ onUpdateChildItemErrors } = {}) => {
-                return <Origin onUpdateChildItemErrors={onUpdateChildItemErrors} {...props} />
-            }}
+            {({ onUpdateChildItemErrors } = {}) => (
+                <Origin onUpdateChildItemErrors={onUpdateChildItemErrors} {...props} />
+            )}
         </ErrorListConsumer>
     ))
 

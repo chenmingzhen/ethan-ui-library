@@ -82,7 +82,7 @@ export default curry(
                 }
             }
 
-            handleBlur = event => {
+            handleBlur = (event) => {
                 if (!this.state.focus) return
 
                 this.setState({ focus: false })
@@ -90,7 +90,7 @@ export default curry(
                 this.props?.onBlur?.(event)
             }
 
-            handleFocus = event => {
+            handleFocus = (event) => {
                 if (this.state.focus) return
 
                 this.setState({ focus: true })
@@ -118,7 +118,7 @@ export default curry(
                 return content
             }
 
-            handleVisibleChange = visible => {
+            handleVisibleChange = (visible) => {
                 const { onVisibleChange } = this.props.popoverProps
 
                 if (onVisibleChange) onVisibleChange(visible)
@@ -193,7 +193,7 @@ export default curry(
 
                             const { focus } = this.state
 
-                            const Tag = ((options.tag || 'label') as unknown) as React.ElementType
+                            const Tag = (options.tag || 'label') as unknown as React.ElementType
 
                             const tagStyle = Object.assign({ width }, style)
 

@@ -7,7 +7,7 @@
 import React from 'react'
 import { Dropdown } from 'ethan-ui'
 
-export default function() {
+export default function () {
     const menu = []
     for (let i = 1; i <= 30; i++) {
         menu.push({

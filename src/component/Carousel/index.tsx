@@ -46,7 +46,7 @@ class Carousel extends PureComponent<CarouselProps, CarouselState> {
         this.setNext(1)
     }
 
-    setNext = next => {
+    setNext = (next) => {
         if (this.mouseInView) {
             return
         }
@@ -62,7 +62,7 @@ class Carousel extends PureComponent<CarouselProps, CarouselState> {
         }
     }
 
-    moveTo = next => {
+    moveTo = (next) => {
         const { current } = this.state
 
         if (next === current) return

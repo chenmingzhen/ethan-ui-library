@@ -9,7 +9,7 @@ import { Tabs, Button } from 'ethan-ui'
 
 const panelStyle = { padding: '12px 0' }
 
-export default function() {
+export default function () {
     return (
         <Tabs defaultActive={1} tabBarExtraContent={<Button type="link">extra</Button>}>
             <Tabs.Panel style={panelStyle} tab="Home">

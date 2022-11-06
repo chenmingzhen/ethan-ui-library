@@ -14,13 +14,13 @@ const style = {
     background: '#3399ff',
 }
 
-export default function() {
+export default function () {
     return (
         <div style={{ background: '#f2f2f2' }}>
             <Grid gutter={8}>
                 {Array.from({ length: 8 })
                     .map((_, i) => i + 1)
-                    .map(i => (
+                    .map((i) => (
                         <Grid key={i} width={1 / 8}>
                             <div style={style}>1/8</div>
                         </Grid>

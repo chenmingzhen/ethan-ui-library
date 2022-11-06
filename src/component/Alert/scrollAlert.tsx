@@ -63,7 +63,7 @@ const ScrollAlert: React.FC<ScrollAlertProps> = ({
     const [, cancel, reset] = useTimeoutFn(scrollIntervalFn, scrollInterval)
 
     const onCloseItemHandler = useCallback(
-        index => {
+        (index) => {
             // 为克隆item的最后一项 即第一项
             if (index === items.length) {
                 index = 0

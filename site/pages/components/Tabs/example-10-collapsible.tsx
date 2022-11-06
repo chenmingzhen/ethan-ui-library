@@ -9,7 +9,7 @@ import { Tabs } from 'ethan-ui'
 
 const panelStyle = { padding: '12px 0' }
 
-export default function() {
+export default function () {
     return (
         <Tabs shape="line" collapsible>
             <Tabs.Panel style={panelStyle} tab="Home">

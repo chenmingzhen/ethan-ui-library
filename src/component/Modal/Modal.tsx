@@ -10,7 +10,7 @@ import useContainer from './hooks/useContainer'
 import { MODAL_ANIMATION_DURATION } from './util'
 import Panel from './Panel'
 
-const Modal: React.FC<IModalProps> = props => {
+const Modal: React.FC<IModalProps> = (props) => {
     const { visible, destroyOnClose, getContainer, rootClassName, position, zIndex, esc, onClose } = props
 
     /** 在使用MethodModal的时候，外层已经执行unmountComponentAtNode,内层handleClose仍会执行state的操作 */

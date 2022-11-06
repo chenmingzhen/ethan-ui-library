@@ -7,7 +7,7 @@
 import React from 'react'
 import { Alert } from 'ethan-ui'
 
-export default function() {
+export default function () {
     return (
         <div>
             <Alert type="success" icon>

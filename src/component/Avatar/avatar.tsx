@@ -14,7 +14,7 @@ export interface AvatarProps {
     className?: string
 }
 
-const Avatar: React.FC<AvatarProps> = props => {
+const Avatar: React.FC<AvatarProps> = (props) => {
     const [textScale, setTextScale] = useState(1)
     const [textReady, setTextReady] = useState(false)
 

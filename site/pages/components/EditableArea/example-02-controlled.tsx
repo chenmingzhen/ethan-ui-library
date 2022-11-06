@@ -8,13 +8,13 @@
 import React, { useState } from 'react'
 import { EditableArea } from 'ethan-ui'
 
-export default function() {
+export default function () {
     const [value, setValue] = useState('')
     return (
         <EditableArea
             value={value}
             placeholder="Input something"
-            onChange={val => {
+            onChange={(val) => {
                 setValue(val)
             }}
             width={400}

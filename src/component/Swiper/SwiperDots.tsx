@@ -16,18 +16,16 @@ const SwiperDots: React.FC<SwiperDotsProps> = ({ realIndex, items, onDotsClick }
 
     return (
         <ul className={swiperClass('dots')}>
-            {React.Children.map(items, (child: React.ReactElement, i) => {
-                return (
-                    <li
-                        key={child?.key || i}
-                        className={swiperClass(realIndex === i && 'active')}
-                        onClick={() => {
-                            // 换算成虚拟index
-                            handleClick(i + 1)
-                        }}
-                    />
-                )
-            })}
+            {React.Children.map(items, (child: React.ReactElement, i) => (
+                <li
+                    key={child?.key || i}
+                    className={swiperClass(realIndex === i && 'active')}
+                    onClick={() => {
+                        // 换算成虚拟index
+                        handleClick(i + 1)
+                    }}
+                />
+            ))}
         </ul>
     )
 }

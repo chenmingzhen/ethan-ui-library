@@ -4,7 +4,7 @@ import Checkbox from '../Checkbox/Checkbox'
 import Radio from '../Radio/Radio'
 import { SelectBoxOptionProps } from './type'
 
-const BoxOption: React.FC<SelectBoxOptionProps> = function(props) {
+const BoxOption: React.FC<SelectBoxOptionProps> = function (props) {
     const { data, index, isActive, renderItem, columns, multiple, disabled, onClick } = props
 
     const width = `${(1 / columns) * 100}%`

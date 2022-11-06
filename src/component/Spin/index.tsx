@@ -57,7 +57,7 @@ const spins = {
     'three-bounce': ThreeBounce,
 }
 
-const Spin: React.FC<SpinProps> = props => {
+const Spin: React.FC<SpinProps> = (props) => {
     const { children, loading } = props
 
     const name = props.name ?? 'default'

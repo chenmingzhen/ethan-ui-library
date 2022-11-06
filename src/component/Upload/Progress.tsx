@@ -23,7 +23,7 @@ class Progress extends PureComponent<UploadProgressProps, UploadProgressState> {
         }
     }
 
-    handleUpload = e => {
+    handleUpload = (e) => {
         const uploading = this.state.progress >= 0
 
         if (uploading) e.stopPropagation()
@@ -47,7 +47,7 @@ class Progress extends PureComponent<UploadProgressProps, UploadProgressState> {
         this.setState({ progress: process })
     }
 
-    handleKeyDown = e => {
+    handleKeyDown(e) {
         if (e.keyCode === 13) e.target.click()
     }
 

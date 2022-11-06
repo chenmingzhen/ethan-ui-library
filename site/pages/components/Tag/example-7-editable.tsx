@@ -7,12 +7,12 @@
 import React, { useState } from 'react'
 import { Tag } from 'ethan-ui'
 
-export default function() {
+export default function () {
     const [value, setValue] = useState('abc')
     return (
         <div>
             <Tag
-                onCompleted={val => {
+                onCompleted={(val) => {
                     setValue(val)
                 }}
                 onClose={() => {

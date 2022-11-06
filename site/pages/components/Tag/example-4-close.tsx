@@ -19,7 +19,7 @@ export default () => (
 
         <Tag
             onClose={() =>
-                new Promise(resolve => {
+                new Promise((resolve) => {
                     setTimeout(() => {
                         console.log('promise close')
                         resolve(true)

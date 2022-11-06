@@ -21,7 +21,7 @@ class Transfer<
         footers: [],
         operations: [],
         operationIcon: true,
-        renderItem: d => d,
+        renderItem: (d) => d,
         rowsInView: 20,
         lineHeight: 32,
         listHeight: 180,
@@ -39,7 +39,7 @@ class Transfer<
     get sources() {
         const { data, datum } = this.props
 
-        return data.filter(d => !datum.check(d))
+        return data.filter((d) => !datum.check(d))
     }
 
     get targets() {

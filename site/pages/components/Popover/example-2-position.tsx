@@ -25,7 +25,7 @@ const style = {
     cursor: 'pointer',
 }
 
-export default function() {
+export default function () {
     return positions.map((row, i) => (
         <div key={i}>
             {row.map((p, j) =>

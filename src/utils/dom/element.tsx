@@ -18,7 +18,7 @@ if (Element && !Element.prototype.matches) {
 // 利用React的顶级容器API 遍历children 查询children它的每一个子项 对是string类型的包裹一层span
 export function wrapSpan(children) {
     if (!children) return children
-    return React.Children.map(children, item => {
+    return React.Children.map(children, (item) => {
         if (typeof item === 'string') return <span>{item}</span>
         return item
     })
@@ -73,7 +73,7 @@ export function cssSupport(attr, value) {
     return false
 }
 
-export function getCursorOffset(length) {
+export function getCursorOffset() {
     /** @see https://developer.mozilla.org/zh-cn/docs/web/api/selection/anchoroffset */
     if (window.getSelection) {
         return window.getSelection().anchorOffset
@@ -146,7 +146,7 @@ export function addResizeObserver(element: HTMLElement, handler: () => void, opt
             lastClientHeight = element.clientHeight
         }
 
-        const observerCallback: ResizeObserverCallback = entries => {
+        const observerCallback: ResizeObserverCallback = (entries) => {
             const { width, height } = entries[0].contentRect
 
             if (direction === 'x') {

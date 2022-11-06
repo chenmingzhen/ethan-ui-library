@@ -7,7 +7,7 @@
 import React from 'react'
 import { Button, Popover } from 'ethan-ui'
 
-export default function() {
+export default function () {
     return (
         <Popover mouseEnterDelay={1} mouseLeaveDelay={1} style={{ width: 200, padding: 20 }} content="Some text">
             <Button>Hover</Button>

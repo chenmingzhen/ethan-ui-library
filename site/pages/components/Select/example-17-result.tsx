@@ -9,6 +9,6 @@ import { Select } from 'ethan-ui'
 
 const data = ['red', 'orange', 'yellow', 'green', 'cyan', 'blue', 'violet']
 
-export default function() {
-    return <Select keygen renderResult={c => `I love ${c}`} style={{ width: 240 }} data={data} defaultValue="" />
+export default function () {
+    return <Select keygen renderResult={(c) => `I love ${c}`} style={{ width: 240 }} data={data} defaultValue="" />
 }

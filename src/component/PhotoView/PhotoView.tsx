@@ -155,7 +155,7 @@ export default class PhotoView extends React.Component<IPhotoViewProps, typeof i
         window.removeEventListener('resize', this.handleResize)
     }
 
-    handleImageLoad = imageParams => {
+    handleImageLoad = (imageParams) => {
         this.setState(imageParams)
     }
 
@@ -171,7 +171,7 @@ export default class PhotoView extends React.Component<IPhotoViewProps, typeof i
     }
 
     handleStart = (clientX: number, clientY: number, touchLength = 0) => {
-        this.setState(prevState => ({
+        this.setState((prevState) => ({
             touched: true,
             clientX,
             clientY,
@@ -311,7 +311,7 @@ export default class PhotoView extends React.Component<IPhotoViewProps, typeof i
         })
     }
 
-    handleWheel = e => {
+    handleWheel = (e) => {
         const { clientX, clientY, deltaY } = e
         const { width, naturalWidth, reachState } = this.state
         if (reachState !== ReachTypeEnum.Normal) {
@@ -340,7 +340,7 @@ export default class PhotoView extends React.Component<IPhotoViewProps, typeof i
     }
 
     handleMaskStart = (clientX: number, clientY: number) => {
-        this.setState(prevState => ({
+        this.setState((prevState) => ({
             maskTouched: true,
             clientX,
             clientY,
@@ -349,32 +349,32 @@ export default class PhotoView extends React.Component<IPhotoViewProps, typeof i
         }))
     }
 
-    handleMaskMouseDown = e => {
+    handleMaskMouseDown = (e) => {
         this.handleMaskStart(e.clientX, e.clientY)
     }
 
-    handleMaskTouchStart = e => {
+    handleMaskTouchStart = (e) => {
         const { clientX, clientY } = e.touches[0]
         this.handleMaskStart(clientX, clientY)
     }
 
-    handleTouchStart = e => {
+    handleTouchStart = (e) => {
         const { clientX, clientY, touchLength } = getMultipleTouchPosition(e)
         this.handleStart(clientX, clientY, touchLength)
     }
 
-    handleMouseDown = e => {
+    handleMouseDown = (e) => {
         e.preventDefault()
         this.handleStart(e.clientX, e.clientY, 0)
     }
 
-    handleTouchMove = e => {
+    handleTouchMove = (e) => {
         e.preventDefault()
         const { clientX, clientY, touchLength } = getMultipleTouchPosition(e)
         this.onMove(clientX, clientY, touchLength)
     }
 
-    handleMouseMove = e => {
+    handleMouseMove = (e) => {
         e.preventDefault()
         this.onMove(e.clientX, e.clientY)
     }
@@ -440,12 +440,12 @@ export default class PhotoView extends React.Component<IPhotoViewProps, typeof i
         }
     }
 
-    handleTouchEnd = e => {
+    handleTouchEnd = (e) => {
         const { clientX, clientY } = e.changedTouches[0]
         this.handleUp(clientX, clientY)
     }
 
-    handleMouseUp = e => {
+    handleMouseUp = (e) => {
         const { clientX, clientY } = e
         this.handleUp(clientX, clientY)
     }

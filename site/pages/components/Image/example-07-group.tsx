@@ -7,10 +7,10 @@
 import React from 'react'
 import { Image } from 'ethan-ui'
 
-export default function() {
+export default function () {
     return (
         <Image.Group>
-            {[1, 2, 3, 4].map(i => (
+            {[1, 2, 3, 4].map((i) => (
                 <Image
                     key={i}
                     width={80}

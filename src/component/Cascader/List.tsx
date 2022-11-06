@@ -4,7 +4,7 @@ import { cascaderClass } from '@/styles'
 import Node from './Node'
 import { CascaderListProps } from './type'
 
-const CascaderList: React.FC<CascaderListProps> = props => {
+const CascaderList: React.FC<CascaderListProps> = (props) => {
     const { data, text, currentPathActiveId, keygen, parentId, ...other } = props
 
     if (!data || data.length === 0)

@@ -8,7 +8,7 @@
 import React from 'react'
 import { Avatar } from 'ethan-ui'
 
-export default function() {
+export default function () {
     return (
         <>
             <Avatar size="small">Y</Avatar>

@@ -7,7 +7,7 @@
 import React from 'react'
 import { Form, Input } from 'ethan-ui'
 
-export default function() {
+export default function () {
     return (
         <Form labelAlign="right" labelWidth={200} style={{ maxWidth: 500 }}>
             <Form.Item label="Email" name="email">

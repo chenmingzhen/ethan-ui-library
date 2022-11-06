@@ -14,7 +14,7 @@ import { CascaderState, CascaderProps } from './type'
 import AnimationList from '../List'
 import AbsoluteList from '../List/AbsoluteList'
 
-class Cascader<T extends any> extends PureComponent<CascaderProps, CascaderState> {
+class Cascader<T> extends PureComponent<CascaderProps, CascaderState> {
     static defaultProps = {
         clearable: true,
         expandTrigger: 'click',
@@ -103,7 +103,7 @@ class Cascader<T extends any> extends PureComponent<CascaderProps, CascaderState
         this.handleFocusChange(false)
     }
 
-    handleKeyDown: React.KeyboardEventHandler<HTMLDivElement> = e => {
+    handleKeyDown: React.KeyboardEventHandler<HTMLDivElement> = (e) => {
         if (e.keyCode === 13) {
             e.preventDefault()
 
@@ -240,7 +240,7 @@ class Cascader<T extends any> extends PureComponent<CascaderProps, CascaderState
             <>
                 <CascaderList {...props} key="root" data={data} currentPathActiveId={path[0]} parentId="" path={[]} />
                 {path.map((id, index) => {
-                    nextPathData = nextPathData?.find(d => {
+                    nextPathData = nextPathData?.find((d) => {
                         const nextPathId = this.keygen({ data: d, parentKey: path[index - 1], index })
 
                         return nextPathId === id
@@ -301,7 +301,7 @@ class Cascader<T extends any> extends PureComponent<CascaderProps, CascaderState
                             animationTypes={['fade', 'scale-y']}
                             duration="fast"
                             display="inline-flex"
-                            getRef={list => {
+                            getRef={(list) => {
                                 this.list = list
                             }}
                             onTransitionEnd={this.resetListStyle}

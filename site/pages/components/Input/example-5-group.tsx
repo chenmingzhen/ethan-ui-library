@@ -9,7 +9,7 @@ import { Input, Button, FontAwesome } from 'ethan-ui'
 
 const style = { width: 300, marginBottom: 12 }
 
-export default function() {
+export default function () {
     return (
         <div>
             <Input.Group style={style}>

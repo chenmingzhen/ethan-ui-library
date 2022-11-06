@@ -68,7 +68,7 @@ class Image extends PureComponent<UploadImageProps, UploadImageState> {
             /** @see https://developer.mozilla.org/zh-CN/docs/Web/API/FileReader */
             const reader = new FileReader()
 
-            reader.onload = e => {
+            reader.onload = (e) => {
                 const data = e.target.result as string
 
                 file.data = data
@@ -77,7 +77,7 @@ class Image extends PureComponent<UploadImageProps, UploadImageState> {
 
                 image.onerror = () => {
                     this.setState(
-                        immer(draft => {
+                        immer((draft) => {
                             draft.urlInvalid = true
                         })
                     )
@@ -116,7 +116,7 @@ class Image extends PureComponent<UploadImageProps, UploadImageState> {
         })
     }
 
-    handleKeyDown = e => {
+    handleKeyDown = (e) => {
         this.setState({ urlInvalid: false })
 
         if (e.keyCode === 13) e.target.click()

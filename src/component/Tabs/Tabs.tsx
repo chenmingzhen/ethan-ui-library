@@ -145,7 +145,7 @@ class Tabs extends PureComponent<TabsProps, TabsState> {
     }
 
     handleCollapse = () => {
-        this.setState(prevState => ({ collapsed: !prevState.collapsed }))
+        this.setState((prevState) => ({ collapsed: !prevState.collapsed }))
     }
 }
 

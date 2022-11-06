@@ -16,7 +16,7 @@ export default class extends PureComponent {
         return (
             <div
                 id="sticky_element"
-                ref={el => {
+                ref={(el) => {
                     this.element = el
                 }}
                 style={{ position: 'relative', height: 400, overflow: 'auto' }}

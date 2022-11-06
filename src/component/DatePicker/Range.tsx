@@ -78,7 +78,7 @@ class Range extends PureComponent {
         const { type, range, min, max } = this.props
 
         if (!change) {
-            const current = immer(this.props.current, draft => {
+            const current = immer(this.props.current, (draft) => {
                 draft[index] = date
             })
             this.props.onChange(current)
@@ -88,7 +88,7 @@ class Range extends PureComponent {
         if (mode === 'time') {
             let endChangedDate
             this.setState(
-                immer(draft => {
+                immer((draft) => {
                     // 设置值进去rangeDate
                     draft.rangeDate[index] = date
                     // 从draft中获取最新的rangeDate值
@@ -155,7 +155,7 @@ class Range extends PureComponent {
         }
 
         this.setState(
-            immer(draft => {
+            immer((draft) => {
                 draft.rangeDate[index] = date
                 draft.rangeDate[1 - index] = draft.rangeDate[1 - index] || ''
                 this.changeDateSmart(draft.rangeDate)
@@ -194,7 +194,7 @@ class Range extends PureComponent {
 
         return (
             <div className={datepickerClass('quick-select')}>
-                {quicks.map(q => (
+                {quicks.map((q) => (
                     <div
                         onClick={this.handleQuick.bind(this, q)}
                         className={datepickerClass(

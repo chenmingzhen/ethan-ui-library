@@ -9,7 +9,7 @@ export default class Slider extends PureComponent<SliderProps, SliderState> {
     parentElement: HTMLElement
 
     static defaultProps = {
-        formatValue: v => v,
+        formatValue: (v) => v,
     }
 
     constructor(props) {
@@ -116,7 +116,7 @@ export default class Slider extends PureComponent<SliderProps, SliderState> {
 
         return (
             <div
-                ref={el => {
+                ref={(el) => {
                     this.parentElement = el?.parentElement
                 }}
                 style={style}

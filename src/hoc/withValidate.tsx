@@ -22,7 +22,7 @@ export interface ValidateHocOutPutProps {
 }
 
 export default curry(
-    Origin =>
+    (Origin) =>
         class extends Component<ValidateHocProps, { error: Error }> {
             constructor(props) {
                 super(props)
@@ -32,7 +32,7 @@ export default curry(
                 }
             }
 
-            handleError = error => {
+            handleError = (error) => {
                 const { onError } = this.props
 
                 if (isSameError(error, this.state.error)) return
@@ -49,7 +49,7 @@ export default curry(
 
                 const validateResults = []
 
-                const validateProps = filterProps(this.props, v => typeof v === 'string' || typeof v === 'number')
+                const validateProps = filterProps(this.props, (v) => typeof v === 'string' || typeof v === 'number')
 
                 if (isArray(rules) && rules.length > 0) {
                     validateResults.push(validate(value, data, rules, validateProps))
@@ -57,11 +57,11 @@ export default curry(
                 /** ---------------------------------------------------------- */
                 // 根据每条检验规则的返回值 进行返回
                 return promiseAll(validateResults)
-                    .then(res => {
+                    .then((res) => {
                         this.handleError(res === true ? undefined : res)
                         return res
                     })
-                    .catch(e => {
+                    .catch((e) => {
                         this.handleError(e)
                         return e
                     })

@@ -1,6 +1,6 @@
-export const errorSubscribe = name => `__ERROR_SUBSCRIBE_${name}__`
+export const errorSubscribe = (name) => `__ERROR_SUBSCRIBE_${name}__`
 
-export const updateSubscribe = name => `__UPDATE_SUBSCRIBE_${name}__`
+export const updateSubscribe = (name) => `__UPDATE_SUBSCRIBE_${name}__`
 
 export const CHANGE_ACTION = 'CHANGE_ACTION'
 

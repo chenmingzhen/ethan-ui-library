@@ -7,7 +7,7 @@
 import React from 'react'
 import { EditableArea } from 'ethan-ui'
 
-export default function() {
+export default function () {
     return (
         <div id="popup-target" style={{ height: 200, overflow: 'auto', position: 'relative', padding: 10 }}>
             <div style={{ height: 100 }} />

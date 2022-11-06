@@ -14,7 +14,7 @@ import Position from './enum/Position'
 import { ComplicatedDropDownData, IDropDownProps } from './type'
 
 /** @TODO 矫正position的方向，顺带修改absoluteList的getPosition的判断 */
-const Dropdown: React.FC<IDropDownProps> = props => {
+const Dropdown: React.FC<IDropDownProps> = (props) => {
     const {
         animation,
         placeholder,
@@ -182,52 +182,50 @@ const Dropdown: React.FC<IDropDownProps> = props => {
                     style={{ width }}
                     fixed="min"
                 >
-                    {({ style: absoluteStyle, resetPosition }) => {
-                        return (
-                            <AnimationList
-                                show={show}
-                                style={absoluteStyle}
-                                data-id={dropdownId}
-                                className={classnames(dropdownClass('menu', columns > 1 && 'box-list'), listClassName)}
-                                animationTypes={['fade']}
-                                duration={animation ? 'fast' : 0}
-                                getRef={list => (animationListRef.current = list)}
-                                onTransitionEnd={resetPosition}
-                                lazyDom
-                            >
-                                {data.map((d: ComplicatedDropDownData, index) => {
-                                    const childPosition = Position[position]
+                    {({ style: absoluteStyle, resetPosition }) => (
+                        <AnimationList
+                            show={show}
+                            style={absoluteStyle}
+                            data-id={dropdownId}
+                            className={classnames(dropdownClass('menu', columns > 1 && 'box-list'), listClassName)}
+                            animationTypes={['fade']}
+                            duration={animation ? 'fast' : 0}
+                            getRef={(list) => (animationListRef.current = list)}
+                            onTransitionEnd={resetPosition}
+                            lazyDom
+                        >
+                            {data.map((d: ComplicatedDropDownData, index) => {
+                                const childPosition = Position[position]
 
-                                    const itemClassName = dropdownClass('item', !width && 'no-width')
+                                const itemClassName = dropdownClass('item', !width && 'no-width')
 
-                                    return d.children ? (
-                                        <Dropdown
-                                            style={{ width: '100%' }}
-                                            data={d.children}
-                                            disabled={d.disabled}
-                                            placeholder={d.content}
-                                            key={index}
-                                            position={childPosition}
-                                            onClick={onClick}
-                                            renderItem={renderItem}
-                                            trigger={trigger}
-                                            isSub
-                                        />
-                                    ) : (
-                                        <Item
-                                            data={d}
-                                            key={index}
-                                            onClick={d.onClick || onClick}
-                                            itemClassName={itemClassName}
-                                            renderItem={renderItem}
-                                            columns={columns}
-                                            width={width}
-                                        />
-                                    )
-                                })}
-                            </AnimationList>
-                        )
-                    }}
+                                return d.children ? (
+                                    <Dropdown
+                                        style={{ width: '100%' }}
+                                        data={d.children}
+                                        disabled={d.disabled}
+                                        placeholder={d.content}
+                                        key={index}
+                                        position={childPosition}
+                                        onClick={onClick}
+                                        renderItem={renderItem}
+                                        trigger={trigger}
+                                        isSub
+                                    />
+                                ) : (
+                                    <Item
+                                        data={d}
+                                        key={index}
+                                        onClick={d.onClick || onClick}
+                                        itemClassName={itemClassName}
+                                        renderItem={renderItem}
+                                        columns={columns}
+                                        width={width}
+                                    />
+                                )
+                            })}
+                        </AnimationList>
+                    )}
                 </AbsoluteList>
 
                 {renderButton()}

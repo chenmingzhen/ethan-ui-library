@@ -197,13 +197,9 @@ class Menu<T extends MenuBaseData> extends React.PureComponent<MenuProps<T>, Men
         this.forceUpdate()
     }
 
-    checkActive = (id: string) => {
-        return id === this.state.activeKey
-    }
+    checkActive = (id: string) => id === this.state.activeKey
 
-    checkOpen = (id: string) => {
-        return this.openKeys?.includes(id)
-    }
+    checkOpen = (id: string) => this.openKeys?.includes(id)
 
     checkInPath = (id: string) => {
         const { activeKey } = this.state
@@ -234,7 +230,7 @@ class Menu<T extends MenuBaseData> extends React.PureComponent<MenuProps<T>, Men
 
         const transformKeys = Array.from(this.innerIdToOuterKeyMap.keys())
 
-        const hasOpen = this.openKeys.filter(key => transformKeys.find(it => it === key)).length > 0
+        const hasOpen = this.openKeys.filter((key) => transformKeys.find((it) => it === key)).length > 0
 
         this.setState({ hasOpen })
     }
@@ -265,7 +261,7 @@ class Menu<T extends MenuBaseData> extends React.PureComponent<MenuProps<T>, Men
         this.setState({ openKeys: newOpenKeys, hasOpen: newOpenKeys.length > 0 })
     }
 
-    handleWheel = e => {
+    handleWheel = (e) => {
         const { mode } = this.props
 
         const { key, pos } = getOption(mode)

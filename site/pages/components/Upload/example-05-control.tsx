@@ -18,7 +18,7 @@ export default () => {
             accept="image/*"
             name="file"
             value={fileList}
-            onChange={v => {
+            onChange={(v) => {
                 console.log(v)
 
                 updateFileList(v)

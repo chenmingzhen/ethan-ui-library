@@ -8,9 +8,9 @@ import React from 'react'
 import { Rate } from 'ethan-ui'
 
 const text = ['A', 'B', 'C', 'D', 'E']
-const front = text.map(t => <span style={{ color: 'red' }}>{t}</span>)
+const front = text.map((t) => <span style={{ color: 'red' }}>{t}</span>)
 
-export default function() {
+export default function () {
     return (
         <>
             <Rate repeat defaultValue={2} front={front} background={text} />

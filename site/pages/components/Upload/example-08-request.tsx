@@ -8,7 +8,7 @@ import React from 'react'
 import { Upload, Button, FontAwesome } from 'ethan-ui'
 import { action } from 'doc/config'
 
-const request = options => {
+const request = (options) => {
     const { file, onLoad, onProgress } = options
     const xhr = new XMLHttpRequest()
     xhr.open('post', action)
@@ -22,7 +22,7 @@ const request = options => {
     return xhr
 }
 
-export default function() {
+export default function () {
     return (
         <Upload accept="image/*" limit={3} style={{ width: 300 }} request={request}>
             <Button>

@@ -46,7 +46,7 @@ class Branch extends PureComponent<TreeBranchProps> {
         this.element.style.setProperty('--var-branch-pl', `${20 * path.length}px`)
     }
 
-    handleDragLeave: React.DragEventHandler<HTMLDivElement> = e => {
+    handleDragLeave: React.DragEventHandler<HTMLDivElement> = (e) => {
         const rect = this.element.getBoundingClientRect()
 
         if (rect.top > e.clientY || rect.bottom < e.clientY || rect.left > e.clientX || rect.right < e.clientX) {
@@ -73,7 +73,7 @@ class Branch extends PureComponent<TreeBranchProps> {
                 show={expanded}
                 animationTypes={['collapse', 'fade']}
                 duration="fast"
-                getRef={el => {
+                getRef={(el) => {
                     this.element = el
                 }}
             >

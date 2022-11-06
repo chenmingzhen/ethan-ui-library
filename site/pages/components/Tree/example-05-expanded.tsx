@@ -17,11 +17,11 @@ export default class extends Component {
         this.expandAll = this.handleExpand.bind(this, [...allIds])
     }
 
-    handleExpand = expanded => {
+    handleExpand = (expanded) => {
         this.setState({ expanded })
     }
 
-    renderItem = node => `node ${node.id}`
+    renderItem = (node) => `node ${node.id}`
 
     render() {
         return (

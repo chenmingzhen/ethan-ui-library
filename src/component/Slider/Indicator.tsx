@@ -3,7 +3,7 @@ import draggable from '@/hoc/draggable'
 import { sliderClass } from '@/styles'
 import { IndicatorProps } from './type'
 
-const Indicator: React.FC<IndicatorProps> = props => {
+const Indicator: React.FC<IndicatorProps> = (props) => {
     const { disabled, onDragStart } = props
 
     const onMouseDown = disabled ? undefined : onDragStart

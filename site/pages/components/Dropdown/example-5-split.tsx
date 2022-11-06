@@ -18,13 +18,13 @@ const menu = [
     },
 ]
 
-export default function() {
+export default function () {
     return (
         <Button.Group>
             <Button onClick={() => Message.info('The left button clicked.')}>Left</Button>
             <Button>Center</Button>
             <Dropdown
-                onClick={data => Message.info(`The Dropdown clicked ${data.content}.`)}
+                onClick={(data) => Message.info(`The Dropdown clicked ${data.content}.`)}
                 position="bottom-right"
                 data={menu}
             />

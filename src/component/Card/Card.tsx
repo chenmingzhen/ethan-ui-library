@@ -33,7 +33,7 @@ const Card: React.FC<CardProps> = ({ collapsible = false, forwardedRef, ...props
         else setCollapsed(!computedCollapsed)
     }, [computedCollapsed, props.onCollapse])
 
-    const handleSubmit = React.useCallback(target => {
+    const handleSubmit = React.useCallback((target) => {
         const form = elRef.current.querySelector('form')
 
         if (form) dispatchEvent(form, 'submit', target)

@@ -24,9 +24,9 @@ export default class extends Component {
         }
     }
 
-    handleActiveChange = active => this.setState({ active })
+    handleActiveChange = (active) => this.setState({ active })
 
-    hideMessage = e => {
+    hideMessage = (e) => {
         e.stopPropagation()
         this.setState({
             tabs: ['home', 'profile', 'contact'],

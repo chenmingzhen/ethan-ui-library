@@ -7,6 +7,6 @@
 import React from 'react'
 import { Textarea } from 'ethan-ui'
 
-export default function() {
+export default function () {
     return <Textarea rows={4} trim placeholder="input something" showCount maxLength={10} />
 }

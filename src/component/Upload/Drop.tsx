@@ -4,7 +4,7 @@ import { uploadClass } from '@/styles'
 import fileAccept from '@/component/Upload/utils/accept'
 import { DropProps } from './type'
 
-const Drop: React.FC<DropProps> = props => {
+const Drop: React.FC<DropProps> = (props) => {
     const [drop, setDrop] = useState(false)
     const { className, disabled, multiple, accept, onDrop, children, dropData } = props
 
@@ -12,7 +12,7 @@ const Drop: React.FC<DropProps> = props => {
         (e: React.DragEvent<HTMLSpanElement>) => {
             const { files } = e.dataTransfer
 
-            const filter = accept ? Array.prototype.filter.call(files, file => fileAccept(file, accept)) : files
+            const filter = accept ? Array.prototype.filter.call(files, (file) => fileAccept(file, accept)) : files
 
             if (!filter || filter.length === 0) return
 
@@ -21,7 +21,7 @@ const Drop: React.FC<DropProps> = props => {
         [accept, multiple, onDrop, dropData]
     )
     const handleDrag: React.DragEventHandler<HTMLSpanElement> = useCallback(
-        e => {
+        (e) => {
             if (disabled) return
 
             e.preventDefault()

@@ -7,7 +7,7 @@ import Loading from './Components/Loading'
 import { setLanguage, STORAGE_KEY, getItem } from './utils/locate'
 import { mainClass } from './styles'
 
-const filterLang = href => (href.indexOf('/en') > -1 ? 'en-US' : 'zh-CN')
+const filterLang = (href) => (href.indexOf('/en') > -1 ? 'en-US' : 'zh-CN')
 
 const Home = lazy(() => import(/* webpackChunkName: "Home" */ './pages/Home'))
 const Components = lazy(() => import(/* webpackChunkName: "Components" */ './chunks/Components'))

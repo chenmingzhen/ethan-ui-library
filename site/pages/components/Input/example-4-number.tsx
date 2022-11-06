@@ -7,20 +7,20 @@
 import React from 'react'
 import { Input } from 'ethan-ui'
 
-export default function() {
+export default function () {
     return (
         <Input.Number
             width={120}
             min={23}
             max={100}
             digits={2}
-            onEnterPress={value => {
+            onEnterPress={(value) => {
                 console.log('onEnterPress:', value)
             }}
-            onChange={value => {
+            onChange={(value) => {
                 console.log('onChange:', value)
             }}
-            onInput={value => {
+            onInput={(value) => {
                 console.log('onInput:', value)
             }}
         />

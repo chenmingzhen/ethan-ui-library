@@ -7,7 +7,7 @@
 import React from 'react'
 import { Button, Message } from 'ethan-ui'
 
-export default function() {
+export default function () {
     const close = () => {
         Message.warn('Close this message will display another message.', 0, {
             onClose: () => {

@@ -10,21 +10,17 @@ import { range } from '@/utils/numbers'
 
 const dataSource = range(50000)
 
-export default () => {
-    return (
-        <LazyList
-            height={300}
-            data={dataSource}
-            defaultIndex={49999}
-            lineHeight={43}
-            keyboardControl
-            renderItem={data => {
-                return (
-                    <Alert type={data % 2 === 0 ? 'info' : 'success'} key={data} style={{ margin: '5px 0' }}>
-                        {data}
-                    </Alert>
-                )
-            }}
-        />
-    )
-}
+export default () => (
+    <LazyList
+        height={300}
+        data={dataSource}
+        defaultIndex={49999}
+        lineHeight={43}
+        keyboardControl
+        renderItem={(data) => (
+            <Alert type={data % 2 === 0 ? 'info' : 'success'} key={data} style={{ margin: '5px 0' }}>
+                {data}
+            </Alert>
+        )}
+    />
+)

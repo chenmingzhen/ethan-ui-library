@@ -9,7 +9,7 @@ import { Tabs } from 'ethan-ui'
 
 const panelStyle = { padding: '12px 0' }
 
-export default function() {
+export default function () {
     return (
         <Tabs inactiveBackground="#f2f2f2" overflowIcon="more" shape="line">
             {Array.from({ length: 50 }).map((_, i) => (

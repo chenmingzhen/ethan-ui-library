@@ -7,7 +7,7 @@
 import React from 'react'
 import { Tag } from 'ethan-ui'
 
-export default function() {
+export default function () {
     return (
         <div>
             <Tag>Tag 1</Tag>

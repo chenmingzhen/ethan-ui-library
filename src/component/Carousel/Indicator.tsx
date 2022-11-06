@@ -35,7 +35,7 @@ const Indicator: React.FC<IndicatorProps> = ({
 
     return (
         <div className={carouselClass('indicator', `indicator-${indicatorPosition}`, `indicator-${indicatorType}`)}>
-            {range(count).map(i => (
+            {range(count).map((i) => (
                 <a
                     key={i}
                     onClick={moveTo.bind(this, i)}

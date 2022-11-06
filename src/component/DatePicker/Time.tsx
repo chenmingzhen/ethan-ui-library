@@ -63,9 +63,7 @@ class Time extends PureComponent<DatePickerTimeProps> {
         return utils.cloneTime(current, defaultTime[idx], format)
     }
 
-    getValue = () => {
-        return this.props.value || this.defaultValue
-    }
+    getValue = () => this.props.value || this.defaultValue
 
     render() {
         const { format, hourStep, minuteStep, secondStep, range, min: mi, max: ma, disabled } = this.props

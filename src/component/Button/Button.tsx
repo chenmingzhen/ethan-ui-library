@@ -40,7 +40,7 @@ export interface ButtonProps extends React.RefAttributes<HTMLElement> {
     autoFocus?: boolean
 }
 
-const Button: React.FC<ButtonProps> = props => {
+const Button: React.FC<ButtonProps> = (props) => {
     const buttonRef = React.useRef<HTMLButtonElement | HTMLAnchorElement>()
 
     const {
@@ -63,12 +63,12 @@ const Button: React.FC<ButtonProps> = props => {
     const Children = React.useMemo(() => {
         if (!children) return children
 
-        return React.Children.map(wrapSpan(children), item => {
+        return React.Children.map(wrapSpan(children), (item) => {
             // 对 loading情况做处理 如果是loading 去除Icon
             if (loading && isValidElement(item) && (item?.type as any)?.isEthanIcon) return null
 
             return item
-        }).filter(v => v !== null)
+        }).filter((v) => v !== null)
     }, [children, loading])
 
     const handleClick = (e: React.MouseEvent<HTMLElement, MouseEvent>) => {

@@ -7,10 +7,10 @@
 import React from 'react'
 import { Image } from 'ethan-ui'
 
-export default function() {
+export default function () {
     return (
         <div>
-            {['fill', 'center', 'fit', 'stretch'].map(fit => (
+            {['fill', 'center', 'fit', 'stretch'].map((fit) => (
                 <div key={fit} style={{ width: '25%', padding: 4, display: 'inline-block' }}>
                     <Image
                         width="100%"

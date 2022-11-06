@@ -9,10 +9,10 @@ import { Radio } from 'ethan-ui'
 
 const data = ['red', 'orange', 'yellow', 'green', 'cyan', 'blue', 'violet']
 
-export default function() {
+export default function () {
     return (
         <Radio.Group keygen defaultValue="yellow">
-            {data.map(d => (
+            {data.map((d) => (
                 <Radio key={d} value={d}>
                     {d}
                 </Radio>

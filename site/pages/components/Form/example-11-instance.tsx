@@ -18,7 +18,7 @@ export default function App() {
     return (
         <Form
             form={form}
-            onSubmit={data => {
+            onSubmit={(data) => {
                 console.log('onSubmit:', data)
             }}
         >

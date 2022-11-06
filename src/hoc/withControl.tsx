@@ -18,7 +18,7 @@ interface WithControlState {
 }
 
 export default curry(
-    Origin =>
+    (Origin) =>
         class extends Component<WithControlProps, WithControlState> {
             /** 是否为受控，Datum中使用 */
             control = false
@@ -66,18 +66,16 @@ export default curry(
 
                 return (
                     <FormItemConsumer>
-                        {({ disabled } = {}) => {
-                            return (
-                                <Origin
-                                    disabled={disabled}
-                                    {...other}
-                                    error={error}
-                                    value={this.getValue()}
-                                    onChange={this.handleChange}
-                                    control={this.control}
-                                />
-                            )
-                        }}
+                        {({ disabled } = {}) => (
+                            <Origin
+                                disabled={disabled}
+                                {...other}
+                                error={error}
+                                value={this.getValue()}
+                                onChange={this.handleChange}
+                                control={this.control}
+                            />
+                        )}
                     </FormItemConsumer>
                 )
             }

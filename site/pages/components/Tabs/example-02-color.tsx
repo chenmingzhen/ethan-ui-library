@@ -18,7 +18,7 @@ const contact = (
     </span>
 )
 
-export default function() {
+export default function () {
     return (
         <Tabs lazy={false}>
             <Tabs.Panel

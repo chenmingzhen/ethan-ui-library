@@ -5,7 +5,7 @@ import { tabsClass } from '@/styles'
 import { filterUndefined } from '@/utils/objects'
 import { TabProps } from './type'
 
-const Tab: React.FC<TabProps> = props => {
+const Tab: React.FC<TabProps> = (props) => {
     const {
         isActive,
         disabled,

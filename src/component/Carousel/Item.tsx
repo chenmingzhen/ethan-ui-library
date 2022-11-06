@@ -12,14 +12,10 @@ interface CarouselItemProps {
     isPrev: boolean
 }
 
-const CarouselItem: React.FC<CarouselItemProps> = ({ children, isCurrent, className, isPrev }) => {
-    return (
-        <div
-            className={classnames(carouselClass('item', isCurrent && 'item-current', isPrev && 'item-pre'), className)}
-        >
-            {children}
-        </div>
-    )
-}
+const CarouselItem: React.FC<CarouselItemProps> = ({ children, isCurrent, className, isPrev }) => (
+    <div className={classnames(carouselClass('item', isCurrent && 'item-current', isPrev && 'item-pre'), className)}>
+        {children}
+    </div>
+)
 
 export default React.memo(CarouselItem)

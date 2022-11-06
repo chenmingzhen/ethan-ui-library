@@ -35,9 +35,7 @@ export default () => {
             value={value}
             renderItem="id"
             format="id"
-            disabled={({ id }) => {
-                return id === 'blue'
-            }}
+            disabled={({ id }) => id === 'blue'}
         />
     )
 }

@@ -12,7 +12,7 @@ export interface StepsProps {
     children: React.ReactElement<StepItemProps>[]
 }
 
-const Steps: React.FC<StepsProps> = props => {
+const Steps: React.FC<StepsProps> = (props) => {
     const { current, status, vertical, children, mini } = props
 
     function renderStep() {

@@ -14,18 +14,12 @@ interface ISpinProps extends SpinProps {
 
     size?: number | string
 
-    spinClass?(...rest): void
+    spinClass?(...rest): string
 
     style?: React.CSSProperties
-
-    itemStyle?: React.CSSProperties
-
-    itemSize?: number | string
-
-    itemClass?: string
 }
 
-const Spin: React.FC<ISpinProps> = props => {
+const Spin: React.FC<ISpinProps> = (props) => {
     const { size, margin, spinClass, count = 0, render } = props
 
     const className = classnames(spinClass('_'), props.className)
@@ -44,7 +38,7 @@ const Spin: React.FC<ISpinProps> = props => {
 
     return (
         <div style={style} className={className}>
-            {range(count + 1, 1).map(i => render(spinClass, i, props))}
+            {range(count + 1, 1).map((i) => render(spinClass, i, props))}
         </div>
     )
 }

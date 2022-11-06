@@ -37,6 +37,6 @@ const data = [
     },
 ]
 
-export default function() {
-    return <Cascader data={data} absolute keygen="value" renderItem={n => `${n.value}`} />
+export default function () {
+    return <Cascader data={data} absolute keygen="value" renderItem={(n) => `${n.value}`} />
 }

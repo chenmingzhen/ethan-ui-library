@@ -20,7 +20,7 @@ export interface IconProps extends React.DetailedHTMLProps<React.HTMLAttributes<
     ext?: string
 }
 
-const Icon: React.FC<IconProps> = props => {
+const Icon: React.FC<IconProps> = (props) => {
     const { children, prefix, type, name, fontFamily, fontSize, ext, ...other } = props
 
     const className = classnames(iconClass('_', type), props.className, `${prefix}-${name}`)

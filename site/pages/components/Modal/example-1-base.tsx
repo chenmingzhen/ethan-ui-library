@@ -7,7 +7,7 @@
 import React from 'react'
 import { Modal, Button } from 'ethan-ui'
 
-export default function() {
+export default function () {
     const [visible, setVisible] = React.useState(false)
     const [count, setCount] = React.useState(0)
 

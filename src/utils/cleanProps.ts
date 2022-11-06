@@ -24,7 +24,7 @@ const names = [
  * @param props
  */
 export default function cleanProps(props) {
-    return immer(props, draft => {
-        names.forEach(p => delete draft[p])
+    return immer(props, (draft) => {
+        names.forEach((p) => delete draft[p])
     })
 }

@@ -12,7 +12,7 @@ const useFormValueState = <Value = any, FormValues extends Record<string, any> =
 
     const internalForm = form as InternalFormInstance
 
-    const setFormValue = useCallback(value => {
+    const setFormValue = useCallback((value) => {
         if (!internalForm) return
 
         const formDatum = internalForm.GET_INTERNAL_FORM_DATUM()

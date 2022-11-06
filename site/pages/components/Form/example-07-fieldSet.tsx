@@ -22,22 +22,20 @@ export default function App() {
                 <Form.FieldSet<{ age: number; name: number }>
                     name="friends"
                     rules={[rule.min(1)]}
-                    emptyRender={onAppend => {
-                        return (
-                            <Button
-                                key="empty"
-                                onClick={() => {
-                                    const nextIndex = index + 1
+                    emptyRender={(onAppend) => (
+                        <Button
+                            key="empty"
+                            onClick={() => {
+                                const nextIndex = index + 1
 
-                                    updateIndex(nextIndex)
+                                updateIndex(nextIndex)
 
-                                    onAppend({ age: nextIndex, name: nextIndex })
-                                }}
-                            >
-                                Add new friend
-                            </Button>
-                        )
-                    }}
+                                onAppend({ age: nextIndex, name: nextIndex })
+                            }}
+                        >
+                            Add new friend
+                        </Button>
+                    )}
                 >
                     {({ onAppend, onRemove }) => (
                         <div style={{ display: 'flex', marginBottom: 4 }}>

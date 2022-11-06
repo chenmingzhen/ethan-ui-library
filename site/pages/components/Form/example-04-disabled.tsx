@@ -7,7 +7,7 @@
 import React from 'react'
 import { Form, Input, Checkbox, Button } from 'ethan-ui'
 
-export default function() {
+export default function () {
     return (
         <Form disabled>
             <Form.Item label="Email" name="email">

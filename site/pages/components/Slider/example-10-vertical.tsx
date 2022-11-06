@@ -7,9 +7,9 @@
 import React from 'react'
 import { Slider } from 'ethan-ui'
 
-const formatTemp = v => `${v}℃`
+const formatTemp = (v) => `${v}℃`
 
-export default function() {
+export default function () {
     return (
         <div>
             <Slider vertical defaultValue={50} />

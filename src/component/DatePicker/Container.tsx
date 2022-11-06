@@ -93,10 +93,10 @@ class Container extends PureComponent<DatePickerContainerProps, DatePickerState>
 
         if (!Array.isArray(quickSelect)) return undefined
 
-        return quickSelect.map(q => {
+        return quickSelect.map((q) => {
             if (!q.value || q.value.length !== 2) return { name: q.name, invalid: true }
 
-            const date = q.value.map(v => utils.toDateWithFormat(v, format))
+            const date = q.value.map((v) => utils.toDateWithFormat(v, format))
 
             if (utils.isInvalid(date[0]) || utils.isInvalid(date[1])) return { name: q.name, invalid: true }
 
@@ -121,7 +121,7 @@ class Container extends PureComponent<DatePickerContainerProps, DatePickerState>
         this.element = el
     }
 
-    bindPicker = picker => {
+    bindPicker = (picker) => {
         this.picker = picker
     }
 
@@ -149,7 +149,7 @@ class Container extends PureComponent<DatePickerContainerProps, DatePickerState>
         this.handleToggleOpen(false)
     }
 
-    handleKeyDown: React.KeyboardEventHandler<HTMLDivElement> = evt => {
+    handleKeyDown: React.KeyboardEventHandler<HTMLDivElement> = (evt) => {
         if (evt.key === KeyboardKey.Enter) {
             evt.preventDefault()
 
@@ -168,7 +168,7 @@ class Container extends PureComponent<DatePickerContainerProps, DatePickerState>
     handleToggleOpen = (open: boolean) => {
         if (this.props.disabled === true || open === this.state.open) return
 
-        this.setImmerState(state => {
+        this.setImmerState((state) => {
             state.open = open
 
             if (open === true) {
@@ -203,13 +203,13 @@ class Container extends PureComponent<DatePickerContainerProps, DatePickerState>
 
         const dates = isArray(date) ? date : [date]
 
-        const values = dates.map(data => {
-            return data
+        const values = dates.map((data) =>
+            data
                 ? utils.format(data, format, {
                       weekStartsOn: getLocale('startOfWeek'),
                   })
                 : data
-        }) as string[]
+        ) as string[]
 
         const value = range ? values : values[0]
 
@@ -232,7 +232,7 @@ class Container extends PureComponent<DatePickerContainerProps, DatePickerState>
         }
     }
 
-    handleClear: React.MouseEventHandler<HTMLAnchorElement> = e => {
+    handleClear: React.MouseEventHandler<HTMLAnchorElement> = (e) => {
         e.stopPropagation()
 
         const value = this.props.range ? [null, null] : null
@@ -245,7 +245,7 @@ class Container extends PureComponent<DatePickerContainerProps, DatePickerState>
     }
 
     handleHover = (index: number, isHover: boolean) => {
-        this.setImmerState(state => {
+        this.setImmerState((state) => {
             state[`picker${index}`] = isHover
         })
     }
@@ -261,7 +261,7 @@ class Container extends PureComponent<DatePickerContainerProps, DatePickerState>
         }, 10)
     }
 
-    handleFocus: React.FocusEventHandler<HTMLDivElement> = evt => {
+    handleFocus: React.FocusEventHandler<HTMLDivElement> = (evt) => {
         if (this.props.disabled || this.focusLockTimer) return
 
         this.lockFocusEvent()
@@ -272,7 +272,7 @@ class Container extends PureComponent<DatePickerContainerProps, DatePickerState>
         this.bindClickAway()
     }
 
-    handleClick: React.MouseEventHandler<HTMLDivElement> = evt => {
+    handleClick: React.MouseEventHandler<HTMLDivElement> = (evt) => {
         const target = evt.target as HTMLElement
 
         const { open } = this.state
@@ -297,7 +297,7 @@ class Container extends PureComponent<DatePickerContainerProps, DatePickerState>
         }
 
         const value = [
-            ...immer(this.props.value as Array<string>, draft => {
+            ...immer(this.props.value as Array<string>, (draft) => {
                 draft[index] = val
             }),
         ]
@@ -398,19 +398,8 @@ class Container extends PureComponent<DatePickerContainerProps, DatePickerState>
     }
 
     renderPicker = () => {
-        const {
-            range,
-            type,
-            value,
-            min,
-            max,
-            disabled,
-            allowSingle,
-            hourStep,
-            minuteStep,
-            secondStep,
-            format,
-        } = this.props
+        const { range, type, value, min, max, disabled, allowSingle, hourStep, minuteStep, secondStep, format } =
+            this.props
 
         const quicks = this.getQuick()
 
@@ -429,7 +418,7 @@ class Container extends PureComponent<DatePickerContainerProps, DatePickerState>
                 quicks={quicks}
                 value={
                     range
-                        ? (value || []).map(v => utils.toDateWithFormat(v, format))
+                        ? (value || []).map((v) => utils.toDateWithFormat(v, format))
                         : utils.toDateWithFormat(value, format)
                 }
                 showTimePicker={!!value}

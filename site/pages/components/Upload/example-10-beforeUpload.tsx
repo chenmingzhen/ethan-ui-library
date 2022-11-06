@@ -7,7 +7,7 @@
 import React from 'react'
 import { Upload, Button, FontAwesome } from 'ethan-ui'
 
-export default function() {
+export default function () {
     return (
         <div>
             <Upload

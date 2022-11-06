@@ -69,7 +69,7 @@ const createMethodModal = (type: ModalProps['type']) => (options: MethodModalPro
     }
 
     function close() {
-        update(prevProps => ({ ...prevProps, visible: false }))
+        update((prevProps) => ({ ...prevProps, visible: false }))
 
         setTimeout(() => {
             if (container) {

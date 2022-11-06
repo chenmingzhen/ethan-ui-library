@@ -8,36 +8,36 @@ const srcPath = path.resolve(__dirname, '../src')
 
 const tsFilesPath = []
 
-const readDir = find => {
-  const dir = fs.readdirSync(find)
+const readDir = (find) => {
+    const dir = fs.readdirSync(find)
 
-  dir.forEach(it => {
-    const ph = path.join(find, it)
-    const stat = fs.statSync(ph)
+    dir.forEach((it) => {
+        const ph = path.join(find, it)
+        const stat = fs.statSync(ph)
 
-    if (stat.isDirectory()) {
-      if (it.indexOf('example') > -1) {
-        fsExtra.remove(ph)
+        if (stat.isDirectory()) {
+            if (it.indexOf('example') > -1) {
+                fsExtra.remove(ph)
 
-        return
-      }
+                return
+            }
 
-      readDir(ph)
-    } else {
-      const ext = path.extname(it)
-      if (ext === '.ts' || ext === '.tsx') {
-        tsFilesPath.push(ph)
-      }
-    }
-  })
+            readDir(ph)
+        } else {
+            const ext = path.extname(it)
+            if (ext === '.ts' || ext === '.tsx') {
+                tsFilesPath.push(ph)
+            }
+        }
+    })
 }
 
 readDir(srcPath)
 
-tsFilesPath.forEach(it => {
-  const originalText = fs.readFileSync(it).toString()
+tsFilesPath.forEach((it) => {
+    const originalText = fs.readFileSync(it).toString()
 
-  const txt = `// @ts-nocheck \n${originalText}`
+    const txt = `// @ts-nocheck \n${originalText}`
 
-  fs.writeFileSync(it, txt)
+    fs.writeFileSync(it, txt)
 })

@@ -20,7 +20,7 @@ function getSingleRule(str, ss) {
 
     const rule = []
     rule.push(match[1])
-    match[2].split(',').forEach(arg => {
+    match[2].split(',').forEach((arg) => {
         arg = arg.trim()
         if (numberReg.test(arg)) {
             rule.push(parseFloat(arg))
@@ -51,7 +51,7 @@ export function splitRule(str) {
     })
 
     const rules = []
-    newString.split(';').forEach(s => {
+    newString.split(';').forEach((s) => {
         if (s) rules.push(getSingleRule(s, arr))
     })
 
@@ -65,7 +65,7 @@ export const convertRule = curry((rule, arr) => {
     return rule[method](...args)
 })
 
-export default function(rule, str) {
+export default function (rule, str) {
     if (!isObject(rule) || !str) {
         console.error(new Error('Convert arguments expect an Rule object and a string.'))
         return []

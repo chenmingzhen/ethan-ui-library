@@ -6,9 +6,9 @@ const nameIs = curry((name, val) => val?.constructor?.name === name)
 
 export const { isArray } = Array
 
-export const isObject = val => val && typeof val === 'object' && !isArray(val)
+export const isObject = (val) => val && typeof val === 'object' && !isArray(val)
 
-export const isDate = val => val instanceof Date
+export const isDate = (val) => val instanceof Date
 
 export const isFunc = (f): f is (...args) => any => typeof f === 'function'
 
@@ -22,7 +22,7 @@ export const isError = (val): val is Error => val instanceof Error
 
 export const isNull = (val): val is null => val === null
 
-export const isRegexp = val => val instanceof RegExp
+export const isRegexp = (val) => val instanceof RegExp
 
 export const isMap = nameIs('Map')
 
@@ -36,7 +36,7 @@ export const isPromise = (p): p is Promise<any> => p && (nameIs('Promise', p) ||
 export const isSyntheticEvent = (event): event is SyntheticEvent =>
     event && nameIs('SyntheticBaseEvent', event) && event.nativeEvent
 
-export const isBuffer = val => {
+export const isBuffer = (val) => {
     if (val?.constructor && typeof val.constructor.isBuffer === 'function') {
         return val.constructor.isBuffer(val)
     }
@@ -45,7 +45,7 @@ export const isBuffer = val => {
 
 export const isBlob = (val): val is Blob => val instanceof Blob
 
-export const isEmpty = val => {
+export const isEmpty = (val) => {
     if (val === null) return true
 
     if (val === undefined) return true
@@ -67,7 +67,7 @@ export function isZero(num: number) {
     return num === 0
 }
 
-export const isMergeable = val => {
+export const isMergeable = (val) => {
     if (!isObject(val)) return false
 
     const fns = [isDate, isError, isRegexp, isMap, isSet, isBuffer, isBlob]
@@ -79,17 +79,17 @@ export const isMergeable = val => {
     return true
 }
 
-export const isOne = val => {
+export const isOne = (val) => {
     if (val === 1) return true
 
     return typeof val === 'string' && val.indexOf('.') !== -1 && parseFloat(val) === 1
 }
 
 // /\d{1,3}%$/
-export const isPercent = n => typeof n === 'string' && /\d{1,3}%$/.test(n)
+export const isPercent = (n) => typeof n === 'string' && /\d{1,3}%$/.test(n)
 
 // 不可再拆分类型
-export const isInseparable = val =>
+export const isInseparable = (val) =>
     Object(val) !== val || isFunc(val) || isDate(val) || isError(val) || isSet(val) || isMap(val) || isRegexp(val)
 
 export const isLink = (el: React.ReactElement<{ to?: string }>) => {
@@ -107,4 +107,4 @@ export const isLink = (el: React.ReactElement<{ to?: string }>) => {
 export const isEnterPress = (e: React.KeyboardEvent) => e.key === KeyboardKey.Enter
 
 /** 是否为原始数据 */
-export const isPrimitive = val => Object(val) !== val
+export const isPrimitive = (val) => Object(val) !== val

@@ -9,7 +9,7 @@ import React from 'react'
 import { Loading, Button } from 'ethan-ui'
 
 export default () => {
-    const globalLoading = React.useCallback(type => {
+    const globalLoading = React.useCallback((type) => {
         const { destroy } = Loading.fullScreen({ type, fallback: <span>loading...</span> })
 
         setTimeout(() => {

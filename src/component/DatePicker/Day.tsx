@@ -306,12 +306,12 @@ class Day extends PureComponent<DatePickerDayProps, DatePickerDayState> {
                 </div>
 
                 <div className={datepickerClass('week')}>
-                    {getLocale('weekdayValues.narrow').map(w => (
+                    {getLocale('weekdayValues.narrow').map((w) => (
                         <span key={w}>{w}</span>
                     ))}
                 </div>
 
-                <div className={datepickerClass('list')}>{days.map(d => this.renderDay(d, minDate, maxDate))}</div>
+                <div className={datepickerClass('list')}>{days.map((d) => this.renderDay(d, minDate, maxDate))}</div>
 
                 <div style={{ flex: 1 }} />
 

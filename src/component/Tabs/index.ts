@@ -9,7 +9,7 @@ export interface ComputedTabsComponent extends React.ClassicComponentClass<TabsP
     Panel: typeof Panel
 }
 
-const ComputedTabs = (Tabs as unknown) as ComputedTabsComponent
+const ComputedTabs = Tabs as unknown as ComputedTabsComponent
 
 ComputedTabs.Panel = Panel
 

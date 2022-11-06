@@ -6,7 +6,7 @@ export interface TimeLineComponent extends MemoExoticComponent<React.FC<TimeLine
     Item: typeof TimeLineItem
 }
 
-const ComputedTimeLine = (TimeLine as unknown) as TimeLineComponent
+const ComputedTimeLine = TimeLine as unknown as TimeLineComponent
 
 ComputedTimeLine.Item = TimeLineItem
 

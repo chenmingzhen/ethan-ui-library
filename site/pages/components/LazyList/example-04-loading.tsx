@@ -38,13 +38,11 @@ export default () => {
                         }, 2000)
                     }
                 }}
-                renderItem={data => {
-                    return (
-                        <Alert icon type={data % 2 === 0 ? 'info' : 'success'} key={data} style={{ margin: '5px 0' }}>
-                            {data}
-                        </Alert>
-                    )
-                }}
+                renderItem={(data) => (
+                    <Alert icon type={data % 2 === 0 ? 'info' : 'success'} key={data} style={{ margin: '5px 0' }}>
+                        {data}
+                    </Alert>
+                )}
             />
         </Spin>
     )

@@ -24,9 +24,9 @@ const useHideTabs = (props: UseHideTabsParams) => {
 
     const tabMoveMap = useRef<TabMoveMap>(new Map()).current
 
-    const dropDownData: ComplicatedDropDownData[] = useMemo(() => {
-        return hideTabs.map(tab => {
-            return {
+    const dropDownData: ComplicatedDropDownData[] = useMemo(
+        () =>
+            hideTabs.map((tab) => ({
                 content: tab.tab,
                 disabled: tab.disabled,
                 onClick() {
@@ -34,9 +34,9 @@ const useHideTabs = (props: UseHideTabsParams) => {
 
                     method?.()
                 },
-            }
-        })
-    }, [hideTabs])
+            })),
+        [hideTabs]
+    )
 
     const [, , run] = useTimeoutFn(computedTabs, 100)
 

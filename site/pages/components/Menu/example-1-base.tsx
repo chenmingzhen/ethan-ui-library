@@ -63,7 +63,7 @@ export default () => (
         inlineIndent={24}
         defaultOpenKeys={['2']}
         defaultActiveKey="1"
-        onClick={item => {
+        onClick={(item) => {
             console.log(item)
         }}
     />

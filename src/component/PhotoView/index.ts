@@ -14,7 +14,7 @@ export interface PhotoViewComponent {
     Group: typeof PhotoViewGroup
 }
 
-const ComputedPhotoView = ({} as unknown) as PhotoViewComponent
+const ComputedPhotoView = {} as unknown as PhotoViewComponent
 
 ComputedPhotoView.Photo = PhotoConsumer
 

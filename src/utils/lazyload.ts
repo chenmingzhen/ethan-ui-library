@@ -37,7 +37,7 @@ export function removeStack(id) {
 }
 
 // 获取容器的getBoundingClientRect
-const getRect = el => {
+const getRect = (el) => {
     if (!el || !el.getBoundingClientRect) {
         if (el) console.error(`the ${el} is not a element`)
 
@@ -51,8 +51,8 @@ function getObserver(obj: Observer, id: string) {
     const { container = null, offset, render } = obj
 
     const observer = new IntersectionObserver(
-        entries => {
-            entries.forEach(entry => {
+        (entries) => {
+            entries.forEach((entry) => {
                 // 正在视图层 可以渲染处理
                 if (entry.isIntersecting) {
                     render()

@@ -209,9 +209,8 @@ class Popover extends Component<IPopoverProps, PopoverState> {
         return elements
     }
 
-    hasTrigger = (trigger: Trigger) => {
-        return isArray(this.props.trigger) ? this.props.trigger.includes(trigger) : trigger === this.props.trigger
-    }
+    hasTrigger = (trigger: Trigger) =>
+        isArray(this.props.trigger) ? this.props.trigger.includes(trigger) : trigger === this.props.trigger
 
     getContainer = () => {
         const { getPopupContainer } = this.props
@@ -305,7 +304,7 @@ class Popover extends Component<IPopoverProps, PopoverState> {
 
         const newStyle = Object.assign({}, style, posStyle)
 
-        Object.keys(newStyle).forEach(k => {
+        Object.keys(newStyle).forEach((k) => {
             this.element.style[k] = newStyle[k]
         })
 
@@ -370,7 +369,7 @@ class Popover extends Component<IPopoverProps, PopoverState> {
         this.setShow(true)
     }
 
-    handleHide = e => {
+    handleHide = (e) => {
         // relatedTarget 事件属性返回与事件的目标节点相关的节点。
         //
         // 对于 mouseover 事件来说，该属性是鼠标指针移到目标节点上时所离开的那个节点。
@@ -403,7 +402,7 @@ class Popover extends Component<IPopoverProps, PopoverState> {
         this.setShow(false)
     }
 
-    clickAway = e => {
+    clickAway = (e) => {
         if (this.eventHandlerElement.contains(e.target)) return
 
         if (this.element.contains(e.target)) return
@@ -415,7 +414,7 @@ class Popover extends Component<IPopoverProps, PopoverState> {
         this.handleHide(0)
     }
 
-    setShow = show => {
+    setShow = (show) => {
         const { mouseEnterDelay, mouseLeaveDelay, trigger, autoAdjustOverflow, animation } = this.props
 
         const delay = show ? mouseEnterDelay : mouseLeaveDelay

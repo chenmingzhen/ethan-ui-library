@@ -9,7 +9,7 @@ import { Radio } from 'ethan-ui'
 
 const data = ['red', 'orange', 'yellow']
 
-export default function() {
+export default function () {
     return (
         <div>
             <Radio.Group size="small" button data={data} defaultValue="red" />

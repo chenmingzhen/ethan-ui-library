@@ -17,12 +17,12 @@ const data = [
     { id: 7, color: 'violet' },
 ]
 
-export default function() {
+export default function () {
     const [value, updateValue] = React.useState([1, 2])
 
     return (
         <Checkbox.Group value={value}>
-            {data.map(d => (
+            {data.map((d) => (
                 <Checkbox key={d.id} value={d.id}>
                     {d.color}
                 </Checkbox>

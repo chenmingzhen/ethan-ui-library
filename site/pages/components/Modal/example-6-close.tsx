@@ -38,7 +38,7 @@ export default () => {
                 renderItem="title"
                 prediction={(v, d) => v.title === d.title}
                 value={selected}
-                onChange={c => {
+                onChange={(c) => {
                     setSelected(c)
                 }}
                 style={{ width: 200, marginRight: 20 }}

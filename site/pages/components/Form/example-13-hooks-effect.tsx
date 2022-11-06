@@ -21,7 +21,7 @@ export default function App() {
     const form = Form.useForm<FormValues>()
 
     Form.useFormValueEffect(
-        v => {
+        (v) => {
             console.log('UseFormValueEffect callback:', v)
         },
         { form, deep: ['name', 'contact.phone', 'address', 'friends'] }
@@ -61,7 +61,7 @@ export default function App() {
             <Form.Item label="Friends">
                 <Form.FieldSet
                     name="friends"
-                    emptyRender={onAppend => (
+                    emptyRender={(onAppend) => (
                         <Button
                             key="empty"
                             onClick={() => {

@@ -7,7 +7,7 @@
 import React from 'react'
 import { Dropdown } from 'ethan-ui'
 
-export default function() {
+export default function () {
     const menu = [
         {
             content: 'First',

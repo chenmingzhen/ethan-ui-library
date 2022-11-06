@@ -7,7 +7,7 @@
 import React from 'react'
 import { Image } from 'ethan-ui'
 
-export default function() {
+export default function () {
     return (
         <Image
             width={200}

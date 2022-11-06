@@ -19,23 +19,23 @@ const ComplexData = [
     { value: 7, label: 'violet' },
 ]
 
-export default function() {
+export default function () {
     return (
         <div>
             <div>
                 <Checkbox.Group
                     data={baseData}
-                    disabled={d => d === 'yellow'}
+                    disabled={(d) => d === 'yellow'}
                     keygen
                     value={['blue']}
-                    renderItem={d => d}
+                    renderItem={(d) => d}
                 />
             </div>
 
             <div>
                 <Checkbox.Group
                     data={ComplexData}
-                    disabled={d => d.label === 'yellow'}
+                    disabled={(d) => d.label === 'yellow'}
                     keygen="value"
                     format="label"
                     value={['blue']}

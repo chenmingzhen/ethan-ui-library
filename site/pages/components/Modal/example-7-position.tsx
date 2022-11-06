@@ -7,7 +7,7 @@
 import React, { useState } from 'react'
 import { Modal, Button, Select } from 'ethan-ui'
 
-export default function() {
+export default function () {
     const [visible, updateVisible] = useState(false)
 
     const [position, updatePosition] = useState<'top' | 'right' | 'bottom' | 'left'>('right')

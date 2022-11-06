@@ -65,7 +65,7 @@ class Content extends PureComponent<TreeContentProps> {
     renderNode = () => {
         const { id, data, renderItem, expanded } = this.props
 
-        const render = typeof renderItem === 'function' ? renderItem : d => d[renderItem]
+        const render = typeof renderItem === 'function' ? renderItem : (d) => d[renderItem]
 
         return render(data, expanded, id)
     }

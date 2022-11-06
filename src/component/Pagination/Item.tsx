@@ -2,7 +2,7 @@ import React from 'react'
 import { paginationClass } from '@/styles'
 import { ItemProps } from './type'
 
-const Item: React.FC<ItemProps> = props => {
+const Item: React.FC<ItemProps> = (props) => {
     const { onClick, page, isCurrent, children, disabled } = props
 
     function handleClick() {

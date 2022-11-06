@@ -120,7 +120,7 @@ export default class PhotoSlider extends PureComponent<PhotoSliderProps, PhotoSl
         if (photoClosable) {
             this.handleClose()
         } else {
-            this.setState(prevState => ({
+            this.setState((prevState) => ({
                 overlayVisible: !prevState.overlayVisible,
             }))
         }
@@ -135,14 +135,12 @@ export default class PhotoSlider extends PureComponent<PhotoSliderProps, PhotoSl
 
     handleResize = () => {
         const { innerWidth } = window
-        this.setState(({ currentIndex }) => {
-            return {
-                translateX: -(innerWidth + horizontalOffset) * currentIndex,
-                lastClientX: undefined,
-                lastClientY: undefined,
-                shouldTransition: false,
-            }
-        })
+        this.setState(({ currentIndex }) => ({
+            translateX: -(innerWidth + horizontalOffset) * currentIndex,
+            lastClientX: undefined,
+            lastClientY: undefined,
+            shouldTransition: false,
+        }))
     }
 
     handleRotate = (rotating: number) => {
@@ -200,7 +198,7 @@ export default class PhotoSlider extends PureComponent<PhotoSliderProps, PhotoSl
         })
     }
 
-    handleReachHorizontalMove = clientX => {
+    handleReachHorizontalMove = (clientX) => {
         const { innerWidth } = window
         const { images } = this.props
         this.setState(({ lastClientX, translateX, currentIndex }) => {
@@ -375,7 +373,7 @@ export default class PhotoSlider extends PureComponent<PhotoSliderProps, PhotoSl
                                 className={sliderWrapClassName}
                                 role="dialog"
                                 id="PhotoView_Slider"
-                                onClick={e => e.stopPropagation()}
+                                onClick={(e) => e.stopPropagation()}
                             >
                                 {/* 背景 */}
                                 <div

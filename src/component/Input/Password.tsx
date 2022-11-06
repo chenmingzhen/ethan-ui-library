@@ -9,7 +9,7 @@ import { FontAwesome } from '../Icon'
 import Button from '../Button/Button'
 import Group from './Group'
 
-const Password: React.FC<InputPasswordProps> = React.memo(props => {
+const Password: React.FC<InputPasswordProps> = React.memo((props) => {
     const { value, onChange, style, className, ...others } = props
 
     const [visible, updateVisible] = useState(false)

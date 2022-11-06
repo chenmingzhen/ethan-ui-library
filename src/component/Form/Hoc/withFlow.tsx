@@ -5,7 +5,7 @@ import React from 'react'
 import { WithFlowProps } from '../type'
 
 /** 监听特定的字段触发重渲染 */
-const withFlow = Origin =>
+const withFlow = (Origin) =>
     class extends Component<WithFlowProps> {
         forceUpdateChildren: () => void
 
@@ -17,13 +17,13 @@ const withFlow = Origin =>
             if (!formDatum || isEmpty(flow)) return
 
             if (isArray(flow)) {
-                flow.forEach(n => {
+                flow.forEach((n) => {
                     formDatum.subscribe(n, this.handleUpdate)
                 })
             } else if (flow === true) {
                 const { $inputNames } = formDatum
 
-                Object.keys($inputNames).forEach(n => {
+                Object.keys($inputNames).forEach((n) => {
                     formDatum.subscribe(n, this.handleUpdate)
                 })
             }
@@ -57,13 +57,13 @@ const withFlow = Origin =>
             if (!formDatum) return
 
             if (isArray(flow)) {
-                flow.forEach(n => {
+                flow.forEach((n) => {
                     formDatum.unsubscribe(n, this.handleUpdate)
                 })
             } else if (flow === true) {
                 const { $inputNames } = formDatum
 
-                Object.keys($inputNames).forEach(n => {
+                Object.keys($inputNames).forEach((n) => {
                     formDatum.unsubscribe(n, this.handleUpdate)
                 })
             }

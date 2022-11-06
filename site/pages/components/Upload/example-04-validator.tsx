@@ -8,7 +8,7 @@ import React from 'react'
 import { Upload, FontAwesome, Button } from 'ethan-ui'
 import { action } from 'doc/config'
 
-export default function() {
+export default function () {
     return (
         <div>
             <Upload
@@ -18,7 +18,7 @@ export default function() {
                 name="file"
                 style={{ width: 300, marginBottom: 80 }}
                 validator={{
-                    size: s => (s > 10240 ? new Error('max file size is 10KB') : undefined),
+                    size: (s) => (s > 10240 ? new Error('max file size is 10KB') : undefined),
                 }}
             >
                 <Button>
@@ -35,9 +35,9 @@ export default function() {
                 limit={1}
                 style={{ width: 300, marginBottom: 80 }}
                 validator={{
-                    imageSize: img =>
+                    imageSize: (img) =>
                         img.width !== 200 || img.height !== 100 ? new Error('only allow 200px * 100px') : undefined,
-                    ext: ext =>
+                    ext: (ext) =>
                         ['jpg', 'png'].includes(ext) ? undefined : new Error('File extension must be jpg or png'),
                 }}
             >
@@ -54,7 +54,7 @@ export default function() {
                 multiple
                 name="file"
                 validator={{
-                    size: s => (s > 10240 ? new Error('max file size is 10KB') : undefined),
+                    size: (s) => (s > 10240 ? new Error('max file size is 10KB') : undefined),
                 }}
             />
         </div>

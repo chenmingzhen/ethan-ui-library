@@ -7,6 +7,6 @@
 import React from 'react'
 import { Checkbox } from 'ethan-ui'
 
-export default function() {
+export default function () {
     return <Checkbox>Checkbox</Checkbox>
 }

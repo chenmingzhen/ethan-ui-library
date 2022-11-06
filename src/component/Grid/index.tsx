@@ -18,7 +18,7 @@ export interface GridProps extends React.DetailedHTMLProps<React.HTMLAttributes<
     width?: number
 }
 
-const Grid: React.FC<GridProps> = props => {
+const Grid: React.FC<GridProps> = (props) => {
     const { width = 1, offset, responsive, stretch, children, gutter, ...other } = props
 
     let autoCount = 0

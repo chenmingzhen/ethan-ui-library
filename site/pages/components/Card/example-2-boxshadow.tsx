@@ -13,7 +13,7 @@ const cardStyle = {
     marginRight: 20,
 }
 
-export default function() {
+export default function () {
     return (
         <div>
             <Card style={cardStyle}>

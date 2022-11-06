@@ -8,7 +8,7 @@ import React from 'react'
 import { Upload, Button, FontAwesome } from 'ethan-ui'
 import { action } from 'doc/config'
 
-export default function() {
+export default function () {
     return (
         <div>
             <Upload.Image action={action} accept="image/*" name="file" limit={3} width={250} drop>

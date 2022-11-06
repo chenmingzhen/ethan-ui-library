@@ -26,7 +26,7 @@ class TimeScroll extends PureComponent<TimeScrollProps> {
         this.updateScrollTop()
     }
 
-    getValue = v => {
+    getValue = (v) => {
         const { step, ampm } = this.props
 
         if (!step || ampm) return v
@@ -46,7 +46,7 @@ class TimeScroll extends PureComponent<TimeScrollProps> {
         return grayStyle[Math.abs(this.props.value - num)]
     }
 
-    bindElement = el => {
+    bindElement = (el) => {
         this.element = el
     }
 
@@ -136,7 +136,7 @@ class TimeScroll extends PureComponent<TimeScrollProps> {
                 onScroll={this.handleScroll}
             >
                 <div className={datepickerClass('pad')} />
-                {range(total, 0).map(v => this.renderItem(v))}
+                {range(total, 0).map((v) => this.renderItem(v))}
                 <div className={datepickerClass('pad')} />
             </div>
         )

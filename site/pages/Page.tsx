@@ -74,7 +74,7 @@ function PageHOC(pages: (Page | string)[]) {
                 <Sticky top={0} style={{ borderRight: '1px solid #e8e8e8' }}>
                     <div ref={menuDOMRef} className={mainClass('menu', hideMiniNav && 'hidden')}>
                         {pages
-                            .filter(page => typeof page !== 'string' && filters.indexOf(page.name) === -1)
+                            .filter((page) => typeof page !== 'string' && filters.indexOf(page.name) === -1)
                             .map((page, index) =>
                                 /* 标题 */
                                 typeof page === 'string' ? (
@@ -101,7 +101,7 @@ function PageHOC(pages: (Page | string)[]) {
                     <Suspense fallback={<Loading />}>
                         <Switch>
                             {pages
-                                .filter(p => typeof p === 'object')
+                                .filter((p) => typeof p === 'object')
                                 .map((p: Page) => (
                                     <Route
                                         key={p.name}

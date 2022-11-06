@@ -17,7 +17,7 @@ export interface FormComponent {
     useFormValueEffect: typeof useFormValueEffect
 }
 
-const ComputedFormComponent = (ForwardForm as unknown) as FormComponent
+const ComputedFormComponent = ForwardForm as unknown as FormComponent
 
 ComputedFormComponent.Item = Item
 

@@ -186,7 +186,7 @@ class OptionList extends PureComponent<SelectListProps, OptionListState> {
         this.setState(state)
     }
 
-    bindOptionInner = el => {
+    bindOptionInner = (el) => {
         this.optionInner = el
     }
 

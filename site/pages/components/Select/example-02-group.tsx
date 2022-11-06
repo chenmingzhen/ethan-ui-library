@@ -16,10 +16,10 @@ const data = [
     { value: 'Mars', tag: '3' },
 ]
 
-export default function() {
+export default function () {
     return (
         <Select
-            groupBy={d => {
+            groupBy={(d) => {
                 if (d.tag === '1') return 'City'
                 if (d.tag === '2') return 'Country'
                 return 'Other'

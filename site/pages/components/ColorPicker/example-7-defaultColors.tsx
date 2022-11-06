@@ -20,8 +20,8 @@ for (let i = 0; i < 50; i++) {
     rgb.push(arr)
 }
 
-const defaultColors = rgb.map(group => `rgb(${group.join(',')})`)
+const defaultColors = rgb.map((group) => `rgb(${group.join(',')})`)
 
-export default function() {
+export default function () {
     return <ColorPicker.ColorBoard defaultColors={defaultColors} defaultValue="#FFC107" />
 }

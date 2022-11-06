@@ -15,7 +15,7 @@ function getRule(rule: Rule, props: ValidatorProps) {
     if (isFunc(rule)) {
         /** 内置的检验的方法,执行方法获取message等信息 */
         if ((<BaseOptionRule[keyof BaseOptionRule]>rule).isInnerValidator) innerRuleExecuteResult = (rule as any)()
-        /** RuleRender */ else return (rule as unknown) as ValidatorFunc
+        /** RuleRender */ else return rule as unknown as ValidatorFunc
     }
 
     /** 执行内置检验方法获取的返回值 */
@@ -79,7 +79,7 @@ const validate = (value: any, formValues: any, rules: Rule[], props: ValidatorPr
 
         /** 处理自定义规则校验 返回是Promise的情况 */
         if (isPromise(promise)) {
-            promise.then(runNextCallback.bind(null, true)).catch(e => {
+            promise.then(runNextCallback.bind(null, true)).catch((e) => {
                 reject(wrapFormError(e))
             })
         }

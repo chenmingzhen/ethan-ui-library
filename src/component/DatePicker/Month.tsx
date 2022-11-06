@@ -6,7 +6,7 @@ import Icon from './Icon'
 import { DatePickerMonthProps } from './type'
 import utils from './utils'
 
-const Month: React.FC<DatePickerMonthProps> = function(props) {
+const Month: React.FC<DatePickerMonthProps> = function (props) {
     const { current, onChange, onModeChange, value, min, disabled, range, type } = props
 
     function handleYearChange(year: number) {

@@ -6,7 +6,7 @@ import { ERROR, REMOVED, UPLOADING } from './utils/request'
 import { ImageFileProps } from './type'
 import icons from '../icons'
 
-const ImageFile: React.FC<ImageFileProps> = props => {
+const ImageFile: React.FC<ImageFileProps> = (props) => {
     const { process, status, style, data, message, onRemove, id, file, showRecover, onRecover, renderContent } = props
 
     const className = uploadClass('image-item', showRecover && 'to-be-delete', {

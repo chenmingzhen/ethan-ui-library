@@ -78,7 +78,7 @@ export default class Result extends React.PureComponent<CascaderResultProps, Cas
         this.shouldResetMore = true
     }
 
-    handleNodeClick = id => {
+    handleNodeClick = (id) => {
         const { datum, onPathChange } = this.props
 
         const { path } = datum.getPath(id)
@@ -94,10 +94,10 @@ export default class Result extends React.PureComponent<CascaderResultProps, Cas
         if (typeof render === 'string') {
             const key = render
 
-            render = data => data[key]
+            render = (data) => data[key]
         }
 
-        const nodes = value.map(v => datum.getDataById(v))
+        const nodes = value.map((v) => datum.getDataById(v))
 
         const items: React.ReactNode[] = []
 
@@ -125,17 +125,15 @@ export default class Result extends React.PureComponent<CascaderResultProps, Cas
         return items
     }
 
-    renderPlaceholder = () => {
-        return (
-            <span
-                key="ethan-cascader-placeholder"
-                className={classnames(inputClass('placeholder'), selectClass('ellipsis'))}
-            >
-                {this.props.placeholder}
-                &nbsp;
-            </span>
-        )
-    }
+    renderPlaceholder = () => (
+        <span
+            key="ethan-cascader-placeholder"
+            className={classnames(inputClass('placeholder'), selectClass('ellipsis'))}
+        >
+            {this.props.placeholder}
+            &nbsp;
+        </span>
+    )
 
     renderClear = () => {
         const { clearable, value, disabled, onClear } = this.props
@@ -197,7 +195,7 @@ export default class Result extends React.PureComponent<CascaderResultProps, Cas
             <div
                 className={cascaderClass('result')}
                 style={style}
-                ref={el => {
+                ref={(el) => {
                     this.resultElement = el
                 }}
             >

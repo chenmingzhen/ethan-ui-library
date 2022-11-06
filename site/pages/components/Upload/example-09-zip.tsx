@@ -8,7 +8,7 @@ import React from 'react'
 import { Upload, Button, FontAwesome, Message } from 'ethan-ui'
 import { action } from 'doc/config'
 
-const request = options => {
+const request = (options) => {
     const { file, onLoad, onError, onProgress } = options
 
     const xhr = new XMLHttpRequest()
@@ -21,23 +21,23 @@ const request = options => {
     const id = new Date().getTime()
 
     zip.generateInternalStream({ type: 'blob' })
-        .accumulate(e => {
+        .accumulate((e) => {
             Message.loading(`current zipping:${Math.floor(e.percent * 100)}%`, 0, { id })
         })
-        .then(content => {
+        .then((content) => {
             const zipFile = new File([content], `${file.name}.zip`)
 
             const data = new FormData()
 
             data.append('file', zipFile)
 
-            xhr.upload.onprogress = e => {
+            xhr.upload.onprogress = (e) => {
                 onProgress(e)
 
                 Message.loading(`current uploading:${Math.floor((e.loaded / e.total) * 100)}%`, 0, { id })
             }
 
-            xhr.onload = e => {
+            xhr.onload = (e) => {
                 onLoad(e.currentTarget)
 
                 Message.success('upload success', 2, { id })
@@ -54,7 +54,7 @@ const request = options => {
     return xhr
 }
 
-export default function() {
+export default function () {
     return (
         <Upload limit={3} style={{ width: 300 }} request={request} onChange={console.log}>
             <Button>

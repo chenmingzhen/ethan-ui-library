@@ -7,10 +7,10 @@
 import React from 'react'
 import { Image } from 'ethan-ui'
 
-export default function() {
+export default function () {
     return (
         <div id="image-container" style={{ height: '300px', overflowY: 'scroll' }}>
-            {[1, 2, 3, 4].map(i => (
+            {[1, 2, 3, 4].map((i) => (
                 <Image
                     lazy
                     container="#image-container"

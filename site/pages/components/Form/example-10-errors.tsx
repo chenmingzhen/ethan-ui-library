@@ -19,7 +19,7 @@ export default function App() {
             onSubmit={async () => {
                 updateLoading(true)
 
-                const errorResults = await new Promise(resolve => {
+                const errorResults = await new Promise((resolve) => {
                     setTimeout(() => {
                         resolve({ nickName: 'Nicknames already exist' })
                     }, 2000)

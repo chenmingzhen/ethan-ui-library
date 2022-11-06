@@ -28,7 +28,7 @@ enum Direction {
     BACKWARD = 'backward',
 }
 
-const Gallery: React.FC<GalleryProps> = props => {
+const Gallery: React.FC<GalleryProps> = (props) => {
     const [current, setCurrent] = useState<number>(props.current || 0)
     const [direction, setDirection] = useState<Direction>(Direction.INIT)
 
@@ -40,7 +40,7 @@ const Gallery: React.FC<GalleryProps> = props => {
         rawScroll.current = false
     }, [])
 
-    const handleClick = index => {
+    const handleClick = (index) => {
         const { length } = props.images
 
         let newCurrent = current + index
@@ -123,7 +123,7 @@ const Gallery: React.FC<GalleryProps> = props => {
     if (images[current - 1]) result.push(renderImage(images[current - 1], 'left'))
     if (images[current + 1]) result.push(renderImage(images[current + 1], 'right'))
 
-    return (result as unknown) as JSX.Element
+    return result as unknown as JSX.Element
 }
 
 export default React.memo(Gallery)

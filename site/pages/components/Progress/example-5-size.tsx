@@ -8,7 +8,7 @@
 import React from 'react'
 import { Progress } from 'ethan-ui'
 
-export default function() {
+export default function () {
     return (
         <div>
             <Progress style={{ width: 120 }} strokeWidth={3} value={30} />

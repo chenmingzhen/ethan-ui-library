@@ -18,7 +18,7 @@ export default () => {
                 content="some text"
                 title="control"
                 trigger="click"
-                onVisibleChange={v => {
+                onVisibleChange={(v) => {
                     console.log('onVisibleChange:', v)
 
                     if (v) {

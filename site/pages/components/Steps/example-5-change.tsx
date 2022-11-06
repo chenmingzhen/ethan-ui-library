@@ -13,7 +13,7 @@ const Item = Steps.StepItem
 export default () => {
     const [current, setCurrent] = React.useState(0)
 
-    const setSteps = action => {
+    const setSteps = (action) => {
         const newCurrent = action === 'next' ? (current >= 3 ? 3 : current + 1) : current <= 0 ? 0 : current - 1
 
         setCurrent(newCurrent)

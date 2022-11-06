@@ -9,7 +9,7 @@ import PageSizeList from './PageSizeList'
 import Jumper from './Jumper'
 import Simple from './Simple'
 
-const Pagination: React.FC<PaginationProps> = props => {
+const Pagination: React.FC<PaginationProps> = (props) => {
     const { onChange, total, align, layouts, size, style, sizeListProps, pageSizeList, text, disabled } = props
 
     const [current, updateCurrent] = useState(props.current || props.defaultCurrent)

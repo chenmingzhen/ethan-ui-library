@@ -31,6 +31,6 @@ const data = [
     },
 ]
 
-export default function() {
+export default function () {
     return <Dropdown placeholder="Dropdown" data={data} />
 }

@@ -11,7 +11,7 @@ const panelStyle = { padding: '12px 0' }
 
 const data = ['left', 'right', 'vertical-left', 'vertical-right']
 
-export default function() {
+export default function () {
     const [align, setAlign] = React.useState('right')
 
     return (

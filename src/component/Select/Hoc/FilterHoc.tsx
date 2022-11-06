@@ -47,7 +47,7 @@ export default function FilterHoc(Origin) {
 
             const results = []
 
-            values.forEach(value => {
+            values.forEach((value) => {
                 let result = cacheAble ? this.resultCache.get(value) : undefined
 
                 if (result === undefined) {
@@ -80,10 +80,10 @@ export default function FilterHoc(Origin) {
             return results
         }
 
-        handleCreate = text => {
+        handleCreate = (text) => {
             const { onCreate } = this.props
 
-            const createFn = typeof onCreate === 'boolean' ? t => t : onCreate
+            const createFn = typeof onCreate === 'boolean' ? (t) => t : onCreate
 
             return createFn(text)
         }
@@ -111,7 +111,7 @@ export default function FilterHoc(Origin) {
 
             let computedData = data
 
-            if (onFilter && filterText) computedData = data.filter(d => onFilter(filterText, d))
+            if (onFilter && filterText) computedData = data.filter((d) => onFilter(filterText, d))
 
             if (createData) {
                 computedData = [createData, ...computedData]

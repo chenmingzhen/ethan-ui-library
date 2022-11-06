@@ -9,7 +9,7 @@ import { Pagination } from 'ethan-ui'
 
 const info = ({ total }) => `total ${total}`
 
-export default function() {
+export default function () {
     return (
         <Pagination
             total={128}

@@ -9,7 +9,7 @@ import { Select } from 'ethan-ui'
 
 const data = ['red', 'orange', 'yellow', 'green', 'cyan', 'blue', 'violet']
 
-export default function() {
+export default function () {
     return (
         <div>
             <Select style={{ width: 240, marginBottom: 12 }} disabled keygen data={data} placeholder="Select color" />
@@ -17,7 +17,7 @@ export default function() {
             <Select
                 style={{ width: 300 }}
                 data={data}
-                disabled={d => d === 'green'}
+                disabled={(d) => d === 'green'}
                 keygen
                 multiple
                 defaultValue={['orange', 'green']}

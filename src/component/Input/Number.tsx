@@ -135,7 +135,7 @@ class Number extends PureComponent<InputNumberProps, InputNumberState> {
         this.handleChange(value + mod)
     }
 
-    longPress = mod => {
+    longPress = (mod) => {
         if (!this.hold) return
 
         setTimeout(() => {
@@ -157,7 +157,7 @@ class Number extends PureComponent<InputNumberProps, InputNumberState> {
         this.changeValue(mod)
     }
 
-    handleCalc = mod => {
+    handleCalc = (mod) => {
         this.hold = true
 
         this.changeValue(mod)

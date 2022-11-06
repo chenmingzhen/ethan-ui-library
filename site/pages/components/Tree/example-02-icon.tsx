@@ -8,7 +8,7 @@ import React from 'react'
 import { Tree, FontAwesome } from 'ethan-ui'
 import data from 'doc/data/tree'
 
-export default function() {
+export default function () {
     return (
         <Tree
             data={data}

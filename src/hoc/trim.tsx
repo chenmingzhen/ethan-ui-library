@@ -10,7 +10,7 @@ export interface ITrimProps extends TrimProps {
     value?: string | number
 }
 
-export default Origin =>
+export default (Origin) =>
     class extends PureComponent<ITrimProps> {
         get trim() {
             const { trim } = this.props
@@ -21,7 +21,7 @@ export default Origin =>
         }
 
         /** 失焦删除空白字符 */
-        handleBlur = e => {
+        handleBlur = (e) => {
             const { value, onBlur, onChange } = this.props
 
             if (this.trim) {

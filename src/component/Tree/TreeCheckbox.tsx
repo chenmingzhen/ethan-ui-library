@@ -4,7 +4,7 @@ import { useUpdate } from 'react-use'
 import Checkbox from '../Checkbox/Checkbox'
 import { TreeCheckboxProps } from './type'
 
-const TreeCheckbox: React.FC<TreeCheckboxProps> = props => {
+const TreeCheckbox: React.FC<TreeCheckboxProps> = (props) => {
     const { id, onChange, disabled, datum } = props
 
     const update = useUpdate()
@@ -18,7 +18,7 @@ const TreeCheckbox: React.FC<TreeCheckboxProps> = props => {
     }, [])
 
     const handleChange = useCallback(
-        checked => {
+        (checked) => {
             datum.set(id, checked ? 1 : 0)
 
             onChange(datum.getValue(), id)

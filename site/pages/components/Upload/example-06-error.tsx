@@ -7,13 +7,13 @@
 import React from 'react'
 import { Upload, Button, FontAwesome } from 'ethan-ui'
 
-export default function() {
+export default function () {
     return (
         <div>
             <Upload
                 action="/path-no-exist"
                 accept="image/*"
-                onError={xhr => {
+                onError={(xhr) => {
                     if (xhr.status === 404) return 'Url not found.'
                     return 'Upload Fail.'
                 }}
@@ -28,7 +28,7 @@ export default function() {
             <Upload.Image
                 action="/path-no-exist"
                 accept="image/*"
-                onError={xhr => {
+                onError={(xhr) => {
                     if (xhr.status === 404) return 'Url not found.'
                     return 'Upload Fail.'
                 }}

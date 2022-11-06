@@ -8,6 +8,6 @@ import React from 'react'
 import { Upload } from 'ethan-ui'
 import { action } from 'doc/config'
 
-export default function() {
+export default function () {
     return <Upload.Image drop action={action} accept="image/*" name="file" limit={3} width={300} height={300} />
 }

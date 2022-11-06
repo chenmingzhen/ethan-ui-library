@@ -14,7 +14,7 @@ export default () => (
         action={action}
         accept="image/*"
         name="file"
-        onChange={v => {
+        onChange={(v) => {
             console.log(v)
         }}
         limit={3}

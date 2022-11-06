@@ -10,7 +10,7 @@ import { Progress } from 'ethan-ui'
 const blue = '#108ee9'
 const green = '#87d068'
 
-export default function() {
+export default function () {
     return (
         <div style={{ width: 400 }}>
             <Progress

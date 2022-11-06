@@ -7,7 +7,7 @@
 import React from 'react'
 import { Button, Popover, Card } from 'ethan-ui'
 
-export default function() {
+export default function () {
     return (
         <Popover
             style={{ marginRight: 12 }}

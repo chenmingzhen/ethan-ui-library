@@ -4,7 +4,7 @@ import { selectClass } from '@/styles'
 import icons from '../icons'
 import { OptionProps } from './type'
 
-const Option: React.FC<OptionProps> = props => {
+const Option: React.FC<OptionProps> = (props) => {
     const { data, onClick, isActive, index, disabled, groupKey, onHover, isHover, renderItem } = props
 
     const locked = useRef(false)

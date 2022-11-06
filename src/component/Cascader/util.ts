@@ -34,7 +34,7 @@ export function getResetMore({ fixWidth, container, doms }: GerResetMoreParams) 
 
     let sumWidth = 0
 
-    const itemWidthList = items.map(item => {
+    const itemWidthList = items.map((item) => {
         const itemStyle = getComputedStyle(item)
 
         const itemWidth =

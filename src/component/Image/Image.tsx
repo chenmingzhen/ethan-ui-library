@@ -147,15 +147,14 @@ const Image: ForwardRefRenderFunction<HTMLAnchorElement | HTMLDivElement, IImage
         )
     }
 
-    const renderType = source => {
-        return fit === 'fill' || fit === 'fit' ? (
+    const renderType = (source) =>
+        fit === 'fill' || fit === 'fit' ? (
             <div className={imageClass('inner')} title={title} style={{ backgroundImage: `url("${source}")` }} />
         ) : (
             <div className={imageClass('inner')} title={title}>
                 <img alt="" src={source} />
             </div>
         )
-    }
 
     const renderImage = () => {
         switch (status) {

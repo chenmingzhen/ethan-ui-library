@@ -10,7 +10,7 @@ import { CheckItemProps, ICheckboxGroupProps, CheckItemGroupDefaultDataRecord } 
 
 class CheckboxGroup<D = CheckItemGroupDefaultDataRecord, FD = D> extends PureComponent<ICheckboxGroupProps<D, FD>> {
     static defaultProps = {
-        renderItem: d => d,
+        renderItem: (d) => d,
     }
 
     static displayName = 'EthanCheckboxGroup'

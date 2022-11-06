@@ -77,7 +77,7 @@ export default class EditableArea extends PureComponent<EditableProps, EditableA
         this.setState({ showTextarea: show })
     }
 
-    handleChange = value => {
+    handleChange = (value) => {
         const { onChange } = this.props
 
         if (onChange) onChange(value)
@@ -85,7 +85,7 @@ export default class EditableArea extends PureComponent<EditableProps, EditableA
         this.setState({ value })
     }
 
-    handleBlur = e => {
+    handleBlur = (e) => {
         const { onBlur } = this.props
 
         if (onBlur) onBlur(e)

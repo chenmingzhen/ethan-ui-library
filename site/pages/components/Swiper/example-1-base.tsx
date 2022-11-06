@@ -16,12 +16,10 @@ const style: React.CSSProperties = {
     fontSize: '30px',
 }
 
-export default () => {
-    return (
-        <Swiper style={{ height: 210, width: '100%' }}>
-            <div style={style}>1</div>
-            <div style={style}>2</div>
-            <div style={style}>3</div>
-        </Swiper>
-    )
-}
+export default () => (
+    <Swiper style={{ height: 210, width: '100%' }}>
+        <div style={style}>1</div>
+        <div style={style}>2</div>
+        <div style={style}>3</div>
+    </Swiper>
+)

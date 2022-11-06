@@ -15,4 +15,4 @@ export interface PhotoContext {
     removeItem: RemoveItem
 }
 
-export default createContext<PhotoContext>({ onShow() { }, addItem() { }, removeItem() { } })
+export default createContext<PhotoContext>({ onShow() {}, addItem() {}, removeItem() {} })

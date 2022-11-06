@@ -15,13 +15,11 @@ const pickNumber = (max = 65555, min = 0, fixed = 2) => {
     return parseFloat(num.toFixed(fixed))
 }
 
-const range = (end, start = 0) => {
-    return Array.from({ length: end - start }, (v, k) => k + start)
-}
+const range = (end, start = 0) => Array.from({ length: end - start }, (v, k) => k + start)
 
 const size = range(11, 0).map(() => [pickNumber(600, 450), pickNumber(450, 320)])
 
-export default function() {
+export default function () {
     const [current, updateCurrent] = useState(0)
 
     function show(count) {
@@ -32,7 +30,7 @@ export default function() {
         <div>
             <Button onClick={show.bind(this, 1)}>click me</Button>
 
-            {range(11, 1).map(i => (
+            {range(11, 1).map((i) => (
                 <Modal
                     key={i}
                     visible={current >= i}

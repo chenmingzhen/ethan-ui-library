@@ -32,7 +32,7 @@ const Swiper: React.ForwardRefRenderFunction<SwiperInstance, SwiperProps> = (pro
 
     const isTransition = useRef(false)
 
-    const timer = useRef<NodeJS.Timeout>()
+    const timer = useRef<number>()
 
     React.useImperativeHandle(ref, () => ({ onNext: next, onPrev: prev }))
 

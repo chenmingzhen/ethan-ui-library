@@ -8,7 +8,7 @@ import React from 'react'
 import { Upload } from 'ethan-ui'
 import { action } from 'doc/config'
 
-export default function() {
+export default function () {
     return (
         <div>
             <Upload.Image
@@ -16,8 +16,8 @@ export default function() {
                 name="file"
                 limit={3}
                 style={{ width: 300 }}
-                beforeUpload={file => {
-                    return new Promise(resolve => {
+                beforeUpload={(file) =>
+                    new Promise((resolve) => {
                         const reader = new FileReader()
 
                         reader.readAsDataURL(file)
@@ -49,7 +49,7 @@ export default function() {
                             }
                         }
                     })
-                }}
+                }
             />
         </div>
     )

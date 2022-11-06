@@ -3,7 +3,7 @@ import { inputClass } from '@/styles'
 import cleanProps from '@/utils/cleanProps'
 import { TextareaProps } from './type'
 
-const Textarea: React.FC<TextareaProps> = props => {
+const Textarea: React.FC<TextareaProps> = (props) => {
     const [height, setHeight] = useState(0)
 
     const shadowElement = useRef<HTMLTextAreaElement>()

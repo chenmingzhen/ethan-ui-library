@@ -8,7 +8,7 @@
 import React from 'react'
 import { ColorPicker } from 'ethan-ui'
 
-export default function() {
+export default function () {
     return (
         <div style={{ display: 'flex' }}>
             <ColorPicker disabled defaultValue="#23B613" />

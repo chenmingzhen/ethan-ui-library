@@ -9,14 +9,14 @@
 import React from 'react'
 import { Slider } from 'ethan-ui'
 
-const pad = i => (i < 10 ? `0${i}` : i)
-const format = v => {
+const pad = (i) => (i < 10 ? `0${i}` : i)
+const format = (v) => {
     const value = v + 540
     const hours = Math.floor(value / 60)
     return `${pad(hours)}:${pad(value - hours * 60)}`
 }
 
-export default function() {
+export default function () {
     return (
         <Slider
             range

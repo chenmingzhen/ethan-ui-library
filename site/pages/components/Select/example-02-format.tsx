@@ -21,7 +21,7 @@ const citys = [
 ]
 const style = { width: 240, marginBottom: 12, display: 'block' }
 
-export default function() {
+export default function () {
     return (
         <div>
             <Select

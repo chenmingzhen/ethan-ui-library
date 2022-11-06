@@ -9,7 +9,7 @@ import { Button, Message, Select } from 'ethan-ui'
 
 const positions = ['top', 'middle', 'top-left', 'top-right', 'bottom-left', 'bottom-right']
 
-export default function() {
+export default function () {
     const [position, updatePosition] = useState(positions[0])
 
     function show() {

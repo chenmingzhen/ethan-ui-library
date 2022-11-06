@@ -78,7 +78,7 @@ export default React.forwardRef<FormInstance, FormProps>((props, ref) => {
     }, [onChange])
 
     useEffect(() => {
-        formDatum.onError = es => {
+        formDatum.onError = (es) => {
             if (onError) {
                 onError(es)
             }

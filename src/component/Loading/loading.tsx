@@ -27,7 +27,7 @@ const Loading: React.ForwardRefRenderFunction<LoadingInstance, LoadingProps> = (
     const lastPercent = usePrevious(percent)
 
     const updateFullScreenConfig = useCallback((config: FullScreenProps) => {
-        Object.keys(config).forEach(stateName => {
+        Object.keys(config).forEach((stateName) => {
             const newState = config[stateName]
 
             switch (stateName) {
@@ -59,7 +59,7 @@ const Loading: React.ForwardRefRenderFunction<LoadingInstance, LoadingProps> = (
     }, [])
 
     const updateLineConfig = useCallback((config: LineLoadingProps) => {
-        Object.keys(config).forEach(stateName => {
+        Object.keys(config).forEach((stateName) => {
             const newState = config[stateName]
 
             switch (stateName) {

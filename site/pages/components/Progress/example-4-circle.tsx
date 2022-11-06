@@ -7,7 +7,7 @@
 import React from 'react'
 import { Progress } from 'ethan-ui'
 
-export default function() {
+export default function () {
     return (
         <div>
             <Progress shape="circle" style={{ marginRight: 20 }} value={30} />

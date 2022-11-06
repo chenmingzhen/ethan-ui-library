@@ -7,7 +7,7 @@ import { computeScroll, getVirtualScrollCurrentIndex } from '@/utils/virtual-scr
 import { KeyboardKey } from '@/utils/keyboard'
 import Scroll from '../Scroll'
 
-interface LazyListProps<T extends any = any> {
+interface LazyListProps<T = any> {
     data: T[]
     lineHeight: number
     height: number
@@ -30,7 +30,7 @@ export interface LazyListState {
 const LAZY_LIST_DATA_OFFSET = 2
 
 /** 不能使用PureComponent，因为Item的部分状态是在上层中使用的，例如Select OptionList Option的hoverIndex prop， */
-export default class LazyList<T extends any = any> extends Component<LazyListProps<T>, LazyListState> {
+export default class LazyList<T = any> extends Component<LazyListProps<T>, LazyListState> {
     static defaultProps = {
         data: [],
         shouldRecomputed: () => true,
@@ -206,7 +206,7 @@ export default class LazyList<T extends any = any> extends Component<LazyListPro
         this.dispatchState({ scrollTopRatio, currentIndex, lastScrollTop })
     }
 
-    handleKeydown: React.KeyboardEventHandler<HTMLDivElement> = evt => {
+    handleKeydown: React.KeyboardEventHandler<HTMLDivElement> = (evt) => {
         if (!this.props.keyboardControl) return
 
         const { currentIndex } = this.state

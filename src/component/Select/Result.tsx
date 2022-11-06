@@ -33,7 +33,7 @@ export default class Result extends PureComponent<SelectResultProps, { showInput
         }
     }
 
-    buildResult = item => {
+    buildResult = (item) => {
         const { renderResult } = this.props
 
         let node = null

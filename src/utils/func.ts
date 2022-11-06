@@ -14,7 +14,7 @@ export function curry(f, ...args) {
  */
 export function compose(...funcs) {
     if (funcs.length === 0) {
-        return arg => arg
+        return (arg) => arg
     }
 
     const lastFunc = funcs[funcs.length - 1]
@@ -36,13 +36,13 @@ export function stopPropagation(e) {
 
 export function createFunc(func) {
     if (typeof func === 'function') return func
-    return data => (func ? data[func] : data)
+    return (data) => (func ? data[func] : data)
 }
 
 export function debounce(fn, delay = 80) {
     let timer: NodeJS.Timeout
 
-    return function(...args) {
+    return function (...args) {
         if (timer) {
             clearTimeout(timer)
 

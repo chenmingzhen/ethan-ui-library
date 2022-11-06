@@ -9,7 +9,7 @@ interface WithValueHocState {
     value: string | string[]
 }
 
-export default Origin =>
+export default (Origin) =>
     class extends Component<WithValueProps, WithValueHocState> {
         get format() {
             const { format, type } = this.props
@@ -43,7 +43,7 @@ export default Origin =>
 
             if (!value) return false
 
-            return range && !allowSingle && isArray(value) && value.filter(v => v).length === 1
+            return range && !allowSingle && isArray(value) && value.filter((v) => v).length === 1
         }
 
         componentDidMount() {
@@ -59,7 +59,7 @@ export default Origin =>
         }
 
         /** Props的中value可能为string或number，将值转化成format后的字符串 */
-        convertValue = value => {
+        convertValue = (value) => {
             const { range } = this.props
 
             const { format } = this
@@ -83,7 +83,7 @@ export default Origin =>
                     this.setState({ value: newValue })
                 }
             } else {
-                const newValue = value.map(v => {
+                const newValue = value.map((v) => {
                     if (!v) return undefined
 
                     return utils.format(utils.toDateWithFormat(v, format), format, {

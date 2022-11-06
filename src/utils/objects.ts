@@ -11,15 +11,15 @@ const PATH_MODE = {
 }
 
 // obj以js entries 的风格转  [key, value]
-export const entries = obj => {
+export const entries = (obj) => {
     if (!obj) return []
     const keys = Object.keys(obj)
-    return keys.map(key => [key, obj[key]])
+    return keys.map((key) => [key, obj[key]])
 }
 
-export const objectValues = obj => {
+export const objectValues = (obj) => {
     if (!obj) return []
-    return Object.keys(obj).map(k => obj[k])
+    return Object.keys(obj).map((k) => obj[k])
 }
 
 export function pathGenerator(raw) {
@@ -67,14 +67,14 @@ export const deepMerge = (target = {}, source, params: DeepMergeOptionsParams = 
     const dest = {}
 
     if (isMergeable(target)) {
-        Object.keys(target).forEach(k => {
+        Object.keys(target).forEach((k) => {
             dest[k] = deepMerge({}, target[k], params)
 
             if (removeUndefined && dest[k] === undefined) delete dest[k]
         })
     }
 
-    Object.keys(source).forEach(k => {
+    Object.keys(source).forEach((k) => {
         if (isMergeable(source[k]) && isMergeable(target[k])) {
             dest[k] = deepMerge(target[k], source[k], params)
         } else {
@@ -124,14 +124,14 @@ export function filterProps(obj, props: ((p: Record<string, any>) => boolean) | 
     if (typeof props === 'function') {
         const prediction = props
 
-        Object.keys(obj).forEach(k => {
+        Object.keys(obj).forEach((k) => {
             if (prediction(obj[k])) newProps.push(k)
         })
     }
 
     const newObj = {}
 
-    newProps.forEach(k => {
+    newProps.forEach((k) => {
         newObj[k] = obj[k]
     })
 
@@ -148,7 +148,7 @@ export const deepSet = (target, path, value, options: any = {}) => {
     // empty root
     if (path === '') {
         const dest = deepMerge(target, value, mergeOptions)
-        Object.keys(dest).forEach(k => {
+        Object.keys(dest).forEach((k) => {
             target[k] = dest[k]
         })
         return target
@@ -229,7 +229,7 @@ export const deepHas = (target, path) => {
 export const filterUndefined = (obj: Record<string, any>) => {
     const newObj = {}
 
-    Object.keys(obj).forEach(key => {
+    Object.keys(obj).forEach((key) => {
         if (obj[key] !== undefined) {
             newObj[key] = obj[key]
         }

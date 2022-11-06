@@ -7,7 +7,7 @@
 import React from 'react'
 import { Modal, Button } from 'ethan-ui'
 
-export default function() {
+export default function () {
     function info() {
         Modal.info({
             title: 'This is a info message',

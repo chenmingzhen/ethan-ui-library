@@ -8,7 +8,7 @@ import React from 'react'
 import { Button } from 'ethan-ui'
 import { FontAwesome } from 'ethan-ui'
 
-export default function() {
+export default function () {
     return (
         <div>
             <Button type="primary">

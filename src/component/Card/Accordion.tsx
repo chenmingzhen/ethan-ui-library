@@ -20,7 +20,7 @@ const Accordion: React.FC<AccordionProps> = ({ active: pActive, defaultActive = 
     const [active, setActive] = React.useState<string | number | null>(pActive || defaultActive)
 
     const handleActive = React.useCallback(
-        newActive => {
+        (newActive) => {
             if (newActive === active) newActive = null
 
             setActive(newActive)

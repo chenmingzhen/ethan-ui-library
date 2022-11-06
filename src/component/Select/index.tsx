@@ -9,7 +9,7 @@ import group from './group'
 import FilterHoc from './Hoc/FilterHoc'
 import { SelectClassComponent } from './type'
 
-const limitWrap = Origin => props => {
+const limitWrap = (Origin) => (props) => {
     const limit = props.multiple ? 0 : 1
 
     return <Origin {...props} limit={limit} />

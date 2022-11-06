@@ -5,7 +5,7 @@ import Icon from './Icon'
 import { DatePickerYearProps } from './type'
 import utils from './utils'
 
-const Year: React.FC<DatePickerYearProps> = function(props) {
+const Year: React.FC<DatePickerYearProps> = function (props) {
     const { current, onChange, onModeChange, value } = props
 
     function handleChange(year: number) {
@@ -25,7 +25,7 @@ const Year: React.FC<DatePickerYearProps> = function(props) {
     /** 可选的范围为当前年份的前后7年 */
     const cy = current.getFullYear() - 7
 
-    const years = range(15, 0).map(i => cy + i)
+    const years = range(15, 0).map((i) => cy + i)
 
     return (
         <div className={datepickerClass('year-picker')}>
@@ -38,7 +38,7 @@ const Year: React.FC<DatePickerYearProps> = function(props) {
             </div>
 
             <div className={datepickerClass('list')}>
-                {years.map(y => (
+                {years.map((y) => (
                     <span
                         key={y}
                         className={datepickerClass(value && value.getFullYear() === y && 'active')}

@@ -2,8 +2,8 @@ import React, { useMemo, useRef } from 'react'
 import { getUidStr } from '@/utils/uid'
 import { SelectProps } from './type'
 
-export default Origin =>
-    React.memo<SelectProps>(props => {
+export default (Origin) =>
+    React.memo<SelectProps>((props) => {
         const groupKey = useRef(getUidStr()).current
 
         const { groupBy, data } = props

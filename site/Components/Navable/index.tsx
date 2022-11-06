@@ -5,7 +5,7 @@ import { navClass } from 'doc/styles'
 import { Heading } from 'doc/type'
 import history from '../history'
 
-const scrollTo = id => {
+const scrollTo = (id) => {
     const isSingleMode = history.location.search.indexOf('?example=') === 0
 
     if (isSingleMode) {
@@ -37,13 +37,13 @@ const Navable = (Component: React.ComponentType<{ onHeadingSet: (heading: Headin
             function handleScroll() {
                 const top = document.documentElement.scrollTop
 
-                const hasChildrenHeading = headings.filter(heading => heading.level === 3 && heading.children.length)
+                const hasChildrenHeading = headings.filter((heading) => heading.level === 3 && heading.children.length)
 
                 if (hasChildrenHeading.length === 0) return
 
                 let newActive = hasChildrenHeading[0].id
 
-                hasChildrenHeading.forEach(h => {
+                hasChildrenHeading.forEach((h) => {
                     const el = document.querySelector(`#${h.id}`) as HTMLElement
 
                     if (el?.offsetTop <= top) newActive = h.id
@@ -73,7 +73,7 @@ const Navable = (Component: React.ComponentType<{ onHeadingSet: (heading: Headin
             <Sticky className={navClass('sticky')} top={50}>
                 <div className={navClass('nav')}>
                     {headings.map((heading, index) => {
-                        const children = heading.children.filter(c => typeof c === 'string')
+                        const children = heading.children.filter((c) => typeof c === 'string')
 
                         return (
                             <a

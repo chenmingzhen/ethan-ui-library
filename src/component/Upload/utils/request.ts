@@ -40,7 +40,7 @@ function defaultRequest(options: RequestOptions) {
     const processParams = isObject(params) ? params : (params as (file: File) => Record<string | number, any>)?.(file)
 
     if (isObject(processParams)) {
-        Object.keys(processParams).forEach(k => {
+        Object.keys(processParams).forEach((k) => {
             data.append(k, params[k])
         })
     } else {
@@ -55,11 +55,11 @@ function defaultRequest(options: RequestOptions) {
 
     if (onProgress) xhr.upload.addEventListener('progress', onProgress, false)
 
-    xhr.onload = e => onLoad(e.currentTarget as XMLHttpRequest)
+    xhr.onload = (e) => onLoad(e.currentTarget as XMLHttpRequest)
 
     xhr.onerror = onError as any
 
-    Object.keys(headers).forEach(k => {
+    Object.keys(headers).forEach((k) => {
         xhr.setRequestHeader(k, headers[k])
     })
 

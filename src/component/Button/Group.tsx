@@ -14,17 +14,17 @@ export interface ButtonGroupProps {
     className?: string
 }
 
-const ButtonGroup: React.FC<ButtonGroupProps> = props => {
+const ButtonGroup: React.FC<ButtonGroupProps> = (props) => {
     const { children, outline = false, size, type = 'default' } = props
 
     const className = classnames(buttonClass('group', (outline || type === 'default') && 'outline'), props.className)
 
     return (
         <div className={className}>
-            {Children.toArray(children).map((child: any) => {
+            {Children.toArray(children).map((child: any) =>
                 // 返回一个克隆值 与Group保持一致
-                return cloneElement(child, { size, outline, type })
-            })}
+                cloneElement(child, { size, outline, type })
+            )}
         </div>
     )
 }

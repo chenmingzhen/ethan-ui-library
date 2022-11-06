@@ -11,13 +11,13 @@ import { Tree } from 'ethan-ui'
 import data from 'doc/data/tree'
 
 export default class extends Component {
-    handleChange = value => {
+    handleChange = (value) => {
         console.log(value)
     }
 
-    isDisabled = node => node.id === '1-0'
+    isDisabled = (node) => node.id === '1-0'
 
-    renderItem = node => `node ${node.id}`
+    renderItem = (node) => `node ${node.id}`
 
     render() {
         return (

@@ -8,7 +8,7 @@
 import React from 'react'
 import { Avatar } from 'ethan-ui'
 
-export default function() {
+export default function () {
     return (
         <>
             <Avatar size={48} style={{ fontSize: 30, backgroundColor: '#e8e8e8', color: '#dc9656' }}>

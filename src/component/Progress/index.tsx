@@ -3,7 +3,7 @@ import Line from './Line'
 import Circle from './Circle'
 import { ProgressProps } from './type'
 
-const Progress: React.FC<ProgressProps> = props => {
+const Progress: React.FC<ProgressProps> = (props) => {
     switch (props.shape) {
         case 'circle':
             return <Circle {...props} />

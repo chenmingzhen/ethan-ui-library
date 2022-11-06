@@ -12,7 +12,7 @@ const FontIconfont = Icon('//at.alicdn.com/t/font_550076_uyvw3e8ul8w4gqfr.css')
 const SVGIconfont = Icon('//at.alicdn.com/t/font_1725436_8gldxw9bjlu.js')
 const margin = { marginRight: 20 }
 
-export default function() {
+export default function () {
     return (
         <div>
             <FontIconfont style={margin}>&#xe64e;</FontIconfont>

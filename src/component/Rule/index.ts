@@ -27,9 +27,8 @@ function Rule<R extends Validator | BaseOptions>(propOptions?: R) {
         return deepMerge(
             {
                 required: true,
-                message: props => {
-                    return substitute(getLocale(`rules.required.${props.type === 'array' ? 'array' : 'string'}`), props)
-                },
+                message: (props) =>
+                    substitute(getLocale(`rules.required.${props.type === 'array' ? 'array' : 'string'}`), props),
             },
             deepMerge({ message }, { message: msg }, deepMergeOptions),
             deepMergeOptions
@@ -40,7 +39,7 @@ function Rule<R extends Validator | BaseOptions>(propOptions?: R) {
         const { message, min: optionsMin = 0 } = (options.min as MinOptions) || {}
 
         return deepMerge(
-            { message: props => createLengthMessage('min', props) },
+            { message: (props) => createLengthMessage('min', props) },
             deepMerge({ message, min: optionsMin }, { message: msg, min: length }, deepMergeOptions),
             deepMergeOptions
         )
@@ -50,7 +49,7 @@ function Rule<R extends Validator | BaseOptions>(propOptions?: R) {
         const { message, max: optionsMax = Number.MAX_SAFE_INTEGER } = (options.max as MaxOptions) || {}
 
         return deepMerge(
-            { message: props => createLengthMessage('max', props) },
+            { message: (props) => createLengthMessage('max', props) },
             deepMerge({ message, max: optionsMax }, { message: msg, max: length }, deepMergeOptions),
             deepMergeOptions
         )
@@ -73,21 +72,21 @@ function Rule<R extends Validator | BaseOptions>(propOptions?: R) {
         regExp,
     }
 
-    Object.keys(rules).forEach(key => {
+    Object.keys(rules).forEach((key) => {
         rules[key].isInnerValidator = true
     })
 
     const innerRuleKeys = Object.keys(rules)
 
     if (propOptions) {
-        Object.keys(propOptions).forEach(key => {
+        Object.keys(propOptions).forEach((key) => {
             if (!innerRuleKeys.includes(key) && typeof propOptions[key] === 'function') {
                 rules[key] = propOptions[key]
             }
         })
     }
 
-    return (rules as unknown) as { [T in keyof Omit<R, BaseOptionKeys>]: R[T] } & BaseOptionRule
+    return rules as unknown as { [T in keyof Omit<R, BaseOptionKeys>]: R[T] } & BaseOptionRule
 }
 
 export default Rule

@@ -7,10 +7,10 @@
 import React from 'react'
 import { Image } from 'ethan-ui'
 
-export default function() {
+export default function () {
     return (
         <div>
-            {['_modal', '_blank', '_self', '_download'].map(target => (
+            {['_modal', '_blank', '_self', '_download'].map((target) => (
                 <div key={target} style={{ display: 'inline-block', marginRight: 12, textAlign: 'center' }}>
                     <Image
                         width={80}

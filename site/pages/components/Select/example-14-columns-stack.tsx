@@ -10,7 +10,7 @@ import { fetchSync as fetchCity } from 'doc/data/city'
 
 const citys = fetchCity(200)
 
-export default function() {
+export default function () {
     return (
         <Select
             data={citys}

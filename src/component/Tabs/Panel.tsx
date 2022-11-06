@@ -18,7 +18,7 @@ export interface ComputedPanelComponent extends React.MemoExoticComponent<React.
 
 // const CollapseList = List(['collapse'], 'fast')
 
-const Panel: React.FC<ITabsPanelProps> = props => {
+const Panel: React.FC<ITabsPanelProps> = (props) => {
     const { children, isActive, collapsible, collapsed, lazy, style, background } = props
 
     const hasRender = useRef(false)
@@ -46,7 +46,7 @@ const Panel: React.FC<ITabsPanelProps> = props => {
     )
 }
 
-const ComputedPanel = (Panel as unknown) as ComputedPanelComponent
+const ComputedPanel = Panel as unknown as ComputedPanelComponent
 
 ComputedPanel.IS_ETHAN_PANEL = true
 

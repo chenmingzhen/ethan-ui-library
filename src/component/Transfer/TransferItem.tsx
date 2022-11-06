@@ -5,7 +5,7 @@ import Checkbox from '../Checkbox'
 import { TransferContext } from './context'
 import { TransferItemProps } from './type'
 
-const Item: React.FC<TransferItemProps> = props => {
+const Item: React.FC<TransferItemProps> = (props) => {
     const { selecteds, setSelecteds } = useContext(TransferContext)
 
     const { index, checkKey, content, disabled, itemClass, lineHeight } = props
@@ -16,7 +16,7 @@ const Item: React.FC<TransferItemProps> = props => {
         } else {
             setSelecteds(
                 index,
-                selecteds[index].filter(ch => ch !== checkKey)
+                selecteds[index].filter((ch) => ch !== checkKey)
             )
         }
     }

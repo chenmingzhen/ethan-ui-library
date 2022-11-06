@@ -49,7 +49,7 @@ function indicatorSwitch(current, moveTo) {
     )
 }
 
-export default function() {
+export default function () {
     return (
         <Carousel indicatorType={indicatorSwitch} style={{ width: 500, height: 300 }} interval={duration}>
             {items.map((item, index) => (

@@ -23,7 +23,7 @@ function getClickPosition(evt: MouseEvent) {
 
 window.addEventListener('click', getClickPosition, true)
 
-const Panel: React.FC<ModalPanelProps> = props => {
+const Panel: React.FC<ModalPanelProps> = (props) => {
     const {
         maskCloseAble,
         onClose,

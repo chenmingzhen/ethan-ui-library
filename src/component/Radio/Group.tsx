@@ -13,7 +13,7 @@ export default class RadioGroup<D = CheckItemGroupDefaultDataRecord, FD = D> ext
     RadioGroupProps<D, FD>
 > {
     static defaultProps = {
-        renderItem: d => d,
+        renderItem: (d) => d,
     }
 
     static displayName = 'EthanRadioGroup'

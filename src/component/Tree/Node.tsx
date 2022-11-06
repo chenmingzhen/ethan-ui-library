@@ -56,7 +56,7 @@ class Node extends PureComponent<TreeNodeProps, TreeNodeState> {
         this.props.unbindNode(this.props.id)
     }
 
-    setFetching = fetching => {
+    setFetching = (fetching) => {
         this.setState({ fetching })
     }
 
@@ -64,11 +64,11 @@ class Node extends PureComponent<TreeNodeProps, TreeNodeState> {
         this.setState({ active })
     }
 
-    bindElement = el => {
+    bindElement = (el) => {
         this.element = el
     }
 
-    handleDragStart: React.DragEventHandler<HTMLDivElement> = evt => {
+    handleDragStart: React.DragEventHandler<HTMLDivElement> = (evt) => {
         this.props.onDragStateChange(true)
 
         dragId = this.props.id
@@ -90,7 +90,7 @@ class Node extends PureComponent<TreeNodeProps, TreeNodeState> {
         document.body.appendChild(this.dragImage)
 
         if (dragImageStyle) {
-            Object.keys(dragImageStyle).forEach(k => {
+            Object.keys(dragImageStyle).forEach((k) => {
                 this.dragImage.style[k] = dragImageStyle[k]
             })
         }
@@ -98,7 +98,7 @@ class Node extends PureComponent<TreeNodeProps, TreeNodeState> {
         evt.dataTransfer.setDragImage(this.dragImage, evt.clientX - rect.left, evt.clientY - rect.top)
     }
 
-    handleDragOver: React.DragEventHandler<HTMLDivElement> = evt => {
+    handleDragOver: React.DragEventHandler<HTMLDivElement> = (evt) => {
         if (dragId === null) return
 
         const { dragHoverExpand, id, hoverElementRef, expanded, datum } = this.props

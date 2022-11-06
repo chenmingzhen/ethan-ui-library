@@ -7,7 +7,7 @@
 import React from 'react'
 import { Card } from 'ethan-ui'
 
-export default function() {
+export default function () {
     return (
         <Card collapsible>
             <Card.Header>Header</Card.Header>

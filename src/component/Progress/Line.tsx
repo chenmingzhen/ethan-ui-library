@@ -5,7 +5,7 @@ import analyzeColor from './analyzeColor'
 import { ProgressProps } from './type'
 import Popup from './Popup'
 
-const Line: React.FC<ProgressProps> = props => {
+const Line: React.FC<ProgressProps> = (props) => {
     const { children, strokeWidth, type, value, color, style, background, popup } = props
 
     const hasChildren = children !== undefined

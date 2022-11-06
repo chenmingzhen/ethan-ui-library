@@ -10,7 +10,7 @@ import { ColorPicker } from 'ethan-ui'
 
 const style = { marginRight: 20, display: 'inline-block' }
 
-export default function() {
+export default function () {
     const handleChange = useCallback(console.log, [])
 
     return (

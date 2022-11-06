@@ -7,6 +7,6 @@
 import React from 'react'
 import { Input } from 'ethan-ui'
 
-export default function() {
+export default function () {
     return <Input clearable placeholder="input something" />
 }

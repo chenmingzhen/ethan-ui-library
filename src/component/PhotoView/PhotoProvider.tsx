@@ -34,9 +34,9 @@ export default class PhotoViewGroup extends PureComponent<PhotoViewGroupProps, P
         }
     }
 
-    handleAddItem: AddItem = imageItem => {
+    handleAddItem: AddItem = (imageItem) => {
         this.setState(
-            immer(state => {
+            immer((state) => {
                 state.images.push(imageItem)
             })
         )
@@ -44,7 +44,7 @@ export default class PhotoViewGroup extends PureComponent<PhotoViewGroupProps, P
 
     handleRemoveItem = (key: string) => {
         this.setState(({ images, index }) => {
-            const nextImages = images.filter(item => item.key !== key)
+            const nextImages = images.filter((item) => item.key !== key)
             const nextEndIndex = nextImages.length - 1
 
             return {
@@ -59,7 +59,7 @@ export default class PhotoViewGroup extends PureComponent<PhotoViewGroupProps, P
 
         this.setState({
             visible: true,
-            index: images.findIndex(item => item.key === key),
+            index: images.findIndex((item) => item.key === key),
         })
     }
 

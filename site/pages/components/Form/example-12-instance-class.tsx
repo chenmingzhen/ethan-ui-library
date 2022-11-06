@@ -19,7 +19,7 @@ export default class extends React.PureComponent {
         return (
             <Form
                 ref={this.formRef}
-                onSubmit={data => {
+                onSubmit={(data) => {
                     console.log('onSubmit:', data)
                 }}
             >

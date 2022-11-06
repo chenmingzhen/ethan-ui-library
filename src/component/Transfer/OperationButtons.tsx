@@ -5,13 +5,13 @@ import icons from '../icons'
 import { TransferOperationButtonProps } from './type'
 import { TransferContext } from './context'
 
-const OperationButtons: React.FC<TransferOperationButtonProps> = props => {
+const OperationButtons: React.FC<TransferOperationButtonProps> = (props) => {
     const { setSelecteds, selecteds } = useContext(TransferContext)
 
     const { datum, data, operations, operationIcon, disabled, getKey } = props
 
     function handleChange(index: number) {
-        const newValue = selecteds[1 - index].map(c => data.find((d, i) => getKey(d, i) === c))
+        const newValue = selecteds[1 - index].map((c) => data.find((d, i) => getKey(d, i) === c))
 
         setSelecteds(1 - index, [])
 

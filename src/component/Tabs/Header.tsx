@@ -13,7 +13,7 @@ import useHideTabs from './hooks/useHideTabs'
 // 点击Tab留出的空隙
 const REDUNDANT = 30
 
-const Header: React.FC<TabsHeaderProps> = props => {
+const Header: React.FC<TabsHeaderProps> = (props) => {
     const [attribute, setAttribute] = useSafeState(0)
 
     const [overflow, setOverflow] = useSafeState(false)
@@ -232,18 +232,16 @@ const Header: React.FC<TabsHeaderProps> = props => {
     if (shape === 'button') {
         return (
             <Button.Group>
-                {tabs.map(({ id, isActive, disabled, tab }) => {
-                    return (
-                        <Button
-                            key={id}
-                            onClick={isActive ? undefined : onChange.bind(this, id)}
-                            className={tabsClass(isActive && 'button-active')}
-                            disabled={disabled}
-                        >
-                            {tab}
-                        </Button>
-                    )
-                })}
+                {tabs.map(({ id, isActive, disabled, tab }) => (
+                    <Button
+                        key={id}
+                        onClick={isActive ? undefined : onChange.bind(this, id)}
+                        className={tabsClass(isActive && 'button-active')}
+                        disabled={disabled}
+                    >
+                        {tab}
+                    </Button>
+                ))}
             </Button.Group>
         )
     }
@@ -275,20 +273,18 @@ const Header: React.FC<TabsHeaderProps> = props => {
                         style={{ [`margin${position}`]: -attribute }}
                         className={tabsClass('scroll')}
                     >
-                        {tabs.map(({ tab, id, ...other }) => {
-                            return (
-                                <Tab
-                                    {...other}
-                                    key={id}
-                                    id={id}
-                                    moveToCenter={moveToCenter}
-                                    onClick={handleClick}
-                                    tabMoveMap={tabMoveMap}
-                                >
-                                    {tab}
-                                </Tab>
-                            )
-                        })}
+                        {tabs.map(({ tab, id, ...other }) => (
+                            <Tab
+                                {...other}
+                                key={id}
+                                id={id}
+                                moveToCenter={moveToCenter}
+                                onClick={handleClick}
+                                tabMoveMap={tabMoveMap}
+                            >
+                                {tab}
+                            </Tab>
+                        ))}
 
                         {buildNav()}
                     </div>
@@ -307,13 +303,11 @@ const Header: React.FC<TabsHeaderProps> = props => {
                         className={tabsClass('drop-down', isVertical && 'vertical')}
                         listClassName={tabsClass('drop-down-list')}
                         animation={false}
-                        renderPlaceholder={(_, onClick) => {
-                            return (
-                                <div className={tabsClass('more')} onClick={onClick}>
-                                    {icons.Ellipsis}
-                                </div>
-                            )
-                        }}
+                        renderPlaceholder={(_, onClick) => (
+                            <div className={tabsClass('more')} onClick={onClick}>
+                                {icons.Ellipsis}
+                            </div>
+                        )}
                     />
                 )}
             </div>

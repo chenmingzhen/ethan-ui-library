@@ -9,7 +9,7 @@ import { Checkbox } from 'ethan-ui'
 
 const data = ['red', 'orange', 'yellow', 'green', 'cyan', 'blue', 'violet']
 
-export default function() {
+export default function () {
     return (
         <div>
             <Checkbox.Group disabled keygen data={data} defaultValue={['blue', 'cyan']} />

@@ -4,7 +4,7 @@ import { merge } from 'webpack-merge'
 import config from '../config'
 import { getCommonConfig, getThemeWebpackConfig } from './utils'
 
-const cssConfig = config.themes.map(name =>
+const cssConfig = config.themes.map((name) =>
     getThemeWebpackConfig({
         name,
         entry: ['./src/styles/style.ts'],

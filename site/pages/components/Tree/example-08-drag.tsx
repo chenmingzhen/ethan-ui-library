@@ -20,7 +20,7 @@ export default class extends Component {
         this.setState({ data })
     }
 
-    renderItem = node => (
+    renderItem = (node) => (
         <div>
             <span>node </span>
             <span id={`node-id-${node.id}`}>{node.text}</span>

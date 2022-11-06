@@ -17,7 +17,7 @@ const data = [
     { value: 7, label: 'violet' },
 ]
 
-export default function() {
+export default function () {
     return (
         <div>
             <div>

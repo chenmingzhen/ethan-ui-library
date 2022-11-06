@@ -8,7 +8,7 @@ const attrAccept = (file: File, accept: string) => {
 
         const baseMimeType = mimeType.replace(/\/.*$/, '')
 
-        return acceptedFilesArray.some(type => {
+        return acceptedFilesArray.some((type) => {
             const validType = type.trim()
 
             if (validType.charAt(0) === '.') {

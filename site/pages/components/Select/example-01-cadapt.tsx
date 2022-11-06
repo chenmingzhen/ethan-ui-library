@@ -9,6 +9,6 @@ import { Select } from 'ethan-ui'
 
 const data = ['red', 'orange', 'this option is so long long long long long', 'green', 'cyan', 'blue', 'violet']
 
-export default function() {
+export default function () {
     return <Select keygen autoAdapt style={{ width: 240 }} data={data} defaultValue="" />
 }

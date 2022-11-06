@@ -38,7 +38,7 @@ class Card extends React.PureComponent<TransferCardProps, CardState> {
 
         if (!onFilter || !text) return data
 
-        return data.filter(d => onFilter(text, d, !index))
+        return data.filter((d) => onFilter(text, d, !index))
     }
 
     constructor(props: TransferCardProps) {
@@ -60,7 +60,7 @@ class Card extends React.PureComponent<TransferCardProps, CardState> {
         this.setState({ lazyHeight: el?.offsetHeight })
     }
 
-    checkAll = check => {
+    checkAll = (check) => {
         const { setSelecteds, disabled, getKey, index } = this.props
 
         if (check) {
@@ -85,7 +85,7 @@ class Card extends React.PureComponent<TransferCardProps, CardState> {
         }
     }
 
-    handleFilter = text => {
+    handleFilter = (text) => {
         const { onSearch, index } = this.props
 
         if (onSearch) onSearch(text, !index)
@@ -93,7 +93,7 @@ class Card extends React.PureComponent<TransferCardProps, CardState> {
         this.setState({ text })
     }
 
-    customSetSelected = value => {
+    customSetSelected = (value) => {
         const { setSelecteds, index, selecteds } = this.props
 
         if (typeof value === 'string') {

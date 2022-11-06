@@ -6,7 +6,7 @@ import { isEnterPress } from '@/utils/is'
 import { checkInputClass } from '@/styles'
 import { ICheckedItemProps, CheckItemState, CheckType } from './type'
 
-export default function(type: CheckType) {
+export default function (type: CheckType) {
     return class extends PureComponent<ICheckedItemProps, CheckItemState> {
         static defaultProps: ICheckedItemProps = {
             content: [],
@@ -116,7 +116,7 @@ export default function(type: CheckType) {
                     style={style}
                     htmlFor={this.id}
                     tabIndex={disabled ? undefined : 0}
-                    ref={labelElement => {
+                    ref={(labelElement) => {
                         this.labelElement = labelElement
                     }}
                 >

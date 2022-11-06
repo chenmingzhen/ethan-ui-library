@@ -18,11 +18,12 @@ const useImage = (
         fetchImage()
     }, [src, alt])
 
-    useEffect(() => {
-        return () => {
+    useEffect(
+        () => () => {
             removeStack(lazyId.current)
-        }
-    }, [])
+        },
+        []
+    )
 
     const fetchImage = () => {
         if (lazyId.current) removeStack(lazyId.current)

@@ -13,7 +13,7 @@ import { Input, Rule } from 'ethan-ui'
 
 const rules = Rule()
 
-export default function() {
+export default function () {
     return (
         <Input
             placeholder="email"

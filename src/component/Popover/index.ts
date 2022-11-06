@@ -8,7 +8,7 @@ export interface PopoverComponent extends React.ComponentClass<PopoverProps> {
 
 export { PopoverProps, PopoverConfirmProps }
 
-const ComputedPopover = (Popover as unknown) as PopoverComponent
+const ComputedPopover = Popover as unknown as PopoverComponent
 
 ComputedPopover.Confirm = Confirm
 

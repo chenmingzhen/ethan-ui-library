@@ -27,15 +27,16 @@ const useContainer = (props: UseContainerProps) => {
         }
     }, [rootClassName])
 
-    useEffect(() => {
-        return () => {
+    useEffect(
+        () => () => {
             const portalContainer = portalContainerRef.current
 
             if (portalContainer && portalContainer.parentElement) {
                 portalContainer.parentElement.removeChild(portalContainer)
             }
-        }
-    }, [])
+        },
+        []
+    )
 
     return { portalContainerRef, initPortalContainer }
 }

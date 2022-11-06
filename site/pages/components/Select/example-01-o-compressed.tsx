@@ -17,7 +17,7 @@ const data = [
     { id: 'violet' },
 ]
 
-export default function() {
+export default function () {
     return (
         <Select
             compressed

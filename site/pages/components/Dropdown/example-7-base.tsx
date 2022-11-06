@@ -31,7 +31,7 @@ const data = [
     },
 ]
 
-export default function() {
+export default function () {
     return (
         <div style={{ background: '#eee', padding: 20, borderRadius: 10, overflow: 'hidden' }}>
             <Dropdown absolute placeholder="Absolute" data={data} />

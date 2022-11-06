@@ -7,7 +7,7 @@
 import React from 'react'
 import { Modal, Button } from 'ethan-ui'
 
-export default function() {
+export default function () {
     function confirm() {
         const { update } = Modal.confirm({
             title: 'This is a confirm message',
@@ -15,7 +15,7 @@ export default function() {
             onOk: () => {
                 update({ okButtonProps: { loading: true } })
 
-                return new Promise(resolve => {
+                return new Promise((resolve) => {
                     console.log('yes i know')
 
                     setTimeout(() => resolve(true), 2000)

@@ -4,7 +4,7 @@ import { selectClass } from '@/styles'
 import { isEmpty, isString } from '@/utils/is'
 import { SelectResultItemProps } from './type'
 
-const ResultItem: React.FC<SelectResultItemProps> = function(props) {
+const ResultItem: React.FC<SelectResultItemProps> = function (props) {
     const { result: value, onRemove, disabled, title, renderResult, resultClassName } = props
 
     const remove = disabled || !onRemove ? undefined : () => onRemove(value)

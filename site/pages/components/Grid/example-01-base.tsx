@@ -13,7 +13,7 @@ export default class extends Component {
         this.state = { count: 5 }
     }
 
-    handleCountChange = count => {
+    handleCountChange = (count) => {
         this.setState({ count })
     }
 

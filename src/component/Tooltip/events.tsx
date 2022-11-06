@@ -85,7 +85,7 @@ export function show(props: ToolTipProps, uuid) {
     const { div, inner } = getDiv(uuid)
 
     div.style.cssText = 'display:none'
-    Object.keys(style).forEach(k => {
+    Object.keys(style).forEach((k) => {
         div.style[k] = style[k]
     })
 

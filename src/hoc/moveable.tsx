@@ -91,7 +91,7 @@ export default curry(
 
                 this.startPos = { x: e.clientX, y: e.clientY }
 
-                this.setState(prev => {
+                this.setState((prev) => {
                     let finalX = x + moveX
                     let finalY = y + moveY
 

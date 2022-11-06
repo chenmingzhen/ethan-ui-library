@@ -15,7 +15,7 @@ function splitSelecteds<D extends TransferBaseData = TransferDefaultData, FD = D
     const left: FD[] = []
     const right: FD[] = []
 
-    selectedKeys.forEach(selectedKey => {
+    selectedKeys.forEach((selectedKey) => {
         const v = data.find((item, index) => getKey(item, keygen, index) === selectedKey)
 
         if (v) {

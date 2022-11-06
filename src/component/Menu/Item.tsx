@@ -58,7 +58,7 @@ class Item extends PureComponent<IMenuItemProps, MenuItemState> {
         this.unbindDocumentEvent()
     }
 
-    bindElement = el => {
+    bindElement = (el) => {
         this.element = el
     }
 
@@ -66,7 +66,7 @@ class Item extends PureComponent<IMenuItemProps, MenuItemState> {
         document.removeEventListener('click', this.handleMouseLeave)
     }
 
-    updateActive: UpdateActive = (activePath: string) => {
+    updateActive: UpdateActive = () => {
         const { checkActive } = this.props
 
         const isActive = checkActive(this.id)
@@ -90,7 +90,7 @@ class Item extends PureComponent<IMenuItemProps, MenuItemState> {
         this.setState({ inPath })
     }
 
-    handleToggle = open => {
+    handleToggle = (open) => {
         const { toggleOpenKeys } = this.props
 
         const { id } = this
@@ -134,7 +134,7 @@ class Item extends PureComponent<IMenuItemProps, MenuItemState> {
         if (!isLeaf) e.nativeEvent.stopImmediatePropagation()
     }
 
-    handleIsLinkClick = e => {
+    handleIsLinkClick = (e) => {
         const { renderItem, data } = this.props
 
         const item = renderItem?.(data) as React.ReactElement
@@ -145,18 +145,8 @@ class Item extends PureComponent<IMenuItemProps, MenuItemState> {
     }
 
     render() {
-        const {
-            data,
-            renderItem,
-            mode,
-            level,
-            onClick,
-            inlineIndent,
-            toggleOpenKeys,
-            bottomLine,
-            topLine,
-            rootMode,
-        } = this.props
+        const { data, renderItem, mode, level, onClick, inlineIndent, toggleOpenKeys, bottomLine, topLine, rootMode } =
+            this.props
 
         const { open, isActive, inPath } = this.state
 

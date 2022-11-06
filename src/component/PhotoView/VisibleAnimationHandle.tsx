@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { PhotoViewImageData, OriginRectType, ShowAnimateEnum } from './types'
 
 interface VisibleHandleProps {

@@ -117,7 +117,7 @@ class Upload extends PureComponent<IUploadProps, UploadState> {
     updateFileListState({ id, updateProps, action }: UpdateFileListStateParams) {
         const { onChange } = this.props
 
-        const index = this.state.fileList.findIndex(stateFile => stateFile.id === id)
+        const index = this.state.fileList.findIndex((stateFile) => stateFile.id === id)
 
         if (index === -1) return
 
@@ -127,7 +127,7 @@ class Upload extends PureComponent<IUploadProps, UploadState> {
         this.propsOnChangeLock = false
 
         this.setState(
-            immer(draft => {
+            immer((draft) => {
                 const fileList = [...draft.fileList]
 
                 switch (action) {
@@ -178,7 +178,7 @@ class Upload extends PureComponent<IUploadProps, UploadState> {
                 if (action === UpdateFileListStateAction.REMOVE && cacheRemoveFile) {
                     changeFile = cacheRemoveFile
                 } else {
-                    const changeFileIndex = this.state.fileList.findIndex(stateFile => stateFile.id === id)
+                    const changeFileIndex = this.state.fileList.findIndex((stateFile) => stateFile.id === id)
 
                     if (changeFileIndex !== -1) {
                         changeFile = this.state.fileList[changeFileIndex]
@@ -193,7 +193,7 @@ class Upload extends PureComponent<IUploadProps, UploadState> {
     }
 
     handleError = (id: React.Key) => {
-        const index = this.state.fileList.findIndex(stateFile => stateFile.id === id)
+        const index = this.state.fileList.findIndex((stateFile) => stateFile.id === id)
 
         if (index === -1) return
 
@@ -213,7 +213,7 @@ class Upload extends PureComponent<IUploadProps, UploadState> {
     uploadFile = (ethanFile: EthanFile) => {
         const { blob: file, id } = ethanFile
 
-        const uploadFileIndex = this.state.fileList.findIndex(stateFile => stateFile.id === id)
+        const uploadFileIndex = this.state.fileList.findIndex((stateFile) => stateFile.id === id)
 
         if (uploadFileIndex === -1) return
 
@@ -228,7 +228,7 @@ class Upload extends PureComponent<IUploadProps, UploadState> {
             withCredentials,
             file,
             headers,
-            onProgress: e => {
+            onProgress: (e) => {
                 const percent = (e.loaded / e.total) * 100
 
                 this.updateFileListState({
@@ -237,7 +237,7 @@ class Upload extends PureComponent<IUploadProps, UploadState> {
                     action: UpdateFileListStateAction.UPDATE,
                 })
             },
-            onLoad: xhr => {
+            onLoad: (xhr) => {
                 if (!/^2/.test(String(xhr.status))) {
                     this.handleError(id)
 
@@ -256,7 +256,7 @@ class Upload extends PureComponent<IUploadProps, UploadState> {
         const xhr = req(options)
 
         this.setState(
-            immer(draft => {
+            immer((draft) => {
                 draft.fileList[uploadFileIndex].xhr = xhr
 
                 /** 没有action将status设置为Error */
@@ -346,7 +346,7 @@ class Upload extends PureComponent<IUploadProps, UploadState> {
 
         const processFileListPromises = originFileList.slice(0, addLength).map(this.processFile)
 
-        Promise.all(processFileListPromises).then(processFileList => {
+        Promise.all(processFileListPromises).then((processFileList) => {
             const newFileList = [...fileList]
 
             const { spliceIndex } = data
@@ -368,7 +368,7 @@ class Upload extends PureComponent<IUploadProps, UploadState> {
 
                     const holdFileList: EthanFile[] = []
 
-                    processFileList.forEach(file => {
+                    processFileList.forEach((file) => {
                         if (file.status === PENDING) {
                             pendingPostFileList.push(file)
                         } else {
@@ -404,7 +404,7 @@ class Upload extends PureComponent<IUploadProps, UploadState> {
 
         if (disabled) return
 
-        const fileIndex = this.state.fileList.findIndex(file => file.id === id)
+        const fileIndex = this.state.fileList.findIndex((file) => file.id === id)
 
         if (fileIndex === -1) return
 

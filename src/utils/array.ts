@@ -1,7 +1,7 @@
 import { deepClone } from './clone'
 
 export function pull<T>(array: T[], removeKey: T) {
-    return array.filter(it => it !== removeKey)
+    return array.filter((it) => it !== removeKey)
 }
 
 export function getSameValue<T>(array: T[]) {

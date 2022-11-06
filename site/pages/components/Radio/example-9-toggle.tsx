@@ -9,12 +9,12 @@ import { Radio } from 'ethan-ui'
 
 const data = ['red', 'orange', 'yellow', 'green', 'cyan', 'blue', 'violet']
 
-export default function() {
+export default function () {
     const [current, setCurrent] = React.useState('red')
 
     return (
-        <Radio.Group keygen value={current} onChange={c => setCurrent(c)}>
-            {data.map(d => (
+        <Radio.Group keygen value={current} onChange={(c) => setCurrent(c)}>
+            {data.map((d) => (
                 <span
                     key={d}
                     onClick={() => {

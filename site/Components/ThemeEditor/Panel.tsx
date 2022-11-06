@@ -15,7 +15,7 @@ const Panel: React.FC<PanelProps> = function (props) {
 
     return (
         <div {...other}>
-            <div className={editorClass('content')}></div>
+            <div className={editorClass('content')} />
             <div className={editorClass('extra')}>
                 <div className={editorClass('handler')} />
                 <div className={editorClass('extra-content')}>

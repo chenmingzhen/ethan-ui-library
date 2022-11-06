@@ -268,7 +268,7 @@ class Sticky extends PureComponent<StickyProps, StickyState> {
         if (this.targetElement) {
             this.targetElement.addEventListener('scroll', this.handlePosition, eventPassive)
         } else {
-            events.forEach(e => {
+            events.forEach((e) => {
                 window.addEventListener(e, this.handlePosition)
             })
         }
@@ -278,7 +278,7 @@ class Sticky extends PureComponent<StickyProps, StickyState> {
         if (this.targetElement) {
             this.targetElement.removeEventListener('scroll', this.handlePosition)
         } else {
-            events.forEach(e => {
+            events.forEach((e) => {
                 window.removeEventListener(e, this.handlePosition)
             })
         }

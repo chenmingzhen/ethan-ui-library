@@ -45,14 +45,14 @@ export function closeWithAnimation(type) {
 
         if (container) container.removeAllMessage()
     } else {
-        components.forEach(container => {
+        components.forEach((container) => {
             container.removeAllMessage()
         })
     }
 }
 
 export function getComponent(type): Promise<MessageContainerInstance> {
-    return new Promise(resolve => {
+    return new Promise((resolve) => {
         const component = components.get(type)
 
         // 判断有无这个type(position)的容器  每个type对应一个所有组件容器
@@ -63,7 +63,7 @@ export function getComponent(type): Promise<MessageContainerInstance> {
             ReactDOM.render(
                 <MessageContainer
                     /* resolve这个实例回去 并记录在组件容器中 */
-                    ref={comp => {
+                    ref={(comp) => {
                         components.set(type, comp)
                         resolve(comp)
                     }}

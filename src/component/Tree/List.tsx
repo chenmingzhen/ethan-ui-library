@@ -44,7 +44,7 @@ class List extends PureComponent<TreeListProps, TreeListState> {
         this.setState({ expanded })
     }
 
-    handleDragStateChange = isDragging => {
+    handleDragStateChange = (isDragging) => {
         this.setState({ isDragging })
     }
 

@@ -41,15 +41,15 @@ export default class extends React.Component {
         this.state = { mode: 1, value }
     }
 
-    handleChange = value => {
+    handleChange = (value) => {
         this.setState({ value })
     }
 
-    handleModeChange = mode => {
+    handleModeChange = (mode) => {
         this.setState({ mode, value: [] })
     }
 
-    renderItem = node => `node ${node.id}`
+    renderItem = (node) => `node ${node.id}`
 
     render() {
         const { mode, value } = this.state

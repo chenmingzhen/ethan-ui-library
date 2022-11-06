@@ -7,7 +7,7 @@
 import React from 'react'
 import { Button, Popover } from 'ethan-ui'
 
-export default function() {
+export default function () {
     return (
         <Popover content="arrow" showArrow={false}>
             <Button>Click me</Button>

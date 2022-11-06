@@ -9,6 +9,6 @@ import { Radio } from 'ethan-ui'
 
 const data = ['red', 'orange', 'yellow']
 
-export default function() {
+export default function () {
     return <Radio.Group button="outline" data={data} defaultValue="red" />
 }

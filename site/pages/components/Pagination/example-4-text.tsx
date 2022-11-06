@@ -14,7 +14,7 @@ function info({ current, pageSize, total }) {
     return `${from} to ${to} of ${total} items`
 }
 
-export default function() {
+export default function () {
     return (
         <Pagination
             text={{

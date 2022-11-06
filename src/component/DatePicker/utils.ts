@@ -189,7 +189,7 @@ function judgeTimeByRange(...args) {
 
 function getFormat(formatStr: string) {
     let defaultFormat = 'yyyy-MM-dd HH:mm:ss.SSS'
-    ;['H', 'm', 's', 'S', 'h'].map(v => {
+    ;['H', 'm', 's', 'S', 'h'].map((v) => {
         if (formatStr.indexOf(v) <= -1) {
             const reg = new RegExp(`${v}`, 'g')
 

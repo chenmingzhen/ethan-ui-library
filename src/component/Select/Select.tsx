@@ -173,7 +173,7 @@ class Select extends PureComponent<ISelectProps, SelectState> {
         }
     }
 
-    handleBlur: React.FocusEventHandler<HTMLDivElement> = evt => {
+    handleBlur: React.FocusEventHandler<HTMLDivElement> = (evt) => {
         if (this.keepSelectFocus) return
 
         /**
@@ -257,7 +257,7 @@ class Select extends PureComponent<ISelectProps, SelectState> {
         this.setState({ focus, position: newPosition })
     }
 
-    handleFocus: React.FocusEventHandler<HTMLDivElement> = evt => {
+    handleFocus: React.FocusEventHandler<HTMLDivElement> = (evt) => {
         if (this.keepSelectFocus) return
 
         this.props.onFocus(evt)
@@ -339,7 +339,7 @@ class Select extends PureComponent<ISelectProps, SelectState> {
         evt.preventDefault()
     }
 
-    handleKeyDown: React.KeyboardEventHandler<HTMLDivElement> = evt => {
+    handleKeyDown: React.KeyboardEventHandler<HTMLDivElement> = (evt) => {
         const { focus } = this.state
 
         if (evt.keyCode === 13 && !focus) {
@@ -421,7 +421,7 @@ class Select extends PureComponent<ISelectProps, SelectState> {
         }
     }
 
-    handleRemove = dataItem => {
+    handleRemove = (dataItem) => {
         this.handleChange(dataItem, false)
     }
 
@@ -463,7 +463,7 @@ class Select extends PureComponent<ISelectProps, SelectState> {
             'filterText',
             'onScrollRatioChange',
             'customRender',
-        ].forEach(k => {
+        ].forEach((k) => {
             props[k] = this.props[k]
         })
 

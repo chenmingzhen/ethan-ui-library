@@ -7,14 +7,14 @@
 import React from 'react'
 import { Button, Popover } from 'ethan-ui'
 
-export default function() {
+export default function () {
     return (
         <Popover.Confirm
             onCancel={() => {
                 console.log('cancel')
             }}
             onOk={() =>
-                new Promise(resolve => {
+                new Promise((resolve) => {
                     console.log('ok')
                     setTimeout(() => resolve(true), 2000)
                 })

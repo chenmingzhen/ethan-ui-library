@@ -41,12 +41,12 @@ async function buildRedirect(lang) {
 async function buildHtml(lang) {
     createDir(lang)
 
-    const components = fs.readdirSync(componentPaths).map(c => c.split('.')[0])
+    const components = fs.readdirSync(componentPaths).map((c) => c.split('.')[0])
 
-    const scripts = config.dev.scripts.map(p => cdn + p)
+    const scripts = config.dev.scripts.map((p) => cdn + p)
 
     // push 入口文件
-    Object.keys(config.webpack.entry).forEach(s => {
+    Object.keys(config.webpack.entry).forEach((s) => {
         scripts.push(`../../${s}.js`)
     })
 
@@ -54,7 +54,7 @@ async function buildHtml(lang) {
 
     fs.writeFileSync(`${dir}/${lang}/index/index.html`, html)
 
-    components.forEach(async c => {
+    components.forEach(async (c) => {
         if (c === 'group') return
 
         const componentHtml = await renderEjs(scripts, `react-${c}`, lang)

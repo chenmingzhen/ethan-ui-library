@@ -28,7 +28,7 @@ export interface ConfirmProps extends PopoverProps {
     description?: React.ReactNode
 }
 
-const Confirm: React.FC<ConfirmProps> = props => {
+const Confirm: React.FC<ConfirmProps> = (props) => {
     const { buttonProps = { ok: {}, cancel: {} }, text, onOk, onCancel, type, children, description, ...other } = props
 
     const [okLoading, setOkLoading] = useState(false)

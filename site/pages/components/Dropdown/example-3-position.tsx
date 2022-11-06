@@ -9,7 +9,7 @@ import { Dropdown } from 'ethan-ui'
 
 const style = { marginRight: 12, marginBottom: 12 }
 
-export default function() {
+export default function () {
     const menu = [
         {
             content: 'First',

@@ -6,7 +6,7 @@ export interface ColorPickerComponent extends React.ClassicComponentClass<ColorP
     ColorBoard: typeof ColorBoard
 }
 
-const MixinComponent: ColorPickerComponent = (ColorPicker as unknown) as ColorPickerComponent
+const MixinComponent: ColorPickerComponent = ColorPicker as unknown as ColorPickerComponent
 
 MixinComponent.ColorBoard = ColorBoard
 

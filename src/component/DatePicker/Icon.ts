@@ -3,7 +3,7 @@ import { datepickerClass } from '@/styles'
 import icons from '../icons'
 import { DatePickerIconProps } from './type'
 
-const Icon: React.FC<DatePickerIconProps> = props => {
+const Icon: React.FC<DatePickerIconProps> = (props) => {
     const { className, name, onClick, tag, disabled } = props
 
     const newProps = {

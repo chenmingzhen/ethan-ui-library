@@ -4,7 +4,7 @@ import React from 'react'
 import Popover from '../Popover/Popover'
 import { CascaderMoreProps } from './type'
 
-const More: React.FC<CascaderMoreProps> = function(props) {
+const More: React.FC<CascaderMoreProps> = function (props) {
     const { dataId, itemNodes, showNum } = props
 
     const className = cascaderClass('item', 'item-compressed')

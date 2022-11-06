@@ -28,7 +28,7 @@ interface GroupProps {
 }
 
 const Group: React.FC<GroupProps> = ({ pile, children, style, ...props }) => {
-    const handleClick = index => {
+    const handleClick = (index) => {
         const images = []
 
         let current = 0

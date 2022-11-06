@@ -3,7 +3,7 @@ import kindOf from '@/utils/kindOf'
 import Alert from './alert'
 
 // 在原节点后面添加第一个子元素节点实现无缝
-const cloneChildren = children => {
+const cloneChildren = (children) => {
     const length = Children.count(children)
     const clonedChildren = new Array(length)
 
@@ -18,7 +18,7 @@ const cloneChildren = children => {
 }
 
 // 获取有效的渲染节点
-const getRenderChildrenFromProps = children => {
+const getRenderChildrenFromProps = (children) => {
     const childArray: any[] = Children.toArray(children)
 
     const items = childArray.reduce((alertItemArray, child) => {

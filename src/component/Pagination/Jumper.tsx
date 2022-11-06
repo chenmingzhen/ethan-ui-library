@@ -6,7 +6,7 @@ import paginationContext from './context'
 
 const inputStyle = { width: 60, display: 'inline-block' }
 
-const Jumper: React.FC<JumperProps> = props => {
+const Jumper: React.FC<JumperProps> = (props) => {
     const { total, pageSize, onChange, current, text } = React.useContext(paginationContext)
 
     const [inputValue, updateInputValue] = React.useState(current)

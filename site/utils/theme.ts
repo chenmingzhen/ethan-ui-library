@@ -3,7 +3,7 @@ import Theme from '../enum/themes'
 let theme = 'default'
 let link
 
-const getParameterByName = name => {
+const getParameterByName = (name) => {
     const { search } = window.location
 
     // [?&] 代表只要匹配到其中一个即可,name=为固定匹配 后面的匹配规则为=号后面不能是&或#开头 然后后面任意字符
@@ -23,12 +23,12 @@ const getParameterByName = name => {
     if (!results) return null
 
     // 不存在 或者主题名称不匹配 默认返回default
-    if (!results[2] || !Theme.map(({ content }) => content).some(it => it === results[2])) return ''
+    if (!results[2] || !Theme.map(({ content }) => content).some((it) => it === results[2])) return ''
 
     return decodeURIComponent(results[2].replace(/\+/g, ' '))
 }
 
-const init = callback => {
+const init = (callback) => {
     // 手动添加link标签进页面
     // 不通过webpack添加
     theme = getParameterByName('theme') || 'default'
@@ -43,7 +43,7 @@ const init = callback => {
     document.head.appendChild(link)
 }
 
-const change = next => {
+const change = (next) => {
     theme = next
     link.setAttribute('href', `${theme}.css`)
 }

@@ -17,6 +17,6 @@ const front = [
     <FaceIcon name="lol" style={{ color: '#fa541c' }} />,
 ]
 
-export default function() {
+export default function () {
     return <Rate size={40} defaultValue={3} background={background} front={front} />
 }

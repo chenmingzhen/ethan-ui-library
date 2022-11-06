@@ -11,7 +11,7 @@ export interface DraggableProps {
     onDragEnd?: (start: boolean) => void
 }
 
-export default curry(Origin => {
+export default curry((Origin) => {
     class Drag extends React.PureComponent<DraggableProps> {
         clientX: number
 

@@ -7,7 +7,7 @@
 import React from 'react'
 import { Input } from 'ethan-ui'
 
-export default function() {
+export default function () {
     return (
         <>
             <Input.Password placeholder="input password" style={{ width: '200px' }} />

@@ -9,7 +9,7 @@ import { Pagination } from 'ethan-ui'
 
 const info = ({ total }) => `Total ${total}`
 
-export default function() {
+export default function () {
     return (
         <div>
             <Pagination align="center" total={100} layouts={['links', info]} />

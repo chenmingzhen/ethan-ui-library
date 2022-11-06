@@ -12,7 +12,7 @@ class SliderContainer extends PureComponent<ISliderContainerProps> {
         scale: [0, 100],
         step: 1,
         vertical: false,
-        formatScale: v => v,
+        formatScale: (v) => v,
     }
 
     static displayName = 'EthanSlider'
@@ -35,7 +35,7 @@ class SliderContainer extends PureComponent<ISliderContainerProps> {
         return val as number[]
     }
 
-    handleClick: React.MouseEventHandler<HTMLDivElement> = e => {
+    handleClick: React.MouseEventHandler<HTMLDivElement> = (e) => {
         const { disabled, scale, step, vertical, range, onChange } = this.props
         /** 点击原点指示器不操作 */
         if ((e.target as HTMLDivElement).className.indexOf(sliderClass('indicator')) >= 0) return
@@ -84,7 +84,7 @@ class SliderContainer extends PureComponent<ISliderContainerProps> {
 
         return (
             <div className={sliderClass('scale', !autoHide && 'show')}>
-                {scale.map(s => (
+                {scale.map((s) => (
                     <div key={s}>
                         <span>{formatScale(s)}</span>
                     </div>

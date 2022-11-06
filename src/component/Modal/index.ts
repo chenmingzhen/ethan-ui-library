@@ -14,7 +14,7 @@ export interface ModalComponent extends React.FunctionComponent<ModalProps> {
     show: ModalMethodType
 }
 
-const exportModal = (Modal as unknown) as ModalComponent
+const exportModal = Modal as unknown as ModalComponent
 
 exportModal.success = createMethodModal('success')
 exportModal.info = createMethodModal('info')

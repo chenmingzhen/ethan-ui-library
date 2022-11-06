@@ -31,8 +31,8 @@ function buildCss(stylePath) {
     }
 
     fs.readdirSync(originPath)
-        .filter(name => name.indexOf('.less') > 0)
-        .forEach(async name => {
+        .filter((name) => name.indexOf('.less') > 0)
+        .forEach(async (name) => {
             const fn = path.resolve(originPath, name)
             const cssFile = path.resolve(distPath, name.replace('.less', '.css'))
 
@@ -41,10 +41,10 @@ function buildCss(stylePath) {
 
             postcss([autoprefixer({ browsers: ['last 2 versions', 'ie >= 9'] })])
                 .process(cssText)
-                .then(result => {
+                .then((result) => {
                     fs.writeFileSync(cssFile, result.css)
                 })
-                .catch(e => console.log(e))
+                .catch((e) => console.log(e))
         })
 }
 
@@ -52,8 +52,8 @@ function buildCss(stylePath) {
 function replaceLess() {
     const dir = path.resolve(publish, 'css/styles/')
     fs.readdirSync(dir)
-        .filter(name => /\.js$/.test(name))
-        .forEach(name => {
+        .filter((name) => /\.js$/.test(name))
+        .forEach((name) => {
             const filePath = path.resolve(dir, name)
             const text = fs
                 .readFileSync(filePath)

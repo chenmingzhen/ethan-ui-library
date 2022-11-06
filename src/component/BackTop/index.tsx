@@ -22,13 +22,13 @@ function isBackTopVisible(limitHeight) {
     return top >= limitHeight
 }
 
-const BackTop: React.FC<BackTopProps> = props => {
+const BackTop: React.FC<BackTopProps> = (props) => {
     const [visible, setVisible] = useSafeState(isBackTopVisible(props.height))
     const backTopTimer = useRef<NodeJS.Timeout>()
     const container = useRef<HTMLDivElement>(document.createElement('div')).current
     const { right, bottom } = props
 
-    const onClick = e => {
+    const onClick = (e) => {
         props.onClick?.(e)
 
         if (backTopTimer.current) {

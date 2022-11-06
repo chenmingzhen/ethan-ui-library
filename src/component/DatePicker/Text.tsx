@@ -12,7 +12,7 @@ const useMergeState = (propsValue = '') => {
     return [propsValue, updateValue] as [string, (value: string) => void]
 }
 
-const Text: React.FC<DatePickerTextProps> = props => {
+const Text: React.FC<DatePickerTextProps> = (props) => {
     const { disabled, className, index, inputAble, onTextBlur, format, placeholder, value, size } = props
 
     const [textValue, updateTextValue] = useMergeState(value)
@@ -34,7 +34,7 @@ const Text: React.FC<DatePickerTextProps> = props => {
     }, [onTextBlur, index, textValue, value])
 
     const handleKeyDown: React.KeyboardEventHandler<HTMLInputElement> = useCallback(
-        evt => {
+        (evt) => {
             if (evt.key === KeyboardKey.Enter) {
                 handleBlur()
             }

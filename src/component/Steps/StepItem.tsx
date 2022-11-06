@@ -16,7 +16,7 @@ export interface StepItemProps {
     index?: number
 }
 
-const StepItem: React.FC<StepItemProps> = props => {
+const StepItem: React.FC<StepItemProps> = (props) => {
     const { icon: Icon, title, description, step, status, width, height, onClick, index } = props
     const [showCustomIcon, setShowCustomIcon] = useState(Icon && kindOf(Icon.type, BaseIcon))
 

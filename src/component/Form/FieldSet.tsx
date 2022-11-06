@@ -15,7 +15,7 @@ function extendName(path = '', name: string | string[]) {
 
     if (name === '') return path
 
-    if (Array.isArray(name)) return name.map(n => extendName(path, n))
+    if (Array.isArray(name)) return name.map((n) => extendName(path, n))
 
     return `${path}${path.length > 0 ? '.' : ''}${name}`
 }
@@ -96,20 +96,18 @@ class FieldSet extends PureComponent<IFieldSetProps> {
 
         return (
             <>
-                {values.map((value, i) => {
-                    return (
-                        <FieldSetProvider key={i} value={{ path: `${name}[${i}]` }}>
-                            {children({
-                                onAppend: this.handleInsert.bind(this, i + 1),
-                                onRemove: this.handleRemove.bind(this, i),
-                                onInsert: this.handleInsert.bind(this),
-                                list: values,
-                                index: i,
-                                value,
-                            })}
-                        </FieldSetProvider>
-                    )
-                })}
+                {values.map((value, i) => (
+                    <FieldSetProvider key={i} value={{ path: `${name}[${i}]` }}>
+                        {children({
+                            onAppend: this.handleInsert.bind(this, i + 1),
+                            onRemove: this.handleRemove.bind(this, i),
+                            onInsert: this.handleInsert.bind(this),
+                            list: values,
+                            index: i,
+                            value,
+                        })}
+                    </FieldSetProvider>
+                ))}
 
                 <FormHelp error={error} animation={animation} />
             </>
@@ -117,9 +115,8 @@ class FieldSet extends PureComponent<IFieldSetProps> {
     }
 }
 
-export const fieldSetConsumer = Origin => props => (
+export const fieldSetConsumer = (Origin) => (props) =>
     <FieldSetConsumer>{({ path } = {}) => <Origin {...props} name={extendName(path, props.name)} />}</FieldSetConsumer>
-)
 
 interface FieldSetComponent {
     new <Value = any>(props: FieldSetProps): React.Component<FieldSetProps<Value>>

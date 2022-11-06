@@ -13,7 +13,7 @@ const Item = Steps.StepItem
 const Example = () => {
     const [current, setCurrent] = React.useState(0)
 
-    const setSteps = index => setCurrent(index)
+    const setSteps = (index) => setCurrent(index)
 
     return (
         <Steps current={current} vertical>

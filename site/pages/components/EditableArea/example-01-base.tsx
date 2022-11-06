@@ -8,6 +8,6 @@
 import React from 'react'
 import { EditableArea } from 'ethan-ui'
 
-export default function() {
+export default function () {
     return <EditableArea bordered placeholder="input something" />
 }

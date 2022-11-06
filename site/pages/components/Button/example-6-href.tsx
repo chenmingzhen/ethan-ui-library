@@ -7,7 +7,7 @@
 import React from 'react'
 import { Button } from 'ethan-ui'
 
-export default function() {
+export default function () {
     return (
         <Button href="#home" target="_blank" type="primary">
             Home

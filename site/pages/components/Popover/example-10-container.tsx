@@ -7,7 +7,7 @@
 import React from 'react'
 import { Button, Popover } from 'ethan-ui'
 
-export default function() {
+export default function () {
     return (
         <div id="popup-target" style={{ height: 200, overflowY: 'auto', position: 'relative' }}>
             <div style={{ margin: '100px 0' }}>1</div>

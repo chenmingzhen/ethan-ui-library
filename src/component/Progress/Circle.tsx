@@ -12,7 +12,7 @@ import { BaseProgressProps } from './type'
  *
  * */
 
-const Circle: React.FC<BaseProgressProps> = props => {
+const Circle: React.FC<BaseProgressProps> = (props) => {
     const { children, strokeWidth, type, color, size, value, background, strokeLinecap } = props
 
     const className = classnames(progressClass('circle', type), props.className)
@@ -35,7 +35,7 @@ const Circle: React.FC<BaseProgressProps> = props => {
                 {objColor ? (
                     <defs>
                         <linearGradient id="progress-linear" x1="50%" x2="50%" y1="0%" y2="100%">
-                            {analyzeColor(color).map(c => (
+                            {analyzeColor(color).map((c) => (
                                 <stop key={c.pos} offset={c.pos} stopColor={c.color} />
                             ))}
                         </linearGradient>

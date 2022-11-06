@@ -8,7 +8,7 @@
 import React from 'react'
 import { Button, Message } from 'ethan-ui'
 
-export default function() {
+export default function () {
     return (
         <div>
             <Button onClick={() => Message.info('This message will close after 10 seconds.', 10)}>

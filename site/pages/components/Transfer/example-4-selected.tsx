@@ -30,7 +30,7 @@ export default class extends Component {
         this.setState({ selectedKeys: [...sourceKeys, ...targetKeys] })
     }
 
-    change = v => {
+    change = (v) => {
         console.log(v)
         this.setState({ value: v })
     }

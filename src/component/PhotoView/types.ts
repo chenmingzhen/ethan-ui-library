@@ -108,7 +108,7 @@ export enum ShowAnimateEnum {
  */
 export type OriginRectType =
     | {
-        clientX: number
-        clientY: number
-    }
+          clientX: number
+          clientY: number
+      }
     | undefined

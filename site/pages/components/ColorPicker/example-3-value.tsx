@@ -9,10 +9,10 @@ import React, { useCallback, useState } from 'react'
 import { Input } from 'ethan-ui'
 import { ColorPicker } from 'ethan-ui'
 
-export default function() {
+export default function () {
     const [color, updateColor] = useState('red')
 
-    const handleChange = useCallback(c => {
+    const handleChange = useCallback((c) => {
         console.log('onChange:', c)
 
         updateColor(c)

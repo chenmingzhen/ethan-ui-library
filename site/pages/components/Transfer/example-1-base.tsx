@@ -16,6 +16,6 @@ for (let i = 1; i < 20; i++) {
     })
 }
 
-export default function() {
+export default function () {
     return <Transfer data={data} format="id" renderItem="content" keygen="id" titles={['Source', 'Target']} />
 }

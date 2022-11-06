@@ -19,6 +19,6 @@ const data = [
     { title: 'Self', onClick: () => Message.show('Clicked self') },
 ]
 
-export default function() {
+export default function () {
     return <Breadcrumb data={data} />
 }

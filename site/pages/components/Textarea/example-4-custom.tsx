@@ -9,7 +9,7 @@
 import React from 'react'
 import { Textarea } from 'ethan-ui'
 
-const renderInfo = value => {
+const renderInfo = (value) => {
     if (!value || value.length === 0) return null
 
     const text = `total is  ${value.length}`
@@ -19,6 +19,6 @@ const renderInfo = value => {
     return <span style={{ color: 'red' }}>{text}</span>
 }
 
-export default function() {
+export default function () {
     return <Textarea rows={4} trim placeholder="input something" tip={renderInfo} />
 }

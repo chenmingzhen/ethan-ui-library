@@ -28,7 +28,7 @@ interface ResizableState {
 }
 
 export default curry(
-    Origin =>
+    (Origin) =>
         class Resizable extends PureComponent<ResizableProps, ResizableState> {
             resizableId: string = getUidStr()
 
@@ -142,7 +142,7 @@ export default curry(
                     width: this.el.clientWidth,
                     height: this.el.clientHeight,
                 }
-                ;['e', 's', 'se'].forEach(dir => {
+                ;['e', 's', 'se'].forEach((dir) => {
                     const handler = document.createElement('div')
                     const action = this.handleMouseDown.bind(this, dir)
 

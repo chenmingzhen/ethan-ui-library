@@ -9,6 +9,6 @@ import { Rate, FontAwesome } from 'ethan-ui'
 
 const star = <FontAwesome name="star" />
 
-export default function() {
+export default function () {
     return <Rate value={3.6} disabled background={star} front={star} />
 }

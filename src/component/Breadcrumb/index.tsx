@@ -27,7 +27,7 @@ export interface BreadcrumbProps {
     style?: React.CSSProperties
 }
 
-const Breadcrumb: React.FC<BreadcrumbProps> = props => {
+const Breadcrumb: React.FC<BreadcrumbProps> = (props) => {
     const { separator, data } = props
     const className = classnames(breadcrumbClass('_'), props.className)
 
@@ -72,7 +72,7 @@ const Breadcrumb: React.FC<BreadcrumbProps> = props => {
                 <Popover
                     placement="bottom"
                     className={breadcrumbClass('popover')}
-                    content={hide => (
+                    content={(hide) => (
                         <>
                             {arrayData.slice(1).map((d, i) => (
                                 <span className={breadcrumbClass('dropdown-item')} key={i} onClick={hide.bind(this)}>
