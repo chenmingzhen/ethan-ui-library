@@ -1,12 +1,9 @@
-// @ts-nocheck
-import { compose } from '@/utils/func'
 import withControl from '../../hoc/withControl'
 import Switch from './Switch'
-import { consumer } from '../Checkbox/context'
+import { SwitchProps } from './type'
 
-const SwitchContainer = compose(withControl, consumer)(Switch)
+const SwitchContainer = withControl(Switch) as React.ComponentClass<SwitchProps>
 
 SwitchContainer.displayName = 'EthanSwitch'
-SwitchContainer.Switch = Switch
 
 export default SwitchContainer
