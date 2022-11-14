@@ -5,25 +5,7 @@ import { capitalize } from '@/utils/strings'
 import classnames from 'classnames'
 import useDismiss from './hooks/useDismiss'
 import icons from '../icons'
-
-export type AlertType = 'default' | 'success' | 'info' | 'warning' | 'danger' | 'error' | 'loading'
-export interface AlertProps {
-    className?: string
-
-    style?: React.CSSProperties
-
-    type?: AlertType
-
-    icon?: boolean | Element
-
-    iconSize?: number
-
-    onClose?: ((duration?: number, height?: number) => void) | boolean
-
-    closeItem?: React.ReactNode
-
-    children?: React.ReactNode
-}
+import { AlertInstance, AlertProps } from './type'
 
 export interface IAlertProps extends AlertProps {
     onDismiss: (duration?: number, height?: number) => void
@@ -31,10 +13,6 @@ export interface IAlertProps extends AlertProps {
     dismiss?: boolean
 
     duration?: number
-}
-
-export interface AlertInstance {
-    clientHeight(): number
 }
 
 export default memo(
@@ -95,7 +73,7 @@ export default memo(
         }
 
         function renderClose() {
-            if (React.isValidElement(closeItem)) return React.cloneElement(closeItem, { onClick: handleClose })
+            if (React.isValidElement(closeItem)) return React.cloneElement<any>(closeItem, { onClick: handleClose })
 
             return (
                 <a className={alertClass('close')} onClick={handleClose}>
@@ -117,13 +95,13 @@ export default memo(
 
         return (
             <div ref={alertContainerElementRef} className={mc} style={style}>
-                {onClose && renderClose()}
                 {type !== 'loading' ? (
                     renderIcon()
                 ) : (
                     <Spin name="ring" size={18} className={alertClass('loading-icon')} color="#17a2b8" />
                 )}
                 <div className={alertClass('content')}>{children}</div>
+                {onClose && renderClose()}
             </div>
         )
     })

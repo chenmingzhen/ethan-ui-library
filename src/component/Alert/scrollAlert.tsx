@@ -2,19 +2,8 @@ import React, { useEffect, useState, useRef, useCallback, useMemo } from 'react'
 import { alertClass } from '@/styles'
 import { useList, useTimeoutFn, useUpdateEffect } from 'react-use'
 import { getRenderChildrenFromProps, cloneChildren } from './util'
-import Alert, { AlertInstance, AlertProps } from './alert'
-
-export interface ScrollAlertProps extends AlertProps {
-    scrollInterval?: number
-
-    /** 关闭所有节点时触发的回调 */
-    onClose?(): void
-
-    /** 用于统一设置Alert的样式 勿添加Margin 影响计算值 */
-    style?: React.CSSProperties
-
-    className?: string
-}
+import Alert from './alert'
+import { AlertInstance, ScrollAlertProps } from './type'
 
 const ScrollAlert: React.FC<ScrollAlertProps> = ({
     scrollInterval = 5 * 1000,
