@@ -22,6 +22,6 @@
 
 | Property       | Type     | Default | Description                                                                                    |
 | -------------- | -------- | ------- | ---------------------------------------------------------------------------------------------- |
-| scrollInterval | number   | 5000    | The spacing of scrolling times                                                                 |
+| scrollInterval | number   | 3000    | The spacing of scrolling times                                                                 |
 | onClose        | ()=>void | none    | Callback when all nodes are shut down                                                          |
 | style          | object   | none    | The style used to uniformly set the Alert should not add Margin to affect the calculated value |

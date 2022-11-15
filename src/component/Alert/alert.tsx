@@ -39,13 +39,13 @@ export default memo(
             alertContainerElementRef,
         })
 
-        const clientHeight = useCallback(() => alertContainerElementRef.current?.clientHeight, [])
+        const offsetHeight = useCallback(() => alertContainerElementRef.current?.offsetHeight, [])
 
         useEffect(() => {
             propDismiss && handleClose()
         }, [propDismiss])
 
-        useImperativeHandle(alertRef, () => ({ clientHeight }))
+        useImperativeHandle(alertRef, () => ({ offsetHeight }))
 
         if (dismiss === 2) return null
 

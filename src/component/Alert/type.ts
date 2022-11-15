@@ -12,7 +12,7 @@ export interface AlertProps {
 }
 
 export interface AlertInstance {
-    clientHeight(): number
+    offsetHeight(): number
 }
 
 export interface ScrollAlertProps extends AlertProps {

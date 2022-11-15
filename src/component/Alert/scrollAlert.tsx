@@ -5,8 +5,10 @@ import { getRenderChildrenFromProps, cloneChildren } from './util'
 import Alert from './alert'
 import { AlertInstance, ScrollAlertProps } from './type'
 
+const MARGIN_BOTTOM = 20
+
 const ScrollAlert: React.FC<ScrollAlertProps> = ({
-    scrollInterval = 5 * 1000,
+    scrollInterval = 3 * 1000,
     children,
     onClose,
     className,
@@ -21,7 +23,7 @@ const ScrollAlert: React.FC<ScrollAlertProps> = ({
 
     const firstChildHeight = useRef<number>()
     const onFirstChildRef = useCallback((itemInstance: AlertInstance) => {
-        firstChildHeight.current = itemInstance?.clientHeight() || 0
+        firstChildHeight.current = itemInstance?.offsetHeight() || 0
     }, [])
 
     // 重置节点为0
@@ -51,7 +53,7 @@ const ScrollAlert: React.FC<ScrollAlertProps> = ({
 
     const [, cancel, reset] = useTimeoutFn(scrollIntervalFn, scrollInterval)
 
-    const onCloseItemHandler = useCallback(
+    const handleCloseItem = useCallback(
         (index) => {
             // 为克隆item的最后一项 即第一项
             if (index === items.length) {
@@ -78,6 +80,7 @@ const ScrollAlert: React.FC<ScrollAlertProps> = ({
 
     useEffect(() => {
         setHeight(firstChildHeight.current)
+
         return cancel
     }, [])
 
@@ -95,7 +98,7 @@ const ScrollAlert: React.FC<ScrollAlertProps> = ({
                 className={alertClass('scroll-container')}
                 style={{
                     height: containerHeight,
-                    transform: `translateY(-${(containerHeight + 22) * activeIndex}px)`,
+                    transform: `translateY(-${(containerHeight + MARGIN_BOTTOM) * activeIndex}px)`,
                     transitionDuration: `${transitionDuration}ms`,
                     transitionProperty: 'transform',
                 }}
@@ -113,7 +116,7 @@ const ScrollAlert: React.FC<ScrollAlertProps> = ({
                                 'scroll-virtual-item': !index && activeIndex === renderItems.length - 1,
                             })}
                             key={index}
-                            onClose={() => onCloseItemHandler(index)}
+                            onClose={() => handleCloseItem(index)}
                             ref={!index ? onFirstChildRef : undefined}
                         />
                     )
