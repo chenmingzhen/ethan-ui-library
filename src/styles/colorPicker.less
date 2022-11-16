@@ -4,6 +4,13 @@
 @colorPicker-prefix: ~'@{ethan-prefix}-colorPicker';
 
 .@{colorPicker-prefix} {
+    display: inline-block;
+
+    &-dropdown {
+        position: absolute;
+        z-index: @zindex-dropdown;
+    }
+
     &-preview-btn {
         height: 30px;
         border: 1px solid #d8d8d8;

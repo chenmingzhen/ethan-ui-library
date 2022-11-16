@@ -14,6 +14,7 @@ import { getDefaultColor } from './util'
 
 const ColorPicker: React.FC<ColorPickerProps> = function (props) {
     const {
+        absolute = true,
         size,
         disabled,
         className,
@@ -44,7 +45,7 @@ const ColorPicker: React.FC<ColorPickerProps> = function (props) {
         updateCurrentValue(value)
     }, [value])
 
-    const cls = classnames(className, colorPickerClass('_', 'preview-btn', size && size, disabled && 'disabled'))
+    const cls = classnames(className, colorPickerClass('preview-btn', size && size, disabled && 'disabled'))
 
     const handleClickAway = useCallback((evt: MouseEvent) => {
         const desc = isDescendent(evt.target as HTMLElement, colorPickerId)
@@ -94,12 +95,17 @@ const ColorPicker: React.FC<ColorPickerProps> = function (props) {
         isRenderRef.current = true
 
         return (
-            <AbsoluteList absolute focus={show} position={position} getParentElement={() => containerRef.current}>
+            <AbsoluteList
+                absolute={absolute}
+                focus={show}
+                position={position}
+                getParentElement={() => containerRef.current}
+            >
                 <AnimationList
                     lazyDom
                     show={show}
                     style={dropdownStyle}
-                    className={dropdownClassName}
+                    className={classnames(colorPickerClass('dropdown', dropdownClassName))}
                     animationTypes={['fade']}
                     duration="fast"
                     data-id={colorPickerId}
@@ -118,15 +124,17 @@ const ColorPicker: React.FC<ColorPickerProps> = function (props) {
     }
 
     return (
-        <div className={cls} style={style} ref={containerRef} data-id={colorPickerId}>
-            <div className={colorPickerClass('result')} onClick={togglePanel}>
-                <div className={colorPickerClass('color')} style={{ backgroundColor: currentValue }} />
+        <div className={colorPickerClass('_')} ref={containerRef} data-id={colorPickerId}>
+            <div className={cls} style={style}>
+                <div className={colorPickerClass('result')} onClick={togglePanel}>
+                    <div className={colorPickerClass('color')} style={{ backgroundColor: currentValue }} />
+                </div>
+                {showIcon && (
+                    <span className={colorPickerClass('caret')} onClick={togglePanel}>
+                        <Caret />
+                    </span>
+                )}
             </div>
-            {showIcon && (
-                <span className={colorPickerClass('caret')} onClick={togglePanel}>
-                    <Caret />
-                </span>
-            )}
 
             {renderColorBoard()}
         </div>

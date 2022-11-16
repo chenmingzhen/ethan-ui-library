@@ -35,7 +35,7 @@ export interface AbsoluteListProps {
 }
 
 interface AbsoluteListState {
-    // 用于自动适应屏幕位置
+    /** 自动适应屏幕位置 */
     overDoc: boolean
 }
 
@@ -52,7 +52,7 @@ const REDUNDANT = 4
 function initRoot() {
     root = document.createElement('div')
 
-    root.className = 'ethan-absolute-root'
+    root.className = listClass('_')
 
     document.body.appendChild(root)
 }
@@ -203,9 +203,11 @@ export default class AbsoluteList extends Component<AbsoluteListProps, AbsoluteL
     renderChildren = () => {
         const { zIndex, children, absolute } = this.props
 
+        const childrenStyle = (children as any)?.props?.style ?? {}
+
         const ms: React.CSSProperties = Object.assign(
             { zIndex },
-            (children as any)?.props?.style ?? {},
+            childrenStyle,
             this.style,
             this.props.style,
             this.state.overDoc ? { right: 0, left: 'auto' } : undefined
@@ -220,7 +222,9 @@ export default class AbsoluteList extends Component<AbsoluteListProps, AbsoluteL
         }
 
         if (isValidElement<any>(children)) {
-            return React.cloneElement(children, { style: absolute ? ms : this.props.style })
+            return React.cloneElement(children, {
+                style: absolute ? ms : Object.assign({}, this.props.style, childrenStyle),
+            })
         }
 
         throw new Error('Expect children is a validElement')
