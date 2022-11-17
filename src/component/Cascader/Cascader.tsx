@@ -5,9 +5,10 @@ import { getUidStr } from '@/utils/uid'
 import TreeDatum, { KeygenParams } from '@/utils/Datum/Tree'
 import { cascaderClass, selectClass } from '@/styles'
 import { docSize } from '@/utils/dom/document'
-import { addResizeObserver, isDescendent } from '@/utils/dom/element'
+import { isDescendent } from '@/utils/dom/element'
 import { runInNextFrame } from '@/utils/nextFrame'
-import { throttleWrapper } from '@/utils/lazyload'
+import { getLocale } from '@/locale'
+import { KeyboardKey } from '@/utils/keyboard'
 import Result from './Result'
 import CascaderList from './List'
 import { CascaderState, CascaderProps } from './type'
@@ -21,6 +22,7 @@ class Cascader<T> extends PureComponent<CascaderProps, CascaderState> {
         height: 300,
         data: [],
         childrenKey: 'children',
+        text: {},
     }
 
     datum: TreeDatum
@@ -31,10 +33,6 @@ class Cascader<T> extends PureComponent<CascaderProps, CascaderState> {
 
     containerElementRef = React.createRef<HTMLDivElement>()
 
-    list: HTMLDivElement
-
-    cancelResizeObserver: () => void
-
     constructor(props) {
         super(props)
 
@@ -42,7 +40,6 @@ class Cascader<T> extends PureComponent<CascaderProps, CascaderState> {
             focus: false,
             path: [],
             position: 'drop-down',
-            listStyle: props.data.length === 0 ? { height: 'auto', width: '100%' } : { height: props.height },
         }
 
         this.datum = new TreeDatum({
@@ -56,23 +53,16 @@ class Cascader<T> extends PureComponent<CascaderProps, CascaderState> {
     }
 
     componentDidMount() {
-        this.cancelResizeObserver = addResizeObserver(
-            this.containerElementRef.current,
-            throttleWrapper(this.resetListStyle),
-            { direction: 'x' }
-        )
+        super.componentDidMount()
+
+        /** 更新无数据的DOM宽度 */
+        if (!this.props.data?.length) this.forceUpdate()
     }
 
     componentDidUpdate(prevProps: CascaderProps) {
-        this.resetListStyle()
-
         if (prevProps.value !== this.props.value) this.datum.setValue(this.props.value || [])
 
         if (prevProps.data !== this.props.data) this.datum.setData(this.props.data)
-    }
-
-    componentWillUnmount() {
-        this.cancelResizeObserver()
     }
 
     keygen = ({ data, parentKey = '', index }: KeygenParams) => {
@@ -104,13 +94,11 @@ class Cascader<T> extends PureComponent<CascaderProps, CascaderState> {
     }
 
     handleKeyDown: React.KeyboardEventHandler<HTMLDivElement> = (e) => {
-        if (e.keyCode === 13) {
+        if (e.key === KeyboardKey.Enter) {
             e.preventDefault()
 
             this.handleFocusChange(!this.state.focus)
-        }
-
-        if (e.keyCode === 9) {
+        } else if (e.key === KeyboardKey.Escape) {
             this.props.onBlur()
 
             if (this.state.focus) {
@@ -178,45 +166,12 @@ class Cascader<T> extends PureComponent<CascaderProps, CascaderState> {
         this.setState({ path: [...path, id] })
     }
 
-    resetListStyle = () => {
-        if (!this.list) return
-
-        const element = this.list
-
-        const { listStyle } = this.state
-
-        const { data, height } = this.props
-
-        const { width } = element.getBoundingClientRect()
-
-        /** 不能直接使用element的left，因为它会变，导致反复渲染 */
-        const { left } = this.containerElementRef.current.getBoundingClientRect()
-
-        if (data.length === 0) {
-            if (listStyle.height === 'auto') return
-
-            /** 无数据时，不需要固定高度 直接让placeholder的高度撑开 */
-            this.setState({ listStyle: { height: 'auto', width: '100%' } })
-
-            return
-        }
-
-        /** 清除从无数据到有数据中 lisStyle中的width 100% */
-        if (listStyle.width === '100%') this.setState({ listStyle: { height } })
-
-        if (left + width > docSize.width) {
-            if (listStyle.left === 'auto') return
-
-            this.setState({ listStyle: { height, left: 'auto', right: 0 } })
-        } else {
-            if (listStyle.right === undefined) return
-
-            this.setState({ listStyle: { height } })
-        }
-    }
-
     renderList = () => {
         const { data, renderItem, mode, onChange, loader, onItemClick, expandTrigger, childrenKey, text } = this.props
+
+        if (!data?.length) {
+            return <span>{text?.noData || getLocale('noData')}</span>
+        }
 
         const { path } = this.state
 
@@ -268,8 +223,8 @@ class Cascader<T> extends PureComponent<CascaderProps, CascaderState> {
     }
 
     renderAbsoluteList = () => {
-        const { zIndex, absolute } = this.props
-        const { focus, position, listStyle } = this.state
+        const { zIndex, absolute, data } = this.props
+        const { focus, position } = this.state
 
         if (!focus && !this.isRendered) return null
 
@@ -277,7 +232,15 @@ class Cascader<T> extends PureComponent<CascaderProps, CascaderState> {
 
         const absoluteRootCls = classnames(cascaderClass(focus && 'focus'), selectClass(this.state.position))
 
-        const className = classnames(selectClass('options'), cascaderClass('options'))
+        const className = classnames(selectClass('options'), cascaderClass('options', !data?.length && 'no-data'))
+
+        let width
+
+        if (!data?.length) {
+            width = this.containerElementRef.current
+                ? this.containerElementRef.current.getBoundingClientRect().width
+                : 0
+        }
 
         return (
             <AbsoluteList
@@ -287,29 +250,19 @@ class Cascader<T> extends PureComponent<CascaderProps, CascaderState> {
                 focus={focus}
                 getParentElement={() => this.containerElementRef.current}
                 zIndex={zIndex}
+                style={{ width }}
             >
-                {({ style }) => {
-                    const ms = Object.assign({}, style, listStyle)
-
-                    return (
-                        <AnimationList
-                            lazyDom
-                            style={ms}
-                            show={focus}
-                            data-id={this.cascaderId}
-                            className={className}
-                            animationTypes={['fade', 'scale-y']}
-                            duration="fast"
-                            display="inline-flex"
-                            getRef={(list) => {
-                                this.list = list
-                            }}
-                            onTransitionEnd={this.resetListStyle}
-                        >
-                            {this.renderList()}
-                        </AnimationList>
-                    )
-                }}
+                <AnimationList
+                    lazyDom
+                    show={focus}
+                    data-id={this.cascaderId}
+                    className={className}
+                    animationTypes={['fade', 'scale-y']}
+                    duration="fast"
+                    display="inline-flex"
+                >
+                    {this.renderList()}
+                </AnimationList>
             </AbsoluteList>
         )
     }

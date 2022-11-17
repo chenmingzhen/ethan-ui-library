@@ -6,7 +6,6 @@ export interface CascaderState {
     focus: boolean
     path: React.Key[]
     position: CascaderProps['position']
-    listStyle: React.CSSProperties
 }
 
 export interface CascaderProps<T = any> {
@@ -47,7 +46,6 @@ export interface CascaderListProps extends Omit<CascaderNodeProps, 'active' | 'i
     data: CascaderProps['data']
     currentPathActiveId: React.Key
     parentId: React.Key
-    text: CascaderProps['text']
     keygen: TreeDatumOptions['keygen']
 }
 

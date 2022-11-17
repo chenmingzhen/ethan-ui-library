@@ -5,10 +5,7 @@ import Node from './Node'
 import { CascaderListProps } from './type'
 
 const CascaderList: React.FC<CascaderListProps> = (props) => {
-    const { data, text, currentPathActiveId, keygen, parentId, ...other } = props
-
-    if (!data || data.length === 0)
-        return <span className={cascaderClass('no-data')}>{text.noData || getLocale('noData')}</span>
+    const { data, currentPathActiveId, keygen, parentId, ...other } = props
 
     return (
         <div className={cascaderClass('list')}>
@@ -24,7 +21,6 @@ const CascaderList: React.FC<CascaderListProps> = (props) => {
 CascaderList.defaultProps = {
     currentPathActiveId: '',
     parentId: '',
-    text: {},
 }
 
 export default React.memo(CascaderList)
