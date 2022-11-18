@@ -63,6 +63,7 @@ export interface SelectProps<D extends SelectBaseData = DefaultSelectDefaultData
     columnWidth?: number
     format?: keyof D
     className?: string
+    width?: number
 }
 
 export interface SelectState {

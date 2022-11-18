@@ -1,4 +1,4 @@
-# Dropdown *下拉菜单*
+# Dropdown _下拉菜单_
 
 <example />
 
@@ -6,34 +6,26 @@
 
 ### Dropdown
 
-| 属性 | 类型 | 默认值 | 说明 |
-| --- | --- | --- | --- |
-| className | string | 无 | 扩展className |
-| columns | number | 无 | 页面多元素展示,此属性需要依赖width属性,请合理的设置列数和宽度 |
-| data | object[] | 必填 | 下拉数据，详见data |
-| disabled | boolean | false | 禁用 |
-| onClick | (data: object) => void | 无 | 点击事件。参数为渲染的数据, <br /> 注: 如果数据内设置了onClick，会忽略此方法，调用data.onClick |
-| placeholder | string \| ReactNode | 必填 | 按钮显示内容 |
-| renderItem | (data: object) => ReactNode \| string | 'content' | 设置显示的内容,如果是字符串,则为对应的值<br />如果是函数,则返回值为显示的内容,参数为当条数据 |
-| buttonProps | ButtonProps | 无 | 同 [Button](/components/Button) |
-| trigger | 'click' \| 'hover' | 'click' | 触发方式 |
-| width | number | 无 | 弹出选项层的宽度 |
-| animation | boolean | true | 是否开启动画 |
-| position | string | 'auto' | 位置，可选值:'right-top'\|'bottom-left'\|'bottom-right'\|'left-top'\|'right-bottom'\|'top-left'\|'top-right'\|'left-bottom'\|'auto'|
+| 属性        | 类型                                  | 默认值    | 说明                                                                                                                                |
+| ----------- | ------------------------------------- | --------- | ----------------------------------------------------------------------------------------------------------------------------------- |
+| className   | string                                | -         | 扩展 className                                                                                                                      |
+| columns     | number                                | -         | 页面多元素展示,此属性需要依赖 width 属性,请合理的设置列数和宽度                                                                     |
+| data        | object[]                              | 必填      | 下拉数据，详见 data                                                                                                                 |
+| disabled    | boolean                               | false     | 禁用                                                                                                                                |
+| onClick     | (data: object) => void                | -         | 点击事件。参数为渲染的数据, <br /> 注: 如果数据内设置了 onClick，会忽略此方法，调用 data.onClick                                    |
+| placeholder | string \| ReactNode                   | 必填      | 按钮显示内容                                                                                                                        |
+| renderItem  | (data: object) => ReactNode \| string | 'content' | 设置显示的内容,如果是字符串,则为对应的值<br />如果是函数,则返回值为显示的内容,参数为当条数据                                        |
+| buttonProps | ButtonProps                           | -         | 同 [Button](/components/Button)                                                                                                     |
+| trigger     | 'click' \| 'hover'                    | 'click'   | 触发方式                                                                                                                            |
+| width       | number                                | -         | 弹出选项层的宽度                                                                                                                    |
+| animation   | boolean                               | true      | 是否开启动画                                                                                                                        |
+| position    | string                                | 'auto'    | 位置，可选值:'right-top'\|'bottom-left'\|'bottom-right'\|'left-top'\|'right-bottom'\|'top-left'\|'top-right'\|'left-bottom'\|'auto' |
+| showCaret   | boolean                               | true      | 是否显示箭头                                                                                                                        |
 
 ### DropdownData
 
-data 选项有三种情况：
-
-- 为 ReactElement 时，直接显示此元素。
-
-- 为 object 且设置了 renderItem，显示 renderItem 返回的内容。
-
-- 为 object 且未设置 renderItem，按以下数据结构处理。
-
-| 属性 | 类型 | 默认值 | 说明 |
-| --- | --- | --- | --- |
-| content | string \| element | | 默认从content获取内容 |
-| url | string | 无 | url属性不为空时，render为一个链接 |
-| target | string | 无 | url 不为空时有效 |
-| onClick | function | 无 | 点击事件 |
+| 属性     | 类型              | 默认值 | 说明                    |
+| -------- | ----------------- | ------ | ----------------------- |
+| content  | string \| element | -      | 默认从 content 获取内容 |
+| key      | string \| number  | -      | 唯一键                  |
+| disabled | boolean           | false  | 是否禁用                |

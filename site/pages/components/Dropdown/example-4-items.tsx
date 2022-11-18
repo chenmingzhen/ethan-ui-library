@@ -11,7 +11,7 @@ export default function () {
     const menu = []
     for (let i = 1; i <= 30; i++) {
         menu.push({
-            id: `${i}`,
+            key: `${i}`,
             content: `item${i}`,
         })
     }

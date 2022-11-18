@@ -200,6 +200,12 @@ const Header: React.FC<TabsHeaderProps> = (props) => {
         computedAttribute(data)
     }
 
+    function handleDropdownClick(tab) {
+        const method = tabMoveMap.get(tab.key)
+
+        method?.()
+    }
+
     function moveToCenter(tabRect: DOMRect, last: boolean, first: boolean) {
         const positions = isVertical ? ['top', 'bottom'] : ['left', 'right']
 
@@ -303,11 +309,10 @@ const Header: React.FC<TabsHeaderProps> = (props) => {
                         className={tabsClass('drop-down', isVertical && 'vertical')}
                         listClassName={tabsClass('drop-down-list')}
                         animation={false}
-                        renderPlaceholder={(_, onClick) => (
-                            <div className={tabsClass('more')} onClick={onClick}>
-                                {icons.Ellipsis}
-                            </div>
-                        )}
+                        onClick={handleDropdownClick}
+                        placeholder={<div className={tabsClass('more')}>{icons.Ellipsis}</div>}
+                        showCaret={false}
+                        buttonProps={{ type: 'link', style: { height: '100%', padding: 0, border: 0, width: '100%' } }}
                     />
                 )}
             </div>

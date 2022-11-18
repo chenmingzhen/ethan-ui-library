@@ -10,11 +10,15 @@ import { Dropdown, Message, Button } from 'ethan-ui'
 const menu = [
     {
         content: 'First',
+        key: 'First',
     },
     {
-        content: 'Second',
-        target: '_blank',
-        url: 'http://www.google.com',
+        content: (
+            <a target="blank" href="http://www.google.com">
+                Second
+            </a>
+        ),
+        key: 'Second',
     },
 ]
 

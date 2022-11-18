@@ -5,28 +5,32 @@
  *    -- Button style
  */
 import React, { Component } from 'react'
-import { Dropdown, Message, Select, Checkbox } from 'ethan-ui'
+import { Dropdown, Select, Checkbox } from 'ethan-ui'
 
 const menu = [
     {
         content: 'Submenu',
+        key: 'Submenu',
         children: [
             {
-                content: 'Link',
-                target: '_blank',
-                url: 'https://google.com',
+                content: (
+                    <a target="_blank" href="https://google.com" rel="noreferrer">
+                        Link to Google
+                    </a>
+                ),
+                key: 'Link to Google',
             },
             {
                 content: 'Disabled',
                 disabled: true,
+                key: 'Disabled',
             },
         ],
     },
+    { content: <a href="/">Home</a>, key: 'Home' },
     {
         content: 'Message',
-        onClick: () => {
-            Message.info('Some message.')
-        },
+        key: 'Message',
     },
 ]
 
@@ -54,7 +58,7 @@ export default class extends Component {
                     <Select
                         width={140}
                         keygen={(d) => d}
-                        data={['primary', 'success', 'warning', 'danger']}
+                        data={['primary', 'success', 'warning', 'danger', 'link']}
                         value={type}
                         onChange={this.changeSetting.bind(this, 'type')}
                         style={{ marginRight: 20 }}

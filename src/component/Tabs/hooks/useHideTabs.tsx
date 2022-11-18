@@ -1,4 +1,4 @@
-import { ComplicatedDropDownData } from '@/component/Dropdown/type'
+import { DropDownData } from '@/component/Dropdown/type'
 import React, { useState, useEffect, useRef, useMemo } from 'react'
 import { useTimeoutFn } from 'react-use'
 import { Tab, TabMoveMap } from '../type'
@@ -24,16 +24,12 @@ const useHideTabs = (props: UseHideTabsParams) => {
 
     const tabMoveMap = useRef<TabMoveMap>(new Map()).current
 
-    const dropDownData: ComplicatedDropDownData[] = useMemo(
+    const dropDownData: DropDownData[] = useMemo(
         () =>
             hideTabs.map((tab) => ({
                 content: tab.tab,
                 disabled: tab.disabled,
-                onClick() {
-                    const method = tabMoveMap.get(tab.id)
-
-                    method?.()
-                },
+                key: tab.id,
             })),
         [hideTabs]
     )

@@ -5,29 +5,32 @@
  *    -- If the parent container of the pop-up layer is occluded, you can set the absolute property to make the pop-up options rendered in a separate layer.
  */
 import React from 'react'
-import { Dropdown, Message } from 'ethan-ui'
+import { Dropdown } from 'ethan-ui'
 
 const data = [
     {
         content: 'Submenu',
+        key: 'Submenu',
         children: [
             {
-                content: 'Link to Google',
-                target: '_blank',
-                url: 'https://google.com',
+                content: (
+                    <a target="_blank" href="https://google.com" rel="noreferrer">
+                        Link to Google
+                    </a>
+                ),
+                key: 'Link to Google',
             },
             {
                 content: 'Disabled',
                 disabled: true,
+                key: 'Disabled',
             },
         ],
     },
-    <a href="/">Home</a>,
+    { content: <a href="/">Home</a>, key: 'Home' },
     {
         content: 'Message',
-        onClick: () => {
-            Message.info('Some message.')
-        },
+        key: 'Message',
     },
 ]
 

@@ -11,25 +11,31 @@ export default function () {
     const menu = [
         {
             content: 'First',
-            id: '1',
+            key: '1',
             children: [
                 {
-                    id: '3',
+                    key: '3',
                     content: 'optic 1',
+                    children: [
+                        {
+                            key: '7',
+                            content: 'topic 3',
+                        },
+                    ],
                 },
             ],
         },
         {
             content: 'Second',
-            url: 'http://www.google.com',
-            id: '2',
+            key: '2',
             children: [
                 {
                     content: 'topic 2',
-                    id: 4,
+                    key: '4',
+                    disabled: true,
                     children: [
                         {
-                            id: '6',
+                            key: '6',
                             content: 'topic 3',
                         },
                     ],

@@ -20,6 +20,8 @@ export interface ListProps extends React.DetailedHTMLProps<React.HTMLAttributes<
 
     duration?: 'fast' | 'slow' | number
 
+    tag?: keyof HTMLElementTagNameMap
+
     /** AnimationList是否一开始就存在于DOM中,懒加载的需要设置该值  */
     lazyDom?: boolean
 
@@ -49,12 +51,13 @@ const transformDuration = (duration: string | number) => {
 type AnimationType = 'fade' | 'collapse' | 'scale-y'
 
 export default class AnimationList extends React.PureComponent<ListProps> {
-    element: HTMLDivElement
+    element: HTMLElement
 
     timer: NodeJS.Timer
 
     static defaultProps = {
         display: 'block',
+        tag: 'div',
     }
 
     get hasAnimation() {
@@ -322,7 +325,7 @@ export default class AnimationList extends React.PureComponent<ListProps> {
     }
 
     render() {
-        const { show, getRef, style = {}, animationTypes, duration, lazyDom, ...other } = this.props
+        const { show, getRef, style = {}, animationTypes, duration, lazyDom, tag, ...other } = this.props
 
         let animation = `animation-${this.duration}`
 
@@ -338,6 +341,8 @@ export default class AnimationList extends React.PureComponent<ListProps> {
 
         const ms = Object.assign({}, style)
 
-        return <div {...cleanProps(other)} ref={this.bindListElement} className={className} style={ms} />
+        const Tag = tag as React.ElementType
+
+        return <Tag {...cleanProps(other)} ref={this.bindListElement} className={className} style={ms} />
     }
 }

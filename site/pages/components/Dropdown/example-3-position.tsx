@@ -13,40 +13,36 @@ export default function () {
     const menu = [
         {
             content: 'First',
-            id: '1',
+            key: '1',
             children: [
                 {
                     content: 'link1',
-                    id: '4',
+                    key: '4',
                 },
                 {
                     content: 'link2',
-                    id: '5',
+                    key: '5',
                 },
             ],
         },
         {
             content: 'Second',
-            url: 'http://www.google.com',
-            id: '2',
+            key: '2',
             children: [
                 {
                     content: 'link3',
-                    id: 6,
-                    onClick: () => {
-                        console.log('this is special')
-                    },
+                    key: 6,
                 },
                 {
                     content: 'link4',
-                    id: 7,
+                    key: 7,
                     children: [
                         {
-                            id: '8',
+                            key: '8',
                             content: 'link5',
                         },
                         {
-                            id: '9',
+                            key: '9',
                             content: 'link6',
                         },
                     ],

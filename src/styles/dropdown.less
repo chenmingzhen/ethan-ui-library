@@ -128,10 +128,10 @@
         color: @dropdown-link-color;
         line-height: @line-height-base;
         text-decoration: none;
+        cursor: pointer;
 
-        a&[disabled] {
-            color: @gray-400;
-            cursor: not-allowed;
+        a {
+            color: initial;
         }
 
         &:first-child {
@@ -144,8 +144,8 @@
             border-bottom-right-radius: @border-radius-base;
         }
 
-        &:hover,
-        &.@{dropdown-prefix}-active {
+        &:hover:not(.@{dropdown-prefix}-disabled),
+        &.@{dropdown-prefix}-active:not(.@{dropdown-prefix}-disabled) {
             background-color: @dropdown-link-hover-bg;
             color: @dropdown-link-hover-color;
             fill: @dropdown-link-hover-color;
@@ -153,6 +153,15 @@
 
         &:focus {
             text-decoration: none;
+        }
+
+        &.@{dropdown-prefix}-disabled {
+            &,
+            * {
+                color: @gray-400;
+                cursor: not-allowed;
+                fill: @gray-400;
+            }
         }
     }
 
