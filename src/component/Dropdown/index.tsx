@@ -10,7 +10,7 @@ import AnimationList, { FAST_TRANSITION_DURATION } from '../List'
 import AbsoluteList from '../List/AbsoluteList'
 import Caret from '../icons/Caret'
 import Position from './enum/Position'
-import { DropDownData, IDropDownProps } from './type'
+import { DropDownData, DropDownProps, IDropDownProps } from './type'
 
 interface DropdownState {
     show: boolean
@@ -34,6 +34,16 @@ class Dropdown extends PureComponent<IDropDownProps, DropdownState> {
         showCaret: true,
     }
 
+    static getDerivedStateFromProps(nextProps: IDropDownProps, prevState: DropdownState) {
+        return {
+            show: nextProps.visible ?? prevState.show,
+        }
+    }
+
+    get hasVisible() {
+        return 'visible' in this.props
+    }
+
     get position() {
         let pos: string = this.props.position
 
@@ -51,12 +61,30 @@ class Dropdown extends PureComponent<IDropDownProps, DropdownState> {
         return pos as IDropDownProps['position']
     }
 
-    constructor(props) {
+    constructor(props: IDropDownProps) {
         super(props)
 
         this.state = {
-            show: false,
+            show: props.visible || false,
         }
+    }
+
+    componentDidMount() {
+        super.componentDidMount()
+
+        if (this.props.visible) {
+            this.toggleDocumentEvent(true)
+        }
+
+        if (this.state.show) {
+            this.setShow(true)
+        }
+    }
+
+    componentWillUnmount() {
+        super.componentWillUnmount()
+
+        this.toggleDocumentEvent(false)
     }
 
     clickAway = (e: MouseEvent) => {
@@ -73,8 +101,12 @@ class Dropdown extends PureComponent<IDropDownProps, DropdownState> {
         document[method]('click', this.clickAway)
     }
 
+    setShow = (show: boolean) => {
+        this.setState({ show })
+    }
+
     handleShow = () => {
-        const { trigger, disabled } = this.props
+        const { trigger, disabled, onVisibleChange } = this.props
         const { show } = this.state
 
         if (this.timer) {
@@ -82,15 +114,20 @@ class Dropdown extends PureComponent<IDropDownProps, DropdownState> {
 
             this.timer = null
         }
+
+        if (onVisibleChange) {
+            onVisibleChange(true)
+        }
+
         if (disabled || show) return
 
-        this.setState({ show: true })
+        this.setShow(true)
 
         trigger === 'click' && this.toggleDocumentEvent(true)
     }
 
     handleDelayToHide = () => {
-        const { trigger } = this.props
+        const { trigger, onVisibleChange } = this.props
 
         if (this.timer) {
             clearTimeout(this.timer)
@@ -98,19 +135,29 @@ class Dropdown extends PureComponent<IDropDownProps, DropdownState> {
             this.timer = null
         }
 
-        if (!this.state.show) return
+        if (onVisibleChange) {
+            onVisibleChange(false)
+        }
+
+        if (!this.state.show || this.hasVisible) return
 
         this.timer = setTimeout(() => {
-            this.setState({ show: false })
+            this.setShow(false)
 
             trigger === 'click' && this.toggleDocumentEvent(false)
         }, FAST_TRANSITION_DURATION)
     }
 
     handleQuickHide = () => {
-        const { trigger } = this.props
+        const { trigger, onVisibleChange } = this.props
 
-        this.setState({ show: false })
+        if (onVisibleChange) {
+            onVisibleChange(false)
+        }
+
+        if (this.hasVisible) return
+
+        this.setShow(false)
 
         trigger === 'click' && this.toggleDocumentEvent(false)
     }
@@ -118,15 +165,17 @@ class Dropdown extends PureComponent<IDropDownProps, DropdownState> {
     handleDropdownClick = (itemData: DropDownData) => {
         const { onClick, clickHoverItemDismiss } = this.props
 
-        if (itemData.disabled || !onClick) return
+        if (itemData.disabled) return
 
-        onClick(itemData)
+        if (onClick) onClick(itemData)
 
-        this.handleQuickHide()
+        if (!this.hasVisible) {
+            this.handleQuickHide()
 
-        /** hover模式下 点击Item，顶层的Dropdown需要立即消失，而非clickaway事件驱动消失 */
-        if (clickHoverItemDismiss) {
-            clickHoverItemDismiss()
+            /** hover模式下 点击Item，顶层的Dropdown需要立即消失，而非clickaway事件驱动消失 */
+            if (clickHoverItemDismiss) {
+                clickHoverItemDismiss()
+            }
         }
     }
 
@@ -271,4 +320,4 @@ class Dropdown extends PureComponent<IDropDownProps, DropdownState> {
     }
 }
 
-export default Dropdown
+export default Dropdown as unknown as React.ClassicComponentClass<DropDownProps>

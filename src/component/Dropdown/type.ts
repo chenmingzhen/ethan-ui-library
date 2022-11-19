@@ -17,6 +17,8 @@ export interface DropDownProps {
     absolute?: boolean
     placeholder?: React.ReactNode
     className?: string
+    visible?: boolean
+    onVisibleChange?(visible: boolean): void
     type?:
         | 'primary'
         | 'default'
