@@ -56,4 +56,6 @@ export interface DropDownProps {
 
 export interface IDropDownProps extends DropDownProps {
     isSub?: boolean
+
+    clickHoverItemDismiss?(): void
 }

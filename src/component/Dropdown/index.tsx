@@ -1,130 +1,145 @@
-import React, { useCallback, useRef } from 'react'
-import useSafeState from '@/hooks/useSafeState'
+import React, { createRef } from 'react'
 import { isDescendent } from '@/utils/dom/element'
 import { dropdownClass } from '@/styles'
 import { docSize } from '@/utils/dom/document'
 import { getUidStr } from '@/utils/uid'
 import classnames from 'classnames'
+import { PureComponent } from '@/utils/component'
 import Button from '../Button'
-import AnimationList from '../List'
+import AnimationList, { FAST_TRANSITION_DURATION } from '../List'
 import AbsoluteList from '../List/AbsoluteList'
 import Caret from '../icons/Caret'
 import Position from './enum/Position'
-import { IDropDownProps } from './type'
+import { DropDownData, IDropDownProps } from './type'
 
-const Dropdown: React.FC<IDropDownProps> = (props) => {
-    const {
-        animation,
-        placeholder,
-        className,
-        style,
-        trigger,
-        data,
-        width,
-        onClick,
-        columns,
-        renderItem,
-        absolute,
-        listClassName,
-        isSub,
-        disabled,
-        buttonProps,
-        showCaret = true,
-    } = props
-    const [show, updateShow] = useSafeState(false)
-    const dropdownParentElementRef = useRef<HTMLDivElement>()
-    const animationListRef = useRef<HTMLDivElement>()
-    const dropdownId = useRef(getUidStr()).current
-    const isRendered = useRef(false)
-    const timer = useRef<NodeJS.Timeout>()
-    const position = (() => {
-        let pos: string = props.position
+interface DropdownState {
+    show: boolean
+}
+
+class Dropdown extends PureComponent<IDropDownProps, DropdownState> {
+    dropdownParentElementRef = createRef<HTMLDivElement>()
+
+    dropdownId = getUidStr()
+
+    timer: NodeJS.Timeout
+
+    isRendered = false
+
+    static defaultProps = {
+        disabled: false,
+        data: [],
+        trigger: 'click',
+        animation: true,
+        position: 'auto',
+        showCaret: true,
+    }
+
+    get position() {
+        let pos: string = this.props.position
 
         if (pos !== 'auto') return pos
-        if (!dropdownParentElementRef.current) return 'bottom-left'
+        if (!this.dropdownParentElementRef.current) return 'bottom-left'
 
         /** 如果position是auto 计算位置给出最合适的position */
         const windowHeight = docSize.height
         const windowWidth = docSize.width
-        const rect = dropdownParentElementRef.current.getBoundingClientRect()
+        const rect = this.dropdownParentElementRef.current.getBoundingClientRect()
 
         pos = rect.bottom > windowHeight / 2 ? 'top-' : 'bottom-'
         pos += rect.right > windowWidth / 2 ? 'right' : 'left'
 
         return pos as IDropDownProps['position']
-    })()
+    }
 
-    const handleHide = useCallback(
-        (delay = 240) => {
-            const dismiss = () => {
-                updateShow(false)
+    constructor(props) {
+        super(props)
 
-                if (trigger === 'click') {
-                    toggleDocumentEvent(false)
-                }
-            }
-
-            timer.current = setTimeout(dismiss, delay)
-        },
-        [trigger, show]
-    )
-
-    const clickAway = useCallback(
-        (e: MouseEvent) => {
-            const desc = isDescendent(e.target as HTMLElement, dropdownId)
-
-            if (desc) return
-
-            handleHide(0)
-        },
-        [handleHide]
-    )
-
-    const toggleDocumentEvent = useCallback(
-        (isBind: boolean) => {
-            const method = isBind ? 'addEventListener' : 'removeEventListener'
-
-            setTimeout(() => {
-                document[method]('click', clickAway)
-            })
-        },
-        [clickAway]
-    )
-
-    const handleShow = useCallback(() => {
-        if (timer.current) {
-            clearTimeout(timer.current)
+        this.state = {
+            show: false,
         }
-        if (disabled) return
+    }
 
-        if (show) return
+    clickAway = (e: MouseEvent) => {
+        const desc = isDescendent(e.target as HTMLElement, this.dropdownId)
 
-        updateShow(true)
+        if (desc) return
 
-        if (trigger === 'click') {
-            toggleDocumentEvent(true)
+        this.handleQuickHide()
+    }
+
+    toggleDocumentEvent = (isBind: boolean) => {
+        const method = isBind ? 'addEventListener' : 'removeEventListener'
+
+        document[method]('click', this.clickAway)
+    }
+
+    handleShow = () => {
+        const { trigger, disabled } = this.props
+        const { show } = this.state
+
+        if (this.timer) {
+            clearTimeout(this.timer)
+
+            this.timer = null
         }
-    }, [show, disabled, toggleDocumentEvent])
+        if (disabled || show) return
 
-    const handleDropdownClick = useCallback(
-        (itemData) => {
-            if (itemData.disabled || !onClick) return
+        this.setState({ show: true })
 
-            onClick(itemData)
+        trigger === 'click' && this.toggleDocumentEvent(true)
+    }
 
-            handleHide(0)
-        },
-        [onClick]
-    )
+    handleDelayToHide = () => {
+        const { trigger } = this.props
 
-    function renderButton() {
+        if (this.timer) {
+            clearTimeout(this.timer)
+
+            this.timer = null
+        }
+
+        if (!this.state.show) return
+
+        this.timer = setTimeout(() => {
+            this.setState({ show: false })
+
+            trigger === 'click' && this.toggleDocumentEvent(false)
+        }, FAST_TRANSITION_DURATION)
+    }
+
+    handleQuickHide = () => {
+        const { trigger } = this.props
+
+        this.setState({ show: false })
+
+        trigger === 'click' && this.toggleDocumentEvent(false)
+    }
+
+    handleDropdownClick = (itemData: DropDownData) => {
+        const { onClick, clickHoverItemDismiss } = this.props
+
+        if (itemData.disabled || !onClick) return
+
+        onClick(itemData)
+
+        this.handleQuickHide()
+
+        /** hover模式下 点击Item，顶层的Dropdown需要立即消失，而非clickaway事件驱动消失 */
+        if (clickHoverItemDismiss) {
+            clickHoverItemDismiss()
+        }
+    }
+
+    renderButton = () => {
+        const { isSub, disabled, showCaret, placeholder, buttonProps } = this.props
+        const { show } = this.state
         const spanClassName = dropdownClass('button-content')
 
         if (isSub) {
             return (
                 <span
                     className={dropdownClass('button', 'item', show && 'active', disabled && 'disabled')}
-                    onClick={handleShow}
+                    onClick={this.handleShow}
                     key="button"
                 >
                     <span className={spanClassName}>{placeholder}</span>
@@ -141,7 +156,7 @@ const Dropdown: React.FC<IDropDownProps> = (props) => {
         return (
             <Button
                 disabled={disabled}
-                onClick={handleShow}
+                onClick={this.handleShow}
                 className={dropdownClass('button')}
                 key="button"
                 {...buttonProps}
@@ -156,24 +171,26 @@ const Dropdown: React.FC<IDropDownProps> = (props) => {
         )
     }
 
-    function renderList() {
-        if (!Array.isArray(data) || data.length === 0) return null
-        if (!isRendered.current && !show) return renderButton()
+    renderList = () => {
+        const { data, absolute, width, animation, columns, listClassName, showCaret, trigger, renderItem } = this.props
+        const { show } = this.state
 
-        isRendered.current = true
+        if (!Array.isArray(data) || data.length === 0) return null
+        if (!this.isRendered && !show) return this.renderButton()
+
+        this.isRendered = true
 
         return (
             <>
                 <AbsoluteList
                     focus={show}
                     absolute={absolute}
-                    getParentElement={() => dropdownParentElementRef.current}
-                    getListElement={() => animationListRef.current}
-                    position={position}
+                    getParentElement={() => this.dropdownParentElementRef.current}
+                    position={this.position}
                     style={{ width }}
                     fixed="min"
                 >
-                    {({ style: absoluteStyle, resetPosition }) => (
+                    {({ style: absoluteStyle }) => (
                         /** 嵌套的Dropdown的absolute均为false */
                         <AnimationList
                             lazyDom
@@ -182,13 +199,11 @@ const Dropdown: React.FC<IDropDownProps> = (props) => {
                             style={absoluteStyle}
                             className={classnames(dropdownClass('menu', columns > 1 && 'box-list'), listClassName)}
                             animationTypes={['fade']}
-                            data-id={dropdownId}
+                            data-id={this.dropdownId}
                             duration={animation ? 'fast' : 0}
-                            getRef={(list) => (animationListRef.current = list)}
-                            onTransitionEnd={resetPosition}
                         >
                             {data.map((d) => {
-                                const childPosition = Position[position]
+                                const childPosition = Position[this.position]
 
                                 if (d.children) {
                                     return (
@@ -201,9 +216,10 @@ const Dropdown: React.FC<IDropDownProps> = (props) => {
                                             placeholder={d.content}
                                             key={d.key}
                                             position={childPosition}
-                                            onClick={handleDropdownClick.bind(this, d)}
+                                            onClick={this.handleDropdownClick.bind(this, d)}
                                             renderItem={renderItem}
                                             trigger={trigger}
+                                            clickHoverItemDismiss={trigger === 'hover' && this.handleQuickHide}
                                         />
                                     )
                                 }
@@ -219,7 +235,7 @@ const Dropdown: React.FC<IDropDownProps> = (props) => {
                                 return (
                                     <li
                                         data-rote="dropdown-leaf"
-                                        onClick={handleDropdownClick.bind(this, d)}
+                                        onClick={this.handleDropdownClick.bind(this, d)}
                                         className={itemClassName}
                                         style={itemStyle}
                                         key={d.key}
@@ -232,33 +248,27 @@ const Dropdown: React.FC<IDropDownProps> = (props) => {
                     )}
                 </AbsoluteList>
 
-                {renderButton()}
+                {this.renderButton()}
             </>
         )
     }
 
-    return (
-        <div
-            ref={dropdownParentElementRef}
-            className={classnames(dropdownClass('_', position), className)}
-            style={style}
-            onMouseEnter={trigger !== 'click' ? handleShow : undefined}
-            onMouseLeave={trigger !== 'click' ? handleHide : undefined}
-            data-id={dropdownId}
-        >
-            {renderList()}
-        </div>
-    )
-}
+    render() {
+        const { className, style, trigger } = this.props
 
-Dropdown.defaultProps = {
-    disabled: false,
-    data: [],
-    trigger: 'click',
-    animation: true,
-    position: 'auto',
+        return (
+            <div
+                ref={this.dropdownParentElementRef}
+                className={classnames(dropdownClass('_', this.position), className)}
+                style={style}
+                onMouseEnter={trigger !== 'click' ? this.handleShow : undefined}
+                onMouseLeave={trigger !== 'click' ? this.handleDelayToHide : undefined}
+                data-id={this.dropdownId}
+            >
+                {this.renderList()}
+            </div>
+        )
+    }
 }
-
-Dropdown.displayName = 'EthanDropdown'
 
 export default Dropdown
