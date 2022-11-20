@@ -127,7 +127,13 @@ class Dropdown extends PureComponent<IDropDownProps, DropdownState> {
     }
 
     handleDelayToHide = () => {
-        const { trigger, onVisibleChange } = this.props
+        const { trigger, onVisibleChange, animation } = this.props
+
+        if (!animation) {
+            this.handleQuickHide()
+
+            return
+        }
 
         if (this.timer) {
             clearTimeout(this.timer)
@@ -229,6 +235,7 @@ class Dropdown extends PureComponent<IDropDownProps, DropdownState> {
 
         this.isRendered = true
 
+        /** 嵌套的Dropdown的absolute均为false,基于上一个Dropdown定位 */
         return (
             <>
                 <AbsoluteList
@@ -239,62 +246,54 @@ class Dropdown extends PureComponent<IDropDownProps, DropdownState> {
                     style={{ width }}
                     fixed="min"
                 >
-                    {({ style: absoluteStyle }) => (
-                        /** 嵌套的Dropdown的absolute均为false */
-                        <AnimationList
-                            lazyDom
-                            tag="ul"
-                            show={show}
-                            style={absoluteStyle}
-                            className={classnames(dropdownClass('menu', columns > 1 && 'box-list'), listClassName)}
-                            animationTypes={['fade']}
-                            data-id={this.dropdownId}
-                            duration={animation ? 'fast' : 0}
-                        >
-                            {data.map((d) => {
-                                const childPosition = Position[this.position]
+                    <AnimationList
+                        lazyDom
+                        tag="ul"
+                        show={show}
+                        className={classnames(dropdownClass('menu', columns > 1 && 'box-list'), listClassName)}
+                        animationTypes={['fade']}
+                        data-id={this.dropdownId}
+                        duration={animation ? 'fast' : 0}
+                    >
+                        {data.map((d) => {
+                            const childPosition = Position[this.position]
 
-                                if (d.children) {
-                                    return (
-                                        <Dropdown
-                                            isSub
-                                            showCaret={showCaret}
-                                            style={{ width: '100%' }}
-                                            data={d.children}
-                                            disabled={d.disabled}
-                                            placeholder={d.content}
-                                            key={d.key}
-                                            position={childPosition}
-                                            onClick={this.handleDropdownClick.bind(this, d)}
-                                            renderItem={renderItem}
-                                            trigger={trigger}
-                                            clickHoverItemDismiss={trigger === 'hover' && this.handleQuickHide}
-                                        />
-                                    )
-                                }
-
-                                const itemWidth = width && columns ? (width - 2) / columns : undefined
-                                const itemStyle = itemWidth ? { display: 'inline-block', width: itemWidth } : undefined
-                                const itemClassName = dropdownClass(
-                                    'item',
-                                    !width && 'no-width',
-                                    d.disabled && 'disabled'
-                                )
-
+                            if (d.children) {
                                 return (
-                                    <li
-                                        data-rote="dropdown-leaf"
-                                        onClick={this.handleDropdownClick.bind(this, d)}
-                                        className={itemClassName}
-                                        style={itemStyle}
+                                    <Dropdown
+                                        isSub
+                                        showCaret={showCaret}
+                                        style={{ width: '100%' }}
+                                        data={d.children}
+                                        disabled={d.disabled}
+                                        placeholder={d.content}
                                         key={d.key}
-                                    >
-                                        {d.content}
-                                    </li>
+                                        position={childPosition}
+                                        onClick={this.handleDropdownClick.bind(this, d)}
+                                        renderItem={renderItem}
+                                        trigger={trigger}
+                                        clickHoverItemDismiss={trigger === 'hover' && this.handleQuickHide}
+                                    />
                                 )
-                            })}
-                        </AnimationList>
-                    )}
+                            }
+
+                            const itemWidth = width && columns ? (width - 2) / columns : undefined
+                            const itemStyle = itemWidth ? { display: 'inline-block', width: itemWidth } : undefined
+                            const itemClassName = dropdownClass('item', !width && 'no-width', d.disabled && 'disabled')
+
+                            return (
+                                <li
+                                    data-rote="dropdown-leaf"
+                                    onClick={this.handleDropdownClick.bind(this, d)}
+                                    className={itemClassName}
+                                    style={itemStyle}
+                                    key={d.key}
+                                >
+                                    {d.content}
+                                </li>
+                            )
+                        })}
+                    </AnimationList>
                 </AbsoluteList>
 
                 {this.renderButton()}

@@ -2,6 +2,7 @@
 @import './themes/@{ethan-theme}.less';
 
 @dropdown-prefix: ~'@{ethan-prefix}-dropdown';
+@button-prefix: ~'@{ethan-prefix}-button';
 @dropdown-caret-size: 10px;
 
 .@{dropdown-prefix} {
@@ -10,6 +11,25 @@
 
     &-button {
         border-width: @dropdown-border-width;
+
+        &.@{button-prefix}-outline:not(.@{button-prefix}-link) {
+            &:not(.@{button-prefix}-disabled):hover span.@{dropdown-prefix}-caret,
+            &:not(.@{button-prefix}-disabled):active span.@{dropdown-prefix}-caret,
+            &:not(.@{button-prefix}-disabled):focus span.@{dropdown-prefix}-caret {
+                svg path {
+                    fill: white;
+                }
+            }
+        }
+
+        &.@{button-prefix}-link {
+            &:not(.@{button-prefix}-disabled) span.@{dropdown-prefix}-caret,
+            &:not(.@{button-prefix}-disabled):focus span.@{dropdown-prefix}-caret {
+                svg path {
+                    fill: @colors-primary;
+                }
+            }
+        }
     }
 
     .@{dropdown-prefix}-button span.@{dropdown-prefix}-caret {
@@ -50,7 +70,6 @@
     &-bottom-right {
         > .@{dropdown-prefix}-menu {
             top: 100%;
-            margin-top: 2px;
         }
     }
 
@@ -72,7 +91,6 @@
     &-top-right {
         > .@{dropdown-prefix}-menu {
             bottom: 100%;
-            margin-bottom: 2px;
         }
 
         > .@{dropdown-prefix}-button .@{dropdown-prefix}-caret {
@@ -95,7 +113,6 @@
 
         > .@{dropdown-prefix}-menu {
             right: 100%;
-            margin-right: 2px;
         }
 
         > .@{dropdown-prefix}-button .@{dropdown-prefix}-caret {
@@ -114,7 +131,6 @@
     &-right-top {
         > .@{dropdown-prefix}-menu {
             left: 100%;
-            margin-left: 2px;
         }
 
         > .@{dropdown-prefix}-button .@{dropdown-prefix}-caret {

@@ -20,11 +20,6 @@ const data = [
                 ),
                 key: 'Link to Google',
             },
-            {
-                content: 'Disabled',
-                key: 'Disabled',
-                children: [{ key: 3, content: '3' }],
-            },
         ],
     },
     { content: <a href="/">Home</a>, key: 'Home' },

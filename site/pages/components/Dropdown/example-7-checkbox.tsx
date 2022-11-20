@@ -1,48 +1,30 @@
 /**
- * cn - 基本用法
- *    -- Dropdown 通过数据来渲染，支持 json 格式数据、React 组件
- * en - Base
- *    -- Dropdown is rendered through data and supports json formatted data and React components.
+ * cn - 勾选框
+ *    -- Dropdown 配合 Checkbox 实现勾选效果
+ * en - Checkbox
+ *    -- Dropdown cooperates with Checkbox to achieve the check effect.
  */
-import React from 'react'
+import React, { useState } from 'react'
 import { Checkbox, Dropdown } from 'ethan-ui'
-
-function empty(e: React.MouseEvent<HTMLInputElement, MouseEvent>) {
-    e.stopPropagation()
-    e.preventDefault()
-}
 
 const data = [
     {
-        content: (
-            <Checkbox value="Submenu" onClick={empty}>
-                Submenu
-            </Checkbox>
-        ),
+        content: <Checkbox value="Submenu">Submenu</Checkbox>,
         key: 'Submenu',
     },
+    { content: <Checkbox value="Home">Home</Checkbox>, key: 'Home' },
     {
-        content: (
-            <Checkbox value="Home" onClick={empty}>
-                Home
-            </Checkbox>
-        ),
-        key: 'Home',
-    },
-    {
-        content: (
-            <Checkbox value="Message" onClick={empty}>
-                Message
-            </Checkbox>
-        ),
+        content: <Checkbox value="Message">Message</Checkbox>,
         key: 'Message',
     },
 ]
 
 export default function () {
+    const [visible, updateVisible] = useState(false)
+
     return (
         <Checkbox.Group>
-            <Dropdown placeholder="Dropdown" data={data} onClick={console.log} />
+            <Dropdown placeholder="Dropdown" data={data} visible={visible} onVisibleChange={updateVisible} />
         </Checkbox.Group>
     )
 }

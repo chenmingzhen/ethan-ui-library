@@ -17,6 +17,7 @@ export default function () {
             children: [
                 {
                     content: 'link1',
+                    disabled: true,
                     key: '4',
                 },
                 {
