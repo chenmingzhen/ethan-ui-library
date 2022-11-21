@@ -259,11 +259,14 @@ class Dropdown extends PureComponent<IDropDownProps, DropdownState> {
                             const childPosition = Position[this.position]
 
                             if (d.children) {
+                                // 旧写法 => style={{ width: '100%' }}
+                                // 新写法 => style={{width:'100%',display:'block'}} === dropdownClass('sub')
+                                // 使用旧写法的时候，在Portal的情况下，Dropdown的宽度出现异常，在子Item没有溢出Parent的宽度的时候，Dropdown超过了Parent的宽度
                                 return (
                                     <Dropdown
                                         isSub
+                                        className={dropdownClass('sub')}
                                         showCaret={showCaret}
-                                        style={{ width: '100%' }}
                                         data={d.children}
                                         disabled={d.disabled}
                                         placeholder={d.content}
