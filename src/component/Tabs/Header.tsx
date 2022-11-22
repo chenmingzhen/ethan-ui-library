@@ -305,7 +305,7 @@ const Header: React.FC<TabsHeaderProps> = (props) => {
                 {overflowIcon === 'more' && overflow && (
                     <Dropdown
                         data={dropDownData}
-                        absolute
+                        portal
                         className={tabsClass('drop-down', isVertical && 'vertical')}
                         listClassName={tabsClass('drop-down-list')}
                         animation={false}

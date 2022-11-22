@@ -51,6 +51,7 @@ import './timeLine.less'
 import './photoView.less'
 import './swiper.less'
 import './colorPicker.less'
+import './portal.less'
 
 /** Spin */
 import './spin/default.less'

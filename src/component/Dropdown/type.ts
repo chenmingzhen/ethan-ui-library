@@ -14,7 +14,7 @@ export interface DropDownData {
 }
 
 export interface DropDownProps {
-    absolute?: boolean
+    portal?: boolean
     placeholder?: React.ReactNode
     className?: string
     visible?: boolean

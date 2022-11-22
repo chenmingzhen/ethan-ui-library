@@ -32,7 +32,7 @@ const data = [
 export default function () {
     return (
         <div style={{ background: '#eee', padding: 20, borderRadius: 10, overflow: 'hidden' }}>
-            <Dropdown absolute placeholder="Absolute" data={data} />
+            <Dropdown portal placeholder="Absolute" data={data} />
             <Dropdown placeholder="Default" data={data} style={{ marginLeft: 40 }} />
         </div>
     )

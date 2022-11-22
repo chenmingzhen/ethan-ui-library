@@ -5,12 +5,14 @@ import { docSize } from '@/utils/dom/document'
 import { getUidStr } from '@/utils/uid'
 import classnames from 'classnames'
 import { PureComponent } from '@/utils/component'
+import { styles } from '@/utils/style/styles'
+import { getPortalDropdownStyle } from '@/utils/position'
 import Button from '../Button'
 import AnimationList, { FAST_TRANSITION_DURATION } from '../List'
-import AbsoluteList from '../List/AbsoluteList'
 import Caret from '../icons/Caret'
 import Position from './enum/Position'
 import { DropDownData, DropDownProps, IDropDownProps } from './type'
+import Portal from '../Portal'
 
 interface DropdownState {
     show: boolean
@@ -227,7 +229,7 @@ class Dropdown extends PureComponent<IDropDownProps, DropdownState> {
     }
 
     renderList = () => {
-        const { data, absolute, width, animation, columns, listClassName, showCaret, trigger, renderItem } = this.props
+        const { data, portal, width, animation, columns, listClassName, showCaret, trigger, renderItem } = this.props
         const { show } = this.state
 
         if (!Array.isArray(data) || data.length === 0) return null
@@ -235,21 +237,19 @@ class Dropdown extends PureComponent<IDropDownProps, DropdownState> {
 
         this.isRendered = true
 
-        /** 嵌套的Dropdown的absolute均为false,基于上一个Dropdown定位 */
+        const rect = this.dropdownParentElementRef.current?.getBoundingClientRect()
+
+        const ms = styles({ width }, portal && getPortalDropdownStyle(rect, this.position))
+
+        /** 嵌套的Dropdown的portal均为false,基于上一个Dropdown定位 */
         return (
             <>
-                <AbsoluteList
-                    focus={show}
-                    absolute={absolute}
-                    getParentElement={() => this.dropdownParentElementRef.current}
-                    position={this.position}
-                    style={{ width }}
-                    fixed="min"
-                >
+                <Portal portal={portal}>
                     <AnimationList
                         lazyDom
                         tag="ul"
                         show={show}
+                        style={ms}
                         className={classnames(dropdownClass('menu', columns > 1 && 'box-list'), listClassName)}
                         animationTypes={['fade']}
                         data-id={this.dropdownId}
@@ -297,7 +297,7 @@ class Dropdown extends PureComponent<IDropDownProps, DropdownState> {
                             )
                         })}
                     </AnimationList>
-                </AbsoluteList>
+                </Portal>
 
                 {this.renderButton()}
             </>
