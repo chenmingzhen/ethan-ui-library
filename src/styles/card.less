@@ -4,8 +4,6 @@
 @card-prefix: ~'@{ethan-prefix}-card';
 
 .@{card-prefix} {
-    @card-inner-border-radius: @panel-border-radius;
-
     position: relative;
     display: flex;
     min-width: 0;
@@ -145,10 +143,10 @@
     }
 
     & > &-header {
-        border-radius: @card-inner-border-radius @card-inner-border-radius 0 0;
+        border-radius: @panel-border-radius @panel-border-radius 0 0;
     }
 
     & > &-footer {
-        border-radius: 0 0 @card-inner-border-radius @card-inner-border-radius;
+        border-radius: 0 0 @panel-border-radius @panel-border-radius;
     }
 }
