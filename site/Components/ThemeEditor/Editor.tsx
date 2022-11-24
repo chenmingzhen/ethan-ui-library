@@ -103,7 +103,7 @@ const Editor: React.FC<EditorProps> = function (props) {
                                                 <div className={editorClass('attr-item')}>
                                                     <Input value={value} width={180} onChange={onChange} />
                                                     <ColorPicker
-                                                        absolute={false}
+                                                        portal={false}
                                                         format="rgba"
                                                         showIcon={false}
                                                         value={value}

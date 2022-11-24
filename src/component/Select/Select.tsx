@@ -7,12 +7,14 @@ import { docSize } from '@/utils/dom/document'
 import { debounce } from '@/utils/func'
 import { isEmpty } from '@/utils/is'
 import { KeyboardKey } from '@/utils/keyboard'
+import { styles } from '@/utils/style/styles'
+import { getListPortalStyle } from '@/utils/position'
 import { SelectOptionListBindFuncMap, SelectState, ISelectProps } from './type'
 import Result from './Result'
 import OptionList from './OptionList'
-import AbsoluteList from '../List/AbsoluteList'
 import { FAST_TRANSITION_DURATION } from '../List'
 import BoxList from './BoxList'
+import Portal from '../Portal'
 
 class Select extends PureComponent<ISelectProps, SelectState> {
     static defaultProps = {
@@ -433,7 +435,7 @@ class Select extends PureComponent<ISelectProps, SelectState> {
 
     renderList = () => {
         const { focus, position } = this.state
-        const { autoAdapt, absolute } = this.props
+        const { autoAdapt, portal } = this.props
 
         if (!focus && !this.isRender) return null
 
@@ -450,7 +452,7 @@ class Select extends PureComponent<ISelectProps, SelectState> {
             'columnsTitle',
             'text',
             'itemsInView',
-            'absolute',
+            'portal',
             'lineHeight',
             'height',
             'loading',
@@ -469,18 +471,16 @@ class Select extends PureComponent<ISelectProps, SelectState> {
 
         const List = props.columns >= 1 || props.columns === -1 ? BoxList : OptionList
 
+        const rect = this.element?.getBoundingClientRect()
+
+        const ms = styles(portal && getListPortalStyle(rect, position, autoAdapt ? 'min' : true))
+
         return (
-            <AbsoluteList
-                rootClass={selectClass(position)}
-                focus={focus}
-                getParentElement={() => this.element}
-                position={position}
-                absolute={absolute}
-                fixed={autoAdapt ? 'min' : true}
-            >
+            <Portal rootClass={selectClass(position)} portal={portal}>
                 <List
                     {...props}
                     focus={focus}
+                    style={ms}
                     selectId={this.selectId}
                     className={selectClass(autoAdapt && 'auto-adapt')}
                     bindOptionListFunc={this.bindOptionListFunc}
@@ -490,7 +490,7 @@ class Select extends PureComponent<ISelectProps, SelectState> {
                     onControlChange={this.handleControlChange}
                     onTransitionEnd={this.handleListTransitionEnd}
                 />
-            </AbsoluteList>
+            </Portal>
         )
     }
 

@@ -19,7 +19,7 @@ const PageSizeList: React.FC<PageSizeListProps> = (props) => {
         <Select
             onChange={handleChange}
             disabled={disabled}
-            absolute
+            portal
             autoAdapt
             keygen
             value={pageSize}

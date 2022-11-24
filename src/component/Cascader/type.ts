@@ -17,7 +17,6 @@ export interface CascaderProps<T = any> {
     height?: number
     keygen?: keyof T | ((data: T, parentKey: React.Key) => React.Key)
     loader?: (key: React.Key, data: T) => void
-    /** @todo */
     mode?: number
     onBlur?: () => void
     onChange?: (value: React.Key[], selected?: T[]) => void
@@ -28,7 +27,7 @@ export interface CascaderProps<T = any> {
     spinProps?: SpinProps
     style?: React.CSSProperties
     value?: T[]
-    absolute?: boolean
+    portal?: boolean
     zIndex?: number
     childrenKey?: keyof T
     finalDismiss?: boolean
@@ -37,7 +36,6 @@ export interface CascaderProps<T = any> {
     multiple?: boolean
     onItemClick?: (data: T) => void
     renderResult?: keyof T | ((data: T) => React.ReactNode)
-    /** @todo  */
     changeOnSelect?: boolean
     compressed?: boolean
 }

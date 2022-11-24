@@ -5,16 +5,18 @@ import { isDescendent } from '@/utils/dom/element'
 import { getUidStr } from '@/utils/uid'
 import useSafeState from '@/hooks/useSafeState'
 import useIsomorphicLayoutUpdateEffect from '@/hooks/useIsomorphicLayoutUpdateEffect'
+import { styles } from '@/utils/style/styles'
+import { getPickerPortalStyle } from '@/utils/position'
 import { ColorPickerProps } from './type'
 import Caret from '../icons/Caret'
-import AbsoluteList from '../List/AbsoluteList'
 import AnimationList from '../List'
 import ColorBoard from './ColorBoard'
 import { getDefaultColor } from './util'
+import Portal from '../Portal'
 
 const ColorPicker: React.FC<ColorPickerProps> = function (props) {
     const {
-        absolute = true,
+        portal = true,
         size,
         disabled,
         className,
@@ -39,7 +41,7 @@ const ColorPicker: React.FC<ColorPickerProps> = function (props) {
 
     const isRenderRef = useRef(false)
 
-    const containerRef = useRef<HTMLDivElement>()
+    const btnContainerRef = useRef<HTMLDivElement>()
 
     useIsomorphicLayoutUpdateEffect(() => {
         updateCurrentValue(value)
@@ -94,17 +96,16 @@ const ColorPicker: React.FC<ColorPickerProps> = function (props) {
 
         isRenderRef.current = true
 
+        const rect = btnContainerRef.current?.getBoundingClientRect()
+
+        const ms = styles(dropdownStyle, portal && getPickerPortalStyle(rect, position))
+
         return (
-            <AbsoluteList
-                absolute={absolute}
-                focus={show}
-                position={position}
-                getParentElement={() => containerRef.current}
-            >
+            <Portal portal={portal}>
                 <AnimationList
                     lazyDom
                     show={show}
-                    style={dropdownStyle}
+                    style={ms}
                     className={classnames(colorPickerClass('dropdown', dropdownClassName))}
                     animationTypes={['fade']}
                     duration="fast"
@@ -119,13 +120,13 @@ const ColorPicker: React.FC<ColorPickerProps> = function (props) {
                         onChange={handleChange}
                     />
                 </AnimationList>
-            </AbsoluteList>
+            </Portal>
         )
     }
 
     return (
-        <div className={colorPickerClass('_')} ref={containerRef} data-id={colorPickerId}>
-            <div className={cls} style={style}>
+        <div className={colorPickerClass('_', position)} data-id={colorPickerId}>
+            <div className={cls} style={style} ref={btnContainerRef}>
                 <div className={colorPickerClass('result')} onClick={togglePanel}>
                     <div className={colorPickerClass('color')} style={{ backgroundColor: currentValue }} />
                 </div>

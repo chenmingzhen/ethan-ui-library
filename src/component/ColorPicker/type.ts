@@ -8,7 +8,7 @@ export interface ColorPickerProps {
     defaultColors?: string[]
     style?: React.CSSProperties
     className?: string
-    absolute?: boolean
+    portal?: boolean
     position?: 'left-bottom' | 'left-top' | 'right-bottom' | 'right-top'
     defaultValue?: string
     onChange?: (color: string) => void

@@ -5,10 +5,35 @@
 
 .@{colorPicker-prefix} {
     display: inline-block;
+    position: relative;
 
     &-dropdown {
         position: absolute;
         z-index: @zindex-dropdown;
+    }
+
+    &-left-bottom &-dropdown {
+        top: 100%;
+        left: 0;
+        margin-top: 4px;
+    }
+
+    &-left-top &-dropdown {
+        bottom: 100%;
+        left: 0;
+        margin-bottom: 4px;
+    }
+
+    &-right-top &-dropdown {
+        right: 0;
+        bottom: 100%;
+        margin-bottom: 4px;
+    }
+
+    &-right-bottom &-dropdown {
+        top: 100%;
+        right: 0;
+        margin-top: 4px;
     }
 
     &-preview-btn {

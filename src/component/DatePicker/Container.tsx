@@ -9,6 +9,8 @@ import { docSize } from '@/utils/dom/document'
 import { getLocale } from '@/locale'
 import { KeyboardKey } from '@/utils/keyboard'
 import immer from 'immer'
+import { styles } from '@/utils/style/styles'
+import { getPickerPortalStyle } from '@/utils/position'
 import Icon from './Icon'
 import utils from './utils'
 import Picker from './Picker'
@@ -16,7 +18,7 @@ import Range from './Range'
 import Text from './Text'
 import AnimationList from '../List'
 import { DatePickerContainerProps } from './type'
-import AbsoluteList from '../List/AbsoluteList'
+import Portal from '../Portal'
 
 interface DatePickerState {
     open: boolean
@@ -368,24 +370,22 @@ class Container extends PureComponent<DatePickerContainerProps, DatePickerState>
     renderWrappedPicker = () => {
         const { open, position } = this.state
 
-        const { absolute, zIndex } = this.props
+        const { portal, zIndex } = this.props
 
         if (!open && !this.isRendered) return null
 
         this.isRendered = true
 
+        const rect = this.element?.getBoundingClientRect()
+
+        const ms = styles({ zIndex }, portal && getPickerPortalStyle(rect, position))
+
         return (
-            <AbsoluteList
-                focus={open}
-                absolute={absolute}
-                position={position}
-                zIndex={zIndex}
-                rootClass={datepickerClass('absolute')}
-                getParentElement={() => this.element}
-            >
+            <Portal portal={portal} rootClass={datepickerClass('absolute')}>
                 <AnimationList
                     lazyDom
                     show={open}
+                    style={ms}
                     duration="fast"
                     animationTypes={['fade']}
                     className={datepickerClass('picker', 'location', `absolute-${position}`)}
@@ -393,7 +393,7 @@ class Container extends PureComponent<DatePickerContainerProps, DatePickerState>
                 >
                     {this.renderPicker()}
                 </AnimationList>
-            </AbsoluteList>
+            </Portal>
         )
     }
 

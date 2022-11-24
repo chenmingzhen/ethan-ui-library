@@ -16,7 +16,7 @@
 | style         | React.CSSProperties                                          | -             | 输入框样式               |
 | className     | string                                                       | -             | 输入框样式名             |
 | position      | 'left-bottom' \| 'left-top' \| 'right-bottom' \| 'right-top' | 'left-bottom' | 下拉框弹出位置           |
-| absolute      | boolean                                                      | true          | 是否在 body 中弹出下拉框 |
+| portal        | boolean                                                      | true          | 是否在 body 中弹出下拉框 |
 | defaultValue  | string                                                       | -             | 默认选中的颜色           |
 | onChange      | (color:string)=>void                                         | -             | 颜色改变时回调           |
 | showIcon      | boolean                                                      | true          | 是否显示下拉图标         |

@@ -9,11 +9,13 @@ import { isDescendent } from '@/utils/dom/element'
 import { runInNextFrame } from '@/utils/nextFrame'
 import { getLocale } from '@/locale'
 import { KeyboardKey } from '@/utils/keyboard'
+import { styles } from '@/utils/style/styles'
+import { getListPortalStyle } from '@/utils/position'
 import Result from './Result'
 import CascaderList from './List'
 import { CascaderState, CascaderProps } from './type'
 import AnimationList from '../List'
-import AbsoluteList from '../List/AbsoluteList'
+import Portal from '../Portal'
 
 class Cascader<T> extends PureComponent<CascaderProps, CascaderState> {
     static defaultProps = {
@@ -223,14 +225,14 @@ class Cascader<T> extends PureComponent<CascaderProps, CascaderState> {
     }
 
     renderAbsoluteList = () => {
-        const { zIndex, absolute, data } = this.props
+        const { zIndex, portal, data } = this.props
         const { focus, position } = this.state
 
         if (!focus && !this.isRendered) return null
 
         this.isRendered = true
 
-        const absoluteRootCls = classnames(cascaderClass(focus && 'focus'), selectClass(this.state.position))
+        const portalRootCls = classnames(cascaderClass(focus && 'focus'), selectClass(this.state.position))
 
         const className = classnames(selectClass('options'), cascaderClass('options', !data?.length && 'no-data'))
 
@@ -242,16 +244,12 @@ class Cascader<T> extends PureComponent<CascaderProps, CascaderState> {
                 : 0
         }
 
+        const rect = this.containerElementRef.current?.getBoundingClientRect()
+
+        const ms = styles({ zIndex, width }, portal && getListPortalStyle(rect, position))
+
         return (
-            <AbsoluteList
-                rootClass={absoluteRootCls}
-                position={position}
-                absolute={absolute}
-                focus={focus}
-                getParentElement={() => this.containerElementRef.current}
-                zIndex={zIndex}
-                style={{ width }}
-            >
+            <Portal rootClass={portalRootCls} portal={portal}>
                 <AnimationList
                     lazyDom
                     show={focus}
@@ -260,10 +258,11 @@ class Cascader<T> extends PureComponent<CascaderProps, CascaderState> {
                     animationTypes={['fade', 'scale-y']}
                     duration="fast"
                     display="inline-flex"
+                    style={ms}
                 >
                     {this.renderList()}
                 </AnimationList>
-            </AbsoluteList>
+            </Portal>
         )
     }
 

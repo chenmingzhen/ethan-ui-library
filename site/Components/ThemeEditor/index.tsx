@@ -1,8 +1,8 @@
 import { headerClass } from 'doc/styles'
 import React, { useRef, useState } from 'react'
 import cssAccessors from '@/utils/style/css-accessors'
-import AbsoluteList from '@/component/List/AbsoluteList'
 import AnimationList from '@/component/List'
+import Portal from '@/component/Portal'
 import Editor from './Editor'
 
 const { color } = cssAccessors
@@ -22,11 +22,11 @@ const ThemeEditor: React.FC = function () {
         isRender.current = true
 
         return (
-            <AbsoluteList focus={visible} absolute>
+            <Portal portal>
                 <AnimationList lazyDom show={visible} animationTypes={['fade']} duration="fast">
                     <Editor visible={visible} onClose={handleToggle} moveable />
                 </AnimationList>
-            </AbsoluteList>
+            </Portal>
         )
     }
 

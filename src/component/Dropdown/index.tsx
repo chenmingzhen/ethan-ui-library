@@ -6,7 +6,7 @@ import { getUidStr } from '@/utils/uid'
 import classnames from 'classnames'
 import { PureComponent } from '@/utils/component'
 import { styles } from '@/utils/style/styles'
-import { getPortalDropdownStyle } from '@/utils/position'
+import { getDropdownPortalStyle } from '@/utils/position'
 import Button from '../Button'
 import AnimationList, { FAST_TRANSITION_DURATION } from '../List'
 import Caret from '../icons/Caret'
@@ -239,7 +239,7 @@ class Dropdown extends PureComponent<IDropDownProps, DropdownState> {
 
         const rect = this.dropdownParentElementRef.current?.getBoundingClientRect()
 
-        const ms = styles({ width }, portal && getPortalDropdownStyle(rect, this.position))
+        const ms = styles({ width }, portal && getDropdownPortalStyle(rect, this.position))
 
         /** 嵌套的Dropdown的portal均为false,基于上一个Dropdown定位 */
         return (

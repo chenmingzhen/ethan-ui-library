@@ -21,7 +21,7 @@ export interface SelectProps<D extends SelectBaseData = DefaultSelectDefaultData
     placeholder?: ReactNode
     style?: React.CSSProperties
     keygen?: ((data: D) => string) | keyof D | boolean
-    absolute?: boolean
+    portal?: boolean
     clearable?: boolean
     // columns 大于 1 时，选项展示为多列布局模式
     columns?: number

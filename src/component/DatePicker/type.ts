@@ -21,7 +21,7 @@ export interface DatePickerProps {
     allowSingle?: boolean
     defaultTime?: string | string[]
     value?: any
-    absolute?: boolean
+    portal?: boolean
     zIndex?: number
     children?: React.ReactNode
     onValueBlur?: () => void
