@@ -1,18 +1,7 @@
 import React, { Children, cloneElement } from 'react'
 import classnames from 'classnames'
 import { buttonClass } from '@/styles'
-
-export interface ButtonGroupProps {
-    size?: 'large' | 'default' | 'small'
-
-    outline?: boolean
-
-    type?: 'default' | 'primary' | 'secondary' | 'success' | 'warning' | 'danger' | 'link'
-
-    children: React.ReactNode
-
-    className?: string
-}
+import { ButtonGroupProps } from './type'
 
 const ButtonGroup: React.FC<ButtonGroupProps> = (props) => {
     const { children, outline = false, size, type = 'default' } = props

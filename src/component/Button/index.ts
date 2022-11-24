@@ -1,14 +1,13 @@
 import React, { MemoExoticComponent } from 'react'
-import Button, { ButtonProps } from './Button'
-import Group, { ButtonGroupProps } from './Group'
+import Button from './Button'
+import Group from './Group'
+import { ButtonProps } from './type'
 
 export interface ButtonComponent extends MemoExoticComponent<React.FC<ButtonProps>> {
     Group: typeof Group
 
     IS_ETHAN_BUTTON: true
 }
-
-export { ButtonProps, ButtonGroupProps }
 
 const ComputedButton = Button as ButtonComponent
 

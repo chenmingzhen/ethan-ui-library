@@ -3,42 +3,7 @@ import classnames from 'classnames'
 import { wrapSpan } from '@/utils/dom/element'
 import { buttonClass } from '@/styles'
 import Spin from '../Spin'
-
-export interface ButtonProps extends React.RefAttributes<HTMLElement> {
-    children?: React.ReactNode
-
-    className?: string
-
-    /*  */
-    disabled?: boolean
-
-    /*  */
-    href?: string
-
-    onClick?: (e: React.MouseEvent<HTMLElement, MouseEvent>) => void
-
-    outline?: boolean
-
-    size?: 'large' | 'default' | 'small'
-
-    space?: string
-
-    style?: React.CSSProperties
-
-    text?: boolean
-
-    type?: 'default' | 'primary' | 'success' | 'warning' | 'danger' | 'link'
-
-    loading?: boolean
-
-    htmlType?: 'button' | 'submit' | 'reset'
-
-    shape?: 'round' | 'circle'
-
-    target?: string
-
-    autoFocus?: boolean
-}
+import { ButtonProps } from './type'
 
 const Button: React.FC<ButtonProps> = (props) => {
     const buttonRef = React.useRef<HTMLButtonElement | HTMLAnchorElement>()
