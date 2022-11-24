@@ -42,12 +42,6 @@ export interface CardContext {
     collapsible: boolean | 'bottom'
     // 是否折叠
     collapsed: boolean
-
-    formStatus: string
-
-    onSubmit(target: EventTarget): void
-
-    setFormStatus(status: string): void
 }
 
 export interface CardFooterProps extends React.DetailedHTMLProps<React.HTMLAttributes<HTMLDivElement>, HTMLDivElement> {

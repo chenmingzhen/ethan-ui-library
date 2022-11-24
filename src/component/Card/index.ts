@@ -1,29 +1,27 @@
 import { MemoExoticComponent, FunctionComponent } from 'react'
 import Card from './Card'
-import Submit from './Submit'
 import Header from './Header'
 import Body from './Body'
 import Footer from './Footer'
 import Accordion from './Accordion'
 import { CardProps } from './type'
 
-export interface CardComponent extends MemoExoticComponent<FunctionComponent<CardProps>> {
+interface CardComponent extends MemoExoticComponent<FunctionComponent<CardProps>> {
     Header: typeof Header
     Body: typeof Body
     Footer: typeof Footer
-    Submit: typeof Submit
     Accordion: typeof Accordion
 }
 
-// 传递需要的props
-Card.Header = Header
-Card.Body = Body
-Card.Footer = Footer
-Card.Submit = Submit
-Card.Accordion = Accordion
+const MixinCardComponent = Card as CardComponent
 
-Card.Body.displayName = 'EthanCardBody'
-Card.Header.displayName = 'EthanCardHeader'
-Card.displayName = 'EthanCard'
+MixinCardComponent.Header = Header
+MixinCardComponent.Body = Body
+MixinCardComponent.Footer = Footer
+MixinCardComponent.Accordion = Accordion
 
-export default Card as CardComponent
+MixinCardComponent.Body.displayName = 'EthanCardBody'
+MixinCardComponent.Header.displayName = 'EthanCardHeader'
+MixinCardComponent.displayName = 'EthanCard'
+
+export default MixinCardComponent
