@@ -1,24 +1,7 @@
 import React from 'react'
 import classnames from 'classnames'
 import { iconClass } from '@/styles'
-
-export interface IconProps extends React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement> {
-    children?: React.ReactNode
-
-    prefix?: string
-
-    type?: 'default' | 'primary' | 'secondary' | 'success' | 'info' | 'warning' | 'danger'
-
-    name?: string
-
-    style?: React.CSSProperties
-
-    fontFamily?: string
-
-    fontSize?: string
-
-    ext?: string
-}
+import { IconProps } from './type'
 
 const Icon: React.FC<IconProps> = (props) => {
     const { children, prefix, type, name, fontFamily, fontSize, ext, ...other } = props

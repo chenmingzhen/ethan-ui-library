@@ -1,15 +1,16 @@
 import React from 'react'
-import Icon, { IconProps } from './Icon'
+import Icon from './Icon'
+import { IconProps } from './type'
 
 interface EthanFC<T> extends React.FC<T> {
-    isEthanIcon: boolean
+    isEthanIcon?: boolean
 }
 
 const links = {}
 const scripts = {}
 
 function createIcon(url = '', fontFamily = 'iconfont', prefix = 'icon') {
-    const ext = url.substr(url.lastIndexOf('.') + 1)
+    const ext = url.substring(url.lastIndexOf('.') + 1)
 
     // 向浏览器添加css脚本或js脚本
     if (ext === 'css' && !links[url]) {
@@ -24,8 +25,7 @@ function createIcon(url = '', fontFamily = 'iconfont', prefix = 'icon') {
         link.setAttribute('href', url)
 
         document.head.appendChild(link)
-    }
-    if (ext === 'js' && !scripts[url]) {
+    } else if (ext === 'js' && !scripts[url]) {
         const script = document.createElement('script')
 
         scripts[url] = script
@@ -35,9 +35,9 @@ function createIcon(url = '', fontFamily = 'iconfont', prefix = 'icon') {
         document.body.appendChild(script)
     }
 
-    const wrapperIcon: EthanFC<IconProps> = (props) => (
+    const wrapperIcon: EthanFC<IconProps> = React.memo((props) => (
         <Icon ext={ext} fontFamily={fontFamily} prefix={prefix} {...props} />
-    )
+    ))
 
     wrapperIcon.isEthanIcon = true
 
