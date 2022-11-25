@@ -389,8 +389,7 @@ export function hslaFormatArray2HslaNumArray([hh, ss, ll, aa]: string[]) {
 
 /** ----------格式化---------- */
 export function hslArray2HslFormat(arr: number[]) {
-    // eslint-disable-next-line prefer-const
-    let [h, s, l, a] = arr
+    const [h, s, l, a] = arr
 
     return !isEmpty(a) && a !== 1 ? `hsla(${h}, ${s}%, ${l}%, ${a})` : `hsl(${h}, ${s}%, ${l}%)`
 }

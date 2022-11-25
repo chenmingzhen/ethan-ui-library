@@ -44,7 +44,7 @@ const ColorPicker: React.FC<ColorPickerProps> = function (props) {
     const btnContainerRef = useRef<HTMLDivElement>()
 
     useIsomorphicLayoutUpdateEffect(() => {
-        updateCurrentValue(value)
+        updateCurrentValue(value || getDefaultColor(format))
     }, [value])
 
     const cls = classnames(className, colorPickerClass('preview-btn', size && size, disabled && 'disabled'))
