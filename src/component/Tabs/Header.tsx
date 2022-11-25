@@ -1,7 +1,7 @@
-import React, { useEffect, useRef } from 'react'
+import React, { useCallback, useEffect, useRef } from 'react'
 import useSafeState from '@/hooks/useSafeState'
 import { tabsClass } from '@/styles'
-import { useUpdateEffect } from 'react-use'
+import { useEvent, useUpdateEffect } from 'react-use'
 import normalizeWheel from '@/utils/dom/normalizeWheel'
 import { TabsHeaderProps } from './type'
 import Button from '../Button'
@@ -97,6 +97,24 @@ const Header: React.FC<TabsHeaderProps> = (props) => {
         }
     }, [overflow, attribute])
 
+    const setPosition = useCallback(() => {
+        if (!innerElementRef.current) return
+
+        const newAttributeString = isVertical ? 'Height' : 'Width'
+
+        const innerAttribute = innerElementRef.current[`client${newAttributeString}`]
+
+        const scrollAttribute = scrollElementRef.current[`client${newAttributeString}`]
+
+        const newOverflow = scrollAttribute > attribute + innerAttribute
+
+        setOverflow(newOverflow)
+
+        setAttributeString(newAttributeString)
+    }, [attribute, isVertical])
+
+    useEvent('resize', setPosition)
+
     const { dropDownData, tabMoveMap } = useHideTabs({
         scrollElementRef,
         innerElementRef,
@@ -168,22 +186,6 @@ const Header: React.FC<TabsHeaderProps> = (props) => {
                 bar.style.transform = `translate(${itemOffsetLeft + itemOffsetWidth / 3}px,0px)`
             }
         }
-    }
-
-    function setPosition() {
-        if (!innerElementRef.current) return
-
-        const newAttributeString = isVertical ? 'Height' : 'Width'
-
-        const innerAttribute = innerElementRef.current[`client${newAttributeString}`]
-
-        const scrollAttribute = scrollElementRef.current[`client${newAttributeString}`]
-
-        const newOverflow = scrollAttribute > attribute + innerAttribute
-
-        setOverflow(newOverflow)
-
-        setAttributeString(newAttributeString)
     }
 
     function handleClick(id: string | number, isActive: boolean) {
