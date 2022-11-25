@@ -180,4 +180,18 @@ export function addResizeObserver(element: HTMLElement, handler: () => void, opt
     return () => window.removeEventListener('resize', handler)
 }
 
+export function mockAnchorClick(url: string, target = '_blank') {
+    const a = document.createElement('a')
+
+    a.setAttribute('href', url)
+
+    if (target === '_download') {
+        a.setAttribute('download', '')
+    } else {
+        a.setAttribute('target', target)
+    }
+
+    a.click()
+}
+
 export const focusElement = { select, end, wrapSpan }

@@ -1,172 +1,127 @@
-import React, { ReactNode, useRef, ForwardRefRenderFunction } from 'react'
+import React, {
+    useRef,
+    ForwardRefRenderFunction,
+    useEffect,
+    useImperativeHandle,
+    isValidElement,
+    useCallback,
+} from 'react'
 import classnames from 'classnames'
 import { imageClass } from '@/styles'
 import Spin from '@/component/Spin'
-import { getUidStr } from '@/utils/uid'
+import useSafeState from '@/hooks/useSafeState'
+import { lazyLoad } from '@/utils/lazyload'
+import { styles } from '@/utils/style/styles'
+import { mockAnchorClick } from '@/utils/dom/element'
 import showGallery from './events'
-import { PLACEHOLDER, SRC, ALT, ERROR } from './variable'
-import useImage from './hooks/useImage'
+import { PLACEHOLDER, SRC, ALT, ERROR, StatusType } from './variable'
+import { IImageProps } from './type'
 
-export interface ImageProps {
-    alt?: string
-
-    className?: string
-
-    /**
-     * 图片高度
-     */
-    height?: number | string
-
-    /**
-     * 图片宽度
-     */
-    width?: number | string
-
-    href?: string
-
-    /**
-     * 懒加载
-     */
-    lazy?: boolean | number
-
-    onClick?(e: React.MouseEvent<HTMLElement, MouseEvent>): void
-
-    placeholder?: ReactNode | string
-
-    /**
-     * 形状
-     */
-    shape?: 'rounded' | 'circle' | 'thumbnail'
-
-    /**
-     * 适应
-     */
-    fit?: 'fill' | 'center' | 'fit' | 'stretch'
-
-    src?: string
-
-    style?: React.CSSProperties
-
-    target?: '_blank' | '_sele' | '_modal' | '_download'
-
-    title?: string
-
-    /**
-     * 目标容器
-     */
-    container?: string
-
-    /**
-     * 图片出错的展示
-     */
-    error?: ReactNode
-
-    /**
-     * 加载中形状
-     */
-    loadingName?:
-        | 'default'
-        | 'chasing-ring'
-        | 'chasing-dots'
-        | 'cube-grid'
-        | 'double-bounce'
-        | 'fading-circle'
-        | 'four-dots'
-        | 'plane'
-        | 'pulse'
-        | 'ring'
-        | 'scale-circle'
-        | 'three-bounce'
-        | 'wave'
-
-    /**
-     * 加载中颜色
-     */
-    loadingColor?: string
-}
-
-interface IImageProps extends ImageProps {
-    onTouchStart(e)
-
-    onTouchEnd(e)
-}
-
-const Image: ForwardRefRenderFunction<HTMLAnchorElement | HTMLDivElement, IImageProps> = (props, ref) => {
+const Image: ForwardRefRenderFunction<HTMLDivElement, IImageProps> = (props, ref) => {
     const {
         src,
         alt,
         lazy = true,
-        container,
+        getContainer = () => undefined,
         shape,
-        fit,
-        href,
-        target = '_modal',
+        thumbnail,
+        target,
         width = '100%',
-        height = '100%',
+        height,
         style,
         onClick,
         error,
         title,
         placeholder,
-        loadingColor: color,
-        loadingName: name,
+        spinProps = {},
         onTouchEnd,
         onTouchStart,
     } = props
 
-    const uuid = useRef(getUidStr()).current
+    const [status, setStatus] = useSafeState<StatusType>(PLACEHOLDER)
 
-    const { status } = useImage(lazy, src, alt, container, uuid)
+    const elementRef = useRef<HTMLDivElement>()
+
+    useEffect(() => {
+        if (!lazy) {
+            render()
+
+            return
+        }
+
+        const dispose = lazyLoad({
+            offset: typeof lazy === 'number' ? lazy : 0,
+            target: elementRef.current,
+            render,
+            container: getContainer(),
+        })
+
+        return dispose
+    }, [src, alt])
+
+    useImperativeHandle(ref, () => elementRef.current)
+
+    const renderFallback = useCallback(() => {
+        if (!alt) {
+            setStatus(ERROR)
+
+            return
+        }
+
+        /** 浏览器会对这个地址的图片进行缓存 */
+        /** src不能找到时 渲染alt地址的图片 */
+        const image = new window.Image()
+        image.onload = () => setStatus(ALT)
+        image.onerror = () => setStatus(ERROR)
+        image.src = alt
+    }, [alt])
+
+    const render = useCallback(() => {
+        if (!src) {
+            renderFallback()
+
+            return
+        }
+
+        const image = new window.Image()
+
+        image.onload = () => setStatus(SRC)
+        image.onerror = renderFallback
+        image.src = src
+    }, [renderFallback, src])
 
     const handleClick = (e: React.MouseEvent<HTMLElement, MouseEvent>) => {
         if (onClick) {
             onClick(e)
-            return
         }
+
+        if (!target) return
 
         if (target === '_modal') {
             e.preventDefault()
-            showGallery({ thumb: src, src: href || src, key: 'key' })
+
+            showGallery({ thumb: src, src: src || thumbnail, key: 'key' })
+        } else {
+            mockAnchorClick(src, target)
         }
     }
-
-    const renderPlaceholder = () => {
-        if (React.isValidElement(placeholder)) {
-            return <div className={imageClass('inner')}>{placeholder}</div>
-        }
-
-        const loadingStyle = { color, name }
-        return (
-            <div className={imageClass('inner', 'mask')}>
-                <div>
-                    {title}
-
-                    <Spin {...loadingStyle} />
-                </div>
-            </div>
-        )
-    }
-
-    const renderType = (source) =>
-        fit === 'fill' || fit === 'fit' ? (
-            <div className={imageClass('inner')} title={title} style={{ backgroundImage: `url("${source}")` }} />
-        ) : (
-            <div className={imageClass('inner')} title={title}>
-                <img alt="" src={source} />
-            </div>
-        )
 
     const renderImage = () => {
         switch (status) {
             case PLACEHOLDER:
-                return renderPlaceholder()
+                return (
+                    <div className={imageClass('mask')}>
+                        {isValidElement(placeholder) ? placeholder : <Spin {...spinProps} />}
+                    </div>
+                )
+
             case SRC:
-                return renderType(src)
+                return <img alt="" src={src} title={title} style={height ? { height } : undefined} />
             case ALT:
-                return renderType(alt)
+                return <img alt="" src={alt} title={title} style={height ? { height } : undefined} />
             case ERROR:
                 return (
-                    <div className={imageClass('inner', 'mask')}>
+                    <div className={imageClass('mask')}>
                         <div>{error || title || 'no found'}</div>
                     </div>
                 )
@@ -175,22 +130,17 @@ const Image: ForwardRefRenderFunction<HTMLAnchorElement | HTMLDivElement, IImage
         }
     }
 
-    const className = classnames(imageClass('_', shape, fit), props.className)
-
-    const Tag = href ? 'a' : 'div'
-
-    const newProps = {
-        onClick: handleClick,
-        target: target === '_download' ? '_self' : target,
-        download: target === '_download',
-        className,
-        style: Object.assign({}, style, { width, paddingBottom: height }),
-    }
-
     return (
-        <Tag {...newProps} onTouchEnd={onTouchEnd} onTouchStart={onTouchStart} ref={ref as any} id={uuid}>
+        <div
+            className={classnames(imageClass('_', shape), props.className)}
+            onClick={handleClick}
+            onTouchEnd={onTouchEnd}
+            onTouchStart={onTouchStart}
+            style={styles(style, { width, paddingBottom: height })}
+            ref={elementRef}
+        >
             {renderImage()}
-        </Tag>
+        </div>
     )
 }
 

@@ -1,14 +1,16 @@
 import { MemoExoticComponent, ForwardRefExoticComponent } from 'react'
-import Image, { ImageProps } from './Image'
+import Image from './Image'
 import Group from './Group'
+import { ImageProps } from './type'
 
 interface ImageComponent extends MemoExoticComponent<ForwardRefExoticComponent<ImageProps>> {
     Group: typeof Group
-
     IS_ETHAN_IMAGE: boolean
 }
 
-;(Image as ImageComponent).Group = Group
-;(Image as ImageComponent).IS_ETHAN_IMAGE = true
+const ComputedImage = Image as ImageComponent
 
-export default Image as ImageComponent
+ComputedImage.Group = Group
+ComputedImage.IS_ETHAN_IMAGE = true
+
+export default ComputedImage

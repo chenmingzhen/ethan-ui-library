@@ -54,3 +54,16 @@ export function debounce(fn, delay = 80) {
         }, delay)
     }
 }
+
+export function throttleWrapper(cb, delay = 80) {
+    let timer = null
+
+    return (...args) => {
+        if (!timer) {
+            timer = setTimeout(() => {
+                cb.apply(this, args)
+                timer = null
+            }, delay)
+        }
+    }
+}

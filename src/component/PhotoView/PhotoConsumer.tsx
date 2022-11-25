@@ -3,7 +3,7 @@ import { getUidStr } from '@/utils/uid'
 import Image from '@/component/Image'
 import { isTouchDevice } from './utils'
 import Context, { PhotoContext } from './context'
-import { ImageProps } from '../Image/Image'
+import { ImageProps } from '../Image/type'
 
 export interface PhotoConsumerProps {
     src: string

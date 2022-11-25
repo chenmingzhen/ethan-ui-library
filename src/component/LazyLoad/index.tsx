@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { lazyloadClass } from '@/styles'
-import { addStack, removeStack } from '@/utils/lazyload'
+import { lazyLoad } from '@/utils/lazyload'
 
 interface LazyLoadProps {
     children?: React.ReactNode
@@ -18,16 +18,14 @@ const LazyLoad: React.FC<LazyLoadProps> = ({ children, placeholder, container, o
     const placeholderRef = useRef<HTMLSpanElement>()
 
     useEffect(() => {
-        const lazyId = addStack({
+        const dispose = lazyLoad({
             offset,
             container,
-            element: placeholderRef.current,
+            target: placeholderRef.current,
             render: () => setReady(true),
         })
 
-        return () => {
-            removeStack(lazyId)
-        }
+        return dispose
     }, [])
 
     if (ready) return <>{children}</>
