@@ -1,15 +1,11 @@
 import React, { ReactNode } from 'react'
-import { ButtonProps } from '../Button'
+import { ButtonProps } from '../Button/type'
 
 export interface DropDownData {
     content: ReactNode
-
     key: React.Key
-
     disabled?: boolean
-
     children?: DropDownData[]
-
     [customKey: string]: string | boolean | ReactNode | Array<DropDownData>[]
 }
 
@@ -58,6 +54,5 @@ export interface DropDownProps {
 
 export interface IDropDownProps extends DropDownProps {
     isSub?: boolean
-
     clickHoverItemDismiss?(): void
 }
