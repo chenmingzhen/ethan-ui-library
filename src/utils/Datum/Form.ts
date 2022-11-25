@@ -369,14 +369,16 @@ export default class {
         const changeValues: Record<string, any> = {}
 
         Object.keys(this.$inputNames).forEach((name) => {
-            changeValues[name] = this.$defaultValues[name] !== undefined ? this.$defaultValues[name] : undefined
+            if (this.$defaultValues[name] !== undefined) {
+                changeValues[name] = this.$defaultValues[name]
+            }
         })
-
-        this.handleChange(unflatten(changeValues))
 
         if (this.onReset) {
             this.onReset()
         }
+
+        this.handleChange(unflatten(changeValues))
     }
 
     /** For FieldSet */

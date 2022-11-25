@@ -4,7 +4,7 @@
  * en - Base
  *    -- The form has a two-way binding mechanism built in, automatically sending and collecting data based on the name property of the FormItem.
  */
-import React from 'react'
+import React, { useCallback } from 'react'
 import { Form, Input, Checkbox, Radio, Textarea, Select, Upload, Button, ColorPicker } from 'ethan-ui'
 import { EthanFile } from '@/component/Upload/type'
 import { action } from 'doc/config'
@@ -22,14 +22,16 @@ interface FormValues {
 }
 
 export default function App() {
-    return (
-        <Form<FormValues> onChange={console.log}>
-            <Form.Item label="Email" name="test">
-                <div>
-                    <Input clearable popoverProps={{ placement: 'left-top' }} />
-                </div>
-            </Form.Item>
+    const handleChange = useCallback((changeValues: Partial<FormValues>, allValues: FormValues) => {
+        console.log('onChange:', changeValues, allValues)
+    }, [])
 
+    const handleReset = useCallback(() => {
+        console.log('onReset')
+    }, [])
+
+    return (
+        <Form<FormValues> onChange={handleChange} onReset={handleReset}>
             <Form.Item label="Email" name="email">
                 <Input clearable popoverProps={{ placement: 'left-top' }} />
             </Form.Item>
