@@ -42,6 +42,10 @@ const Header = () => {
         window.location = href as unknown as Location
     }
 
+    const handleVersionClick = (item) => {
+        window.open(item.url, '_self')
+    }
+
     return (
         <div className={headerClass('_')}>
             <div className={headerClass('logo')}>
@@ -70,6 +74,7 @@ const Header = () => {
                         data={versions}
                         trigger="hover"
                         placeholder={version}
+                        onClick={handleVersionClick}
                         size="small"
                         style={{ marginRight: 12 }}
                     />

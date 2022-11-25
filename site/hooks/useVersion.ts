@@ -31,6 +31,7 @@ const useVersion = () => {
 
                 const jsonVersions = json.map((v) => ({
                     content: v,
+                    key: v,
                     url: transformVersionUrl(v, language),
                 }))
 

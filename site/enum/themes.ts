@@ -1,15 +1,15 @@
 const themes = [
     {
-        content: 'antd',
-        id: '1',
-    },
-    {
         content: 'default',
-        id: '2',
+        key: 'default',
     },
     {
         content: 'ethan',
-        id: '3',
+        key: 'ethan',
+    },
+    {
+        content: 'antd',
+        key: 'antd',
     },
 ]
 
