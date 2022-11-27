@@ -2,8 +2,9 @@ import React from 'react'
 import ReactDOM from 'react-dom'
 import { imageClass } from '@/styles'
 import Gallery from './Gallery'
+import { ImageItem } from './type'
 
-let container
+let container: HTMLDivElement
 
 function keyClose(e) {
     if (e.keyCode === 27) close()
@@ -26,8 +27,7 @@ function getContainer() {
     return container
 }
 
-export default function (images, current = 0) {
-    if (!Array.isArray(images)) images = [images]
+export function showGallery(images: ImageItem[], current = 0) {
     const div = getContainer()
 
     document.addEventListener('keydown', keyClose)

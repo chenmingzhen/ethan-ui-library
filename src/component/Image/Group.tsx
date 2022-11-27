@@ -1,35 +1,11 @@
 import React, { Children, cloneElement, ReactElement } from 'react'
 import { imageClass } from '@/styles'
-import showGallery from './events'
-
-interface GroupProps {
-    /**
-     * 是否堆叠
-     */
-    pile?: boolean
-    /**
-     * 是否懒加载
-     */
-    lazy?: boolean
-    /**
-     * 单个图片高度(值为百分比时，对比值为图片宽度)
-     */
-    height?: number | string
-    /**
-     * 单个图片宽度
-     */
-    width?: number | string
-    /**
-     * 图片打开方式
-     */
-    target?: '_modal' | '_blank' | '_self' | '_download'
-
-    style?: React.CSSProperties
-}
+import { showGallery } from './events'
+import { GroupProps, ImageItem } from './type'
 
 const Group: React.FC<GroupProps> = ({ pile, children, style, ...props }) => {
     const handleClick = (index) => {
-        const images = []
+        const images: ImageItem[] = []
 
         let current = 0
 
@@ -39,7 +15,7 @@ const Group: React.FC<GroupProps> = ({ pile, children, style, ...props }) => {
 
                 const { src, href } = child.props
 
-                images.push({ thumb: src, src: href || src, key: i })
+                images.push({ src: href || src, key: i })
             }
         })
 

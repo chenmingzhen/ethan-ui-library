@@ -11,20 +11,23 @@
 
     position: relative;
     display: inline-block;
+    box-sizing: content-box;
+    overflow: hidden;
 
     img {
         width: 100%;
-        height: auto;
+        height: 100%;
+        vertical-align: middle; // 贴合div
     }
 
     &-mask {
         display: flex;
         background: @gray-100;
         color: @gray-500;
-        width: 100%;
-        height: 100%;
         justify-content: center;
         align-items: center;
+        width: 100%;
+        height: 100%;
     }
 
     &-rounded {
@@ -40,12 +43,19 @@
         border-radius: @thumbnail-border-radius;
         box-shadow: @thumbnail-box-shadow;
         transition: all 0.2s ease-in-out;
+        padding: 3px;
+    }
 
-        .@{image-prefix}-inner {
-            top: @thumbnail-padding;
-            right: @thumbnail-padding;
-            bottom: @thumbnail-padding;
-            left: @thumbnail-padding;
+    &-target {
+        cursor: pointer;
+    }
+
+    &-group {
+        display: flex;
+        align-items: center;
+
+        img {
+            cursor: pointer;
         }
     }
 
@@ -93,11 +103,6 @@
             z-index: 10;
             top: 50%;
             background: #fff;
-
-            & > div {
-                box-sizing: content-box;
-                border: solid 10px #fff;
-            }
         }
 
         .@{image-prefix}-center {
@@ -223,10 +228,8 @@
             right: -10px;
             width: 24px;
             height: 24px;
-            // border: solid 1px #fff;
             background: #333;
             border-radius: 12px;
-            // box-shadow: 0px 1px 2px 2px rgba(0, 0, 0, 0.3);
             display: inline-flex;
             align-content: center;
             justify-content: center;
@@ -234,10 +237,6 @@
             z-index: 10;
 
             svg {
-                //position: absolute;
-                //top: 5px;
-                //left: 5px;
-                //height: 12px;
                 width: 12px;
                 fill: #fff;
             }
@@ -253,7 +252,6 @@
         margin: auto;
 
         > img {
-            background: #fff;
             position: relative;
             z-index: 2;
         }

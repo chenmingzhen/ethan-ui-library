@@ -1,23 +1,24 @@
 import React, {
     useRef,
     ForwardRefRenderFunction,
-    useEffect,
-    useImperativeHandle,
     isValidElement,
     useCallback,
+    useImperativeHandle,
+    useEffect,
 } from 'react'
 import classnames from 'classnames'
 import { imageClass } from '@/styles'
 import Spin from '@/component/Spin'
-import useSafeState from '@/hooks/useSafeState'
-import { lazyLoad } from '@/utils/lazyload'
 import { styles } from '@/utils/style/styles'
 import { mockAnchorClick } from '@/utils/dom/element'
-import showGallery from './events'
-import { PLACEHOLDER, SRC, ALT, ERROR, StatusType } from './variable'
+import { lazyLoad } from '@/utils/lazyload'
+import useSafeState from '@/hooks/useSafeState'
+import { isPercent } from '@/utils/is'
 import { IImageProps } from './type'
+import { PLACEHOLDER, SRC, ALT, ERROR, StatusType } from './variable'
+import { showGallery } from './events'
 
-const Image: ForwardRefRenderFunction<HTMLDivElement, IImageProps> = (props, ref) => {
+const Image: ForwardRefRenderFunction<HTMLAnchorElement | HTMLDivElement, IImageProps> = (props, ref) => {
     const {
         src,
         alt,
@@ -36,11 +37,15 @@ const Image: ForwardRefRenderFunction<HTMLDivElement, IImageProps> = (props, ref
         spinProps = {},
         onTouchEnd,
         onTouchStart,
+        fit,
     } = props
 
     const [status, setStatus] = useSafeState<StatusType>(PLACEHOLDER)
 
     const elementRef = useRef<HTMLDivElement>()
+
+    /** 如果是加载中状态，没有高度或者高度为百分比，使用paddingBottom进行占位 */
+    const isPaddingHold = status === PLACEHOLDER && (!height || isPercent(height))
 
     useEffect(() => {
         if (!lazy) {
@@ -100,7 +105,7 @@ const Image: ForwardRefRenderFunction<HTMLDivElement, IImageProps> = (props, ref
         if (target === '_modal') {
             e.preventDefault()
 
-            showGallery({ thumb: src, src: src || thumbnail, key: 'key' })
+            showGallery([{ src: src || thumbnail, key: 'key' }])
         } else {
             mockAnchorClick(src, target)
         }
@@ -110,15 +115,15 @@ const Image: ForwardRefRenderFunction<HTMLDivElement, IImageProps> = (props, ref
         switch (status) {
             case PLACEHOLDER:
                 return (
-                    <div className={imageClass('mask')}>
+                    <div className={imageClass('mask')} style={isPaddingHold ? { position: 'absolute' } : undefined}>
                         {isValidElement(placeholder) ? placeholder : <Spin {...spinProps} />}
                     </div>
                 )
 
             case SRC:
-                return <img alt="" src={src} title={title} style={height ? { height } : undefined} />
+                return <img alt="" src={thumbnail || src} title={title} style={{ objectFit: fit }} />
             case ALT:
-                return <img alt="" src={alt} title={title} style={height ? { height } : undefined} />
+                return <img alt="" src={alt} title={title} style={{ objectFit: fit }} />
             case ERROR:
                 return (
                     <div className={imageClass('mask')}>
@@ -130,13 +135,15 @@ const Image: ForwardRefRenderFunction<HTMLDivElement, IImageProps> = (props, ref
         }
     }
 
+    const ms: React.CSSProperties = styles(style, { width }, isPaddingHold ? { paddingBottom: width } : { height })
+
     return (
         <div
-            className={classnames(imageClass('_', shape), props.className)}
+            className={classnames(imageClass('_', shape, target && 'target'), props.className)}
             onClick={handleClick}
             onTouchEnd={onTouchEnd}
             onTouchStart={onTouchStart}
-            style={styles(style, { width, paddingBottom: height })}
+            style={ms}
             ref={elementRef}
         >
             {renderImage()}
