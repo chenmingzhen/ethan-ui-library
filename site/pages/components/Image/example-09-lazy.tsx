@@ -14,7 +14,6 @@ export default function () {
                 <Image
                     lazy
                     key={i}
-                    fit="fill"
                     height="66%"
                     src={`https://chenmingzhen.github.io/ethan-ui-library/images/${i}_b.jpg`}
                 />

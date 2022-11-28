@@ -13,10 +13,8 @@ export default function () {
             {[1, 2, 3, 4].map((i) => (
                 <Image
                     lazy
-                    container="#image-container"
+                    getContainer={() => document.querySelector('#image-container')}
                     key={i}
-                    fit="fill"
-                    height="66%"
                     src={`https://chenmingzhen.github.io/ethan-ui-library/images/${i}_b.jpg`}
                 />
             ))}

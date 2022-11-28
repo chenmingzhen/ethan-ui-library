@@ -15,10 +15,10 @@ export default function () {
                     key={i}
                     width={80}
                     height={80}
-                    fit="fill"
+                    fit="cover"
                     shape="thumbnail"
+                    thumbnail={`https://chenmingzhen.github.io/ethan-ui-library/images/${i}_s_t.jpg`}
                     src={`https://chenmingzhen.github.io/ethan-ui-library/images/${i}_s.jpg`}
-                    href={`https://chenmingzhen.github.io/ethan-ui-library/images/${i}_s.jpg`}
                 />
             ))}
         </Image.Group>

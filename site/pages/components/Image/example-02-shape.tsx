@@ -10,27 +10,9 @@ import { Image } from 'ethan-ui'
 export default function () {
     return (
         <div>
-            <Image
-                width={150}
-                height={150}
-                src="https://chenmingzhen.github.io/ethan-ui-library/images/1_b.jpg"
-                shape="rounded"
-                title="rounded"
-            />
-            <Image
-                width={150}
-                height={150}
-                src="https://chenmingzhen.github.io/ethan-ui-library/images/1_b.jpg"
-                shape="circle"
-                title="circle"
-            />
-            <Image
-                width={150}
-                height={150}
-                src="https://chenmingzhen.github.io/ethan-ui-library/images/1_b.jpg"
-                shape="thumbnail"
-                title="thumbnail"
-            />
+            <Image width={150} height={150} shape="rounded" title="rounded" />
+            <Image width={150} height={150} shape="circle" title="circle" />
+            <Image width={150} height={150} shape="thumbnail" title="thumbnail" />
         </div>
     )
 }

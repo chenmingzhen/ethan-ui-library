@@ -8,5 +8,5 @@ import React from 'react'
 import { Image } from 'ethan-ui'
 
 export default function () {
-    return <Image width={200} src="https://chenmingzhen.github.io/ethan-ui-library/images/1_b.jpg" />
+    return <Image width={400} height={250} src="https://chenmingzhen.github.io/ethan-ui-library/images/1_b.jpg" />
 }

@@ -17,8 +17,9 @@ export default function () {
                         height={80}
                         target={target}
                         shape="thumbnail"
+                        fit="cover"
                         src="https://chenmingzhen.github.io/ethan-ui-library/images/1_s.jpg"
-                        thumbnail="https://chenmingzhen.github.io/ethan-ui-library/images/1_s.jpg"
+                        thumbnail="https://chenmingzhen.github.io/ethan-ui-library/images/1_s_t.jpg"
                     />
                     <br />
                     {target}
