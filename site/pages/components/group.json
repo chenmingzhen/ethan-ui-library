@@ -48,7 +48,8 @@
         "Pagination": "分页",
         "Tree": "树",
         "Timeline": "时间轴",
-        "LazyList": "高性能列表"
+        "LazyList": "高性能列表",
+        "ClampLines": "多行裁剪"
     },
     "Feedback": {
         "Alert": "提示框",
