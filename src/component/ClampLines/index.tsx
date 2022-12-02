@@ -120,7 +120,7 @@ export default class ClampLines extends PureComponent<ClampLinesProps, ClampLine
     }
 
     handleClick = () => {
-        this.setImmerState(
+        this.setDraftState(
             (state) => {
                 state.expanded = !state.expanded
 

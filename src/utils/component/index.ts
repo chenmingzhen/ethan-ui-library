@@ -22,7 +22,7 @@ function create(name: 'PureComponent' | 'Component') {
             if (this.$isMounted !== false) super.setState(...args)
         }
 
-        setImmerState = (fn, callback) => {
+        setDraftState = (fn, callback) => {
             this.setState(immer(fn), callback)
         }
 

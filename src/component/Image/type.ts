@@ -24,6 +24,8 @@ export interface ImageProps {
     error?: ReactNode
     spinProps?: SpinProps
     fit?: 'fill' | 'contain' | 'cover' | 'none' | 'scale-down'
+    onLoad?(e: Event): void
+    imageMaskClassName?: string
 }
 
 export interface IImageProps extends ImageProps {

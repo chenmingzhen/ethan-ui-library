@@ -1,0 +1,200 @@
+@import './variables.less';
+@import './themes/@{ethan-theme}.less';
+
+@proImage-prefix: ~'@{ethan-prefix}-proImage';
+
+.@{proImage-prefix} {
+    @keyframes-fade: ~'@{proImage-prefix}-fade';
+    @keyframes-zoom-in:~ '@{proImage-prefix}-in';
+    @keyframes-zoom-out:~ '@{proImage-prefix}-out';
+
+    @keyframes @keyframes-fade {
+        from {
+            opacity: 0;
+        }
+
+        to {
+            opacity: 1;
+        }
+    }
+
+    @keyframes @keyframes-zoom-in {
+        from {
+            opacity: 0.4;
+            transform: scale(0.2);
+        }
+
+        to {
+            opacity: 1;
+            transform: scale(1);
+        }
+    }
+
+    @keyframes @keyframes-zoom-out {
+        from {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        to {
+            opacity: 0;
+            transform: scale(0.2);
+        }
+    }
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: @zindex-modal;
+
+    &-bg {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgb(0 0 0 / 60%);
+        z-index: -1;
+
+        &.@{proImage-prefix}-fade-in {
+            opacity: 0;
+            animation: @keyframes-fade 0.4s linear both;
+        }
+
+        &.@{proImage-prefix}-fade-out {
+            opacity: 0;
+            animation: @keyframes-fade 0.4s linear both reverse;
+        }
+    }
+
+    &-toolbar {
+        position: absolute;
+        left: 0;
+        top: 0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: 100%;
+        height: 44px;
+        color: white;
+        background-color: rgb(0 0 0 / 50%);
+        transition: opacity 0.4s linear;
+        z-index: 20;
+
+        &:hover {
+            opacity: 1;
+        }
+
+        .@{proImage-prefix}-counter {
+            padding: 0 10px;
+            font-size: 14px;
+            opacity: 0.75;
+        }
+
+        .@{proImage-prefix}-buttons {
+            display: flex;
+            align-items: center;
+            height: 100%;
+
+            .@{proImage-prefix}-icon {
+                svg {
+                    box-sizing: border-box;
+                    padding: 15px;
+                    opacity: 0.75;
+                    cursor: pointer;
+                    transition: opacity 0.4s linear;
+                    fill: white;
+                    width: 100%;
+                    height: 44px;
+
+                    &:hover {
+                        opacity: 1;
+                    }
+                }
+
+                &.@{proImage-prefix}-magnify svg {
+                    padding: 10px;
+                }
+
+                &.@{proImage-prefix}-shrink svg,
+                &.@{proImage-prefix}-rotate svg {
+                    padding: 12px;
+                }
+            }
+        }
+    }
+
+    &-item {
+        position: absolute;
+        top: 0;
+        left: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 100%;
+        height: 100%;
+        z-index: 10;
+        overflow: hidden;
+
+        &-mask {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+
+        .@{proImage-prefix}-content {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 0;
+            height: 0;
+
+            .@{proImage-prefix}-img-mask {
+                background: none;
+            }
+
+            &.@{proImage-prefix}-zoom-in {
+                opacity: 0.4;
+                animation: @keyframes-zoom-in 0.4s cubic-bezier(0.25, 0.8, 0.25, 1) both;
+            }
+
+            &.@{proImage-prefix}-zoom-out {
+                opacity: 1;
+                animation: @keyframes-zoom-out 0.4s cubic-bezier(0.25, 0.8, 0.25, 1) both;
+            }
+        }
+    }
+
+    &-footer {
+        box-sizing: border-box;
+        position: absolute;
+        left: 0;
+        bottom: 0;
+        padding: 10px;
+        width: 100%;
+        min-height: 44px;
+        line-height: 1.5;
+        font-size: 14px;
+        color: #ccc;
+        background-color: rgb(0 0 0 / 50%);
+        text-align: justify;
+        transition: opacity 0.4s linear;
+        z-index: 20;
+    }
+
+    &-close &-toolbar,
+    &-close &-toolbar:hover,
+    &-close &-footer,
+    &-close &-footer:hover {
+        opacity: 0;
+    }
+}
