@@ -1,8 +1,10 @@
+import { getLocale } from '@/locale'
 import { PureComponent } from '@/utils/component'
 import { debounce } from '@/utils/func'
 import { styles } from '@/utils/style/styles'
 import React from 'react'
 import Button from '../Button'
+import Popover from '../Popover/Popover'
 import { ClampLinesProps } from './type'
 
 interface ClampLinesState {
@@ -16,21 +18,13 @@ export default class ClampLines extends PureComponent<ClampLinesProps, ClampLine
         lines: 3,
         ellipsis: '...',
         showButton: true,
-        moreText: '展开',
-        lessText: '收起',
-        tag: 'div',
         text: '',
+        pop: false,
     }
 
     element: HTMLElement
 
     lineHeight = 0
-
-    start = 0
-
-    middle = 0
-
-    end = 0
 
     get originalText() {
         return this.props.text
@@ -66,6 +60,7 @@ export default class ClampLines extends PureComponent<ClampLinesProps, ClampLine
 
     componentDidUpdate(prevProps) {
         if (prevProps.text !== this.props.text || prevProps.lines !== this.props.lines) {
+            this.setState({ noClamp: false, expanded: true })
             this.clampLines()
         }
     }
@@ -143,29 +138,47 @@ export default class ClampLines extends PureComponent<ClampLinesProps, ClampLine
 
         if (noClamp || !showButton) return
 
-        const buttonText = expanded ? moreText : lessText
+        const buttonText = expanded ? moreText || getLocale('expand') : lessText || getLocale('collapse')
 
         return (
-            <Button onClick={this.handleClick} type="link">
+            <Button onClick={this.handleClick} type="link" style={{ padding: 0 }}>
                 {buttonText}
             </Button>
         )
     }
 
     render() {
-        const { tag, className, style } = this.props
+        const { className, style, pop } = this.props
 
-        const { text } = this.state
+        const { text, expanded } = this.state
 
         if (!this.originalText) {
             return null
         }
 
-        const Tag = tag as unknown as React.ElementType
+        if (pop && expanded) {
+            const width = this.element?.getBoundingClientRect()?.width
+
+            return (
+                <div className={className} style={styles({ wordBreak: 'break-all' }, style)}>
+                    <Popover
+                        innerAlwaysUpdate
+                        content={this.originalText}
+                        innerProps={{ style: { width, whiteSpace: 'break-spaces' } }}
+                        mouseEnterDelay={0.3}
+                        animation={false}
+                    >
+                        <div ref={this.bindElement}>{text}</div>
+                    </Popover>
+
+                    {this.renderButton()}
+                </div>
+            )
+        }
 
         return (
             <div className={className} style={styles({ wordBreak: 'break-all' }, style)}>
-                <Tag ref={this.bindElement}>{text}</Tag>
+                <div ref={this.bindElement}>{text}</div>
 
                 {this.renderButton()}
             </div>

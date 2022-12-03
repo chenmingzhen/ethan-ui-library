@@ -61,4 +61,6 @@ export default {
     search: 'search',
     urlInvalidMsg: 'Picture format is incorrect, please upload again',
     uploadFail: 'Upload Fail',
+    expand: 'expand',
+    collapse: 'collapse',
 }

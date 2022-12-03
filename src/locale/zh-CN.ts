@@ -47,4 +47,6 @@ export default {
     search: '搜索',
     urlInvalidMsg: '图片格式不正确，请重新上传',
     uploadFail: '上传失败',
+    expand: '展开',
+    collapse: '收起',
 }

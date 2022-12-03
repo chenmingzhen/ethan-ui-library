@@ -7,7 +7,7 @@ export interface ClampLinesProps {
     showButton?: boolean
     moreText?: string
     lessText?: string
-    tag: keyof HTMLElementTagNameMap
     className?: string
     style?: React.CSSProperties
+    pop?: boolean
 }
