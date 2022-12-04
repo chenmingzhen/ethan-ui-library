@@ -141,6 +141,7 @@
         height: 100%;
         z-index: 10;
         overflow: hidden;
+        transition: transform 0.6s cubic-bezier(0.25, 0.8, 0.25, 1);
 
         &-mask {
             position: absolute;
@@ -158,10 +159,6 @@
             width: 0;
             height: 0;
 
-            .@{proImage-prefix}-img-mask {
-                background: none;
-            }
-
             &.@{proImage-prefix}-zoom-in {
                 opacity: 0.4;
                 animation: @keyframes-zoom-in 0.4s cubic-bezier(0.25, 0.8, 0.25, 1) both;
@@ -171,7 +168,51 @@
                 opacity: 1;
                 animation: @keyframes-zoom-out 0.4s cubic-bezier(0.25, 0.8, 0.25, 1) both;
             }
+
+            img {
+                cursor: grab;
+                will-change: transform;
+            }
         }
+    }
+
+    &-angle-left,
+    &-angle-right {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 70px;
+        height: 100px;
+        margin: auto;
+        opacity: 0.75;
+        z-index: 20;
+        cursor: pointer;
+        user-select: none;
+        transition: opacity 0.2s linear;
+
+        &:hover {
+            opacity: 1;
+        }
+
+        svg {
+            box-sizing: content-box;
+            padding: 10px;
+            width: 24px;
+            height: 24px;
+            fill: white;
+            background: rgb(0 0 0 / 30%);
+        }
+    }
+
+    &-angle-left {
+        left: 0;
+    }
+
+    &-angle-right {
+        right: 0;
     }
 
     &-footer {

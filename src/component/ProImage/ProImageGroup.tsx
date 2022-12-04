@@ -6,7 +6,6 @@ import { ProImageGroupProps } from './type'
 const ProImageGroup: React.FC<ProImageGroupProps> = function (props) {
     const [current, updateCurrent] = useState(0)
     const [proImages, updateProImages] = useState([])
-    const [visible, updateVisible] = useState(false)
 
     const handleAddImage = useCallback((proImageItem) => {
         updateProImages((list) => {
@@ -32,17 +31,24 @@ const ProImageGroup: React.FC<ProImageGroupProps> = function (props) {
             const nextCurrent = proImages.findIndex((item) => item.key === key)
 
             updateCurrent(nextCurrent)
-            updateVisible(true)
 
             openPreviewImage(proImages, nextCurrent)
         },
         [proImages]
     )
 
-    const { children } = props
+    const { children, loadingElement, errorElement } = props
 
     return (
-        <Context.Provider value={{ addImage: handleAddImage, removeImage: handleRemoveImage, onShow: handleShow }}>
+        <Context.Provider
+            value={{
+                addImage: handleAddImage,
+                removeImage: handleRemoveImage,
+                onShow: handleShow,
+                loadingElement,
+                errorElement,
+            }}
+        >
             {children}
         </Context.Provider>
     )

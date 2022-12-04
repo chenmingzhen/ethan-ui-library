@@ -1,25 +1,23 @@
 import React from 'react'
 import { PureComponent } from '@/utils/component'
 import { proImageClass } from '@/styles'
-import Image from '../Image'
-import { OriginRect, ProImageAnimation, ProImageSliderItemProps } from './type'
+import { ProImageAnimation, ProImageSliderItemProps } from './type'
 import { getAnimateOrigin, getSuitableImageSize } from './util'
+import Photo from './Photo'
 
 interface ProImageSliderItemState {
     naturalWidth: number
     naturalHeight: number
     width: number
     height: number
-    x: number
-    y: number
-    scale: number
     rotate: number
     loaded: boolean
+    error: boolean
+    /** 如果image已经打开过一次 不需要显示Loading,避免出现loading闪烁 */
+    pendding: boolean
 }
 
 class ProImageSliderItem extends PureComponent<ProImageSliderItemProps, ProImageSliderItemState> {
-    originRect: OriginRect
-
     constructor(props: ProImageSliderItemProps) {
         super(props)
 
@@ -28,18 +26,26 @@ class ProImageSliderItem extends PureComponent<ProImageSliderItemProps, ProImage
             naturalHeight: 0,
             width: undefined,
             height: undefined,
-            x: 0,
-            y: 0,
-            scale: 1,
             rotate: 0,
             loaded: false,
+            error: false,
+            pendding: true,
         }
+    }
 
-        const { top, left, width, height } = props.proImageItem.dom.getBoundingClientRect()
+    componentDidMount() {
+        super.componentDidMount()
 
-        this.originRect = {
-            clientX: left + width / 2,
-            clientY: top + height / 2,
+        setTimeout(() => {
+            if (this.state.loaded || this.state.error) {
+                this.setState({ pendding: false })
+            }
+        }, 0)
+    }
+
+    componentDidUpdate(): void {
+        if ((this.state.loaded || this.state.error) && this.state.pendding) {
+            this.setState({ pendding: false })
         }
     }
 
@@ -56,26 +62,36 @@ class ProImageSliderItem extends PureComponent<ProImageSliderItemProps, ProImage
         })
     }
 
+    handleImageError = () => {
+        this.setState({ error: true })
+    }
+
     render() {
-        const { width, height, loaded } = this.state
-        const { animation, proImageItem } = this.props
+        const { width, height, loaded, error, pendding } = this.state
+        const { animation, proImageItem, active, style } = this.props
 
         return (
-            <div className={proImageClass('item')}>
+            <div className={proImageClass('item')} style={style}>
                 <div className={proImageClass('item-mask')} />
 
-                <Image
+                <div
                     className={proImageClass('content', {
-                        'zoom-in': loaded && animation === ProImageAnimation.IN,
-                        'zoom-out': loaded && animation === ProImageAnimation.OUT,
+                        'zoom-in': loaded && active ? animation === ProImageAnimation.IN : false,
+                        'zoom-out': loaded && active ? animation === ProImageAnimation.OUT : false,
                     })}
-                    src={proImageItem.src}
-                    onLoad={this.handleImageLoad}
-                    width={width}
-                    height={height}
-                    style={{ transformOrigin: loaded ? getAnimateOrigin(this.originRect) : undefined }}
-                    imageMaskClassName={proImageClass('img-mask')}
-                />
+                    style={{ transformOrigin: loaded && active ? getAnimateOrigin(proImageItem.dom) : undefined }}
+                >
+                    <Photo
+                        src={proImageItem.src}
+                        loaded={loaded}
+                        onLoad={this.handleImageLoad}
+                        width={width}
+                        height={height}
+                        error={error}
+                        pendding={pendding}
+                        onError={this.handleImageError}
+                    />
+                </div>
             </div>
         )
     }

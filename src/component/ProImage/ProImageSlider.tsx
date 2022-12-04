@@ -5,6 +5,7 @@ import { proImageClass } from '@/styles'
 import { ProImageAnimation, ProImageSliderProps } from './type'
 import Icons from '../icons'
 import ProImageSliderItem from './ProImageSliderItem'
+import { horizontalOffset } from './variables'
 
 interface ProImageSliderState {
     translateX: number
@@ -12,6 +13,7 @@ interface ProImageSliderState {
     animation: ProImageAnimation
     currentIndex: number
     visible: boolean
+    backdropOpacity: number
 }
 
 class ProImageSlider extends PureComponent<ProImageSliderProps, ProImageSliderState> {
@@ -21,27 +23,27 @@ class ProImageSlider extends PureComponent<ProImageSliderProps, ProImageSliderSt
         const { currentIndex } = this.state
         const { proImageItems } = this.props
 
-        return proImageItems.slice(
-            // 加载相邻三张
-            Math.max(currentIndex - 1, 0),
-            Math.min(currentIndex + 2, proImageItems.length + 1)
-        )
+        /** 加载相邻三张 */
+        return proImageItems.slice(Math.max(currentIndex - 1, 0), Math.min(currentIndex + 1, proImageItems.length) + 1)
     }
 
-    constructor(props) {
+    constructor(props: ProImageSliderProps) {
         super(props)
 
+        const { currentIndex } = props
+
         this.state = {
-            translateX: 0,
+            translateX: currentIndex * -(window.innerWidth + horizontalOffset),
             animationVisible: true,
             animation: ProImageAnimation.IN,
-            currentIndex: 0,
+            currentIndex,
             visible: true,
+            backdropOpacity: 1,
         }
     }
 
     componentDidMount() {
-        const { style } = document.body
+        const { style } = document.body.parentNode as HTMLElement
 
         this.originalBodyOverflow = style.overflow
 
@@ -49,7 +51,7 @@ class ProImageSlider extends PureComponent<ProImageSliderProps, ProImageSliderSt
     }
 
     componentWillUnmount() {
-        const { style } = document.body
+        const { style } = document.body.parentNode as HTMLElement
 
         style.overflow = this.originalBodyOverflow
     }
@@ -77,16 +79,44 @@ class ProImageSlider extends PureComponent<ProImageSliderProps, ProImageSliderSt
         )
     }
 
-    render() {
-        const { proImageItems } = this.props
+    handleIndexChange = (currentIndex) => {
+        const { innerWidth } = window
 
-        const { animationVisible, translateX, animation, visible, currentIndex } = this.state
+        const translateX = currentIndex * -(innerWidth + horizontalOffset)
+
+        this.setState({ translateX, currentIndex })
+    }
+
+    handleNext = () => {
+        const { proImageItems } = this.props
+        const { currentIndex } = this.state
+
+        if (currentIndex < proImageItems.length - 1) {
+            this.handleIndexChange(currentIndex + 1)
+        }
+    }
+
+    handlePrevious = () => {
+        const { currentIndex } = this.state
+
+        if (currentIndex > 0) {
+            this.handleIndexChange(currentIndex - 1)
+        }
+    }
+
+    render() {
+        const { proImageItems, loadingElement, errorElement } = this.props
+
+        const { animationVisible, translateX, animation, visible, currentIndex, backdropOpacity } = this.state
 
         if (!visible) return null
 
         const currentImage = proImageItems[currentIndex]
         const intro = currentImage && currentImage.intro
-
+        const opacity = animationVisible ? backdropOpacity : backdropOpacity
+        const { innerWidth } = window
+        const transform = `translate3d(${translateX}px, 0px, 0)`
+        const { length } = proImageItems
         return (
             <div className={classnames(proImageClass('_', animation === ProImageAnimation.OUT && 'close'))}>
                 <div
@@ -94,6 +124,9 @@ class ProImageSlider extends PureComponent<ProImageSliderProps, ProImageSliderSt
                         'fade-in': animation === ProImageAnimation.IN,
                         'fade-out': animation === ProImageAnimation.OUT,
                     })}
+                    style={{
+                        background: `rgba(0, 0, 0, ${opacity})`,
+                    }}
                     onAnimationEnd={this.handleBgAnimationEnd}
                 />
 
@@ -115,9 +148,39 @@ class ProImageSlider extends PureComponent<ProImageSliderProps, ProImageSliderSt
                     </div>
                 </div>
 
-                {this.displayedImages.map((item) => (
-                    <ProImageSliderItem proImageItem={item} animation={animation} key={item.key} />
-                ))}
+                {this.displayedImages.map((item, index) => {
+                    const realIndex = currentIndex === 0 ? currentIndex + index : currentIndex - 1 + index
+
+                    return (
+                        <ProImageSliderItem
+                            proImageItem={item}
+                            animation={animation}
+                            key={item.key}
+                            active={realIndex === currentIndex}
+                            loadingElement={loadingElement || item.loadingElement}
+                            errorElement={errorElement || item.errorElement}
+                            style={{
+                                /** 每个PhotoView设置对应的Left，通过Transform的改变去驱动位置的更新 */
+                                left: `${(innerWidth + horizontalOffset) * realIndex}px`,
+                                WebkitTransform: transform,
+                                transform,
+                            }}
+                        />
+                    )
+                })}
+
+                <>
+                    {currentIndex !== 0 && (
+                        <div className={proImageClass('angle-left')} onClick={this.handlePrevious}>
+                            {Icons.AngleLeft}
+                        </div>
+                    )}
+                    {currentIndex + 1 < length && (
+                        <div className={proImageClass('angle-right')} onClick={this.handleNext}>
+                            {Icons.AngleRight}
+                        </div>
+                    )}
+                </>
 
                 {intro && <div className={proImageClass('footer')}>{intro}</div>}
             </div>

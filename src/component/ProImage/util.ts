@@ -1,17 +1,14 @@
-import { OriginRect } from './type'
-
 export const getSuitableImageSize = (naturalWidth: number, naturalHeight: number, rotate: number) => {
-    let width
-    let height
-    let y = 0
+    let width: number
+    let height: number
     let { innerWidth, innerHeight } = window
     const isVertical = rotate % 180 !== 0
 
-    // 若图片不是水平则调换宽高
     if (isVertical) {
         ;[innerHeight, innerWidth] = [innerWidth, innerHeight]
     }
 
+    /** 根据原图缩放比计算合适的宽高 */
     const autoWidth = (naturalWidth / naturalHeight) * innerHeight
     const autoHeight = (naturalHeight / naturalWidth) * innerWidth
 
@@ -21,18 +18,15 @@ export const getSuitableImageSize = (naturalWidth: number, naturalHeight: number
     } else if (naturalWidth < innerWidth && naturalHeight >= innerHeight) {
         width = autoWidth
         height = innerHeight
-    } else if (naturalWidth >= innerWidth && naturalHeight < innerHeight) {
-        width = innerWidth
-        height = autoHeight
-    } else if (naturalWidth / naturalHeight > innerWidth / innerHeight) {
+    } else if (
+        (naturalWidth >= innerWidth && naturalHeight < innerHeight) ||
+        naturalWidth / naturalHeight > innerWidth / innerHeight
+    ) {
         width = innerWidth
         height = autoHeight
     } else if (naturalHeight / naturalWidth >= 3 && !isVertical) {
-        // 长图模式
         width = innerWidth
         height = autoHeight
-        // 默认定位到顶部区域
-        y = (height - innerHeight) / 2
     } else {
         width = autoWidth
         height = innerHeight
@@ -40,21 +34,19 @@ export const getSuitableImageSize = (naturalWidth: number, naturalHeight: number
     return {
         width: Math.floor(width),
         height: Math.floor(height),
-        x: 0,
-        y,
-        scale: 1,
     }
 }
 
-export const getAnimateOrigin = (originRect: OriginRect): string | undefined => {
-    if (originRect) {
-        const { innerWidth, innerHeight } = window
+/** ProImage中心点到屏幕中心的距离 */
+export const getAnimateOrigin = (originElement: HTMLDivElement) => {
+    if (!originElement) return undefined
 
-        const xOrigin = -innerWidth / 2 + originRect.clientX
-        const yOrigin = -innerHeight / 2 + originRect.clientY
+    const rect = originElement.getBoundingClientRect()
 
-        return `${xOrigin}px ${yOrigin}px`
-    }
+    const { innerWidth, innerHeight } = window
 
-    return undefined
+    const xOrigin = rect.left + rect.width / 2 - innerWidth / 2
+    const yOrigin = rect.top + rect.height / 2 - innerHeight / 2
+
+    return `${xOrigin}px ${yOrigin}px`
 }

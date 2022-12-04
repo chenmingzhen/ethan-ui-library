@@ -1,29 +1,32 @@
+import React from 'react'
 import { ImageProps } from '../Image/type'
 
-export interface ProImageProps extends ImageProps {
+export interface ProImageProps extends Omit<ImageProps, 'target'>, Pick<PhotoProps, 'loadingElement' | 'errorElement'> {
     intro?: string
 }
 
-export interface ProImageItem {
+export interface ProImageItem extends Pick<PhotoProps, 'loadingElement' | 'errorElement'> {
     src: string
     intro?: string
     key: string
     dom: HTMLDivElement
 }
 
-export interface ProImageSliderProps {
+export interface ProImageSliderProps extends Pick<PhotoProps, 'loadingElement' | 'errorElement'> {
     proImageItems: ProImageItem[]
-    current: number
+    currentIndex: number
     onClose(): void
 }
 
-export interface ProImageContextProps {
+export interface ProImageContextProps extends Pick<PhotoProps, 'loadingElement' | 'errorElement'> {
     addImage(item: ProImageItem): void
     removeImage(key: string): void
     onShow(key: string): void
 }
 
-export interface ProImageGroupProps {}
+export interface ProImageGroupProps extends Pick<PhotoProps, 'loadingElement' | 'errorElement'> {
+    children: React.ReactNode
+}
 
 export enum ProImageAnimation {
     IN,
@@ -31,12 +34,22 @@ export enum ProImageAnimation {
     NONE,
 }
 
-export interface ProImageSliderItemProps {
+export interface ProImageSliderItemProps extends Pick<PhotoProps, 'loadingElement' | 'errorElement'> {
     proImageItem: ProImageItem
     animation: ProImageAnimation
+    active: boolean
+    style?: React.CSSProperties
 }
 
-export interface OriginRect {
-    clientX: number
-    clientY: number
+export interface PhotoProps extends React.RefAttributes<HTMLImageElement> {
+    src: string
+    loaded: boolean
+    error: boolean
+    width: number
+    height: number
+    pendding: boolean
+    onLoad(evt): void
+    onError(): void
+    loadingElement?: JSX.Element
+    errorElement?: JSX.Element
 }

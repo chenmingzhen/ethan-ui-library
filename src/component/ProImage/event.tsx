@@ -21,8 +21,8 @@ function getContainer() {
     return container
 }
 
-export function openPreviewImage(photoItems: ProImageItem[], current = 0) {
+export function openPreviewImage(photoItems: ProImageItem[], currentIndex = 0) {
     const div = getContainer()
 
-    ReactDOM.render(<ProImageSlider proImageItems={photoItems} current={current} onClose={close} />, div)
+    ReactDOM.render(<ProImageSlider proImageItems={photoItems} currentIndex={currentIndex} onClose={close} />, div)
 }
