@@ -2,7 +2,7 @@ import React from 'react'
 import { PureComponent } from '@/utils/component'
 import { proImageClass } from '@/styles'
 import { ProImageAnimation, ProImageSliderItemProps } from './type'
-import { getAnimateOrigin, getSuitableImageSize } from './util'
+import { getAnimateOrigin, getSuitableImageSize, handleContinueClick } from './util'
 import Photo from './Photo'
 
 interface ProImageSliderItemState {
@@ -14,7 +14,9 @@ interface ProImageSliderItemState {
     loaded: boolean
     error: boolean
     /** 如果image已经打开过一次 不需要显示Loading,避免出现loading闪烁 */
-    pendding: boolean
+    pending: boolean
+    clientX: number
+    clientY: number
 }
 
 class ProImageSliderItem extends PureComponent<ProImageSliderItemProps, ProImageSliderItemState> {
@@ -29,7 +31,9 @@ class ProImageSliderItem extends PureComponent<ProImageSliderItemProps, ProImage
             rotate: 0,
             loaded: false,
             error: false,
-            pendding: true,
+            pending: true,
+            clientX: undefined,
+            clientY: undefined,
         }
     }
 
@@ -38,15 +42,23 @@ class ProImageSliderItem extends PureComponent<ProImageSliderItemProps, ProImage
 
         setTimeout(() => {
             if (this.state.loaded || this.state.error) {
-                this.setState({ pendding: false })
+                this.setState({ pending: false })
             }
         }, 0)
+
+        window.addEventListener('mouseup', this.handleMouseUp)
     }
 
     componentDidUpdate(): void {
-        if ((this.state.loaded || this.state.error) && this.state.pendding) {
-            this.setState({ pendding: false })
+        if ((this.state.loaded || this.state.error) && this.state.pending) {
+            this.setState({ pending: false })
         }
+    }
+
+    componentWillUnmount() {
+        super.componentWillUnmount()
+
+        window.removeEventListener('mouseup', this.handleMouseUp)
     }
 
     handleImageLoad = (evt) => {
@@ -66,8 +78,46 @@ class ProImageSliderItem extends PureComponent<ProImageSliderItemProps, ProImage
         this.setState({ error: true })
     }
 
+    handlePhotoSingleClick = () => {
+        const { onClick } = this.props
+
+        onClick()
+    }
+
+    handlePhotoClick = handleContinueClick(this.handlePhotoSingleClick, () => {})
+
+    handleMoveStart = (clientX: number, clientY: number) => {
+        this.setState({ clientX, clientY })
+    }
+
+    handleMoveEnd = (clientX: number, clientY: number) => {
+        if (!this.props.active) return
+
+        const hasMove = this.state.clientX !== clientX || this.state.clientY !== clientY
+
+        this.setState({ clientX, clientY }, () => {
+            if (!hasMove) {
+                this.handlePhotoClick(clientX, clientY)
+            }
+        })
+    }
+
+    handleMouseDown = (evt: React.MouseEvent) => {
+        evt.preventDefault()
+
+        const { clientX, clientY } = evt
+
+        this.handleMoveStart(clientX, clientY)
+    }
+
+    handleMouseUp = (evt: MouseEvent) => {
+        const { clientX, clientY } = evt
+
+        this.handleMoveEnd(clientX, clientY)
+    }
+
     render() {
-        const { width, height, loaded, error, pendding } = this.state
+        const { width, height, loaded, error, pending } = this.state
         const { animation, proImageItem, active, style } = this.props
 
         return (
@@ -88,8 +138,9 @@ class ProImageSliderItem extends PureComponent<ProImageSliderItemProps, ProImage
                         width={width}
                         height={height}
                         error={error}
-                        pendding={pendding}
+                        pending={pending}
                         onError={this.handleImageError}
+                        onMouseDown={this.handleMouseDown}
                     />
                 </div>
             </div>

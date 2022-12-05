@@ -1,4 +1,6 @@
-export const getSuitableImageSize = (naturalWidth: number, naturalHeight: number, rotate: number) => {
+import { debounce } from '@/utils/func'
+
+export function getSuitableImageSize(naturalWidth: number, naturalHeight: number, rotate: number) {
     let width: number
     let height: number
     let { innerWidth, innerHeight } = window
@@ -38,7 +40,7 @@ export const getSuitableImageSize = (naturalWidth: number, naturalHeight: number
 }
 
 /** ProImage中心点到屏幕中心的距离 */
-export const getAnimateOrigin = (originElement: HTMLDivElement) => {
+export function getAnimateOrigin(originElement: HTMLDivElement) {
     if (!originElement) return undefined
 
     const rect = originElement.getBoundingClientRect()
@@ -49,4 +51,28 @@ export const getAnimateOrigin = (originElement: HTMLDivElement) => {
     const yOrigin = rect.top + rect.height / 2 - innerHeight / 2
 
     return `${xOrigin}px ${yOrigin}px`
+}
+
+export function handleContinueClick(singleClick: (...args) => void, doubleClick: (...args) => void) {
+    let clickCount = 0
+
+    const debounceSingleClick = debounce((...args) => {
+        clickCount = 0
+
+        singleClick(...args)
+    }, 250)
+
+    return function (...args) {
+        clickCount += 1
+
+        debounceSingleClick()
+
+        if (clickCount === 2) {
+            debounceSingleClick.cancel()
+
+            clickCount = 0
+
+            doubleClick(...args)
+        }
+    }
 }

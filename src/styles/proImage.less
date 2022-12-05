@@ -5,8 +5,8 @@
 
 .@{proImage-prefix} {
     @keyframes-fade: ~'@{proImage-prefix}-fade';
-    @keyframes-zoom-in:~ '@{proImage-prefix}-in';
-    @keyframes-zoom-out:~ '@{proImage-prefix}-out';
+    @keyframes-zoom-in: ~'@{proImage-prefix}-in';
+    @keyframes-zoom-out: ~'@{proImage-prefix}-out';
 
     @keyframes @keyframes-fade {
         from {
@@ -73,6 +73,15 @@
         }
     }
 
+    &-hide-overlay {
+        .@{proImage-prefix}-toolbar,
+        .@{proImage-prefix}-footer,
+        .@{proImage-prefix}-angle-left,
+        .@{proImage-prefix}-angle-right {
+            opacity: 0;
+        }
+    }
+
     &-toolbar {
         position: absolute;
         left: 0;
@@ -84,7 +93,7 @@
         height: 44px;
         color: white;
         background-color: rgb(0 0 0 / 50%);
-        transition: opacity 0.4s linear;
+        transition: opacity 0.25s ease-in-out;
         z-index: 20;
 
         &:hover {

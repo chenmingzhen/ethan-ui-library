@@ -14,6 +14,7 @@ interface ProImageSliderState {
     currentIndex: number
     visible: boolean
     backdropOpacity: number
+    overlayVisible: boolean
 }
 
 class ProImageSlider extends PureComponent<ProImageSliderProps, ProImageSliderState> {
@@ -39,6 +40,7 @@ class ProImageSlider extends PureComponent<ProImageSliderProps, ProImageSliderSt
             currentIndex,
             visible: true,
             backdropOpacity: 1,
+            overlayVisible: false,
         }
     }
 
@@ -104,10 +106,17 @@ class ProImageSlider extends PureComponent<ProImageSliderProps, ProImageSliderSt
         }
     }
 
+    handlePhotoClick = () => {
+        const { overlayVisible } = this.state
+
+        this.setState({ overlayVisible: !overlayVisible })
+    }
+
     render() {
         const { proImageItems, loadingElement, errorElement } = this.props
 
-        const { animationVisible, translateX, animation, visible, currentIndex, backdropOpacity } = this.state
+        const { animationVisible, translateX, animation, visible, currentIndex, backdropOpacity, overlayVisible } =
+            this.state
 
         if (!visible) return null
 
@@ -117,8 +126,18 @@ class ProImageSlider extends PureComponent<ProImageSliderProps, ProImageSliderSt
         const { innerWidth } = window
         const transform = `translate3d(${translateX}px, 0px, 0)`
         const { length } = proImageItems
+        const isOverlayVisible = overlayVisible && animation === ProImageAnimation.NONE
+        console.log(overlayVisible)
         return (
-            <div className={classnames(proImageClass('_', animation === ProImageAnimation.OUT && 'close'))}>
+            <div
+                className={classnames(
+                    proImageClass(
+                        '_',
+                        animation === ProImageAnimation.OUT && 'close',
+                        !isOverlayVisible && 'hide-overlay'
+                    )
+                )}
+            >
                 <div
                     className={proImageClass('bg', {
                         'fade-in': animation === ProImageAnimation.IN,
@@ -153,18 +172,19 @@ class ProImageSlider extends PureComponent<ProImageSliderProps, ProImageSliderSt
 
                     return (
                         <ProImageSliderItem
-                            proImageItem={item}
-                            animation={animation}
-                            key={item.key}
-                            active={realIndex === currentIndex}
-                            loadingElement={loadingElement || item.loadingElement}
-                            errorElement={errorElement || item.errorElement}
                             style={{
                                 /** 每个PhotoView设置对应的Left，通过Transform的改变去驱动位置的更新 */
                                 left: `${(innerWidth + horizontalOffset) * realIndex}px`,
                                 WebkitTransform: transform,
                                 transform,
                             }}
+                            proImageItem={item}
+                            animation={animation}
+                            key={item.key}
+                            active={realIndex === currentIndex}
+                            loadingElement={loadingElement || item.loadingElement}
+                            errorElement={errorElement || item.errorElement}
+                            onClick={this.handlePhotoClick}
                         />
                     )
                 })}

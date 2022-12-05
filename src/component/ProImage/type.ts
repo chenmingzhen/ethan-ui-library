@@ -39,15 +39,16 @@ export interface ProImageSliderItemProps extends Pick<PhotoProps, 'loadingElemen
     animation: ProImageAnimation
     active: boolean
     style?: React.CSSProperties
+    onClick(): void
 }
 
-export interface PhotoProps extends React.RefAttributes<HTMLImageElement> {
+export interface PhotoProps extends React.HTMLAttributes<HTMLImageElement> {
     src: string
     loaded: boolean
     error: boolean
     width: number
     height: number
-    pendding: boolean
+    pending: boolean
     onLoad(evt): void
     onError(): void
     loadingElement?: JSX.Element
