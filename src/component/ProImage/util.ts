@@ -1,4 +1,5 @@
 import { debounce } from '@/utils/func'
+import { PhotoTouchEdgeState, TouchIntent, TriggerDirectionState } from './type'
 
 export function getSuitableImageSize(naturalWidth: number, naturalHeight: number, rotate: number) {
     let width: number
@@ -75,4 +76,36 @@ export function handleContinueClick(singleClick: (...args) => void, doubleClick:
             doubleClick(...args)
         }
     }
+}
+
+export function getPhotoTouchEdgeState(moveSize: number, photoSize: number, innerSize: number) {
+    const currentSize = photoSize
+
+    if (currentSize <= innerSize) {
+        return PhotoTouchEdgeState.NORMAL_LESS_SCREEN
+    }
+}
+
+/**
+ * 获取应该触发哪个方向的事件
+ * x轴：左右滑动 y轴:上下拉  */
+export function getTriggerDirectionState(
+    touchIntent: TouchIntent,
+    horizontalTouchEdgeState: PhotoTouchEdgeState,
+    verticalTouchEdgeState: PhotoTouchEdgeState,
+    prevTriggerDirectionState: TriggerDirectionState
+) {
+    if (prevTriggerDirectionState === TriggerDirectionState.X_AXIS || touchIntent === TouchIntent.X_SLIDE) {
+        return TriggerDirectionState.X_AXIS
+    }
+
+    if (
+        prevTriggerDirectionState === TriggerDirectionState.Y_AXIS ||
+        touchIntent === TouchIntent.Y_PULL_DOWN ||
+        touchIntent === TouchIntent.Y_PULL_UP
+    ) {
+        return TriggerDirectionState.Y_AXIS
+    }
+
+    return TriggerDirectionState.NONE
 }

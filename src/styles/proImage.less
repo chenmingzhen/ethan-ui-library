@@ -150,7 +150,10 @@
         height: 100%;
         z-index: 10;
         overflow: hidden;
-        transition: transform 0.6s cubic-bezier(0.25, 0.8, 0.25, 1);
+
+        &.@{proImage-prefix}-should-transition {
+            transition: transform 0.6s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
 
         &-mask {
             position: absolute;
@@ -181,6 +184,10 @@
             img {
                 cursor: grab;
                 will-change: transform;
+
+                &:active {
+                    cursor: grabbing;
+                }
             }
         }
     }

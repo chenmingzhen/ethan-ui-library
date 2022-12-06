@@ -2,10 +2,10 @@ import React from 'react'
 import { PureComponent } from '@/utils/component'
 import classnames from 'classnames'
 import { proImageClass } from '@/styles'
-import { ProImageAnimation, ProImageSliderProps } from './type'
+import { ProImageAnimation, ProImageSliderProps, TriggerDirectionState } from './type'
 import Icons from '../icons'
 import ProImageSliderItem from './ProImageSliderItem'
-import { horizontalOffset } from './variables'
+import { horizontalOffset, maxMoveOffset } from './variables'
 
 interface ProImageSliderState {
     translateX: number
@@ -15,6 +15,8 @@ interface ProImageSliderState {
     visible: boolean
     backdropOpacity: number
     overlayVisible: boolean
+    lastClientX: number
+    touched: boolean
 }
 
 class ProImageSlider extends PureComponent<ProImageSliderProps, ProImageSliderState> {
@@ -41,6 +43,7 @@ class ProImageSlider extends PureComponent<ProImageSliderProps, ProImageSliderSt
             visible: true,
             backdropOpacity: 1,
             overlayVisible: false,
+            lastClientX: undefined,
         }
     }
 
@@ -112,11 +115,69 @@ class ProImageSlider extends PureComponent<ProImageSliderProps, ProImageSliderSt
         this.setState({ overlayVisible: !overlayVisible })
     }
 
+    handleHorizontalMove = (clientX: number) => {
+        const { innerWidth } = window
+        const { proImageItems } = this.props
+
+        this.setDraftState((state) => {
+            state.touched = true
+
+            if (state.lastClientX === undefined) {
+                state.lastClientX = clientX
+
+                return
+            }
+
+            const originOffsetClientX = clientX - state.lastClientX
+            let offsetClientX = originOffsetClientX
+
+            // 第一张和最后一张超出距离减半
+            if (
+                (state.currentIndex === 0 && originOffsetClientX > 0) ||
+                (state.currentIndex === proImageItems.length - 1 && originOffsetClientX < 0)
+            ) {
+                offsetClientX = originOffsetClientX / 2
+            }
+
+            state.translateX = -(innerWidth + horizontalOffset) * state.currentIndex + offsetClientX
+        })
+    }
+
+    handleSliderItemMove = (triggerDirectionState: TriggerDirectionState, clientX: number, clientY: number) => {
+        if (triggerDirectionState === TriggerDirectionState.X_AXIS) {
+            this.handleHorizontalMove(clientX)
+        }
+    }
+
+    handleSliderItemMoveEnd = (clientX: number, clientY: number) => {
+        const { proImageItems } = this.props
+        const { lastClientX, currentIndex } = this.state
+
+        const offsetClientX = clientX - lastClientX
+
+        if (offsetClientX < -maxMoveOffset && currentIndex < proImageItems.length - 1) {
+            this.handleIndexChange(currentIndex + 1)
+            return
+        }
+        // 上一张
+        if (offsetClientX > maxMoveOffset && currentIndex > 0) {
+            this.handleIndexChange(currentIndex - 1)
+        }
+    }
+
     render() {
         const { proImageItems, loadingElement, errorElement } = this.props
 
-        const { animationVisible, translateX, animation, visible, currentIndex, backdropOpacity, overlayVisible } =
-            this.state
+        const {
+            animationVisible,
+            translateX,
+            animation,
+            visible,
+            currentIndex,
+            backdropOpacity,
+            overlayVisible,
+            touched,
+        } = this.state
 
         if (!visible) return null
 
@@ -127,7 +188,7 @@ class ProImageSlider extends PureComponent<ProImageSliderProps, ProImageSliderSt
         const transform = `translate3d(${translateX}px, 0px, 0)`
         const { length } = proImageItems
         const isOverlayVisible = overlayVisible && animation === ProImageAnimation.NONE
-        console.log(overlayVisible)
+
         return (
             <div
                 className={classnames(
@@ -178,6 +239,7 @@ class ProImageSlider extends PureComponent<ProImageSliderProps, ProImageSliderSt
                                 WebkitTransform: transform,
                                 transform,
                             }}
+                            className={proImageClass('should-transition')}
                             proImageItem={item}
                             animation={animation}
                             key={item.key}
@@ -185,6 +247,8 @@ class ProImageSlider extends PureComponent<ProImageSliderProps, ProImageSliderSt
                             loadingElement={loadingElement || item.loadingElement}
                             errorElement={errorElement || item.errorElement}
                             onClick={this.handlePhotoClick}
+                            onMove={this.handleSliderItemMove}
+                            onMoveEnd={this.handleSliderItemMoveEnd}
                         />
                     )
                 })}

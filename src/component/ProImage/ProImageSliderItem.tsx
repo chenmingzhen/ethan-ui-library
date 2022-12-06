@@ -1,9 +1,17 @@
 import React from 'react'
 import { PureComponent } from '@/utils/component'
 import { proImageClass } from '@/styles'
-import { ProImageAnimation, ProImageSliderItemProps } from './type'
-import { getAnimateOrigin, getSuitableImageSize, handleContinueClick } from './util'
+import classnames from 'classnames'
+import { ProImageAnimation, ProImageSliderItemProps, TouchIntent, TriggerDirectionState } from './type'
+import {
+    getAnimateOrigin,
+    getPhotoTouchEdgeState,
+    getSuitableImageSize,
+    getTriggerDirectionState,
+    handleContinueClick,
+} from './util'
 import Photo from './Photo'
+import { minStartTouchOffset } from './variables'
 
 interface ProImageSliderItemState {
     naturalWidth: number
@@ -17,9 +25,15 @@ interface ProImageSliderItemState {
     pending: boolean
     clientX: number
     clientY: number
+    triggerDirectionState: TriggerDirectionState
+    touched: boolean
+    startMoveClientX: number
+    startMoveClientY: number
 }
 
 class ProImageSliderItem extends PureComponent<ProImageSliderItemProps, ProImageSliderItemState> {
+    touchIntent = TouchIntent.NONE
+
     constructor(props: ProImageSliderItemProps) {
         super(props)
 
@@ -34,6 +48,9 @@ class ProImageSliderItem extends PureComponent<ProImageSliderItemProps, ProImage
             pending: true,
             clientX: undefined,
             clientY: undefined,
+            triggerDirectionState: TriggerDirectionState.NONE,
+            startMoveClientX: undefined,
+            startMoveClientY: undefined,
         }
     }
 
@@ -47,6 +64,7 @@ class ProImageSliderItem extends PureComponent<ProImageSliderItemProps, ProImage
         }, 0)
 
         window.addEventListener('mouseup', this.handleMouseUp)
+        window.addEventListener('mousemove', this.handleMouseMove)
     }
 
     componentDidUpdate(): void {
@@ -59,6 +77,7 @@ class ProImageSliderItem extends PureComponent<ProImageSliderItemProps, ProImage
         super.componentWillUnmount()
 
         window.removeEventListener('mouseup', this.handleMouseUp)
+        window.removeEventListener('mousemove', this.handleMouseMove)
     }
 
     handleImageLoad = (evt) => {
@@ -87,19 +106,34 @@ class ProImageSliderItem extends PureComponent<ProImageSliderItemProps, ProImage
     handlePhotoClick = handleContinueClick(this.handlePhotoSingleClick, () => {})
 
     handleMoveStart = (clientX: number, clientY: number) => {
-        this.setState({ clientX, clientY })
+        this.setState({ clientX, clientY, startMoveClientX: clientX, startMoveClientY: clientY, touched: true })
     }
 
-    handleMoveEnd = (clientX: number, clientY: number) => {
-        if (!this.props.active) return
+    handleMoveEnd = (nextClientX: number, nextClientY: number) => {
+        const { clientX, clientY, touched } = this.state
+        const { active, onMoveEnd } = this.props
 
-        const hasMove = this.state.clientX !== clientX || this.state.clientY !== clientY
+        if (!active || !touched) return
 
-        this.setState({ clientX, clientY }, () => {
-            if (!hasMove) {
-                this.handlePhotoClick(clientX, clientY)
+        const hasMove = clientX !== nextClientX || clientY !== nextClientY
+
+        this.setState(
+            {
+                clientX: undefined,
+                clientY: undefined,
+                startMoveClientX: undefined,
+                startMoveClientY: undefined,
+                touched: false,
+                triggerDirectionState: TriggerDirectionState.NONE,
+            },
+            () => {
+                onMoveEnd(nextClientX, nextClientY)
+
+                if (!hasMove) {
+                    this.handlePhotoClick(nextClientX, nextClientY)
+                }
             }
-        })
+        )
     }
 
     handleMouseDown = (evt: React.MouseEvent) => {
@@ -116,12 +150,62 @@ class ProImageSliderItem extends PureComponent<ProImageSliderItemProps, ProImage
         this.handleMoveEnd(clientX, clientY)
     }
 
+    handleMove = (nextClientX: number, nextClientY: number) => {
+        const { active, onMove } = this.props
+
+        const { clientX, clientY, width, height, triggerDirectionState, touched, startMoveClientX, startMoveClientY } =
+            this.state
+
+        if (!active || !touched) return
+
+        if ((this.touchIntent = TouchIntent.NONE)) {
+            /** 是否X无移动 */
+            const isStayX = Math.abs(nextClientX - clientX) <= minStartTouchOffset
+            /** 是否Y无移动 */
+            const isStayY = Math.abs(nextClientY - clientY) <= minStartTouchOffset
+
+            // 初始移动距离不足
+            if (isStayX && isStayY) return
+
+            /** X无移动，则看Y */
+            this.touchIntent = isStayX
+                ? nextClientY > clientY
+                    ? TouchIntent.Y_PULL_DOWN
+                    : TouchIntent.Y_PULL_UP
+                : TouchIntent.X_SLIDE
+        }
+
+        /** 移动的距离 */
+        const moveX = nextClientX - startMoveClientX
+        const moveY = nextClientY - startMoveClientY
+        const { innerWidth, innerHeight } = window
+        const horizontalTouchEdgeState = getPhotoTouchEdgeState(moveX, width, innerWidth)
+        const verticalTouchEdgeState = getPhotoTouchEdgeState(moveY, height, innerHeight)
+
+        const currentTriggerDirectionState = getTriggerDirectionState(
+            this.touchIntent,
+            horizontalTouchEdgeState,
+            verticalTouchEdgeState,
+            triggerDirectionState
+        )
+
+        if (currentTriggerDirectionState !== TriggerDirectionState.NONE) {
+            onMove(currentTriggerDirectionState, nextClientX, nextClientY)
+        }
+    }
+
+    handleMouseMove = (evt: MouseEvent) => {
+        const { clientX, clientY } = evt
+
+        this.handleMove(clientX, clientY)
+    }
+
     render() {
         const { width, height, loaded, error, pending } = this.state
-        const { animation, proImageItem, active, style } = this.props
+        const { animation, proImageItem, active, style, className } = this.props
 
         return (
-            <div className={proImageClass('item')} style={style}>
+            <div className={classnames(proImageClass('item'), className)} style={style}>
                 <div className={proImageClass('item-mask')} />
 
                 <div
