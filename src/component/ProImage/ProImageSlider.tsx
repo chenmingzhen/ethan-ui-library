@@ -44,6 +44,7 @@ class ProImageSlider extends PureComponent<ProImageSliderProps, ProImageSliderSt
             backdropOpacity: 1,
             overlayVisible: false,
             lastClientX: undefined,
+            touched: false,
         }
     }
 
@@ -155,14 +156,30 @@ class ProImageSlider extends PureComponent<ProImageSliderProps, ProImageSliderSt
 
         const offsetClientX = clientX - lastClientX
 
+        this.setState({ lastClientX: undefined, touched: false })
+
         if (offsetClientX < -maxMoveOffset && currentIndex < proImageItems.length - 1) {
             this.handleIndexChange(currentIndex + 1)
+
             return
         }
-        // 上一张
+
         if (offsetClientX > maxMoveOffset && currentIndex > 0) {
             this.handleIndexChange(currentIndex - 1)
+
+            return
         }
+
+        const singlePageWidth = window.innerWidth + horizontalOffset
+
+        // 当前偏移
+        const nextTranslateX = -singlePageWidth * currentIndex
+        const nextIndex = currentIndex
+
+        this.setState({
+            translateX: nextTranslateX,
+            currentIndex: nextIndex,
+        })
     }
 
     render() {
@@ -239,7 +256,7 @@ class ProImageSlider extends PureComponent<ProImageSliderProps, ProImageSliderSt
                                 WebkitTransform: transform,
                                 transform,
                             }}
-                            className={proImageClass('should-transition')}
+                            className={!touched && proImageClass('should-transition')}
                             proImageItem={item}
                             animation={animation}
                             key={item.key}
