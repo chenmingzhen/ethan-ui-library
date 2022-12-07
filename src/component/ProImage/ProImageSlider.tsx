@@ -15,7 +15,7 @@ interface ProImageSliderState {
     visible: boolean
     backdropOpacity: number
     overlayVisible: boolean
-    lastClientX: number
+    startMoveClientX: number
     touched: boolean
 }
 
@@ -43,7 +43,7 @@ class ProImageSlider extends PureComponent<ProImageSliderProps, ProImageSliderSt
             visible: true,
             backdropOpacity: 1,
             overlayVisible: false,
-            lastClientX: undefined,
+            startMoveClientX: undefined,
             touched: false,
         }
     }
@@ -85,12 +85,12 @@ class ProImageSlider extends PureComponent<ProImageSliderProps, ProImageSliderSt
         )
     }
 
-    handleIndexChange = (currentIndex) => {
+    handleIndexChange = (nextIndex: number) => {
         const { innerWidth } = window
 
-        const translateX = currentIndex * -(innerWidth + horizontalOffset)
+        const translateX = nextIndex * -(innerWidth + horizontalOffset)
 
-        this.setState({ translateX, currentIndex })
+        this.setState({ translateX, currentIndex: nextIndex })
     }
 
     handleNext = () => {
@@ -123,16 +123,14 @@ class ProImageSlider extends PureComponent<ProImageSliderProps, ProImageSliderSt
         this.setDraftState((state) => {
             state.touched = true
 
-            if (state.lastClientX === undefined) {
-                state.lastClientX = clientX
-
-                return
+            if (state.startMoveClientX === undefined) {
+                state.startMoveClientX = clientX
             }
 
-            const originOffsetClientX = clientX - state.lastClientX
+            const originOffsetClientX = clientX - state.startMoveClientX
+
             let offsetClientX = originOffsetClientX
 
-            // 第一张和最后一张超出距离减半
             if (
                 (state.currentIndex === 0 && originOffsetClientX > 0) ||
                 (state.currentIndex === proImageItems.length - 1 && originOffsetClientX < 0)
@@ -152,11 +150,11 @@ class ProImageSlider extends PureComponent<ProImageSliderProps, ProImageSliderSt
 
     handleSliderItemMoveEnd = (clientX: number, clientY: number) => {
         const { proImageItems } = this.props
-        const { lastClientX, currentIndex } = this.state
+        const { startMoveClientX, currentIndex } = this.state
 
-        const offsetClientX = clientX - lastClientX
+        const offsetClientX = clientX - startMoveClientX
 
-        this.setState({ lastClientX: undefined, touched: false })
+        this.setState({ startMoveClientX: undefined, touched: false })
 
         if (offsetClientX < -maxMoveOffset && currentIndex < proImageItems.length - 1) {
             this.handleIndexChange(currentIndex + 1)
@@ -170,9 +168,8 @@ class ProImageSlider extends PureComponent<ProImageSliderProps, ProImageSliderSt
             return
         }
 
+        /** 两端处理 */
         const singlePageWidth = window.innerWidth + horizontalOffset
-
-        // 当前偏移
         const nextTranslateX = -singlePageWidth * currentIndex
         const nextIndex = currentIndex
 
@@ -227,7 +224,7 @@ class ProImageSlider extends PureComponent<ProImageSliderProps, ProImageSliderSt
                     onAnimationEnd={this.handleBgAnimationEnd}
                 />
 
-                <div className={proImageClass('toolbar')}>
+                <div className={proImageClass('t oolbar')}>
                     <div className={proImageClass('counter')}>
                         {currentIndex + 1} / {proImageItems.length}
                     </div>
