@@ -5,17 +5,17 @@ import { proImageClass } from '@/styles'
 import { ProImageAnimation, ProImageSliderProps, TriggerDirectionState } from './type'
 import Icons from '../icons'
 import ProImageSliderItem from './ProImageSliderItem'
-import { horizontalOffset, maxMoveOffset } from './variables'
+import { DEFAULT_OPACITY, DRAG_CLOSE_RATIO, HORIZONTAL_PHOTO_OFFSET, SLIDE_MOVE_OFFSET } from './variables'
 
 interface ProImageSliderState {
     translateX: number
-    animationVisible: boolean
     animation: ProImageAnimation
     currentIndex: number
     visible: boolean
     backdropOpacity: number
     overlayVisible: boolean
     startMoveClientX: number
+    startMoveClientY: number
     touched: boolean
 }
 
@@ -36,14 +36,14 @@ class ProImageSlider extends PureComponent<ProImageSliderProps, ProImageSliderSt
         const { currentIndex } = props
 
         this.state = {
-            translateX: currentIndex * -(window.innerWidth + horizontalOffset),
-            animationVisible: true,
+            translateX: currentIndex * -(window.innerWidth + HORIZONTAL_PHOTO_OFFSET),
             animation: ProImageAnimation.IN,
             currentIndex,
             visible: true,
-            backdropOpacity: 1,
+            backdropOpacity: DEFAULT_OPACITY,
             overlayVisible: false,
             startMoveClientX: undefined,
+            startMoveClientY: undefined,
             touched: false,
         }
     }
@@ -88,7 +88,7 @@ class ProImageSlider extends PureComponent<ProImageSliderProps, ProImageSliderSt
     handleIndexChange = (nextIndex: number) => {
         const { innerWidth } = window
 
-        const translateX = nextIndex * -(innerWidth + horizontalOffset)
+        const translateX = nextIndex * -(innerWidth + HORIZONTAL_PHOTO_OFFSET)
 
         this.setState({ translateX, currentIndex: nextIndex })
     }
@@ -138,66 +138,86 @@ class ProImageSlider extends PureComponent<ProImageSliderProps, ProImageSliderSt
                 offsetClientX = originOffsetClientX / 2
             }
 
-            state.translateX = -(innerWidth + horizontalOffset) * state.currentIndex + offsetClientX
+            state.translateX = -(innerWidth + HORIZONTAL_PHOTO_OFFSET) * state.currentIndex + offsetClientX
+        })
+    }
+
+    handleVerticalMove = (clientY: number) => {
+        this.setDraftState((state) => {
+            state.touched = true
+
+            if (state.startMoveClientY === undefined) {
+                state.startMoveClientY = clientY
+            }
+
+            const offsetClientY = Math.abs(clientY - state.startMoveClientY)
+
+            const backdropOpacity = Math.max(Math.min(DEFAULT_OPACITY, DEFAULT_OPACITY - offsetClientY / 100 / 4), 0)
+
+            state.backdropOpacity = backdropOpacity
         })
     }
 
     handleSliderItemMove = (triggerDirectionState: TriggerDirectionState, clientX: number, clientY: number) => {
         if (triggerDirectionState === TriggerDirectionState.X_AXIS) {
             this.handleHorizontalMove(clientX)
+        } else if (triggerDirectionState === TriggerDirectionState.Y_AXIS) {
+            this.handleVerticalMove(clientY)
         }
     }
 
-    handleSliderItemMoveEnd = (clientX: number, clientY: number) => {
+    handleSliderItemMoveEnd = (triggerDirectionState: TriggerDirectionState, clientX: number, clientY: number) => {
         const { proImageItems } = this.props
-        const { startMoveClientX, currentIndex } = this.state
+        const { startMoveClientX, currentIndex, startMoveClientY } = this.state
 
         const offsetClientX = clientX - startMoveClientX
+        const offsetClientY = clientY - startMoveClientY
 
-        this.setState({ startMoveClientX: undefined, touched: false })
+        this.setState({ startMoveClientX: undefined, startMoveClientY: undefined, touched: false })
 
-        if (offsetClientX < -maxMoveOffset && currentIndex < proImageItems.length - 1) {
-            this.handleIndexChange(currentIndex + 1)
+        if (triggerDirectionState === TriggerDirectionState.X_AXIS) {
+            if (offsetClientX < -SLIDE_MOVE_OFFSET && currentIndex < proImageItems.length - 1) {
+                this.handleIndexChange(currentIndex + 1)
+
+                return
+            }
+
+            if (offsetClientX > SLIDE_MOVE_OFFSET && currentIndex > 0) {
+                this.handleIndexChange(currentIndex - 1)
+
+                return
+            }
+
+            /** 两端处理 */
+            const singlePageWidth = window.innerWidth + HORIZONTAL_PHOTO_OFFSET
+            const nextTranslateX = -singlePageWidth * currentIndex
+            const nextIndex = currentIndex
+
+            this.setState({
+                translateX: nextTranslateX,
+                currentIndex: nextIndex,
+            })
 
             return
         }
 
-        if (offsetClientX > maxMoveOffset && currentIndex > 0) {
-            this.handleIndexChange(currentIndex - 1)
-
-            return
+        if (
+            triggerDirectionState === TriggerDirectionState.Y_AXIS &&
+            Math.abs(offsetClientY) > window.innerHeight * DRAG_CLOSE_RATIO
+        ) {
+            this.handleClose()
         }
-
-        /** 两端处理 */
-        const singlePageWidth = window.innerWidth + horizontalOffset
-        const nextTranslateX = -singlePageWidth * currentIndex
-        const nextIndex = currentIndex
-
-        this.setState({
-            translateX: nextTranslateX,
-            currentIndex: nextIndex,
-        })
     }
 
     render() {
         const { proImageItems, loadingElement, errorElement } = this.props
 
-        const {
-            animationVisible,
-            translateX,
-            animation,
-            visible,
-            currentIndex,
-            backdropOpacity,
-            overlayVisible,
-            touched,
-        } = this.state
+        const { translateX, animation, visible, currentIndex, backdropOpacity, overlayVisible, touched } = this.state
 
         if (!visible) return null
 
         const currentImage = proImageItems[currentIndex]
         const intro = currentImage && currentImage.intro
-        const opacity = animationVisible ? backdropOpacity : backdropOpacity
         const { innerWidth } = window
         const transform = `translate3d(${translateX}px, 0px, 0)`
         const { length } = proImageItems
@@ -219,12 +239,12 @@ class ProImageSlider extends PureComponent<ProImageSliderProps, ProImageSliderSt
                         'fade-out': animation === ProImageAnimation.OUT,
                     })}
                     style={{
-                        background: `rgba(0, 0, 0, ${opacity})`,
+                        background: `rgba(0, 0, 0, ${backdropOpacity})`,
                     }}
                     onAnimationEnd={this.handleBgAnimationEnd}
                 />
 
-                <div className={proImageClass('t oolbar')}>
+                <div className={proImageClass('toolbar')}>
                     <div className={proImageClass('counter')}>
                         {currentIndex + 1} / {proImageItems.length}
                     </div>
@@ -249,7 +269,7 @@ class ProImageSlider extends PureComponent<ProImageSliderProps, ProImageSliderSt
                         <ProImageSliderItem
                             style={{
                                 /** 每个PhotoView设置对应的Left，通过Transform的改变去驱动位置的更新 */
-                                left: `${(innerWidth + horizontalOffset) * realIndex}px`,
+                                left: `${(innerWidth + HORIZONTAL_PHOTO_OFFSET) * realIndex}px`,
                                 WebkitTransform: transform,
                                 transform,
                             }}

@@ -42,7 +42,7 @@ export interface ProImageSliderItemProps extends Pick<PhotoProps, 'loadingElemen
     onClick(): void
     onMove(triggerDirectionState: TriggerDirectionState, clientX: number, clientY: number): void
     className?: string
-    onMoveEnd(clientX: number, clientY: number): void
+    onMoveEnd(triggerDirectionState: TriggerDirectionState, clientX: number, clientY: number): void
 }
 
 export interface PhotoProps extends React.HTMLAttributes<HTMLImageElement> {
@@ -64,10 +64,10 @@ export enum CloseEdgeEnum {
 
 /** 滑动时候的移动 */
 export enum TouchIntent {
+    NONE,
     X_SLIDE, // x轴正常滑动
     Y_PULL_DOWN, // 下拉
     Y_PULL_UP, // 上拉
-    NONE,
 }
 
 /** 图片接触边界的类型  */
@@ -77,7 +77,7 @@ export enum PhotoTouchEdgeState {
 
 /** 触发事件的方向 */
 export enum TriggerDirectionState {
+    NONE,
     X_AXIS,
     Y_AXIS,
-    NONE,
 }

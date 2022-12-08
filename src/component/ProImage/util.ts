@@ -109,3 +109,57 @@ export function getTriggerDirectionState(
 
     return TriggerDirectionState.NONE
 }
+
+interface ComputedYAxisMovePositionParams {
+    currentX: number
+    currentY: number
+    nextClientX: number
+    nextClientY: number
+    moveX: number
+    moveY: number
+}
+
+// 在 JavaScript 中，你可以使用下列公式来计算缩放后的位置移动：
+// 计算缩放后的 x 坐标
+// new_x = (x - center_x) * scale + center_x + dx
+// 计算缩放后的 y 坐标
+// new_y = (y - center_y) * scale + center_y + dy
+
+// 在这里，x 和 y 是要缩放的坐标，center_x 和 center_y 是缩放中心，scale 是缩放比例，dx 和 dy 是要移动的水平和竖直距离。
+
+// 例如，如果要将坐标 (100, 100) 放大到原来的 2 倍，并以坐标 (50, 50) 为缩放中心，然后将坐标向右移动 10 个单位，向下移动 20 个单位，则可以使用下列代码计算出缩放后的坐标：
+// 计算缩放后的 x 坐标
+// new_x = (100 - 50) * 2 + 50 + 10 = 160
+// 计算缩放后的 y 坐标
+// new_y = (100 - 50) * 2 + 50 + 20 = 170
+
+/** y轴移动，获取photoItem对应的位置信息 */
+export function computedYAxisMovePosition(params: ComputedYAxisMovePositionParams) {
+    const { currentX, currentY, nextClientX, nextClientY, moveX, moveY } = params
+
+    const scaleRadio = 1
+
+    const nextOffsetX = nextClientX - (nextClientX - currentX) * scaleRadio
+    const nextOffsetY = nextClientY - (nextClientY - currentY) * scaleRadio
+
+    const nextX = nextOffsetX + moveX
+    const nextY = nextOffsetY + moveY
+
+    return {
+        currentX: nextX,
+        currentY: nextY,
+        lastMoveClientX: nextClientX,
+        lastMoveClientY: nextClientY,
+    }
+}
+
+export function computedYAxisMovePosition2(params: ComputedYAxisMovePositionParams) {
+    const { currentX, currentY, nextClientX, nextClientY, moveX, moveY } = params
+
+    return {
+        currentX: currentX + moveX,
+        currentY: currentY + moveY,
+        lastMoveClientX: nextClientX,
+        lastMoveClientY: nextClientY,
+    }
+}
