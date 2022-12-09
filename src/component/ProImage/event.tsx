@@ -3,26 +3,19 @@ import ReactDOM from 'react-dom'
 import ProImageSlider from './ProImageSlider'
 import { ProImageItem } from './type'
 
-let container: HTMLDivElement
+export function openProImageSlider(photoItems: ProImageItem[], currentIndex = 0) {
+    const container = document.createElement('div')
 
-function close() {
-    ReactDOM.unmountComponentAtNode(container)
-    document.body.removeChild(container)
-
-    container = null
-}
-
-function getContainer() {
-    if (container) return container
-
-    container = document.createElement('div')
     document.body.appendChild(container)
 
-    return container
-}
+    function close() {
+        ReactDOM.unmountComponentAtNode(container)
 
-export function openPreviewImage(photoItems: ProImageItem[], currentIndex = 0) {
-    const div = getContainer()
+        document.body.removeChild(container)
+    }
 
-    ReactDOM.render(<ProImageSlider proImageItems={photoItems} currentIndex={currentIndex} onClose={close} />, div)
+    ReactDOM.render(
+        <ProImageSlider proImageItems={photoItems} currentIndex={currentIndex} onClose={close} />,
+        container
+    )
 }

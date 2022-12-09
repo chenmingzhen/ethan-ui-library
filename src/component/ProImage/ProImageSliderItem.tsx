@@ -4,8 +4,9 @@ import { proImageClass } from '@/styles'
 import classnames from 'classnames'
 import { ProImageAnimation, ProImageSliderItemProps, TouchIntent, TriggerDirectionState } from './type'
 import {
-    computedYAxisMovePosition,
+    computedYAxisMoveOrScaleMovePosition,
     getAnimateOrigin,
+    getCorrectedPosition,
     getPhotoTouchEdgeState,
     getSuitableImageSize,
     getTriggerDirectionState,
@@ -22,7 +23,7 @@ interface ProImageSliderItemState {
     rotate: number
     loaded: boolean
     error: boolean
-    pending: boolean // 如果image已经打开过一次 不需要显示Loading,避免出现loading闪烁
+    pending: boolean // 由于是使用函数调用的方式打开组件，如果图片已经打开过一次（浏览器中已经缓存了图片） 不需要显示Loading,避免出现loading闪烁
     clientX: number
     clientY: number
     triggerDirectionState: TriggerDirectionState
@@ -31,6 +32,7 @@ interface ProImageSliderItemState {
     lastMoveClientY: number // 在TriggerDirectionState.X_AXIS上，表现为startMoveClientY(开始移动的clientY)
     currentX: number // 图片 X 偏移量 (仅在放大模式下或TriggerDirectionState.Y_AXIS移动中产生)
     currentY: number // 图片 y 偏移量(仅在放大模式下或TriggerDirectionState.Y_AXIS移动中产生)
+    scale: number
 }
 
 class ProImageSliderItem extends PureComponent<ProImageSliderItemProps, ProImageSliderItemState> {
@@ -56,6 +58,7 @@ class ProImageSliderItem extends PureComponent<ProImageSliderItemProps, ProImage
             lastMoveClientY: undefined,
             currentX: 0,
             currentY: 0,
+            scale: 1,
         }
     }
 
@@ -108,7 +111,29 @@ class ProImageSliderItem extends PureComponent<ProImageSliderItemProps, ProImage
         onClick()
     }
 
-    handlePhotoClick = handleContinueClick(this.handlePhotoSingleClick, () => {})
+    handlePhotoDoubleClick = (nextClientX: number, nextClientY: number) => {
+        const { width, naturalWidth, currentX, currentY, scale } = this.state
+
+        const position = computedYAxisMoveOrScaleMovePosition({
+            currentX,
+            currentY,
+            nextClientX,
+            nextClientY,
+            fromScale: scale,
+            /** 复原或放大 */
+            toScale: scale !== 1 ? 1 : Math.max(2, naturalWidth / width),
+        })
+
+        this.setState((state) => ({
+            ...state,
+            clientX: nextClientX,
+            clientY: nextClientY,
+            ...position,
+            ...getCorrectedPosition(position),
+        }))
+    }
+
+    handlePhotoClick = handleContinueClick(this.handlePhotoSingleClick, this.handlePhotoDoubleClick)
 
     handleMoveStart = (clientX: number, clientY: number) => {
         this.setState({ clientX, clientY, lastMoveClientX: clientX, lastMoveClientY: clientY, touched: true })
@@ -217,7 +242,7 @@ class ProImageSliderItem extends PureComponent<ProImageSliderItemProps, ProImage
         if (currentTriggerDirectionState !== TriggerDirectionState.X_AXIS) {
             this.setState((state) => ({
                 ...state,
-                ...computedYAxisMovePosition({ currentX, currentY, moveX, moveY, nextClientX, nextClientY }),
+                ...computedYAxisMoveOrScaleMovePosition({ currentX, currentY, moveX, moveY, nextClientX, nextClientY }),
             }))
         }
     }
@@ -229,11 +254,11 @@ class ProImageSliderItem extends PureComponent<ProImageSliderItemProps, ProImage
     }
 
     render() {
-        const { width, height, loaded, error, pending, currentX, currentY } = this.state
+        const { width, height, touched, loaded, error, pending, currentX, currentY, scale } = this.state
         const { animation, proImageItem, active, style, className } = this.props
 
         /** X轴移动由Slider驱动，y轴移动由Item驱动 */
-        const transform = `translate3d(${currentX}px, ${currentY}px, 0)`
+        const transform = `translate3d(${currentX}px, ${currentY}px, 0) scale(${scale})`
 
         return (
             <div className={classnames(proImageClass('item'), className)} style={style}>
@@ -256,6 +281,7 @@ class ProImageSliderItem extends PureComponent<ProImageSliderItemProps, ProImage
                         pending={pending}
                         onError={this.handleImageError}
                         onMouseDown={this.handleMouseDown}
+                        className={!touched && proImageClass('should-transition')}
                         style={{
                             WebkitTransform: transform,
                             transform,

@@ -27,7 +27,7 @@ const Photo: React.FC<PhotoProps> = (props) => {
         return <Spin />
     }
 
-    return errorElement
+    return errorElement || null
 }
 
 export default React.memo(Photo)

@@ -3,7 +3,7 @@ import { getUidStr } from '@/utils/uid'
 import { styles } from '@/utils/style/styles'
 import Image from '../Image'
 import { ProImageItem, ProImageProps } from './type'
-import { openPreviewImage } from './event'
+import { openProImageSlider } from './event'
 import ProImageContext from './context'
 
 const ProImage: React.FC<ProImageProps> = function (props) {
@@ -32,7 +32,7 @@ const ProImage: React.FC<ProImageProps> = function (props) {
                 errorElement,
             }
 
-            openPreviewImage([proImageItem])
+            openProImageSlider([proImageItem])
         }
     }, [])
 

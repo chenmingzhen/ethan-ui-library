@@ -1,4 +1,5 @@
 import { debounce } from '@/utils/func'
+import { toFixed } from '@/utils/numbers'
 import { PhotoTouchEdgeState, TouchIntent, TriggerDirectionState } from './type'
 
 export function getSuitableImageSize(naturalWidth: number, naturalHeight: number, rotate: number) {
@@ -115,8 +116,10 @@ interface ComputedYAxisMovePositionParams {
     currentY: number
     nextClientX: number
     nextClientY: number
-    moveX: number
-    moveY: number
+    moveX?: number
+    moveY?: number
+    fromScale?: number
+    toScale?: number
 }
 
 // 在 JavaScript 中，你可以使用下列公式来计算缩放后的位置移动：
@@ -127,29 +130,41 @@ interface ComputedYAxisMovePositionParams {
 
 // 在这里，x 和 y 是要缩放的坐标，center_x 和 center_y 是缩放中心，scale 是缩放比例，dx 和 dy 是要移动的水平和竖直距离。
 
-// 例如，如果要将坐标 (100, 100) 放大到原来的 2 倍，并以坐标 (50, 50) 为缩放中心，然后将坐标向右移动 10 个单位，向下移动 20 个单位，则可以使用下列代码计算出缩放后的坐标：
+// 例如，如果要将坐标 (0, 0) 放大到原来的 2 倍，并以坐标 (50, 50) 为缩放中心，然后将坐标向右移动 10 个单位，向下移动 10 个单位，则可以使用下列代码计算出缩放后的坐标：
 // 计算缩放后的 x 坐标
-// new_x = (100 - 50) * 2 + 50 + 10 = 160
+// new_x = (0 - 50) * 2 + 50 + 10 = -40
 // 计算缩放后的 y 坐标
-// new_y = (100 - 50) * 2 + 50 + 20 = 170
+// new_y = (0 - 50) * 2 + 50 + 10 = -40
 
-/** y轴移动，获取photoItem对应的位置信息 */
-export function computedYAxisMovePosition(params: ComputedYAxisMovePositionParams) {
-    const { currentX, currentY, nextClientX, nextClientY, moveX, moveY } = params
+/** 获取photoItemY轴移动或者缩放或缩放移动对应的位置信息 */
+export function computedYAxisMoveOrScaleMovePosition(params: ComputedYAxisMovePositionParams) {
+    const { currentX, currentY, nextClientX, nextClientY, moveX = 0, moveY = 0, fromScale = 1, toScale = 1 } = params
 
-    const scaleRadio = 1
+    const { innerWidth, innerHeight } = window
 
-    const nextOffsetX = nextClientX - (nextClientX - currentX) * scaleRadio
-    const nextOffsetY = nextClientY - (nextClientY - currentY) * scaleRadio
+    /** 屏幕的中心是原点(也是图片的transform-origin中心) */
+    const centerClientX = innerWidth / 2
+    const centerClientY = innerHeight / 2
 
-    const nextX = nextOffsetX + moveX
-    const nextY = nextOffsetY + moveY
+    const offsetScale = toFixed(toScale / fromScale, 3)
+
+    /** 点击的位置是缩放中心 */
+    const scaleCenterX = nextClientX - centerClientX
+    const scaleCenterY = nextClientY - centerClientY
+
+    /** 计算currentX，currentY在最新缩放比的x,y，再加上本次的偏移量 */
+    const dx = currentX * offsetScale + moveX
+    const dy = currentY * offsetScale + moveY
+
+    const newX = (0 - scaleCenterX) * offsetScale + scaleCenterX + dx
+    const newY = (0 - scaleCenterY) * offsetScale + scaleCenterY + dy
 
     return {
-        currentX: nextX,
-        currentY: nextY,
+        currentX: newX,
+        currentY: newY,
         lastMoveClientX: nextClientX,
         lastMoveClientY: nextClientY,
+        scale: toScale,
     }
 }
 
@@ -162,4 +177,15 @@ export function computedYAxisMovePosition2(params: ComputedYAxisMovePositionPara
         lastMoveClientX: nextClientX,
         lastMoveClientY: nextClientY,
     }
+}
+
+interface CorrectSuitablePositionParams {
+    currentX: number
+    currentY: number
+    scale: number
+}
+
+/** 大于1放大，小于等于1复原 */
+export function getCorrectedPosition({ currentX, currentY, scale }: CorrectSuitablePositionParams) {
+    return scale > 1 ? { currentX, currentY } : { currentX: 0, currentY: 0 }
 }

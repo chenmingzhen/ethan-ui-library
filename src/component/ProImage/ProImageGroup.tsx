@@ -1,6 +1,6 @@
 import React, { useCallback, useState } from 'react'
 import Context from './context'
-import { openPreviewImage } from './event'
+import { openProImageSlider } from './event'
 import { ProImageGroupProps } from './type'
 
 const ProImageGroup: React.FC<ProImageGroupProps> = function (props) {
@@ -32,7 +32,7 @@ const ProImageGroup: React.FC<ProImageGroupProps> = function (props) {
 
             updateCurrent(nextCurrent)
 
-            openPreviewImage(proImages, nextCurrent)
+            openProImageSlider(proImages, nextCurrent)
         },
         [proImages]
     )
