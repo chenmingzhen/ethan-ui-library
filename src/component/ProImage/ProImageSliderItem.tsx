@@ -126,6 +126,7 @@ class ProImageSliderItem extends PureComponent<ProImageSliderItemProps, ProImage
         })
 
         this.setState({
+            touched: false,
             clientX: nextClientX,
             clientY: nextClientY,
             ...position,
