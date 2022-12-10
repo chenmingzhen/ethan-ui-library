@@ -11,4 +11,7 @@ export const START_MOVE_OFFSET = 10
 export const DEFAULT_OPACITY = 1
 
 /** 拖动关闭的系数 */
-export const DRAG_CLOSE_RATIO = 0.2
+export const DRAG_CLOSE_RATIO = 0.15
+
+/** 手势滑动的距离 */
+export const GESTURE_SLIDE_LENGTH = 20

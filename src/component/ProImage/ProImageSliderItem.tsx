@@ -11,6 +11,7 @@ import {
     getSuitableImageSize,
     getTriggerDirectionState,
     handleContinueClick,
+    slide2Position,
 } from './util'
 import Photo from './Photo'
 import { START_MOVE_OFFSET } from './variables'
@@ -124,50 +125,50 @@ class ProImageSliderItem extends PureComponent<ProImageSliderItemProps, ProImage
             toScale: scale !== 1 ? 1 : Math.max(2, naturalWidth / width),
         })
 
-        this.setState((state) => ({
-            ...state,
+        this.setState({
             clientX: nextClientX,
             clientY: nextClientY,
             ...position,
             ...getCorrectedPosition(position),
-        }))
+        })
     }
 
     handlePhotoClick = handleContinueClick(this.handlePhotoSingleClick, this.handlePhotoDoubleClick)
 
-    handleMoveStart = (clientX: number, clientY: number) => {
+    handleStartMove = (clientX: number, clientY: number) => {
         this.setState({ clientX, clientY, lastMoveClientX: clientX, lastMoveClientY: clientY, touched: true })
     }
 
-    handleMoveEnd = (nextClientX: number, nextClientY: number) => {
-        const { clientX, clientY, touched } = this.state
-        const { active, onMoveEnd } = this.props
+    handleUp = (nextClientX: number, nextClientY: number) => {
+        const { clientX, clientY, touched, currentX, currentY } = this.state
+        const { active, onMouseUp } = this.props
 
         this.touchIntent = TouchIntent.NONE
 
         if (!active || !touched) return
 
+        onMouseUp(this.state.triggerDirectionState, nextClientX, nextClientY)
+
         const hasMove = clientX !== nextClientX || clientY !== nextClientY
 
-        const currentTriggerDirectionState = this.state.triggerDirectionState
+        if (!hasMove) {
+            this.handlePhotoClick(nextClientX, nextClientY)
+        }
 
-        this.setState(
-            {
-                clientX: undefined,
-                clientY: undefined,
-                lastMoveClientX: undefined,
-                lastMoveClientY: undefined,
-                touched: false,
-                triggerDirectionState: TriggerDirectionState.NONE,
-            },
-            () => {
-                onMoveEnd(currentTriggerDirectionState, nextClientX, nextClientY)
+        const position =
+            hasMove && this.state.triggerDirectionState === TriggerDirectionState.Y_AXIS
+                ? slide2Position({ currentX, currentY })
+                : {}
 
-                if (!hasMove) {
-                    this.handlePhotoClick(nextClientX, nextClientY)
-                }
-            }
-        )
+        this.setState({
+            clientX: undefined,
+            clientY: undefined,
+            lastMoveClientX: undefined,
+            lastMoveClientY: undefined,
+            touched: false,
+            triggerDirectionState: TriggerDirectionState.NONE,
+            ...position,
+        })
     }
 
     handleMouseDown = (evt: React.MouseEvent) => {
@@ -175,13 +176,13 @@ class ProImageSliderItem extends PureComponent<ProImageSliderItemProps, ProImage
 
         const { clientX, clientY } = evt
 
-        this.handleMoveStart(clientX, clientY)
+        this.handleStartMove(clientX, clientY)
     }
 
     handleMouseUp = (evt: MouseEvent) => {
         const { clientX, clientY } = evt
 
-        this.handleMoveEnd(clientX, clientY)
+        this.handleUp(clientX, clientY)
     }
 
     handleMove = (nextClientX: number, nextClientY: number) => {
@@ -233,17 +234,16 @@ class ProImageSliderItem extends PureComponent<ProImageSliderItemProps, ProImage
             triggerDirectionState
         )
 
+        this.setState({ triggerDirectionState: currentTriggerDirectionState })
+
         if (currentTriggerDirectionState !== TriggerDirectionState.NONE) {
             onMove(currentTriggerDirectionState, nextClientX, nextClientY)
         }
 
-        this.setState({ triggerDirectionState: currentTriggerDirectionState })
-
         if (currentTriggerDirectionState !== TriggerDirectionState.X_AXIS) {
-            this.setState((state) => ({
-                ...state,
+            this.setState({
                 ...computedYAxisMoveOrScaleMovePosition({ currentX, currentY, moveX, moveY, nextClientX, nextClientY }),
-            }))
+            })
         }
     }
 
@@ -281,7 +281,7 @@ class ProImageSliderItem extends PureComponent<ProImageSliderItemProps, ProImage
                         pending={pending}
                         onError={this.handleImageError}
                         onMouseDown={this.handleMouseDown}
-                        className={!touched && proImageClass('should-transition')}
+                        className={!touched ? proImageClass('should-transition') : undefined}
                         style={{
                             WebkitTransform: transform,
                             transform,

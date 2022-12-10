@@ -2,6 +2,7 @@ import React from 'react'
 import { PureComponent } from '@/utils/component'
 import classnames from 'classnames'
 import { proImageClass } from '@/styles'
+import { getRangeValue } from '@/utils/numbers'
 import { ProImageAnimation, ProImageSliderProps, TriggerDirectionState } from './type'
 import Icons from '../icons'
 import ProImageSliderItem from './ProImageSliderItem'
@@ -69,20 +70,15 @@ class ProImageSlider extends PureComponent<ProImageSliderProps, ProImageSliderSt
     handleBgAnimationEnd = () => {
         const { onClose } = this.props
 
-        this.setDraftState(
-            (state) => {
-                if (state.animation === ProImageAnimation.OUT) {
-                    state.visible = false
-                }
+        this.setDraftState((state) => {
+            if (state.animation === ProImageAnimation.OUT) {
+                state.visible = false
 
-                state.animation = ProImageAnimation.NONE
-            },
-            () => {
-                if (!this.state.visible) {
-                    onClose()
-                }
+                onClose()
             }
-        )
+
+            state.animation = ProImageAnimation.NONE
+        })
     }
 
     handleIndexChange = (nextIndex: number) => {
@@ -152,7 +148,10 @@ class ProImageSlider extends PureComponent<ProImageSliderProps, ProImageSliderSt
 
             const offsetClientY = Math.abs(clientY - state.startMoveClientY)
 
-            const backdropOpacity = Math.max(Math.min(DEFAULT_OPACITY, DEFAULT_OPACITY - offsetClientY / 100 / 4), 0)
+            const backdropOpacity = getRangeValue({
+                max: DEFAULT_OPACITY,
+                current: DEFAULT_OPACITY - offsetClientY / 100 / 6,
+            })
 
             state.backdropOpacity = backdropOpacity
         })
@@ -166,7 +165,7 @@ class ProImageSlider extends PureComponent<ProImageSliderProps, ProImageSliderSt
         }
     }
 
-    handleSliderItemMoveEnd = (triggerDirectionState: TriggerDirectionState, clientX: number, clientY: number) => {
+    handleSliderItemUp = (triggerDirectionState: TriggerDirectionState, clientX: number, clientY: number) => {
         const { proImageItems } = this.props
         const { startMoveClientX, currentIndex, startMoveClientY } = this.state
 
@@ -273,7 +272,7 @@ class ProImageSlider extends PureComponent<ProImageSliderProps, ProImageSliderSt
                                 WebkitTransform: transform,
                                 transform,
                             }}
-                            className={!touched && proImageClass('should-transition')}
+                            className={!touched ? proImageClass('should-transition') : undefined}
                             proImageItem={item}
                             animation={animation}
                             key={item.key}
@@ -282,7 +281,7 @@ class ProImageSlider extends PureComponent<ProImageSliderProps, ProImageSliderSt
                             errorElement={errorElement || item.errorElement}
                             onClick={this.handlePhotoClick}
                             onMove={this.handleSliderItemMove}
-                            onMoveEnd={this.handleSliderItemMoveEnd}
+                            onMouseUp={this.handleSliderItemUp}
                         />
                     )
                 })}

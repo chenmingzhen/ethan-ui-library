@@ -42,7 +42,7 @@ export interface ProImageSliderItemProps extends Pick<PhotoProps, 'loadingElemen
     onClick(): void
     onMove(triggerDirectionState: TriggerDirectionState, clientX: number, clientY: number): void
     className?: string
-    onMoveEnd(triggerDirectionState: TriggerDirectionState, clientX: number, clientY: number): void
+    onMouseUp(triggerDirectionState: TriggerDirectionState, clientX: number, clientY: number): void
 }
 
 export interface PhotoProps extends React.HTMLAttributes<HTMLImageElement> {

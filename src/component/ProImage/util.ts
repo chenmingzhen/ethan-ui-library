@@ -1,6 +1,7 @@
 import { debounce } from '@/utils/func'
 import { toFixed } from '@/utils/numbers'
 import { PhotoTouchEdgeState, TouchIntent, TriggerDirectionState } from './type'
+import { GESTURE_SLIDE_LENGTH } from './variables'
 
 export function getSuitableImageSize(naturalWidth: number, naturalHeight: number, rotate: number) {
     let width: number
@@ -168,17 +169,6 @@ export function computedYAxisMoveOrScaleMovePosition(params: ComputedYAxisMovePo
     }
 }
 
-export function computedYAxisMovePosition2(params: ComputedYAxisMovePositionParams) {
-    const { currentX, currentY, nextClientX, nextClientY, moveX, moveY } = params
-
-    return {
-        currentX: currentX + moveX,
-        currentY: currentY + moveY,
-        lastMoveClientX: nextClientX,
-        lastMoveClientY: nextClientY,
-    }
-}
-
 interface CorrectSuitablePositionParams {
     currentX: number
     currentY: number
@@ -188,4 +178,16 @@ interface CorrectSuitablePositionParams {
 /** 大于1放大，小于等于1复原 */
 export function getCorrectedPosition({ currentX, currentY, scale }: CorrectSuitablePositionParams) {
     return scale > 1 ? { currentX, currentY } : { currentX: 0, currentY: 0 }
+}
+
+interface Slide2PositionParams {
+    currentX: number
+    currentY: number
+}
+
+export function slide2Position(params: Slide2PositionParams) {
+    const nextX = 0
+    const nextY = 0
+
+    return { currentX: nextX, currentY: nextY }
 }
