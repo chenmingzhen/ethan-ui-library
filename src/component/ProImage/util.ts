@@ -1,6 +1,6 @@
 import { debounce } from '@/utils/func'
 import { toFixed } from '@/utils/numbers'
-import { PhotoTouchEdgeState, TouchIntent, TriggerDirectionState } from './type'
+import { ScalePhotoTouchEdgeState, TouchIntent, TriggerDirectionState } from './type'
 
 export function getSuitableImageSize(naturalWidth: number, naturalHeight: number, rotate: number) {
     let width: number
@@ -79,12 +79,22 @@ export function handleContinueClick(singleClick: (...args) => void, doubleClick:
     }
 }
 
-export function getPhotoTouchEdgeState(moveSize: number, photoSize: number, innerSize: number) {
-    const currentSize = photoSize
+export function getScalePhotoTouchEdgeState(position: number, photoSize: number, innerSize: number, scale: number) {
+    if (scale <= 1) return ScalePhotoTouchEdgeState.NONE
 
-    if (currentSize <= innerSize) {
-        return PhotoTouchEdgeState.NORMAL_LESS_SCREEN
+    const currentSize = photoSize * scale
+
+    const overflowLength = (currentSize - innerSize) / 2
+
+    if (position > 0 && overflowLength - position <= 0) {
+        return ScalePhotoTouchEdgeState.BOTTOM_RIGHT
     }
+
+    if (position < 0 && overflowLength + position <= 0) {
+        return ScalePhotoTouchEdgeState.TOP_LEFT
+    }
+
+    return ScalePhotoTouchEdgeState.NOT_TOUCH
 }
 
 /**
@@ -92,8 +102,8 @@ export function getPhotoTouchEdgeState(moveSize: number, photoSize: number, inne
  * x轴：左右滑动 y轴:上下拉  */
 export function getTriggerDirectionState(
     touchIntent: TouchIntent,
-    horizontalTouchEdgeState: PhotoTouchEdgeState,
-    verticalTouchEdgeState: PhotoTouchEdgeState,
+    horizontalTouchEdgeState: ScalePhotoTouchEdgeState,
+    verticalTouchEdgeState: ScalePhotoTouchEdgeState,
     prevTriggerDirectionState: TriggerDirectionState
 ) {
     if (prevTriggerDirectionState === TriggerDirectionState.X_AXIS || touchIntent === TouchIntent.X_SLIDE) {

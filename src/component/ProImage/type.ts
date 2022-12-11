@@ -71,9 +71,12 @@ export enum TouchIntent {
     Y_PULL_UP, // 上拉
 }
 
-/** 图片接触边界的类型  */
-export enum PhotoTouchEdgeState {
-    NORMAL_LESS_SCREEN, // 正常图模式下，小于屏幕宽度
+/** 缩放后图片接触边界的类型  */
+export enum ScalePhotoTouchEdgeState {
+    NONE, // 未缩放
+    TOP_LEFT, // 触碰到顶部或左边
+    BOTTOM_RIGHT, // 触碰到底部或右边
+    NOT_TOUCH, // 未触碰到
 }
 
 /** 触发事件的方向 */

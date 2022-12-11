@@ -8,7 +8,7 @@ import {
     computedYAxisMoveOrScaleMovePosition,
     getAnimateOrigin,
     getCorrectedPosition,
-    getPhotoTouchEdgeState,
+    getScalePhotoTouchEdgeState,
     getSuitableImageSize,
     getTriggerDirectionState,
     handleContinueClick,
@@ -203,6 +203,7 @@ class ProImageSliderItem extends PureComponent<ProImageSliderItemProps, ProImage
             touched,
             lastMoveClientX,
             lastMoveClientY,
+            scale,
         } = this.state
 
         if (!active || !touched) return
@@ -228,13 +229,13 @@ class ProImageSliderItem extends PureComponent<ProImageSliderItemProps, ProImage
         const moveX = nextClientX - lastMoveClientX
         const moveY = nextClientY - lastMoveClientY
         const { innerWidth, innerHeight } = window
-        const horizontalTouchEdgeState = getPhotoTouchEdgeState(moveX, width, innerWidth)
-        const verticalTouchEdgeState = getPhotoTouchEdgeState(moveY, height, innerHeight)
+        const horizontalScaleTouchEdgeState = getScalePhotoTouchEdgeState(moveX, width, innerWidth, scale)
+        const verticalScaleTouchEdgeState = getScalePhotoTouchEdgeState(moveY, height, innerHeight, scale)
 
         const currentTriggerDirectionState = getTriggerDirectionState(
             this.touchIntent,
-            horizontalTouchEdgeState,
-            verticalTouchEdgeState,
+            horizontalScaleTouchEdgeState,
+            verticalScaleTouchEdgeState,
             triggerDirectionState
         )
 

@@ -3,6 +3,7 @@ import { PureComponent } from '@/utils/component'
 import classnames from 'classnames'
 import { proImageClass } from '@/styles'
 import { getRangeValue } from '@/utils/numbers'
+import { KeyboardKey } from '@/utils/keyboard'
 import { ProImageAnimation, ProImageSliderProps, TriggerDirectionState } from './type'
 import Icons from '../icons'
 import ProImageSliderItem from './ProImageSliderItem'
@@ -58,7 +59,7 @@ class ProImageSlider extends PureComponent<ProImageSliderProps, ProImageSliderSt
 
         style.overflow = 'hidden'
 
-        window.addEventListener('keydown', this.handleClose)
+        window.addEventListener('keydown', this.handleKeyDown)
     }
 
     componentWillUnmount() {
@@ -68,7 +69,15 @@ class ProImageSlider extends PureComponent<ProImageSliderProps, ProImageSliderSt
 
         style.overflow = this.originalBodyOverflow
 
-        window.removeEventListener('keydown', this.handleClose)
+        window.removeEventListener('keydown', this.handleKeyDown)
+    }
+
+    handleKeyDown = (evt: KeyboardEvent) => {
+        const { key } = evt
+
+        if (key === KeyboardKey.Escape) {
+            this.handleClose()
+        }
     }
 
     handleClose = () => {
