@@ -1,7 +1,6 @@
 import { debounce } from '@/utils/func'
 import { toFixed } from '@/utils/numbers'
 import { PhotoTouchEdgeState, TouchIntent, TriggerDirectionState } from './type'
-import { GESTURE_SLIDE_LENGTH } from './variables'
 
 export function getSuitableImageSize(naturalWidth: number, naturalHeight: number, rotate: number) {
     let width: number

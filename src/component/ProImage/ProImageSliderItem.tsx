@@ -2,6 +2,7 @@ import React from 'react'
 import { PureComponent } from '@/utils/component'
 import { proImageClass } from '@/styles'
 import classnames from 'classnames'
+import { getRangeValue } from '@/utils/numbers'
 import { ProImageAnimation, ProImageSliderItemProps, TouchIntent, TriggerDirectionState } from './type'
 import {
     computedYAxisMoveOrScaleMovePosition,
@@ -74,6 +75,7 @@ class ProImageSliderItem extends PureComponent<ProImageSliderItemProps, ProImage
 
         window.addEventListener('mouseup', this.handleMouseUp)
         window.addEventListener('mousemove', this.handleMouseMove)
+        window.addEventListener('resize', this.handleResize)
     }
 
     componentDidUpdate(): void {
@@ -87,6 +89,7 @@ class ProImageSliderItem extends PureComponent<ProImageSliderItemProps, ProImage
 
         window.removeEventListener('mouseup', this.handleMouseUp)
         window.removeEventListener('mousemove', this.handleMouseMove)
+        window.removeEventListener('resize', this.handleResize)
     }
 
     handleImageLoad = (evt) => {
@@ -254,6 +257,37 @@ class ProImageSliderItem extends PureComponent<ProImageSliderItemProps, ProImage
         this.handleMove(clientX, clientY)
     }
 
+    handleWheel = (evt: React.WheelEvent<HTMLImageElement>) => {
+        const { clientX, clientY, deltaY } = evt
+        const { width, naturalWidth, triggerDirectionState, currentX, currentY, scale } = this.state
+
+        if (triggerDirectionState !== TriggerDirectionState.NONE) {
+            return
+        }
+
+        const position = computedYAxisMoveOrScaleMovePosition({
+            currentX,
+            currentY,
+            nextClientX: clientX,
+            nextClientY: clientY,
+            fromScale: scale,
+            toScale: getRangeValue({ current: scale - deltaY / 100 / 2, max: naturalWidth / width, min: 1 }),
+        })
+
+        this.setState({ clientX, clientY, ...position, ...getCorrectedPosition(position) })
+    }
+
+    handleResize = () => {
+        const { onResize } = this.props
+        const { loaded, naturalWidth, naturalHeight, rotate } = this.state
+
+        if (loaded) {
+            this.setState(getSuitableImageSize(naturalWidth, naturalHeight, rotate))
+
+            onResize()
+        }
+    }
+
     render() {
         const { width, height, touched, loaded, error, pending, currentX, currentY, scale } = this.state
         const { animation, proImageItem, active, style, className } = this.props
@@ -282,6 +316,7 @@ class ProImageSliderItem extends PureComponent<ProImageSliderItemProps, ProImage
                         pending={pending}
                         onError={this.handleImageError}
                         onMouseDown={this.handleMouseDown}
+                        onWheel={this.handleWheel}
                         className={!touched ? proImageClass('should-transition') : undefined}
                         style={{
                             WebkitTransform: transform,

@@ -50,17 +50,25 @@ class ProImageSlider extends PureComponent<ProImageSliderProps, ProImageSliderSt
     }
 
     componentDidMount() {
+        super.componentDidMount()
+
         const { style } = document.body.parentNode as HTMLElement
 
         this.originalBodyOverflow = style.overflow
 
         style.overflow = 'hidden'
+
+        window.addEventListener('keydown', this.handleClose)
     }
 
     componentWillUnmount() {
+        super.componentWillUnmount()
+
         const { style } = document.body.parentNode as HTMLElement
 
         style.overflow = this.originalBodyOverflow
+
+        window.removeEventListener('keydown', this.handleClose)
     }
 
     handleClose = () => {
@@ -208,6 +216,11 @@ class ProImageSlider extends PureComponent<ProImageSliderProps, ProImageSliderSt
         }
     }
 
+    handleSliderItemResize = () => {
+        /** 更新innerWidth重新计算left */
+        this.forceUpdate()
+    }
+
     render() {
         const { proImageItems, loadingElement, errorElement } = this.props
 
@@ -282,6 +295,7 @@ class ProImageSlider extends PureComponent<ProImageSliderProps, ProImageSliderSt
                             onClick={this.handlePhotoClick}
                             onMove={this.handleSliderItemMove}
                             onMouseUp={this.handleSliderItemUp}
+                            onResize={this.handleSliderItemResize}
                         />
                     )
                 })}
