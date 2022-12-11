@@ -66,22 +66,32 @@ export enum CloseEdgeEnum {
 /** 滑动时候的移动 */
 export enum TouchIntent {
     NONE,
-    X_SLIDE, // x轴正常滑动
-    Y_PULL_DOWN, // 下拉
-    Y_PULL_UP, // 上拉
+    /** x轴正常滑动 */
+    X_SLIDE,
+    /** 下拉 */
+    Y_PULL_DOWN,
+    /** 上拉 */
+    Y_PULL_UP,
 }
 
 /** 缩放后图片接触边界的类型  */
 export enum ScalePhotoTouchEdgeState {
-    NONE, // 未缩放
-    TOP_LEFT, // 触碰到顶部或左边
-    BOTTOM_RIGHT, // 触碰到底部或右边
-    NOT_TOUCH, // 未触碰到
+    /** 未缩放 */
+    NONE,
+    /** 触碰到顶部或左边 */
+    TOP_LEFT,
+    /** 触碰到底部或右边 */
+    BOTTOM_RIGHT,
+    /** 未触碰到 */
+    NOT_TOUCH,
 }
 
 /** 触发事件的方向 */
 export enum TriggerDirectionState {
-    NONE,
+    /** 缩放后移动 */
+    SCALE_MOVE,
+    /** X轴左右滑动 */
     X_AXIS,
+    /** y轴为主移动 */
     Y_AXIS,
 }

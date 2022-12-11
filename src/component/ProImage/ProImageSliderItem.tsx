@@ -26,12 +26,12 @@ interface ProImageSliderItemState {
     loaded: boolean
     error: boolean
     pending: boolean // 由于是使用函数调用的方式打开组件，如果图片已经打开过一次（浏览器中已经缓存了图片） 不需要显示Loading,避免出现loading闪烁
-    clientX: number
-    clientY: number
+    startClientX: number // 开始移动的clientX
+    startClientY: number // 开始移动的clientY
     triggerDirectionState: TriggerDirectionState
     touched: boolean
-    lastMoveClientX: number // 在TriggerDirectionState.X_AXIS上，表现为startMoveClientX(开始移动的clientX)
-    lastMoveClientY: number // 在TriggerDirectionState.X_AXIS上，表现为startMoveClientY(开始移动的clientY)
+    lastClientX: number // 在TriggerDirectionState.X_AXIS上，表现为startMoveClientX(开始移动的clientX)
+    lastClientY: number // 在TriggerDirectionState.X_AXIS上，表现为startMoveClientY(开始移动的clientY)
     currentX: number // 图片 X 偏移量 (仅在放大模式下或TriggerDirectionState.Y_AXIS移动中产生)
     currentY: number // 图片 y 偏移量(仅在放大模式下或TriggerDirectionState.Y_AXIS移动中产生)
     scale: number
@@ -53,11 +53,11 @@ class ProImageSliderItem extends PureComponent<ProImageSliderItemProps, ProImage
             loaded: false,
             error: false,
             pending: true,
-            clientX: undefined,
-            clientY: undefined,
-            triggerDirectionState: TriggerDirectionState.NONE,
-            lastMoveClientX: undefined,
-            lastMoveClientY: undefined,
+            startClientX: undefined,
+            startClientY: undefined,
+            triggerDirectionState: TriggerDirectionState.SCALE_MOVE,
+            lastClientX: undefined,
+            lastClientY: undefined,
             currentX: 0,
             currentY: 0,
             scale: 1,
@@ -130,8 +130,8 @@ class ProImageSliderItem extends PureComponent<ProImageSliderItemProps, ProImage
 
         this.setState({
             touched: false,
-            clientX: nextClientX,
-            clientY: nextClientY,
+            startClientX: nextClientX,
+            startClientY: nextClientY,
             ...position,
             ...getCorrectedPosition(position),
         })
@@ -140,11 +140,17 @@ class ProImageSliderItem extends PureComponent<ProImageSliderItemProps, ProImage
     handlePhotoClick = handleContinueClick(this.handlePhotoSingleClick, this.handlePhotoDoubleClick)
 
     handleStartMove = (clientX: number, clientY: number) => {
-        this.setState({ clientX, clientY, lastMoveClientX: clientX, lastMoveClientY: clientY, touched: true })
+        this.setState({
+            startClientX: clientX,
+            startClientY: clientY,
+            lastClientX: clientX,
+            lastClientY: clientY,
+            touched: true,
+        })
     }
 
     handleUp = (nextClientX: number, nextClientY: number) => {
-        const { clientX, clientY, touched, currentX, currentY } = this.state
+        const { startClientX, startClientY, touched, currentX, currentY } = this.state
         const { active, onMouseUp } = this.props
 
         this.touchIntent = TouchIntent.NONE
@@ -153,7 +159,7 @@ class ProImageSliderItem extends PureComponent<ProImageSliderItemProps, ProImage
 
         onMouseUp(this.state.triggerDirectionState, nextClientX, nextClientY)
 
-        const hasMove = clientX !== nextClientX || clientY !== nextClientY
+        const hasMove = startClientX !== nextClientX || startClientY !== nextClientY
 
         if (!hasMove) {
             this.handlePhotoClick(nextClientX, nextClientY)
@@ -165,12 +171,12 @@ class ProImageSliderItem extends PureComponent<ProImageSliderItemProps, ProImage
                 : {}
 
         this.setState({
-            clientX: undefined,
-            clientY: undefined,
-            lastMoveClientX: undefined,
-            lastMoveClientY: undefined,
+            startClientX: undefined,
+            startClientY: undefined,
+            lastClientX: undefined,
+            lastClientY: undefined,
             touched: false,
-            triggerDirectionState: TriggerDirectionState.NONE,
+            triggerDirectionState: TriggerDirectionState.SCALE_MOVE,
             ...position,
         })
     }
@@ -195,14 +201,14 @@ class ProImageSliderItem extends PureComponent<ProImageSliderItemProps, ProImage
         const {
             currentX,
             currentY,
-            clientX,
-            clientY,
+            startClientX,
+            startClientY,
             width,
             height,
             triggerDirectionState,
             touched,
-            lastMoveClientX,
-            lastMoveClientY,
+            lastClientX,
+            lastClientY,
             scale,
         } = this.state
 
@@ -210,24 +216,24 @@ class ProImageSliderItem extends PureComponent<ProImageSliderItemProps, ProImage
 
         if (this.touchIntent === TouchIntent.NONE) {
             /** 是否X无移动 */
-            const isStayX = Math.abs(nextClientX - clientX) <= START_MOVE_OFFSET
+            const isStayX = Math.abs(nextClientX - startClientX) <= START_MOVE_OFFSET
             /** 是否Y无移动 */
-            const isStayY = Math.abs(nextClientY - clientY) <= START_MOVE_OFFSET
+            const isStayY = Math.abs(nextClientY - startClientY) <= START_MOVE_OFFSET
 
             // 初始移动距离不足
             if (isStayX && isStayY) return
 
             /** X无移动，则看Y */
             this.touchIntent = isStayX
-                ? nextClientY > clientY
+                ? nextClientY > startClientY
                     ? TouchIntent.Y_PULL_DOWN
                     : TouchIntent.Y_PULL_UP
                 : TouchIntent.X_SLIDE
         }
 
         /** 移动的距离 */
-        const moveX = nextClientX - lastMoveClientX
-        const moveY = nextClientY - lastMoveClientY
+        const moveX = nextClientX - lastClientX
+        const moveY = nextClientY - lastClientY
         const { innerWidth, innerHeight } = window
         const horizontalScaleTouchEdgeState = getScalePhotoTouchEdgeState(moveX, width, innerWidth, scale)
         const verticalScaleTouchEdgeState = getScalePhotoTouchEdgeState(moveY, height, innerHeight, scale)
@@ -241,7 +247,7 @@ class ProImageSliderItem extends PureComponent<ProImageSliderItemProps, ProImage
 
         this.setState({ triggerDirectionState: currentTriggerDirectionState })
 
-        if (currentTriggerDirectionState !== TriggerDirectionState.NONE) {
+        if (currentTriggerDirectionState !== TriggerDirectionState.SCALE_MOVE) {
             onMove(currentTriggerDirectionState, nextClientX, nextClientY)
         }
 
@@ -262,7 +268,7 @@ class ProImageSliderItem extends PureComponent<ProImageSliderItemProps, ProImage
         const { clientX, clientY, deltaY } = evt
         const { width, naturalWidth, triggerDirectionState, currentX, currentY, scale } = this.state
 
-        if (triggerDirectionState !== TriggerDirectionState.NONE) {
+        if (triggerDirectionState !== TriggerDirectionState.SCALE_MOVE) {
             return
         }
 
@@ -275,7 +281,7 @@ class ProImageSliderItem extends PureComponent<ProImageSliderItemProps, ProImage
             toScale: getRangeValue({ current: scale - deltaY / 100 / 2, max: naturalWidth / width, min: 1 }),
         })
 
-        this.setState({ clientX, clientY, ...position, ...getCorrectedPosition(position) })
+        this.setState({ startClientX: clientX, startClientY: clientY, ...position, ...getCorrectedPosition(position) })
     }
 
     handleResize = () => {

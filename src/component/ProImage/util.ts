@@ -118,7 +118,7 @@ export function getTriggerDirectionState(
         return TriggerDirectionState.Y_AXIS
     }
 
-    return TriggerDirectionState.NONE
+    return TriggerDirectionState.SCALE_MOVE
 }
 
 interface ComputedYAxisMovePositionParams {
@@ -172,8 +172,8 @@ export function computedYAxisMoveOrScaleMovePosition(params: ComputedYAxisMovePo
     return {
         currentX: newX,
         currentY: newY,
-        lastMoveClientX: nextClientX,
-        lastMoveClientY: nextClientY,
+        lastClientX: nextClientX,
+        lastClientY: nextClientY,
         scale: toScale,
     }
 }
