@@ -4,7 +4,7 @@ import classnames from 'classnames'
 import { proImageClass } from '@/styles'
 import { getRangeValue } from '@/utils/numbers'
 import { KeyboardKey } from '@/utils/keyboard'
-import { ProImageAnimation, ProImageSliderProps, TriggerDirectionState } from './type'
+import { ProImageAnimation, ProImageSliderProps, TouchIntent } from './type'
 import Icons from '../icons'
 import ProImageSliderItem from './ProImageSliderItem'
 import { DEFAULT_OPACITY, DRAG_CLOSE_RATIO, HORIZONTAL_PHOTO_OFFSET, SLIDE_MOVE_OFFSET } from './variables'
@@ -174,15 +174,15 @@ class ProImageSlider extends PureComponent<ProImageSliderProps, ProImageSliderSt
         })
     }
 
-    handleSliderItemMove = (triggerDirectionState: TriggerDirectionState, clientX: number, clientY: number) => {
-        if (triggerDirectionState === TriggerDirectionState.X_AXIS) {
+    handleSliderItemMove = (touchIntent: TouchIntent, clientX: number, clientY: number) => {
+        if (touchIntent === TouchIntent.X_SLIDE) {
             this.handleHorizontalMove(clientX)
-        } else if (triggerDirectionState === TriggerDirectionState.Y_AXIS) {
+        } else if (touchIntent === TouchIntent.Y_MOVE) {
             this.handleVerticalMove(clientY)
         }
     }
 
-    handleSliderItemUp = (triggerDirectionState: TriggerDirectionState, clientX: number, clientY: number) => {
+    handleSliderItemUp = (touchIntent: TouchIntent, clientX: number, clientY: number) => {
         const { proImageItems } = this.props
         const { startMoveClientX, currentIndex, startMoveClientY } = this.state
 
@@ -191,7 +191,7 @@ class ProImageSlider extends PureComponent<ProImageSliderProps, ProImageSliderSt
 
         this.setState({ startMoveClientX: undefined, startMoveClientY: undefined, touched: false })
 
-        if (triggerDirectionState === TriggerDirectionState.X_AXIS) {
+        if (touchIntent === TouchIntent.X_SLIDE) {
             if (offsetClientX < -SLIDE_MOVE_OFFSET && currentIndex < proImageItems.length - 1) {
                 this.handleIndexChange(currentIndex + 1)
 
@@ -217,10 +217,7 @@ class ProImageSlider extends PureComponent<ProImageSliderProps, ProImageSliderSt
             return
         }
 
-        if (
-            triggerDirectionState === TriggerDirectionState.Y_AXIS &&
-            Math.abs(offsetClientY) > window.innerHeight * DRAG_CLOSE_RATIO
-        ) {
+        if (touchIntent === TouchIntent.Y_MOVE && Math.abs(offsetClientY) > window.innerHeight * DRAG_CLOSE_RATIO) {
             this.handleClose()
         }
     }

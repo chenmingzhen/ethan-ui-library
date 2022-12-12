@@ -3,16 +3,14 @@ import { PureComponent } from '@/utils/component'
 import { proImageClass } from '@/styles'
 import classnames from 'classnames'
 import { getRangeValue } from '@/utils/numbers'
-import { ProImageAnimation, ProImageSliderItemProps, TouchIntent, TriggerDirectionState } from './type'
+import { ProImageAnimation, ProImageSliderItemProps, TouchIntent } from './type'
 import {
     computedYAxisMoveOrScaleMovePosition,
     getAnimateOrigin,
     getCorrectedPosition,
-    getScalePhotoTouchEdgeState,
     getSuitableImageSize,
-    getTriggerDirectionState,
     handleContinueClick,
-    slide2Position,
+    scaleSlide2Position,
 } from './util'
 import Photo from './Photo'
 import { START_MOVE_OFFSET } from './variables'
@@ -28,7 +26,6 @@ interface ProImageSliderItemState {
     pending: boolean // 由于是使用函数调用的方式打开组件，如果图片已经打开过一次（浏览器中已经缓存了图片） 不需要显示Loading,避免出现loading闪烁
     startClientX: number // 开始移动的clientX
     startClientY: number // 开始移动的clientY
-    triggerDirectionState: TriggerDirectionState
     touched: boolean
     lastClientX: number // 在TriggerDirectionState.X_AXIS上，表现为startMoveClientX(开始移动的clientX)
     lastClientY: number // 在TriggerDirectionState.X_AXIS上，表现为startMoveClientY(开始移动的clientY)
@@ -55,7 +52,6 @@ class ProImageSliderItem extends PureComponent<ProImageSliderItemProps, ProImage
             pending: true,
             startClientX: undefined,
             startClientY: undefined,
-            triggerDirectionState: TriggerDirectionState.SCALE_MOVE,
             lastClientX: undefined,
             lastClientY: undefined,
             currentX: 0,
@@ -153,11 +149,13 @@ class ProImageSliderItem extends PureComponent<ProImageSliderItemProps, ProImage
         const { startClientX, startClientY, touched, currentX, currentY } = this.state
         const { active, onMouseUp } = this.props
 
+        const { touchIntent } = this
+
         this.touchIntent = TouchIntent.NONE
 
         if (!active || !touched) return
 
-        onMouseUp(this.state.triggerDirectionState, nextClientX, nextClientY)
+        onMouseUp(touchIntent, nextClientX, nextClientY)
 
         const hasMove = startClientX !== nextClientX || startClientY !== nextClientY
 
@@ -165,10 +163,17 @@ class ProImageSliderItem extends PureComponent<ProImageSliderItemProps, ProImage
             this.handlePhotoClick(nextClientX, nextClientY)
         }
 
-        const position =
-            hasMove && this.state.triggerDirectionState === TriggerDirectionState.Y_AXIS
-                ? slide2Position({ currentX, currentY })
-                : {}
+        let position = {}
+
+        if (hasMove) {
+            if (touchIntent === TouchIntent.Y_MOVE) {
+                position = { currentX: 0, currentY: 0 }
+            }
+
+            if (touchIntent === TouchIntent.SCALE_MOVE) {
+                position = scaleSlide2Position({ currentX, currentY })
+            }
+        }
 
         this.setState({
             startClientX: undefined,
@@ -176,7 +181,6 @@ class ProImageSliderItem extends PureComponent<ProImageSliderItemProps, ProImage
             lastClientX: undefined,
             lastClientY: undefined,
             touched: false,
-            triggerDirectionState: TriggerDirectionState.SCALE_MOVE,
             ...position,
         })
     }
@@ -198,62 +202,52 @@ class ProImageSliderItem extends PureComponent<ProImageSliderItemProps, ProImage
     handleMove = (nextClientX: number, nextClientY: number) => {
         const { active, onMove } = this.props
 
-        const {
-            currentX,
-            currentY,
-            startClientX,
-            startClientY,
-            width,
-            height,
-            triggerDirectionState,
-            touched,
-            lastClientX,
-            lastClientY,
-            scale,
-        } = this.state
+        const { currentX, currentY, startClientX, startClientY, width, touched, lastClientX, lastClientY, scale } =
+            this.state
 
         if (!active || !touched) return
 
+        const { innerWidth } = window
+
         if (this.touchIntent === TouchIntent.NONE) {
-            /** 是否X无移动 */
-            const isStayX = Math.abs(nextClientX - startClientX) <= START_MOVE_OFFSET
-            /** 是否Y无移动 */
-            const isStayY = Math.abs(nextClientY - startClientY) <= START_MOVE_OFFSET
+            if (scale > 1 && innerWidth * scale > width) {
+                this.touchIntent = TouchIntent.SCALE_MOVE
+            } else {
+                /** 是否X无移动 */
+                const isStayX = Math.abs(nextClientX - startClientX) <= START_MOVE_OFFSET
+                /** 是否Y无移动 */
+                const isStayY = Math.abs(nextClientY - startClientY) <= START_MOVE_OFFSET
 
-            // 初始移动距离不足
-            if (isStayX && isStayY) return
+                // 初始移动距离不足
+                if (isStayX && isStayY) return
 
-            /** X无移动，则看Y */
-            this.touchIntent = isStayX
-                ? nextClientY > startClientY
-                    ? TouchIntent.Y_PULL_DOWN
-                    : TouchIntent.Y_PULL_UP
-                : TouchIntent.X_SLIDE
+                /** X无移动，则看Y */
+                this.touchIntent = isStayX ? TouchIntent.Y_MOVE : TouchIntent.X_SLIDE
+            }
         }
 
-        /** 移动的距离 */
-        const moveX = nextClientX - lastClientX
-        const moveY = nextClientY - lastClientY
-        const { innerWidth, innerHeight } = window
-        const horizontalScaleTouchEdgeState = getScalePhotoTouchEdgeState(moveX, width, innerWidth, scale)
-        const verticalScaleTouchEdgeState = getScalePhotoTouchEdgeState(moveY, height, innerHeight, scale)
-
-        const currentTriggerDirectionState = getTriggerDirectionState(
-            this.touchIntent,
-            horizontalScaleTouchEdgeState,
-            verticalScaleTouchEdgeState,
-            triggerDirectionState
-        )
-
-        this.setState({ triggerDirectionState: currentTriggerDirectionState })
-
-        if (currentTriggerDirectionState !== TriggerDirectionState.SCALE_MOVE) {
-            onMove(currentTriggerDirectionState, nextClientX, nextClientY)
+        if (this.touchIntent === TouchIntent.X_SLIDE) {
+            onMove(TouchIntent.X_SLIDE, nextClientX, nextClientY)
         }
 
-        if (currentTriggerDirectionState !== TriggerDirectionState.X_AXIS) {
+        if ([TouchIntent.Y_MOVE, TouchIntent.SCALE_MOVE].includes(this.touchIntent)) {
+            /** 移动的距离 */
+            const moveX = nextClientX - lastClientX
+            const moveY = nextClientY - lastClientY
+
+            if (this.touchIntent === TouchIntent.Y_MOVE) {
+                onMove(TouchIntent.Y_MOVE, nextClientX, nextClientY)
+            }
+
             this.setState({
-                ...computedYAxisMoveOrScaleMovePosition({ currentX, currentY, moveX, moveY, nextClientX, nextClientY }),
+                ...computedYAxisMoveOrScaleMovePosition({
+                    currentX,
+                    currentY,
+                    moveX,
+                    moveY,
+                    nextClientX,
+                    nextClientY,
+                }),
             })
         }
     }
@@ -266,9 +260,9 @@ class ProImageSliderItem extends PureComponent<ProImageSliderItemProps, ProImage
 
     handleWheel = (evt: React.WheelEvent<HTMLImageElement>) => {
         const { clientX, clientY, deltaY } = evt
-        const { width, naturalWidth, triggerDirectionState, currentX, currentY, scale } = this.state
+        const { width, naturalWidth, currentX, currentY, scale } = this.state
 
-        if (triggerDirectionState !== TriggerDirectionState.SCALE_MOVE) {
+        if (this.touchIntent !== TouchIntent.SCALE_MOVE) {
             return
         }
 
