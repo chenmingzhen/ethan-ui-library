@@ -146,7 +146,7 @@ class ProImageSliderItem extends PureComponent<ProImageSliderItemProps, ProImage
     }
 
     handleUp = (nextClientX: number, nextClientY: number) => {
-        const { startClientX, startClientY, touched, currentX, currentY } = this.state
+        const { startClientX, startClientY, touched, currentX, currentY, width, height, scale } = this.state
         const { active, onMouseUp } = this.props
 
         const { touchIntent } = this
@@ -171,7 +171,7 @@ class ProImageSliderItem extends PureComponent<ProImageSliderItemProps, ProImage
             }
 
             if (touchIntent === TouchIntent.SCALE_MOVE) {
-                position = scaleSlide2Position({ currentX, currentY })
+                position = scaleSlide2Position({ currentX, currentY, width, height, scale })
             }
         }
 
@@ -247,6 +247,8 @@ class ProImageSliderItem extends PureComponent<ProImageSliderItemProps, ProImage
                     moveY,
                     nextClientX,
                     nextClientY,
+                    fromScale: scale,
+                    toScale: scale,
                 }),
             })
         }
@@ -262,7 +264,7 @@ class ProImageSliderItem extends PureComponent<ProImageSliderItemProps, ProImage
         const { clientX, clientY, deltaY } = evt
         const { width, naturalWidth, currentX, currentY, scale } = this.state
 
-        if (this.touchIntent !== TouchIntent.SCALE_MOVE) {
+        if (this.touchIntent !== TouchIntent.NONE) {
             return
         }
 

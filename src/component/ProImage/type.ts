@@ -59,10 +59,6 @@ export interface PhotoProps extends React.HTMLAttributes<HTMLImageElement> {
     errorElement?: JSX.Element
 }
 
-export enum CloseEdgeEnum {
-    NORMAL_SIZE_SLIDE,
-}
-
 export enum TouchIntent {
     NONE,
     /** X轴正常滑动 */
@@ -75,8 +71,6 @@ export enum TouchIntent {
 
 /** 缩放后图片接触边界的类型  */
 export enum ScalePhotoTouchEdgeState {
-    /** 未缩放 */
-    NONE,
     /** 触碰到顶部或左边 */
     TOP_LEFT,
     /** 触碰到底部或右边 */

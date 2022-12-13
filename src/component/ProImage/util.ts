@@ -1,5 +1,4 @@
 import { debounce } from '@/utils/func'
-import { toFixed } from '@/utils/numbers'
 import { ScalePhotoTouchEdgeState } from './type'
 
 export function getSuitableImageSize(naturalWidth: number, naturalHeight: number, rotate: number) {
@@ -79,17 +78,25 @@ export function handleContinueClick(singleClick: (...args) => void, doubleClick:
     }
 }
 
+/**
+ *
+ * @param position 移动的向量
+ * @param photoSize Photo 宽/高
+ * @param innerSize window innerWidth/innerHeight
+ * @param scale
+ * @returns
+ */
 export function getScalePhotoTouchEdgeState(position: number, photoSize: number, innerSize: number, scale: number) {
-    if (scale <= 1) return ScalePhotoTouchEdgeState.NONE
-
     const currentSize = photoSize * scale
 
     const overflowLength = (currentSize - innerSize) / 2
 
+    /** 向右/向下滑动的总距离超过了溢出的长度 */
     if (position > 0 && overflowLength - position <= 0) {
         return ScalePhotoTouchEdgeState.BOTTOM_RIGHT
     }
 
+    /** 向左/向上滑动的总距离超过了溢出的长度 */
     if (position < 0 && overflowLength + position <= 0) {
         return ScalePhotoTouchEdgeState.TOP_LEFT
     }
@@ -132,7 +139,7 @@ export function computedYAxisMoveOrScaleMovePosition(params: ComputedYAxisMovePo
     const centerClientX = innerWidth / 2
     const centerClientY = innerHeight / 2
 
-    const offsetScale = toFixed(toScale / fromScale, 3)
+    const offsetScale = toScale / fromScale
 
     /** 点击的位置是缩放中心 */
     const scaleCenterX = nextClientX - centerClientX
@@ -168,12 +175,45 @@ export function getCorrectedPosition({ currentX, currentY, scale }: CorrectSuita
 interface Slide2PositionParams {
     currentX: number
     currentY: number
+    scale: number
+    width: number
+    height: number
 }
 
 /** 缩放意图下，滑动到一定距离 */
 export function scaleSlide2Position(params: Slide2PositionParams) {
-    const nextX = 0
-    const nextY = 0
+    const { currentX, currentY, scale, width, height } = params
+    const { innerHeight, innerWidth } = window
+    const horizontalScalePhotoTouchEdgeState = getScalePhotoTouchEdgeState(currentX, width, innerWidth, scale)
+    const verticalScalePhotoTouchEdgeState = getScalePhotoTouchEdgeState(currentY, height, innerHeight, scale)
+
+    if (
+        horizontalScalePhotoTouchEdgeState === ScalePhotoTouchEdgeState.NOT_TOUCH &&
+        verticalScalePhotoTouchEdgeState === ScalePhotoTouchEdgeState.NOT_TOUCH
+    ) {
+        return {
+            currentX,
+            currentY,
+        }
+    }
+
+    let nextX = currentX
+    let nextY = currentY
+    /** 溢出的长度 */
+    const halfOverflowWidth = (width * scale - innerWidth) / 2
+    const halfOverflowHeight = (height * scale - innerHeight) / 2
+
+    if (horizontalScalePhotoTouchEdgeState === ScalePhotoTouchEdgeState.BOTTOM_RIGHT) {
+        nextX = halfOverflowWidth
+    } else if (horizontalScalePhotoTouchEdgeState === ScalePhotoTouchEdgeState.TOP_LEFT) {
+        nextX = -halfOverflowWidth
+    }
+
+    if (verticalScalePhotoTouchEdgeState === ScalePhotoTouchEdgeState.BOTTOM_RIGHT) {
+        nextY = halfOverflowHeight
+    } else if (verticalScalePhotoTouchEdgeState === ScalePhotoTouchEdgeState.TOP_LEFT) {
+        nextY = -halfOverflowHeight
+    }
 
     return { currentX: nextX, currentY: nextY }
 }
