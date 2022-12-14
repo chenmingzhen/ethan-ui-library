@@ -4,6 +4,7 @@ import classnames from 'classnames'
 import { proImageClass } from '@/styles'
 import { getRangeValue } from '@/utils/numbers'
 import { KeyboardKey } from '@/utils/keyboard'
+import { noop } from '@/utils/func'
 import { ProImageAnimation, ProImageSliderProps, TouchIntent } from './type'
 import Icons from '../icons'
 import ProImageSliderItem from './ProImageSliderItem'
@@ -22,7 +23,7 @@ interface ProImageSliderState {
 }
 
 class ProImageSlider extends PureComponent<ProImageSliderProps, ProImageSliderState> {
-    originalBodyOverflow: React.CSSProperties['overflow']
+    disposeOverflowEffect = noop
 
     get displayedImages() {
         const { currentIndex } = this.state
@@ -32,16 +33,30 @@ class ProImageSlider extends PureComponent<ProImageSliderProps, ProImageSliderSt
         return proImageItems.slice(Math.max(currentIndex - 1, 0), Math.min(currentIndex + 1, proImageItems.length) + 1)
     }
 
+    static defaultProps = {
+        proImageItems: [],
+        esc: true,
+    }
+
+    static getDerivedStateFromProps(nextProps: ProImageSliderProps, prevState: ProImageSliderState) {
+        return {
+            ...prevState,
+            visible: nextProps.visible ?? prevState.visible,
+        }
+    }
+
     constructor(props: ProImageSliderProps) {
         super(props)
 
-        const { currentIndex } = props
+        const { defaultIndex } = props
+
+        const currentIndex = props.currentIndex ?? defaultIndex ?? 0
 
         this.state = {
             translateX: currentIndex * -(window.innerWidth + HORIZONTAL_PHOTO_OFFSET),
-            animation: ProImageAnimation.IN,
+            animation: ProImageAnimation.NONE,
             currentIndex,
-            visible: true,
+            visible: props.visible ?? true,
             backdropOpacity: DEFAULT_OPACITY,
             overlayVisible: false,
             startMoveClientX: undefined,
@@ -50,60 +65,118 @@ class ProImageSlider extends PureComponent<ProImageSliderProps, ProImageSliderSt
         }
     }
 
-    componentDidMount() {
-        super.componentDidMount()
+    setOverflowEffect = () => {
+        this.disposeOverflowEffect()
 
         const { style } = document.body.parentNode as HTMLElement
 
-        this.originalBodyOverflow = style.overflow
+        const originalBodyOverflow: React.CSSProperties['overflow'] = style.overflow
 
         style.overflow = 'hidden'
 
+        this.disposeOverflowEffect = () => {
+            style.overflow = originalBodyOverflow
+        }
+    }
+
+    componentDidMount() {
+        super.componentDidMount()
+
         window.addEventListener('keydown', this.handleKeyDown)
+
+        if (this.state.visible) {
+            this.startOpenAnimation()
+        }
+    }
+
+    componentDidUpdate(prevProps: ProImageSliderProps, prevState: ProImageSliderState): void {
+        /** 受控改变index */
+        if (prevProps.currentIndex !== this.props.currentIndex) {
+            this.setState({
+                currentIndex: this.props.currentIndex,
+                translateX: -(window.innerWidth + HORIZONTAL_PHOTO_OFFSET) * this.props.currentIndex,
+            })
+        }
+
+        if (prevState.visible !== this.state.visible) {
+            if (this.state.visible && prevState.animation !== ProImageAnimation.OPEN) {
+                this.startOpenAnimation()
+            } else if (!this.state.visible && prevState.animation !== ProImageAnimation.CLOSE) {
+                this.startCloseAnimation()
+            }
+        }
     }
 
     componentWillUnmount() {
         super.componentWillUnmount()
 
-        const { style } = document.body.parentNode as HTMLElement
-
-        style.overflow = this.originalBodyOverflow
+        this.disposeOverflowEffect()
 
         window.removeEventListener('keydown', this.handleKeyDown)
     }
 
     handleKeyDown = (evt: KeyboardEvent) => {
+        const { visible } = this.state
+        const { esc } = this.props
+
+        if (!visible) return
+
         const { key } = evt
 
-        if (key === KeyboardKey.Escape) {
-            this.handleClose()
+        switch (key) {
+            case KeyboardKey.Escape:
+                if (esc) {
+                    this.startCloseAnimation()
+                }
+                break
+            case KeyboardKey.ArrowLeft:
+                this.handlePrevious()
+                break
+            case KeyboardKey.ArrowRight:
+                this.handleNext()
+                break
+            default:
+                break
         }
     }
 
-    handleClose = () => {
-        this.setState({ animation: ProImageAnimation.OUT })
+    startOpenAnimation = () => {
+        this.setState({ animation: ProImageAnimation.OPEN, backdropOpacity: DEFAULT_OPACITY })
+
+        this.setOverflowEffect()
+    }
+
+    startCloseAnimation = () => {
+        this.setState({ animation: ProImageAnimation.CLOSE })
+
+        this.disposeOverflowEffect()
     }
 
     handleBgAnimationEnd = () => {
         const { onClose } = this.props
+        const { animation, visible } = this.state
 
-        this.setDraftState((state) => {
-            if (state.animation === ProImageAnimation.OUT) {
-                state.visible = false
+        const nextVisible = animation === ProImageAnimation.CLOSE ? false : visible
 
-                onClose()
-            }
+        this.setState({ visible: nextVisible, animation: ProImageAnimation.NONE })
 
-            state.animation = ProImageAnimation.NONE
-        })
+        if (!nextVisible && onClose) {
+            onClose()
+        }
     }
 
     handleIndexChange = (nextIndex: number) => {
+        const { onIndexChange } = this.props
+
         const { innerWidth } = window
 
         const translateX = nextIndex * -(innerWidth + HORIZONTAL_PHOTO_OFFSET)
 
         this.setState({ translateX, currentIndex: nextIndex })
+
+        if (onIndexChange) {
+            onIndexChange(nextIndex)
+        }
     }
 
     handleNext = () => {
@@ -218,7 +291,7 @@ class ProImageSlider extends PureComponent<ProImageSliderProps, ProImageSliderSt
         }
 
         if (touchIntent === TouchIntent.Y_MOVE && Math.abs(offsetClientY) > window.innerHeight * DRAG_CLOSE_RATIO) {
-            this.handleClose()
+            this.startCloseAnimation()
         }
     }
 
@@ -229,16 +302,15 @@ class ProImageSlider extends PureComponent<ProImageSliderProps, ProImageSliderSt
 
     render() {
         const { proImageItems, loadingElement, errorElement } = this.props
-
         const { translateX, animation, visible, currentIndex, backdropOpacity, overlayVisible, touched } = this.state
 
-        if (!visible) return null
+        if (!visible && animation === ProImageAnimation.NONE) return null
 
+        const { innerWidth } = window
+        const { length } = proImageItems
         const currentImage = proImageItems[currentIndex]
         const intro = currentImage && currentImage.intro
-        const { innerWidth } = window
         const transform = `translate3d(${translateX}px, 0px, 0)`
-        const { length } = proImageItems
         const isOverlayVisible = overlayVisible && animation === ProImageAnimation.NONE
 
         return (
@@ -246,15 +318,15 @@ class ProImageSlider extends PureComponent<ProImageSliderProps, ProImageSliderSt
                 className={classnames(
                     proImageClass(
                         '_',
-                        animation === ProImageAnimation.OUT && 'close',
+                        animation === ProImageAnimation.CLOSE && 'close',
                         !isOverlayVisible && 'hide-overlay'
                     )
                 )}
             >
                 <div
                     className={proImageClass('bg', {
-                        'fade-in': animation === ProImageAnimation.IN,
-                        'fade-out': animation === ProImageAnimation.OUT,
+                        'fade-in': animation === ProImageAnimation.OPEN,
+                        'fade-out': animation === ProImageAnimation.CLOSE,
                     })}
                     style={{
                         background: `rgba(0, 0, 0, ${backdropOpacity})`,
@@ -274,7 +346,7 @@ class ProImageSlider extends PureComponent<ProImageSliderProps, ProImageSliderSt
 
                         <span className={proImageClass('icon rotate')}>{Icons.Rotate}</span>
 
-                        <span onClick={this.handleClose} className={proImageClass('icon')}>
+                        <span onClick={this.startCloseAnimation} className={proImageClass('icon')}>
                             {Icons.Close}
                         </span>
                     </div>

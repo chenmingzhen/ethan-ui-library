@@ -4,7 +4,6 @@ import { openProImageSlider } from './event'
 import { ProImageGroupProps } from './type'
 
 const ProImageGroup: React.FC<ProImageGroupProps> = function (props) {
-    const [current, updateCurrent] = useState(0)
     const [proImages, updateProImages] = useState([])
 
     const handleAddImage = useCallback((proImageItem) => {
@@ -18,21 +17,17 @@ const ProImageGroup: React.FC<ProImageGroupProps> = function (props) {
     const handleRemoveImage = useCallback(
         (key) => {
             const nextImages = proImages.filter((item) => item.key !== key)
-            const nextEndIndex = nextImages.length - 1
 
             updateProImages(nextImages)
-            updateCurrent(Math.min(nextEndIndex, current))
         },
-        [proImages, current]
+        [proImages]
     )
 
     const handleShow = useCallback(
         (key: string) => {
-            const nextCurrent = proImages.findIndex((item) => item.key === key)
+            const index = proImages.findIndex((item) => item.key === key)
 
-            updateCurrent(nextCurrent)
-
-            openProImageSlider(proImages, nextCurrent)
+            openProImageSlider(proImages, index)
         },
         [proImages]
     )

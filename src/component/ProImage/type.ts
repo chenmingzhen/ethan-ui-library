@@ -8,14 +8,18 @@ export interface ProImageProps extends Omit<ImageProps, 'target'>, Pick<PhotoPro
 export interface ProImageItem extends Pick<PhotoProps, 'loadingElement' | 'errorElement'> {
     src: string
     intro?: string
-    key: string
-    dom: HTMLDivElement
+    key: React.Key
+    getElement?: () => HTMLElement
 }
 
 export interface ProImageSliderProps extends Pick<PhotoProps, 'loadingElement' | 'errorElement'> {
     proImageItems: ProImageItem[]
-    currentIndex: number
-    onClose(): void
+    currentIndex?: number
+    defaultIndex?: number
+    visible?: boolean
+    esc?: boolean
+    onClose?(): void
+    onIndexChange?(index: number): void
 }
 
 export interface ProImageContextProps extends Pick<PhotoProps, 'loadingElement' | 'errorElement'> {
@@ -29,8 +33,8 @@ export interface ProImageGroupProps extends Pick<PhotoProps, 'loadingElement' | 
 }
 
 export enum ProImageAnimation {
-    IN,
-    OUT,
+    OPEN,
+    CLOSE,
     NONE,
 }
 

@@ -27,9 +27,9 @@ const ProImage: React.FC<ProImageProps> = function (props) {
                 src: other.src,
                 key,
                 intro,
-                dom: imageRef.current,
                 loadingElement,
                 errorElement,
+                getElement: () => imageRef.current,
             }
 
             openProImageSlider([proImageItem])
@@ -45,9 +45,9 @@ const ProImage: React.FC<ProImageProps> = function (props) {
             src: other.src,
             key,
             intro,
-            dom: imageRef.current,
             loadingElement,
             errorElement,
+            getElement: () => imageRef.current,
         }
 
         addImage(proImageItem)

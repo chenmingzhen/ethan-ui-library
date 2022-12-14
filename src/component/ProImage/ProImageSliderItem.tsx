@@ -10,7 +10,7 @@ import {
     getCorrectedPosition,
     getSuitableImageSize,
     handleContinueClick,
-    scaleSlide2Position,
+    scaleMoveBack2NormalArea,
 } from './util'
 import Photo from './Photo'
 import { START_MOVE_OFFSET } from './variables'
@@ -23,14 +23,21 @@ interface ProImageSliderItemState {
     rotate: number
     loaded: boolean
     error: boolean
-    pending: boolean // 由于是使用函数调用的方式打开组件，如果图片已经打开过一次（浏览器中已经缓存了图片） 不需要显示Loading,避免出现loading闪烁
-    startClientX: number // 开始移动的clientX
-    startClientY: number // 开始移动的clientY
+    /** 如果图片已经打开过一次（浏览器中已经缓存了图片||函数调用的方式打开组件） 不需要显示Loading,避免出现loading闪烁 */
+    pending: boolean
+    /** 开始触碰的clientX */
+    startClientX: number
+    /** 开始触碰的clientY */
+    startClientY: number
     touched: boolean
-    lastClientX: number // 在TriggerDirectionState.X_AXIS上，表现为startMoveClientX(开始移动的clientX)
-    lastClientY: number // 在TriggerDirectionState.X_AXIS上，表现为startMoveClientY(开始移动的clientY)
-    currentX: number // 图片 X 偏移量 (仅在放大模式下或TriggerDirectionState.Y_AXIS移动中产生)
-    currentY: number // 图片 y 偏移量(仅在放大模式下或TriggerDirectionState.Y_AXIS移动中产生)
+    /** 在TriggerDirectionState.X_AXIS上，表现为startClientX */
+    lastClientX: number
+    /** 在TriggerDirectionState.X_AXIS上，表现为startClientY */
+    lastClientY: number
+    /** 图片 X 偏移量 (仅在放大模式下或TriggerDirectionState.Y_AXIS移动中产生) */
+    currentX: number
+    /** 图片 y 偏移量(仅在放大模式下或TriggerDirectionState.Y_AXIS移动中产生) */
+    currentY: number
     scale: number
 }
 
@@ -171,7 +178,7 @@ class ProImageSliderItem extends PureComponent<ProImageSliderItemProps, ProImage
             }
 
             if (touchIntent === TouchIntent.SCALE_MOVE) {
-                position = scaleSlide2Position({ currentX, currentY, width, height, scale })
+                position = scaleMoveBack2NormalArea({ currentX, currentY, width, height, scale })
             }
         }
 
@@ -304,10 +311,12 @@ class ProImageSliderItem extends PureComponent<ProImageSliderItemProps, ProImage
 
                 <div
                     className={proImageClass('content', {
-                        'zoom-in': loaded && active ? animation === ProImageAnimation.IN : false,
-                        'zoom-out': loaded && active ? animation === ProImageAnimation.OUT : false,
+                        'zoom-in': loaded && active ? animation === ProImageAnimation.OPEN : false,
+                        'zoom-out': loaded && active ? animation === ProImageAnimation.CLOSE : false,
                     })}
-                    style={{ transformOrigin: loaded && active ? getAnimateOrigin(proImageItem.dom) : undefined }}
+                    style={{
+                        transformOrigin: loaded && active ? getAnimateOrigin(proImageItem.getElement?.()) : undefined,
+                    }}
                 >
                     <Photo
                         src={proImageItem.src}

@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom'
 import ProImageSlider from './ProImageSlider'
 import { ProImageItem } from './type'
 
-export function openProImageSlider(photoItems: ProImageItem[], currentIndex = 0) {
+export function openProImageSlider(photoItems: ProImageItem[], defaultIndex = 0) {
     const container = document.createElement('div')
 
     document.body.appendChild(container)
@@ -15,7 +15,7 @@ export function openProImageSlider(photoItems: ProImageItem[], currentIndex = 0)
     }
 
     ReactDOM.render(
-        <ProImageSlider proImageItems={photoItems} currentIndex={currentIndex} onClose={close} />,
+        <ProImageSlider proImageItems={photoItems} defaultIndex={defaultIndex} onClose={close} />,
         container
     )
 }

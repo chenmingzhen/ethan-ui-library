@@ -41,7 +41,7 @@ export function getSuitableImageSize(naturalWidth: number, naturalHeight: number
 }
 
 /** ProImage中心点到屏幕中心的距离 */
-export function getAnimateOrigin(originElement: HTMLDivElement) {
+export function getAnimateOrigin(originElement: HTMLElement) {
     if (!originElement) return undefined
 
     const rect = originElement.getBoundingClientRect()
@@ -180,8 +180,8 @@ interface Slide2PositionParams {
     height: number
 }
 
-/** 缩放意图下，滑动到一定距离 */
-export function scaleSlide2Position(params: Slide2PositionParams) {
+/** 缩放移动下，判断是否超过了边界，回滚到正常区域中 */
+export function scaleMoveBack2NormalArea(params: Slide2PositionParams) {
     const { currentX, currentY, scale, width, height } = params
     const { innerHeight, innerWidth } = window
     const horizontalScalePhotoTouchEdgeState = getScalePhotoTouchEdgeState(currentX, width, innerWidth, scale)
