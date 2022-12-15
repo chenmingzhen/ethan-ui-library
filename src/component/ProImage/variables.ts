@@ -15,3 +15,9 @@ export const DRAG_CLOSE_RATIO = 0.15
 
 /** 手势滑动的距离 */
 export const GESTURE_SLIDE_LENGTH = 20
+
+/** 惯性滑动最大的触碰时间 */
+export const INERTIA_SLIDE_MAX_TOUCH_TIME = 0.25
+
+/** 增大加速度的系数（使滑动平滑） */
+export const INCREASE_ACCELERATED_SPEED_RATIO = 1.2

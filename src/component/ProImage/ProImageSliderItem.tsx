@@ -10,6 +10,7 @@ import {
     getCorrectedPosition,
     getSuitableImageSize,
     handleContinueClick,
+    inertiaSlide,
     scaleMoveBack2NormalArea,
 } from './util'
 import Photo from './Photo'
@@ -39,6 +40,7 @@ interface ProImageSliderItemState {
     /** 图片 y 偏移量(仅在放大模式下或TriggerDirectionState.Y_AXIS移动中产生) */
     currentY: number
     scale: number
+    startTouchTime: number
 }
 
 class ProImageSliderItem extends PureComponent<ProImageSliderItemProps, ProImageSliderItemState> {
@@ -64,6 +66,7 @@ class ProImageSliderItem extends PureComponent<ProImageSliderItemProps, ProImage
             currentX: 0,
             currentY: 0,
             scale: 1,
+            startTouchTime: undefined,
         }
     }
 
@@ -149,11 +152,13 @@ class ProImageSliderItem extends PureComponent<ProImageSliderItemProps, ProImage
             lastClientX: clientX,
             lastClientY: clientY,
             touched: true,
+            startTouchTime: new Date().getTime(),
         })
     }
 
     handleUp = (nextClientX: number, nextClientY: number) => {
-        const { startClientX, startClientY, touched, currentX, currentY, width, height, scale } = this.state
+        const { startClientX, startClientY, touched, currentX, currentY, width, height, scale, startTouchTime } =
+            this.state
         const { active, onMouseUp } = this.props
 
         const { touchIntent } = this
@@ -178,7 +183,23 @@ class ProImageSliderItem extends PureComponent<ProImageSliderItemProps, ProImage
             }
 
             if (touchIntent === TouchIntent.SCALE_MOVE) {
-                position = scaleMoveBack2NormalArea({ currentX, currentY, width, height, scale })
+                const { planX, planY } = inertiaSlide({
+                    startClientX,
+                    startClientY,
+                    startTouchTime,
+                    currentX,
+                    currentY,
+                    clientX: nextClientX,
+                    clientY: nextClientY,
+                })
+
+                position = scaleMoveBack2NormalArea({
+                    currentX: planX,
+                    currentY: planY,
+                    width,
+                    height,
+                    scale,
+                })
             }
         }
 
@@ -188,6 +209,7 @@ class ProImageSliderItem extends PureComponent<ProImageSliderItemProps, ProImage
             lastClientX: undefined,
             lastClientY: undefined,
             touched: false,
+            startTouchTime: undefined,
             ...position,
         })
     }

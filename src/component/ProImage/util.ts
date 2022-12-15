@@ -1,5 +1,6 @@
 import { debounce } from '@/utils/func'
 import { ScalePhotoTouchEdgeState } from './type'
+import { INCREASE_ACCELERATED_SPEED_RATIO, INERTIA_SLIDE_MAX_TOUCH_TIME } from './variables'
 
 export function getSuitableImageSize(naturalWidth: number, naturalHeight: number, rotate: number) {
     let width: number
@@ -216,4 +217,51 @@ export function scaleMoveBack2NormalArea(params: Slide2PositionParams) {
     }
 
     return { currentX: nextX, currentY: nextY }
+}
+
+interface InertiaSlideParams {
+    currentX: number
+    clientX: number
+    clientY: number
+    currentY: number
+    startTouchTime: number
+    startClientX: number
+    startClientY: number
+}
+
+/** 利用加速度计算惯性滑动的距离 */
+export function inertiaSlide(params: InertiaSlideParams) {
+    const { currentX, clientX, clientY, currentY, startTouchTime, startClientX, startClientY } = params
+
+    const now = new Date().getTime()
+    const moveTime = (now - startTouchTime) / 1000
+
+    if (moveTime > INERTIA_SLIDE_MAX_TOUCH_TIME)
+        return {
+            planX: currentX,
+            planY: currentY,
+        }
+
+    const moveX = clientX - startClientX
+    const moveY = clientY - startClientY
+
+    /** 初始速度为0，利用平均速度*2估算末速度 */
+    const speedX = (moveX / moveTime) * 2
+    const speedY = (moveY / moveTime) * 2
+
+    /** 正常加速度a＝(Vt-Vo)/t,在乘一个系数（使滑动更平滑）得到一个最终的加速度 */
+    const xAcceleratedSpeed = (speedX / moveTime) * INCREASE_ACCELERATED_SPEED_RATIO
+    const yAcceleratedSpeed = (speedY / moveTime) * INCREASE_ACCELERATED_SPEED_RATIO
+
+    /** 位移 */
+    const sx = (1 / 2) * xAcceleratedSpeed * moveTime ** 2
+    const sy = (1 / 2) * yAcceleratedSpeed * moveTime ** 2
+
+    const planX = Math.floor(currentX + sx)
+    const planY = Math.floor(currentY + sy)
+
+    return {
+        planX,
+        planY,
+    }
 }
