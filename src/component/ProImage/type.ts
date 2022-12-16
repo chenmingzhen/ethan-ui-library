@@ -1,7 +1,16 @@
+import EventBus from '@/utils/EventBus'
 import React from 'react'
 import { ImageProps } from '../Image/type'
 
-export interface ProImageProps extends Omit<ImageProps, 'target'>, Pick<PhotoProps, 'loadingElement' | 'errorElement'> {
+export interface ProImageCommonProps {
+    backdropOpacity?: number
+    defaultIndex?: number
+}
+
+export interface ProImageProps
+    extends Omit<ImageProps, 'target'>,
+        Pick<PhotoProps, 'loadingElement' | 'errorElement'>,
+        Omit<ProImageCommonProps, 'defaultIndex'> {
     intro?: string
 }
 
@@ -12,7 +21,7 @@ export interface ProImageItem extends Pick<PhotoProps, 'loadingElement' | 'error
     getElement?: () => HTMLElement
 }
 
-export interface ProImageSliderProps extends Pick<PhotoProps, 'loadingElement' | 'errorElement'> {
+export interface ProImageSliderProps extends Pick<PhotoProps, 'loadingElement' | 'errorElement'>, ProImageCommonProps {
     proImageItems: ProImageItem[]
     currentIndex?: number
     defaultIndex?: number
@@ -28,7 +37,7 @@ export interface ProImageContextProps extends Pick<PhotoProps, 'loadingElement' 
     onShow(key: string): void
 }
 
-export interface ProImageGroupProps extends Pick<PhotoProps, 'loadingElement' | 'errorElement'> {
+export interface ProImageGroupProps extends Pick<PhotoProps, 'loadingElement' | 'errorElement'>, ProImageCommonProps {
     children: React.ReactNode
 }
 
@@ -44,6 +53,7 @@ export interface ProImageSliderItemProps extends Pick<PhotoProps, 'loadingElemen
     active: boolean
     style?: React.CSSProperties
     className?: string
+    eventBus: ReturnType<typeof EventBus<ProImageSliderEvent>>
     onResize(): void
     onClick(): void
     onMouseUp(touchIntent: TouchIntent, clientX: number, clientY: number): void
@@ -81,4 +91,14 @@ export enum ScalePhotoTouchEdgeState {
     BOTTOM_RIGHT,
     /** 未触碰到 */
     NOT_TOUCH,
+}
+
+export enum ProImageSlideEventKey {
+    ROTATE_CHANGE,
+    SCALE_CHANGE,
+}
+
+export interface ProImageSliderEvent {
+    [ProImageSlideEventKey.ROTATE_CHANGE]: number | undefined
+    [ProImageSlideEventKey.SCALE_CHANGE]: number | undefined
 }

@@ -179,12 +179,17 @@ interface Slide2PositionParams {
     scale: number
     width: number
     height: number
+    rotate: number
 }
 
 /** 缩放移动下，判断是否超过了边界，回滚到正常区域中 */
-export function scaleMoveBack2NormalArea(params: Slide2PositionParams) {
-    const { currentX, currentY, scale, width, height } = params
+export function scaleMoveBack2NormalArea({ currentX, currentY, scale, width, height, rotate }: Slide2PositionParams) {
     const { innerHeight, innerWidth } = window
+
+    if (rotate % 180 !== 0) {
+        ;[width, height] = [height, width]
+    }
+
     const horizontalScalePhotoTouchEdgeState = getScalePhotoTouchEdgeState(currentX, width, innerWidth, scale)
     const verticalScalePhotoTouchEdgeState = getScalePhotoTouchEdgeState(currentY, height, innerHeight, scale)
 

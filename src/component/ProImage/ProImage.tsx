@@ -7,7 +7,7 @@ import { openProImageSlider } from './event'
 import ProImageContext from './context'
 
 const ProImage: React.FC<ProImageProps> = function (props) {
-    const { intro, onClick, loadingElement, errorElement, style, ...other } = props
+    const { intro, onClick, loadingElement, errorElement, style, backdropOpacity, ...other } = props
 
     const key = useRef(getUidStr()).current
 
@@ -32,7 +32,7 @@ const ProImage: React.FC<ProImageProps> = function (props) {
                 getElement: () => imageRef.current,
             }
 
-            openProImageSlider([proImageItem])
+            openProImageSlider([proImageItem], { backdropOpacity })
         }
     }, [])
 

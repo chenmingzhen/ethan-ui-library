@@ -5,7 +5,8 @@ import { proImageClass } from '@/styles'
 import { getRangeValue } from '@/utils/numbers'
 import { KeyboardKey } from '@/utils/keyboard'
 import { noop } from '@/utils/func'
-import { ProImageAnimation, ProImageSliderProps, TouchIntent } from './type'
+import EventBus from '@/utils/EventBus'
+import { ProImageAnimation, ProImageSlideEventKey, ProImageSliderEvent, ProImageSliderProps, TouchIntent } from './type'
 import Icons from '../icons'
 import ProImageSliderItem from './ProImageSliderItem'
 import { DEFAULT_OPACITY, DRAG_CLOSE_RATIO, HORIZONTAL_PHOTO_OFFSET, SLIDE_MOVE_OFFSET } from './variables'
@@ -25,6 +26,8 @@ interface ProImageSliderState {
 class ProImageSlider extends PureComponent<ProImageSliderProps, ProImageSliderState> {
     disposeOverflowEffect = noop
 
+    eventBus = EventBus<ProImageSliderEvent>()
+
     get displayedImages() {
         const { currentIndex } = this.state
         const { proImageItems } = this.props
@@ -36,6 +39,7 @@ class ProImageSlider extends PureComponent<ProImageSliderProps, ProImageSliderSt
     static defaultProps = {
         proImageItems: [],
         esc: true,
+        backdropOpacity: DEFAULT_OPACITY,
     }
 
     static getDerivedStateFromProps(nextProps: ProImageSliderProps, prevState: ProImageSliderState) {
@@ -48,7 +52,7 @@ class ProImageSlider extends PureComponent<ProImageSliderProps, ProImageSliderSt
     constructor(props: ProImageSliderProps) {
         super(props)
 
-        const { defaultIndex } = props
+        const { defaultIndex, backdropOpacity } = props
 
         const currentIndex = props.currentIndex ?? defaultIndex ?? 0
 
@@ -57,7 +61,7 @@ class ProImageSlider extends PureComponent<ProImageSliderProps, ProImageSliderSt
             animation: ProImageAnimation.NONE,
             currentIndex,
             visible: props.visible ?? true,
-            backdropOpacity: DEFAULT_OPACITY,
+            backdropOpacity,
             overlayVisible: false,
             startMoveClientX: undefined,
             startMoveClientY: undefined,
@@ -141,7 +145,7 @@ class ProImageSlider extends PureComponent<ProImageSliderProps, ProImageSliderSt
     }
 
     startOpenAnimation = () => {
-        this.setState({ animation: ProImageAnimation.OPEN, backdropOpacity: DEFAULT_OPACITY })
+        this.setState({ animation: ProImageAnimation.OPEN, backdropOpacity: this.props.backdropOpacity })
 
         this.setOverflowEffect()
     }
@@ -229,6 +233,8 @@ class ProImageSlider extends PureComponent<ProImageSliderProps, ProImageSliderSt
     }
 
     handleVerticalMove = (clientY: number) => {
+        const { backdropOpacity: opacity } = this.props
+
         this.setDraftState((state) => {
             state.touched = true
 
@@ -239,8 +245,8 @@ class ProImageSlider extends PureComponent<ProImageSliderProps, ProImageSliderSt
             const offsetClientY = Math.abs(clientY - state.startMoveClientY)
 
             const backdropOpacity = getRangeValue({
-                max: DEFAULT_OPACITY,
-                current: DEFAULT_OPACITY - offsetClientY / 100 / 6,
+                max: opacity,
+                current: opacity - offsetClientY / 100 / 6,
             })
 
             state.backdropOpacity = backdropOpacity
@@ -300,6 +306,16 @@ class ProImageSlider extends PureComponent<ProImageSliderProps, ProImageSliderSt
         this.forceUpdate()
     }
 
+    handleRotate = () => {
+        const offsetRotate = 90
+
+        this.eventBus.emit(ProImageSlideEventKey.ROTATE_CHANGE, offsetRotate)
+    }
+
+    handleScale = (offsetScale: number) => {
+        this.eventBus.emit(ProImageSlideEventKey.SCALE_CHANGE, offsetScale)
+    }
+
     render() {
         const { proImageItems, loadingElement, errorElement } = this.props
         const { translateX, animation, visible, currentIndex, backdropOpacity, overlayVisible, touched } = this.state
@@ -334,17 +350,28 @@ class ProImageSlider extends PureComponent<ProImageSliderProps, ProImageSliderSt
                     onAnimationEnd={this.handleBgAnimationEnd}
                 />
 
-                <div className={proImageClass('toolbar')}>
+                <div
+                    className={proImageClass('toolbar')}
+                    style={{
+                        background: `rgba(0, 0, 0, ${backdropOpacity / 4})`,
+                    }}
+                >
                     <div className={proImageClass('counter')}>
                         {currentIndex + 1} / {proImageItems.length}
                     </div>
 
                     <div className={proImageClass('buttons')}>
-                        <span className={proImageClass('icon magnify')}>{Icons.Magnify}</span>
+                        <span className={proImageClass('icon magnify')} onClick={this.handleScale.bind(this, 0.25)}>
+                            {Icons.Magnify}
+                        </span>
 
-                        <span className={proImageClass('icon shrink')}>{Icons.Shrink}</span>
+                        <span className={proImageClass('icon shrink')} onClick={this.handleScale.bind(this, -0.25)}>
+                            {Icons.Shrink}
+                        </span>
 
-                        <span className={proImageClass('icon rotate')}>{Icons.Rotate}</span>
+                        <span className={proImageClass('icon rotate')} onClick={this.handleRotate}>
+                            {Icons.Rotate}
+                        </span>
 
                         <span onClick={this.startCloseAnimation} className={proImageClass('icon')}>
                             {Icons.Close}
@@ -370,6 +397,7 @@ class ProImageSlider extends PureComponent<ProImageSliderProps, ProImageSliderSt
                             active={realIndex === currentIndex}
                             loadingElement={loadingElement || item.loadingElement}
                             errorElement={errorElement || item.errorElement}
+                            eventBus={this.eventBus}
                             onClick={this.handlePhotoClick}
                             onMove={this.handleSliderItemMove}
                             onMouseUp={this.handleSliderItemUp}
@@ -380,18 +408,39 @@ class ProImageSlider extends PureComponent<ProImageSliderProps, ProImageSliderSt
 
                 <>
                     {currentIndex !== 0 && (
-                        <div className={proImageClass('angle-left')} onClick={this.handlePrevious}>
+                        <span
+                            className={proImageClass('angle-left')}
+                            onClick={this.handlePrevious}
+                            style={{
+                                background: `rgba(0, 0, 0, ${backdropOpacity / 2})`,
+                            }}
+                        >
                             {Icons.AngleLeft}
-                        </div>
+                        </span>
                     )}
                     {currentIndex + 1 < length && (
-                        <div className={proImageClass('angle-right')} onClick={this.handleNext}>
+                        <span
+                            className={proImageClass('angle-right')}
+                            onClick={this.handleNext}
+                            style={{
+                                background: `rgba(0, 0, 0, ${backdropOpacity / 2})`,
+                            }}
+                        >
                             {Icons.AngleRight}
-                        </div>
+                        </span>
                     )}
                 </>
 
-                {intro && <div className={proImageClass('footer')}>{intro}</div>}
+                {intro && (
+                    <div
+                        className={proImageClass('footer')}
+                        style={{
+                            background: `rgba(0, 0, 0, ${backdropOpacity / 4})`,
+                        }}
+                    >
+                        {intro}
+                    </div>
+                )}
             </div>
         )
     }

@@ -4,6 +4,8 @@ import { openProImageSlider } from './event'
 import { ProImageGroupProps } from './type'
 
 const ProImageGroup: React.FC<ProImageGroupProps> = function (props) {
+    const { children, loadingElement, errorElement, backdropOpacity } = props
+
     const [proImages, updateProImages] = useState([])
 
     const handleAddImage = useCallback((proImageItem) => {
@@ -25,14 +27,12 @@ const ProImageGroup: React.FC<ProImageGroupProps> = function (props) {
 
     const handleShow = useCallback(
         (key: string) => {
-            const index = proImages.findIndex((item) => item.key === key)
+            const defaultIndex = proImages.findIndex((item) => item.key === key)
 
-            openProImageSlider(proImages, index)
+            openProImageSlider(proImages, { defaultIndex, backdropOpacity })
         },
         [proImages]
     )
-
-    const { children, loadingElement, errorElement } = props
 
     return (
         <Context.Provider

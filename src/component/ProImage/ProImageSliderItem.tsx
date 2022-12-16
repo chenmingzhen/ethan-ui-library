@@ -3,7 +3,7 @@ import { PureComponent } from '@/utils/component'
 import { proImageClass } from '@/styles'
 import classnames from 'classnames'
 import { getRangeValue } from '@/utils/numbers'
-import { ProImageAnimation, ProImageSliderItemProps, TouchIntent } from './type'
+import { ProImageAnimation, ProImageSlideEventKey, ProImageSliderItemProps, TouchIntent } from './type'
 import {
     computedYAxisMoveOrScaleMovePosition,
     getAnimateOrigin,
@@ -79,6 +79,9 @@ class ProImageSliderItem extends PureComponent<ProImageSliderItemProps, ProImage
             }
         }, 0)
 
+        this.props.eventBus.on(ProImageSlideEventKey.ROTATE_CHANGE, this.handleRotate)
+        this.props.eventBus.on(ProImageSlideEventKey.SCALE_CHANGE, this.handleScale)
+
         window.addEventListener('mouseup', this.handleMouseUp)
         window.addEventListener('mousemove', this.handleMouseMove)
         window.addEventListener('resize', this.handleResize)
@@ -93,9 +96,54 @@ class ProImageSliderItem extends PureComponent<ProImageSliderItemProps, ProImage
     componentWillUnmount() {
         super.componentWillUnmount()
 
+        this.props.eventBus.off(ProImageSlideEventKey.ROTATE_CHANGE, this.handleRotate)
+        this.props.eventBus.off(ProImageSlideEventKey.SCALE_CHANGE, this.handleScale)
+
         window.removeEventListener('mouseup', this.handleMouseUp)
         window.removeEventListener('mousemove', this.handleMouseMove)
         window.removeEventListener('resize', this.handleResize)
+    }
+
+    handleRotate = (offsetRotate: number) => {
+        const { active } = this.props
+        const { naturalWidth, naturalHeight, rotate, loaded } = this.state
+
+        if (!active || !loaded) return
+
+        const nextRotate = offsetRotate + rotate
+
+        this.setState({ rotate: nextRotate, ...getSuitableImageSize(naturalWidth, naturalHeight, nextRotate) })
+    }
+
+    handleScale = (offsetScale) => {
+        const { innerWidth, innerHeight } = window
+        const { active } = this.props
+        const {
+            scale,
+            naturalWidth,
+            width,
+            loaded,
+            currentX,
+            currentY,
+            lastClientX = innerWidth / 2,
+            lastClientY = innerHeight / 2,
+        } = this.state
+
+        if (!active || !loaded) return
+
+        const nextScale = getRangeValue({ current: scale + offsetScale, max: naturalWidth / width, min: 1 })
+
+        this.setState({
+            scale: nextScale,
+            ...computedYAxisMoveOrScaleMovePosition({
+                currentX,
+                currentY,
+                nextClientX: lastClientX,
+                nextClientY: lastClientY,
+                toScale: nextScale,
+                fromScale: scale,
+            }),
+        })
     }
 
     handleImageLoad = (evt) => {
@@ -157,8 +205,18 @@ class ProImageSliderItem extends PureComponent<ProImageSliderItemProps, ProImage
     }
 
     handleUp = (nextClientX: number, nextClientY: number) => {
-        const { startClientX, startClientY, touched, currentX, currentY, width, height, scale, startTouchTime } =
-            this.state
+        const {
+            startClientX,
+            startClientY,
+            touched,
+            currentX,
+            currentY,
+            width,
+            height,
+            scale,
+            rotate,
+            startTouchTime,
+        } = this.state
         const { active, onMouseUp } = this.props
 
         const { touchIntent } = this
@@ -199,6 +257,7 @@ class ProImageSliderItem extends PureComponent<ProImageSliderItemProps, ProImage
                     width,
                     height,
                     scale,
+                    rotate,
                 })
             }
         }
@@ -206,8 +265,8 @@ class ProImageSliderItem extends PureComponent<ProImageSliderItemProps, ProImage
         this.setState({
             startClientX: undefined,
             startClientY: undefined,
-            lastClientX: undefined,
-            lastClientY: undefined,
+            // lastClientX: undefined,
+            // lastClientY: undefined,
             touched: false,
             startTouchTime: undefined,
             ...position,
@@ -321,11 +380,11 @@ class ProImageSliderItem extends PureComponent<ProImageSliderItemProps, ProImage
     }
 
     render() {
-        const { width, height, touched, loaded, error, pending, currentX, currentY, scale } = this.state
+        const { width, height, touched, loaded, error, pending, currentX, currentY, scale, rotate } = this.state
         const { animation, proImageItem, active, style, className } = this.props
 
         /** X轴移动由Slider驱动，y轴移动由Item驱动 */
-        const transform = `translate3d(${currentX}px, ${currentY}px, 0) scale(${scale})`
+        const transform = `translate3d(${currentX}px, ${currentY}px, 0) scale(${scale}) rotate(${rotate}deg`
 
         return (
             <div className={classnames(proImageClass('item'), className)} style={style}>
