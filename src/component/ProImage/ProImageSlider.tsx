@@ -4,7 +4,7 @@ import classnames from 'classnames'
 import { proImageClass } from '@/styles'
 import { getRangeValue } from '@/utils/numbers'
 import { KeyboardKey } from '@/utils/keyboard'
-import { noop } from '@/utils/func'
+import { debounce, noop } from '@/utils/func'
 import EventBus from '@/utils/EventBus'
 import { ProImageAnimation, ProImageSlideEventKey, ProImageSliderEvent, ProImageSliderProps, TouchIntent } from './type'
 import Icons from '../icons'
@@ -301,10 +301,16 @@ class ProImageSlider extends PureComponent<ProImageSliderProps, ProImageSliderSt
         }
     }
 
-    handleSliderItemResize = () => {
-        /** 更新innerWidth重新计算left */
+    handleSliderItemResize = debounce(() => {
+        const { currentIndex } = this.state
+        const { innerWidth } = window
+
+        this.setState({
+            translateX: -(innerWidth + HORIZONTAL_PHOTO_OFFSET) * currentIndex,
+        })
+
         this.forceUpdate()
-    }
+    }, 17)
 
     handleRotate = () => {
         const offsetRotate = 90
