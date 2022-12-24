@@ -2,7 +2,7 @@ import { MoveableProps } from '@/hoc/moveable'
 import { ResizableProps } from '@/hoc/resizable'
 
 import React from 'react'
-import { ButtonProps } from '../Button'
+import { ButtonProps } from '../Button/type'
 
 export interface CardProps extends MoveableProps, ResizableProps {
     /** 是否显示阴影 */

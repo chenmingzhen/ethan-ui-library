@@ -1,8 +1,12 @@
+import React from 'react'
 import Image from './Image'
 import Group from './Group'
 import { ImageProps } from './type'
 
-interface ImageComponent extends React.ForwardRefExoticComponent<ImageProps & React.RefAttributes<HTMLDivElement>> {
+interface ImageComponent
+    extends React.MemoExoticComponent<
+        React.ForwardRefExoticComponent<ImageProps & React.RefAttributes<HTMLDivElement>>
+    > {
     Group: typeof Group
     IS_ETHAN_IMAGE: boolean
 }

@@ -126,7 +126,7 @@ class FormItem extends PureComponent<IFormItemProps, FormItemState> {
     }
 
     updateChildItemErrors = (nameStr: string, error: Error) => {
-        this.setImmerState((draft) => {
+        this.setDraftState((draft) => {
             if (error) {
                 draft.errors[nameStr] = error
             } else {

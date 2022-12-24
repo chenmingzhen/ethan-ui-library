@@ -42,17 +42,25 @@ export function createFunc(func) {
 export function debounce(fn, delay = 80) {
     let timer: NodeJS.Timeout
 
-    return function (...args) {
+    const cancel = () => {
         if (timer) {
             clearTimeout(timer)
 
             timer = null
         }
+    }
+
+    function invoke(...args) {
+        cancel()
 
         timer = setTimeout(() => {
             fn(...args)
         }, delay)
     }
+
+    invoke.cancel = cancel
+
+    return invoke
 }
 
 export function throttleWrapper(cb, delay = 80) {

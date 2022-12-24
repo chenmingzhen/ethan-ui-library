@@ -1,4 +1,4 @@
-export interface ButtonProps extends React.RefAttributes<HTMLElement> {
+export interface ButtonProps extends React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement> {
     children?: React.ReactNode
     className?: string
     disabled?: boolean

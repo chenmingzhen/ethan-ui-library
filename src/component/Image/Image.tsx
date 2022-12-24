@@ -18,7 +18,7 @@ import { IImageProps } from './type'
 import { PLACEHOLDER, SRC, ALT, ERROR, StatusType } from './variable'
 import { showGallery } from './events'
 
-const Image: ForwardRefRenderFunction<HTMLAnchorElement | HTMLDivElement, IImageProps> = (props, ref) => {
+const Image: ForwardRefRenderFunction<HTMLDivElement, IImageProps> = (props, ref) => {
     const {
         src,
         alt,
@@ -38,6 +38,8 @@ const Image: ForwardRefRenderFunction<HTMLAnchorElement | HTMLDivElement, IImage
         onTouchEnd,
         onTouchStart,
         fit,
+        onLoad,
+        imageMaskClassName,
     } = props
 
     const [status, setStatus] = useSafeState<StatusType>(PLACEHOLDER)
@@ -76,10 +78,16 @@ const Image: ForwardRefRenderFunction<HTMLAnchorElement | HTMLDivElement, IImage
         /** 浏览器会对这个地址的图片进行缓存 */
         /** src不能找到时 渲染alt地址的图片 */
         const image = new window.Image()
-        image.onload = () => setStatus(ALT)
+        image.onload = (e) => {
+            if (onLoad) {
+                onLoad(e)
+            }
+
+            setStatus(ALT)
+        }
         image.onerror = () => setStatus(ERROR)
         image.src = alt
-    }, [alt])
+    }, [alt, onLoad])
 
     const render = useCallback(() => {
         if (!src) {
@@ -90,10 +98,16 @@ const Image: ForwardRefRenderFunction<HTMLAnchorElement | HTMLDivElement, IImage
 
         const image = new window.Image()
 
-        image.onload = () => setStatus(SRC)
+        image.onload = (e) => {
+            if (onLoad) {
+                onLoad(e)
+            }
+
+            setStatus(SRC)
+        }
         image.onerror = renderFallback
         image.src = src
-    }, [renderFallback, src])
+    }, [renderFallback, src, onLoad])
 
     const handleClick = (e: React.MouseEvent<HTMLElement, MouseEvent>) => {
         if (onClick) {
@@ -115,7 +129,10 @@ const Image: ForwardRefRenderFunction<HTMLAnchorElement | HTMLDivElement, IImage
         switch (status) {
             case PLACEHOLDER:
                 return (
-                    <div className={imageClass('mask')} style={isPaddingHold ? { position: 'absolute' } : undefined}>
+                    <div
+                        className={classnames(imageClass('mask'), imageMaskClassName)}
+                        style={isPaddingHold ? { position: 'absolute', top: 0 } : undefined}
+                    >
                         {isValidElement(placeholder) ? placeholder : <Spin {...spinProps} />}
                     </div>
                 )
@@ -126,7 +143,7 @@ const Image: ForwardRefRenderFunction<HTMLAnchorElement | HTMLDivElement, IImage
                 return <img alt="" src={alt} title={title} style={{ objectFit: fit }} />
             case ERROR:
                 return (
-                    <div className={imageClass('mask')}>
+                    <div className={classnames(imageClass('mask'), imageMaskClassName)}>
                         <div>{error || title || 'no found'}</div>
                     </div>
                 )

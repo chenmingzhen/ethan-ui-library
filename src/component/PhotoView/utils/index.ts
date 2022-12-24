@@ -147,7 +147,7 @@ export const getPositionOnMoveOrScale = ({
 }
 
 /**
- * 接触左边/上边 或 右边/下边边缘
+ * 接触左边/上边 或 右边/下边边缘 计算滑动的时候是否超过边界
  * @param position - x/y
  * @param scale
  * @param size - width/height

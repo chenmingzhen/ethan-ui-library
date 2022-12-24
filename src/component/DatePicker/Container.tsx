@@ -170,7 +170,7 @@ class Container extends PureComponent<DatePickerContainerProps, DatePickerState>
     handleToggleOpen = (open: boolean) => {
         if (this.props.disabled === true || open === this.state.open) return
 
-        this.setImmerState((state) => {
+        this.setDraftState((state) => {
             state.open = open
 
             if (open === true) {
@@ -247,7 +247,7 @@ class Container extends PureComponent<DatePickerContainerProps, DatePickerState>
     }
 
     handleHover = (index: number, isHover: boolean) => {
-        this.setImmerState((state) => {
+        this.setDraftState((state) => {
             state[`picker${index}`] = isHover
         })
     }

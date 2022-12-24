@@ -16,7 +16,7 @@ export interface ImageProps {
     /** 原图 */
     src?: string
     style?: React.CSSProperties
-    target?: '_blank' | '_sele' | '_modal' | '_download'
+    target?: '_blank' | '_self' | '_modal' | '_download'
     title?: string
     /** 目标容器 */
     getContainer?: () => HTMLElement
@@ -24,6 +24,8 @@ export interface ImageProps {
     error?: ReactNode
     spinProps?: SpinProps
     fit?: 'fill' | 'contain' | 'cover' | 'none' | 'scale-down'
+    onLoad?(e: Event): void
+    imageMaskClassName?: string
 }
 
 export interface IImageProps extends ImageProps {
