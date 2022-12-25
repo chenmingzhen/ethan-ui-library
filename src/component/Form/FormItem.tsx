@@ -42,7 +42,7 @@ class FormItem extends PureComponent<IFormItemProps, FormItemState> {
     constructor(props) {
         super(props)
 
-        const { name = '', onFlowUpdateBind, error, onUpdateChildItemErrors } = this.props
+        const { name = '', onFlowUpdateBind, error, onUpdateRootErrors: onUpdateChildItemErrors } = this.props
 
         this.state = {
             errors: {
@@ -79,7 +79,7 @@ class FormItem extends PureComponent<IFormItemProps, FormItemState> {
 
     componentDidUpdate(prevProps: Readonly<IFormItemProps>): void {
         const prevError = prevProps.error
-        const { name, error, onUpdateChildItemErrors, formDatum } = this.props
+        const { name, error, onUpdateRootErrors: onUpdateChildItemErrors, formDatum } = this.props
 
         if (!deepEqual(prevProps.name, this.props.name) && formDatum) {
             this.unBindInput(prevProps.name)
@@ -111,7 +111,7 @@ class FormItem extends PureComponent<IFormItemProps, FormItemState> {
     }
 
     unBindInput = (name: string | string[]) => {
-        const { formDatum, onUpdateChildItemErrors, preserve } = this.props
+        const { formDatum, onUpdateRootErrors: onUpdateChildItemErrors, preserve } = this.props
 
         if (formDatum && name) {
             formDatum.unbind(name, preserve)
@@ -233,7 +233,7 @@ class FormItem extends PureComponent<IFormItemProps, FormItemState> {
     }
 
     renderHelp = () => {
-        const { onUpdateChildItemErrors, animation, tip } = this.props
+        const { onUpdateRootErrors: onUpdateChildItemErrors, animation, tip } = this.props
 
         const { errors } = this.state
 
@@ -266,9 +266,9 @@ class FormItem extends PureComponent<IFormItemProps, FormItemState> {
             required,
             style,
             error,
-            onUpdateChildItemErrors,
+            onUpdateRootErrors: onUpdateChildItemErrors,
             noStyle,
-            noErrorInRoot,
+            collectErrorInRoot: noErrorInRoot,
             disabled,
         } = this.props
 
@@ -307,7 +307,7 @@ class FormItem extends PureComponent<IFormItemProps, FormItemState> {
             <ErrorListProvider
                 value={{
                     /** 根FormItem不收集错误 */
-                    onUpdateChildItemErrors:
+                    onUpdateRootErrors:
                         noErrorInRoot && !onUpdateChildItemErrors
                             ? undefined
                             : onUpdateChildItemErrors || this.updateChildItemErrors,
@@ -336,7 +336,7 @@ class FormItem extends PureComponent<IFormItemProps, FormItemState> {
 const withCollectError = (Origin) =>
     React.memo((props) => (
         <ErrorListConsumer>
-            {({ onUpdateChildItemErrors } = {}) => (
+            {({ onUpdateRootErrors: onUpdateChildItemErrors } = {}) => (
                 <Origin onUpdateChildItemErrors={onUpdateChildItemErrors} {...props} />
             )}
         </ErrorListConsumer>

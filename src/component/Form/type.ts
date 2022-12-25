@@ -27,12 +27,12 @@ export interface FormItemProps<Value = any> extends Pick<FormContextProps, 'anim
     flow?: string[] | true
     noStyle?: boolean
     beforeChange?: (value: any, prevValue: any, form: FormInstance<Value>) => any
-    /** 根FormItem设置不集中收集Error */
-    noErrorInRoot?: boolean
+    /** 根FormItem集中收集Error */
+    collectErrorInRoot?: boolean
 }
 
 export interface FormItemErrorListContext {
-    onUpdateChildItemErrors?: (id: string, error: Error) => void
+    onUpdateRootErrors?: (id: string, error: Error) => void
 }
 
 export interface IFormItemProps

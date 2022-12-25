@@ -18,7 +18,7 @@ export default function App() {
                 <Input defaultValue="Harry Potter" />
             </Form.Item>
 
-            <Form.Item label="Friends" noErrorInRoot>
+            <Form.Item label="Friends" collectErrorInRoot>
                 <Form.FieldSet<{ age: number; name: number }>
                     name="friends"
                     rules={[rule.min(1)]}
