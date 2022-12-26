@@ -1,49 +1,23 @@
-import React from 'react'
-import withValidate from '@/hoc/withValidate'
-import { PureComponent } from '@/utils/component'
-import { isFunc } from '@/utils/is'
-import { compose } from '@/utils/func'
+import useUpdate from '@/hooks/useUpdate'
 import { CHANGE_ACTION, IGNORE_VALIDATE_ACTION } from '@/utils/Datum/types'
+import React, { useContext } from 'react'
+import { isFunc } from '@/utils/is'
+import formContext from './context/formContext'
+import useBindFormDatum from './hooks/internal/useBindFormDatum'
+import useEvent from './hooks/internal/useEvent'
+import useFlow from './hooks/internal/useFlow'
+import useFormValidate from './hooks/internal/useFormValidate'
 import { FieldSetProps, IFieldSetProps } from './type'
-import { FieldSetConsumer, FieldSetProvider } from './context/fieldSetContext'
+import { FieldSetProvider } from './context/fieldSetContext'
 import FormHelp from './FormHelp'
-import withFlow from './Hoc/withFlow'
-import withFormConsumer from './Hoc/withFormConsumer'
 
-function extendName(path = '', name: string | string[]) {
-    if (name === undefined) return undefined
-
-    if (name === '') return path
-
-    if (Array.isArray(name)) return name.map((n) => extendName(path, n))
-
-    return `${path}${path.length > 0 ? '.' : ''}${name}`
-}
-
-class FieldSet extends PureComponent<IFieldSetProps> {
-    constructor(props: IFieldSetProps) {
-        super(props)
-
-        const { defaultValue, formDatum, validate, name, onFlowUpdateBind } = this.props
-
-        if (formDatum && name) {
-            formDatum.bind(name, this.handleUpdate, defaultValue, validate)
-        }
-
-        onFlowUpdateBind(this.forceUpdate)
-    }
-
-    componentWillUnmount() {
-        const { formDatum, name, preserve } = this.props
-
-        if (formDatum && name) {
-            formDatum.unbind(name, preserve)
-        }
-    }
-
-    handleUpdate = (_, __, type) => {
-        const { validate, formDatum, name } = this.props
-
+const FieldSet: React.FC<IFieldSetProps> = (props) => {
+    const { name, rules, preserve: propPreserve, defaultValue, flow, emptyRender, children } = props
+    const { formDatum, animation, preserve: formPreserve } = useContext(formContext) || {}
+    const preserve = formPreserve || propPreserve
+    const update = useUpdate()
+    const { error, validate } = useFormValidate({ rules })
+    const handleUpdate = useEvent((_, __, type) => {
         const formValues = formDatum.getValue()
 
         const value = formDatum.get(name)
@@ -52,78 +26,72 @@ class FieldSet extends PureComponent<IFieldSetProps> {
             validate(value, formValues).catch(() => {})
         }
 
-        this.forceUpdate()
+        update()
+    })
+    useFlow({ flow, name, formDatum, validate })
+    useBindFormDatum({
+        formDatum,
+        name,
+        onValidate: validate,
+        defaultValue,
+        preserve,
+        onUpdate: handleUpdate,
+    })
+
+    if (!isFunc(children)) {
+        return (
+            <FieldSetProvider value={{ path: name }}>
+                {children}
+                <FormHelp error={error} animation={animation} />
+            </FieldSetProvider>
+        )
     }
 
-    handleInsert = (index: number, value) => {
-        const { name, formDatum } = this.props
-
+    function handleInsert(index: number, value) {
         formDatum.insert(name, index, value)
 
-        this.handleUpdate(undefined, undefined, CHANGE_ACTION)
+        handleUpdate(undefined, undefined, CHANGE_ACTION)
     }
 
-    handleRemove = (index: number) => {
-        const { formDatum, name } = this.props
-
+    function handleRemove(index: number) {
         formDatum.splice(name, index)
 
-        this.handleUpdate(undefined, undefined, CHANGE_ACTION)
+        handleUpdate(undefined, undefined, CHANGE_ACTION)
     }
 
-    render() {
-        const { name, defaultValue, emptyRender, children, formDatum, error, animation } = this.props
+    const values = formDatum.get(name) || defaultValue || []
 
-        if (!isFunc(children)) {
-            return (
-                <FieldSetProvider value={{ path: name }}>
-                    {children}
-                    <FormHelp error={error} animation={animation} />
-                </FieldSetProvider>
-            )
-        }
-
-        const values = formDatum.get(name) || defaultValue || []
-
-        if (!values.length && emptyRender) {
-            return (
-                <>
-                    {emptyRender(this.handleInsert.bind(this, 0))}
-                    <FormHelp error={error} animation={animation} />
-                </>
-            )
-        }
-
+    if (!values.length && emptyRender) {
         return (
             <>
-                {values.map((value, i) => (
-                    <FieldSetProvider key={i} value={{ path: `${name}[${i}]` }}>
-                        {children({
-                            onAppend: this.handleInsert.bind(this, i + 1),
-                            onRemove: this.handleRemove.bind(this, i),
-                            onInsert: this.handleInsert.bind(this),
-                            list: values,
-                            index: i,
-                            value,
-                        })}
-                    </FieldSetProvider>
-                ))}
-
+                {emptyRender(handleInsert.bind(this, 0))}
                 <FormHelp error={error} animation={animation} />
             </>
         )
     }
-}
 
-export const fieldSetConsumer = (Origin) => (props) =>
-    <FieldSetConsumer>{({ path } = {}) => <Origin {...props} name={extendName(path, props.name)} />}</FieldSetConsumer>
+    return (
+        <>
+            {values.map((value, i) => (
+                <FieldSetProvider key={i} value={{ path: `${name}[${i}]` }}>
+                    {children({
+                        onAppend: handleInsert.bind(this, i + 1),
+                        onRemove: handleRemove.bind(this, i),
+                        onInsert: handleInsert.bind(this),
+                        list: values,
+                        index: i,
+                        value,
+                    })}
+                </FieldSetProvider>
+            ))}
+
+            <FormHelp error={error} animation={animation} />
+        </>
+    )
+}
 
 interface FieldSetComponent {
     new <Value = any>(props: FieldSetProps): React.Component<FieldSetProps<Value>>
 }
 
-export default compose(
-    withFormConsumer(['formDatum', 'animation', 'preserve']),
-    withValidate,
-    withFlow
-)(FieldSet) as FieldSetComponent
+export default React.memo(FieldSet) as unknown as FieldSetComponent

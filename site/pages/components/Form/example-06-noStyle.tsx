@@ -1,5 +1,5 @@
 /**
- * cn - 没样式
+ * cn - 无样式
  *    -- 无样式的FormItem可直接展示组件，但仍然保留收集数据的能力,实现更复杂的组件
  * en - NoStyle
  *    -- FormItem without styles can directly display components, but still retain the ability to collect data and implement more complex components

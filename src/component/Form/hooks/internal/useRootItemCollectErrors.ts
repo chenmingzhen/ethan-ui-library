@@ -3,7 +3,7 @@ import { isSameError } from '@/utils/errors'
 import { isArray } from '@/utils/is'
 import { useContext, useEffect } from 'react'
 import { usePrevious, useUpdateEffect } from 'react-use'
-import { ErrorListContext } from '../../FormItem2'
+import { ErrorListContext } from '../../FormItem'
 import useEvent from './useEvent'
 
 interface UseErrorListProps {
@@ -20,7 +20,8 @@ function arrayNamesToStr(name: string | string[] = '') {
     return name.join('_ETHAN_JOIN_')
 }
 
-export function useErrorList(props: UseErrorListProps) {
+/** 此hooks用于收集FormItem下面的所有FormItem的错误 */
+export function useRootItemCollectErrors(props: UseErrorListProps) {
     const { name, error } = props
     const [errors, setErrors] = useSafeState<Record<string, Error>>({ [arrayNamesToStr(name)]: undefined })
     const prevError = usePrevious(error)
@@ -60,5 +61,5 @@ export function useErrorList(props: UseErrorListProps) {
         }
     }, [])
 
-    return { errors, updateErrors, isRoot: !!onUpdateRootErrors }
+    return { errors, updateErrors, isRootItem: !!onUpdateRootErrors }
 }

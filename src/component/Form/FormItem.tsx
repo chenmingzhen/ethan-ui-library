@@ -1,167 +1,87 @@
-import React, { cloneElement, createContext, isValidElement } from 'react'
-import classnames from 'classnames'
-import deepEqual from 'deep-eql'
-import { PureComponent } from '@/utils/component'
+import useUpdate from '@/hooks/useUpdate'
 import { formClass } from '@/styles'
+import { ERROR_ACTION, IGNORE_VALIDATE_ACTION, RESET_ACTION } from '@/utils/Datum/types'
 import { isSameError } from '@/utils/errors'
 import { isArray, isFunc, isSyntheticEvent } from '@/utils/is'
-import withValidate from '@/hoc/withValidate'
-import immer from 'immer'
 import shallowEqual from '@/utils/shallowEqual'
-import { ERROR_ACTION, IGNORE_VALIDATE_ACTION, RESET_ACTION } from '@/utils/Datum/types'
-import { compose } from '@/utils/func'
+import classnames from 'classnames'
+import immer from 'immer'
+import React, { isValidElement, useContext, cloneElement, createContext, useRef } from 'react'
 import { getGrid } from '../Grid/util'
-import { FormItemErrorListContext, FormItemProps, IFormItemProps } from './type'
-import FormHelp from './FormHelp'
-import { fieldSetConsumer } from './FieldSet'
-import withFlow from './Hoc/withFlow'
+import { FieldSetContext } from './context/fieldSetContext'
+import formContext from './context/formContext'
 import { FormItemProvider } from './context/formItemContext'
-import withFormConsumer from './Hoc/withFormConsumer'
+import FormHelp from './FormHelp'
+import useBindFormDatum from './hooks/internal/useBindFormDatum'
+import { useRootItemCollectErrors } from './hooks/internal/useRootItemCollectErrors'
+import useEvent from './hooks/internal/useEvent'
+import useFlow from './hooks/internal/useFlow'
+import useFormValidate from './hooks/internal/useFormValidate'
+import { FormItemErrorListContext, FormItemProps, IFormItemProps } from './type'
+import { extendName } from './util'
 
-interface FormItemState {
-    errors: Record<string, Error>
-}
+export const ErrorListContext = createContext<FormItemErrorListContext>(undefined)
 
-const { Provider: ErrorListProvider, Consumer: ErrorListConsumer } = createContext<FormItemErrorListContext>(undefined)
-
-function arrayNamesToStr(name: string | string[] = '') {
-    if (!isArray(name)) {
-        return name
-    }
-
-    return name.join('_ETHAN_JOIN_')
-}
-
-class FormItem extends PureComponent<IFormItemProps, FormItemState> {
-    lastValue
-
-    static defaultProps = {
-        name: '',
-    }
-
-    constructor(props) {
-        super(props)
-
-        const { name = '', onFlowUpdateBind, error, onUpdateRootErrors: onUpdateChildItemErrors } = this.props
-
-        this.state = {
-            errors: {
-                [arrayNamesToStr(name)]: undefined,
-            },
-        }
-
-        this.bindInput(this.props.name)
-
-        if (error && onUpdateChildItemErrors) {
-            onUpdateChildItemErrors(arrayNamesToStr(name), error)
-        }
-
-        onFlowUpdateBind(this.forceUpdate)
-    }
-
-    static getDerivedStateFromProps(nextProps: IFormItemProps, state: FormItemState) {
-        const nextError = nextProps.error
-
-        return {
-            ...state,
-            errors: {
-                ...state.errors,
-                [arrayNamesToStr(nextProps.name)]: nextError,
-            },
-        }
-    }
-
-    componentDidMount() {
-        super.componentDidMount()
-
-        this.lastValue = this.value
-    }
-
-    componentDidUpdate(prevProps: Readonly<IFormItemProps>): void {
-        const prevError = prevProps.error
-        const { name, error, onUpdateRootErrors: onUpdateChildItemErrors, formDatum } = this.props
-
-        if (!deepEqual(prevProps.name, this.props.name) && formDatum) {
-            this.unBindInput(prevProps.name)
-
-            this.bindInput(this.props.name)
-        } else if (onUpdateChildItemErrors && !isSameError(prevError, error)) {
-            onUpdateChildItemErrors(arrayNamesToStr(name), error)
-        }
-    }
-
-    componentWillUnmount() {
-        super.componentWillUnmount()
-
-        this.unBindInput(this.props.name)
-    }
-
-    bindInput = (name: string | string[]) => {
-        const { defaultValue, formDatum, validate } = this.props
-
-        if (formDatum && name) {
-            if (!isArray(name)) {
-                formDatum.bind(name, this.handleUpdate, defaultValue, validate)
-            } else {
-                const defaultValues = isArray(defaultValue) ? defaultValue : [defaultValue]
-
-                name.forEach((n, i) => formDatum.bind(n, this.handleUpdate, defaultValues[i], validate))
-            }
-        }
-    }
-
-    unBindInput = (name: string | string[]) => {
-        const { formDatum, onUpdateRootErrors: onUpdateChildItemErrors, preserve } = this.props
-
-        if (formDatum && name) {
-            formDatum.unbind(name, preserve)
-        }
-
-        if (onUpdateChildItemErrors) {
-            onUpdateChildItemErrors(arrayNamesToStr(name), undefined)
-        } else {
-            /** Root */
-            this.updateChildItemErrors(arrayNamesToStr(name), undefined)
-        }
-    }
-
-    updateChildItemErrors = (nameStr: string, error: Error) => {
-        this.setDraftState((draft) => {
-            if (error) {
-                draft.errors[nameStr] = error
-            } else {
-                delete draft.errors[nameStr]
-            }
-        })
-    }
-
-    handleUpdate = (name, data, type) => {
-        const { name: propName, validate, error, onInternalError, formDatum } = this.props
-
+const FormItem: React.FC<IFormItemProps> = (props) => {
+    const {
+        disabled: propDisabled,
+        grid,
+        label,
+        required,
+        style,
+        noStyle,
+        collectErrorInRoot,
+        name: propName,
+        rules,
+        children,
+        beforeChange,
+        tip,
+        className,
+        flow,
+        defaultValue,
+        preserve: propPreserve,
+    } = props
+    const {
+        formDatum,
+        labelWidth,
+        labelAlign,
+        animation,
+        preserve: formPreserve,
+        disabled: formDisabled,
+    } = useContext(formContext)
+    const preserve = propPreserve || formPreserve
+    const { path } = useContext(FieldSetContext) || {}
+    const name = extendName(path, propName)
+    const disabled = propDisabled || formDisabled
+    const { error, validate, updateError } = useFormValidate({ rules })
+    const { errors, updateErrors, isRootItem } = useRootItemCollectErrors({ name, error })
+    const update = useUpdate()
+    const lastValueRef = useRef<any>(undefined)
+    const handleUpdate = useEvent((actionName, data, type) => {
         /** ERROR_ACTION */
         if (type === ERROR_ACTION) {
             if (!isSameError(data, error)) {
-                onInternalError(data)
+                updateError(data)
             }
 
             return
         }
 
         if (type === RESET_ACTION) {
-            onInternalError(undefined)
+            updateError(undefined)
         }
 
-        const newValue = !Array.isArray(propName)
+        const newValue = !Array.isArray(name)
             ? data
-            : immer(this.value, (draft) => {
-                  propName.forEach((n, i) => {
-                      if (n === name) draft[i] = data
+            : immer(getValue(), (draft) => {
+                  name.forEach((n, i) => {
+                      if (n === actionName) draft[i] = data
                   })
               })
 
-        if (shallowEqual(newValue, this.lastValue)) return
+        if (shallowEqual(newValue, lastValueRef.current)) return
 
-        this.lastValue = newValue
+        lastValueRef.current = newValue
 
         const formValue = formDatum.getValue()
 
@@ -169,12 +89,27 @@ class FormItem extends PureComponent<IFormItemProps, FormItemState> {
             validate(newValue, formValue).catch(() => {})
         }
 
-        this.forceUpdate()
+        update()
+    })
+
+    useFlow({ formDatum, name, flow, validate })
+    useBindFormDatum({ formDatum, name, preserve, defaultValue, onValidate: validate, onUpdate: handleUpdate })
+
+    function getValue() {
+        let value
+
+        if (formDatum && name) {
+            if (isArray(name)) {
+                value = name.map((n) => formDatum.get(n))
+            } else {
+                value = formDatum.get(name)
+            }
+        }
+
+        return value
     }
 
-    handleChange = (rawValue, ...args) => {
-        const { name, formDatum, children, beforeChange } = this.props
-
+    function handleChange(rawValue, ...args) {
         const anyChildren = children as any
 
         const prevValue = formDatum.get(name)
@@ -196,29 +131,11 @@ class FormItem extends PureComponent<IFormItemProps, FormItemState> {
         }
     }
 
-    get value() {
-        const { formDatum, name } = this.props
-
-        let value
-
-        if (formDatum && name) {
-            if (isArray(name)) {
-                value = name.map((n) => formDatum.get(n))
-            } else {
-                value = formDatum.get(name)
-            }
-        }
-
-        return value
-    }
-
-    renderChildren = () => {
-        const { children, formDatum, error, name } = this.props
-
-        const { value } = this
+    function renderChildren() {
+        const value = getValue()
 
         if (typeof children === 'function') {
-            return children({ value, onChange: this.handleChange, form: formDatum.getForm(), error })
+            return children({ value, onChange: handleChange, form: formDatum.getForm(), error })
         }
 
         /** 避免react div嵌套Input可以实现onChange  */
@@ -226,19 +143,15 @@ class FormItem extends PureComponent<IFormItemProps, FormItemState> {
         if (!formDatum || !name) return children
 
         if (isValidElement(children)) {
-            return cloneElement<any>(children, { value, onChange: this.handleChange })
+            return cloneElement<any>(children, { value, onChange: handleChange })
         }
 
         return null
     }
 
-    renderHelp = () => {
-        const { onUpdateRootErrors: onUpdateChildItemErrors, animation, tip } = this.props
-
-        const { errors } = this.state
-
+    function renderHelp() {
         /** 非顶层FormItem */
-        if (onUpdateChildItemErrors) {
+        if (collectErrorInRoot && !isRootItem) {
             if (tip) {
                 return <FormHelp tip={tip} animation={animation} />
             }
@@ -257,99 +170,62 @@ class FormItem extends PureComponent<IFormItemProps, FormItemState> {
         )
     }
 
-    render() {
-        const {
-            grid,
-            label,
-            labelAlign,
-            labelWidth,
-            required,
-            style,
-            error,
-            onUpdateRootErrors: onUpdateChildItemErrors,
-            noStyle,
-            collectErrorInRoot: noErrorInRoot,
-            disabled,
-        } = this.props
-
-        const { errors } = this.state
-
-        if (noStyle) {
-            return (
-                <FormItemProvider value={{ hasItemError: !!error, disabled }}>
-                    {this.renderChildren()}
-
-                    {this.renderHelp()}
-                </FormItemProvider>
-            )
-        }
-
-        const className = classnames(
-            getGrid(grid),
-            formClass(
-                'item',
-                required && 'required',
-                /**
-                 * @todo
-                 * 下面的样式是为了兼容InputGroup的，但是有点别扭。
-                 * 因为FormItem内的输入型组件（有InputBorder包裹）的Error样式是通过FormItem的上下文读取的,
-                 * 由于InputGroup不存在成为受控组件的条件（没有value和onChange），所以没有hasItemError的值
-                 * 如果想让InputGroup获取样式，需要在formless中添加InputGroup的invalid的样式，并且要封装一下InputGroup，例如使用children函数的形式
-                 * 如果包裹InputGroup的顶层FormItem是noStyle.则error下InputGroup的样式会失效
-                 */
-                Object.keys(errors).filter((key) => !!errors[key]).length && 'invalid',
-                ['top', 'right'].indexOf(labelAlign) >= 0 && `label-align-${labelAlign}`
-            ),
-            this.props.className
-        )
-
+    if (noStyle) {
         return (
-            <ErrorListProvider
-                value={{
-                    /** 根FormItem不收集错误 */
-                    onUpdateRootErrors:
-                        noErrorInRoot && !onUpdateChildItemErrors
-                            ? undefined
-                            : onUpdateChildItemErrors || this.updateChildItemErrors,
-                }}
-            >
-                <FormItemProvider value={{ hasItemError: !!error, disabled }}>
-                    <div className={className} style={style}>
-                        {label && (
-                            <div style={{ width: labelWidth }} className={formClass('label')}>
-                                {label}
-                            </div>
-                        )}
-                        <div className={formClass('control')}>
-                            {this.renderChildren()}
+            <FormItemProvider value={{ hasItemError: !!error, disabled }}>
+                {renderChildren()}
 
-                            {this.renderHelp()}
-                        </div>
-                    </div>
-                </FormItemProvider>
-            </ErrorListProvider>
+                {renderHelp()}
+            </FormItemProvider>
         )
     }
-}
 
-/** 顶层FormItem收集Error统一显示 */
-const withCollectError = (Origin) =>
-    React.memo((props) => (
-        <ErrorListConsumer>
-            {({ onUpdateRootErrors: onUpdateChildItemErrors } = {}) => (
-                <Origin onUpdateChildItemErrors={onUpdateChildItemErrors} {...props} />
-            )}
-        </ErrorListConsumer>
-    ))
+    const cls = classnames(
+        getGrid(grid),
+        formClass(
+            'item',
+            required && 'required',
+            /**
+             * @todo
+             * 下面的样式是为了兼容InputGroup的，但是有点别扭。
+             * 因为FormItem内的输入型组件（有InputBorder包裹）的Error样式是通过FormItem的上下文读取的,
+             * 由于InputGroup不存在成为受控组件的条件（没有value和onChange），所以没有hasItemError的值
+             * 如果想让InputGroup获取样式，需要在formless中添加InputGroup的invalid的样式，并且要封装一下InputGroup，例如使用children函数的形式
+             * 如果包裹InputGroup的顶层FormItem是noStyle.则error下InputGroup的样式会失效
+             */
+            Object.keys(errors).filter((key) => !!errors[key]).length && 'invalid',
+            ['top', 'right'].indexOf(labelAlign) >= 0 && `label-align-${labelAlign}`
+        ),
+        className
+    )
+
+    return (
+        <ErrorListContext.Provider
+            value={{
+                /** 根FormItem收集错误 */
+                onUpdateRootErrors: collectErrorInRoot && !isRootItem ? undefined : updateErrors,
+            }}
+        >
+            <FormItemProvider value={{ hasItemError: !!error, disabled }}>
+                <div className={cls} style={style}>
+                    {label && (
+                        <div style={{ width: labelWidth }} className={formClass('label')}>
+                            {label}
+                        </div>
+                    )}
+                    <div className={formClass('control')}>
+                        {renderChildren()}
+
+                        {renderHelp()}
+                    </div>
+                </div>
+            </FormItemProvider>
+        </ErrorListContext.Provider>
+    )
+}
 
 interface ComputedFormItem {
-    new <Value = any>(props: FormItemProps): React.PureComponent<FormItemProps<Value>>
+    new <Value = any>(props: FormItemProps): React.ClassicComponent<FormItemProps<Value>>
 }
 
-export default compose(
-    withFormConsumer(['formDatum', 'labelWidth', 'labelAlign', 'keepErrorHeight', 'animation', 'preserve', 'disabled']),
-    withValidate,
-    fieldSetConsumer,
-    withFlow,
-    withCollectError
-)(FormItem) as ComputedFormItem
+export default React.memo(FormItem) as unknown as ComputedFormItem

@@ -1,6 +1,5 @@
 import { Rule } from '@/component/Rule/type'
 import { isArray } from '@/utils/is'
-import { filterProps } from '@/utils/objects'
 import { useState } from 'react'
 import execValidate from '@/utils/validate'
 import { isSameError, promiseAll } from '@/utils/errors'

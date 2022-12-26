@@ -13,7 +13,7 @@ export default function App() {
     const rule = Rule()
 
     return (
-        <Form animation defaultValue={{ name: 'Ethan', friends: [{ age: index, name: index }] }}>
+        <Form animation defaultValue={{ name: 'Ethan', friends: [{ age: index, name: index }] }} onChange={console.log}>
             <Form.Item label="Name" name="name">
                 <Input defaultValue="Harry Potter" />
             </Form.Item>
