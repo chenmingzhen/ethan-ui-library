@@ -1,4 +1,3 @@
-import { ValidateHocOutPutProps } from '@/hoc/withValidate'
 import FormDatum from '@/utils/Datum/Form'
 import { FormError } from '@/utils/errors'
 import React from 'react'
@@ -35,11 +34,7 @@ export interface FormItemErrorListContext {
     onUpdateRootErrors?: (id: string, error: Error) => void
 }
 
-export interface IFormItemProps
-    extends FormItemProps,
-        ValidateHocOutPutProps,
-        WithFlowOutputProps,
-        FormItemErrorListContext {
+export interface IFormItemProps extends FormItemProps {
     formDatum: FormDatum
 }
 
@@ -106,7 +101,7 @@ export interface FieldSetProps<Value = any> extends Pick<FormContextProps, 'anim
     preserve?: boolean
 }
 
-export interface IFieldSetProps extends FieldSetProps, ValidateHocOutPutProps, WithFlowOutputProps {
+export interface IFieldSetProps extends FieldSetProps {
     formDatum: FormDatum
 }
 
