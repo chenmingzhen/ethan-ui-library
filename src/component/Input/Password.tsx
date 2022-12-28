@@ -1,10 +1,7 @@
 import React, { useState } from 'react'
-import withControl from '@/hoc/withControl'
 import { inputClass } from '@/styles'
-import { compose } from '@/utils/func'
-import inputBorder from '@/hoc/inputBorder'
 import Input from './Input'
-import { InputComponent, InputPasswordProps } from './type'
+import { InputPasswordProps } from './type'
 import { FontAwesome } from '../Icon'
 import Button from '../Button/Button'
 import Group from './Group'
@@ -36,4 +33,4 @@ const Password: React.FC<InputPasswordProps> = React.memo((props) => {
     )
 })
 
-export default compose(withControl, inputBorder({ popover: true }))(Password) as InputComponent['Password']
+export default Password

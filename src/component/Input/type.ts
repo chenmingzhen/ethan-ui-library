@@ -1,18 +1,15 @@
-import { InputBorderProps } from '@/hoc/inputBorder'
-import { TrimProps } from '@/hoc/trim'
 import React from 'react'
+import { PopoverProps } from '../Popover'
 import { Rule } from '../Rule/type'
 
 export interface BaseInputProps<Value = string | number>
     extends Omit<
-            React.InputHTMLAttributes<HTMLInputElement>,
-            'size' | 'prefix' | 'type' | 'value' | 'onChange' | 'defaultValue' | 'width'
-        >,
-        TrimProps,
-        InputBorderProps {
+        React.InputHTMLAttributes<HTMLInputElement>,
+        'size' | 'prefix' | 'type' | 'value' | 'onChange' | 'defaultValue' | 'width' | 'onError'
+    > {
     rules?: Rule[]
     className?: string
-    clearable?: boolean | (() => void)
+    clearable?: boolean
     defaultValue?: Value
     digits?: number
     maxLength?: number
@@ -25,6 +22,16 @@ export interface BaseInputProps<Value = string | number>
     type?: HTMLInputElement['type']
     value?: Value
     forwardedRef?: React.MutableRefObject<HTMLInputElement> | React.RefCallback<HTMLInputElement>
+    onError?: (error: Error) => void
+    disabled?: boolean
+    tip?: React.ReactNode | ((value: string | number) => React.ReactNode)
+    popoverProps?: Omit<PopoverProps, 'children'>
+    onBlur?: (e: React.FocusEvent<Element>) => void
+    onFocus?: (e: React.FocusEvent<Element>) => void
+    border?: boolean
+    width?: React.CSSProperties['width']
+    autoFocus?: boolean
+    trim?: boolean
 }
 
 export interface InputProps extends Omit<BaseInputProps<string | number>, 'onChange' | 'onEnterPress'> {
@@ -46,14 +53,19 @@ export interface InputPasswordProps extends BaseInputProps<string> {
     iconRender?: (visible: boolean) => React.ReactNode
 }
 
-export interface InputGroupProps extends Pick<BaseInputProps, 'size'>, InputBorderProps {}
+export interface InputGroupProps {
+    disabled?: boolean
+    tip?: React.ReactNode
+    popoverProps?: Omit<PopoverProps, 'children'>
+    onBlur?: (e: React.FocusEvent<Element>) => void
+    onFocus?: (e: React.FocusEvent<Element>) => void
+    border?: boolean
+    width?: React.CSSProperties['width']
+    style?: React.CSSProperties
+    size?: 'large' | 'default' | 'small'
+    className?: string
+}
 
 export interface IInputProps extends BaseInputProps {
     htmlName?: string
-}
-
-export interface InputComponent extends React.ComponentClass<InputProps> {
-    Number: React.ComponentClass<InputNumberProps>
-    Password: React.ComponentClass<InputPasswordProps>
-    Group: React.FunctionComponent<InputGroupProps>
 }
