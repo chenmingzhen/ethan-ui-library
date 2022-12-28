@@ -2,8 +2,15 @@ import Input from './Input'
 import Number from './Number'
 import Group from './Group'
 import Password from './Password'
+import { InputGroupProps, InputNumberProps, InputPasswordProps, InputProps } from './type'
 
-const InputContainer = Input
+interface InputComponent extends React.ComponentClass<InputProps> {
+    Number: React.FunctionComponent<InputNumberProps>
+    Password: React.FunctionComponent<InputPasswordProps>
+    Group: React.FunctionComponent<InputGroupProps>
+}
+
+const InputContainer = Input as unknown as InputComponent
 
 InputContainer.Group = Group
 InputContainer.Number = Number

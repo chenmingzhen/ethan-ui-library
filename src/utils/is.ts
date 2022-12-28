@@ -22,6 +22,9 @@ export const isError = (val): val is Error => val instanceof Error
 
 export const isNull = (val): val is null => val === null
 
+// eslint-disable-next-line no-restricted-globals
+export const isNan = (val): boolean => isNaN(val)
+
 export const isRegexp = (val) => val instanceof RegExp
 
 export const isMap = nameIs('Map')

@@ -1,207 +1,192 @@
-import React, { PureComponent } from 'react'
+import useMergedValue from '@/hooks/useMergedValue'
+import useRefMethod from '@/hooks/useRefMethod'
 import { inputClass } from '@/styles'
-import { isNull, isString } from '@/utils/is'
-import { compose } from '@/utils/func'
-import withControl from '@/hoc/withControl'
-import inputBorder from '@/hoc/inputBorder'
-import icons from '../icons'
+import { isNan, isNull, isString } from '@/utils/is'
+import { KeyboardKey } from '@/utils/keyboard'
+import React, { useEffect, useRef, useState } from 'react'
 import Input from './Input'
-import { InputComponent, InputNumberProps } from './type'
+import { InputNumberProps } from './type'
+import icons from '../icons'
+import useInputStyle from './hooks/useInputStyle'
 
-interface InputNumberState {
-    valueStr: string
-}
+const Number: React.FC<InputNumberProps> = function (props) {
+    const {
+        step = 1,
+        allowNull = false,
+        hideArrow = false,
+        onInput,
+        onEnterPress,
+        disabled,
+        digits,
+        onChange,
+        min,
+        max,
+        defaultValue,
+        onBlur,
+        ...other
+    } = props
 
-class Number extends PureComponent<InputNumberProps, InputNumberState> {
-    static defaultProps: InputNumberProps = {
-        step: 1,
-        allowNull: false,
-        hideArrow: false,
-    }
-
-    hold: boolean
-
-    keyPressTimeOut: NodeJS.Timeout
-
-    constructor(props) {
-        super(props)
-
-        this.state = {
-            valueStr: undefined,
+    const [valueStr, updateValueStr] = useState<string>()
+    const [focus, updateFocus] = useState(other.autoFocus || false)
+    const holdRef = useRef<boolean>()
+    const keyPressTimer = useRef<NodeJS.Timeout>()
+    const [value, updateValue] = useMergedValue({
+        defaultStateValue: undefined,
+        options: { value: other.value, defaultValue, onChange },
+    })
+    const { className, style } = useInputStyle({
+        border: other.border,
+        size: other.size,
+        disabled,
+        className: other.className,
+        width: other.width,
+        style: other.style,
+        focus,
+    })
+    useEffect(() => {
+        if (valueStr !== undefined) {
+            updateValueStr(undefined)
         }
-    }
+    }, [value])
 
-    componentDidUpdate(prevProps: Readonly<InputNumberProps>) {
-        const prevValue = prevProps.value
+    const parseValue = useRefMethod((rawValue: string) => {
+        let parsedValue = parseFloat(rawValue)
 
-        const { value } = this.props
-
-        if (value !== prevValue && this.state.valueStr !== undefined) {
-            this.setState({ valueStr: undefined })
-        }
-    }
-
-    componentWillUnmount() {
-        this.hold = false
-
-        if (this.keyPressTimeOut) clearTimeout(this.keyPressTimeOut)
-    }
-
-    handleAddClick = () => {
-        this.handleCalc(this.props.step)
-    }
-
-    handleSubClick = () => {
-        this.handleCalc(-this.props.step)
-    }
-
-    beforeChange = (value: string) => {
-        const { onInput } = this.props
-
-        /** 处于手动输入状态 */
-        if (isString(value) && new RegExp('^-?\\d*\\.?\\d*$').test(value)) {
-            this.setState({ valueStr: value })
-
-            if (onInput) {
-                onInput(value)
-            }
-        }
-    }
-
-    handleChange = (value: number | null) => {
-        const { onChange, digits, step, onInput } = this.props
-
-        this.setState({ valueStr: undefined })
-
-        if (onInput) {
-            onInput(undefined)
-        }
-
-        if (isNull(value)) {
-            onChange(value)
-
-            return
-        }
-
-        if (typeof digits === 'number') {
-            value = parseFloat(value.toFixed(digits))
-        } else {
-            const stepStr = step.toString()
-
-            const dot = stepStr.lastIndexOf('.')
-
-            if (dot >= 0) value = parseFloat(value.toFixed(stepStr.length - dot))
-        }
-
-        const { min, max } = this.props
-
-        if (max !== undefined && value > max) value = max
-        if (min !== undefined && value < min) value = min
-
-        if (value !== this.props.value) {
-            onChange(value)
-        }
-    }
-
-    parseValue = (value: string) => {
-        let parsedValue = parseFloat(value)
-
-        if (value === '' && this.props.allowNull) {
+        if (rawValue === '' && allowNull) {
             parsedValue = null
         }
 
-        // eslint-disable-next-line no-restricted-globals
-        if (isNaN(parsedValue)) parsedValue = 0
+        if (isNan(parsedValue)) parsedValue = 0
 
         return parsedValue
-    }
+    })
 
-    handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
-        const value = this.parseValue(e.target.value)
-
-        this.handleChange(value)
-
-        this.props.onBlur(e)
-    }
-
-    changeValue = (mod: number) => {
-        if (this.props.disabled) return
-
-        let value = parseFloat(`${String(this.props.value) || ''}`.replace(/,/g, ''))
-
-        // eslint-disable-next-line
-        if (isNaN(value)) value = 0
-
-        this.handleChange(value + mod)
-    }
-
-    longPress = (mod) => {
-        if (!this.hold) return
-
-        setTimeout(() => {
-            this.changeValue(mod)
-
-            this.longPress(mod)
-        }, 50)
-    }
-
-    handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-        const { step } = this.props
-
-        if (e.keyCode !== 38 && e.keyCode !== 40) return
-
-        e.preventDefault()
-
-        const mod = e.keyCode === 38 ? step : -step
-
-        this.changeValue(mod)
-    }
-
-    handleCalc = (mod) => {
-        this.hold = true
-
-        this.changeValue(mod)
-
-        this.keyPressTimeOut = setTimeout(() => {
-            this.longPress(mod)
-        }, 1000)
-    }
-
-    handleMouseUp = () => {
-        this.hold = false
-
-        if (this.keyPressTimeOut) clearTimeout(this.keyPressTimeOut)
-    }
-
-    handleEnterPress = (_, evt: React.KeyboardEvent<HTMLInputElement>) => {
-        const { onEnterPress } = this.props
-
+    const handleEnterPress = useRefMethod((_, evt: React.KeyboardEvent<HTMLInputElement>) => {
         if (onEnterPress) {
-            const parsedValue = this.parseValue(this.state.valueStr)
+            const parsedValue = parseValue(valueStr)
 
-            // eslint-disable-next-line
-            if (!isNaN(parsedValue)) {
+            if (!isNan(parsedValue)) {
                 onEnterPress(parsedValue, evt)
             } else {
                 onEnterPress(null, evt)
             }
         }
+    })
+
+    const beforeChange = useRefMethod((nextValue: string) => {
+        /** 处于手动输入状态 */
+        if (isString(nextValue) && new RegExp('^-?\\d*\\.?\\d*$').test(nextValue)) {
+            updateValueStr(nextValue)
+
+            if (onInput) {
+                onInput(nextValue)
+            }
+        }
+    })
+
+    const handleChange = useRefMethod((nextValue: number | null) => {
+        updateValueStr(undefined)
+
+        if (onInput) {
+            onInput(undefined)
+        }
+        if (isNull(nextValue)) {
+            updateValue(nextValue)
+
+            return
+        }
+
+        if (typeof digits === 'number') {
+            nextValue = parseFloat(nextValue.toFixed(digits))
+        } else {
+            const stepStr = step.toString()
+            const dot = stepStr.lastIndexOf('.')
+
+            if (dot >= 0) nextValue = parseFloat(nextValue.toFixed(stepStr.length - dot))
+        }
+
+        if (max !== undefined && nextValue > max) nextValue = max
+        if (min !== undefined && nextValue < min) nextValue = min
+
+        updateValue(nextValue)
+    })
+
+    const changeValue = useRefMethod((mod: number) => {
+        if (disabled) return
+
+        let rawValue = parseFloat(`${String(value) || ''}`.replace(/,/g, ''))
+
+        if (isNan(value)) rawValue = 0
+
+        handleChange(rawValue + mod)
+    })
+
+    const handleKeyDown = useRefMethod((e: React.KeyboardEvent<HTMLInputElement>) => {
+        const { key } = e
+
+        if (key !== KeyboardKey.ArrowUp && key !== KeyboardKey.ArrowDown) return
+
+        e.preventDefault()
+
+        const mod = key === KeyboardKey.ArrowUp ? step : -step
+
+        changeValue(mod)
+    })
+
+    const handleBlur = useRefMethod((e: React.FocusEvent<HTMLInputElement>) => {
+        if (onBlur) {
+            onBlur(e)
+        }
+        const parsedValue = parseValue(e.target.value)
+
+        updateFocus(false)
+
+        handleChange(parsedValue)
+    })
+
+    function longPress(mod) {
+        if (!holdRef.current) return
+
+        setTimeout(() => {
+            changeValue(mod)
+
+            longPress(mod)
+        }, 50)
     }
 
-    renderArrowGroup = () => {
-        const { hideArrow } = this.props
+    const handleCalc = useRefMethod((mod) => {
+        holdRef.current = true
 
+        changeValue(mod)
+
+        keyPressTimer.current = setTimeout(() => {
+            longPress(mod)
+        }, 500)
+    })
+
+    function handleArrowMouseUp() {
+        holdRef.current = false
+
+        if (keyPressTimer.current) {
+            clearTimeout(keyPressTimer.current)
+
+            keyPressTimer.current = null
+        }
+    }
+
+    function renderArrowGroup() {
         if (hideArrow) return []
 
         return [
             <a
                 key="up"
-                // do not need the tab to focus
                 tabIndex={-1}
                 className={inputClass('number-up')}
-                onMouseDown={this.handleAddClick}
-                onMouseUp={this.handleMouseUp}
-                onMouseLeave={this.handleMouseUp}
+                onMouseDown={() => {
+                    handleCalc(step)
+                }}
+                onMouseUp={handleArrowMouseUp}
+                onMouseLeave={handleArrowMouseUp}
             >
                 {icons.AngleRight}
             </a>,
@@ -210,35 +195,39 @@ class Number extends PureComponent<InputNumberProps, InputNumberState> {
                 key="down"
                 tabIndex={-1}
                 className={inputClass('number-down')}
-                onMouseDown={this.handleSubClick}
-                onMouseUp={this.handleMouseUp}
-                onMouseLeave={this.handleMouseUp}
+                onMouseDown={() => {
+                    handleCalc(-step)
+                }}
+                onMouseUp={handleArrowMouseUp}
+                onMouseLeave={handleArrowMouseUp}
             >
                 {icons.AngleRight}
             </a>,
         ]
     }
 
-    render = () => {
-        const { onChange, allowNull, hideArrow, value, onInput, onEnterPress, ...other } = this.props
-
-        const { valueStr } = this.state
-
-        return [
-            <Input
-                key="input"
-                value={valueStr !== undefined ? valueStr : value}
-                onEnterPress={onEnterPress ? this.handleEnterPress : undefined}
-                {...other}
-                className={inputClass({ number: !hideArrow })}
-                onChange={this.beforeChange}
-                onKeyDown={this.handleKeyDown}
-                onBlur={this.handleBlur}
-                type="number"
-            />,
-            ...this.renderArrowGroup(),
-        ]
-    }
+    return (
+        <span className={className} style={style}>
+            {[
+                <Input
+                    key="input"
+                    {...other}
+                    onEnterPress={onEnterPress ? handleEnterPress : undefined}
+                    disabled={disabled}
+                    value={valueStr !== undefined ? valueStr : value}
+                    onChange={beforeChange}
+                    onKeyDown={handleKeyDown}
+                    onBlur={handleBlur}
+                    className={inputClass({ number: !hideArrow })}
+                    onFocus={() => {
+                        updateFocus(true)
+                    }}
+                    type="number"
+                />,
+                ...renderArrowGroup(),
+            ]}
+        </span>
+    )
 }
 
-export default compose(withControl, inputBorder({ popover: true }))(Number) as InputComponent['Number']
+export default React.memo(Number)
