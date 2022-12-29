@@ -205,7 +205,6 @@
         width: 13px;
         height: 13px;
         cursor: pointer;
-        color: #fff;
         font-size: 12px;
         display: flex;
         justify-content: center;
@@ -213,8 +212,13 @@
         background: @input-clear-bg-color;
         margin-right: 2px;
 
-        &:hover {
-            background: @input-clear-bg-hover-color;
+        svg {
+            background-color: #fff;
+            fill: #d9d9d9;
+        }
+
+        &:hover svg {
+            fill: @input-clear-bg-hover-color;
         }
     }
 
@@ -569,12 +573,6 @@
 
     & input&-number {
         padding-right: 22px;
-
-        & + .@{input-prefix}-clear-wrapper {
-            .@{input-prefix}-clear {
-                right: 22px;
-            }
-        }
     }
 
     & .@{input-prefix}-btn-suffix {

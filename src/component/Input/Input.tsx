@@ -9,6 +9,7 @@ import useIsomorphicLayoutUpdateEffect from '@/hooks/useIsomorphicLayoutUpdateEf
 import useValidate from '@/component/Input/hooks/useValidate'
 import { IInputProps } from './type'
 import WrapperPopover from './WrapperPopover'
+import icons from '../icons'
 
 const Input: React.FC<IInputProps> = function (props) {
     const {
@@ -192,7 +193,7 @@ const Input: React.FC<IInputProps> = function (props) {
                 />
                 {!disabled && clearable && value !== '' && (
                     <div className={inputClass('clear')} onClick={handleClearClick}>
-                        x
+                        {icons.CloseCircle}
                     </div>
                 )}
             </div>
