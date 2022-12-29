@@ -29,7 +29,7 @@ function useInputStyle(props: UseInputStyleProps) {
             ((focus && disabled !== true) || (popoverProps?.placement && hasError)) && 'focus',
             disabled === true && 'disabled',
             size,
-            ms.width && 'inline',
+            ms.width && 'inline-flex',
             !border && 'no-border',
             (hasItemError || hasError) && 'invalid'
         ),

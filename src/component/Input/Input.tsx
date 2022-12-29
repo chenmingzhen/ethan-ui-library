@@ -163,14 +163,16 @@ const Input: React.FC<IInputProps> = function (props) {
 
     return (
         <WrapperPopover
+            hasError={!!error}
             focus={focus}
             popoverProps={popoverProps}
             tip={tipInfo}
             className={popoverClass('input-tip', error && 'input-error')}
         >
-            <span style={ms} className={cls}>
+            <div style={ms} className={cls}>
                 <input
                     {...cleanProps(other)}
+                    disabled={disabled}
                     type={type === 'password' ? type : 'text'}
                     value={value}
                     ref={bindRef}
@@ -189,11 +191,11 @@ const Input: React.FC<IInputProps> = function (props) {
                     }}
                 />
                 {!disabled && clearable && value !== '' && (
-                    <div onClick={handleClearClick} className={inputClass('clear-wrapper')} key="clear">
-                        <div className={inputClass('clear')} />
+                    <div className={inputClass('clear')} onClick={handleClearClick}>
+                        x
                     </div>
                 )}
-            </span>
+            </div>
         </WrapperPopover>
     )
 }

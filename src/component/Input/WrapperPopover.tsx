@@ -8,12 +8,15 @@ interface WrapperPopoverProps {
     tip?: React.ReactNode
     focus?: boolean
     className?: string
+    hasError?: boolean
 }
 
 const WrapperPopover: React.FC<WrapperPopoverProps> = function (props) {
-    const { children, popoverProps = {}, focus, tip, className } = props
+    const { children, popoverProps = {}, focus, tip, className, hasError } = props
 
     const [popoverVisible, updateVisible] = useState(() => {
+        if (hasError) return true
+
         if (!focus) return false
 
         if (!isEmpty(tip)) return false
@@ -22,8 +25,8 @@ const WrapperPopover: React.FC<WrapperPopoverProps> = function (props) {
     })
 
     useEffect(() => {
-        updateVisible(focus && !isEmpty(tip))
-    }, [focus, tip])
+        updateVisible(hasError || (focus && !isEmpty(tip)))
+    }, [focus, tip, hasError])
 
     const popoverStyles =
         popoverProps.style && popoverProps.style.width
