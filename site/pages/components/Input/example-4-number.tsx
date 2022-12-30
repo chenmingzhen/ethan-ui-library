@@ -14,6 +14,7 @@ export default function () {
             min={23}
             max={100}
             digits={2}
+            clearable
             onEnterPress={(value) => {
                 console.log('onEnterPress:', value)
             }}

@@ -209,7 +209,6 @@
         display: flex;
         justify-content: center;
         align-items: center;
-        background: @input-clear-bg-color;
         margin-right: 2px;
 
         svg {
@@ -303,10 +302,13 @@
         }
     }
 
+    &-arrow {
+        display: flex;
+        flex-direction: column;
+    }
+
     &-number-up,
     &-number-down {
-        position: absolute;
-        right: 0;
         width: 18px;
         padding: 0 4px;
         border-left: solid 1px @gray-200;

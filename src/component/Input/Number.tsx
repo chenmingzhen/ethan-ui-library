@@ -1,7 +1,7 @@
 import useMergedValue from '@/hooks/useMergedValue'
 import useRefMethod from '@/hooks/useRefMethod'
 import { inputClass } from '@/styles'
-import { isNan, isNull, isString } from '@/utils/is'
+import { isEmpty, isNan } from '@/utils/is'
 import { KeyboardKey } from '@/utils/keyboard'
 import React, { useEffect, useRef, useState } from 'react'
 import Input from './Input'
@@ -12,7 +12,6 @@ import useInputStyle from './hooks/useInputStyle'
 const Number: React.FC<InputNumberProps> = function (props) {
     const {
         step = 1,
-        allowNull = false,
         hideArrow = false,
         onInput,
         onEnterPress,
@@ -43,18 +42,17 @@ const Number: React.FC<InputNumberProps> = function (props) {
         style: other.style,
         focus,
     })
+
     useEffect(() => {
         if (valueStr !== undefined) {
             updateValueStr(undefined)
         }
     }, [value])
 
-    const parseValue = useRefMethod((rawValue: string) => {
-        let parsedValue = parseFloat(rawValue)
+    const parseValue = useRefMethod((rawValue: string | number | undefined) => {
+        if (isEmpty(rawValue)) return undefined
 
-        if (rawValue === '' && allowNull) {
-            parsedValue = null
-        }
+        let parsedValue = typeof rawValue !== 'number' ? parseFloat(rawValue) : rawValue
 
         if (isNan(parsedValue)) parsedValue = 0
 
@@ -65,17 +63,12 @@ const Number: React.FC<InputNumberProps> = function (props) {
         if (onEnterPress) {
             const parsedValue = parseValue(valueStr)
 
-            if (!isNan(parsedValue)) {
-                onEnterPress(parsedValue, evt)
-            } else {
-                onEnterPress(null, evt)
-            }
+            onEnterPress(parsedValue, evt)
         }
     })
 
     const beforeChange = useRefMethod((nextValue: string) => {
-        /** 处于手动输入状态 */
-        if (isString(nextValue) && new RegExp('^-?\\d*\\.?\\d*$').test(nextValue)) {
+        if (new RegExp('^-?\\d*\\.?\\d*$').test(nextValue)) {
             updateValueStr(nextValue)
 
             if (onInput) {
@@ -84,13 +77,14 @@ const Number: React.FC<InputNumberProps> = function (props) {
         }
     })
 
-    const handleChange = useRefMethod((nextValue: number | null) => {
+    const handleChange = useRefMethod((nextValue: number | undefined) => {
         updateValueStr(undefined)
 
         if (onInput) {
             onInput(undefined)
         }
-        if (isNull(nextValue)) {
+
+        if (nextValue === undefined) {
             updateValue(nextValue)
 
             return
@@ -114,11 +108,9 @@ const Number: React.FC<InputNumberProps> = function (props) {
     const changeValue = useRefMethod((mod: number) => {
         if (disabled) return
 
-        let rawValue = parseFloat(`${String(value) || ''}`.replace(/,/g, ''))
+        const nextValue = parseValue(value) || 0
 
-        if (isNan(value)) rawValue = 0
-
-        handleChange(rawValue + mod)
+        handleChange(nextValue + mod)
     })
 
     const handleKeyDown = useRefMethod((e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -137,11 +129,12 @@ const Number: React.FC<InputNumberProps> = function (props) {
         if (onBlur) {
             onBlur(e)
         }
-        const parsedValue = parseValue(e.target.value)
+
+        const nextValue = parseValue(e.target.value)
 
         updateFocus(false)
 
-        handleChange(parsedValue)
+        handleChange(nextValue)
     })
 
     function longPress(mod) {
@@ -175,57 +168,56 @@ const Number: React.FC<InputNumberProps> = function (props) {
     }
 
     function renderArrowGroup() {
-        if (hideArrow) return []
+        if (hideArrow) return null
 
-        return [
-            <a
-                key="up"
-                tabIndex={-1}
-                className={inputClass('number-up')}
-                onMouseDown={() => {
-                    handleCalc(step)
-                }}
-                onMouseUp={handleArrowMouseUp}
-                onMouseLeave={handleArrowMouseUp}
-            >
-                {icons.AngleRight}
-            </a>,
-
-            <a
-                key="down"
-                tabIndex={-1}
-                className={inputClass('number-down')}
-                onMouseDown={() => {
-                    handleCalc(-step)
-                }}
-                onMouseUp={handleArrowMouseUp}
-                onMouseLeave={handleArrowMouseUp}
-            >
-                {icons.AngleRight}
-            </a>,
-        ]
+        return (
+            <span className={inputClass('arrow')}>
+                <a
+                    key="up"
+                    tabIndex={-1}
+                    className={inputClass('number-up')}
+                    onMouseDown={() => {
+                        handleCalc(step)
+                    }}
+                    onMouseUp={handleArrowMouseUp}
+                    onMouseLeave={handleArrowMouseUp}
+                >
+                    {icons.AngleRight}
+                </a>
+                <a
+                    key="down"
+                    tabIndex={-1}
+                    className={inputClass('number-down')}
+                    onMouseDown={() => {
+                        handleCalc(-step)
+                    }}
+                    onMouseUp={handleArrowMouseUp}
+                    onMouseLeave={handleArrowMouseUp}
+                >
+                    {icons.AngleRight}
+                </a>
+            </span>
+        )
     }
 
     return (
         <span className={className} style={style}>
-            {[
-                <Input
-                    key="input"
-                    {...other}
-                    onEnterPress={onEnterPress ? handleEnterPress : undefined}
-                    disabled={disabled}
-                    value={valueStr !== undefined ? valueStr : value}
-                    onChange={beforeChange}
-                    onKeyDown={handleKeyDown}
-                    onBlur={handleBlur}
-                    className={inputClass({ number: !hideArrow })}
-                    onFocus={() => {
-                        updateFocus(true)
-                    }}
-                    type="number"
-                />,
-                ...renderArrowGroup(),
-            ]}
+            <Input
+                key="input"
+                {...other}
+                onEnterPress={onEnterPress ? handleEnterPress : undefined}
+                disabled={disabled}
+                value={valueStr ?? value ?? ''}
+                onChange={beforeChange}
+                onKeyDown={handleKeyDown}
+                onBlur={handleBlur}
+                className={inputClass({ number: !hideArrow })}
+                onFocus={() => {
+                    updateFocus(true)
+                }}
+                type="number"
+            />
+            {renderArrowGroup()}
         </span>
     )
 }

@@ -40,7 +40,6 @@ export interface InputProps extends Omit<BaseInputProps<string | number>, 'onCha
 }
 
 export interface InputNumberProps extends Omit<BaseInputProps<number>, 'onInput' | 'onEnterPress'> {
-    allowNull?: boolean
     hideArrow?: boolean
     max?: number
     min?: number

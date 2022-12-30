@@ -60,12 +60,12 @@ const Input: React.FC<IInputProps> = function (props) {
         hasError: error,
         focus,
     })
-    const ref = useRef<HTMLInputElement>()
+    const inputRef = useRef<HTMLInputElement>()
     const enterLock = useRef(false)
 
     useEffect(() => {
         if (autoFocus) {
-            ref.current.focus()
+            inputRef.current.focus()
         }
     }, [])
 
@@ -74,7 +74,7 @@ const Input: React.FC<IInputProps> = function (props) {
     }, [value])
 
     const bindRef = useCallback((el) => {
-        ref.current = el
+        inputRef.current = el
 
         if (typeof forwardedRef === 'function') {
             forwardedRef(el)
@@ -122,7 +122,11 @@ const Input: React.FC<IInputProps> = function (props) {
     }
 
     const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
-        if (onBlur) onBlur(e)
+        if (!focus) return
+
+        if (onBlur) {
+            onBlur(e)
+        }
 
         updateFocus(false)
 
@@ -132,6 +136,8 @@ const Input: React.FC<IInputProps> = function (props) {
     }
 
     const handleFocus = (e: React.FocusEvent<HTMLInputElement>) => {
+        if (focus) return
+
         if (onFocus) onFocus(e)
 
         updateFocus(true)
@@ -142,7 +148,7 @@ const Input: React.FC<IInputProps> = function (props) {
 
         handleChange('')
 
-        ref.current.focus()
+        inputRef.current.focus()
     }
 
     const tipInfo = useMemo(() => {
@@ -175,7 +181,7 @@ const Input: React.FC<IInputProps> = function (props) {
                     {...cleanProps(other)}
                     disabled={disabled}
                     type={type === 'password' ? type : 'text'}
-                    value={value}
+                    value={value || ''}
                     ref={bindRef}
                     key="input"
                     onFocus={handleFocus}
@@ -192,7 +198,13 @@ const Input: React.FC<IInputProps> = function (props) {
                     }}
                 />
                 {!disabled && clearable && value !== '' && (
-                    <div className={inputClass('clear')} onClick={handleClearClick}>
+                    <div
+                        className={inputClass('clear')}
+                        onClick={handleClearClick}
+                        // Do not trigger onBlur when clear input
+                        /** @see https://github.com/react-component/input/blob/master/src/BaseInput.tsx */
+                        onMouseDown={(e) => e.preventDefault()}
+                    >
                         {icons.CloseCircle}
                     </div>
                 )}
