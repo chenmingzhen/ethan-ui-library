@@ -176,7 +176,8 @@ const Number: React.FC<InputNumberProps> = function (props) {
                     key="up"
                     tabIndex={-1}
                     className={inputClass('number-up')}
-                    onMouseDown={() => {
+                    onMouseDown={(e) => {
+                        e.preventDefault()
                         handleCalc(step)
                     }}
                     onMouseUp={handleArrowMouseUp}
@@ -188,7 +189,9 @@ const Number: React.FC<InputNumberProps> = function (props) {
                     key="down"
                     tabIndex={-1}
                     className={inputClass('number-down')}
-                    onMouseDown={() => {
+                    onMouseDown={(e) => {
+                        e.preventDefault()
+
                         handleCalc(-step)
                     }}
                     onMouseUp={handleArrowMouseUp}

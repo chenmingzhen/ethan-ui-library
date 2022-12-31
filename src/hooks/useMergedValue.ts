@@ -43,12 +43,12 @@ function useMergedValue<T>(props: UseMergedValueProps<T>): [T, Updater<T>] {
     }, [value])
 
     const triggerUpdate: Updater<T> = useRefMethod((updater) => {
-        const nextValue = isFunc(updater) ? updater(innerValue) : updater
+        const nextValue = isFunc(updater) ? updater(mergedValue) : updater
 
         setInnerValue(nextValue)
 
-        if (nextValue !== innerValue) {
-            onChangeFn(nextValue, innerValue)
+        if (nextValue !== mergedValue) {
+            onChangeFn(nextValue, mergedValue)
         }
     })
 
