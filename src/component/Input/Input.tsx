@@ -7,6 +7,7 @@ import { KeyboardKey } from '@/utils/keyboard'
 import { isEmpty, isFunc, isNumber, isString } from '@/utils/is'
 import useIsomorphicLayoutUpdateEffect from '@/hooks/useIsomorphicLayoutUpdateEffect'
 import useValidate from '@/component/Input/hooks/useValidate'
+import classnames from 'classnames'
 import { IInputProps } from './type'
 import WrapperPopover from './WrapperPopover'
 import icons from '../icons'
@@ -34,6 +35,8 @@ const Input: React.FC<IInputProps> = function (props) {
         popoverProps,
         tip,
         trim,
+        prefix,
+        suffix,
         ...other
     } = props
 
@@ -59,6 +62,7 @@ const Input: React.FC<IInputProps> = function (props) {
         style,
         hasError: error,
         focus,
+        className: classnames(inputClass(prefix && 'with-prefix', suffix && 'with-suffix'), className),
     })
     const inputRef = useRef<HTMLInputElement>()
     const enterLock = useRef(false)
@@ -177,13 +181,13 @@ const Input: React.FC<IInputProps> = function (props) {
             className={popoverClass('input-tip', error && 'input-error')}
         >
             <div style={ms} className={cls}>
+                {prefix && <span className={inputClass('prefix')}>{prefix}</span>}
                 <input
                     {...cleanProps(other)}
                     disabled={disabled}
                     type={type === 'password' ? type : 'text'}
-                    value={value || ''}
+                    value={value ?? ''}
                     ref={bindRef}
-                    key="input"
                     onFocus={handleFocus}
                     onChange={tryHandleChange}
                     onKeyUp={handleKeyUp}
@@ -208,6 +212,7 @@ const Input: React.FC<IInputProps> = function (props) {
                         {icons.CloseCircle}
                     </div>
                 )}
+                {suffix && <span className={inputClass('suffix')}>{suffix}</span>}
             </div>
         </WrapperPopover>
     )

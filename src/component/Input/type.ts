@@ -32,6 +32,8 @@ export interface BaseInputProps<Value = string | number>
     width?: React.CSSProperties['width']
     autoFocus?: boolean
     trim?: boolean
+    prefix?: React.ReactNode
+    suffix?: React.ReactNode
 }
 
 export interface InputProps extends Omit<BaseInputProps<string | number>, 'onChange' | 'onEnterPress'> {

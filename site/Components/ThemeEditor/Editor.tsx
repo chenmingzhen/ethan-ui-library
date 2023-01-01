@@ -101,7 +101,7 @@ const Editor: React.FC<EditorProps> = function (props) {
                                         if (type === 'color') {
                                             element = (
                                                 <div className={editorClass('attr-item')}>
-                                                    <Input value={value} width={180} onChange={onChange} />
+                                                    <Input value={value} width={200} onChange={onChange} />
                                                     <ColorPicker
                                                         portal={false}
                                                         format="rgba"

@@ -206,7 +206,6 @@ const Number: React.FC<InputNumberProps> = function (props) {
     return (
         <span className={className} style={style}>
             <Input
-                key="input"
                 {...other}
                 onEnterPress={onEnterPress ? handleEnterPress : undefined}
                 disabled={disabled}

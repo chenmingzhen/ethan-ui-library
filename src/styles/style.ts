@@ -52,6 +52,7 @@ import './swiper.less'
 import './colorPicker.less'
 import './portal.less'
 import './proImage.less'
+import './input.less'
 
 /** Spin */
 import './spin/default.less'

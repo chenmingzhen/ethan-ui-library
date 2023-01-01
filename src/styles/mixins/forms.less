@@ -10,3 +10,11 @@
     border-color: @color;
     box-shadow: 0 0 0 @input-focus-width @color-rgba;
 }
+
+.input-focus-color(@color) when (%('%s', @color) = %('%s', @colors-danger)) {
+    box-shadow: 0 0 0 @input-focus-width @danger-color-fade-25;
+}
+
+.input-focus-color(@color) when not (%('%s', @color) = %('%s', @colors-danger)) {
+    box-shadow: 0 0 0 @input-focus-width @input-border-focus-fade-25;
+}
