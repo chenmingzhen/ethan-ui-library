@@ -9,12 +9,16 @@ interface WrapperPopoverProps {
     focus?: boolean
     className?: string
     hasError?: boolean
+    /** 是否需要Popover，不存在tip或者rule的时候直接显示children */
+    shouldPop: boolean
 }
 
 const WrapperPopover: React.FC<WrapperPopoverProps> = function (props) {
-    const { children, popoverProps = {}, focus, tip, className, hasError } = props
+    const { children, popoverProps = {}, focus, tip, className, hasError, shouldPop } = props
 
-    const [popoverVisible, updateVisible] = useState(() => {
+    const [popoverVisible, updatePopoverVisible] = useState(() => {
+        if (!shouldPop) return false
+
         if (hasError) return true
 
         if (!focus) return false
@@ -25,8 +29,12 @@ const WrapperPopover: React.FC<WrapperPopoverProps> = function (props) {
     })
 
     useEffect(() => {
-        updateVisible(hasError || (focus && !isEmpty(tip)))
-    }, [focus, tip, hasError])
+        if (shouldPop) {
+            updatePopoverVisible(hasError || (focus && !isEmpty(tip)))
+        }
+    }, [focus, tip, hasError, shouldPop])
+
+    if (!shouldPop) return children
 
     const popoverStyles =
         popoverProps.style && popoverProps.style.width

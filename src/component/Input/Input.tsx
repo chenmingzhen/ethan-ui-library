@@ -178,6 +178,7 @@ const Input: React.FC<IInputProps> = function (props) {
             focus={focus}
             popoverProps={popoverProps}
             tip={tipInfo}
+            shouldPop={!isEmpty(tip) || !isEmpty(rules)}
             className={popoverClass('input-tip', error && 'input-error')}
         >
             <div style={ms} className={cls}>

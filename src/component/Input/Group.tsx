@@ -1,4 +1,5 @@
 import { buttonClass, inputClass, popoverClass } from '@/styles'
+import { isEmpty } from '@/utils/is'
 import classnames from 'classnames'
 import React, { Children, cloneElement, useState } from 'react'
 import { InputGroupProps } from './type'
@@ -12,7 +13,13 @@ const Group: React.FC<InputGroupProps> = React.memo((props) => {
     const [focus, updateFocus] = useState(false)
 
     return (
-        <WrapperPopover focus={focus} tip={tip} className={popoverClass('input-tip')} popoverProps={popoverProps}>
+        <WrapperPopover
+            focus={focus}
+            tip={tip}
+            className={popoverClass('input-tip')}
+            popoverProps={popoverProps}
+            shouldPop={!isEmpty(tip)}
+        >
             <div
                 className={classnames(
                     inputClass(

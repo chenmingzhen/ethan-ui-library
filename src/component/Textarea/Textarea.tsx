@@ -1,65 +1,140 @@
-import React, { useState, useCallback, useEffect, useRef } from 'react'
-import { inputClass } from '@/styles'
+import React, { useState, useRef, useMemo } from 'react'
+import { inputClass, popoverClass } from '@/styles'
 import cleanProps from '@/utils/cleanProps'
+import useMergedValue from '@/hooks/useMergedValue'
+import { KeyboardKey } from '@/utils/keyboard'
+import { isEmpty, isFunc, isString } from '@/utils/is'
+import useIsomorphicLayoutUpdateEffect from '@/hooks/useIsomorphicLayoutUpdateEffect'
+import classNames from 'classnames'
+import { useIsomorphicLayoutEffect } from 'react-use'
 import { TextareaProps } from './type'
+import useInputStyle from '../Input/hooks/useInputStyle'
+import useValidate from '../Input/hooks/useValidate'
+import WrapperPopover from '../Input/WrapperPopover'
+import icons from '../icons'
 
 const Textarea: React.FC<TextareaProps> = (props) => {
     const [height, setHeight] = useState(0)
-
-    const shadowElement = useRef<HTMLTextAreaElement>()
-
-    const { value, autoSize, onChange, onEnterPress, onBlur, maxHeight, showCount, resize, ...otherProps } = props
-
-    const textareaResize = useCallback(
-        (newValue?: string) => {
-            if (newValue || newValue === '') shadowElement.current.value = newValue
-
-            const newHeight = shadowElement.current ? shadowElement.current.scrollHeight : 0
-
-            setHeight(newHeight)
+    const textareaElementRef = useRef<HTMLTextAreaElement>()
+    const {
+        autoSize,
+        onChange,
+        onEnterPress,
+        onBlur,
+        maxHeight,
+        showCount,
+        resize,
+        defaultValue,
+        trim,
+        border,
+        size,
+        disabled,
+        width,
+        style,
+        autoFocus,
+        className,
+        onFocus,
+        popoverProps,
+        rules,
+        tip,
+        clearable,
+        ...otherProps
+    } = props
+    const [focus, updateFocus] = useState(autoFocus || false)
+    const { error, validate } = useValidate({ rules })
+    const { style: ms, className: cls } = useInputStyle({
+        border,
+        size,
+        disabled,
+        width,
+        style,
+        focus,
+        className: classNames(className, inputClass(showCount && 'showCount')),
+        hasError: !!error,
+    })
+    const [value, updateValue] = useMergedValue({
+        defaultStateValue: '',
+        options: {
+            value: otherProps.value,
+            defaultValue,
+            onChange(nextValue) {
+                if (onChange) {
+                    onChange(nextValue)
+                }
+            },
         },
-        [height]
-    )
+    })
 
-    const handleChange = useCallback(
-        (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-            const newValue = e.target.value
+    useIsomorphicLayoutUpdateEffect(() => {
+        validate(value).catch(() => {})
+    }, [value])
 
-            if (onChange) onChange(newValue)
-
-            if (autoSize) textareaResize(newValue)
-        },
-        [autoSize]
-    )
-
-    const handleKeyUp = useCallback(
-        (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-            if (e.keyCode === 13 && onEnterPress) {
-                onEnterPress((e.target as any).value, e)
-            }
-        },
-        [onEnterPress]
-    )
-
-    const handleBlur = useCallback(
-        (e: React.FocusEvent<HTMLTextAreaElement>) => {
-            if (onBlur) onBlur(e)
-        },
-        [onBlur]
-    )
-
-    useEffect(() => {
+    useIsomorphicLayoutEffect(() => {
         if (autoSize) {
             textareaResize()
         }
     }, [value])
 
-    const newHeight = height || 'auto'
+    function textareaResize(newValue?: string) {
+        if (newValue || newValue === '') textareaElementRef.current.value = newValue
 
-    const className = inputClass(autoSize && 'auto-size', !autoSize && resize && 'textarea-resize')
+        const nextHeight = textareaElementRef.current ? textareaElementRef.current.scrollHeight : 0
 
-    const info = React.useMemo(() => {
-        if (!showCount) return
+        setHeight(nextHeight)
+    }
+
+    function handleChange(e: React.ChangeEvent<HTMLTextAreaElement>) {
+        const nextValue = e.target.value
+
+        updateValue(nextValue)
+    }
+
+    function handleKeyUp(e: React.KeyboardEvent<HTMLTextAreaElement>) {
+        e.preventDefault()
+
+        if (e.key === KeyboardKey.Enter && onEnterPress) {
+            onEnterPress((e.target as any).value, e)
+        }
+    }
+
+    function handleBlur(e: React.FocusEvent<HTMLTextAreaElement>) {
+        updateFocus(false)
+
+        if (onBlur) onBlur(e)
+
+        if (trim && isString(value)) {
+            updateValue(value.trim())
+        }
+    }
+
+    function handleFocus(e: React.FocusEvent<HTMLTextAreaElement, Element>) {
+        if (onFocus) {
+            onFocus(e)
+        }
+
+        updateFocus(true)
+    }
+
+    function handleClearClick(e: React.MouseEvent<HTMLDivElement>) {
+        e.preventDefault()
+
+        updateValue('')
+    }
+
+    const tipInfo = useMemo(() => {
+        if (error) {
+            return error?.message
+        }
+
+        if (isFunc(tip)) {
+            if (!isEmpty(value)) return tip(value)
+        } else {
+            return tip
+        }
+    }, [tip, value, error])
+
+    const countInfo = useMemo(() => {
+        if (!showCount) return ''
 
         if (props.maxLength) {
             return `${value?.length || 0}/${props.maxLength}`
@@ -68,30 +143,38 @@ const Textarea: React.FC<TextareaProps> = (props) => {
         return `${value?.length || 0}`
     }, [showCount, value])
 
-    const children = (
-        <>
-            <textarea
-                {...cleanProps(otherProps)}
-                value={value ?? ''}
-                className={className}
-                style={{ height: newHeight, maxHeight, overflow: 'auto' }}
-                onChange={handleChange}
-                onKeyUp={handleKeyUp}
-                onBlur={handleBlur}
-            />
-
-            {autoSize && (
-                <textarea ref={shadowElement} className={inputClass('shadow')} rows={props.rows} defaultValue={value} />
-            )}
-        </>
-    )
-
-    return showCount ? (
-        <span className={inputClass(showCount && 'showCount')} data-count={info}>
-            {children}
-        </span>
-    ) : (
-        children
+    return (
+        <WrapperPopover
+            hasError={!!error}
+            focus={focus}
+            popoverProps={popoverProps}
+            tip={tipInfo}
+            className={popoverClass('input-tip', error && 'input-error')}
+            shouldPop={!isEmpty(tip) || !isEmpty(rules)}
+        >
+            <div className={cls} style={ms} data-count={countInfo}>
+                <textarea
+                    {...cleanProps(otherProps)}
+                    value={value ?? ''}
+                    className={inputClass(autoSize && 'auto-size', !autoSize && resize && 'textarea-resize')}
+                    style={{ height: height || 'auto', maxHeight, overflow: 'auto' }}
+                    onChange={handleChange}
+                    onKeyUp={handleKeyUp}
+                    onBlur={handleBlur}
+                    onFocus={handleFocus}
+                    ref={textareaElementRef}
+                />
+                {!disabled && clearable && value !== '' && (
+                    <div
+                        className={inputClass('clear', 'textarea-clear')}
+                        onClick={handleClearClick}
+                        onMouseDown={(e) => e.preventDefault()}
+                    >
+                        {icons.CloseCircle}
+                    </div>
+                )}
+            </div>
+        </WrapperPopover>
     )
 }
 

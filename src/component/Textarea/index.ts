@@ -1,17 +1,5 @@
-import { compose } from '@/utils/func'
-import trim from '@/hoc/trim'
-import inputBorder from '@/hoc/inputBorder'
-import React from 'react'
-import withControl from '../../hoc/withControl'
 import Textarea from './Textarea'
-import { TextareaProps } from './type'
 
-const TextareaComponent = compose(
-    withControl,
-    inputBorder({ tag: 'div', popover: true }),
-    trim
-)(Textarea) as React.MemoExoticComponent<React.FC<TextareaProps>>
+Textarea.displayName = 'EthanTextarea'
 
-TextareaComponent.displayName = 'EthanTextarea'
-
-export default TextareaComponent
+export default Textarea
