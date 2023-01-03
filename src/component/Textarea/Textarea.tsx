@@ -1,4 +1,4 @@
-import React, { useState, useRef, useMemo } from 'react'
+import React, { useState, useRef, useMemo, useEffect } from 'react'
 import { inputClass, popoverClass } from '@/styles'
 import cleanProps from '@/utils/cleanProps'
 import useMergedValue from '@/hooks/useMergedValue'
@@ -74,6 +74,12 @@ const Textarea: React.FC<TextareaProps> = (props) => {
             textareaResize()
         }
     }, [value])
+
+    useEffect(() => {
+        if (autoFocus) {
+            textareaElementRef.current.focus()
+        }
+    }, [])
 
     function textareaResize(newValue?: string) {
         if (newValue || newValue === '') textareaElementRef.current.value = newValue

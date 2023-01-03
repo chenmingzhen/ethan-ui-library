@@ -12,7 +12,7 @@ export default function () {
         <div id="popup-target" style={{ height: 200, overflow: 'auto', position: 'relative', padding: 10 }}>
             <div style={{ height: 100 }} />
             <EditableArea
-                bordered
+                border
                 placeholder="scroll in container"
                 getPopupContainer={() => document.querySelector('#popup-target')}
                 maxHeight={100}

@@ -8,7 +8,7 @@ export interface TextareaProps
     showCount?: boolean
     maxHeight?: string | number
     onEnterPress?: (value: string, evt: React.KeyboardEvent<HTMLTextAreaElement>) => void
-    onChange?: (string) => void
+    onChange?: (value: string) => void
     rows?: number
     value?: string
     /** 是否可以伸缩高度 */

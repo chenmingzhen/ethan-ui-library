@@ -18,7 +18,7 @@
 
     .@{popover-prefix}-inner {
         background: #fff;
-        box-shadow: 0 2px 8px rgb(0 0 0 / 15%);
+        box-shadow: var(--popover-box-shadow, 0 2px 8px rgb(0 0 0 / 15%));
         border-radius: 2px;
 
         &-content {
@@ -288,7 +288,6 @@
         padding: @common-content-text-padding;
     }
 
-    // inputborder
     &-input-error {
         color: @form-feedback-invalid-color;
 
@@ -298,7 +297,6 @@
 
         .@{popover-prefix}-inner {
             border: none;
-            // box-shadow: 0 2px 8px 0 @state-danger-border, 0 2px 8px rgba(0, 0, 0, 0.15);
             box-shadow: 0 2px 8px 0 @state-danger-border;
         }
     }

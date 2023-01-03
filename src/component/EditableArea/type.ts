@@ -1,16 +1,19 @@
 import { PopoverProps } from '../Popover'
+import { TextareaProps } from '../Textarea/type'
 
-export interface EditableProps extends Pick<PopoverProps, 'getPopupContainer'> {
+export interface EditableProps
+    extends Pick<PopoverProps, 'getPopupContainer'>,
+        Pick<TextareaProps, 'onBlur' | 'onFocus'> {
     width?: number | string
     style?: React.CSSProperties
-    onBlur?: (e: React.FocusEventHandler<HTMLTextAreaElement>) => void
     onChange?: (value: string) => void
+    defaultValue?: string
     value?: string
     className?: string
-    bordered?: boolean
+    border?: boolean
     placeholder?: string
-    onFocus?: () => void
     disabled?: boolean
     clearable?: boolean
     maxHeight?: number | string
+    trim?: boolean
 }
