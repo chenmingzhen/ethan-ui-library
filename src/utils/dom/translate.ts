@@ -1,18 +1,24 @@
-import { has3d, getTransformName } from './detect'
+import React from 'react'
 
-let use3d
-
-export function setTranslate(el, x, y) {
-    const tn = getTransformName()
-    el.style[tn] = `translate(${x},${y})`
+export const TRANSFORMS = {
+    WebkitTransform: '-webkit-transform',
+    OTransform: '-o-transform',
+    msTransform: '-ms-transform',
+    MozTransform: 'MozTransform',
+    transform: 'transform',
 }
 
-export function setTranslate3D(el, x, y) {
-    if (use3d === undefined) use3d = has3d()
-    const tn = getTransformName()
-    if (use3d) {
-        el.style[tn] = `translate3d(${x},${y},0)`
-    } else {
-        el.style[tn] = `translate(${x},${y})`
+export function setTranslate(el, x, y) {
+    Object.values(TRANSFORMS).forEach((transform) => {
+        el.style[transform] = `translate(${x},${y})`
+    })
+}
+
+export function setTransformProp(transform: string): React.CSSProperties {
+    return {
+        WebkitTransform: transform,
+        OTransform: transform,
+        msTransform: transform,
+        transform,
     }
 }
