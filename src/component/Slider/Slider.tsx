@@ -34,7 +34,7 @@ export default class Slider extends PureComponent<SliderProps, SliderState> {
     }
 
     handleDrag = (mx: number, my: number) => {
-        const { scale, onDrag, value, vertical, onIncrease, min, max } = this.props
+        const { scale, vertical, onIncrease, min, max } = this.props
 
         const { lengthPercent } = this.state
 
@@ -59,10 +59,6 @@ export default class Slider extends PureComponent<SliderProps, SliderState> {
             lengthPercent: newLengthPercent,
             dragging: true,
         })
-
-        if (onDrag) {
-            if (newValue !== value) onDrag(newValue)
-        }
     }
 
     handleDragEnd = () => {

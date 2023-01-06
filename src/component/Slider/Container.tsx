@@ -1,27 +1,42 @@
-import React from 'react'
-import classnames from 'classnames'
+import useMergedValue from '@/hooks/useMergedValue'
 import { sliderClass } from '@/styles'
-import { PureComponent } from '@/utils/component'
+import { isArray } from '@/utils/is'
+import { styles } from '@/utils/style/styles'
+import classnames from 'classnames'
+import React, { useMemo, useRef } from 'react'
 import Slider from './Slider'
+import { SliderContainerProps } from './type'
 import { perToValue } from './utils'
-import { ISliderContainerProps } from './type'
 
-class SliderContainer extends PureComponent<ISliderContainerProps> {
-    static defaultProps = {
-        height: 200,
-        scale: [0, 100],
-        step: 1,
-        vertical: false,
-        formatScale: (v) => v,
-    }
-
-    static displayName = 'EthanSlider'
-
-    innerElement = React.createRef<HTMLDivElement>()
-
-    get computedVal() {
-        const { range, value, scale } = this.props
-
+const SliderContainer: React.FC<SliderContainerProps> = function (props) {
+    const {
+        vertical = false,
+        height = 200,
+        disabled,
+        range,
+        className,
+        style,
+        scale = [0, 100],
+        onChange,
+        step = 1,
+        formatScale = (v) => v,
+        autoHide,
+        ...other
+    } = props
+    const [value, updateValue] = useMergedValue({
+        defaultStateValue: undefined,
+        options: {
+            defaultValue: props.defaultValue,
+            value: props.value,
+            onChange(nextValue) {
+                if (onChange) {
+                    onChange(nextValue)
+                }
+            },
+        },
+    })
+    const rangeContainerElementRef = useRef<HTMLDivElement>()
+    const computedValue = useMemo(() => {
         const from = scale[0]
 
         if (!range) return value || from
@@ -32,108 +47,93 @@ class SliderContainer extends PureComponent<ISliderContainerProps> {
 
         if (val[0] > val[1]) val = [val[1], val[0]]
 
-        return val as number[]
-    }
+        return val
+    }, [range, value, scale])
 
-    handleClick: React.MouseEventHandler<HTMLDivElement> = (e) => {
-        const { disabled, scale, step, vertical, range, onChange } = this.props
-        /** 点击原点指示器不操作 */
-        if ((e.target as HTMLDivElement).className.indexOf(sliderClass('indicator')) >= 0) return
+    function handleClick(e: React.MouseEvent<HTMLDivElement, MouseEvent>) {
+        if (disabled || (e.target as HTMLDivElement).className.indexOf(sliderClass('indicator')) >= 0) return
 
-        if (disabled) return
-
-        const rect = this.innerElement.current.getBoundingClientRect()
+        const rect = rangeContainerElementRef.current.getBoundingClientRect()
 
         const per = vertical ? 1 - (e.clientY - rect.top) / rect.height : (e.clientX - rect.left) / rect.width
 
         const val = perToValue(per, scale, step)
 
-        if (!range && onChange) {
-            onChange(val)
-
-            return
-        }
-
-        const value = [...(this.computedVal as number[])]
-
-        if (val < value[0]) value[0] = val
-        else value[1] = val
-
-        onChange?.(value)
-    }
-
-    handleChange = (index: number, val: number) => {
-        const { range, onChange } = this.props
-
         if (!range) {
-            onChange(val)
+            updateValue(val)
+
             return
         }
 
-        const value = [...(this.computedVal as number[])]
+        const values = [...(computedValue as number[])]
 
-        value[index] = val
+        if (val < values[0]) values[0] = val
+        else values[1] = val
 
-        onChange(value)
+        updateValue?.(values)
     }
 
-    renderScale = () => {
-        const { autoHide, formatScale, scale } = this.props
+    function handleChange(index: number, val: number) {
+        if (!range) {
+            updateValue(val)
+            return
+        }
 
-        if (!formatScale) return null
+        const values = [...(computedValue as number[])]
 
-        return (
-            <div className={sliderClass('scale', !autoHide && 'show')}>
-                {scale.map((s) => (
-                    <div key={s}>
-                        <span>{formatScale(s)}</span>
-                    </div>
-                ))}
-            </div>
-        )
+        values[index] = val
+
+        updateValue(values)
     }
 
-    render() {
-        const { vertical, height, disabled, range, ...other } = this.props
+    const cls = classnames(sliderClass('_', vertical && 'vertical', disabled && 'disabled'), className)
+    const ms = styles(vertical ? { height } : undefined, style)
+    const arrayValue = isArray(computedValue) ? computedValue : [0, computedValue]
 
-        const className = classnames(
-            sliderClass('_', vertical && 'vertical', disabled && 'disabled'),
-            this.props.className
-        )
-
-        const style = vertical ? Object.assign({ height }, this.props.style) : this.props.style
-
-        const value = !Array.isArray(this.computedVal) ? [0, this.computedVal] : this.computedVal
-
-        return (
-            <div style={style} className={className}>
-                <div className={sliderClass('background')} />
-                <div ref={this.innerElement} onClick={this.handleClick} className={sliderClass('inner')}>
-                    {range && (
-                        <Slider
-                            {...other}
-                            index={0}
-                            max={value[1]}
-                            onChange={this.handleChange}
-                            value={value[0]}
-                            vertical={vertical}
-                        />
-                    )}
-
+    return (
+        <div style={ms} className={cls}>
+            <div className={sliderClass('background')} />
+            <div ref={rangeContainerElementRef} onClick={handleClick} className={sliderClass('inner')}>
+                {range && (
                     <Slider
                         {...other}
-                        index={1}
-                        min={value[0]}
-                        onChange={this.handleChange}
-                        value={value[1]}
+                        scale={scale}
+                        index={0}
+                        max={arrayValue[1]}
+                        onChange={handleChange}
+                        value={arrayValue[0]}
                         vertical={vertical}
+                        step={step}
+                        formatValue={formatScale}
+                        autoHide={autoHide}
                     />
-                </div>
+                )}
 
-                {this.renderScale()}
+                <Slider
+                    {...other}
+                    index={1}
+                    min={arrayValue[0]}
+                    onChange={handleChange}
+                    value={arrayValue[1]}
+                    vertical={vertical}
+                    step={step}
+                    formatValue={formatScale}
+                    autoHide={autoHide}
+                    scale={scale}
+                />
             </div>
-        )
-    }
+
+            {formatScale ? (
+                <div className={sliderClass('scale', !autoHide && 'show')}>
+                    {scale.map((s) => (
+                        <div key={s}>
+                            <span>{formatScale(s)}</span>
+                        </div>
+                    ))}
+                </div>
+            ) : null}
+        </div>
+    )
 }
 
-export default SliderContainer
+export default React.memo(SliderContainer)

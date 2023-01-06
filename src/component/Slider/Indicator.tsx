@@ -1,14 +1,14 @@
 import React, { memo } from 'react'
-import draggable from '@/hoc/draggable'
 import { sliderClass } from '@/styles'
+import useDrag from '@/hooks/useDrag'
 import { IndicatorProps } from './type'
 
 const Indicator: React.FC<IndicatorProps> = (props) => {
-    const { disabled, onDragStart } = props
+    const { disabled, onDragStart, onDrag, onDragEnd } = props
 
-    const onMouseDown = disabled ? undefined : onDragStart
+    const [, , handleDragStart] = useDrag({ onDragStart, onDrag, onDragEnd })
 
-    return <div onMouseDown={onMouseDown} className={sliderClass('indicator')} />
+    return <div onMouseDown={disabled ? undefined : handleDragStart} className={sliderClass('indicator')} />
 }
 
-export default draggable(memo(Indicator))
+export default memo(Indicator)

@@ -1,4 +1,4 @@
-import { DraggableProps } from '@/hoc/draggable'
+import { UseDragProps } from '@/hooks/useDrag'
 import React from 'react'
 
 export interface SliderContainerProps {
@@ -25,11 +25,7 @@ export interface SliderContainerProps {
     defaultValue?: number | number[]
 }
 
-export interface ISliderContainerProps extends SliderContainerProps {
-    onDrag: (value: number) => void
-}
-
-export interface SliderProps extends Omit<ISliderContainerProps, 'value' | 'formatScale' | 'onChange'> {
+export interface SliderProps extends Omit<SliderContainerProps, 'value' | 'formatScale' | 'onChange'> {
     value: number
     index: number
     onChange: (index: number, value: number) => void
@@ -42,8 +38,6 @@ export interface SliderState {
     lengthPercent: number
 }
 
-export interface IndicatorProps extends Omit<DraggableProps, 'onDragStart'> {
+export interface IndicatorProps extends Pick<UseDragProps, 'onDrag' | 'onDragEnd' | 'onDragStart'> {
     disabled?: SliderContainerProps['disabled']
-
-    onDragStart: React.MouseEventHandler<HTMLDivElement>
 }
