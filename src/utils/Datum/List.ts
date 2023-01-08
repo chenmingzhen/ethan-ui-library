@@ -29,8 +29,6 @@ export interface DatumListProps<Data = any, FormatResult = Data> {
 
     prediction?(formatValue: FormatResult, raw: Data): boolean
 
-    distinct?: boolean
-
     disabled?: boolean | ((value: Data) => boolean)
 
     limit?: number
@@ -40,15 +38,11 @@ export interface DatumListProps<Data = any, FormatResult = Data> {
 
 /** 不存储Data，只存储Value */
 export default class List<T = string> {
-    distinct?: boolean
-
     limit?: number
 
     format: (value) => string
 
     $events = {}
-
-    $cachedFlatten = new Map()
 
     /**
      *
@@ -82,9 +76,7 @@ export default class List<T = string> {
     }
 
     constructor(args: DatumListProps<T> = {}) {
-        const { format, onChange, value, prediction, distinct, disabled, limit, control } = args
-
-        this.distinct = distinct
+        const { format, onChange, value, prediction, disabled, limit, control } = args
 
         this.limit = limit
 
@@ -170,8 +162,6 @@ export default class List<T = string> {
             const disabled = this.disabled(v)
 
             if (disabled) return false
-
-            if (this.distinct) return !this.check(v)
 
             return true
         })

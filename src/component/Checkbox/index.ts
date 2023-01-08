@@ -1,18 +1,13 @@
-import { compose } from '@/utils/func'
-import withListDatum from '@/utils/Datum/withListDatum'
-import withControl from '../../hoc/withControl'
 import Checkbox from './Checkbox'
 import Group from './Group'
-import { consumer } from './context'
-import { CheckboxComponent } from './type'
+import { CheckboxProps } from './type2'
 
-const CheckboxContainer = compose(withControl, consumer)(Checkbox) as CheckboxComponent
+interface CheckboxComponent extends React.FunctionComponent<CheckboxProps> {
+    Group: typeof Group
+}
 
-CheckboxContainer.Group = compose(
-    withControl,
-    withListDatum({ bindProps: ['disabled', 'format', 'prediction'] })
-)(Group)
+const CheckboxContainer = Checkbox as unknown as CheckboxComponent
 
-CheckboxContainer.displayName = 'EthanCheckbox'
+CheckboxContainer.Group = Group
 
 export default CheckboxContainer

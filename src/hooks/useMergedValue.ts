@@ -3,7 +3,7 @@ import useIsomorphicLayoutUpdateEffect from './useIsomorphicLayoutUpdateEffect'
 import useRefMethod from './useRefMethod'
 import useSafeState from './useSafeState'
 
-interface UseMergedValueProps<T, R extends Array<any>> {
+interface UseMergedValueProps<T, R extends Array<any> = never> {
     defaultStateValue: T | (() => T)
     options?: {
         defaultValue?: T

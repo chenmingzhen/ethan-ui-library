@@ -4,10 +4,17 @@
  * en - Complex data
  *    -- Complex data can use format to process value.
  */
-import React, { Component } from 'react'
+import React from 'react'
 import { Checkbox } from 'ethan-ui'
 
-const data = [
+interface Data {
+    id: number
+    color: string
+}
+
+type FormatData = string
+
+const data: Data[] = [
     { id: 1, color: 'red' },
     { id: 2, color: 'orange' },
     { id: 3, color: 'yellow' },
@@ -17,21 +24,19 @@ const data = [
     { id: 7, color: 'violet' },
 ]
 
-export default class extends Component {
-    renderItem = (d) => {
-        const style = { borderBottom: `solid 1px ${d.color}`, paddingBottom: 2 }
-        return <span style={style}>{d.color}</span>
-    }
+function renderItem(item: Data) {
+    const style = { borderBottom: `solid 1px ${item.color}`, paddingBottom: 2 }
+    return <span style={style}>{item.color}</span>
+}
 
-    render() {
-        return (
-            <Checkbox.Group<{ id: number; color: string }, string>
-                keygen="id"
-                data={data}
-                format="color"
-                renderItem={this.renderItem}
-                defaultValue={['red']}
-            />
-        )
-    }
+export default function () {
+    return (
+        <Checkbox.Group<Data, FormatData>
+            keygen="id"
+            data={data}
+            format="color"
+            renderItem={renderItem}
+            defaultValue={['red']}
+        />
+    )
 }

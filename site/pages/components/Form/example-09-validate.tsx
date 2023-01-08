@@ -65,6 +65,10 @@ export default function App() {
                 />
             </Form.Item>
 
+            <Form.Item name="checkbox" label="Checkbox" rules={[rule.required]} required>
+                <Checkbox>Check</Checkbox>
+            </Form.Item>
+
             <Form.Item label="InputNumber">
                 <div style={{ display: 'flex', alignItems: 'center' }}>
                     <Form.Item

@@ -4,16 +4,17 @@
  * en -
  *    -- Render a group of checkboxes from data.
  */
-import React from 'react'
+import React, { useState } from 'react'
 import { Checkbox } from 'ethan-ui'
 
 const data = ['red', 'orange', 'yellow', 'green', 'cyan', 'blue', 'violet']
 
-function renderItem(color) {
+function renderItem(color: string) {
     const style = { borderBottom: `solid 1px ${color}`, paddingBottom: 2 }
     return <span style={style}>{color}</span>
 }
 
 export default function () {
-    return <Checkbox.Group keygen={(c) => c} data={data} defaultValue={['blue', 'cyan']} renderItem={renderItem} />
+    const [value, updateValue] = useState(['blue', 'cyan'])
+    return <Checkbox.Group data={data} value={value} renderItem={renderItem} onChange={updateValue} />
 }

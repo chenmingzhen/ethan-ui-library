@@ -1,103 +1,100 @@
 import React from 'react'
 import classnames from 'classnames'
-import { PureComponent } from '@/utils/component'
 import { getKey } from '@/utils/uid'
-import { CHANGE_ACTION } from '@/utils/Datum/types'
 import { checkInputClass } from '@/styles'
+import useRefMethod from '@/hooks/useRefMethod'
+import useListDatum from '@/utils/Datum/useListDatum'
+import { isFunc, isString } from '@/utils/is'
 import Checkbox from './Checkbox'
 import { Provider } from './context'
-import { CheckItemProps, ICheckboxGroupProps, CheckItemGroupDefaultDataRecord } from './type'
+import { CheckboxGroupProps, CheckItemGroupBaseData } from './type2'
 
-class CheckboxGroup<D = CheckItemGroupDefaultDataRecord, FD = D> extends PureComponent<ICheckboxGroupProps<D, FD>> {
-    static defaultProps = {
-        renderItem: (d) => d,
-    }
+function Group<Data extends CheckItemGroupBaseData, FormatData extends CheckItemGroupBaseData>(
+    props: CheckboxGroupProps<Data, FormatData>
+) {
+    const {
+        block,
+        data,
+        keygen,
+        children,
+        defaultValue,
+        format,
+        prediction,
+        onChange,
+        value,
+        renderItem = (d) => d,
+    } = props
+    const { check, add, remove, disabled } = useListDatum({
+        format,
+        prediction,
+        onChange,
+        defaultValue,
+        value,
+        disabled: props.disabled,
+    })
+    const className = classnames(checkInputClass('group', block && 'block'), props.className)
 
-    static displayName = 'EthanCheckboxGroup'
-
-    componentDidMount() {
-        super.componentDidMount()
-
-        this.props.datum.subscribe(CHANGE_ACTION, this.handleUpdate)
-    }
-
-    componentWillUnmount() {
-        super.componentWillUnmount()
-
-        this.props.datum.unsubscribe(CHANGE_ACTION, this.handleUpdate)
-    }
-
-    getContent = (data: D) => {
-        const { renderItem } = this.props
-
-        if (typeof renderItem === 'string') {
-            return data[renderItem]
+    const handleCheckboxGroupItemChange = useRefMethod((changedValue, checked) => {
+        if (checked) {
+            add(changedValue)
+        } else {
+            remove(changedValue)
         }
-        if (typeof renderItem === 'function') {
-            return renderItem(data)
+    })
+
+    const handleClick = useRefMethod((checked: boolean, index: number) => {
+        if (checked) {
+            add(data[index])
+        } else {
+            remove(data[index])
+        }
+    })
+
+    const getContent = useRefMethod((item) => {
+        if (isString(renderItem)) {
+            return item[renderItem]
+        }
+
+        if (isFunc(renderItem)) {
+            /** @todo 类型修复 */
+            return (renderItem as any)(item)
         }
 
         return ''
+    })
+
+    /** 通过wrapperChildren的形式 */
+    if (data === undefined) {
+        return (
+            <div className={className}>
+                <Provider value={{ onCheckboxGroupItemChange: handleCheckboxGroupItemChange, checked: check }}>
+                    {children}
+                </Provider>
+            </div>
+        )
     }
 
-    handleUpdate = () => {
-        this.forceUpdate()
-    }
-
-    handleClick = (checked: boolean, index: number) => {
-        const { data, datum } = this.props
-
-        if (checked) {
-            datum.add({ data: data[index] })
-        } else {
-            datum.remove({ data: data[index] })
-        }
-    }
-
-    handleGroupCallback: CheckItemProps['onGroupCallback'] = (value, checked) => {
-        const { datum } = this.props
-
-        if (checked) {
-            datum.add({ data: value })
-        } else {
-            datum.remove({ data: value })
-        }
-    }
-
-    render() {
-        const { block, data, datum, keygen, children } = this.props
-
-        const className = classnames(checkInputClass('group', block && 'block'), this.props.className)
-
-        /** 通过wrapperChildren的形式 */
-        if (data === undefined) {
-            return (
-                <div className={className}>
-                    <Provider value={{ onGroupCallback: this.handleGroupCallback, checked: datum.check.bind(datum) }}>
-                        {children}
-                    </Provider>
-                </div>
-            )
-        }
-
-        /** 通过data的形式 */
+    /** 通过data的形式 */
+    if (data) {
         return (
             <div className={className}>
                 {data.map((d, i) => (
                     <Checkbox
-                        checked={datum.check(d)}
-                        disabled={datum.disabled(d)}
-                        key={getKey<D>(d, keygen, i)}
+                        checked={check(d)}
+                        disabled={disabled(d)}
+                        key={getKey(d, keygen, i)}
+                        onChange={handleClick}
                         index={i}
-                        internalOnChange={this.handleClick}
                     >
-                        {this.getContent(d)}
+                        {getContent(d)}
                     </Checkbox>
                 ))}
                 {children}
             </div>
         )
     }
+
+    return null
 }
 
-export default CheckboxGroup
+export default Group
