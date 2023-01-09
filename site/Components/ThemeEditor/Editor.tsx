@@ -1,34 +1,33 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { Button, ColorPicker, Form, Input, Select } from 'ethan-ui'
 import cssAccessors from '@/utils/style/css-accessors'
 import { editorClass } from 'doc/styles'
 import CssInject from '@/utils/style/vars-inject'
 import locate from 'doc/utils/locate'
-import { isArray } from '@/utils/is'
-import { compose } from '@/utils/func'
-import moveable, { MoveableProps } from '@/hoc/moveable'
-import resizable from '@/hoc/resizable'
+import { isArray, isEmpty } from '@/utils/is'
 import { style } from '@/utils/style'
 import classnames from 'classnames'
+import useDragPosition from '@/hooks/useDragPosition'
+import { styles } from '@/utils/style/styles'
+import { setTransformProp } from '@/utils/dom/translate'
 
-interface EditorProps extends MoveableProps {
-    visible: boolean
-
+interface EditorProps {
     onClose(): void
 }
 
 const modules = Object.keys(cssAccessors).sort((a, b) => a.localeCompare(b))
-
-setTimeout(() => {}, 20)
+const defaultTheme = JSON.parse(JSON.stringify(cssAccessors))
 
 const Editor: React.FC<EditorProps> = function (props) {
-    const { visible, onClose, className, ...other } = props
-
-    const defaultTheme = useRef(JSON.parse(JSON.stringify(cssAccessors))).current
-
+    const { onClose } = props
     const [componentModule, updateModule] = useState('color')
-
     const form = Form.useForm()
+    const getDragTarget = useCallback(() => document.querySelector(`.${editorClass('_')}`), [])
+    const { x, y, dragging } = useDragPosition({ getDragTarget })
+    const ms = styles(
+        !isEmpty(x) && !isEmpty(y) ? setTransformProp(`translate(${x}px, ${y}px)`) : undefined,
+        dragging && { userSelect: 'none' }
+    )
 
     function handleModuleSelectChange(m: string) {
         updateModule(m)
@@ -74,10 +73,10 @@ const Editor: React.FC<EditorProps> = function (props) {
         form.setValue(cssAccessors[componentModule])
     }, [componentModule])
 
-    const attributes = CssInject[componentModule].conf
+    const attributes = useMemo(() => CssInject[componentModule].conf, [componentModule])
 
     return (
-        <div className={classnames(editorClass('_'), className)} {...other}>
+        <div className={classnames(editorClass('_'))} style={ms}>
             <div className={editorClass('content')}>
                 <div className={editorClass('header')}>
                     <Select<string>
@@ -153,6 +152,4 @@ const Editor: React.FC<EditorProps> = function (props) {
     )
 }
 
-const MixinEditor = compose(moveable(`.${editorClass('_')}`), resizable)(Editor)
-
-export default React.memo(MixinEditor) as typeof Editor
+export default React.memo(Editor)

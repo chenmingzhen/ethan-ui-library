@@ -2,7 +2,6 @@
 @import './themes/@{ethan-theme}.less';
 @modal-prefix: ~'@{ethan-prefix}-modal';
 @card-prefix: ~'@{ethan-prefix}-card';
-@moveable-prefix: ~'@{ethan-prefix}-moveable';
 @zoom-out: cubic-bezier(0.78, 0.14, 0.15, 0.86);
 @zoom-in: cubic-bezier(0.08, 0.82, 0.17, 1);
 
@@ -97,7 +96,7 @@
         overflow-y: hidden;
         transition: opacity 0.3s @zoom-out;
 
-        .@{modal-prefix}-panel:not(.@{moveable-prefix}-dragging) {
+        .@{modal-prefix}-panel:not(.@{card-prefix}-dragging) {
             transition: transform 0.3s @zoom-out;
         }
     }
@@ -122,7 +121,7 @@
         .@{modal-prefix}-panel {
             transform: scale(1) translate(0, 0);
 
-            &:not(.@{moveable-prefix}-dragging) {
+            &:not(.@{card-prefix}-dragging) {
                 transition: transform 0.3s @zoom-in;
             }
         }
@@ -222,7 +221,7 @@
         }
     }
 
-    .@{moveable-prefix} {
+    .@{card-prefix} {
         .@{modal-prefix}-title {
             cursor: move;
         }

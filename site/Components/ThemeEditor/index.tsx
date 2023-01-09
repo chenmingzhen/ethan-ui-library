@@ -24,7 +24,7 @@ const ThemeEditor: React.FC = function () {
         return (
             <Portal portal>
                 <AnimationList lazyDom show={visible} animationTypes={['fade']} duration="fast">
-                    <Editor visible={visible} onClose={handleToggle} moveable />
+                    <Editor onClose={handleToggle} />
                 </AnimationList>
             </Portal>
         )

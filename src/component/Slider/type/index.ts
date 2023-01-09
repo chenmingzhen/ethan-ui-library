@@ -1,4 +1,4 @@
-import { UseDragProps } from '@/hooks/useDrag'
+import { UseDragPositionProps } from '@/hooks/useDragPosition'
 import React from 'react'
 
 export interface SliderContainerProps {
@@ -38,6 +38,6 @@ export interface SliderState {
     lengthPercent: number
 }
 
-export interface IndicatorProps extends Pick<UseDragProps, 'onDrag' | 'onDragEnd' | 'onDragStart'> {
+export interface IndicatorProps extends Pick<UseDragPositionProps, 'onDrag' | 'onDragEnd' | 'onDragStart'> {
     disabled?: SliderContainerProps['disabled']
 }

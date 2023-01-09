@@ -16,6 +16,12 @@
     color: @card-color;
     font-size: @card-font-size;
 
+    &-dragging {
+        transition-property: transform;
+        transition-duration: 0s;
+        user-select: none;
+    }
+
     &-hover:hover,
     &-shadow {
         box-shadow: @panel-box-shadow;
