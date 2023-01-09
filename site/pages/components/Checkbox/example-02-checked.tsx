@@ -12,7 +12,9 @@ export default function () {
         <div>
             <Checkbox checked={false}>not checked</Checkbox>
             <Checkbox checked>checked</Checkbox>
-            <Checkbox checked="indeterminate">indeterminate</Checkbox>
+            <Checkbox indeterminate checked>
+                indeterminate
+            </Checkbox>
         </div>
     )
 }

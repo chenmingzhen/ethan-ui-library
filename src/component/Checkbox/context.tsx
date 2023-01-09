@@ -1,9 +1,9 @@
 import React from 'react'
-import { CheckHandlerContext } from './type'
+import { CheckboxGroupContext } from './type2'
 
-const context = React.createContext<CheckHandlerContext>(undefined)
+export const CheckboxContext = React.createContext<CheckboxGroupContext>(undefined)
 
-export const { Provider } = context
+export const { Provider } = CheckboxContext
 
 export const consumer = (Origin) => (props) =>
-    <context.Consumer>{(value) => <Origin {...props} {...value} />}</context.Consumer>
+    <CheckboxContext.Consumer>{(value) => <Origin {...props} {...value} />}</CheckboxContext.Consumer>

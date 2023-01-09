@@ -27,7 +27,7 @@ export default function () {
                     data={baseData}
                     disabled={(d) => d === 'yellow'}
                     keygen
-                    value={['blue']}
+                    defaultValue={['blue']}
                     renderItem={(d) => d}
                 />
             </div>
@@ -38,7 +38,7 @@ export default function () {
                     disabled={(d) => d.label === 'yellow'}
                     keygen="value"
                     format="label"
-                    value={['blue']}
+                    defaultValue={['blue']}
                     renderItem="label"
                 />
             </div>

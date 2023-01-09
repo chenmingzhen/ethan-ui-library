@@ -1,8 +1,8 @@
 /**
  * cn - 比对
- *    -- 复杂的数据可以使用prediction判断是否应该被选中
+ *    -- 复杂的数据和复杂的值可以使用prediction判断是否应该被选中
  * en - Prediction
- *    -- Complex data can use prediction to determine whether item should be checked
+ *    -- Complex data and complex value can use prediction to determine whether item should be checked
  */
 import React from 'react'
 import { Checkbox } from 'ethan-ui'
@@ -26,7 +26,7 @@ export default function () {
                     keygen="value"
                     renderItem="label"
                     defaultValue={[{ value: 3, label: 'yellow' }]}
-                    prediction={(item, raw) => item.value === raw.value}
+                    prediction={(item, predictiveData) => item.value === predictiveData.value}
                 />
             </div>
         </div>

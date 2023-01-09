@@ -53,7 +53,7 @@ export default class RadioGroup<D = CheckItemGroupDefaultDataRecord, FD = D> ext
         datum.set(checked ? data[index] : [])
     }
 
-    handleGroupCallback: CheckItemProps['onGroupCallback'] = (value, checked) => {
+    handleGroupCallback: CheckItemProps['onCheckboxGroupItemChange'] = (value, checked) => {
         const { datum } = this.props
 
         datum.set(checked ? value : [])
@@ -76,7 +76,12 @@ export default class RadioGroup<D = CheckItemGroupDefaultDataRecord, FD = D> ext
         if (data === undefined) {
             return (
                 <div className={className}>
-                    <Provider value={{ onGroupCallback: this.handleGroupCallback, checked: datum.check.bind(datum) }}>
+                    <Provider
+                        value={{
+                            onCheckboxGroupItemChange: this.handleGroupCallback,
+                            checked: datum.check.bind(datum),
+                        }}
+                    >
                         {children}
                     </Provider>
                 </div>
