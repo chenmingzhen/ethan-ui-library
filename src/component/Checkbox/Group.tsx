@@ -12,18 +12,7 @@ import { CheckboxGroupProps, CheckItemGroupBaseData } from './type2'
 function Group<Data extends CheckItemGroupBaseData, FormatData extends CheckItemGroupBaseData>(
     props: CheckboxGroupProps<Data, FormatData>
 ) {
-    const {
-        block,
-        data,
-        keygen,
-        children,
-        defaultValue,
-        format,
-        prediction,
-        onChange,
-        value,
-        renderItem = (d) => d,
-    } = props
+    const { block, data, keygen, children, defaultValue, format, prediction, onChange, value, renderItem } = props
     const { check, add, remove, disabled } = useListDatum({
         format,
         prediction,
@@ -56,8 +45,7 @@ function Group<Data extends CheckItemGroupBaseData, FormatData extends CheckItem
         }
 
         if (isFunc(renderItem)) {
-            /** @todo 类型修复 */
-            return (renderItem as any)(item)
+            return renderItem(item)
         }
 
         return ''

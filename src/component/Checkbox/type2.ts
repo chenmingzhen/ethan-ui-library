@@ -1,10 +1,12 @@
+import React from 'react'
+
 type KeyGen<T> = T extends string | number ? true : keyof T | true | ((data: T) => string | number)
 
 type CheckBoxInferData<Data> = Data extends string | number ? never : keyof Data | ((data: Data) => string | number)
 
-type CheckboxInferRenderItem<Data> = Data extends string
-    ? string | ((item: Data) => React.ReactNode)
-    : keyof Data | ((item: Data) => React.ReactNode)
+type CheckboxInferRenderItem<Data> =
+    | (Data extends string | number ? React.ReactNode : keyof Data)
+    | ((item: Data) => React.ReactNode)
 
 export type CheckItemGroupBaseData = Record<string, any> | string | number
 
