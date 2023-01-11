@@ -33,6 +33,7 @@ function Group<Data extends RadioGroupBaseData, FormatData extends RadioGroupBas
         defaultValue,
         value,
         disabled: props.disabled,
+        limit: 1,
     })
     const className = classnames(
         checkInputClass(
