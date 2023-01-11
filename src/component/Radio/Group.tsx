@@ -1,108 +1,100 @@
 import React from 'react'
 import classnames from 'classnames'
 import { getKey } from '@/utils/uid'
-import { CHANGE_ACTION } from '@/utils/Datum/types'
 import { checkInputClass } from '@/styles'
-import { PureComponent } from '@/utils/component'
-import { Provider } from '../Checkbox/context'
+import useRefMethod from '@/hooks/useRefMethod'
+import useListDatum from '@/utils/Datum/useListDatum'
+import { isFunc, isString } from '@/utils/is'
 import Radio from './Radio'
-import { RadioGroupProps } from './type'
-import { CheckItemGroupDefaultDataRecord, CheckItemProps } from '../Checkbox/type'
+import { Provider } from './context'
+import { RadioGroupProps, RadioGroupBaseData } from './type'
 
-export default class RadioGroup<D = CheckItemGroupDefaultDataRecord, FD = D> extends PureComponent<
-    RadioGroupProps<D, FD>
-> {
-    static defaultProps = {
-        renderItem: (d) => d,
-    }
+function Group<Data extends RadioGroupBaseData, FormatData extends RadioGroupBaseData>(
+    props: RadioGroupProps<Data, FormatData>
+) {
+    const {
+        data,
+        keygen,
+        children,
+        defaultValue,
+        format,
+        prediction,
+        onChange,
+        value,
+        renderItem = (d) => d,
+        block,
+        button,
+        size,
+    } = props
+    const { check, set, disabled } = useListDatum({
+        format,
+        prediction,
+        onChange,
+        defaultValue,
+        value,
+        disabled: props.disabled,
+    })
+    const className = classnames(
+        checkInputClass(
+            'group',
+            block && 'block',
+            button && 'button',
+            button === 'outline' && 'outline',
+            button && size
+        ),
+        props.className
+    )
 
-    static displayName = 'EthanRadioGroup'
+    const handleRadioGroupItemChange = useRefMethod((changedValue, checked) => {
+        set(checked ? changedValue : [])
+    })
 
-    componentDidMount() {
-        super.componentDidMount()
+    const handleClick = useRefMethod((checked: boolean, index: number) => {
+        set(checked ? data[index] : [])
+    })
 
-        this.props.datum.subscribe(CHANGE_ACTION, this.handleUpdate)
-    }
-
-    componentWillUnmount() {
-        super.componentWillUnmount()
-
-        this.props.datum.unsubscribe(CHANGE_ACTION, this.handleUpdate)
-    }
-
-    handleUpdate = () => {
-        this.forceUpdate()
-    }
-
-    getContent = (data: D) => {
-        const { renderItem } = this.props
-
-        if (typeof renderItem === 'string') {
-            return data[renderItem]
+    const getContent = useRefMethod((item) => {
+        if (isString(renderItem)) {
+            return item[renderItem]
         }
-        if (typeof renderItem === 'function') {
-            return renderItem(data)
+
+        if (isFunc(renderItem)) {
+            return renderItem(item)
         }
 
         return ''
-    }
+    })
 
-    handleClick = (checked: boolean, index: number) => {
-        const { data, datum } = this.props
-
-        datum.set(checked ? data[index] : [])
-    }
-
-    handleGroupCallback: CheckItemProps['onCheckboxGroupItemChange'] = (value, checked) => {
-        const { datum } = this.props
-
-        datum.set(checked ? value : [])
-    }
-
-    render() {
-        const { block, data, datum, keygen, children, button, size } = this.props
-
-        const className = classnames(
-            checkInputClass(
-                'group',
-                block && 'block',
-                button && 'button',
-                button === 'outline' && 'outline',
-                button && size
-            ),
-            this.props.className
+    if (data === undefined) {
+        return (
+            <div className={className}>
+                <Provider value={{ onRadioGroupItemChange: handleRadioGroupItemChange, checked: check }}>
+                    {children}
+                </Provider>
+            </div>
         )
+    }
 
-        if (data === undefined) {
-            return (
-                <div className={className}>
-                    <Provider
-                        value={{
-                            onCheckboxGroupItemChange: this.handleGroupCallback,
-                            checked: datum.check.bind(datum),
-                        }}
-                    >
-                        {children}
-                    </Provider>
-                </div>
-            )
-        }
-
+    if (data) {
         return (
             <div className={className}>
                 {data.map((d, i) => (
                     <Radio
-                        checked={datum.check(d)}
-                        disabled={datum.disabled(d)}
+                        checked={check(d)}
+                        disabled={disabled(d)}
                         key={getKey(d, keygen, i)}
+                        onChange={handleClick}
                         index={i}
-                        internalOnChange={this.handleClick}
                     >
-                        {this.getContent(d)}
+                        {getContent(d)}
                     </Radio>
                 ))}
                 {children}
             </div>
         )
     }
+
+    return null
 }
+
+export default React.memo(Group)

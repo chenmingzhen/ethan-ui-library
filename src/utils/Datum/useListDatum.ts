@@ -1,6 +1,6 @@
 import useMergedValue from '@/hooks/useMergedValue'
 import useRefMethod from '@/hooks/useRefMethod'
-import { isBoolean, isFunc, isString } from '../is'
+import { isArray, isBoolean, isFunc, isString } from '../is'
 
 interface UseListDatumProps {
     format?: string | ((value) => string | number)
@@ -12,13 +12,20 @@ interface UseListDatumProps {
     defaultValue?: any
 }
 
+function transformValue2Array(value) {
+    if (value === undefined || value === null) return undefined
+
+    return isArray(value) ? value : [value]
+}
+
 function useListDatum(props: UseListDatumProps) {
     const { limit = 0, onChange } = props
+
     const [values, updateValues] = useMergedValue<any[], [any, boolean]>({
         defaultStateValue: [],
         options: {
-            defaultValue: props.defaultValue,
-            value: props.value,
+            defaultValue: transformValue2Array(props.defaultValue),
+            value: transformValue2Array(props.value),
             onChange(nextValues, prevValue, ...args) {
                 if (onChange) {
                     const limitValues = limit === 1 ? nextValues[0] : nextValues
@@ -57,16 +64,7 @@ function useListDatum(props: UseListDatumProps) {
     const add = useRefMethod((data, unshift = false) => {
         if (data === undefined || data === null) return
 
-        let raws = Array.isArray(data) ? data : [data]
-
-        raws = raws.filter((v) => {
-            const isDisabled = disabled(v)
-
-            if (isDisabled) return false
-
-            return true
-        })
-
+        const raws = (Array.isArray(data) ? data : [data]).filter((v) => !disabled(v))
         const nextValues = []
 
         for (let i = 0; i < raws.length; i++) {
@@ -83,10 +81,7 @@ function useListDatum(props: UseListDatumProps) {
     const remove = useRefMethod((data) => {
         if (!data) return
 
-        let raws = Array.isArray(data) ? data : [data]
-
-        raws = raws.filter((r) => !disabled(r))
-
+        const raws = (Array.isArray(data) ? data : [data]).filter((v) => !disabled(v))
         const nextValues = []
 
         outer: for (let i = 0; i < values.length; i++) {
@@ -114,7 +109,22 @@ function useListDatum(props: UseListDatumProps) {
         return false
     })
 
-    return { add, remove, check, disabled }
+    const set = useRefMethod((data) => {
+        const raws = (Array.isArray(data) ? data : [data]).filter((v) => !disabled(v))
+        const nextValues = []
+
+        for (let i = 0; i < raws.length; i++) {
+            const formatDataValue = format(raws[i])
+
+            if (formatDataValue !== undefined) {
+                nextValues.push(formatDataValue)
+            }
+        }
+
+        updateValues(nextValues, data, true)
+    })
+
+    return { add, remove, check, disabled, set }
 }
 
 export default useListDatum

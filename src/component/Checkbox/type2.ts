@@ -2,7 +2,7 @@ import React from 'react'
 
 type KeyGen<T> = T extends string | number ? true : keyof T | true | ((data: T) => string | number)
 
-type CheckBoxInferData<Data> = Data extends string | number ? never : keyof Data | ((data: Data) => string | number)
+type CheckBoxInferFormat<Data> = Data extends string | number ? never : keyof Data | ((data: Data) => string | number)
 
 type CheckboxInferRenderItem<Data> =
     | (Data extends string | number ? React.ReactNode : keyof Data)
@@ -41,7 +41,7 @@ export interface CheckboxGroupProps<
     children?: React.ReactNode
     defaultValue?: FormatData[]
     value?: FormatData[]
-    format?: CheckBoxInferData<Data>
+    format?: CheckBoxInferFormat<Data>
     prediction?(formatValue: FormatData, data: Data): boolean
     disabled?: boolean | ((data: Data) => boolean)
     onChange?(value: FormatData[], data: Data, checked: boolean)

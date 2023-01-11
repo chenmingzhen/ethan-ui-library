@@ -1,18 +1,13 @@
-import { compose } from '@/utils/func'
-import withListDatum from '@/utils/Datum/withListDatum'
-import withControl from '../../hoc/withControl'
-import { consumer } from '../Checkbox/context'
-import Group from './Group'
 import Radio from './Radio'
-import { RadioComponent } from './type'
+import Group from './Group'
+import { RadioProps } from './type'
 
-const RadioContainer = compose(withControl, consumer)(Radio) as RadioComponent
+interface RadioComponent extends React.FunctionComponent<RadioProps> {
+    Group: typeof Group
+}
 
-RadioContainer.Group = compose(
-    withControl,
-    withListDatum({ limit: 1, bindProps: ['disabled', 'format', 'prediction'] })
-)(Group)
+const RadioContainer = Radio as unknown as RadioComponent
 
-RadioContainer.displayName = 'EthanRadio'
+RadioContainer.Group = Group
 
 export default RadioContainer

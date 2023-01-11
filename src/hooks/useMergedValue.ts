@@ -39,7 +39,7 @@ function useMergedValue<T, R extends Array<any> = never>(props: UseMergedValuePr
 
     useIsomorphicLayoutUpdateEffect(() => {
         if (!hasValue(value)) {
-            setInnerValue(value)
+            setInnerValue(isFunc(defaultStateValue) ? defaultStateValue() : defaultStateValue)
         }
     }, [value])
 
