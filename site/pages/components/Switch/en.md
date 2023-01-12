@@ -1,4 +1,4 @@
-# Switch *Switching Selector*
+# Switch _Switching Selector_
 
 <example />
 
@@ -6,13 +6,11 @@
 
 ### Switch
 
-| 属性 | 类型 | 默认值 | 说明 |
-| --- | --- | --- | --- |
-| checked | boolean | none | checked status，will in control when pass |
-| disabled | boolean | false | disable switch |
-| name | string | none | The name of the Form which access data |
-| onChange | (checked: boolean) => void | none | checked is status |
-| content | ReactNode[] | none | content with checked and unchecked |
-| size | 'default' \| 'small' \| 'large' | 'default' | size of switch |
-| value | boolean | none | set while no checked |
-| defaultValue | boolean | none | init value |
+| 属性         | 类型                            | 默认值    | 说明                                      |
+| ------------ | ------------------------------- | --------- | ----------------------------------------- |
+| checked      | boolean                         | -         | checked status，will in control when pass |
+| disabled     | boolean                         | false     | disable switch                            |
+| onChange     | (checked: boolean) => void      | -         | checked is status                         |
+| content      | ReactNode[]                     | -         | content with checked and unchecked        |
+| size         | 'default' \| 'small' \| 'large' | 'default' | size of switch                            |
+| defaultValue | boolean                         | -         | init value                                |

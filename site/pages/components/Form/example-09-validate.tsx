@@ -18,6 +18,7 @@ import {
     Slider,
     Upload,
     Transfer,
+    Switch,
 } from 'ethan-ui'
 
 const rule = Rule({
@@ -67,6 +68,10 @@ export default function App() {
 
             <Form.Item name="checkbox" label="Checkbox" rules={[rule.required]} required>
                 <Checkbox>Check</Checkbox>
+            </Form.Item>
+
+            <Form.Item name="switch" label="Switch" rules={[rule.required]} required>
+                <Switch />
             </Form.Item>
 
             <Form.Item label="InputNumber">
