@@ -1,122 +1,126 @@
-import React from 'react'
-import { transferClass } from '@/styles'
+import useRefMethod from '@/hooks/useRefMethod'
 import { getLocale } from '@/locale'
+import { transferClass } from '@/styles'
+import { isArray, isFunc, isString } from '@/utils/is'
+import { styles } from '@/utils/style/styles'
+import { getKey } from '@/utils/uid'
 import classnames from 'classnames'
-import { isArray, isFunc } from '@/utils/is'
-import { createFunc } from '@/utils/func'
-import { TransferCardProps } from './type'
-import ECard from '../Card'
-import Spin from '../Spin'
+import React, { useMemo, useRef, useState } from 'react'
+import { useIsomorphicLayoutEffect } from 'react-use'
+import Card from '../Card'
 import Checkbox from '../Checkbox'
 import Input from '../Input'
 import LazyList from '../LazyList'
+import Spin from '../Spin'
+import { TransferCardProps } from './type'
 import Item from './TransferItem'
 
-interface CardState {
-    lazyHeight: number
+const TransferCard: React.FC<TransferCardProps> = (props) => {
+    const {
+        selectedKeys,
+        disabled,
+        loading,
+        title,
+        listClassName,
+        listStyle,
+        listHeight,
+        customRender,
+        empty,
+        footer,
+        keygen,
+        index,
+        onFilter,
+        onSelectedKeysChange,
+        onSearch,
+        values,
+        lineHeight,
+        itemClass,
+    } = props
 
-    text: string
-}
+    const [text, updateText] = useState('')
+    const [lazyListHeight, updateLazyListHeight] = useState(0)
+    const cardBodyElementRef = useRef<HTMLDivElement>()
+    const data = useMemo(() => {
+        if (!onFilter || !text) return props.data
 
-class Card extends React.PureComponent<TransferCardProps, CardState> {
-    cardBody: HTMLDivElement
+        return props.data.filter((d) => onFilter(text, d, !index))
+    }, [props.data, text])
 
-    get check() {
-        const { selecteds } = this.props
+    useIsomorphicLayoutEffect(() => {
+        updateLazyListHeight(cardBodyElementRef.current.offsetHeight)
+    }, [])
 
-        if (selecteds.length === 0) return false
+    const handleShouldRecomputed = useRefMethod(() => false)
 
-        if (selecteds.length === this.data.length) return true
-
-        return 'indeterminate'
-    }
-
-    get data() {
-        const { onFilter, data, index } = this.props
-
-        const { text } = this.state
-
-        if (!onFilter || !text) return data
-
-        return data.filter((d) => onFilter(text, d, !index))
-    }
-
-    constructor(props: TransferCardProps) {
-        super(props)
-
-        this.state = {
-            lazyHeight: 0,
-            text: '',
-        }
-    }
-
-    componentDidMount() {
-        this.forceUpdate()
-    }
-
-    bindCardBody = (el: HTMLDivElement) => {
-        this.cardBody = el
-
-        this.setState({ lazyHeight: el?.offsetHeight })
-    }
-
-    checkAll = (check) => {
-        const { setSelecteds, disabled, getKey, index } = this.props
-
+    const handleCheckAll = useRefMethod((check: boolean) => {
         if (check) {
             if (typeof disabled === 'function') {
-                const newSelecteds = this.data.reduce((total, current, i) => {
+                const nextSelectedKeys = data.reduce((total, current, i) => {
                     if (disabled(current)) return total
 
-                    total.push(getKey(current, i))
+                    total.push(getKey(current, keygen, i))
 
                     return total
                 }, [])
 
-                setSelecteds(index, newSelecteds)
+                onSelectedKeysChange(index, nextSelectedKeys)
             } else {
-                setSelecteds(
+                onSelectedKeysChange(
                     index,
-                    this.data.map((item, i) => getKey(item, i))
+                    data.map((item, i) => getKey(item, keygen, i))
                 )
             }
         } else {
-            setSelecteds(index, [])
+            onSelectedKeysChange(index, [])
         }
-    }
+    })
 
-    handleFilter = (text) => {
-        const { onSearch, index } = this.props
+    const handleFilter = useRefMethod((nextText) => {
+        if (onSearch) onSearch(nextText, !index)
 
-        if (onSearch) onSearch(text, !index)
+        updateText(nextText)
+    })
 
-        this.setState({ text })
-    }
+    const renderItem = useRefMethod((item, i) => {
+        const key = getKey(item, keygen, i)
 
-    customSetSelected = (value) => {
-        const { setSelecteds, index, selecteds } = this.props
+        const content = isString(props.renderItem)
+            ? item[props.renderItem]
+            : isFunc(props.renderItem)
+            ? props.renderItem(item)
+            : ''
 
+        return (
+            <Item
+                lineHeight={lineHeight}
+                key={key}
+                disabled={typeof disabled === 'function' ? disabled(item) : disabled}
+                index={index}
+                checkKey={key}
+                content={content}
+                itemClass={itemClass}
+            />
+        )
+    })
+
+    const customSetSelected = useRefMethod((value) => {
         if (typeof value === 'string') {
-            setSelecteds(index, [...selecteds, value])
+            onSelectedKeysChange(index, [...selectedKeys, value])
 
             return
         }
         if (isArray(value)) {
-            setSelecteds(index, value)
+            onSelectedKeysChange(index, value)
         }
-    }
+    })
 
-    renderFilter = () => {
-        const { onFilter, onSearch, renderFilter, disabled } = this.props
-
-        const { text } = this.state
-
+    function renderFilter() {
         if (!onFilter && !onSearch) return null
 
-        if (renderFilter && typeof renderFilter === 'function') {
+        if (isFunc(props.renderFilter)) {
             return (
                 <div className={transferClass('filter')}>
-                    {renderFilter({
+                    {props.renderFilter({
                         text,
                         disabled: disabled === true,
                         onFilter,
@@ -129,7 +133,7 @@ class Card extends React.PureComponent<TransferCardProps, CardState> {
             <div className={transferClass('filter')}>
                 <Input
                     disabled={disabled === true}
-                    onChange={this.handleFilter}
+                    onChange={handleFilter}
                     placeholder={getLocale('search')}
                     clearable
                     size="small"
@@ -139,35 +143,15 @@ class Card extends React.PureComponent<TransferCardProps, CardState> {
         )
     }
 
-    renderItem = (data, i) => {
-        const { disabled, getKey, lineHeight, renderItem, itemClass, index } = this.props
-
-        const key = getKey(data, i)
-
-        return (
-            <Item
-                lineHeight={lineHeight}
-                key={key}
-                disabled={typeof disabled === 'function' ? disabled(data) : disabled}
-                index={index}
-                checkKey={key}
-                content={createFunc(renderItem)(data)}
-                itemClass={itemClass}
-            />
-        )
-    }
-
-    renderBody = () => {
-        const { customRender, values, selecteds, index, lineHeight } = this.props
-
-        const { lazyHeight } = this.state
-
+    function renderBody() {
         if (isFunc(customRender)) {
             const custom = customRender({
-                onSelected: this.customSetSelected,
+                onSelected: customSetSelected,
                 direction: index === 0 ? 'left' : 'right',
-                selectedKeys: selecteds,
+                selectedKeys,
                 value: values,
+                data,
+                text,
             })
 
             if (custom) return custom
@@ -175,66 +159,53 @@ class Card extends React.PureComponent<TransferCardProps, CardState> {
 
         return (
             <LazyList
-                data={this.data}
+                data={data}
                 lineHeight={lineHeight}
-                height={lazyHeight}
-                renderItem={this.renderItem}
-                shouldRecomputed={() => false}
+                height={lazyListHeight}
+                renderItem={renderItem}
+                shouldRecomputed={handleShouldRecomputed}
             />
         )
     }
 
-    render() {
-        const {
-            selecteds,
-            disabled,
-            loading,
-            title,
-            listClassName,
-            listStyle,
-            listHeight,
-            customRender,
-            empty,
-            footer,
-        } = this.props
+    const checked = data.length !== 0 && selectedKeys.length === data.length
+    const indeterminate = !checked && selectedKeys.length !== 0
+    const listMergeStyle = styles(listStyle, { height: listHeight })
 
-        const listMergeStyle = Object.assign({}, listStyle, { height: listHeight })
-
-        return (
-            <>
-                <ECard className={transferClass('card')}>
-                    <ECard.Header className={transferClass('card-header')}>
-                        <div>
-                            <Checkbox
-                                onChange={this.checkAll}
-                                checked={this.check}
-                                disabled={disabled === true || loading}
-                            >
-                                {this.check ? `${selecteds.length} ${getLocale('selected')}` : getLocale('selectAll')}
-                            </Checkbox>
-                        </div>
-                        <div className={transferClass('card-header-title')}>{title}</div>
-                    </ECard.Header>
-                    {this.renderFilter()}
-                    <Spin loading={loading}>
-                        <ECard.Body
-                            className={classnames(transferClass('card-body'), listClassName)}
-                            style={listMergeStyle}
+    return (
+        <>
+            <Card className={transferClass('card')}>
+                <Card.Header className={transferClass('card-header')}>
+                    <div>
+                        <Checkbox
+                            onChange={handleCheckAll}
+                            checked={checked}
+                            indeterminate={indeterminate}
+                            disabled={disabled === true || loading}
                         >
-                            <div className={transferClass('body-container')} ref={this.bindCardBody}>
-                                {this.renderBody()}
-                                {!isFunc(customRender) && this.data.length === 0 && (
-                                    <div className={transferClass('empty')}>{empty || getLocale('noData')}</div>
-                                )}
-                            </div>
-                        </ECard.Body>
-                    </Spin>
+                            {checked || indeterminate
+                                ? `${selectedKeys.length} ${getLocale('selected')}`
+                                : getLocale('selectAll')}
+                        </Checkbox>
+                    </div>
+                    <div className={transferClass('card-header-title')}>{title}</div>
+                </Card.Header>
+                {renderFilter()}
+                <Spin loading={loading}>
+                    <Card.Body className={classnames(transferClass('card-body'), listClassName)} style={listMergeStyle}>
+                        <div className={transferClass('body-container')} ref={cardBodyElementRef}>
+                            {renderBody()}
+                            {!isFunc(customRender) && data.length === 0 && (
+                                <div className={transferClass('empty')}>{empty || getLocale('noData')}</div>
+                            )}
+                        </div>
+                    </Card.Body>
+                </Spin>
 
-                    {footer && <ECard.Footer className={transferClass('card-footer')}>{footer}</ECard.Footer>}
-                </ECard>
-            </>
-        )
-    }
+                {footer && <Card.Footer className={transferClass('card-footer')}>{footer}</Card.Footer>}
+            </Card>
+        </>
+    )
 }
 
-export default Card
+export default React.memo(TransferCard)

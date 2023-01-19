@@ -1,24 +1,25 @@
 import React, { memo, useContext } from 'react'
 import { transferClass } from '@/styles'
+import { getKey } from '@/utils/uid'
 import Button from '../Button'
 import icons from '../icons'
 import { TransferOperationButtonProps } from './type'
 import { TransferContext } from './context'
 
 const OperationButtons: React.FC<TransferOperationButtonProps> = (props) => {
-    const { setSelecteds, selecteds } = useContext(TransferContext)
+    const { setSelectedKeys: setSelecteds, selectedKeys: selecteds } = useContext(TransferContext)
 
-    const { datum, data, operations, operationIcon, disabled, getKey } = props
+    const { data, operations, operationIcon, disabled, add, remove, keygen } = props
 
     function handleChange(index: number) {
-        const newValue = selecteds[1 - index].map((c) => data.find((d, i) => getKey(d, i) === c))
+        const newValue = selecteds[1 - index].map((c) => data.find((d, i) => getKey(d, keygen, i) === c))
 
         setSelecteds(1 - index, [])
 
         if (index) {
-            datum.add({ data: newValue, unshift: true })
+            add(newValue, true)
         } else {
-            datum.remove({ data: newValue })
+            remove(newValue)
         }
     }
 

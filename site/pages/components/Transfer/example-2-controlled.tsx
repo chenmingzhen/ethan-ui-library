@@ -4,10 +4,15 @@
  * en - Controlled
  *    -- Component controlled
  */
-import React, { Component } from 'react'
+import React, { useState } from 'react'
 import { Transfer } from 'ethan-ui'
 
-const data = []
+interface Data {
+    id: number
+    content: string
+}
+
+const data: Data[] = []
 
 for (let i = 1; i < 20; i++) {
     data.push({
@@ -16,30 +21,18 @@ for (let i = 1; i < 20; i++) {
     })
 }
 
-export default class extends Component {
-    constructor(props) {
-        super(props)
-        this.state = {
-            value: [1, 3, 5, 7, 9],
-        }
-    }
+export default function () {
+    const [value, updateValue] = useState([1, 3, 5, 7, 9])
 
-    onChange = (v) => {
-        console.log(v)
-        this.setState({ value: v })
-    }
-
-    render() {
-        return (
-            <Transfer
-                data={data}
-                value={this.state.value}
-                // onChange={this.onChange}
-                format="id"
-                renderItem="content"
-                keygen="id"
-                disabled={(d) => d.content.indexOf('1') > -1}
-            />
-        )
-    }
+    return (
+        <Transfer<Data, number>
+            data={data}
+            value={value}
+            onChange={updateValue}
+            format="id"
+            renderItem="content"
+            keygen="id"
+            disabled={(d) => d.content.indexOf('1') > -1}
+        />
+    )
 }
