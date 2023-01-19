@@ -124,7 +124,15 @@ function useListDatum(props: UseListDatumProps) {
         updateValues(nextValues, data, true)
     })
 
-    return { add, remove, check, disabled, set }
+    const getDataByValue = useRefMethod((data, value) => {
+        for (let i = 0; i < data.length; i++) {
+            if (prediction(value, data[i])) return { data: data[i], index: i }
+        }
+
+        return null
+    })
+
+    return { add, remove, check, disabled, set, values, getDataByValue }
 }
 
 export default useListDatum

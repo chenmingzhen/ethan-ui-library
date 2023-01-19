@@ -1,16 +1,16 @@
 import { getKey } from '@/utils/uid'
-import { TransferProps, TransferBaseData, TransferDefaultData } from '../type'
+import { TransferBaseData, TransferDefaultData } from '../type'
 
 /**
  * 获取左右的勾选项
  */
 function splitSelecteds<D extends TransferBaseData = TransferDefaultData, FD = D>(
     selectedKeys: FD[],
-    props: TransferProps<D, FD>
+    data,
+    keygen,
+    check
 ) {
-    if (!selectedKeys) return null
-
-    const { data, keygen, datum } = props
+    if (!selectedKeys) return undefined
 
     const left: FD[] = []
     const right: FD[] = []
@@ -19,7 +19,7 @@ function splitSelecteds<D extends TransferBaseData = TransferDefaultData, FD = D
         const v = data.find((item, index) => getKey(item, keygen, index) === selectedKey)
 
         if (v) {
-            if (datum.check(v)) right.push(selectedKey)
+            if (check(v)) right.push(selectedKey)
             else left.push(selectedKey)
         }
     })
