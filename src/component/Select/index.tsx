@@ -5,6 +5,7 @@ import { selectClass } from '@/styles'
 import withListDatum from '@/utils/Datum/withListDatum'
 import withControl from '../../hoc/withControl'
 import Select from './Select'
+import Select2 from './Select2'
 import group from './group'
 import FilterHoc from './Hoc/FilterHoc'
 import { SelectClassComponent } from './type'
@@ -26,4 +27,4 @@ const SelectContainer = compose(
 
 SelectContainer.displayName = 'EthanSelect'
 
-export default SelectContainer
+export default Select2

@@ -30,6 +30,9 @@ const Option: React.FC<OptionProps> = (props) => {
             onMouseMove={() => {
                 onHover(index)
             }}
+            onMouseLeave={() => {
+                onHover(undefined)
+            }}
         >
             {result}
             {isActive && icons.Check}

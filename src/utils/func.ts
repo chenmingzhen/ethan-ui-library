@@ -24,7 +24,7 @@ export function compose(...funcs) {
     return (...args) => restFuncs.reduceRight((composed, f) => f(composed), lastFunc(...args))
 }
 
-export function empty(e) {
+export function preventDefault(e) {
     e.preventDefault()
 }
 

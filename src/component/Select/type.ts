@@ -1,4 +1,3 @@
-import List from '@/utils/Datum/List'
 import React, { ReactNode } from 'react'
 import { ListProps } from '../List'
 import { SpinProps } from '../Spin'
@@ -7,17 +6,8 @@ export type SelectBaseData = Record<string, any> | string | number
 
 export type DefaultSelectDefaultDataRecord = { label: React.ReactNode; value: any }
 
-export interface ISelectProps extends Omit<SelectProps<any, any>, 'filterDelay' | 'onFilter'> {
-    datum: List
-
-    groupKey?: string
-
-    result: any[]
-
-    onInput?: (text: string) => void
-}
-
 export interface SelectProps<D extends SelectBaseData = DefaultSelectDefaultDataRecord, FormatData = D> {
+    border?: boolean
     placeholder?: ReactNode
     style?: React.CSSProperties
     keygen?: ((data: D) => string) | keyof D | boolean
@@ -36,8 +26,8 @@ export interface SelectProps<D extends SelectBaseData = DefaultSelectDefaultData
     onFilter?: (text: string, data: D) => boolean
     onFocus?(evt: React.FocusEvent<HTMLDivElement>): void
     onChange?: (values: any, value: FormatData, selected: boolean) => void
-    position?: SelectState['position']
-    renderItem?: keyof D | ((data: D, index: number) => ReactNode)
+    position?: 'drop-down' | 'drop-up'
+    renderItem?: keyof D | ((data: D, index?: number) => ReactNode)
     result?: D[]
     size?: 'large' | 'default' | 'small'
     text?
@@ -46,7 +36,7 @@ export interface SelectProps<D extends SelectBaseData = DefaultSelectDefaultData
     showArrow?: boolean
     compressedClassName?: string
     onCollapse?(focus: boolean): string
-    resultClassName?: string | ((data: D) => string)
+    resultClassName?: string
     prediction?: (formatValue: FormatData, value: D) => boolean
     renderResult?: keyof D | ((data: D) => ReactNode)
     lineHeight?: number
@@ -64,52 +54,65 @@ export interface SelectProps<D extends SelectBaseData = DefaultSelectDefaultData
     format?: keyof D
     className?: string
     width?: number
+    createOption?: {
+        onCreate: (text: string) => D
+        onCreateEnd?: (data: D) => void
+    }
 }
 
-export interface SelectState {
+export interface OptionListProps extends Pick<ListProps, 'onTransitionEnd'> {
+    height: SelectProps['height']
+    lineHeight: SelectProps['lineHeight']
+    text: SelectProps['text']
+    loading: SelectProps['loading']
+    keygen: SelectProps['keygen']
+    position: SelectProps['position']
+    spinProps: SelectProps['spinProps']
+    size: SelectProps['size']
+    onScrollRatioChange: SelectProps['onScrollRatioChange']
+    filterText: SelectProps['filterText']
+    customRender: SelectProps['customRender']
     control: 'mouse' | 'keyboard'
-    focus: boolean
-    position: 'drop-down' | 'drop-up'
-}
-
-export interface SelectListProps
-    extends Pick<
-            ISelectProps,
-            | 'height'
-            | 'lineHeight'
-            | 'text'
-            | 'loading'
-            | 'keygen'
-            | 'datum'
-            | 'position'
-            | 'spinProps'
-            | 'size'
-            | 'onScrollRatioChange'
-            | 'filterText'
-            | 'customRender'
-            /* BoxList */
-            | 'multiple'
-            | 'columnWidth'
-            | 'columns'
-        >,
-        Omit<ListProps, 'onScroll'> {
-    control: SelectState['control']
     selectId: string
-    onControlChange(control: SelectState['control']): void
+    onControlChange(control: OptionListProps['control']): void
     onChange(data, fromInput?: boolean): void
     renderItem(data, index: number): React.ReactNode
     parentElement?: HTMLDivElement
-    onBlur(): void
     groupKey?: string
-    children: React.ReactNode
-    bindOptionListFunc: (func: SelectOptionListBindFuncMap) => void
     data: any[]
-    focus: boolean
+    show: boolean
     style?: React.CSSProperties
     className?: string
+    values?: any[]
+    getDataByValue
+    check
+    disabled
+    set
 }
 
-export interface OptionProps extends Pick<SelectListProps, 'columns' | 'renderItem'> {
+export interface BoxListProps extends Pick<SelectProps, 'multiple' | 'columnWidth' | 'columns'> {
+    style: React.CSSProperties
+    show: boolean
+    selectId: string
+    customRender: SelectProps['customRender']
+    loading: boolean
+    data: any
+    text: SelectProps['text']
+    onChange(data): void
+    renderItem(data, index: number): React.ReactNode
+    keygen: SelectProps['keygen']
+    groupKey: string
+    height: SelectProps['height']
+    lineHeight: SelectProps['lineHeight']
+    spinProps: SpinProps
+    values: any
+    getDataByValue
+    disabled
+    check
+    set
+}
+
+export interface OptionProps {
     data: any
     disabled: boolean
     index: number
@@ -117,37 +120,28 @@ export interface OptionProps extends Pick<SelectListProps, 'columns' | 'renderIt
     isHover: boolean
     onHover: (index: number) => void
     groupKey: string
-    onClick: SelectListProps['onChange']
+    onClick(data): void
+    renderItem(data, index: number): React.ReactNode
 }
 
-export interface SelectOptionListBindFuncMap {
-    handleHover: (index: number, force?: boolean) => void
-    hoverMove: (step: number) => void
-    getHoverIndex: () => number
-}
-
-export interface SelectResultProps
-    extends Pick<
-        ISelectProps,
-        | 'datum'
-        | 'disabled'
-        | 'filterText'
-        | 'onCreate'
-        | 'onInput'
-        | 'result'
-        | 'multiple'
-        | 'placeholder'
-        | 'renderResult'
-        | 'showArrow'
-        | 'resultClassName'
-        | 'compressedClassName'
-        | 'size'
-    > {
-    onClear?(): void
+export interface SelectResultProps {
+    onClear(e: React.MouseEvent): void
     onRemove(data: any): void
     compressed: boolean
-    focus: boolean
-    onBindInputInstance(input: HTMLInputElement): void
+    onInput(text: string): void
+    isDisabled: boolean
+    disabledFunc: (data) => boolean
+    filterText: string
+    size: SelectProps['size']
+    showArrow: SelectProps['showArrow']
+    resultClassName: SelectProps['resultClassName']
+    compressedClassName: SelectProps['compressedClassName']
+    multiple: SelectProps['multiple']
+    placeholder: SelectProps['placeholder']
+    result: any[]
+    renderResult: SelectProps['renderResult']
+    show: boolean
+    forwardedInputRef: ((instance: HTMLInputElement) => void) | React.MutableRefObject<HTMLInputElement>
 }
 
 export interface SelectResultItemProps extends Pick<SelectResultProps, 'resultClassName'> {
@@ -158,35 +152,18 @@ export interface SelectResultItemProps extends Pick<SelectResultProps, 'resultCl
     renderResult: (data) => React.ReactNode
 }
 
-export interface SelectFilterHocProps extends ISelectProps, Pick<SelectProps, 'onFilter'> {}
-
-export interface SelectInputProps extends Pick<SelectResultProps, 'multiple' | 'focus' | 'onInput'> {
-    text: string
-}
-
-export interface SelectBoxOptionProps extends Pick<SelectListProps, 'columns' | 'renderItem'> {
+export interface SelectBoxOptionProps {
     data: any
     disabled: boolean
     index: number
     isActive: boolean
     multiple: boolean
-    onClick: SelectListProps['onChange']
-}
-export interface FormatBoxListDataHandlerProps
-    extends Pick<SelectListProps, 'data' | 'columns' | 'results' | 'datum' | 'groupKey'> {
-    children(params: { defaultIndex: number; sliceData: any[] }): React.ReactNode
+    onClick(data): void
+    columns: number
+    renderItem(data, index: number): React.ReactNode
 }
 
 export interface BoxListTitleProps {
     title: React.ReactNode
-
     style?: React.CSSProperties
-}
-
-export interface SelectClassComponent {
-    <D extends SelectBaseData = DefaultSelectDefaultDataRecord, FormatData extends SelectBaseData = SelectBaseData>(
-        props: SelectProps<D, FormatData>
-    ): React.ReactElement
-
-    displayName: string
 }

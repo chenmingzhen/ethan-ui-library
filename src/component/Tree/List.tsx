@@ -1,6 +1,6 @@
 import { treeClass } from '@/styles'
 import { PureComponent } from '@/utils/component'
-import { empty } from '@/utils/func'
+import { preventDefault } from '@/utils/func'
 import React, { createRef } from 'react'
 import Branch from './Branch'
 import Node from './Node'
@@ -59,8 +59,8 @@ class List extends PureComponent<TreeListProps, TreeListState> {
             <div
                 className={treeClass('list', isDragging && 'isDragging')}
                 ref={this.list}
-                onDrop={empty}
-                onDragOver={empty}
+                onDrop={preventDefault}
+                onDragOver={preventDefault}
             >
                 <Node
                     {...this.props}

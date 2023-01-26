@@ -261,7 +261,7 @@ class OptionList extends PureComponent<SelectListProps, OptionListState> {
     }
 
     render() {
-        const { focus, style, selectId, className, onTransitionEnd, customRender = {} } = this.props
+        const { show: focus, style, selectId, className, onTransitionEnd, customRender = {} } = this.props
 
         const { header, footer } = customRender
 

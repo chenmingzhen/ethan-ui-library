@@ -11,7 +11,8 @@
         outline: none;
     }
 
-    &-result {
+    &-result,
+    &-popover-result {
         display: flex;
         overflow: auto;
         max-height: 80px;
@@ -422,7 +423,7 @@
     }
 
     &-popover {
-        .@{select-prefix}-result {
+        .@{select-prefix}-popover-result {
             max-height: 112px;
             max-width: 300px;
             cursor: default;

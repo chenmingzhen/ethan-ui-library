@@ -78,10 +78,10 @@ function useListDatum(props: UseListDatumProps) {
         updateValues(unshift ? nextValues.concat(values) : values.concat(nextValues), data, true)
     })
 
-    const remove = useRefMethod((data) => {
-        if (!data) return
+    const remove = useRefMethod((dataItem) => {
+        if (!dataItem) return
 
-        const raws = (Array.isArray(data) ? data : [data]).filter((v) => !disabled(v))
+        const raws = (Array.isArray(dataItem) ? dataItem : [dataItem]).filter((v) => !disabled(v))
         const nextValues = []
 
         outer: for (let i = 0; i < values.length; i++) {
@@ -98,7 +98,7 @@ function useListDatum(props: UseListDatumProps) {
             nextValues.push(value)
         }
 
-        updateValues(nextValues, data, false)
+        updateValues(nextValues, dataItem, false)
     })
 
     const check = useRefMethod((data) => {
@@ -124,7 +124,15 @@ function useListDatum(props: UseListDatumProps) {
         updateValues(nextValues, data, true)
     })
 
-    return { add, remove, check, disabled, set }
+    const getDataByValue = useRefMethod((data, value) => {
+        for (let i = 0; i < data.length; i++) {
+            if (prediction(value, data[i])) return { data: data[i], index: i }
+        }
+
+        return null
+    })
+
+    return { add, remove, check, disabled, set, values, prediction, getDataByValue, updateValues }
 }
 
 export default useListDatum

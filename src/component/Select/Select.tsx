@@ -479,7 +479,7 @@ class Select extends PureComponent<ISelectProps, SelectState> {
             <Portal rootClass={selectClass(position)} portal={portal}>
                 <List
                     {...props}
-                    focus={focus}
+                    show={focus}
                     style={ms}
                     selectId={this.selectId}
                     className={selectClass(autoAdapt && 'auto-adapt')}

@@ -2,6 +2,7 @@ import React from 'react'
 import classnames from 'classnames'
 import { selectClass } from '@/styles'
 import { isEmpty, isString } from '@/utils/is'
+import { preventDefault, stopPropagation } from '@/utils/func'
 import { SelectResultItemProps } from './type'
 
 const ResultItem: React.FC<SelectResultItemProps> = function (props) {
@@ -20,6 +21,11 @@ const ResultItem: React.FC<SelectResultItemProps> = function (props) {
             title={title && isString(content) ? content : null}
             tabIndex={-1}
             className={classnames(selectClass('item', disabled && 'disabled', hideRemove && 'ban'), resultClassName)}
+            onClick={stopPropagation}
+            onMouseDown={(e) => {
+                preventDefault(e)
+                stopPropagation(e)
+            }}
         >
             {content}
 

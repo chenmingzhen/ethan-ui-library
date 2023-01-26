@@ -1,7 +1,7 @@
 import React from 'react'
 import classnames from 'classnames'
 import { treeClass } from '@/styles'
-import { empty } from '@/utils/func'
+import { preventDefault } from '@/utils/func'
 import { PureComponent } from '@/utils/component'
 import { TreeBranchProps } from './type'
 import AnimationList from '../List'
@@ -66,8 +66,8 @@ class Branch extends PureComponent<TreeBranchProps> {
                 lazyDom
                 className={classnames(className, treeClass(isRoot ? 'root' : 'branch', expanded && 'expanded'))}
                 /** 添加empty使拖动时不会出现禁止符号 */
-                onDrop={empty}
-                onDragOver={empty}
+                onDrop={preventDefault}
+                onDragOver={preventDefault}
                 onDragLeave={isRoot ? this.handleDragLeave : undefined}
                 style={style}
                 show={expanded}

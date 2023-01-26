@@ -166,7 +166,7 @@ class BoxList extends PureComponent<SelectListProps> {
     }
 
     render() {
-        const { style, focus, selectId, customRender = {}, loading } = this.props
+        const { style, show: focus, selectId, customRender = {}, loading } = this.props
 
         const { footer } = customRender
 
