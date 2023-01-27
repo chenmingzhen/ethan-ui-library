@@ -6,17 +6,17 @@ import { TransferContext } from './context'
 import { TransferItemProps } from './type'
 
 const Item: React.FC<TransferItemProps> = (props) => {
-    const { selecteds, setSelecteds } = useContext(TransferContext)
+    const { selectedKeys, setSelectedKeys } = useContext(TransferContext)
 
     const { index, checkKey, content, disabled, itemClass, lineHeight } = props
 
     function handleCheck(check) {
         if (check) {
-            setSelecteds(index, [...selecteds[index], checkKey])
+            setSelectedKeys(index, [...selectedKeys[index], checkKey])
         } else {
-            setSelecteds(
+            setSelectedKeys(
                 index,
-                selecteds[index].filter((ch) => ch !== checkKey)
+                selectedKeys[index].filter((ch) => ch !== checkKey)
             )
         }
     }
@@ -30,7 +30,7 @@ const Item: React.FC<TransferItemProps> = (props) => {
                 className={transferClass('item-check')}
                 onChange={handleCheck}
                 disabled={disabled}
-                checked={selecteds[index].indexOf(checkKey) > -1}
+                checked={selectedKeys[index].indexOf(checkKey) > -1}
             >
                 {content}
             </Checkbox>
