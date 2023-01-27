@@ -3,7 +3,7 @@ import { checkInputClass } from '@/styles'
 import classnames from 'classnames'
 import React, { useContext, useMemo } from 'react'
 import { CheckboxContext } from './context'
-import { CheckboxProps } from './type2'
+import { CheckboxProps } from './type'
 
 const Checkbox: React.FC<CheckboxProps> = (props) => {
     const { disabled, style, children, onClick, value, index, onChange, indeterminate } = props

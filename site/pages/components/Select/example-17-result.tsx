@@ -2,7 +2,7 @@
  * cn - 自定义结果
  *    --  使用 renderResult 去自定义选中的结果。
  * en -  result
- *    --  use renderRsult. to format the result
+ *    --  use renderResult. to format the result
  */
 import React from 'react'
 import { Select } from 'ethan-ui'

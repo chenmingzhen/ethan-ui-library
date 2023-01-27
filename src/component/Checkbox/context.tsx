@@ -1,5 +1,5 @@
 import React from 'react'
-import { CheckboxGroupContext } from './type2'
+import { CheckboxGroupContext } from './type'
 
 export const CheckboxContext = React.createContext<CheckboxGroupContext>(undefined)
 

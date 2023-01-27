@@ -1,6 +1,6 @@
 import Checkbox from './Checkbox'
 import Group from './Group'
-import { CheckboxProps } from './type2'
+import { CheckboxProps } from './type'
 
 interface CheckboxComponent extends React.FunctionComponent<CheckboxProps> {
     Group: typeof Group

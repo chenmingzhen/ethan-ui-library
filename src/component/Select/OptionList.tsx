@@ -1,17 +1,18 @@
-import React from 'react'
-import { PureComponent } from '@/utils/component'
-import classnames from 'classnames'
+import useSetState from '@/hooks/useSetState'
 import { selectClass } from '@/styles'
-import { getLocale } from '@/locale'
-import { getKey } from '@/utils/uid'
-import { isEmptyStr } from '@/utils/is'
 import { getRangeValue } from '@/utils/numbers'
-import { SelectListProps } from './type'
-import Spin from '../Spin'
-import Option from './Option'
-import AnimationList from '../List'
-import { transformSizeToPx } from './util'
+import classnames from 'classnames'
+import React, { useImperativeHandle, useRef } from 'react'
+import { getKey } from '@/utils/uid'
+import useRefMethod from '@/hooks/useRefMethod'
+import { isEmptyStr } from '@/utils/is'
+import { getLocale } from '@/locale'
 import LazyList, { LazyListState } from '../LazyList'
+import AnimationList from '../List'
+import Spin from '../Spin'
+import { OptionListProps } from './type'
+import { transformSizeToPx } from './util'
+import Option from './Option'
 
 interface OptionListState {
     /* 目前选中的index */
@@ -22,116 +23,90 @@ interface OptionListState {
     scrollTopRatio: number
     /* Scroll的Top值 */
     lastScrollTop: number
+    defaultIndex: number
 }
 
-class OptionList extends PureComponent<SelectListProps, OptionListState> {
-    optionInner: HTMLDivElement
+export interface OptionListInstance {
+    handleHover: (index: number, force?: boolean) => void
+    hoverMove: (step: number) => void
+    getHoverIndex: () => number
+}
 
-    hoverMoveTimer: NodeJS.Timeout
-
-    scrollTimer: NodeJS.Timeout
-
-    lazyList: LazyList
-
-    defaultIndex = 0
-
-    getInitState = (): OptionListState => {
-        const { datum, data } = this.props
-
+const OptionList: React.ForwardRefRenderFunction<OptionListInstance, OptionListProps> = function (props, ref) {
+    const lazyListRef = useRef<LazyList>()
+    const hoverMoveTimer = useRef<NodeJS.Timeout>()
+    const scrollTimer = useRef<NodeJS.Timeout>()
+    const {
+        values,
+        getDataByValue,
+        data,
+        show,
+        style,
+        selectId,
+        className,
+        onTransitionEnd,
+        control,
+        onControlChange,
+        loading,
+        height,
+        text,
+        size,
+        lineHeight,
+        groupKey,
+        keygen,
+        onChange,
+        filterText,
+        onScrollRatioChange,
+        check,
+        disabled,
+        customRender = {},
+    } = props
+    const [state, setState] = useSetState<OptionListState>(() => {
         const defaultState = {
             currentIndex: 0,
-            hoverIndex: 0,
+            hoverIndex: undefined,
             scrollTopRatio: 0,
             lastScrollTop: 0,
+            defaultIndex: 0,
         }
 
-        if (!datum.values.length) return defaultState
+        if (values.length) return defaultState
 
-        const item = datum.getDataByValue(data, datum.values[0])
+        const item = getDataByValue(data, values[0])
 
         if (!item) return defaultState
 
         const { index } = item
-
         const defaultIndex = getRangeValue({ min: 0, max: data.length - 1, current: index })
 
-        defaultState.hoverIndex = defaultIndex
-
-        this.defaultIndex = defaultIndex
-
+        // defaultState.hoverIndex = defaultIndex
+        defaultState.defaultIndex = defaultIndex
         return defaultState
-    }
+    })
 
-    constructor(props: SelectListProps) {
-        super(props)
-
-        this.state = this.getInitState()
-
-        props.bindOptionListFunc({
-            handleHover: this.handleHover,
-            hoverMove: this.hoverMove,
-            getHoverIndex: () => this.state.hoverIndex,
-        })
-    }
-
-    bindLazyList = (instance: LazyList) => {
-        this.lazyList = instance
-    }
-
-    startHoverMoveTimer = () => {
-        if (this.hoverMoveTimer) {
-            clearTimeout(this.hoverMoveTimer)
-
-            this.hoverMoveTimer = null
-        }
-
-        this.hoverMoveTimer = setTimeout(() => {
-            this.hoverMoveTimer = null
-        }, 50)
-    }
-
-    startScrollTimer = () => {
-        if (this.scrollTimer) {
-            clearTimeout(this.scrollTimer)
-
-            this.scrollTimer = null
-        }
-
-        this.scrollTimer = setTimeout(() => {
-            this.scrollTimer = null
-        }, 10)
-    }
-
-    handleHover = (index: number, force = false) => {
-        const { control } = this.props
-
+    const handleHover = useRefMethod((index: number, force = false) => {
         /** 当鼠标在select的滚动容器内，键盘操作时，会触发Option的Hover，此时键盘的优先级更高 */
         if (control === 'keyboard' && !force) return
 
-        if (this.state.hoverIndex !== index && !this.scrollTimer) {
-            this.setState({ hoverIndex: index })
+        if (state.hoverIndex !== index && !scrollTimer.current) {
+            setState({ hoverIndex: index })
         }
-    }
+    })
 
-    handleMouseMove = () => {
-        if (this.props.control !== 'mouse' && !this.hoverMoveTimer) {
-            this.props.onControlChange('mouse')
+    const hoverMove = useRefMethod((step: number) => {
+        if (hoverMoveTimer.current) {
+            clearTimeout(hoverMoveTimer.current)
+
+            hoverMoveTimer.current = null
         }
-    }
 
-    /** 上下键移动 */
-    /** 不同于handleScroll 因为handleScroll是必然滚动的，此处不一定滚动，所以滚动高度逻辑 以及ScrollTop逻辑发生改变 */
-    hoverMove = (step: number) => {
-        this.startHoverMoveTimer()
+        hoverMoveTimer.current = setTimeout(() => {
+            hoverMoveTimer.current = null
+        }, 50)
 
-        const max = this.props.data.length
-
-        const { lineHeight, height, groupKey } = this.props
-
-        let { hoverIndex, currentIndex } = this.state
-
-        const { lastScrollTop } = this.state
-
+        const max = data.length
+        let { hoverIndex, currentIndex } = state
+        const { lastScrollTop } = state
         /** 无hover 取当前的index */
         if (hoverIndex === undefined) hoverIndex = currentIndex
         else hoverIndex += step
@@ -140,10 +115,10 @@ class OptionList extends PureComponent<SelectListProps, OptionListState> {
             hoverIndex = 0
         }
 
-        const data = this.props.data[hoverIndex]
+        const item = data[hoverIndex]
 
         /** 如果为Group的标题 则多加或减1 */
-        if (data && data[groupKey]) {
+        if (item && item[groupKey]) {
             if (step > 0) hoverIndex += 1
             else hoverIndex -= 1
         }
@@ -169,71 +144,71 @@ class OptionList extends PureComponent<SelectListProps, OptionListState> {
             currentIndex = 0
         }
 
-        this.lazyList.scrollToView(currentIndex)
+        lazyListRef.current.scrollToView(currentIndex)
+        setState({ hoverIndex })
+    })
 
-        this.setState({ hoverIndex })
-    }
+    const getHoverIndex = useRefMethod(() => state.hoverIndex)
 
-    handleScrollStateChange = (state: LazyListState) => {
-        const { onScrollRatioChange } = this.props
+    useImperativeHandle(ref, () => ({ getHoverIndex, hoverMove, handleHover }))
 
-        const { scrollTopRatio, lastScrollTop } = state
-
-        if (onScrollRatioChange) {
-            onScrollRatioChange(scrollTopRatio, lastScrollTop)
-        }
-
-        this.setState(state)
-    }
-
-    bindOptionInner = (el) => {
-        this.optionInner = el
-    }
-
-    shouldRecomputed = (prevData: any[], nextData: any[]) => {
+    const shouldLazyListRecomputed = useRefMethod((prevData: any[], nextData: any[]) => {
         /** 如果数据源的数据增加时，如果是输入框输入内容，则不需要重新计算位置,将hoverIndex置为0 */
         /** 数据源减少时，重置hoverIndex */
-        if (nextData.length > prevData.length) {
-            if (isEmptyStr(this.props.filterText)) return true
 
-            this.setState({ hoverIndex: 0 })
+        if (nextData.length > prevData.length) {
+            if (isEmptyStr(filterText)) return true
+
+            setState({ hoverIndex: 0 })
 
             return false
         }
 
         if (nextData.length < prevData.length) {
-            this.setState({ hoverIndex: 0 })
+            setState({ hoverIndex: 0 })
 
             return false
         }
 
         return true
+    })
+
+    const handleScrollStateChange = useRefMethod((lazyListState: LazyListState) => {
+        const { scrollTopRatio, lastScrollTop } = lazyListState
+
+        if (onScrollRatioChange) {
+            onScrollRatioChange(scrollTopRatio, lastScrollTop)
+        }
+
+        setState(lazyListState)
+    })
+
+    function handleMouseMove() {
+        if (control !== 'mouse' && !hoverMoveTimer.current) {
+            onControlChange('mouse')
+        }
     }
 
-    renderItem = (d, i: number) => {
-        const { currentIndex, hoverIndex } = this.state
-
-        const { datum, groupKey, keygen, onChange, renderItem } = this.props
+    function renderItem(d, i: number) {
+        const { currentIndex, hoverIndex } = state
 
         return (
             <Option
-                isActive={datum.check(d)}
-                disabled={datum.disabled(d)}
+                isActive={check(d)}
+                disabled={disabled(d)}
                 isHover={hoverIndex === currentIndex + i}
-                key={d[groupKey] ? `__${d[groupKey]}__` : getKey(d, keygen, i)}
+                key={d[groupKey] ? d[groupKey] : getKey(d, keygen, i)}
                 index={currentIndex + i}
                 data={d}
                 onClick={onChange}
-                renderItem={renderItem}
-                onHover={this.handleHover}
+                renderItem={props.renderItem}
+                onHover={handleHover}
                 groupKey={groupKey}
             />
         )
     }
 
-    renderList = () => {
-        const { loading, data, height, text, size } = this.props
-
+    function renderList() {
         const spinSize = transformSizeToPx(size)
 
         if (loading)
@@ -249,40 +224,36 @@ class OptionList extends PureComponent<SelectListProps, OptionListState> {
         return (
             <LazyList
                 height={height}
-                defaultIndex={this.defaultIndex}
-                ref={this.bindLazyList}
-                data={this.props.data}
-                renderItem={this.renderItem}
-                lineHeight={this.props.lineHeight}
-                shouldRecomputed={this.shouldRecomputed}
-                onScrollStateChange={this.handleScrollStateChange}
+                defaultIndex={state.defaultIndex}
+                ref={lazyListRef}
+                data={data}
+                renderItem={renderItem}
+                lineHeight={lineHeight}
+                shouldRecomputed={shouldLazyListRecomputed}
+                onScrollStateChange={handleScrollStateChange}
             />
         )
     }
 
-    render() {
-        const { show: focus, style, selectId, className, onTransitionEnd, customRender = {} } = this.props
+    const { header, footer } = customRender
 
-        const { header, footer } = customRender
-
-        return (
-            <AnimationList
-                lazyDom
-                show={focus}
-                style={style}
-                data-id={selectId}
-                duration="fast"
-                className={classnames(selectClass('options'), className)}
-                animationTypes={['fade', 'scale-y']}
-                onMouseMove={this.handleMouseMove}
-                onTransitionEnd={onTransitionEnd}
-            >
-                {header ? <div className={selectClass('custom')}>{header}</div> : null}
-                {this.renderList()}
-                {footer ? <div className={selectClass('custom')}>{footer}</div> : null}
-            </AnimationList>
-        )
-    }
+    return (
+        <AnimationList
+            lazyDom
+            show={show}
+            style={style}
+            data-id={selectId}
+            duration="fast"
+            className={classnames(selectClass('options'), className)}
+            animationTypes={['fade', 'scale-y']}
+            onMouseMove={handleMouseMove}
+            onTransitionEnd={onTransitionEnd}
+        >
+            {header ? <div className={selectClass('custom')}>{header}</div> : null}
+            {renderList()}
+            {footer ? <div className={selectClass('custom')}>{footer}</div> : null}
+        </AnimationList>
+    )
 }
 
-export default OptionList
+export default React.memo(React.forwardRef(OptionList))

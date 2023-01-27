@@ -4,16 +4,21 @@ import { SpinProps } from '../Spin'
 
 export type SelectBaseData = Record<string, any> | string | number
 
-export type DefaultSelectDefaultDataRecord = { label: React.ReactNode; value: any }
+type SelectInferFormat<Data> = Data extends string | number ? never : keyof Data | ((data: Data) => string | number)
 
-export interface SelectProps<D extends SelectBaseData = DefaultSelectDefaultDataRecord, FormatData = D> {
+type SelectInferRenderItem<Data> =
+    | (Data extends string | number ? React.ReactNode : keyof Data)
+    | ((item: Data, index?: number) => React.ReactNode)
+
+type KeyGen<T> = T extends string | number ? boolean : keyof T | boolean | ((data: T) => string | number)
+
+export interface SelectProps<D extends SelectBaseData = any, FormatData = D> {
     border?: boolean
     placeholder?: ReactNode
     style?: React.CSSProperties
-    keygen?: ((data: D) => string) | keyof D | boolean
+    keygen?: KeyGen<D>
     portal?: boolean
     clearable?: boolean
-    // columns 大于 1 时，选项展示为多列布局模式
     columns?: number
     data?: D[]
     disabled?: boolean | ((data: D) => boolean)
@@ -27,10 +32,13 @@ export interface SelectProps<D extends SelectBaseData = DefaultSelectDefaultData
     onFocus?(evt: React.FocusEvent<HTMLDivElement>): void
     onChange?: (values: any, value: FormatData, selected: boolean) => void
     position?: 'drop-down' | 'drop-up'
-    renderItem?: keyof D | ((data: D, index?: number) => ReactNode)
+    renderItem?: SelectInferRenderItem<D>
     result?: D[]
     size?: 'large' | 'default' | 'small'
-    text?
+    text?: {
+        selectAll?: string
+        noData?: string
+    }
     compressed?: boolean
     autoAdapt?: boolean
     showArrow?: boolean
@@ -38,12 +46,11 @@ export interface SelectProps<D extends SelectBaseData = DefaultSelectDefaultData
     onCollapse?(focus: boolean): string
     resultClassName?: string
     prediction?: (formatValue: FormatData, value: D) => boolean
-    renderResult?: keyof D | ((data: D) => ReactNode)
+    renderResult?: SelectInferRenderItem<D>
     lineHeight?: number
     value?: any
     defaultValue?: any
     groupBy?: (item: any, index: number, items: any) => string | number
-    cacheAble?: boolean
     spinProps?: Omit<SpinProps, 'children' | 'loading'>
     onScrollRatioChange?: (scrollTopRatio: number, lastScrollTop: number) => void
     customRender?: {
@@ -51,7 +58,7 @@ export interface SelectProps<D extends SelectBaseData = DefaultSelectDefaultData
         footer?: React.ReactNode
     }
     columnWidth?: number
-    format?: keyof D
+    format?: SelectInferFormat<D>
     className?: string
     width?: number
     createOption?: {

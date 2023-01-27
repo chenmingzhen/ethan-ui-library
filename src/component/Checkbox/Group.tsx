@@ -7,7 +7,7 @@ import useListDatum from '@/utils/Datum/useListDatum'
 import { isFunc, isString } from '@/utils/is'
 import Checkbox from './Checkbox'
 import { Provider } from './context'
-import { CheckboxGroupProps, CheckItemGroupBaseData } from './type2'
+import { CheckboxGroupProps, CheckItemGroupBaseData } from './type'
 
 function Group<Data extends CheckItemGroupBaseData, FormatData extends CheckItemGroupBaseData>(
     props: CheckboxGroupProps<Data, FormatData>

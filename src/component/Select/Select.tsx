@@ -1,339 +1,271 @@
-import React from 'react'
+import useRefMethod from '@/hooks/useRefMethod'
 import { selectClass } from '@/styles'
-import { PureComponent } from '@/utils/component'
-import { getUidStr } from '@/utils/uid'
-import { addResizeObserver, getParent, isDescendent } from '@/utils/dom/element'
 import { docSize } from '@/utils/dom/document'
-import { debounce } from '@/utils/func'
-import { isEmpty } from '@/utils/is'
+import { getParent, isDescendent } from '@/utils/dom/element'
+import { isEmpty, isFunc } from '@/utils/is'
 import { KeyboardKey } from '@/utils/keyboard'
-import { styles } from '@/utils/style/styles'
 import { getListPortalStyle } from '@/utils/position'
-import { SelectOptionListBindFuncMap, SelectState, ISelectProps } from './type'
-import Result from './Result'
-import OptionList from './OptionList'
-import { FAST_TRANSITION_DURATION } from '../List'
-import BoxList from './BoxList'
+import { styles } from '@/utils/style/styles'
+import { getUidStr } from '@/utils/uid'
+import React, { useRef, useState } from 'react'
+import useInputStyle from '../Input/hooks/useInputStyle'
 import Portal from '../Portal'
+import BoxList from './BoxList'
+import useFocus from './hooks/useLockFocus'
+import useSelectData from './hooks/useSelectData'
+import useSelectValues from './hooks/useSelectValue'
+import OptionList, { OptionListInstance } from './OptionList'
+import Result from './Result'
+import { SelectBaseData, SelectProps } from './type'
 
-class Select extends PureComponent<ISelectProps, SelectState> {
-    static defaultProps = {
-        clearable: false,
-        data: [],
-        height: 256,
-        lineHeight: 32,
-        loading: false,
-        multiple: false,
-        renderItem(item) {
-            if (typeof item === 'string' || typeof item === 'number') {
-                return item
-            }
-
-            console.error(
-                `RenderItem or RenderResult must return reactNode.But Got ${typeof item}.Maybe you passed a wrong value or didn't pass it`
-            )
-
-            return null
-        },
-        text: {},
-        compressed: false,
-        trim: true,
-        autoAdapt: false,
-        showArrow: true,
-        focusSelected: true,
+function defaultRenderItem(item) {
+    if (typeof item === 'string' || typeof item === 'number') {
+        return item
     }
 
-    element: HTMLDivElement
+    console.error(
+        `RenderItem or RenderResult must return reactNode.But Got ${typeof item}.Maybe you passed a wrong value or didn't pass it`
+    )
 
-    selectId = getUidStr()
+    return null
+}
 
-    selectOptionListFuncMap: SelectOptionListBindFuncMap
+function Select<Data extends SelectBaseData = SelectBaseData, FormatData extends SelectBaseData = SelectBaseData>(
+    props: SelectProps<Data, FormatData>
+) {
+    const [show, updateShow] = useState(false)
+    const [focus, updateFocus, lockFocus, hasLockFocusRef] = useFocus()
+    const [position, updatePosition] = useState<'drop-down' | 'drop-up'>('drop-down')
+    const [control, updateControl] = useState<'mouse' | 'keyboard'>('mouse')
+    const [filterText, updateFilterText] = useState('')
+    const {
+        size,
+        border,
+        width,
+        style,
+        className,
+        multiple = false,
+        onFocus,
+        onBlur,
+        onFilter,
+        onCreate,
+        height = 256,
+        onCollapse,
+        autoAdapt,
+        portal,
+        format,
+        data,
+        groupBy,
+        defaultValue,
+        value,
+        onChange,
+        prediction,
+        placeholder,
+        compressed,
+        showArrow = true,
+        compressedClassName,
+        resultClassName,
+        lineHeight = 32,
+        text = {},
+        loading,
+        keygen,
+        spinProps,
+        onScrollRatioChange,
+        customRender,
+        clearable,
+        columns,
+        columnWidth,
+    } = props
+    const selectId = useRef(getUidStr()).current
+    const isRender = useRef(false)
+    const inputRef = useRef<HTMLInputElement>()
+    const optionListRef = useRef<OptionListInstance>()
+    const containerElementRef = useRef<HTMLDivElement>()
+    const { className: cls, style: ms } = useInputStyle({
+        border,
+        size,
+        disabled: props.disabled === true,
+        width,
+        style,
+        focus,
+        className,
+    })
+    const { selectData, groupKey } = useSelectData({ filterText, data, groupBy, onFilter, onCreate })
+    const { selectValues, add, remove, disabled, check, getDataByValue, set, updateSelectValues } = useSelectValues({
+        multiple,
+        onCreate,
+        onChange,
+        prediction,
+        defaultValue,
+        value,
+        disabled: props.disabled,
+        selectData,
+        format,
+    })
+    const containerCls = selectClass(
+        'inner',
+        size,
+        focus && 'focus',
+        position,
+        multiple && 'multiple',
+        props.disabled === true && 'disabled'
+    )
 
-    isRender = false
+    function handleFocus(e: React.FocusEvent<HTMLDivElement, Element>) {
+        if (hasLockFocusRef.current || props.disabled === true) return
 
-    keepSelectFocus = false
-
-    clickLockTimer: NodeJS.Timeout
-
-    inputInstance: HTMLInputElement
-
-    cancelResizeObserver: () => void
-
-    deleteLockTimer: NodeJS.Timeout
-
-    constructor(props) {
-        super(props)
-
-        this.state = {
-            control: 'mouse',
-            focus: false,
-            position: 'drop-down',
+        if (onFocus) {
+            onFocus(e)
         }
+
+        updateFocus(true)
+
+        lockFocus()
     }
 
-    componentDidMount() {
-        super.componentDidMount()
+    function handleBlur(evt: React.FocusEvent<HTMLDivElement, Element>) {
+        if (hasLockFocusRef.current || props.disabled === true) return
+        /** @see https://developer.mozilla.org/en-US/docs/Web/API/FocusEvent/relatedTarget */
+        if (evt.relatedTarget && getParent(evt.relatedTarget as HTMLElement, `.${selectClass('result')}`)) return
 
-        /** Result高度发生变化时 */
-        this.cancelResizeObserver = addResizeObserver(this.element, this.forceUpdate, { direction: 'y' })
-    }
-
-    componentWillUnmount() {
-        super.componentWillUnmount()
-
-        if (this.cancelResizeObserver) {
-            this.cancelResizeObserver()
-        }
-    }
-
-    /**
-     *  @description
-     *  select的容器使用了onBlur和onFocus，有时候点击select里面的元素，不用失去焦点。
-     *  使用afterActionKeepFocus标记去阻止重新执行focus和blur事件
-     */
-    startKeepSelectFocus = (autoFocus = true) => {
-        /** 标记操作的DOM仍然是属于Select组件，阻止聚焦和失焦 */
-        this.keepSelectFocus = true
-
-        setTimeout(() => {
-            /** 虽然阻止了handleBlur和handleFocus的执行，此时的Select容器已经是失去焦点状态，重新拿回焦点 */
-            if (autoFocus) this.element.focus()
-
-            this.keepSelectFocus = false
-        }, 30)
-    }
-
-    startDeleteLockTimer = () => {
-        if (this.deleteLockTimer) {
-            clearTimeout(this.deleteLockTimer)
-
-            this.deleteLockTimer = null
+        if (onBlur) {
+            onBlur(evt)
         }
 
-        this.deleteLockTimer = setTimeout(() => {
-            this.deleteLockTimer = null
-        }, 500)
+        document.removeEventListener('mousedown', handleClickAway, true)
+        handleShowStateChange(false)
+        updateFocus(false)
     }
 
-    bindClickAway = () => {
-        /**
-         * 事件执行顺序
-         * @see https://stackoverflow.com/questions/39439115/how-to-execute-click-function-before-the-blur-function
-         * 使用mousedown代替click，因为mousedown的执行时先于blur,在Option中为click事件，所以这里使用mousedown提前blur，click执行
-         * 如果点击的还是select的元素且不是Input，提前上锁，然后不能继续执行blur
-         */
+    const handleClickAway = useRefMethod((evt: MouseEvent) => {
+        const desc = isDescendent(evt.target as HTMLElement, selectId)
 
-        /**
-         * @see https://developer.mozilla.org/zh-CN/docs/Web/API/EventTarget/addEventListener
-         * 设置为true,捕获阶段执行,防止下层的DOM阻止冒泡无法执行到这个Handler
-         *  */
-        document.addEventListener('mousedown', this.handleClickAway, true)
-    }
-
-    clearClickAway = () => {
-        document.removeEventListener('mousedown', this.handleClickAway, true)
-    }
-
-    bindOptionListFunc = (funcMap: SelectOptionListBindFuncMap) => {
-        this.selectOptionListFuncMap = funcMap
-    }
-
-    bindElement = (element: HTMLDivElement) => {
-        this.element = element
-    }
-
-    bindInputInstance = (input: HTMLInputElement) => {
-        this.inputInstance = input
-    }
-
-    handleControlChange = (control: SelectState['control']) => {
-        if (control !== this.state.control) this.setState({ control })
-    }
-
-    handleClickAway = (evt: MouseEvent) => {
-        const desc = isDescendent(evt.target as HTMLElement, this.selectId)
-
-        const clickInput = getParent(evt.target as HTMLElement, `.${selectClass('input')}`)
-
-        const clickCustom = getParent(evt.target as HTMLElement, `.${selectClass('custom')}`)
-
-        /** 点击Select内部元素时 */
         if (desc) {
-            /** 多选模式下点击输入框或者点击自定义区域，Select保持Focus状态，但不获取焦点 */
-            if (clickInput || clickCustom) {
-                this.startKeepSelectFocus(false)
-            } else {
-                this.startKeepSelectFocus()
-            }
+            const clickInput = getParent(evt.target as HTMLElement, `.${selectClass('input')}`)
+            const clickCustom = getParent(evt.target as HTMLElement, `.${selectClass('custom')}`)
 
-            return
+            lockFocus(() => {
+                if (!clickInput && !clickCustom) {
+                    containerElementRef.current.focus()
+                }
+            })
         }
+    })
 
-        /** 如果是非绝对定位的情况下，点击元素外的内容会由事件触发handleBlur，但是在绝对定位下，下拉的内容已经不在Select的DOM上，无法冒泡的SelectDOM上，所以手动触发handleBlur */
-        if (document.activeElement !== this.element) {
-            this.handleBlur(undefined)
-        }
-    }
-
-    handleBlur: React.FocusEventHandler<HTMLDivElement> = (evt) => {
-        if (this.keepSelectFocus) return
-
-        /**
-         * FocusEvent.relatedTarget
-         * @see https://developer.mozilla.org/en-US/docs/Web/API/FocusEvent/relatedTarget
-         */
-
-        if (evt && evt.relatedTarget && getParent(evt.relatedTarget as HTMLElement, `.${selectClass('result')}`)) {
-            return
-        }
-
-        this.props.onBlur(evt)
-
-        this.clearClickAway()
-
-        this.handleFocusStateChange(false, evt)
-    }
-
-    handleChange = (dataItem: any, autoFocusElement = true) => {
-        const { datum, multiple, disabled, onInput } = this.props
-
-        if (disabled === true || this.clickLockTimer) return
-
-        /** 以动画持续时间做锁的时间 */
-        this.clickLockTimer = setTimeout(() => {
-            this.clickLockTimer = null
-        }, 240)
+    const handleChange = useRefMethod((dataItem) => {
+        if (props.disabled === true) return
 
         if (multiple) {
-            const checked = !datum.check(dataItem)
+            const checked = !check(dataItem)
 
             if (checked) {
-                datum.add({ data: dataItem })
+                add(dataItem)
 
-                /** 多选创建模式选中后，需要清除值,并让Input获取焦点，但不执行handleBlur */
-                if (onInput) {
-                    onInput('')
-
-                    autoFocusElement = false
+                if (handleInput) {
+                    handleInput('')
+                    lockFocus()
+                    inputRef.current.focus()
                 }
             } else {
-                datum.remove({ data: dataItem })
+                remove(dataItem)
             }
         } else {
-            datum.set(dataItem)
+            set(dataItem)
 
-            this.handleFocusStateChange(false)
+            handleShowStateChange(false)
         }
+    })
 
-        if (!autoFocusElement && this.inputInstance) {
-            this.inputInstance.focus()
+    const handleItemRemove = useRefMethod((dataItem) => {
+        handleChange(dataItem)
+    })
+
+    const handleClear = useRefMethod((evt: React.MouseEvent) => {
+        evt.stopPropagation()
+
+        set([])
+
+        if (show) {
+            handleShowStateChange(false)
         }
+    })
 
-        this.startKeepSelectFocus(autoFocusElement)
-    }
+    function handleShowStateChange(nextShow: boolean) {
+        if (props.disabled === true || show === nextShow) return
 
-    handleFocusStateChange = (focus: boolean, e?) => {
-        const { disabled, height, onCollapse, position } = this.props
-
-        if (disabled === true) return
-
-        if (this.state.focus === focus) return
-
-        if (focus && e && e.target.classList.contains(selectClass('close'))) return
-
-        let newPosition = position || 'drop-down'
+        let nextPosition = position || 'drop-down'
 
         const windowHeight = docSize.height
+        const bottom = height + containerElementRef.current.getBoundingClientRect().bottom
 
-        const bottom = height + this.element.getBoundingClientRect().bottom
-
-        if (bottom > windowHeight && !newPosition) newPosition = 'drop-up'
-
-        if (onCollapse) onCollapse(focus)
-
-        /** 当下拉框被隐藏时，不需要清除ClickAway事件，因为此时的Select的element还处于focus,当Select失去焦点时才清除ClickAway事件 */
-        if (focus) {
-            this.bindClickAway()
+        if (bottom > windowHeight && !nextPosition) nextPosition = 'drop-up'
+        if (onCollapse) onCollapse(nextShow)
+        if (nextShow) {
+            /** @see https://developer.mozilla.org/zh-CN/docs/Web/API/EventTarget/addEventListener */
+            document.addEventListener('mousedown', handleClickAway, true)
         }
 
-        this.setState({ focus, position: newPosition })
+        updateShow(nextShow)
+        updatePosition(nextPosition)
     }
 
-    handleFocus: React.FocusEventHandler<HTMLDivElement> = (evt) => {
-        if (this.keepSelectFocus) return
+    const handleInput = onFilter || onCreate ? updateFilterText : undefined
 
-        this.props.onFocus(evt)
-    }
+    const handleTransitionEnd = useRefMethod(() => {
+        if (!handleInput) return
 
-    handleListTransitionEnd = debounce(() => {
-        const { onInput } = this.props
+        updateFilterText('')
+    })
 
-        const { focus } = this.state
+    function handleContainerMouseDown(evt: React.MouseEvent) {
+        const isClickOption =
+            !getParent(evt.target as HTMLElement, `.${selectClass('result')}`) &&
+            evt.target !== containerElementRef.current
 
-        if (focus || !onInput) return
-
-        onInput('')
-    }, FAST_TRANSITION_DURATION)
-
-    /** 如果是可输入的情况, 打开下拉时，焦点已经在Input上了 */
-    handleClick = (evt: React.MouseEvent<HTMLDivElement, MouseEvent> | React.KeyboardEvent<HTMLDivElement>) => {
-        if (!getParent(evt.target as HTMLElement, `.${selectClass('result')}`) && evt.target !== this.element) {
+        if (isClickOption) {
             return
         }
 
-        const { onInput } = this.props
+        const plain = !handleInput
 
-        const { focus } = this.state
-
-        const plain = !onInput
-
-        if (plain && focus) {
-            this.handleFocusStateChange(false, evt)
+        if (plain && show) {
+            handleShowStateChange(false)
         } else {
-            this.handleFocusStateChange(true, evt)
+            handleShowStateChange(true)
         }
     }
 
-    handleEnter = () => {
-        const { data, groupKey } = this.props
+    function handleEnter() {
+        if (!optionListRef.current) return
 
-        const hoverIndex = this.selectOptionListFuncMap.getHoverIndex?.()
+        const hoverIndex = optionListRef.current.getHoverIndex()
 
         const hoverData = data[hoverIndex]
 
         if (!isEmpty(hoverData) && !hoverData[groupKey]) {
-            this.handleChange(hoverData)
+            handleChange(hoverData)
 
-            this.selectOptionListFuncMap.handleHover?.(hoverIndex)
+            optionListRef.current.handleHover?.(hoverIndex)
         }
     }
 
-    handleDelete = (evt: React.KeyboardEvent<HTMLDivElement>) => {
-        const { multiple, filterText, datum, data } = this.props
-
-        if (!multiple || this.deleteLockTimer) return
-
-        if (filterText.length === 1) {
-            this.startDeleteLockTimer()
-        }
+    function handleDelete(evt: React.KeyboardEvent<HTMLDivElement>) {
+        if (!multiple) return
 
         if (!isEmpty(filterText)) return
 
-        const { values } = datum
+        if (!selectValues.length) return
 
-        if (!values.length) return
-
-        const afterValues = [...values]
+        const afterValues = [...selectValues]
 
         const deleteValue = afterValues.pop()
 
-        const { data: dataItem } = datum.getDataByValue(data, deleteValue) || {}
+        const dataItem = getDataByValue(data, deleteValue) || {}
 
         if (dataItem) {
-            this.handleRemove(dataItem)
+            handleItemRemove(dataItem)
         } else {
-            /* onCreate生成的result */
-            datum.removeNotOriginData(afterValues, deleteValue)
+            updateSelectValues(afterValues, deleteValue, false)
         }
 
         evt.stopPropagation()
@@ -341,52 +273,45 @@ class Select extends PureComponent<ISelectProps, SelectState> {
         evt.preventDefault()
     }
 
-    handleKeyDown: React.KeyboardEventHandler<HTMLDivElement> = (evt) => {
-        const { focus } = this.state
-
-        if (evt.keyCode === 13 && !focus) {
+    function handleKeydown(evt: React.KeyboardEvent<HTMLDivElement>) {
+        if (evt.key === KeyboardKey.Enter && !show) {
             evt.preventDefault()
 
-            this.handleClick(evt)
+            handleShowStateChange(true)
 
             return
         }
 
-        if (evt.key === KeyboardKey.Tab) {
-            if (this.element) {
-                /** 如果是输入模式下点击Tab，下面的语句是不会执行，由Input冒泡到handleBlur */
-                this.element.blur()
-            }
-
-            if (focus) this.handleFocusStateChange(false, evt)
+        if (evt.key === KeyboardKey.Tab && show) {
+            handleShowStateChange(false)
 
             return
         }
 
         if (!focus) return
 
-        this.handleControlChange('keyboard')
+        updateControl('keyboard')
 
         switch (evt.key) {
             case KeyboardKey.ArrowUp:
                 evt.preventDefault()
 
-                if (this.selectOptionListFuncMap) {
-                    this.selectOptionListFuncMap.hoverMove(-1)
+                if (optionListRef.current) {
+                    optionListRef.current.hoverMove(-1)
                 }
 
                 break
             case KeyboardKey.ArrowDown:
                 evt.preventDefault()
 
-                if (this.selectOptionListFuncMap) {
-                    this.selectOptionListFuncMap.hoverMove(1)
+                if (optionListRef.current) {
+                    optionListRef.current.hoverMove(1)
                 }
 
                 break
             case KeyboardKey.Enter:
-                if (this.selectOptionListFuncMap) {
-                    this.handleEnter()
+                if (optionListRef.current) {
+                    handleEnter()
                 }
 
                 evt.stopPropagation()
@@ -396,7 +321,7 @@ class Select extends PureComponent<ISelectProps, SelectState> {
                 break
 
             case KeyboardKey.Backspace:
-                this.handleDelete(evt)
+                handleDelete(evt)
 
                 break
             default:
@@ -404,149 +329,110 @@ class Select extends PureComponent<ISelectProps, SelectState> {
         }
     }
 
-    handleClear = () => {
-        const { datum } = this.props
-
-        const { focus } = this.state
-
-        datum.set([])
-
-        /** 此处按常理 自己将元素focus即可，
-         * 但是前面的动作执行的blur的操作，同时执行focus只会生效第一个blur，
-         * 所以也加入到延时任务中 */
-
-        // document mousedown中已添加startKeepFocus，但是还没打开下拉，是不会触发keepFocus，所以处理下面逻辑处理还没打开就点击清除的情况
-        this.startKeepSelectFocus()
-
-        if (focus) {
-            this.handleFocusStateChange(false)
+    const renderItem = useRefMethod((item, index?: number) => {
+        if (isEmpty(props.renderItem)) {
+            return defaultRenderItem(item)
         }
-    }
 
-    handleRemove = (dataItem) => {
-        this.handleChange(dataItem, false)
-    }
+        return isFunc(props.renderItem) ? props.renderItem(item, index) : item[props.renderItem]
+    })
 
-    renderItem = (data: any, index?: number) => {
-        const { renderItem } = this.props
+    function renderList() {
+        if (!show && !isRender.current) return null
 
-        return typeof renderItem === 'function' ? renderItem(data, index) : data[renderItem]
-    }
+        isRender.current = true
 
-    renderList = () => {
-        const { focus, position } = this.state
-        const { autoAdapt, portal } = this.props
+        const rect = containerElementRef.current?.getBoundingClientRect()
 
-        if (!focus && !this.isRender) return null
-
-        this.isRender = true
-
-        const props: any = {}
-        ;[
-            'data',
-            'datum',
-            'keygen',
-            'multiple',
-            'columns',
-            'columnWidth',
-            'columnsTitle',
-            'text',
-            'itemsInView',
-            'portal',
-            'lineHeight',
-            'height',
-            'loading',
-            'onInput',
-            'filterText',
-            'zIndex',
-            'groupKey',
-            'spinProps',
-            'size',
-            'filterText',
-            'onScrollRatioChange',
-            'customRender',
-        ].forEach((k) => {
-            props[k] = this.props[k]
-        })
-
-        const List = props.columns >= 1 || props.columns === -1 ? BoxList : OptionList
-
-        const rect = this.element?.getBoundingClientRect()
-
-        const ms = styles(portal && getListPortalStyle(rect, position, autoAdapt ? 'min' : true))
+        const listStyle = styles(portal && getListPortalStyle(rect, position, autoAdapt ? 'min' : true))
 
         return (
             <Portal rootClass={selectClass(position)} portal={portal}>
-                <List
-                    {...props}
-                    show={focus}
-                    style={ms}
-                    selectId={this.selectId}
-                    className={selectClass(autoAdapt && 'auto-adapt')}
-                    bindOptionListFunc={this.bindOptionListFunc}
-                    onChange={this.handleChange}
-                    renderItem={this.renderItem}
-                    control={this.state.control}
-                    onControlChange={this.handleControlChange}
-                    onTransitionEnd={this.handleListTransitionEnd}
-                />
+                {columns >= 1 || columns === -1 ? (
+                    <BoxList
+                        style={listStyle}
+                        show={show}
+                        selectId={selectId}
+                        renderItem={renderItem}
+                        height={height}
+                        lineHeight={lineHeight}
+                        text={text}
+                        loading={loading}
+                        keygen={keygen}
+                        spinProps={spinProps}
+                        customRender={customRender}
+                        onChange={handleChange}
+                        set={set}
+                        disabled={disabled}
+                        getDataByValue={getDataByValue}
+                        check={check}
+                        groupKey={groupKey}
+                        data={selectData}
+                        values={selectValues}
+                        columns={columns}
+                        columnWidth={columnWidth}
+                        multiple={multiple}
+                    />
+                ) : (
+                    <OptionList
+                        values={selectValues}
+                        data={selectData}
+                        show={show}
+                        style={listStyle}
+                        selectId={selectId}
+                        className={selectClass(autoAdapt && 'auto-adapt')}
+                        renderItem={renderItem}
+                        onControlChange={updateControl}
+                        control={control}
+                        height={height}
+                        lineHeight={lineHeight}
+                        text={text}
+                        loading={loading}
+                        keygen={keygen}
+                        position={position}
+                        spinProps={spinProps}
+                        size={size}
+                        onScrollRatioChange={onScrollRatioChange}
+                        filterText={filterText}
+                        customRender={customRender}
+                        onChange={handleChange}
+                        set={set}
+                        disabled={disabled}
+                        getDataByValue={getDataByValue}
+                        check={check}
+                        groupKey={groupKey}
+                        onTransitionEnd={handleTransitionEnd}
+                        ref={optionListRef}
+                    />
+                )}
             </Portal>
         )
     }
 
-    render() {
-        const { position, focus } = this.state
+    const renderResult = props.renderResult || renderItem
 
-        const {
-            placeholder,
-            multiple,
-            clearable,
-            disabled,
-            size,
-            datum,
-            filterText,
-            onCreate,
-            result,
-            compressed,
-            showArrow,
-            compressedClassName,
-            resultClassName,
-            onInput,
-        } = this.props
-
-        const className = selectClass(
-            'inner',
-            size,
-            focus && 'focus',
-            position,
-            multiple && 'multiple',
-            disabled === true && 'disabled'
-        )
-
-        const renderResult = this.props.renderResult || this.renderItem
-
-        return (
+    return (
+        <div className={cls} style={ms}>
             <div
-                tabIndex={disabled === true ? -1 : 0}
-                ref={this.bindElement}
-                className={className}
-                data-id={this.selectId}
-                onFocus={this.handleFocus}
-                onClick={this.handleClick}
-                onBlur={this.handleBlur}
-                onKeyDown={this.handleKeyDown}
+                tabIndex={props.disabled === true ? -1 : 0}
+                ref={containerElementRef}
+                className={containerCls}
+                onFocus={handleFocus}
+                onMouseDown={handleContainerMouseDown}
+                onBlur={handleBlur}
+                data-id={selectId}
+                onKeyDown={handleKeydown}
             >
                 <Result
                     size={size}
                     filterText={filterText}
-                    onClear={clearable ? this.handleClear : undefined}
-                    onCreate={onCreate}
-                    onInput={onInput}
-                    onRemove={this.handleRemove}
-                    datum={datum}
-                    disabled={disabled}
-                    focus={this.state.focus}
-                    result={result}
+                    onClear={clearable ? handleClear : undefined}
+                    onInput={handleInput}
+                    onRemove={handleItemRemove}
+                    isDisabled={props.disabled === true}
+                    disabledFunc={disabled}
+                    show={show}
+                    result={selectValues}
                     multiple={multiple}
                     placeholder={placeholder}
                     renderResult={renderResult}
@@ -554,13 +440,13 @@ class Select extends PureComponent<ISelectProps, SelectState> {
                     showArrow={showArrow}
                     compressedClassName={compressedClassName}
                     resultClassName={resultClassName}
-                    onBindInputInstance={this.bindInputInstance}
+                    forwardedInputRef={inputRef}
                 />
 
-                {this.renderList()}
+                {renderList()}
             </div>
-        )
-    }
+        </div>
+    )
 }
 
-export default Select
+export default React.memo(Select) as typeof Select

@@ -4,7 +4,6 @@ import { useMemo, useRef } from 'react'
 
 interface UseSelectValueProps {
     multiple: boolean
-    cacheAble: boolean
     onChange?
     onCreate
     prediction
@@ -16,7 +15,7 @@ interface UseSelectValueProps {
 }
 
 function useSelectValues(props: UseSelectValueProps) {
-    const { multiple, onChange, defaultValue, value, cacheAble, onCreate, selectData, format } = props
+    const { multiple, onChange, defaultValue, value, onCreate, selectData, format } = props
     const { add, set, remove, prediction, values, disabled, check, getDataByValue, updateValues } = useListDatum({
         limit: multiple ? 0 : 1,
         prediction: props.prediction,
@@ -37,7 +36,7 @@ function useSelectValues(props: UseSelectValueProps) {
     const selectValues = useMemo(
         () =>
             values.reduce((accumulation, currentValue) => {
-                let result = cacheAble ? selectValueCacheMap.get(currentValue) : undefined
+                let result = selectValueCacheMap.get(currentValue)
 
                 if (result === undefined) {
                     for (const item of selectData) {
@@ -56,7 +55,7 @@ function useSelectValues(props: UseSelectValueProps) {
                         }
                     }
 
-                    if (result !== undefined && cacheAble) {
+                    if (result !== undefined) {
                         selectValueCacheMap.set(currentValue, result)
                     }
                 }

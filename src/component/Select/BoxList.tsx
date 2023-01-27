@@ -1,62 +1,118 @@
+import useRefMethod from '@/hooks/useRefMethod'
 import { getLocale } from '@/locale'
 import { selectClass } from '@/styles'
-import { PureComponent } from '@/utils/component'
 import { isEmpty } from '@/utils/is'
+import { styles } from '@/utils/style/styles'
 import { getKey } from '@/utils/uid'
-import React from 'react'
+import React, { useMemo } from 'react'
 import Checkbox from '../Checkbox'
-import { Checked } from '../Checkbox/type'
-import AnimationList from '../List'
 import LazyList from '../LazyList'
+import AnimationList from '../List'
 import Spin from '../Spin'
 import BoxListTitle from './BoxListTitle'
 import BoxOption from './BoxOption'
-import FormatBoxListDataHandler from './Hoc/FormatBoxListDataHandler'
-import { SelectListProps } from './type'
+import { BoxListProps } from './type'
 
-class BoxList extends PureComponent<SelectListProps> {
-    static defaultProps = {
-        columnWidth: 160,
-    }
+const BoxList: React.FC<BoxListProps> = function (props) {
+    const {
+        columnWidth = 160,
+        style,
+        show,
+        selectId,
+        customRender = {},
+        loading,
+        columns,
+        data,
+        multiple,
+        text,
+        onChange,
+        renderItem,
+        keygen,
+        groupKey,
+        height,
+        lineHeight,
+        values,
+        check,
+        set,
+        disabled,
+        getDataByValue,
+    } = props
+    const { footer, header } = customRender
+    const width = columns === -1 ? columnWidth : columnWidth * columns
+    const ms = styles({}, style, { width })
 
-    get width() {
-        const { columnWidth, columns } = this.props
+    /**
+     * 根据列数再次分割数据
+     * columns:3 => [[1,2,3],[4,5,6]]
+     */
+    const sliceData = useMemo(
+        () =>
+            data.reduce((accumulatedValue, currentValue) => {
+                let lastItem = accumulatedValue[accumulatedValue.length - 1]
 
-        if (columns === -1) return columnWidth
+                const groupTitle = currentValue[groupKey]
 
-        return columnWidth * columns
-    }
+                if (!isEmpty(groupTitle)) {
+                    accumulatedValue.push([currentValue])
 
-    getText = (key) => this.props.text[key] || getLocale(key)
+                    accumulatedValue.push([])
 
-    handleSelectAll = (checked: boolean) => {
-        const { datum, data } = this.props
+                    return accumulatedValue
+                }
 
-        if (checked) {
-            datum.set(data)
-        } else {
-            datum.clear()
+                if (!lastItem) {
+                    lastItem = []
+
+                    accumulatedValue.push(lastItem)
+                }
+
+                if (lastItem.length >= columns) {
+                    accumulatedValue.push([currentValue])
+                } else {
+                    lastItem.push(currentValue)
+                }
+
+                return accumulatedValue
+            }, []),
+        [data]
+    )
+
+    const defaultIndex = useMemo(() => {
+        if (!values.length) return undefined
+
+        for (let i = 0; i < sliceData.length; i++) {
+            sliceData[i]
+
+            const item = getDataByValue(sliceData[i], values[0])
+
+            if (item) {
+                return i
+            }
         }
-    }
 
-    handleRenderItem = (data: any[], groupIndex) => {
-        const { datum, keygen, columns, multiple, onChange, renderItem, lineHeight, groupKey } = this.props
+        return undefined
+    }, [])
 
-        const groupTitle = data[0] && data[0][groupKey] ? data[0][groupKey] : undefined
+    const handleSelectAll = useRefMethod((checked: boolean) => {
+        set(checked ? data : [])
+    })
+
+    const handleLazyListRenderItem = useRefMethod((itemList: any[], groupIndex: number) => {
+        const groupTitle = itemList[0] && itemList[0][groupKey] ? itemList[0][groupKey] : undefined
 
         if (!isEmpty(groupTitle)) {
             return <BoxListTitle title={groupTitle} key={groupTitle} style={{ height: lineHeight }} />
         }
 
-        const lineKey = `__${data.map((d, i) => getKey(d, keygen, i)).join()}__`
+        const lineKey = itemList.map((d, i) => getKey(d, keygen, i)).join()
 
         return (
             <div key={lineKey} style={{ height: lineHeight }}>
-                {data.map((d, i) => (
+                {itemList.map((d, i) => (
                     <BoxOption
                         key={getKey(d, keygen, groupIndex + i)}
-                        isActive={datum.check(d)}
-                        disabled={datum.disabled(d)}
+                        isActive={check(d)}
+                        disabled={disabled(d)}
                         data={d}
                         columns={columns}
                         multiple={multiple}
@@ -67,28 +123,32 @@ class BoxList extends PureComponent<SelectListProps> {
                 ))}
             </div>
         )
+    })
+
+    function getText(key: string) {
+        return text[key] || getLocale(key)
     }
 
-    renderHeader = () => {
-        const { customRender = {}, data, loading, multiple, datum } = this.props
-
-        const { header } = customRender
-
+    function renderHeader() {
         if (loading || !multiple) return header ? <div className={selectClass('custom')}>{header}</div> : null
 
-        let checked: Checked = 'indeterminate'
+        let checked = false
+        let indeterminate = false
 
-        const checkedCount = data.filter((d) => datum.check(d)).length
+        const checkedCount = data.filter((d) => check(d)).length
 
-        if (checkedCount === 0) checked = false
-        else if (checkedCount === data.length) checked = true
+        if (checkedCount === data.length) {
+            checked = true
+        } else if (checkedCount !== 0) {
+            indeterminate = true
+        }
 
         return (
             <div className={selectClass('custom')}>
                 <div className={selectClass('header')}>
                     {multiple && (
-                        <Checkbox onChange={this.handleSelectAll} checked={checked}>
-                            {this.getText('selectAll')}
+                        <Checkbox onChange={handleSelectAll} checked={checked} indeterminate={indeterminate}>
+                            {getText('selectAll')}
                         </Checkbox>
                     )}
                 </div>
@@ -98,9 +158,19 @@ class BoxList extends PureComponent<SelectListProps> {
         )
     }
 
-    renderStack = () => {
-        const { columns, datum, multiple, onChange, renderItem, data, keygen, groupKey } = this.props
+    function renderLazyList() {
+        return (
+            <LazyList
+                defaultIndex={defaultIndex}
+                lineHeight={lineHeight}
+                data={sliceData}
+                height={height}
+                renderItem={handleLazyListRenderItem}
+            />
+        )
+    }
 
+    function renderStack() {
         return data.map((d, i) => {
             const groupTitle = d[groupKey]
 
@@ -108,13 +178,13 @@ class BoxList extends PureComponent<SelectListProps> {
                 return <BoxListTitle title={groupTitle} key={groupTitle} />
             }
 
-            const isActive = datum.check(d)
+            const isActive = check(d)
 
             return (
                 <BoxOption
                     key={getKey(d, keygen, i)}
                     isActive={isActive}
-                    disabled={datum.disabled(d)}
+                    disabled={disabled(d)}
                     data={d}
                     columns={columns}
                     multiple={multiple}
@@ -126,27 +196,7 @@ class BoxList extends PureComponent<SelectListProps> {
         })
     }
 
-    renderLazyList = () => {
-        const { columns, height, lineHeight, data, datum, groupKey } = this.props
-
-        return (
-            <FormatBoxListDataHandler data={data} datum={datum} columns={columns} groupKey={groupKey}>
-                {({ defaultIndex, sliceData }) => (
-                    <LazyList
-                        defaultIndex={defaultIndex}
-                        lineHeight={lineHeight}
-                        data={sliceData}
-                        height={height}
-                        renderItem={this.handleRenderItem}
-                    />
-                )}
-            </FormatBoxListDataHandler>
-        )
-    }
-
-    renderOptions = () => {
-        const { columns, data, loading } = this.props
-
+    function renderOptions() {
         const stack = columns === -1
 
         const empty = data.length === 0
@@ -157,42 +207,34 @@ class BoxList extends PureComponent<SelectListProps> {
             <div className={selectClass('box-options', stack && 'scrollable')}>
                 {empty && (
                     <div key="empty" className={selectClass('no-data')}>
-                        {this.getText('noData')}
+                        {getText('noData')}
                     </div>
                 )}
-                {stack ? this.renderStack() : this.renderLazyList()}
+                {stack ? renderStack() : renderLazyList()}
             </div>
         )
     }
 
-    render() {
-        const { style, show: focus, selectId, customRender = {}, loading } = this.props
+    return (
+        <AnimationList
+            lazyDom
+            style={ms}
+            show={show}
+            duration="fast"
+            data-id={selectId}
+            className={selectClass('box-list')}
+            animationTypes={['scale-y', 'fade']}
+            display="flex"
+        >
+            {renderHeader()}
 
-        const { footer } = customRender
+            {loading && typeof loading === 'boolean' ? <Spin size={30} /> : loading}
 
-        const ms = Object.assign({}, style, { width: this.width })
+            {renderOptions()}
 
-        return (
-            <AnimationList
-                lazyDom
-                style={ms}
-                show={focus}
-                duration="fast"
-                data-id={selectId}
-                className={selectClass('box-list')}
-                animationTypes={['scale-y', 'fade']}
-                display="flex"
-            >
-                {this.renderHeader()}
-
-                {loading && typeof loading === 'boolean' ? <Spin size={30} /> : loading}
-
-                {this.renderOptions()}
-
-                {footer ? <div className={selectClass('custom')}>{footer}</div> : null}
-            </AnimationList>
-        )
-    }
+            {footer ? <div className={selectClass('custom')}>{footer}</div> : null}
+        </AnimationList>
+    )
 }
 
-export default BoxList
+export default React.memo(BoxList)
