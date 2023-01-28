@@ -95,13 +95,14 @@ const Result: React.FC<SelectResultProps> = function (props) {
     function renderMore(resultList: any[]) {
         const className = classnames(selectClass('popover'), compressedClassName)
 
-        /** 阻止click冒泡到父容器中 */
-        /** 阻止触发Focus和Blur事件 */
         return (
             <Popover
                 key="more"
                 innerProps={{
-                    onMouseDown: preventDefault,
+                    onMouseDown(e) {
+                        preventDefault(e)
+                        stopPropagation(e)
+                    },
                     onClick: stopPropagation,
                 }}
                 className={className}
@@ -126,7 +127,10 @@ const Result: React.FC<SelectResultProps> = function (props) {
                     tabIndex={-1}
                     className={selectClass('item', 'item-compressed', 'item-more')}
                     onClick={stopPropagation}
-                    onMouseDown={preventDefault}
+                    onMouseDown={(e) => {
+                        preventDefault(e)
+                        stopPropagation(e)
+                    }}
                 >
                     <span>{`+${resultList.length}`}</span>
                 </a>
@@ -187,7 +191,14 @@ const Result: React.FC<SelectResultProps> = function (props) {
         const showCaret = !multiple
 
         return (
-            <a tabIndex={-1} className={selectClass('indicator', multiple ? 'multi' : 'caret')}>
+            <a
+                tabIndex={-1}
+                className={selectClass('indicator', multiple ? 'multi' : 'caret')}
+                onMouseDown={(e) => {
+                    preventDefault(e)
+                    stopPropagation(e)
+                }}
+            >
                 {showCaret && <Caret />}
             </a>
         )
@@ -196,7 +207,14 @@ const Result: React.FC<SelectResultProps> = function (props) {
     function renderClear() {
         if (onClear && result.length > 0 && isDisabled !== true) {
             return (
-                <div onClick={onClear} className={selectClass('close-wrapper')} onMouseDown={preventDefault}>
+                <div
+                    onClick={onClear}
+                    className={selectClass('close-wrapper')}
+                    onMouseDown={(e) => {
+                        preventDefault(e)
+                        stopPropagation(e)
+                    }}
+                >
                     <span data-role="close" className={selectClass('indicator', 'close')} />
                 </div>
             )
