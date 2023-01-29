@@ -1,8 +1,7 @@
 import React from 'react'
-import Tag, { TagProps } from './Tag'
-import Input, { TagInputProps } from './Input'
-
-export { TagProps, TagInputProps }
+import Tag from './Tag'
+import Input from './Input'
+import { TagProps } from './type'
 
 export interface TagComponent extends React.MemoExoticComponent<React.FC<TagProps>> {
     Input: typeof Input

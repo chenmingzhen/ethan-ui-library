@@ -38,6 +38,7 @@ export default class extends Component {
 
     render() {
         const { tags, inputVisible } = this.state
+
         return (
             <div>
                 {tags.map((a) => (

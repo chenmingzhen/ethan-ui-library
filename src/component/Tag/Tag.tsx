@@ -1,64 +1,36 @@
 import { tagClass } from '@/styles'
 import { isDark } from '@/utils/color'
 import { wrapSpan } from '@/utils/dom/element'
-import { isPromise } from '@/utils/is'
+import { isPromise, isString } from '@/utils/is'
 import React, { useState } from 'react'
+import { styles } from '@/utils/style/styles'
+import useRefMethod from '@/hooks/useRefMethod'
 import Input from './Input'
 import icons from '../icons'
 import Spin from '../Spin'
 import useDismiss, { Dismiss } from './hooks/useDismiss'
-
-export interface TagProps {
-    type?:
-        | 'primary'
-        | 'default'
-        | 'secondary'
-        | 'success'
-        | 'info'
-        | 'warning'
-        | 'error'
-        | 'danger'
-        | 'link'
-        | 'loading'
-
-    children?: React.ReactNode
-
-    onClick?(e: React.MouseEvent): void
-
-    /** 当 onClose 为空时，不显示关闭。如果需要关闭又不需要处理回调，设置为true即可 */
-    onClose?: boolean | ((e: React.MouseEvent) => void)
-
-    backgroundColor?: string
-    /** Tag编辑完成时触发该事件（children 必须为 string） */
-    onCompleted?(value: string): void
-
-    disabled?: boolean
-
-    className?: string
-
-    style?: React.CSSProperties
-}
+import { TagProps } from './type'
 
 const Tag: React.FC<TagProps> = (props) => {
     const { className, style, backgroundColor, onClose, disabled, onClick, children, type, onCompleted } = props
-
-    const [inputVisible, setInputVisible] = useState(false)
-
-    const [value, setValue] = useState<string>('')
-
+    const [inputVisible, updateInputVisible] = useState(false)
+    const [value, setValue] = useState<string>(isString(children) ? children : '')
     const { dismiss, dispatchCallback, dispatchClosing } = useDismiss()
+
+    const handleInputBlur = useRefMethod((nextValue: string) => {
+        if (onCompleted) onCompleted(nextValue)
+
+        updateInputVisible(false)
+    })
 
     function handleClick(e: React.MouseEvent) {
         if (disabled) return
-
-        if (onCompleted) setInputVisible(!inputVisible)
-
-        onClick?.(e)
+        if (onCompleted) updateInputVisible(!inputVisible)
+        if (onClick) onClick(e)
     }
 
     function handleDismiss(e) {
         let callback
-        // 如果传入值是布尔 非函数
 
         if (onClose === true) {
             dispatchClosing()
@@ -80,7 +52,7 @@ const Tag: React.FC<TagProps> = (props) => {
             return
         }
 
-        // https://developer.mozilla.org/zh-CN/docs/Web/API/Event/defaultPrevented
+        /** @see https://developer.mozilla.org/zh-CN/docs/Web/API/Event/defaultPrevented */
         if (e.defaultPrevented) {
             return
         }
@@ -118,14 +90,8 @@ const Tag: React.FC<TagProps> = (props) => {
 
     if (dismiss === Dismiss.CLOSED) return null
 
-    function onInputBlur(newValue) {
-        onCompleted?.(newValue)
-
-        setInputVisible(false)
-    }
-
     if (inputVisible) {
-        return <Input value={value} onBlur={onInputBlur} onChange={setValue} />
+        return <Input value={value} onBlur={handleInputBlur} onChange={setValue} />
     }
 
     const wrapChildren = wrapSpan(children)
@@ -138,14 +104,12 @@ const Tag: React.FC<TagProps> = (props) => {
         dismiss === Dismiss.CLOSING && 'closing'
     )
 
-    const tagStyle = backgroundColor
-        ? {
-              color: isDark(backgroundColor) ? '#fff' : '#000',
-              backgroundColor,
-              borderColor: 'transparent',
-              ...style,
-          }
-        : undefined
+    const tagStyle = styles(
+        backgroundColor
+            ? { color: isDark(backgroundColor) ? '#fff' : '#000', backgroundColor, borderColor: 'transparent' }
+            : undefined,
+        style
+    )
 
     return (
         <div className={tagClassName} style={tagStyle} onClick={handleClick}>
@@ -154,10 +118,6 @@ const Tag: React.FC<TagProps> = (props) => {
             {renderClose()}
         </div>
     )
-}
-
-Tag.defaultProps = {
-    style: {},
 }
 
 Tag.displayName = 'EthanTag'

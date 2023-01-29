@@ -451,3 +451,15 @@ export function fade(color, alpha = 1) {
 
     return hslArray2HslFormat([h, s, l, alpha])
 }
+
+export function isDark(color: string) {
+    if (isEmpty(color)) return false
+
+    const parseColorResult = parseColor(color)
+
+    if (!parseColorResult) return false
+
+    const [r, g, b] = parseColorResult
+
+    return r * 0.299 + g * 0.578 + b * 0.114 < 192
+}
