@@ -10,16 +10,7 @@ import { Upload, Button, FontAwesome } from 'ethan-ui'
 import { action } from 'doc/config'
 
 export default () => (
-    <Upload
-        action={action}
-        accept="image/*"
-        name="file"
-        onChange={(v) => {
-            console.log(v)
-        }}
-        limit={3}
-        style={{ width: 300 }}
-    >
+    <Upload action={action} accept="image/*" name="file" onChange={console.log} limit={3} style={{ width: 300 }}>
         <Button>
             <FontAwesome name="cloud-upload " style={{ marginRight: 4 }} />
             Upload file

@@ -1,37 +1,24 @@
-import React, { isValidElement } from 'react'
-import classnames from 'classnames'
-import { PureComponent } from '@/utils/component'
 import { uploadClass } from '@/styles'
+import { KeyboardKey } from '@/utils/keyboard'
+import classnames from 'classnames'
+import React, { isValidElement, useState } from 'react'
 import Spin from '../Spin'
+import { EthanFile, UploadProgressProps } from './type'
 import Upload from './Upload'
-import { EthanFile, UploadProgressProps, UploadProgressState } from './type'
 import { UPLOADING } from './utils/request'
 
-/** 上传按钮 */
-class Progress extends PureComponent<UploadProgressProps, UploadProgressState> {
-    static defaultProps = {
-        type: 'primary',
-    }
+const Progress: React.FC<UploadProgressProps> = function (props) {
+    const { type = 'primary', placeholder, onChange, loading, ...others } = props
+    const [progress, updateProgress] = useState(-1)
 
-    static displayName = 'EthanButtonUpload'
+    const uploading = progress >= 0
 
-    constructor(props) {
-        super(props)
+    const wrapperClassName = classnames(
+        uploadClass('bprogress', others.disabled && 'disabled'),
+        uploading ? uploadClass('uploading', `border-${type}`) : uploadClass(`bprogress-${type}`)
+    )
 
-        this.state = {
-            progress: -1,
-        }
-    }
-
-    handleUpload = (e) => {
-        const uploading = this.state.progress >= 0
-
-        if (uploading) e.stopPropagation()
-    }
-
-    handleUploadChange = (fileList: EthanFile[], file: EthanFile) => {
-        const { onChange } = this.props
-
+    function handleUploadChange(fileList: EthanFile[], file: EthanFile) {
         if (onChange) {
             onChange(fileList, file)
         }
@@ -39,21 +26,23 @@ class Progress extends PureComponent<UploadProgressProps, UploadProgressState> {
         const { status, process } = file
 
         if (status !== UPLOADING) {
-            this.setState({ progress: -1 })
+            updateProgress(-1)
 
             return
         }
 
-        this.setState({ progress: process })
+        updateProgress(process)
     }
 
-    handleKeyDown(e) {
-        if (e.keyCode === 13) e.target.click()
+    function handleUpload(e) {
+        if (uploading) e.stopPropagation()
     }
 
-    renderLoadingView = (color?: string) => {
-        const { placeholder, loading } = this.props
+    function handleKeyDown(e: React.KeyboardEvent) {
+        if (e.key === KeyboardKey.Enter) (e.target as HTMLElement).click()
+    }
 
+    function renderLoadingView(color?: string) {
         return isValidElement(loading) ? (
             <span>{loading}</span>
         ) : (
@@ -66,37 +55,29 @@ class Progress extends PureComponent<UploadProgressProps, UploadProgressState> {
         )
     }
 
-    render() {
-        const { placeholder, type, ...others } = this.props
-
-        const uploading = this.state.progress >= 0
-
-        const wrapperClassName = classnames(
-            uploadClass('bprogress', others.disabled && 'disabled'),
-            uploading ? uploadClass('uploading', `border-${type}`) : uploadClass(`bprogress-${type}`)
-        )
-
-        const style = {
-            right: uploading ? `${100 - this.state.progress}%` : '100%',
-        }
-        return (
-            <Upload {...others} limit={undefined} showUploadList={false} onChange={this.handleUploadChange}>
-                <div
-                    tabIndex={this.props.disabled ? -1 : 0}
-                    className={wrapperClassName}
-                    onClick={this.handleUpload}
-                    onKeyDown={this.handleKeyDown}
-                >
-                    {uploading && (
-                        <div style={style} className={uploadClass(`bprogress-${type}`, 'stream')}>
-                            {this.renderLoadingView('#fff')}
-                        </div>
-                    )}
-                    <span>{uploading ? this.renderLoadingView() : placeholder}</span>
-                </div>
-            </Upload>
-        )
+    const style = {
+        right: uploading ? `${100 - progress}%` : '100%',
     }
+
+    return (
+        <Upload {...others} limit={undefined} onChange={handleUploadChange}>
+            <div
+                tabIndex={props.disabled ? -1 : 0}
+                className={wrapperClassName}
+                onClick={handleUpload}
+                onKeyDown={handleKeyDown}
+            >
+                {uploading && (
+                    <div style={style} className={uploadClass(`bprogress-${type}`, 'stream')}>
+                        {renderLoadingView('#fff')}
+                    </div>
+                )}
+                <span>{uploading ? renderLoadingView() : placeholder}</span>
+            </div>
+        </Upload>
+    )
 }
 
-export default Progress
+Progress.displayName = 'EthanUploadProgress'
+
+export default React.memo(Progress)

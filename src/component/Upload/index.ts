@@ -1,12 +1,16 @@
-import withControl from '../../hoc/withControl'
 import Upload from './Upload'
-import Image from './Image'
+import UploadImage from './Image'
 import Progress from './Progress'
-import { UploadComponent } from './type'
+import { UploadProps } from './type'
 
-const UploadContainer = withControl(Upload) as UploadComponent
+interface UploadComponent extends React.FunctionComponent<UploadProps> {
+    Image: typeof UploadImage
+    Button: typeof Progress
+}
 
-UploadContainer.Image = withControl(Image)
-UploadContainer.Button = withControl(Progress)
+const UploadContainer = Upload as unknown as UploadComponent
+
+UploadContainer.Image = UploadImage
+UploadContainer.Button = Progress
 
 export default UploadContainer

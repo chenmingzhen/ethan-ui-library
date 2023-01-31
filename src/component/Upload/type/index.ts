@@ -1,4 +1,4 @@
-import { ButtonProps } from '@/component/Button'
+import { ButtonProps } from '@/component/Button/type'
 import React from 'react'
 
 export type UploadKey = React.Key
@@ -7,6 +7,17 @@ export interface UploadValidator {
     size?: (size: number) => Error | void
     ext?: (ext: string) => Error | void
     customValidator?: (file: File) => Error | void
+}
+
+export enum UpdateFileListItemAction {
+    /** 更新Props */
+    UPDATE = 'UPDATE',
+    /** 移除指定的File */
+    REMOVE = 'REMOVE',
+    /** 恢复文件 */
+    RECOVER = 'RECOVER',
+    /** 缓存指定文件，但状态为REMOVED */
+    CACHE = 'CACHE',
 }
 
 export interface UploadProps {
@@ -134,10 +145,5 @@ export interface UploadProgressState {
 export type ImageUploadComponent = React.ComponentClass<UploadImageProps>
 
 export type UploadProgressComponent = React.ComponentClass<UploadProgressProps>
-
-export interface UploadComponent extends React.ComponentClass<UploadProps> {
-    Image: ImageUploadComponent
-    Button: UploadProgressComponent
-}
 
 export type BeforeUploadFileType = File | EthanFile

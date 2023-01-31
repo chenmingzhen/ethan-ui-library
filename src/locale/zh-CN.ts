@@ -49,4 +49,5 @@ export default {
     uploadFail: '上传失败',
     expand: '展开',
     collapse: '收起',
+    invalidAccept: '文件格式不正确',
 }

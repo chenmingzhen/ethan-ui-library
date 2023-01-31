@@ -27,17 +27,7 @@ const ImageFile: React.FC<ImageFileProps> = (props) => {
 
         if (content) return content
 
-        if (data)
-            return (
-                <Image
-                    src={data}
-                    target="_modal"
-                    fit="center"
-                    width="auto"
-                    height={0}
-                    className={uploadClass('image-bg')}
-                />
-            )
+        if (data) return <Image src={data} target="_modal" fit="contain" className={uploadClass('image-bg')} />
     }
 
     return (

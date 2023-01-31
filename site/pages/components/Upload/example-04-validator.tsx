@@ -34,6 +34,7 @@ export default function () {
                 height={100}
                 limit={1}
                 style={{ width: 300, marginBottom: 80 }}
+                onChange={console.log}
                 validator={{
                     imageSize: (img) =>
                         img.width !== 200 || img.height !== 100 ? new Error('only allow 200px * 100px') : undefined,

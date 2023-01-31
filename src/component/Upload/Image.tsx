@@ -1,44 +1,38 @@
-import React, { PureComponent } from 'react'
-import immer from 'immer'
-import { uploadClass } from '@/styles'
 import { getLocale } from '@/locale'
+import { uploadClass } from '@/styles'
+import { KeyboardKey } from '@/utils/keyboard'
+import React, { useEffect, useState } from 'react'
+import { BeforeUploadFileType, EthanFile, UploadImageProps } from './type'
 import Upload from './Upload'
 import { ERROR, PENDING } from './utils/request'
-import { BeforeUploadFileType, EthanFile, UploadImageProps, UploadImageState } from './type'
 
-class Image extends PureComponent<UploadImageProps, UploadImageState> {
-    timer: NodeJS.Timeout
+const UploadImage: React.FC<UploadImageProps> = function (props) {
+    const { accept = 'image/*', height = 80, width = 80, validator = {}, children, beforeUpload, ...others } = props
+    const [urlInvalid, updateUrlInvalid] = useState(false)
 
-    static defaultProps: UploadImageProps = {
-        accept: 'image/*',
-        height: 80,
-        validator: {},
-        width: 80,
-    }
-
-    static displayName = 'EthanImageUpload'
-
-    constructor(props) {
-        super(props)
-
-        this.state = {
-            urlInvalid: false,
-        }
-    }
-
-    componentDidUpdate() {
-        if (this.state.urlInvalid) {
-            clearTimeout(this.timer)
-
-            this.timer = setTimeout(() => {
-                this.setState({ urlInvalid: false })
+    useEffect(() => {
+        if (urlInvalid) {
+            const timer = setTimeout(() => {
+                updateUrlInvalid(false)
             }, 3000)
+
+            return () => {
+                clearTimeout(timer)
+            }
         }
+    }, [urlInvalid])
+
+    const style = { width, height }
+
+    const content = children || <div className={uploadClass('indicator', urlInvalid && 'url-invalid-indicator')} />
+
+    function handleKeydown(e: React.KeyboardEvent) {
+        updateUrlInvalid(false)
+
+        if (e.key === KeyboardKey.Enter) (e.target as HTMLElement).click()
     }
 
-    beforeUpload = async (blob: File): Promise<EthanFile> => {
-        const { beforeUpload } = this.props
-
+    async function handleBeforeUpload(blob: File): Promise<EthanFile> {
         let transformedFile: BeforeUploadFileType = blob
 
         if (beforeUpload) {
@@ -54,14 +48,14 @@ class Image extends PureComponent<UploadImageProps, UploadImageState> {
         }
 
         return new Promise((resolve, reject) => {
-            const { imageSize } = this.props.validator
+            const { imageSize } = validator
 
-            const file: EthanFile = { status: PENDING }
+            const ethanFile: EthanFile = { status: PENDING }
 
             let transformProps: EthanFile = {}
 
             /** 处理过后的文件 */
-            if (transformedFile !== false && !(transformedFile instanceof File)) {
+            if (!(transformedFile instanceof File)) {
                 transformProps = { ...transformedFile }
             }
 
@@ -70,25 +64,18 @@ class Image extends PureComponent<UploadImageProps, UploadImageState> {
 
             reader.onload = (e) => {
                 const data = e.target.result as string
-
-                file.data = data
-
                 const image = new window.Image()
 
-                image.onerror = () => {
-                    this.setState(
-                        immer((draft) => {
-                            draft.urlInvalid = true
-                        })
-                    )
+                ethanFile.data = data
 
+                image.onerror = () => {
+                    updateUrlInvalid(true)
                     reject()
                 }
-
                 /** Props的beforeUpload的result覆盖掉内部处理的result */
                 image.onload = () => {
                     if (!imageSize) {
-                        const processFile = Object.assign({}, file, transformProps)
+                        const processFile = Object.assign({}, ethanFile, transformProps)
 
                         resolve(processFile)
 
@@ -98,12 +85,12 @@ class Image extends PureComponent<UploadImageProps, UploadImageState> {
                     const res = imageSize(image)
 
                     if (res instanceof Error) {
-                        file.status = ERROR
+                        ethanFile.status = ERROR
 
-                        file.message = res.message
+                        ethanFile.message = res.message
                     }
 
-                    const processFile = Object.assign({}, file, transformProps)
+                    const processFile = Object.assign({}, ethanFile, transformProps)
 
                     resolve(processFile)
                 }
@@ -116,44 +103,30 @@ class Image extends PureComponent<UploadImageProps, UploadImageState> {
         })
     }
 
-    handleKeyDown = (e) => {
-        this.setState({ urlInvalid: false })
-
-        if (e.keyCode === 13) e.target.click()
-    }
-
-    render() {
-        const { children, width, height, ...others } = this.props
-
-        const { urlInvalid } = this.state
-
-        const style = { width, height }
-
-        const content = children || <div className={uploadClass('indicator', urlInvalid && 'url-invalid-indicator')} />
-
-        return (
-            <Upload {...others} imageStyle={style} beforeUpload={this.beforeUpload}>
-                <div
-                    tabIndex={this.props.disabled ? -1 : 0}
-                    style={style}
-                    onKeyDown={this.handleKeyDown}
-                    className={uploadClass(
-                        'image-plus',
-                        'image-item',
-                        others.disabled && 'disabled',
-                        urlInvalid && 'url-invalid-border'
-                    )}
-                >
-                    {content}
-                </div>
-                {urlInvalid && (
-                    <div style={{ width: '100%', position: 'relative' }}>
-                        <div className={uploadClass('url-invalid-message')}>{getLocale('urlInvalidMsg')}</div>
-                    </div>
+    return (
+        <Upload {...others} accept={accept} validator={validator} imageStyle={style} beforeUpload={handleBeforeUpload}>
+            <div
+                tabIndex={props.disabled ? -1 : 0}
+                style={style}
+                onKeyDown={handleKeydown}
+                className={uploadClass(
+                    'image-plus',
+                    'image-item',
+                    others.disabled && 'disabled',
+                    urlInvalid && 'url-invalid-border'
                 )}
-            </Upload>
-        )
-    }
+            >
+                {content}
+            </div>
+            {urlInvalid && (
+                <div style={{ width: '100%', position: 'relative' }}>
+                    <div className={uploadClass('url-invalid-message')}>{getLocale('urlInvalidMsg')}</div>
+                </div>
+            )}
+        </Upload>
+    )
 }
 
-export default Image
+UploadImage.displayName = 'EthanUploadImage'
+
+export default React.memo(UploadImage)

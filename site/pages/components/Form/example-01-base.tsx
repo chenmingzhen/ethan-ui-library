@@ -74,7 +74,7 @@ export default function App() {
             </Form.Item>
 
             <Form.Item label={<></>} name="file">
-                <Upload.Image action={action} accept="image/*" limit={3} />
+                <Upload.Image action={action} accept="image/*" limit={3} name="file" />
             </Form.Item>
 
             <Form.Item label={<></>}>

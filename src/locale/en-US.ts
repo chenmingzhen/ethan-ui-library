@@ -63,4 +63,5 @@ export default {
     uploadFail: 'Upload Fail',
     expand: 'expand',
     collapse: 'collapse',
+    invalidAccept: 'Invalid file format',
 }
