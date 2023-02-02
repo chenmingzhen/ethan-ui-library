@@ -455,19 +455,4 @@
         .for(@data, (@i + 1));
     }
     .for(@types);
-
-    &-url-invalid-border {
-        border-color: @colors-danger !important;
-    }
-
-    &-url-invalid-indicator {
-        &::before,
-        &::after {
-            background: @colors-danger !important;
-        }
-    }
-
-    &-url-invalid-message {
-        .message();
-    }
 }

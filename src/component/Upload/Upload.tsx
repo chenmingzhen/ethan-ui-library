@@ -128,7 +128,7 @@ const Upload: React.FC<IUploadProps> = function (props) {
         }
     })
 
-    const handleError = useRefMethod((id: React.Key) => {
+    const handleError = useRefMethod((id: string) => {
         const index = fileList.findIndex((stateFile) => stateFile.id === id)
 
         if (index === -1) return
@@ -246,7 +246,7 @@ const Upload: React.FC<IUploadProps> = function (props) {
         addFile({ files })
     })
 
-    const handleRemoveFile = useRefMethod((id: React.Key) => {
+    const handleRemoveFile = useRefMethod((id: string) => {
         if (disabled) return
 
         const fileIndex = fileList.findIndex((file) => file.id === id)

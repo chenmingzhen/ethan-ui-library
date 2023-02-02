@@ -6,8 +6,9 @@
 
  */
 import React from 'react'
-import { Upload, Button, FontAwesome, Message } from 'ethan-ui'
+import { Upload, Button, FontAwesome } from 'ethan-ui'
 import { action } from 'doc/config'
+import ProImage from '@/component/ProImage/ProImage'
 
 export default function () {
     return (
@@ -16,7 +17,11 @@ export default function () {
                 action={action}
                 accept="image/*"
                 name="file"
-                renderContent={(f) => <span style={{ fontSize: '16px' }}>{f.name}</span>}
+                renderContent={(f) => (
+                    <span>
+                        {f.name}({f.blob.size / 1000}kb)
+                    </span>
+                )}
                 limit={3}
                 style={{ width: 300, marginBottom: 30 }}
             >
@@ -32,9 +37,7 @@ export default function () {
                 name="file"
                 limit={3}
                 renderContent={(file) => (
-                    <div onClick={() => Message.info('i am click')}>
-                        <img width="100%" src={file.data} alt="not found" />
-                    </div>
+                    <ProImage width="100%" height="100%" src={file.data} alt="not found" fit="contain" />
                 )}
             />
         </>

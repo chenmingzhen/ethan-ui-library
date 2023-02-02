@@ -6,11 +6,12 @@
 
  */
 import React, { useState } from 'react'
-import { Upload, Button, FontAwesome } from 'ethan-ui'
+import { Upload } from 'ethan-ui'
 import { action } from 'doc/config'
+import { EthanFile } from '@/component/Upload/type'
 
 export default () => {
-    const [fileList, updateFileList] = useState([
+    const [fileList, updateFileList] = useState<EthanFile[]>([
         {
             id: 'test',
             status: 'MANUAL',
@@ -20,40 +21,16 @@ export default () => {
     ])
 
     return (
-        <>
-            <Upload
-                action={action}
-                accept="image/*"
-                name="file"
-                value={fileList}
-                onChange={(v) => {
-                    console.log(v)
-
-                    updateFileList(v)
-                }}
-                limit={3}
-                style={{ width: 300 }}
-            >
-                <Button>
-                    <FontAwesome name="cloud-upload " style={{ marginRight: 4 }} />
-                    Upload file
-                </Button>
-            </Upload>
-            <br />
-
-            <Upload.Image
-                action={action}
-                accept="image/*"
-                name="file"
-                value={fileList}
-                onChange={(v) => {
-                    console.log(v)
-
-                    updateFileList(v)
-                }}
-                limit={3}
-                style={{ width: 300 }}
-            />
-        </>
+        <Upload.Image
+            action={action}
+            accept="image/*"
+            name="file"
+            value={fileList}
+            onChange={(v) => {
+                updateFileList(v)
+            }}
+            limit={3}
+            style={{ width: 300 }}
+        />
     )
 }

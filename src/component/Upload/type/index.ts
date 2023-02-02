@@ -1,8 +1,6 @@
 import { ButtonProps } from '@/component/Button/type'
 import React from 'react'
 
-export type UploadKey = React.Key
-
 export interface UploadValidator {
     size?: (size: number) => Error | void
     ext?: (ext: string) => Error | void
@@ -55,10 +53,11 @@ export interface IUploadProps extends UploadProps {
     customResult?: React.ElementType
 }
 
-export type UploadFileStatus = 'UPLOADING' | 'SUCCESS' | 'ERROR' | 'REMOVED' | 'MANUAL' | 'PENDING'
+// eslint-disable-next-line @typescript-eslint/ban-types
+export type UploadFileStatus = ('UPLOADING' | 'SUCCESS' | 'ERROR' | 'REMOVED' | 'MANUAL' | 'PENDING') | (string & {})
 
 export interface EthanFile {
-    id?: UploadKey
+    id?: string
     name?: string
     process?: number
     status?: UploadFileStatus
@@ -101,9 +100,9 @@ export interface FileInputProps extends Pick<UploadProps, 'accept' | 'multiple'>
 }
 
 export interface FileProps extends EthanFile {
-    onRemove(id: UploadKey): void
+    onRemove(id: string): void
 
-    onRecover(id: UploadKey): void
+    onRecover(id: string): void
 
     style?: React.CSSProperties
 
