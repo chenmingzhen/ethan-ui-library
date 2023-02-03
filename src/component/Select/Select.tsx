@@ -260,10 +260,10 @@ function Select<Data extends SelectBaseData = SelectBaseData, FormatData extends
 
         const deleteValue = afterValues.pop()
 
-        const dataItem = getDataByValue(data, deleteValue) || {}
+        const dataItem = getDataByValue(data, deleteValue)
 
         if (dataItem) {
-            handleItemRemove(dataItem)
+            handleItemRemove(dataItem.data)
         } else {
             updateSelectValues(afterValues, deleteValue, false)
         }
