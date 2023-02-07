@@ -449,4 +449,6 @@ function Select<Data extends SelectBaseData = SelectBaseData, FormatData extends
     )
 }
 
+Select.displayName = 'EthanSelect'
+
 export default React.memo(Select) as typeof Select
