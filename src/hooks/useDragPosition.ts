@@ -114,7 +114,7 @@ function useDragPosition(props: UseDragPositionProps) {
         if (!dragging) return
 
         updateDragging(false)
-        updateBoundingElementRect(undefined)
+
         removeEvents()
         if (onDragEnd) {
             onDragEnd(e)
@@ -135,7 +135,7 @@ function useDragPosition(props: UseDragPositionProps) {
         if (getBoundingElement) {
             const boundingElement = getBoundingElement()
 
-            if (boundingElement) {
+            if (boundingElement && !boundingElementRect) {
                 updateBoundingElementRect(boundingElement.getBoundingClientRect())
             }
         }

@@ -49,7 +49,10 @@ const Panel: React.FC<ModalPanelProps> = (props) => {
 
     const cardDomRef = useRef<HTMLDivElement>()
 
-    const ms = classnames(modalClass('panel', type, position, zoom && !moveable && 'zoom'), className)
+    const ms = classnames(
+        modalClass('panel', type, position, zoom && !moveable && 'zoom', moveable && 'moveable'),
+        className
+    )
 
     function buildStyle() {
         const style: React.CSSProperties = { position: 'absolute' }
