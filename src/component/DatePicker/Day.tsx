@@ -1,6 +1,6 @@
 // @ts-nocheck
 import React from 'react'
-import { datepickerClass } from '@/styles'
+import { datePickerClass } from '@/styles'
 import { getLocale } from '@/locale'
 import { PureComponent } from '@/utils/component'
 import { isFunc } from '@/utils/is'
@@ -197,7 +197,7 @@ class Day extends PureComponent<DatePickerDayProps, DatePickerDayState> {
                     weekStartsOn: weekStart,
                 })
             ) {
-                hoverClass = datepickerClass(
+                hoverClass = datePickerClass(
                     'active',
                     date.getDay() === weekStart && 'hover-start',
                     date.getDay() === weekEnd && 'hover-end'
@@ -208,7 +208,7 @@ class Day extends PureComponent<DatePickerDayProps, DatePickerDayState> {
                     weekStartsOn: weekStart,
                 })
             ) {
-                hoverClass = datepickerClass(
+                hoverClass = datePickerClass(
                     'hover',
                     date.getDay() === weekStart && 'hover-start',
                     date.getDay() === weekEnd && 'hover-end'
@@ -219,7 +219,7 @@ class Day extends PureComponent<DatePickerDayProps, DatePickerDayState> {
 
             classList.push(utils.isSameDay(date, rangeDate[index]) && 'active')
 
-            hoverClass = datepickerClass(
+            hoverClass = datePickerClass(
                 //  选中时间区间内的days 灰色方块hover
                 utils.compareAsc(rangeDate[0], date) <= 0 && utils.compareAsc(rangeDate[1], date) >= 0 && 'hover',
                 // Datetime Picker range end datetime classname #330
@@ -237,7 +237,7 @@ class Day extends PureComponent<DatePickerDayProps, DatePickerDayState> {
                 onDoubleClick={isDisabled ? undefined : this.handleDayDoubleClick.bind(this, date)}
                 {...hoverProps}
             >
-                <span className={datepickerClass(...classList)}>{date.getDate()}</span>
+                <span className={datePickerClass(...classList)}>{date.getDate()}</span>
             </div>
         )
     }
@@ -263,7 +263,7 @@ class Day extends PureComponent<DatePickerDayProps, DatePickerDayState> {
         if (!value) return undefined
 
         return (
-            <div className={datepickerClass('datetime')}>
+            <div className={datePickerClass('datetime')}>
                 <Time {...this.props} format={format} value={value} onChange={this.handleTimeChange} />
                 <span>{utils.format(value, format)}</span>
             </div>
@@ -280,9 +280,9 @@ class Day extends PureComponent<DatePickerDayProps, DatePickerDayState> {
         const maxDate = max && new Date(utils.format(max, maxStr))
 
         return (
-            <div className={datepickerClass('day-picker')}>
-                <div className={datepickerClass('title')}>{getLocale('pickerTitle')[index]}</div>
-                <div className={datepickerClass('header')}>
+            <div className={datePickerClass('day-picker')}>
+                <div className={datePickerClass('title')}>{getLocale('pickerTitle')[index]}</div>
+                <div className={datePickerClass('header')}>
                     <Icon
                         name="AngleDoubleLeft"
                         disabled={!!(min && current.getFullYear() <= minDate.getFullYear())}
@@ -294,7 +294,7 @@ class Day extends PureComponent<DatePickerDayProps, DatePickerDayState> {
                         onClick={this.handlePrevMonth}
                     />
 
-                    <span className={datepickerClass('ym')}>
+                    <span className={datePickerClass('ym')}>
                         <span onClick={this.handleYearModeChange}>{current.getFullYear()}</span>
                         <span onClick={this.handleMonthModeChange}>
                             {getLocale('monthValues.short')[current.getMonth()]}
@@ -305,13 +305,13 @@ class Day extends PureComponent<DatePickerDayProps, DatePickerDayState> {
                     <Icon onClick={this.handleNextYear} name="AngleDoubleRight" />
                 </div>
 
-                <div className={datepickerClass('week')}>
+                <div className={datePickerClass('week')}>
                     {getLocale('weekdayValues.narrow').map((w) => (
                         <span key={w}>{w}</span>
                     ))}
                 </div>
 
-                <div className={datepickerClass('list')}>{days.map((d) => this.renderDay(d, minDate, maxDate))}</div>
+                <div className={datePickerClass('list')}>{days.map((d) => this.renderDay(d, minDate, maxDate))}</div>
 
                 <div style={{ flex: 1 }} />
 

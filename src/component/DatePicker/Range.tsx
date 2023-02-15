@@ -3,7 +3,7 @@ import React from 'react'
 import immer from 'immer'
 import { PureComponent } from '@/utils/component'
 import shallowEqual from '@/utils/shallowEqual'
-import { datepickerClass } from '@/styles'
+import { datePickerClass } from '@/styles'
 import dateFns from './utils'
 import utils from './utils'
 import Picker from './Picker'
@@ -193,11 +193,11 @@ class Range extends PureComponent {
         if (!quicks) return null
 
         return (
-            <div className={datepickerClass('quick-select')}>
+            <div className={datePickerClass('quick-select')}>
                 {quicks.map((q) => (
                     <div
                         onClick={this.handleQuick.bind(this, q)}
-                        className={datepickerClass(
+                        className={datePickerClass(
                             'quick-select-item',
                             dateFns.compareDateArray(q.value, rangeDate, type) && 'quick-select-item-active'
                         )}
@@ -216,7 +216,7 @@ class Range extends PureComponent {
         const quick = this.createQuick()
         const rangeDate = [...this.state.rangeDate]
         return (
-            <div className={datepickerClass('range-picker')}>
+            <div className={datePickerClass('range-picker')}>
                 {quick || children}
                 <Picker
                     {...props}

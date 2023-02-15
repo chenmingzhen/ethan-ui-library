@@ -18,7 +18,7 @@ import {
     cardClass,
     modalClass,
     popoverClass,
-    datepickerClass,
+    datePickerClass,
     dropdownClass,
 } from '../../styles'
 
@@ -835,7 +835,7 @@ const injects = {
             },
             {
                 name: 'dropdownBorderRadius',
-                className: datepickerClass('picker'),
+                className: datePickerClass('picker'),
                 attr: 'borderRadius',
                 type: 'number',
                 parser: parseInt,

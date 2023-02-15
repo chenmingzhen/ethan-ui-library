@@ -4,30 +4,28 @@
 @datepicker-prefix: ~'@{ethan-prefix}-datepicker';
 
 .@{datepicker-prefix} {
-    label& {
-        display: inline-block;
-        width: 150px;
-    }
+    display: inline-block;
+    width: 150px;
 
-    label&-c-datetime {
+    &-c-date-time {
         width: 240px;
     }
 
-    label&-c-time {
+    &-c-time {
         width: 120px;
     }
 
-    label&-r-date,
-    label&-r-week,
-    label&-r-month {
+    &-r-date,
+    &-r-week,
+    &-r-month {
         width: 300px;
     }
 
-    label&-r-datetime {
+    &-r-date-time {
         width: 420px;
     }
 
-    label&-r-time {
+    &-r-time {
         width: 250px;
     }
 
@@ -351,7 +349,7 @@
             }
         }
 
-        .@{datepicker-prefix}-datetime {
+        .@{datepicker-prefix}-date-time {
             position: relative;
             padding-top: 12px;
             border-top: solid 1px #f2f2f2;

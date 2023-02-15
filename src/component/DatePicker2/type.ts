@@ -19,14 +19,15 @@ export interface DatePickerProps {
     size?: 'small' | 'default' | 'large'
     type?: 'date' | 'time' | 'date-time' | 'month' | 'week' | 'year'
     allowSingle?: boolean
+    defaultTime?: string | string[]
     value?: number | Date | number[] | Date[]
     portal?: boolean
     zIndex?: number
     children?: React.ReactNode
     onValueBlur?: () => void
     quickSelect?: QuickSelect[]
-    min?: number | Date | string
-    max?: number | Date | string
+    min?: number | Date
+    max?: number | Date
     /** number | Date | number[] | Date[] */
     defaultPickerValue?: number | Date
     hourStep?: number
@@ -58,20 +59,18 @@ export interface DatePickerTextProps extends Pick<DatePickerProps, 'formatResult
 }
 
 export interface PickerProps extends Pick<DatePickerProps, 'type'> {
-    current: Date
+    panelDate: Date
     disabled: () => boolean
     format: string
     max: Date
     min: Date
-    onChange: () => void
+    onChange: (date: Date, shouldChange?: boolean, shouldDismiss?: boolean) => void
     value: any
-    index: number
     handleHover: (index: number, isEnter: boolean) => void
-    defaultTime: any
 }
 
 export interface DatePickerDayProps extends Pick<PickerProps, 'type'> {
-    current: Date
+    panelDate: Date
     disabled: boolean | ((date: Date) => boolean)
     onChange: (date: Date, change?: boolean, blur?: boolean, isEnd?: boolean) => void
     format: string
@@ -93,13 +92,14 @@ export interface DatePickerDayProps extends Pick<PickerProps, 'type'> {
 export interface DatePickerIconProps {
     className?: string
     name: string
-    onClick?: (e) => void
+    onClick?: (e: React.MouseEvent) => void
+    onMouseDown?: (e: React.MouseEvent) => void
     tag?: keyof HTMLElementTagNameMap
     disabled?: boolean
 }
 
 export interface DatePickerYearProps {
-    current: Date
+    panelDate: Date
     onChange: (date: Date) => void
     onModeChange: (mode: string) => void
     value: Date
@@ -107,7 +107,7 @@ export interface DatePickerYearProps {
 }
 
 export interface DatePickerMonthProps extends Pick<DatePickerProps, 'min'> {
-    current: Date
+    panelDate: Date
     disabled: boolean | ((date: Date) => boolean)
     onChange: (date: Date, change?: boolean, blur?: boolean) => void
     onModeChange: (mode: string) => void
@@ -142,4 +142,5 @@ export interface TimeScrollProps {
     range
     current
     mode
+    panelDate: Date
 }

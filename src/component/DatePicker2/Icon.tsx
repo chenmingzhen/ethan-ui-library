@@ -4,11 +4,12 @@ import icons from '../icons'
 import { DatePickerIconProps } from './type'
 
 const Icon: React.FC<DatePickerIconProps> = (props) => {
-    const { className, name, onClick, tag, disabled } = props
+    const { className, name, onClick, tag, disabled, onMouseDown } = props
 
     const newProps = {
         className: datePickerClass(className, 'icon', disabled && 'disabled'),
         onClick: disabled ? undefined : onClick,
+        onMouseDown: disabled ? undefined : onMouseDown,
     }
 
     return createElement(tag, newProps, icons[name])

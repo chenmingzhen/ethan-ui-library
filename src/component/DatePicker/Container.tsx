@@ -1,7 +1,7 @@
 import React from 'react'
 import classnames from 'classnames'
 import { PureComponent } from '@/utils/component'
-import { datepickerClass, inputClass } from '@/styles'
+import { datePickerClass, inputClass } from '@/styles'
 import { getUidStr } from '@/utils/uid'
 import { isArray, isEmpty } from '@/utils/is'
 import { getParent, isDescendent } from '@/utils/dom/element'
@@ -281,7 +281,7 @@ class Container extends PureComponent<DatePickerContainerProps, DatePickerState>
 
         if (open && getParent(target, this.pickerContainer)) return
 
-        if (open && target.classList.contains(datepickerClass('close'))) return
+        if (open && target.classList.contains(datePickerClass('close'))) return
 
         if (this.focusLockTimer) return
 
@@ -316,7 +316,7 @@ class Container extends PureComponent<DatePickerContainerProps, DatePickerState>
         const date = utils.toDateWithFormat(value, format)
 
         const className = classnames(
-            datepickerClass('txt', this.state[`picker${key}`] && 'text-focus'),
+            datePickerClass('txt', this.state[`picker${key}`] && 'text-focus'),
             utils.isInvalid(date) && inputClass('placeholder')
         )
 
@@ -346,11 +346,11 @@ class Container extends PureComponent<DatePickerContainerProps, DatePickerState>
         const empty = isEmpty(value)
 
         return (
-            <div className={datepickerClass('result')}>
+            <div className={datePickerClass('result')}>
                 {range
                     ? [
                           this.renderText(value[0], placeholder[0], 0),
-                          <span key="-" className={datepickerClass('separate')}>
+                          <span key="-" className={datePickerClass('separate')}>
                               ~
                           </span>,
                           this.renderText(value[1], placeholder[1], 1),
@@ -381,14 +381,14 @@ class Container extends PureComponent<DatePickerContainerProps, DatePickerState>
         const ms = styles({ zIndex }, portal && getPickerPortalStyle(rect, position))
 
         return (
-            <Portal portal={portal} rootClass={datepickerClass('absolute')}>
+            <Portal portal={portal} rootClass={datePickerClass('absolute')}>
                 <AnimationList
                     lazyDom
                     show={open}
                     style={ms}
                     duration="fast"
                     animationTypes={['fade']}
-                    className={datepickerClass('picker', 'location', `absolute-${position}`)}
+                    className={datePickerClass('picker', 'location', `absolute-${position}`)}
                     getRef={this.bindWrappedPicker}
                 >
                     {this.renderPicker()}
@@ -438,7 +438,7 @@ class Container extends PureComponent<DatePickerContainerProps, DatePickerState>
     render() {
         const { range, size, disabled } = this.props
 
-        const className = datepickerClass(
+        const className = datePickerClass(
             'inner',
             range && 'range',
             size && `size-${size}`,
