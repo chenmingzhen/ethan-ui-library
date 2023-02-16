@@ -1,35 +1,19 @@
-import { DatePickerProps } from '@/component/DatePicker/type'
 import useMergedValue from '@/hooks/useMergedValue'
-import useRefMethod from '@/hooks/useRefMethod'
-import { getLocale } from '@/locale'
-import utils from '../utils'
+import { DatePickerProps } from '../type'
 
 type UseDatePickerValueProps = Pick<DatePickerProps, 'defaultValue' | 'value' | 'format' | 'type' | 'onChange'>
 
 function useDatePickerValue(props: UseDatePickerValueProps) {
-    const { format, onChange } = props
-    const convertValue2FormatStr = useRefMethod((rawValue: string | number) => {
-        if (!rawValue) return undefined
+    const { onChange, defaultValue } = props
 
-        const date = utils.toDateWithFormat(rawValue, format)
-
-        if (!date) return undefined
-
-        const formatValue = utils.format(date, format, {
-            weekStartsOn: getLocale('startOfWeek'),
-        })
-
-        return formatValue
-    })
-
-    const [value, updateValue] = useMergedValue<string, [Date]>({
+    const [value, updateValue] = useMergedValue<Date, [string]>({
         defaultStateValue: undefined,
         options: {
-            defaultValue: convertValue2FormatStr(props.defaultValue),
-            value: convertValue2FormatStr(props.value),
-            onChange(nextValue, _, date) {
+            defaultValue,
+            value: props.value,
+            onChange(date, _, dateStr) {
                 if (onChange) {
-                    onChange(nextValue, date)
+                    onChange(date, dateStr)
                 }
             },
         },

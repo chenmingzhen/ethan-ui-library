@@ -12,7 +12,7 @@ import { getPickerPortalStyle } from '@/utils/position'
 import useLockFocus from '@/hooks/useLockFocus'
 import { getLocale } from '@/locale'
 import { preventDefault, stopPropagation } from '@/utils/func'
-import { DatePickerProps } from '../DatePicker/type'
+import { DatePickerProps } from './type'
 import useInputStyle from '../Input/hooks/useInputStyle'
 import useDatePickerValue from './hooks/useDatePickerValue'
 import utils from './utils'
@@ -39,7 +39,6 @@ const DatePicker: React.FC<DatePickerProps> = function (props) {
         onFocus,
         defaultPickerValue,
         placeholder = <span>&nbsp;</span>,
-        formatResult,
         inputAble,
         onBlur,
         zIndex,
@@ -81,10 +80,10 @@ const DatePicker: React.FC<DatePickerProps> = function (props) {
     /** 目前正在操作的时间(必须有一个值) */
     const [panelDate, updatePanelDate] = useState(() => {
         if (value) {
-            return utils.toDateWithFormat(value, format)
+            return value
         }
         if (defaultPickerValue) {
-            return utils.toDateWithFormat(defaultPickerValue, format) || new Date()
+            return defaultPickerValue
         }
 
         return new Date()
@@ -92,9 +91,9 @@ const DatePicker: React.FC<DatePickerProps> = function (props) {
 
     useEffect(() => {
         if (value) {
-            updatePanelDate(utils.toDateWithFormat(value, format))
+            updatePanelDate(value)
         } else if (defaultPickerValue) {
-            updatePanelDate(utils.toDateWithFormat(defaultPickerValue, format) || new Date())
+            updatePanelDate(defaultPickerValue)
         } else {
             updatePanelDate(new Date())
         }
@@ -180,16 +179,16 @@ const DatePicker: React.FC<DatePickerProps> = function (props) {
     }
 
     const handleTextBlur = useRefMethod((date: Date) => {
-        const val = date ? utils.format(date, format) : ''
+        const dateStr = date ? utils.format(date, format) : ''
 
-        updateValue(val, date)
+        updateValue(date, dateStr)
     })
 
     const handleChange = useRefMethod((date: Date, shouldChange?: boolean, shouldDismiss?: boolean) => {
-        const nextValue = date ? utils.format(date, format, { weekStartsOn: getLocale('startOfWeek') }) : null
+        const dateStr = date ? utils.format(date, format, { weekStartsOn: getLocale('startOfWeek') }) : null
 
         if (shouldChange) {
-            updateValue(nextValue, date)
+            updateValue(date, dateStr)
         }
 
         if (shouldDismiss) {
@@ -207,9 +206,7 @@ const DatePicker: React.FC<DatePickerProps> = function (props) {
         handleChange(null, true, true)
     })
 
-    function renderText(rawDate: string | number, textPlaceholder: React.ReactNode, key?: number) {
-        const date = utils.toDateWithFormat(rawDate, format)
-
+    function renderText(date: Date, textPlaceholder: React.ReactNode, key?: number) {
         const cls = classnames(
             datePickerClass('txt', state[`picker${key}`] && 'text-focus'),
             utils.isInvalid(date) && inputClass('placeholder')
@@ -224,7 +221,7 @@ const DatePicker: React.FC<DatePickerProps> = function (props) {
                 inputAble={inputAble}
                 placeholder={textPlaceholder}
                 onTextBlur={handleTextBlur}
-                value={utils.isInvalid(date) ? undefined : utils.format(date, formatResult || format)}
+                value={utils.isInvalid(date) ? undefined : utils.format(date, format)}
                 disabled={disabled === true}
                 size={size}
             />

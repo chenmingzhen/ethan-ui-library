@@ -12,7 +12,7 @@ export interface DatePickerProps {
     inputAble?: boolean
     placeholder?: React.ReactNode
     onBlur?: (e: React.FocusEvent<HTMLElement>) => void
-    onChange?: (value: string) => void
+    onChange?: (date: Date, dateStr: string) => void
     onFocus?: (evt: React.FocusEvent<HTMLElement>) => void
     position?: string
     range?: boolean | number
@@ -20,7 +20,7 @@ export interface DatePickerProps {
     type?: 'date' | 'time' | 'date-time' | 'month' | 'week' | 'year'
     allowSingle?: boolean
     defaultTime?: string | string[]
-    value?: number | Date | number[] | Date[]
+    value?: Date
     portal?: boolean
     zIndex?: number
     children?: React.ReactNode
@@ -28,13 +28,11 @@ export interface DatePickerProps {
     quickSelect?: QuickSelect[]
     min?: number | Date
     max?: number | Date
-    /** number | Date | number[] | Date[] */
-    defaultPickerValue?: number | Date
+    defaultPickerValue?: Date
     hourStep?: number
     minuteStep?: number
     secondStep?: number
-    defaultValue?: number | Date
-    formatResult?: string
+    defaultValue?: Date
     border?: boolean
     className?: string
     style?: React.CSSProperties
@@ -123,11 +121,9 @@ export interface DatePickerTimeProps extends Pick<DatePickerProps, 'format'> {
     value: Date
     defaultTime
     index: number
-    hourStep: number
-    minuteStep: number
-    secondStep: number
     min
     max
+    panelDate: Date
 }
 
 export interface TimeScrollProps {
@@ -135,12 +131,10 @@ export interface TimeScrollProps {
     onChange
     total?
     value
-    step?
     disabled
     min
     max
     range
-    current
-    mode
     panelDate: Date
+    mode
 }

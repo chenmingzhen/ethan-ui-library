@@ -1,37 +1,14 @@
-import React from 'react'
+import useRefMethod from '@/hooks/useRefMethod'
 import { datePickerClass } from '@/styles'
-import { PureComponent } from '@/utils/component'
+import React from 'react'
+import TimeScroll from './TimeScroll'
 import { DatePickerTimeProps } from './type'
 import utils from './utils'
-import TimeScroll from './TimeScroll'
 
-class Time extends PureComponent<DatePickerTimeProps> {
-    handleHourChange: () => void
+const Time: React.FC<DatePickerTimeProps> = function (props) {
+    const { value, format, panelDate, min, max, disabled, onChange } = props
 
-    handleMinuteChange: () => void
-
-    handleSecondChange: () => void
-
-    handleAMPMChange: () => void
-
-    defaultValue: Date
-
-    constructor(props) {
-        super(props)
-
-        this.defaultValue = this.getDefaultTime()
-
-        this.handleHourChange = this.handleChange.bind(this, 'hour')
-        this.handleMinuteChange = this.handleChange.bind(this, 'minute')
-        this.handleSecondChange = this.handleChange.bind(this, 'second')
-        this.handleAMPMChange = this.handleChange.bind(this, 'ampm')
-    }
-
-    handleChange = (type: string, val) => {
-        const { disabled, format, min, max, range } = this.props
-
-        const value = this.getValue()
-
+    const handleChange = useRefMethod((type: string, val) => {
         let mode = type
 
         if (type === 'hour') {
@@ -42,118 +19,57 @@ class Time extends PureComponent<DatePickerTimeProps> {
             }
         }
 
-        const [isDisabled, date] = utils.judgeTimeByRange(val, value, mode, min, max, range, disabled)
+        const [isDisabled, date] = utils.judgeTimeByRange(val, value, mode, min, max, undefined, disabled)
 
         if (isDisabled) return
 
-        this.props.onChange(date, true, false, 'time')
-    }
+        onChange(date, false, false)
+    })
 
-    getDefaultTime = () => {
-        let idx = 0
+    const handleHourChange = useRefMethod((val) => {
+        handleChange('hour', val)
+    })
 
-        const current = utils.newDate()
+    function renderHouTimeScroll() {
+        if (format.indexOf('H') >= 0) {
+            return (
+                <TimeScroll
+                    panelDate={panelDate}
+                    value={panelDate.getHours()}
+                    mode="H"
+                    min={min}
+                    max={max}
+                    disabled={disabled}
+                    total={24}
+                    onChange={handleHourChange}
+                />
+            )
+        }
+        if (format.indexOf('h') >= 0) {
+            let hours = value.getHours()
 
-        const { index, defaultTime, format } = this.props
+            if (hours >= 12) {
+                hours -= 12
+            }
 
-        if (typeof index === 'number') idx = index
-
-        if (!defaultTime[idx]) return current
-
-        return utils.cloneTime(current, defaultTime[idx], format)
-    }
-
-    getValue = () => this.props.value || this.defaultValue
-
-    render() {
-        const { format, hourStep, minuteStep, secondStep, range, min: mi, max: ma, disabled } = this.props
-
-        const value = this.getValue()
-
-        const className = datePickerClass('time-picker')
-
-        let hours = value.getHours()
-
-        if (format.indexOf('h') >= 0 && hours >= 12) {
-            hours -= 12
+            return (
+                <TimeScroll
+                    panelDate={panelDate}
+                    mode="h"
+                    min={min}
+                    max={max}
+                    disabled={disabled}
+                    value={hours}
+                    total={12}
+                    onChange={handleHourChange}
+                />
+            )
         }
 
-        const min = utils.resetTimeByFormat(mi && new Date(mi), format)
-        const max = utils.resetTimeByFormat(ma && new Date(ma), format)
-
-        return (
-            <div className={className}>
-                {format.indexOf('H') >= 0 && (
-                    <TimeScroll
-                        current={value}
-                        value={value.getHours()}
-                        mode="H"
-                        range={range}
-                        min={min}
-                        max={max}
-                        disabled={disabled}
-                        total={24}
-                        step={hourStep}
-                        onChange={this.handleHourChange}
-                    />
-                )}
-                {format.indexOf('h') >= 0 && (
-                    <TimeScroll
-                        current={value}
-                        mode="h"
-                        range={range}
-                        min={min}
-                        max={max}
-                        disabled={disabled}
-                        value={hours}
-                        total={12}
-                        step={hourStep}
-                        onChange={this.handleHourChange}
-                    />
-                )}
-                {format.indexOf('m') >= 0 && (
-                    <TimeScroll
-                        current={value}
-                        mode="m"
-                        range={range}
-                        min={min}
-                        max={max}
-                        disabled={disabled}
-                        value={value.getMinutes()}
-                        step={minuteStep}
-                        onChange={this.handleMinuteChange}
-                    />
-                )}
-                {format.indexOf('s') >= 0 && (
-                    <TimeScroll
-                        current={value}
-                        mode="s"
-                        range={range}
-                        min={min}
-                        max={max}
-                        disabled={disabled}
-                        value={value.getSeconds()}
-                        step={secondStep}
-                        onChange={this.handleSecondChange}
-                    />
-                )}
-                {/a|A/.test(format) && (
-                    <TimeScroll
-                        current={value}
-                        mode="ampm"
-                        range={range}
-                        min={min}
-                        max={max}
-                        disabled={disabled}
-                        value={value.getHours() >= 12 ? 1 : 0}
-                        total={2}
-                        ampm
-                        onChange={this.handleAMPMChange}
-                    />
-                )}
-            </div>
-        )
+        return null
     }
+
+    return <div className={datePickerClass('time-picker')}>{renderHouTimeScroll()}</div>
 }
 
-export default Time
+export default React.memo(Time)

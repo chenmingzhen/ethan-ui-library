@@ -12,16 +12,11 @@ export default function () {
     return (
         <>
             <DatePicker2
+                type="date-time"
                 onChange={console.log}
-                format="格式化的值:yyyy年-MM月-dd天"
-                portal
-                onFocus={() => {
-                    console.log('focus')
-                }}
-                onBlur={() => {
-                    console.log('blur')
-                }}
                 clearable
+                format="yyyy年-MM月-dd日 HH时"
+                defaultValue={new Date('2023-01-05')}
             />
         </>
     )

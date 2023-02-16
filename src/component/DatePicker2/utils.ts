@@ -56,9 +56,10 @@ function isInvalid(date) {
     /** @see https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/isNaN */
     /** @see https://blog.csdn.net/WJLcomeon/article/details/123681070 */
     // eslint-disable-next-line no-restricted-globals
-    return isNaN(date)
+    return date === null || date === undefined || isNaN(date)
 }
 
+/** 默认情况下，推荐value是使用Date或者number存储，如果使用string，必须保证与format的格式相符合 */
 function toDateWithFormat(rawDate: string | number | Date, fmt: string) {
     let date: Date
 
@@ -76,13 +77,6 @@ function toDateWithFormat(rawDate: string | number | Date, fmt: string) {
         date = parse(rawDate, fmt, new Date(), {
             weekStartsOn: getLocale('startOfWeek'),
         })
-
-        /** 兜底使用毫秒级别的format进行格式化（用于format和value对不上，但是value是常规的存储值方式（合理的字符串，时间戳）） */
-        /** eg: format="yyyy年-M月" value="1327052443" */
-        if (isInvalid(date))
-            date = parse(rawDate, 't', new Date(), {
-                weekStartsOn: getLocale('startOfWeek'),
-            })
     } else {
         date = toDate(rawDate)
     }

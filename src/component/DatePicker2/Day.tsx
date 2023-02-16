@@ -4,11 +4,12 @@ import { datePickerClass } from '@/styles'
 import { isFunc } from '@/utils/is'
 import React, { useMemo, useRef, useState } from 'react'
 import Icon from './Icon'
+import Time from './Time'
 import { DatePickerDayProps } from './type'
 import utils from './utils'
 
 const Day: React.FC<DatePickerDayProps> = function (props) {
-    const { panelDate, index, min, max, onChange, onModeChange, disabled, type } = props
+    const { panelDate, index, min, max, onChange, onModeChange, disabled, type, showTimePicker, value } = props
     const [hover, updateHover] = useState(null)
     const today = useRef(utils.newDate()).current
     const minDate = min && new Date(utils.format(min, 'yyyy-MM-dd 00:00:00'))
@@ -61,6 +62,9 @@ const Day: React.FC<DatePickerDayProps> = function (props) {
             onChange(newDate, true, type !== 'date-time')
         }
     })
+    const handleTimeChange = useRefMethod((date) => {
+        onChange(date, true, false)
+    })
 
     function renderDay(date: Date) {
         const hmsDate = new Date(date)
@@ -78,8 +82,6 @@ const Day: React.FC<DatePickerDayProps> = function (props) {
 
         let hoverClass
         const hoverProps: React.DetailedHTMLProps<React.HTMLAttributes<HTMLDivElement>, HTMLDivElement> = {}
-        const weekStart = getLocale('startOfWeek')
-        const weekEnd = weekStart ? 0 : 6
         const classList = [
             utils.isSameDay(date, today) && 'today',
             panelDate.getMonth() !== date.getMonth() && 'other-month',
@@ -87,6 +89,9 @@ const Day: React.FC<DatePickerDayProps> = function (props) {
         ]
 
         if (type === 'week') {
+            const weekStart = getLocale('startOfWeek')
+            const weekEnd = weekStart ? 0 : 6
+
             hoverProps.onMouseEnter = () => {
                 updateHover(date)
             }
@@ -125,10 +130,22 @@ const Day: React.FC<DatePickerDayProps> = function (props) {
                 key={date.getTime()}
                 className={hoverClass}
                 onClick={isDisabled ? undefined : handleClickDay.bind(null, date)}
-                onDoubleClick={isDisabled ? undefined : undefined}
                 {...hoverProps}
             >
                 <span className={datePickerClass(...classList)}>{date.getDate()}</span>
+            </div>
+        )
+    }
+
+    function renderTimePicker() {
+        if (type !== 'date-time' || !value) return null
+
+        const { format } = props
+
+        return (
+            <div className={datePickerClass('date-time')}>
+                <Time {...props} format={format} value={value} onChange={handleTimeChange} />
+                <span>{utils.format(value, format)}</span>
             </div>
         )
     }
@@ -164,6 +181,8 @@ const Day: React.FC<DatePickerDayProps> = function (props) {
             </div>
 
             <div className={datePickerClass('list')}>{days.map(renderDay)}</div>
+
+            {renderTimePicker()}
         </div>
     )
 }
