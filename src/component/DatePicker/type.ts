@@ -19,7 +19,6 @@ export interface DatePickerProps {
     size?: 'small' | 'default' | 'large'
     type?: 'date' | 'time' | 'date-time' | 'month' | 'week' | 'year'
     allowSingle?: boolean
-    defaultTime?: string | string[]
     value?: Date
     portal?: boolean
     zIndex?: number
