@@ -30,9 +30,7 @@ function getDaysOfMonth(rawDate: Date): Date[] {
     })
 
     current.setHours(rawDate.getHours())
-
     current.setMinutes(rawDate.getMinutes())
-
     current.setSeconds(rawDate.getSeconds())
 
     const days = []
@@ -56,9 +54,10 @@ function isInvalid(date) {
     /** @see https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/isNaN */
     /** @see https://blog.csdn.net/WJLcomeon/article/details/123681070 */
     // eslint-disable-next-line no-restricted-globals
-    return isNaN(date)
+    return date === null || date === undefined || isNaN(date)
 }
 
+/** 默认情况下，推荐value是使用Date或者number存储，如果使用string，必须保证与format的格式相符合 */
 function toDateWithFormat(rawDate: string | number | Date, fmt: string) {
     let date: Date
 
@@ -69,10 +68,15 @@ function toDateWithFormat(rawDate: string | number | Date, fmt: string) {
          */
         // var result = parse('02/11/2014', 'MM/dd/yyyy', new Date())
         //= > Tue Feb 11 2014 00:00:00
+
+        /** eg: format="yyyy年-M月" value="2012年-3月" =》可以对上 */
+        /** eg: format="yyyy年-M月" value="1327052443" =》对不上 */
         date = parse(rawDate, fmt, new Date(), {
             weekStartsOn: getLocale('startOfWeek'),
         })
-    } else date = toDate(rawDate)
+    } else {
+        date = toDate(rawDate)
+    }
 
     if (isInvalid(date)) date = undefined
 
@@ -83,23 +87,14 @@ function compareMonth(dateLeft: Date, dateRight: Date, pad = 0) {
     if (!dateLeft || !dateRight) return 0
 
     const left = new Date(dateLeft.getFullYear(), dateLeft.getMonth(), 1)
-
     const right = new Date(dateRight.getFullYear(), dateRight.getMonth() + pad, 1)
 
     return compareAsc(left, right)
 }
 
-function newDate(defaultDate?: number | string | Date) {
-    const date = defaultDate ? new Date(defaultDate) : new Date()
-
-    return new Date(date.getFullYear(), date.getMonth(), date.getDate())
-}
-
 function setTime(date: Date, old: Date) {
     date.setHours(old.getHours())
-
     date.setMinutes(old.getMinutes())
-
     date.setSeconds(old.getSeconds())
 
     return date
@@ -136,87 +131,46 @@ function compareDateArray(arr1, arr2, type = 'date') {
     })
 }
 
-function judgeTimeByRange(...args) {
-    const [target, value, mode, min, max, range, disabled] = args
+interface GetIsDisabledHMSParams {
+    scale: number
+    panelDate: Date
+    mode: 'hour' | 'minute' | 'second'
+    min: Date
+    max: Date
+    disabled: (date: Date) => boolean
+}
 
-    const date = new Date(value.getTime())
+function getIsDisabledHMS(params: GetIsDisabledHMSParams): [boolean, Date?] {
+    const { scale, panelDate, mode, min, max, disabled } = params
+    const date = new Date(panelDate.getTime())
+
     switch (mode) {
-        case 'H':
-            date.setHours(target)
+        case 'hour':
+            date.setHours(scale)
             break
-        case 'h':
-            if (date.getHours() >= 12) {
-                date.setHours(target + 12)
-                break
-            }
-            date.setHours(target)
-            break
-        case 'm':
         case 'minute':
-            date.setMinutes(target)
+            date.setMinutes(scale)
             break
-        case 's':
         case 'second':
-            date.setSeconds(target)
+            date.setSeconds(scale)
             break
-        case 'ampm':
-            if (target === 0) {
-                const hours = date.getHours()
-                if (target === 1 && hours < 12) {
-                    date.setHours(hours + 12)
-                } else if (target === 0 && hours >= 12) {
-                    date.setHours(hours - 12)
-                }
-            }
-            break
+
         default:
             break
     }
 
     let isDisabled
+
     if (disabled) isDisabled = disabled(date)
     if (isDisabled) return [true]
-    if (!isDisabled && min) {
+    if (min) {
         if (compareAsc(date, min) < 0) return [true]
-        if (range && compareAsc(date, addSeconds(min, range)) > 0) return [true]
     }
     if (!isDisabled && max) {
         if (compareAsc(date, max) > 0) return [true]
-        if (range && compareAsc(date, addSeconds(max, -range)) < 0) return [true]
     }
+
     return [false, date]
-}
-
-function getFormat(formatStr: string) {
-    let defaultFormat = 'yyyy-MM-dd HH:mm:ss.SSS'
-    ;['H', 'm', 's', 'S', 'h'].map((v) => {
-        if (formatStr.indexOf(v) <= -1) {
-            const reg = new RegExp(`${v}`, 'g')
-
-            defaultFormat = defaultFormat.replace(reg, '0')
-        }
-
-        return v
-    })
-
-    return defaultFormat
-}
-
-function resetTimeByFormat(value: string | Date, formatStr: string) {
-    if (!value) return null
-
-    let date = null
-
-    if (typeof value === 'string') {
-        date = new Date(value)
-    } else {
-        date = new Date(value.getTime())
-    }
-    return new Date(
-        format(date, getFormat(formatStr), {
-            weekStartsOn: getLocale('startOfWeek'),
-        })
-    )
 }
 
 export default {
@@ -236,13 +190,11 @@ export default {
     isSameMonth,
     isSameWeek,
     isValid,
-    newDate,
     setTime,
     toDate,
     toDateWithFormat,
     compareDateArray,
     TIME_FORMAT,
-    judgeTimeByRange,
-    resetTimeByFormat,
+    getIsDisabledHMS,
     parseISO,
 }

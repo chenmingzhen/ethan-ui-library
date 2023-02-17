@@ -12,28 +12,27 @@ export interface DatePickerProps {
     inputAble?: boolean
     placeholder?: React.ReactNode
     onBlur?: (e: React.FocusEvent<HTMLElement>) => void
-    onChange?: (value: string) => void
+    onChange?: (date: Date, dateStr: string) => void
     onFocus?: (evt: React.FocusEvent<HTMLElement>) => void
     position?: string
     range?: boolean | number
     size?: 'small' | 'default' | 'large'
     type?: 'date' | 'time' | 'date-time' | 'month' | 'week' | 'year'
     allowSingle?: boolean
-    value?: number | Date | number[] | Date[]
+    defaultTime?: string | string[]
+    value?: Date
     portal?: boolean
     zIndex?: number
     children?: React.ReactNode
     onValueBlur?: () => void
     quickSelect?: QuickSelect[]
-    min?: number | Date | string
-    max?: number | Date | string
-    /** number | Date | number[] | Date[] */
-    defaultPickerValue?: number | Date
+    min?: Date
+    max?: Date
+    defaultPickerValue?: Date
     hourStep?: number
     minuteStep?: number
     secondStep?: number
-    defaultValue?: number | Date
-    formatResult?: string
+    defaultValue?: Date
     border?: boolean
     className?: string
     style?: React.CSSProperties
@@ -45,7 +44,7 @@ export interface DatePickerContainerProps extends Omit<DatePickerProps, 'onChang
 
 export type WithValueProps = DatePickerProps
 
-export interface DatePickerTextProps extends Pick<DatePickerProps, 'formatResult'> {
+export interface DatePickerTextProps {
     disabled: boolean
     className: string
     index: number
@@ -58,21 +57,19 @@ export interface DatePickerTextProps extends Pick<DatePickerProps, 'formatResult
 }
 
 export interface PickerProps extends Pick<DatePickerProps, 'type'> {
-    current: Date
+    panelDate: Date
     disabled: () => boolean
     format: string
     max: Date
     min: Date
-    onChange: () => void
+    onChange: (date: Date, shouldChange?: boolean, shouldDismiss?: boolean) => void
     value: any
-    index: number
     handleHover: (index: number, isEnter: boolean) => void
-    defaultTime: any
 }
 
 export interface DatePickerDayProps extends Pick<PickerProps, 'type'> {
-    current: Date
-    disabled: boolean | ((date: Date) => boolean)
+    panelDate: Date
+    disabled: (date: Date) => boolean
     onChange: (date: Date, change?: boolean, blur?: boolean, isEnd?: boolean) => void
     format: string
     index: number
@@ -93,13 +90,14 @@ export interface DatePickerDayProps extends Pick<PickerProps, 'type'> {
 export interface DatePickerIconProps {
     className?: string
     name: string
-    onClick?: (e) => void
+    onClick?: (e: React.MouseEvent) => void
+    onMouseDown?: (e: React.MouseEvent) => void
     tag?: keyof HTMLElementTagNameMap
     disabled?: boolean
 }
 
 export interface DatePickerYearProps {
-    current: Date
+    panelDate: Date
     onChange: (date: Date) => void
     onModeChange: (mode: string) => void
     value: Date
@@ -107,7 +105,7 @@ export interface DatePickerYearProps {
 }
 
 export interface DatePickerMonthProps extends Pick<DatePickerProps, 'min'> {
-    current: Date
+    panelDate: Date
     disabled: boolean | ((date: Date) => boolean)
     onChange: (date: Date, change?: boolean, blur?: boolean) => void
     onModeChange: (mode: string) => void
@@ -117,29 +115,21 @@ export interface DatePickerMonthProps extends Pick<DatePickerProps, 'min'> {
 }
 
 export interface DatePickerTimeProps extends Pick<DatePickerProps, 'format'> {
-    disabled: boolean | ((date: Date) => boolean)
-    onChange
-    range
+    disabled: (date: Date) => boolean
+    onChange: (date: Date, change?: boolean, blur?: boolean) => void
     value: Date
-    defaultTime
-    index: number
-    hourStep: number
-    minuteStep: number
-    secondStep: number
-    min
-    max
+    min: Date
+    max: Date
+    panelDate: Date
 }
 
 export interface TimeScrollProps {
-    ampm?: boolean
-    onChange
-    total?
-    value
-    step?
-    disabled
-    min
-    max
-    range
-    current
-    mode
+    onChange: (scale: number) => void
+    total: number
+    currentScale: number
+    disabled: (date: Date) => boolean
+    min: Date
+    max: Date
+    panelDate: Date
+    mode: 'hour' | 'minute' | 'second'
 }

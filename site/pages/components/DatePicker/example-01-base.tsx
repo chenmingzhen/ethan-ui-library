@@ -6,12 +6,12 @@
  */
 
 import React from 'react'
-import { DatePicker2 } from 'ethan-ui'
+import { DatePicker } from 'ethan-ui'
 
 export default function () {
     return (
         <>
-            <DatePicker2 />
+            <DatePicker />
         </>
     )
 }

@@ -1,40 +1,20 @@
-import React, { useCallback, useState } from 'react'
+import useRefMethod from '@/hooks/useRefMethod'
+import React, { useState } from 'react'
 import Day from './Day'
 import Month from './Month'
 import Time from './Time'
 import { PickerProps } from './type'
-import utils from './utils'
 import Year from './Year'
 
-function getInitMode(type: PickerProps['type']) {
-    let mode: string
-
-    switch (type) {
-        case 'month':
-            mode = 'month'
-            break
-        case 'time':
-            mode = 'time'
-            break
-        default:
-            mode = 'day'
-    }
-
-    return mode
-}
-
-function getDefaultCurrent(rawDate: string | number | Date, format: string) {
-    const date = utils.toDateWithFormat(rawDate, format)
-
-    return date ? new Date(date) : new Date()
-}
-
 const Picker: React.FC<PickerProps> = (props) => {
-    const { type, format, index, children, current, handleHover, ...other } = props
+    const { type, format, children, panelDate, handleHover, ...other } = props
+    const [mode, updateMode] = useState(() => {
+        if (type === 'year') return 'year'
+        if (type === 'month') return 'month'
+        if (type === 'time') return 'time'
 
-    const [mode, updateMode] = useState(getInitMode(type))
-
-    const [defaultCurrent] = useState(getDefaultCurrent(props.defaultTime[0], format))
+        return 'day'
+    })
 
     let Component = null
 
@@ -52,52 +32,13 @@ const Picker: React.FC<PickerProps> = (props) => {
             Component = Day
     }
 
-    const handleModeChange = useCallback((newMode: string) => {
+    const handleModeChange = useRefMethod((newMode: string) => {
         setTimeout(() => {
             updateMode(newMode)
         })
-    }, [])
+    })
 
-    const handleMouseEnter: React.MouseEventHandler<HTMLDivElement> = useCallback(
-        (evt) => {
-            evt.stopPropagation()
-
-            handleHover(index, true)
-        },
-        [handleHover, index]
-    )
-
-    const handleMouseLeave: React.MouseEventHandler<HTMLDivElement> = useCallback(
-        (evt) => {
-            evt.stopPropagation()
-
-            handleHover(index, false)
-        },
-        [handleHover, index]
-    )
-
-    if (index === undefined)
-        return (
-            <Component
-                {...other}
-                format={format}
-                type={type}
-                current={current || defaultCurrent}
-                onModeChange={handleModeChange}
-            />
-        )
-
-    return (
-        <div onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
-            <Component
-                {...other}
-                format={format}
-                index={index}
-                current={current || defaultCurrent}
-                onModeChange={handleModeChange}
-            />
-        </div>
-    )
+    return <Component {...other} format={format} type={type} panelDate={panelDate} onModeChange={handleModeChange} />
 }
 
 export default React.memo(Picker)

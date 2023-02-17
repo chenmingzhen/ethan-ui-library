@@ -1,8 +1,9 @@
-import React, { PureComponent } from 'react'
-import { range } from '@/utils/numbers'
 import { datePickerClass } from '@/styles'
-import utils from './utils'
+import { runInNextFrame } from '@/utils/nextFrame'
+import { range } from '@/utils/numbers'
+import React, { useEffect, useRef } from 'react'
 import { TimeScrollProps } from './type'
+import utils from './utils'
 
 const lineHeight = 30
 const grayStyle = {
@@ -11,136 +12,64 @@ const grayStyle = {
     3: { color: '#eee' },
 }
 
-class TimeScroll extends PureComponent<TimeScrollProps> {
-    defaultProps = {
-        total: 60,
-    }
+const TimeScroll: React.FC<TimeScrollProps> = function (props) {
+    const { total, onChange, mode, min, max, panelDate, disabled, currentScale } = props
+    const elementRef = useRef<HTMLDivElement>()
 
-    element: HTMLDivElement
-
-    componentDidMount() {
-        this.updateScrollTop()
-    }
-
-    componentDidUpdate() {
-        this.updateScrollTop()
-    }
-
-    getValue = (v) => {
-        const { step, ampm } = this.props
-
-        if (!step || ampm) return v
-
-        return Math.ceil(v / step)
-    }
-
-    // 获取数字项的样式
-    getItemStyle = (num, isDisabled) => {
-        if (isDisabled) return null
-
-        if (this.props.ampm || (typeof this.props.step === 'number' && this.props.step > 0)) {
-            if (this.props.value % this.props.step) return null
-            return grayStyle[Math.ceil(Math.abs(this.props.value - num) / this.props.step)]
-        }
-
-        return grayStyle[Math.abs(this.props.value - num)]
-    }
-
-    bindElement = (el) => {
-        this.element = el
-    }
-
-    updateScrollTop = () => {
-        const { value } = this.props
-
-        if (!this.element) return
-
-        if (typeof this.props.step === 'number' && this.props.step > 0 && value % this.props.step) return
-
-        if (this.element.scrollTop !== lineHeight * value) {
-            setTimeout(() => {
-                if (this.element) this.scrollToValue()
+    useEffect(() => {
+        if (elementRef.current.scrollTop !== lineHeight * currentScale) {
+            return runInNextFrame(() => {
+                elementRef.current.scrollTop = lineHeight * currentScale
             })
         }
+    }, [currentScale])
+
+    function handleMouseLeave() {
+        const scale = Math.round(elementRef.current.scrollTop / lineHeight)
+        elementRef.current.scrollTop = scale * lineHeight
     }
 
-    scrollToValue() {
-        const { value } = this.props
+    function handleScroll() {
+        const scale = Math.round(elementRef.current.scrollTop / lineHeight)
 
-        this.element.scrollTop = lineHeight * this.getValue(value)
+        onChange(scale)
     }
 
-    // 点击数字
-    handleClick(value) {
-        this.props.onChange(value)
+    function handleClick(num: number) {
+        onChange(num)
 
-        this.element.scrollTop = lineHeight * this.getValue(value)
+        elementRef.current.scrollTop = lineHeight * num
     }
 
-    // 鼠标离开后需要重置到指定的位置
-    handleMouseLeave() {
-        const value = Math.round(this.element.scrollTop / lineHeight)
+    function renderItem(scale: number) {
+        const text: string | number = scale < 10 ? `0${scale}` : scale
+        const [isDisabled] = utils.getIsDisabledHMS({ scale, min, max, panelDate, disabled, mode })
+        const className = datePickerClass(!isDisabled && currentScale === scale && 'time-active')
 
-        this.element.scrollTop = lineHeight * value
-    }
-
-    // 处理滚动 步长在此计算
-    handleScroll() {
-        const { step, ampm } = this.props
-
-        const value = Math.round(this.element.scrollTop / lineHeight)
-
-        if (typeof step === 'number' && step > 0 && !ampm && value !== this.props.value) {
-            this.props.onChange(value * step)
-            return
-        }
-
-        if (value !== this.props.value) this.props.onChange(value)
-    }
-
-    // 渲染数字项
-    renderItem(num) {
-        const { ampm, total, value, step, mode, min, max, range: ra, current, disabled } = this.props
-
-        if (typeof step === 'number' && step <= 0) return null
-        if (!ampm && typeof step === 'number' && num % step !== 0) return null
-
-        // 文本
-        let text = num
-        if (ampm) text = ['am', 'pm'][num]
-        else if (total === 12 && num === 0) text = '12'
-        else if (num < 10) text = `0${num}`
-
-        const [isDisabled] = utils.judgeTimeByRange(num, current, mode, min, max, ra, disabled)
-
-        const className = datePickerClass(!isDisabled && value === num && 'time-active')
         return (
             <span
-                key={num}
+                key={scale}
                 className={className}
-                style={this.getItemStyle(num, isDisabled)}
-                onClick={this.handleClick.bind(this, num)}
+                style={isDisabled ? undefined : grayStyle[Math.abs(currentScale - scale)]}
+                onClick={disabled ? undefined : handleClick.bind(null, scale)}
             >
                 {text}
             </span>
         )
     }
 
-    render() {
-        const { total } = this.props
-        return (
-            <div
-                ref={this.bindElement}
-                className={datePickerClass('time-list')}
-                onMouseLeave={this.handleMouseLeave}
-                onScroll={this.handleScroll}
-            >
-                <div className={datePickerClass('pad')} />
-                {range(total, 0).map((v) => this.renderItem(v))}
-                <div className={datePickerClass('pad')} />
-            </div>
-        )
-    }
+    return (
+        <div
+            ref={elementRef}
+            className={datePickerClass('time-list')}
+            onMouseLeave={handleMouseLeave}
+            onScroll={handleScroll}
+        >
+            <div className={datePickerClass('pad')} />
+            {range(total, 0).map(renderItem)}
+            <div className={datePickerClass('pad')} />
+        </div>
+    )
 }
 
-export default TimeScroll
+export default React.memo(TimeScroll)

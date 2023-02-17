@@ -1,46 +1,34 @@
-import React, { useCallback, useState } from 'react'
+import useMergedValue from '@/hooks/useMergedValue'
+import useRefMethod from '@/hooks/useRefMethod'
 import { KeyboardKey } from '@/utils/keyboard'
-import { DatePickerTextProps } from './type'
+import React from 'react'
+import { DatePickerTextProps } from '../DatePicker/type'
 import Input from '../Input'
 import utils from './utils'
 
-const useMergeState = (propsValue = '') => {
-    const [value, updateValue] = useState<string>('')
-
-    if (value) return [value, updateValue] as [string, (value: string) => void]
-
-    return [propsValue, updateValue] as [string, (value: string) => void]
-}
-
-const Text: React.FC<DatePickerTextProps> = (props) => {
+const Text: React.FC<DatePickerTextProps> = function (props) {
     const { disabled, className, index, inputAble, onTextBlur, format, placeholder, value, size } = props
+    const [textValue, updateTextValue] = useMergedValue({ defaultStateValue: '', options: { value } })
 
-    const [textValue, updateTextValue] = useMergeState(value)
-
-    if (!inputAble || disabled) return <span className={className}>{textValue || placeholder}</span>
-
-    const handleBlur = useCallback(() => {
+    const handleBlur = useRefMethod(() => {
         if (!textValue.length) {
             onTextBlur(undefined, index)
         } else {
-            const newValue = utils.toDateWithFormat(textValue, format)
+            const nextDate = utils.toDateWithFormat(textValue, format)
 
-            if (newValue) {
-                onTextBlur(newValue, index)
+            if (nextDate) {
+                onTextBlur(nextDate, index)
             }
         }
+    })
 
-        updateTextValue('')
-    }, [onTextBlur, index, textValue, value])
+    const handleKeyDown = useRefMethod((evt: React.KeyboardEvent) => {
+        if (evt.key === KeyboardKey.Enter) {
+            handleBlur()
+        }
+    })
 
-    const handleKeyDown: React.KeyboardEventHandler<HTMLInputElement> = useCallback(
-        (evt) => {
-            if (evt.key === KeyboardKey.Enter) {
-                handleBlur()
-            }
-        },
-        [handleBlur]
-    )
+    if (!inputAble || disabled) return <span className={className}>{textValue || placeholder}</span>
 
     return (
         <Input
