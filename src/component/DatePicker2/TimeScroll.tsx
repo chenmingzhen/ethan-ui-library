@@ -1,4 +1,5 @@
 import { datePickerClass } from '@/styles'
+import { runInNextFrame } from '@/utils/nextFrame'
 import { range } from '@/utils/numbers'
 import React, { useEffect, useRef } from 'react'
 import { TimeScrollProps } from './type'
@@ -12,30 +13,26 @@ const grayStyle = {
 }
 
 const TimeScroll: React.FC<TimeScrollProps> = function (props) {
-    const { total, onChange, mode, min, max, panelDate, disabled, value } = props
+    const { total, onChange, mode, min, max, panelDate, disabled, currentScale } = props
     const elementRef = useRef<HTMLDivElement>()
 
     useEffect(() => {
-        if (elementRef.current.scrollTop !== lineHeight * value) {
-            const timer = setTimeout(() => {
-                elementRef.current.scrollTop = lineHeight * value
-            }, 10)
-
-            return () => {
-                clearTimeout(timer)
-            }
+        if (elementRef.current.scrollTop !== lineHeight * currentScale) {
+            return runInNextFrame(() => {
+                elementRef.current.scrollTop = lineHeight * currentScale
+            })
         }
-    }, [value])
+    }, [currentScale])
 
     function handleMouseLeave() {
-        const currentIndex = Math.round(elementRef.current.scrollTop / lineHeight)
-        elementRef.current.scrollTop = currentIndex * lineHeight
+        const scale = Math.round(elementRef.current.scrollTop / lineHeight)
+        elementRef.current.scrollTop = scale * lineHeight
     }
 
     function handleScroll() {
-        const currentIndex = Math.round(elementRef.current.scrollTop / lineHeight)
+        const scale = Math.round(elementRef.current.scrollTop / lineHeight)
 
-        onChange(currentIndex)
+        onChange(scale)
     }
 
     function handleClick(num: number) {
@@ -44,21 +41,17 @@ const TimeScroll: React.FC<TimeScrollProps> = function (props) {
         elementRef.current.scrollTop = lineHeight * num
     }
 
-    function renderItem(num: number) {
-        let text: string | number = num
-
-        if (total === 12 && num === 0) text = '12'
-        else if (num < 10) text = `0${num}`
-
-        const [isDisabled] = utils.judgeTimeByRange(num, panelDate, mode, min, max, props.range, disabled)
-        const className = datePickerClass(!isDisabled && value === num && 'time-active')
+    function renderItem(scale: number) {
+        const text: string | number = scale < 10 ? `0${scale}` : scale
+        const [isDisabled] = utils.getIsDisabledHMS({ scale, min, max, panelDate, disabled, mode })
+        const className = datePickerClass(!isDisabled && currentScale === scale && 'time-active')
 
         return (
             <span
-                key={num}
+                key={scale}
                 className={className}
-                style={isDisabled ? undefined : grayStyle[Math.abs(value - num)]}
-                onClick={handleClick.bind(null, num)}
+                style={isDisabled ? undefined : grayStyle[Math.abs(currentScale - scale)]}
+                onClick={disabled ? undefined : handleClick.bind(null, scale)}
             >
                 {text}
             </span>

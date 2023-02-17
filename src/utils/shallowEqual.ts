@@ -21,6 +21,7 @@ function getOption(options, key) {
     return Array.isArray(val) ? val : [val]
 }
 
+/** @todo 直接使用deep-eql */
 /** 比较值是否相同 */
 export default function shallowEqual(
     objA: Record<string, any> | Array<any> | any,

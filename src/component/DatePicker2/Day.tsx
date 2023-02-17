@@ -9,9 +9,9 @@ import { DatePickerDayProps } from './type'
 import utils from './utils'
 
 const Day: React.FC<DatePickerDayProps> = function (props) {
-    const { panelDate, index, min, max, onChange, onModeChange, disabled, type, showTimePicker, value } = props
+    const { panelDate, index, min, max, onChange, onModeChange, disabled, type, value } = props
     const [hover, updateHover] = useState(null)
-    const today = useRef(utils.newDate()).current
+    const today = useRef(new Date()).current
     const minDate = min && new Date(utils.format(min, 'yyyy-MM-dd 00:00:00'))
     const maxDate = max && new Date(utils.format(max, 'yyyy-MM-dd 23:59:59'))
     const days = useMemo(() => {
@@ -144,7 +144,15 @@ const Day: React.FC<DatePickerDayProps> = function (props) {
 
         return (
             <div className={datePickerClass('date-time')}>
-                <Time {...props} format={format} value={value} onChange={handleTimeChange} />
+                <Time
+                    format={format}
+                    value={value}
+                    onChange={handleTimeChange}
+                    panelDate={panelDate}
+                    disabled={disabled}
+                    min={min}
+                    max={max}
+                />
                 <span>{utils.format(value, format)}</span>
             </div>
         )

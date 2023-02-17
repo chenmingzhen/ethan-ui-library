@@ -6,70 +6,62 @@ import { DatePickerTimeProps } from './type'
 import utils from './utils'
 
 const Time: React.FC<DatePickerTimeProps> = function (props) {
-    const { value, format, panelDate, min, max, disabled, onChange } = props
+    const { panelDate, min, max, disabled, onChange } = props
 
-    const handleChange = useRefMethod((type: string, val) => {
-        let mode = type
-
-        if (type === 'hour') {
-            if (format.indexOf('h') >= 0) {
-                mode = 'h'
-            } else {
-                mode = 'H'
-            }
-        }
-
-        const [isDisabled, date] = utils.judgeTimeByRange(val, value, mode, min, max, undefined, disabled)
+    const handleChange = useRefMethod((mode, scale) => {
+        const [isDisabled, date] = utils.getIsDisabledHMS({ scale, min, max, panelDate, disabled, mode })
 
         if (isDisabled) return
 
         onChange(date, false, false)
     })
 
-    const handleHourChange = useRefMethod((val) => {
-        handleChange('hour', val)
+    const handleHourChange = useRefMethod((scale: number) => {
+        handleChange('hour', scale)
     })
 
-    function renderHouTimeScroll() {
-        if (format.indexOf('H') >= 0) {
-            return (
-                <TimeScroll
-                    panelDate={panelDate}
-                    value={panelDate.getHours()}
-                    mode="H"
-                    min={min}
-                    max={max}
-                    disabled={disabled}
-                    total={24}
-                    onChange={handleHourChange}
-                />
-            )
-        }
-        if (format.indexOf('h') >= 0) {
-            let hours = value.getHours()
+    const handleMinuteChange = useRefMethod((scale: number) => {
+        handleChange('minute', scale)
+    })
 
-            if (hours >= 12) {
-                hours -= 12
-            }
+    const handleSecondChange = useRefMethod((scale: number) => {
+        handleChange('second', scale)
+    })
 
-            return (
-                <TimeScroll
-                    panelDate={panelDate}
-                    mode="h"
-                    min={min}
-                    max={max}
-                    disabled={disabled}
-                    value={hours}
-                    total={12}
-                    onChange={handleHourChange}
-                />
-            )
-        }
-
-        return null
-    }
-
-    return <div className={datePickerClass('time-picker')}>{renderHouTimeScroll()}</div>
+    return (
+        <div className={datePickerClass('time-picker')}>
+            <TimeScroll
+                panelDate={panelDate}
+                currentScale={panelDate.getHours()}
+                mode="hour"
+                min={min}
+                max={max}
+                disabled={disabled}
+                total={24}
+                onChange={handleHourChange}
+            />
+            <TimeScroll
+                panelDate={panelDate}
+                currentScale={panelDate.getMinutes()}
+                mode="minute"
+                min={min}
+                max={max}
+                disabled={disabled}
+                total={60}
+                onChange={handleMinuteChange}
+            />
+            <TimeScroll
+                panelDate={panelDate}
+                currentScale={panelDate.getSeconds()}
+                mode="second"
+                min={min}
+                max={max}
+                disabled={disabled}
+                total={60}
+                onChange={handleSecondChange}
+            />
+        </div>
+    )
 }
 
 export default React.memo(Time)

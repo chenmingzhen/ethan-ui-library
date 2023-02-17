@@ -47,6 +47,7 @@ const DatePicker: React.FC<DatePickerProps> = function (props) {
         max,
         onChange,
     } = props
+
     const isRender = useRef(false)
     const [focus, updateFocus, lockFocus, hasLockFocusRef] = useLockFocus()
     const pickerId = useRef(getUidStr()).current
@@ -77,7 +78,6 @@ const DatePicker: React.FC<DatePickerProps> = function (props) {
         type: props.type,
         onChange,
     })
-    /** 目前正在操作的时间(必须有一个值) */
     const [panelDate, updatePanelDate] = useState(() => {
         if (value) {
             return value
@@ -281,10 +281,10 @@ const DatePicker: React.FC<DatePickerProps> = function (props) {
                         disabled={isFunc(disabled) ? disabled : undefined}
                         onChange={handleChange}
                         type={type}
-                        value={utils.toDateWithFormat(value, format)}
+                        value={value}
                         handleHover={() => {}}
-                        min={utils.toDateWithFormat(min, format)}
-                        max={utils.toDateWithFormat(max, format)}
+                        min={min}
+                        max={max}
                     />
                 </AnimationList>
             </Portal>

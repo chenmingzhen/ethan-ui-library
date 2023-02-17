@@ -26,8 +26,8 @@ export interface DatePickerProps {
     children?: React.ReactNode
     onValueBlur?: () => void
     quickSelect?: QuickSelect[]
-    min?: number | Date
-    max?: number | Date
+    min?: Date
+    max?: Date
     defaultPickerValue?: Date
     hourStep?: number
     minuteStep?: number
@@ -44,7 +44,7 @@ export interface DatePickerContainerProps extends Omit<DatePickerProps, 'onChang
 
 export type WithValueProps = DatePickerProps
 
-export interface DatePickerTextProps extends Pick<DatePickerProps, 'formatResult'> {
+export interface DatePickerTextProps {
     disabled: boolean
     className: string
     index: number
@@ -69,7 +69,7 @@ export interface PickerProps extends Pick<DatePickerProps, 'type'> {
 
 export interface DatePickerDayProps extends Pick<PickerProps, 'type'> {
     panelDate: Date
-    disabled: boolean | ((date: Date) => boolean)
+    disabled: (date: Date) => boolean
     onChange: (date: Date, change?: boolean, blur?: boolean, isEnd?: boolean) => void
     format: string
     index: number
@@ -115,26 +115,21 @@ export interface DatePickerMonthProps extends Pick<DatePickerProps, 'min'> {
 }
 
 export interface DatePickerTimeProps extends Pick<DatePickerProps, 'format'> {
-    disabled: boolean | ((date: Date) => boolean)
-    onChange
-    range
+    disabled: (date: Date) => boolean
+    onChange: (date: Date, change?: boolean, blur?: boolean) => void
     value: Date
-    defaultTime
-    index: number
-    min
-    max
+    min: Date
+    max: Date
     panelDate: Date
 }
 
 export interface TimeScrollProps {
-    ampm?: boolean
-    onChange
-    total?
-    value
-    disabled
-    min
-    max
-    range
+    onChange: (scale: number) => void
+    total: number
+    currentScale: number
+    disabled: (date: Date) => boolean
+    min: Date
+    max: Date
     panelDate: Date
-    mode
+    mode: 'hour' | 'minute' | 'second'
 }
