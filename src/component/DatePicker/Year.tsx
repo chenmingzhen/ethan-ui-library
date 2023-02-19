@@ -7,7 +7,7 @@ import { DatePickerYearProps } from './type'
 import utils from './utils'
 
 const Year: React.FC<DatePickerYearProps> = function (props) {
-    const { panelDate, onChange, onModeChange, type } = props
+    const { panelDate, onChange, onModeChange, type, value } = props
 
     function handleChange(year: number) {
         const date = new Date(panelDate.getTime())
@@ -39,7 +39,7 @@ const Year: React.FC<DatePickerYearProps> = function (props) {
                 {years.map((y) => (
                     <span
                         key={y}
-                        className={datePickerClass(panelDate && panelDate.getFullYear() === y && 'active')}
+                        className={datePickerClass(value && value.getFullYear() === y && 'active')}
                         onClick={handleChange.bind(null, y)}
                     >
                         {y}

@@ -7,7 +7,7 @@ export interface QuickSelect {
 
 export interface DatePickerProps {
     clearable?: boolean
-    disabled?: boolean | (() => boolean)
+    disabled?: boolean | ((date: Date) => boolean)
     format?: string
     inputAble?: boolean
     placeholder?: React.ReactNode
@@ -57,7 +57,7 @@ export interface DatePickerTextProps {
 
 export interface PickerProps extends Pick<DatePickerProps, 'type'> {
     panelDate: Date
-    disabled: () => boolean
+    disabled: (date: Date) => boolean
     format: string
     max: Date
     min: Date
@@ -97,7 +97,7 @@ export interface DatePickerIconProps {
 
 export interface DatePickerYearProps {
     panelDate: Date
-    onChange: (date: Date) => void
+    onChange: (date: Date, change?: boolean, blur?: boolean) => void
     onModeChange: (mode: string) => void
     value: Date
     type: string

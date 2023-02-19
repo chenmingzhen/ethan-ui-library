@@ -6,7 +6,7 @@ type UseDatePickerValueProps = Pick<DatePickerProps, 'defaultValue' | 'value' | 
 function useDatePickerValue(props: UseDatePickerValueProps) {
     const { onChange, defaultValue } = props
 
-    const [value, updateValue, stateValue] = useMergedValue<Date, [string]>({
+    const [value, updateValue] = useMergedValue<Date, [string]>({
         defaultStateValue: undefined,
         options: {
             defaultValue,
@@ -19,7 +19,7 @@ function useDatePickerValue(props: UseDatePickerValueProps) {
         },
     })
 
-    return { value, updateValue, stateValue }
+    return { value, updateValue }
 }
 
 export default useDatePickerValue

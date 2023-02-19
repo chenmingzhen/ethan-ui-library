@@ -72,7 +72,7 @@ const DatePicker: React.FC<DatePickerProps> = function (props) {
                 return 'yyyy-MM-dd'
         }
     }, [props.type, props.format])
-    const { value, updateValue, stateValue } = useDatePickerValue({
+    const { value, updateValue } = useDatePickerValue({
         defaultValue: props.defaultValue,
         value: props.value,
         format,
@@ -98,7 +98,7 @@ const DatePicker: React.FC<DatePickerProps> = function (props) {
         } else {
             updatePanelDate(new Date())
         }
-    }, [value, format, state.open, stateValue])
+    }, [value, format, state.open])
 
     const { className, style } = useInputStyle({
         focus,
@@ -191,8 +191,8 @@ const DatePicker: React.FC<DatePickerProps> = function (props) {
         }
 
         if (date) {
-            // useMergedValue中innerValue（stateValue）更新，声明式重新panelValue
-            // updatePanelDate(date)
+            /** 点击年月份Icon切换，时间滚动 更新PanelDate */
+            updatePanelDate(date)
         }
     })
 

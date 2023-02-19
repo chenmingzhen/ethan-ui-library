@@ -5,7 +5,6 @@ import { preventDefault, throttleWrapper } from '@/utils/func'
 import { runInNextFrame } from '@/utils/nextFrame'
 import { getRangeValue, range } from '@/utils/numbers'
 import React, { useEffect, useRef } from 'react'
-import { useIsomorphicLayoutEffect } from 'react-use'
 import { TimeScrollProps } from './type'
 import utils from './utils'
 
