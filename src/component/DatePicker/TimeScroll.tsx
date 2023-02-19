@@ -1,7 +1,11 @@
+import useRefMethod from '@/hooks/useRefMethod'
 import { datePickerClass } from '@/styles'
+import normalizeWheel from '@/utils/dom/normalizeWheel'
+import { preventDefault, throttleWrapper } from '@/utils/func'
 import { runInNextFrame } from '@/utils/nextFrame'
-import { range } from '@/utils/numbers'
+import { getRangeValue, range } from '@/utils/numbers'
 import React, { useEffect, useRef } from 'react'
+import { useIsomorphicLayoutEffect } from 'react-use'
 import { TimeScrollProps } from './type'
 import utils from './utils'
 
@@ -17,28 +21,29 @@ const TimeScroll: React.FC<TimeScrollProps> = function (props) {
     const elementRef = useRef<HTMLDivElement>()
 
     useEffect(() => {
-        if (elementRef.current.scrollTop !== lineHeight * currentScale) {
-            return runInNextFrame(() => {
+        if (elementRef.current.scrollTop !== currentScale * lineHeight) {
+            const timer = runInNextFrame(() => {
                 elementRef.current.scrollTop = lineHeight * currentScale
             })
+
+            return timer
         }
     }, [currentScale])
 
-    function handleMouseLeave() {
-        const scale = Math.round(elementRef.current.scrollTop / lineHeight)
-        elementRef.current.scrollTop = scale * lineHeight
-    }
+    useEffect(() => {
+        if (elementRef.current) {
+            elementRef.current.addEventListener('wheel', handleWheel, { passive: false })
+        }
 
-    function handleScroll() {
-        const scale = Math.round(elementRef.current.scrollTop / lineHeight)
+        return () => {
+            if (elementRef.current) {
+                elementRef.current.removeEventListener('wheel', handleWheel)
+            }
+        }
+    }, [])
 
+    function handleClick(scale: number) {
         onChange(scale)
-    }
-
-    function handleClick(num: number) {
-        onChange(num)
-
-        elementRef.current.scrollTop = lineHeight * num
     }
 
     function renderItem(scale: number) {
@@ -58,13 +63,28 @@ const TimeScroll: React.FC<TimeScrollProps> = function (props) {
         )
     }
 
+    const throllScroll = useRefMethod(
+        throttleWrapper((e: WheelEvent) => {
+            const { pixelY } = normalizeWheel(e)
+
+            const scale = getRangeValue({
+                max: total - 1,
+                min: 0,
+                current: currentScale + Math.round(pixelY / lineHeight),
+            })
+
+            onChange(scale)
+        }, 150)
+    )
+
+    const handleWheel = useRefMethod((e: WheelEvent) => {
+        preventDefault(e)
+
+        throllScroll(e)
+    })
+
     return (
-        <div
-            ref={elementRef}
-            className={datePickerClass('time-list')}
-            onMouseLeave={handleMouseLeave}
-            onScroll={handleScroll}
-        >
+        <div ref={elementRef} className={datePickerClass('time-list')} style={{ scrollBehavior: 'smooth' }}>
             <div className={datePickerClass('pad')} />
             {range(total, 0).map(renderItem)}
             <div className={datePickerClass('pad')} />

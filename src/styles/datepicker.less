@@ -451,15 +451,13 @@
                 color: #eee;
                 line-height: @datepicker-time-height;
                 height: @datepicker-time-height;
+                cursor: pointer;
+                user-select: none;
             }
 
             .@{datepicker-prefix}-time-active {
-                color: #000;
+                color: @colors-primary;
                 font-weight: bold;
-            }
-
-            &:hover {
-                overflow: auto;
             }
         }
     }

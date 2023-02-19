@@ -13,7 +13,7 @@ const Time: React.FC<DatePickerTimeProps> = function (props) {
 
         if (isDisabled) return
 
-        onChange(date, false, false)
+        onChange(date, true, false)
     })
 
     const handleHourChange = useRefMethod((scale: number) => {

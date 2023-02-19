@@ -5,13 +5,14 @@ import { docSize } from '@/utils/dom/document'
 import { isEmpty, isFunc } from '@/utils/is'
 import { getUidStr } from '@/utils/uid'
 import classnames from 'classnames'
-import React, { useEffect, useMemo, useRef, useState } from 'react'
+import React, { useMemo, useRef, useState } from 'react'
 import { isDescendent } from '@/utils/dom/element'
 import { styles } from '@/utils/style/styles'
 import { getPickerPortalStyle } from '@/utils/position'
 import useLockFocus from '@/hooks/useLockFocus'
 import { getLocale } from '@/locale'
 import { preventDefault, stopPropagation } from '@/utils/func'
+import { useIsomorphicLayoutEffect } from 'react-use'
 import { DatePickerProps } from './type'
 import useInputStyle from '../Input/hooks/useInputStyle'
 import useDatePickerValue from './hooks/useDatePickerValue'
@@ -71,33 +72,14 @@ const DatePicker: React.FC<DatePickerProps> = function (props) {
                 return 'yyyy-MM-dd'
         }
     }, [props.type, props.format])
-    const { value, updateValue } = useDatePickerValue({
+    const { value, updateValue, stateValue } = useDatePickerValue({
         defaultValue: props.defaultValue,
         value: props.value,
         format,
         type: props.type,
         onChange,
     })
-    const [panelDate, updatePanelDate] = useState(() => {
-        if (value) {
-            return value
-        }
-        if (defaultPickerValue) {
-            return defaultPickerValue
-        }
-
-        return new Date()
-    })
-
-    useEffect(() => {
-        if (value) {
-            updatePanelDate(value)
-        } else if (defaultPickerValue) {
-            updatePanelDate(defaultPickerValue)
-        } else {
-            updatePanelDate(new Date())
-        }
-    }, [value, format])
+    const [panelDate, updatePanelDate] = useState(new Date())
 
     const [state, setState] = useSetState<DatePickerState>({
         open: false,
@@ -105,6 +87,19 @@ const DatePicker: React.FC<DatePickerProps> = function (props) {
         picker0: false,
         picker1: false,
     })
+
+    useIsomorphicLayoutEffect(() => {
+        if (!state.open) return
+
+        if (value) {
+            updatePanelDate(value)
+        } else if (defaultPickerValue) {
+            updatePanelDate(defaultPickerValue)
+        } else {
+            updatePanelDate(new Date())
+        }
+    }, [value, format, state.open, stateValue])
+
     const { className, style } = useInputStyle({
         focus,
         disabled: disabled === true,
@@ -196,7 +191,8 @@ const DatePicker: React.FC<DatePickerProps> = function (props) {
         }
 
         if (date) {
-            updatePanelDate(date)
+            // useMergedValue中innerValue（stateValue）更新，声明式重新panelValue
+            // updatePanelDate(date)
         }
     })
 
