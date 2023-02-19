@@ -8,7 +8,7 @@ import { DatePickerMonthProps } from './type'
 import utils from './utils'
 
 const Month: React.FC<DatePickerMonthProps> = function (props) {
-    const { panelDate, onChange, onModeChange, min, disabled, type, value } = props
+    const { panelDate, onChange, onModeChange, min, disabled, type, value, max } = props
 
     const handleClickPrevYear = useRefMethod(() => {
         onChange(utils.addYears(panelDate, -1))
@@ -38,6 +38,10 @@ const Month: React.FC<DatePickerMonthProps> = function (props) {
 
         if (min) {
             isDisabled = utils.compareMonth(new Date(min), date, 1) >= 0
+        }
+
+        if (!isDisabled && max) {
+            isDisabled = utils.compareMonth(date, new Date(max), 1) >= 0
         }
 
         if (!isDisabled && type === 'month' && isFunc(disabled)) {

@@ -12,8 +12,6 @@ const Day: React.FC<DatePickerDayProps> = function (props) {
     const { panelDate, index, min, max, onChange, onModeChange, disabled, type, value } = props
     const [hover, updateHover] = useState(null)
     const today = useRef(new Date()).current
-    const minDate = min && new Date(utils.format(min, 'yyyy-MM-dd 00:00:00'))
-    const maxDate = max && new Date(utils.format(max, 'yyyy-MM-dd 23:59:59'))
     const days = useMemo(() => {
         const date = utils.clearHMS(panelDate)
 
@@ -74,8 +72,8 @@ const Day: React.FC<DatePickerDayProps> = function (props) {
         let isDisabled = isFunc(disabled) ? disabled(date) : disabled
 
         if (
-            (index === undefined && !isDisabled && minDate && utils.compareAsc(date, minDate) < 0) ||
-            (maxDate && utils.compareAsc(date, maxDate) > 0)
+            (index === undefined && !isDisabled && min && utils.compareAsc(date, min) < 0) ||
+            (max && utils.compareAsc(date, max) > 0)
         ) {
             isDisabled = true
         }
@@ -164,12 +162,12 @@ const Day: React.FC<DatePickerDayProps> = function (props) {
             <div className={datePickerClass('header')}>
                 <Icon
                     name="AngleDoubleLeft"
-                    disabled={!!(min && panelDate.getFullYear() <= minDate.getFullYear())}
+                    disabled={!!(min && panelDate.getFullYear() <= min.getFullYear())}
                     onClick={handleClickPrevYear}
                 />
                 <Icon
                     name="AngleLeft"
-                    disabled={!!(min && utils.compareMonth(panelDate, minDate) <= 0)}
+                    disabled={!!(min && utils.compareMonth(panelDate, min) <= 0)}
                     onClick={handleClickPrevMonth}
                 />
 

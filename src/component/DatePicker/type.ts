@@ -101,6 +101,9 @@ export interface DatePickerYearProps {
     onModeChange: (mode: string) => void
     value: Date
     type: string
+    min: Date
+    max: Date
+    disabled: (date: Date) => boolean
 }
 
 export interface DatePickerMonthProps extends Pick<DatePickerProps, 'min'> {
@@ -111,6 +114,7 @@ export interface DatePickerMonthProps extends Pick<DatePickerProps, 'min'> {
     value: Date
     range: number
     type: string
+    max: Date
 }
 
 export interface DatePickerTimeProps extends Pick<DatePickerProps, 'format'> {

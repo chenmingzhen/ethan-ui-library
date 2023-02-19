@@ -2,12 +2,13 @@ import React from 'react'
 import { datePickerClass } from '@/styles'
 import { range } from '@/utils/numbers'
 import useRefMethod from '@/hooks/useRefMethod'
+import { isFunc } from '@/utils/is'
 import Icon from './Icon'
 import { DatePickerYearProps } from './type'
 import utils from './utils'
 
 const Year: React.FC<DatePickerYearProps> = function (props) {
-    const { panelDate, onChange, onModeChange, type, value } = props
+    const { panelDate, onChange, onModeChange, type, value, min, max, disabled } = props
 
     function handleChange(year: number) {
         const date = new Date(panelDate.getTime())
@@ -36,15 +37,37 @@ const Year: React.FC<DatePickerYearProps> = function (props) {
                 <Icon name="AngleRight" onClick={handleRangeChange.bind(null, 15)} />
             </div>
             <div className={datePickerClass('list')}>
-                {years.map((y) => (
-                    <span
-                        key={y}
-                        className={datePickerClass(value && value.getFullYear() === y && 'active')}
-                        onClick={handleChange.bind(null, y)}
-                    >
-                        {y}
-                    </span>
-                ))}
+                {years.map((y) => {
+                    let isDisabled = false
+                    const date = new Date()
+
+                    date.setFullYear(y)
+
+                    if (min) {
+                        isDisabled = min.getFullYear() > y
+                    }
+
+                    if (!isDisabled && max) {
+                        isDisabled = max.getFullYear() < y
+                    }
+
+                    if (!isDisabled && type === 'year' && isFunc(disabled)) {
+                        isDisabled = disabled(date)
+                    }
+
+                    return (
+                        <span
+                            key={y}
+                            className={datePickerClass(
+                                value && value.getFullYear() === y && 'active',
+                                isDisabled && 'disabled'
+                            )}
+                            onClick={handleChange.bind(null, y)}
+                        >
+                            {y}
+                        </span>
+                    )
+                })}
             </div>
         </div>
     )
