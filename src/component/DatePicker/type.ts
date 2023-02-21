@@ -2,7 +2,7 @@ import React from 'react'
 
 export interface QuickSelect {
     name: string
-    value: Date[] | Date
+    value: Date
 }
 
 export interface DatePickerProps {
@@ -15,15 +15,11 @@ export interface DatePickerProps {
     onChange?: (date: Date, dateStr: string) => void
     onFocus?: (evt: React.FocusEvent<HTMLElement>) => void
     position?: string
-    range?: boolean | number
     size?: 'small' | 'default' | 'large'
     type?: 'date' | 'time' | 'date-time' | 'month' | 'week' | 'year'
-    allowSingle?: boolean
     value?: Date
     portal?: boolean
     zIndex?: number
-    children?: React.ReactNode
-    onValueBlur?: () => void
     quickSelects?: QuickSelect[]
     min?: Date
     max?: Date
@@ -37,7 +33,7 @@ export interface DatePickerProps {
 export interface DatePickerTextProps {
     disabled: boolean
     className: string
-    index: number
+    index?: number
     inputAble: boolean
     onTextBlur: (date: Date, index: number) => void
     placeholder: React.ReactNode
@@ -54,7 +50,7 @@ export interface PickerProps extends Pick<DatePickerProps, 'type'> {
     min: Date
     onChange: (date: Date, shouldChange?: boolean, shouldDismiss?: boolean) => void
     value: any
-    handleHover: (index: number, isEnter: boolean) => void
+    handleHover?: (index: number, isEnter: boolean) => void
     quicks: QuickSelect[]
 }
 

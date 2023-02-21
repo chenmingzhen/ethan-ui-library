@@ -34,14 +34,8 @@ const Picker: React.FC<PickerProps> = (props) => {
             Component = Day
     }
 
-    const handleModeChange = useRefMethod((newMode: string) => {
-        setTimeout(() => {
-            updateMode(newMode)
-        })
-    })
-
     const handleQuickChange = useRefMethod((quick: QuickSelect) => {
-        onChange(quick.value[0], true, false)
+        onChange(quick.value, true, false)
     })
 
     return (
@@ -54,7 +48,7 @@ const Picker: React.FC<PickerProps> = (props) => {
                 format={format}
                 type={type}
                 panelDate={panelDate}
-                onModeChange={handleModeChange}
+                onModeChange={updateMode}
             />
         </div>
     )

@@ -13,9 +13,10 @@ import useLockFocus from '@/hooks/useLockFocus'
 import { getLocale } from '@/locale'
 import { preventDefault, stopPropagation } from '@/utils/func'
 import { useIsomorphicLayoutEffect } from 'react-use'
+import useMergedValue from '@/hooks/useMergedValue'
+import shallowEqual from '@/utils/shallowEqual'
 import { DatePickerProps, QuickSelect } from './type'
 import useInputStyle from '../Input/hooks/useInputStyle'
-import useDatePickerValue from './hooks/useDatePickerValue'
 import utils from './utils'
 import Icon from './Icon'
 import Text from './Text'
@@ -26,8 +27,6 @@ import Picker from './Picker'
 interface DatePickerState {
     open: boolean
     position: string
-    picker0: boolean
-    picker1: boolean
 }
 
 const DatePicker: React.FC<DatePickerProps> = function (props) {
@@ -35,7 +34,6 @@ const DatePicker: React.FC<DatePickerProps> = function (props) {
         disabled,
         border,
         size,
-        range,
         type,
         onFocus,
         defaultPickerValue,
@@ -79,31 +77,32 @@ const DatePicker: React.FC<DatePickerProps> = function (props) {
         const results: QuickSelect[] = []
 
         quickSelects.forEach((quickSelect) => {
-            const date = (Array.isArray(quickSelect.value) ? quickSelect.value : [quickSelect.value]).map((v) =>
-                utils.toDateWithFormat(v, format)
-            )
+            const date = utils.toDateWithFormat(quickSelect.value, format)
 
-            if (utils.isInvalid(date[0])) return
-
-            if (date[1] && utils.isInvalid(date[1])) return
+            if (utils.isInvalid(date)) return
 
             results.push({ name: quickSelect.name, value: date })
         })
 
         return results
     }, [quickSelects, format])
-    const { value, updateValue } = useDatePickerValue({
-        defaultValue: props.defaultValue,
-        value: props.value,
-        onChange,
+    const [value, updateValue] = useMergedValue<Date, [string]>({
+        defaultStateValue: undefined,
+        options: {
+            defaultValue: props.defaultValue,
+            value: props.value,
+            onChange(date, prevDate, dateStr) {
+                /** 至少有一个Date是有值才执行,（避免Input无值失去焦点也执行一次onChange null） */
+                if (onChange && (date || prevDate) && !shallowEqual(date, prevDate)) {
+                    onChange(date, dateStr)
+                }
+            },
+        },
     })
     const [panelDate, updatePanelDate] = useState(new Date())
-
     const [state, setState] = useSetState<DatePickerState>({
         open: false,
         position: props.position,
-        picker0: false,
-        picker1: false,
     })
 
     useIsomorphicLayoutEffect(() => {
@@ -123,7 +122,7 @@ const DatePicker: React.FC<DatePickerProps> = function (props) {
         disabled: disabled === true,
         border,
         size,
-        className: classnames(props.className, datePickerClass('_', `${range ? 'r' : 'c'}-${type || 'date'}`)),
+        className: classnames(props.className, datePickerClass('_', `c-${type || 'date'}`)),
         style: props.style,
     })
 
@@ -226,44 +225,31 @@ const DatePicker: React.FC<DatePickerProps> = function (props) {
         handleChange(null, true, true)
     })
 
-    function renderText(date: Date, textPlaceholder: React.ReactNode, key?: number) {
-        const cls = classnames(
-            datePickerClass('txt', state[`picker${key}`] && 'text-focus'),
-            utils.isInvalid(date) && inputClass('placeholder')
-        )
-
-        return (
-            <Text
-                format={format}
-                key={key}
-                className={cls}
-                index={key}
-                inputAble={inputAble}
-                placeholder={textPlaceholder}
-                onTextBlur={handleTextBlur}
-                value={utils.isInvalid(date) ? undefined : utils.format(date, format)}
-                disabled={disabled === true}
-                size={size}
-            />
-        )
-    }
-
     function renderResult() {
         const clearable = disabled ? false : props.clearable
         const empty = isEmpty(value)
 
         return (
             <div className={datePickerClass('result')}>
-                {renderText(value, placeholder)}
+                <Text
+                    size={size}
+                    format={format}
+                    inputAble={inputAble}
+                    placeholder={placeholder}
+                    onTextBlur={handleTextBlur}
+                    disabled={disabled === true}
+                    className={classnames(datePickerClass('txt'), utils.isInvalid(value) && inputClass('placeholder'))}
+                    value={utils.isInvalid(value) ? undefined : utils.format(value, format)}
+                />
                 <Icon
-                    className={empty || !clearable ? '' : 'indecator'}
                     name={type === 'time' ? 'Clock' : 'Calendar'}
+                    className={empty || !clearable ? '' : 'indecator'}
                 />
                 {!empty && clearable && (
                     <Icon
-                        name="CloseCircle"
-                        className="close"
                         tag="a"
+                        className="close"
+                        name="CloseCircle"
                         onClick={handleClear}
                         onMouseDown={(e) => {
                             preventDefault(e)
@@ -274,6 +260,8 @@ const DatePicker: React.FC<DatePickerProps> = function (props) {
             </div>
         )
     }
+
+    /** 考虑将Range和Picker拆分成不同的组件 */
 
     function renderWrappedPicker() {
         if (!state.open && !isRender.current) return null
@@ -291,50 +279,46 @@ const DatePicker: React.FC<DatePickerProps> = function (props) {
                     style={ms}
                     duration="fast"
                     animationTypes={['fade']}
+                    getRef={bindPickerContainerRef}
+                    data-id={pickerId}
                     className={datePickerClass(
                         'picker',
                         'location',
                         `absolute-${state.position}`,
                         quicks.length && 'quick'
                     )}
-                    getRef={bindPickerContainerRef}
-                    data-id={pickerId}
                 >
                     <Picker
-                        panelDate={panelDate}
                         format={format}
-                        disabled={isFunc(disabled) ? disabled : undefined}
-                        onChange={handleChange}
                         type={type}
                         value={value}
-                        handleHover={() => {}}
                         min={min}
                         max={max}
                         quicks={quicks}
+                        panelDate={panelDate}
+                        onChange={handleChange}
+                        disabled={isFunc(disabled) ? disabled : undefined}
                     />
                 </AnimationList>
             </Portal>
         )
     }
 
-    const innerCls = datePickerClass(
-        'inner',
-        range && 'range',
-        size && `size-${size}`,
-        disabled === true && 'disabled',
-        state.position
-    )
-
     return (
         <div className={className} style={style}>
             <div
                 tabIndex={disabled === true ? -1 : 0}
-                className={innerCls}
                 onFocus={handleFocus}
                 onBlur={handleBlur}
                 data-id={pickerId}
                 ref={containerRef}
                 onMouseDown={handleMouseDown}
+                className={datePickerClass(
+                    'inner',
+                    size && `size-${size}`,
+                    disabled === true && 'disabled',
+                    state.position
+                )}
             >
                 {renderResult()}
                 {renderWrappedPicker()}
