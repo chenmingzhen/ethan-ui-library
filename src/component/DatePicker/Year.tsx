@@ -62,7 +62,7 @@ const Year: React.FC<DatePickerYearProps> = function (props) {
                                 value && value.getFullYear() === y && 'active',
                                 isDisabled && 'disabled'
                             )}
-                            onClick={handleChange.bind(null, y)}
+                            onClick={isDisabled ? undefined : handleChange.bind(null, y)}
                         >
                             {y}
                         </span>

@@ -37,11 +37,11 @@ const Month: React.FC<DatePickerMonthProps> = function (props) {
         date.setFullYear(panelDate.getFullYear())
 
         if (min) {
-            isDisabled = utils.compareMonth(new Date(min), date, 1) >= 0
+            isDisabled = utils.compareMonth(new Date(min), date) >= 0
         }
 
         if (!isDisabled && max) {
-            isDisabled = utils.compareMonth(date, new Date(max), 1) >= 0
+            isDisabled = utils.compareMonth(date, new Date(max)) >= 0
         }
 
         if (!isDisabled && type === 'month' && isFunc(disabled)) {

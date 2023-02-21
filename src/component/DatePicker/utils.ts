@@ -84,11 +84,11 @@ function toDateWithFormat(rawDate: string | number | Date, fmt: string) {
     return date
 }
 
-function compareMonth(dateLeft: Date, dateRight: Date, pad = 0) {
+function compareMonth(dateLeft: Date, dateRight: Date) {
     if (!dateLeft || !dateRight) return 0
 
     const left = new Date(dateLeft.getFullYear(), dateLeft.getMonth(), 1)
-    const right = new Date(dateRight.getFullYear(), dateRight.getMonth() + pad, 1)
+    const right = new Date(dateRight.getFullYear(), dateRight.getMonth(), 1)
 
     return compareAsc(left, right)
 }

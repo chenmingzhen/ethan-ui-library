@@ -12,11 +12,7 @@ const Day: React.FC<DatePickerDayProps> = function (props) {
     const { panelDate, index, min, max, onChange, onModeChange, disabled, type, value } = props
     const [hover, updateHover] = useState(null)
     const today = useRef(new Date()).current
-    const days = useMemo(() => {
-        const date = utils.clearHMS(panelDate)
-
-        return utils.getDaysOfMonth(date)
-    }, [panelDate])
+    const days = useMemo(() => utils.getDaysOfMonth(panelDate), [panelDate])
 
     const handleChangeMonth = useRefMethod((month: number) => {
         onChange(utils.addMonths(panelDate, month))
@@ -45,30 +41,13 @@ const Day: React.FC<DatePickerDayProps> = function (props) {
         onModeChange('month')
     })
     const handleClickDay = useRefMethod((date: Date) => {
-        if (type === 'week') {
-            onChange(date, true, true)
-        } else {
-            const newDate = new Date(
-                date.getFullYear(),
-                date.getMonth(),
-                date.getDate(),
-                panelDate.getHours(),
-                panelDate.getMinutes(),
-                panelDate.getSeconds()
-            )
-
-            onChange(newDate, true, type !== 'date-time')
-        }
+        onChange(date, true, type === 'week' ? true : type !== 'date-time')
     })
     const handleTimeChange = useRefMethod((date) => {
         onChange(date, true, false)
     })
 
     function renderDay(date: Date) {
-        const hmsDate = new Date(date)
-
-        utils.setTime(hmsDate, panelDate)
-
         let isDisabled = isFunc(disabled) ? disabled(date) : disabled
 
         if (
@@ -98,7 +77,7 @@ const Day: React.FC<DatePickerDayProps> = function (props) {
             }
 
             if (
-                utils.isSameWeek(date, panelDate, {
+                utils.isSameWeek(date, value, {
                     weekStartsOn: weekStart,
                 })
             ) {
@@ -120,7 +99,7 @@ const Day: React.FC<DatePickerDayProps> = function (props) {
                 )
             }
         } else {
-            classList.push(utils.isSameDay(date, panelDate) && 'active')
+            classList.push(utils.isSameDay(date, value) && 'active')
         }
 
         return (
@@ -160,16 +139,8 @@ const Day: React.FC<DatePickerDayProps> = function (props) {
         <div className={datePickerClass('day-picker')}>
             <div className={datePickerClass('title')}>{getLocale('pickerTitle')[index]}</div>
             <div className={datePickerClass('header')}>
-                <Icon
-                    name="AngleDoubleLeft"
-                    disabled={!!(min && panelDate.getFullYear() <= min.getFullYear())}
-                    onClick={handleClickPrevYear}
-                />
-                <Icon
-                    name="AngleLeft"
-                    disabled={!!(min && utils.compareMonth(panelDate, min) <= 0)}
-                    onClick={handleClickPrevMonth}
-                />
+                <Icon name="AngleDoubleLeft" onClick={handleClickPrevYear} />
+                <Icon name="AngleLeft" onClick={handleClickPrevMonth} />
 
                 <span className={datePickerClass('ym')}>
                     <span onClick={handleClickYearMode}>{panelDate.getFullYear()}</span>

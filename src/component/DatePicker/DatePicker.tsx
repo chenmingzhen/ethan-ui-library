@@ -183,7 +183,7 @@ const DatePicker: React.FC<DatePickerProps> = function (props) {
         const dateStr = date ? utils.format(date, format, { weekStartsOn: getLocale('startOfWeek') }) : null
 
         if (shouldChange) {
-            updateValue(date, dateStr)
+            updateValue(date ? new Date(date) : null, dateStr)
         }
 
         if (shouldDismiss) {

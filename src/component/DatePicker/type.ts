@@ -28,9 +28,6 @@ export interface DatePickerProps {
     min?: Date
     max?: Date
     defaultPickerValue?: Date
-    hourStep?: number
-    minuteStep?: number
-    secondStep?: number
     defaultValue?: Date
     border?: boolean
     className?: string

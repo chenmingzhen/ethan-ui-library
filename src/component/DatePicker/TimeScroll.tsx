@@ -55,14 +55,14 @@ const TimeScroll: React.FC<TimeScrollProps> = function (props) {
                 key={scale}
                 className={className}
                 style={isDisabled ? undefined : grayStyle[Math.abs(currentScale - scale)]}
-                onClick={disabled ? undefined : handleClick.bind(null, scale)}
+                onClick={isDisabled ? undefined : handleClick.bind(null, scale)}
             >
                 {text}
             </span>
         )
     }
 
-    const throllScroll = useRefMethod(
+    const throttleScroll = useRefMethod(
         throttleWrapper((e: WheelEvent) => {
             const { pixelY } = normalizeWheel(e)
 
@@ -73,13 +73,13 @@ const TimeScroll: React.FC<TimeScrollProps> = function (props) {
             })
 
             onChange(scale)
-        }, 150)
+        }, 120)
     )
 
     const handleWheel = useRefMethod((e: WheelEvent) => {
         preventDefault(e)
 
-        throllScroll(e)
+        throttleScroll(e)
     })
 
     return (
