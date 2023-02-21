@@ -6,14 +6,14 @@ import { isEmpty, isFunc } from '@/utils/is'
 import { getUidStr } from '@/utils/uid'
 import classnames from 'classnames'
 import React, { useMemo, useRef, useState } from 'react'
-import { isDescendent } from '@/utils/dom/element'
+import { getParent, isDescendent } from '@/utils/dom/element'
 import { styles } from '@/utils/style/styles'
 import { getPickerPortalStyle } from '@/utils/position'
 import useLockFocus from '@/hooks/useLockFocus'
 import { getLocale } from '@/locale'
 import { preventDefault, stopPropagation } from '@/utils/func'
 import { useIsomorphicLayoutEffect } from 'react-use'
-import { DatePickerProps } from './type'
+import { DatePickerProps, QuickSelect } from './type'
 import useInputStyle from '../Input/hooks/useInputStyle'
 import useDatePickerValue from './hooks/useDatePickerValue'
 import utils from './utils'
@@ -47,6 +47,7 @@ const DatePicker: React.FC<DatePickerProps> = function (props) {
         min,
         max,
         onChange,
+        quickSelects,
     } = props
 
     const isRender = useRef(false)
@@ -72,11 +73,28 @@ const DatePicker: React.FC<DatePickerProps> = function (props) {
                 return 'yyyy-MM-dd'
         }
     }, [props.type, props.format])
+    const quicks = useMemo(() => {
+        if (!quickSelects) return []
+
+        const results: QuickSelect[] = []
+
+        quickSelects.forEach((quickSelect) => {
+            const date = (Array.isArray(quickSelect.value) ? quickSelect.value : [quickSelect.value]).map((v) =>
+                utils.toDateWithFormat(v, format)
+            )
+
+            if (utils.isInvalid(date[0])) return
+
+            if (date[1] && utils.isInvalid(date[1])) return
+
+            results.push({ name: quickSelect.name, value: date })
+        })
+
+        return results
+    }, [quickSelects, format])
     const { value, updateValue } = useDatePickerValue({
         defaultValue: props.defaultValue,
         value: props.value,
-        format,
-        type: props.type,
         onChange,
     })
     const [panelDate, updatePanelDate] = useState(new Date())
@@ -113,8 +131,12 @@ const DatePicker: React.FC<DatePickerProps> = function (props) {
         const desc = isDescendent(e.target as HTMLElement, pickerId)
 
         if (desc) {
+            const clickInput = getParent(e.target as HTMLElement, 'input')
+
             lockFocus(() => {
-                containerRef.current.focus()
+                if (!clickInput) {
+                    containerRef.current.focus()
+                }
             })
         }
     })
@@ -152,7 +174,9 @@ const DatePicker: React.FC<DatePickerProps> = function (props) {
             const rect = containerRef.current.getBoundingClientRect()
             const windowHeight = docSize.height
             const windowWidth = docSize.width
-            const pickerWidth = 270
+            const hasQuick = quicks.length > 0
+
+            const pickerWidth = 270 + (hasQuick ? 120 : 0)
             let nextPosition = state.position
 
             if (!props.position) {
@@ -267,7 +291,12 @@ const DatePicker: React.FC<DatePickerProps> = function (props) {
                     style={ms}
                     duration="fast"
                     animationTypes={['fade']}
-                    className={datePickerClass('picker', 'location', `absolute-${state.position}`)}
+                    className={datePickerClass(
+                        'picker',
+                        'location',
+                        `absolute-${state.position}`,
+                        quicks.length && 'quick'
+                    )}
                     getRef={bindPickerContainerRef}
                     data-id={pickerId}
                 >
@@ -281,6 +310,7 @@ const DatePicker: React.FC<DatePickerProps> = function (props) {
                         handleHover={() => {}}
                         min={min}
                         max={max}
+                        quicks={quicks}
                     />
                 </AnimationList>
             </Portal>

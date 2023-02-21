@@ -114,6 +114,10 @@
         }
     }
 
+    &-split {
+        display: flex;
+    }
+
     &-picker {
         position: absolute;
         z-index: @zindex-dropdown;
@@ -231,6 +235,46 @@
         top: 100%;
         right: 0;
         margin-top: 4px;
+    }
+
+    &-quick {
+        padding-left: 0;
+    }
+
+    &-quick-select {
+        min-width: 80px;
+        border-right: 1px solid @gray-200;
+
+        &-item {
+            max-width: 120px;
+            text-overflow: ellipsis;
+            overflow: hidden;
+            white-space: nowrap;
+            padding: 4px 12px;
+            cursor: pointer;
+            position: relative;
+            transition: all 0.2s;
+
+            &:hover {
+                background: @primary-color-fade-10;
+            }
+
+            &::after {
+                content: '';
+                transition: all 0.2s;
+                opacity: 0;
+                background: @colors-primary;
+                position: absolute;
+                right: 0;
+                top: 0;
+                bottom: 0;
+                width: 2px;
+                .@{datepicker-prefix}-rtl & {
+                    right: auto;
+                    left: 0;
+                }
+            }
+        }
     }
 
     &-day-picker,

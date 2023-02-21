@@ -4,7 +4,6 @@ import {
     addSeconds,
     addYears,
     compareAsc,
-    format,
     isSameDay,
     isSameMonth,
     isSameWeek,
@@ -15,11 +14,25 @@ import {
     startOfWeek,
     toDate,
     parseISO,
+    format as DateFnsFormat,
 } from 'date-fns'
 import { getLocale } from '@/locale'
 import { isString } from '@/utils/is'
+import { warningOnce } from '@/utils/warning'
 
 const TIME_FORMAT = 'HH:mm:ss'
+
+function format(...args: Parameters<typeof DateFnsFormat>) {
+    let res = ''
+
+    try {
+        res = DateFnsFormat(...args)
+    } catch (e) {
+        warningOnce(e?.message)
+    }
+
+    return res
+}
 
 /** 获取月份的天数 并填充前后至42个 */
 function getDaysOfMonth(rawDate: Date): Date[] {
@@ -120,18 +133,6 @@ function clearHMS(rawDate: Date | number): Date {
     return new Date(new Date(date.toLocaleDateString()).getTime())
 }
 
-function compareDateArray(arr1, arr2, type = 'date') {
-    if (!arr1 || !arr2 || arr1.length !== arr2.length) return false
-
-    return arr1.every((v, i) => {
-        if (!v || !arr2[i]) return false
-
-        if (type === 'week') return format(v, 'RRRR II') === format(arr2[i], 'RRR II')
-
-        return v.getTime() === arr2[i].getTime()
-    })
-}
-
 interface GetIsDisabledHMSParams {
     scale: number
     panelDate: Date
@@ -195,7 +196,6 @@ export default {
     setTime,
     toDate,
     toDateWithFormat,
-    compareDateArray,
     TIME_FORMAT,
     getIsDisabledHMS,
     parseISO,

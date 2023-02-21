@@ -1,13 +1,15 @@
 import useRefMethod from '@/hooks/useRefMethod'
+import { datePickerClass } from '@/styles'
 import React, { useState } from 'react'
 import Day from './Day'
 import Month from './Month'
+import Quick from './Quick'
 import Time from './Time'
-import { PickerProps } from './type'
+import { PickerProps, QuickSelect } from './type'
 import Year from './Year'
 
 const Picker: React.FC<PickerProps> = (props) => {
-    const { type, format, children, panelDate, handleHover, ...other } = props
+    const { type, format, children, panelDate, handleHover, onChange, quicks, ...other } = props
     const [mode, updateMode] = useState(() => {
         if (type === 'year') return 'year'
         if (type === 'month') return 'month'
@@ -38,7 +40,24 @@ const Picker: React.FC<PickerProps> = (props) => {
         })
     })
 
-    return <Component {...other} format={format} type={type} panelDate={panelDate} onModeChange={handleModeChange} />
+    const handleQuickChange = useRefMethod((quick: QuickSelect) => {
+        onChange(quick.value[0], true, false)
+    })
+
+    return (
+        <div className={datePickerClass('split')}>
+            {quicks.length ? <Quick quicks={quicks} onChange={handleQuickChange} /> : null}
+
+            <Component
+                {...other}
+                onChange={onChange}
+                format={format}
+                type={type}
+                panelDate={panelDate}
+                onModeChange={handleModeChange}
+            />
+        </div>
+    )
 }
 
 export default React.memo(Picker)

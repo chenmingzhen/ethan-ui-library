@@ -2,7 +2,7 @@ import useMergedValue from '@/hooks/useMergedValue'
 import useRefMethod from '@/hooks/useRefMethod'
 import { KeyboardKey } from '@/utils/keyboard'
 import React from 'react'
-import { DatePickerTextProps } from '../DatePicker/type'
+import { DatePickerTextProps } from './type'
 import Input from '../Input'
 import utils from './utils'
 
@@ -12,14 +12,18 @@ const Text: React.FC<DatePickerTextProps> = function (props) {
 
     const handleBlur = useRefMethod(() => {
         if (!textValue.length) {
-            onTextBlur(undefined, index)
+            onTextBlur(null, index)
         } else {
             const nextDate = utils.toDateWithFormat(textValue, format)
 
             if (nextDate) {
                 onTextBlur(nextDate, index)
+            } else {
+                onTextBlur(null, index)
             }
         }
+
+        updateTextValue('')
     })
 
     const handleKeyDown = useRefMethod((evt: React.KeyboardEvent) => {
