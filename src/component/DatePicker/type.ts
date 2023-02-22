@@ -1,8 +1,8 @@
 import React from 'react'
 
-export interface QuickSelect {
+export interface QuickSelect<Value extends Date | Date[]> {
     name: string
-    value: Date
+    value: Value
 }
 
 export interface DatePickerProps {
@@ -20,7 +20,7 @@ export interface DatePickerProps {
     value?: Date
     portal?: boolean
     zIndex?: number
-    quickSelects?: QuickSelect[]
+    quickSelects?: QuickSelect<Date>[]
     min?: Date
     max?: Date
     defaultPickerValue?: Date
@@ -51,7 +51,7 @@ export interface PickerProps extends Pick<DatePickerProps, 'type'> {
     onChange: (date: Date, shouldChange?: boolean, shouldDismiss?: boolean) => void
     value: any
     handleHover?: (index: number, isEnter: boolean) => void
-    quicks: QuickSelect[]
+    quicks: QuickSelect<Date>[]
 }
 
 export interface DatePickerDayProps extends Pick<PickerProps, 'type'> {
@@ -126,6 +126,17 @@ export interface TimeScrollProps {
 }
 
 export interface DatePickerQuickProps {
-    onChange: (date: QuickSelect, change?: boolean, blur?: boolean) => void
-    quicks: QuickSelect[]
+    onChange: (date: QuickSelect<Date>, change?: boolean, blur?: boolean) => void
+    quicks: QuickSelect<Date>[]
+}
+
+export interface ContainerProps extends React.DetailedHTMLProps<React.HTMLAttributes<HTMLDivElement>, HTMLDivElement> {
+    disabled: boolean
+    border: boolean
+    size: DatePickerProps['size']
+    type: DatePickerProps['type']
+    toggleOpen: (open: boolean) => void
+    containerClassName: string
+    innerClassName: string
+    containerStyle: React.CSSProperties
 }
