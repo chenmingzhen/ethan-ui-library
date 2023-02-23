@@ -3,13 +3,13 @@ import { datePickerClass } from '@/styles'
 import React, { useState } from 'react'
 import Day from './Day'
 import Month from './Month'
-import Quick from './Quick'
 import Time from './Time'
 import { PickerProps, QuickSelect } from './type'
 import Year from './Year'
 
 const Picker: React.FC<PickerProps> = (props) => {
-    const { type, format, children, panelDate, handleHover, onChange, quicks, ...other } = props
+    const { type, format, children, panelDate, onChange, quicks, ...other } = props
+
     const [mode, updateMode] = useState(() => {
         if (type === 'year') return 'year'
         if (type === 'month') return 'month'
@@ -34,13 +34,27 @@ const Picker: React.FC<PickerProps> = (props) => {
             Component = Day
     }
 
-    const handleQuickChange = useRefMethod((quick: QuickSelect) => {
+    const handleQuickChange = useRefMethod((quick: QuickSelect<Date>) => {
         onChange(quick.value, true, false)
     })
 
     return (
         <div className={datePickerClass('split')}>
-            {quicks.length ? <Quick quicks={quicks} onChange={handleQuickChange} /> : null}
+            {quicks.length ? (
+                <div className={datePickerClass('quick-select')}>
+                    {quicks.map((q) => (
+                        <div
+                            key={q.name}
+                            className={datePickerClass('quick-select-item')}
+                            onClick={() => {
+                                handleQuickChange(q)
+                            }}
+                        >
+                            {q.name}
+                        </div>
+                    ))}
+                </div>
+            ) : null}
 
             <Component
                 {...other}

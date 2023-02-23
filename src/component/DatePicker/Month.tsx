@@ -11,11 +11,11 @@ const Month: React.FC<DatePickerMonthProps> = function (props) {
     const { panelDate, onChange, onModeChange, min, disabled, type, value, max } = props
 
     const handleClickPrevYear = useRefMethod(() => {
-        onChange(utils.addYears(panelDate, -1))
+        onChange(utils.addYears(panelDate, -1), undefined)
     })
 
     const handleClickNextYear = useRefMethod(() => {
-        onChange(utils.addYears(panelDate, 1))
+        onChange(utils.addYears(panelDate, 1), undefined)
     })
 
     function handleMonthClick(month: number) {
@@ -24,7 +24,7 @@ const Month: React.FC<DatePickerMonthProps> = function (props) {
 
         date.setMonth(month, 1)
 
-        onChange(date, isMonthType, isMonthType)
+        onChange(date, 'month')
 
         if (!isMonthType) onModeChange('day')
     }

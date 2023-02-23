@@ -28,7 +28,7 @@ const DatePicker: React.FC<DatePickerProps> = function (props) {
         disabled,
         border,
         size,
-        type,
+        type = 'date',
         onFocus,
         defaultPickerValue,
         placeholder = <span>&nbsp;</span>,
@@ -117,14 +117,30 @@ const DatePicker: React.FC<DatePickerProps> = function (props) {
         updateValue(date, dateStr)
     })
 
-    const handleChange = useRefMethod((date: Date, shouldChange?: boolean, shouldDismiss?: boolean) => {
+    const handleChange = useRefMethod((date: Date, mode?: DatePickerProps['type']) => {
         const dateStr = date ? utils.format(date, format, { weekStartsOn: getLocale('startOfWeek') }) : null
 
-        if (shouldChange) {
+        let change = false
+        let dismiss = false
+
+        if ((mode === 'year' && type === 'year') || (mode === 'month' && type === 'month')) {
+            change = true
+            dismiss = true
+        }
+
+        if (mode === 'date' || mode === 'week' || mode === 'date-time' || mode === 'time') {
+            change = true
+        }
+
+        if (mode === 'week' || mode === 'date') {
+            dismiss = true
+        }
+
+        if (change) {
             updateValue(date ? new Date(date) : null, dateStr)
         }
 
-        if (shouldDismiss) {
+        if (dismiss) {
             toggleOpen(false)
         }
 
@@ -137,7 +153,8 @@ const DatePicker: React.FC<DatePickerProps> = function (props) {
     const handleClear = useRefMethod((e: React.MouseEvent) => {
         e.stopPropagation()
 
-        handleChange(null, true, true)
+        updateValue(null, '')
+        toggleOpen(false)
     })
 
     function renderResult() {

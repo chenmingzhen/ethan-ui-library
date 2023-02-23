@@ -16,13 +16,13 @@ const Year: React.FC<DatePickerYearProps> = function (props) {
 
         date.setFullYear(year)
 
-        onChange(date, isYearType, isYearType)
+        onChange(date, 'year')
 
         if (!isYearType) onModeChange('month')
     }
 
     const handleRangeChange = useRefMethod((year: number) => {
-        onChange(utils.addYears(panelDate, year))
+        onChange(utils.addYears(panelDate, year), undefined)
     })
 
     /** 可选的范围为当前年份的前后7年 */
