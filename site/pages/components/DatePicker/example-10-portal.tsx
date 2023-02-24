@@ -14,6 +14,8 @@ export default function () {
             <DatePicker placeholder="normal" />
 
             <DatePicker portal placeholder="portal" style={{ marginLeft: 20 }} />
+
+            <DatePicker.RangePicker portal placeholder="Select date" style={{ marginLeft: 20 }} />
         </div>
     )
 }

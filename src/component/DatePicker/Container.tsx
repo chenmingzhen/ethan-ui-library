@@ -31,7 +31,7 @@ const Container: ForwardRefRenderFunction<HTMLDivElement, ContainerProps> = func
     })
 
     const handleClickAway = useRefMethod((e: MouseEvent) => {
-        const desc = isDescendent(e.target as HTMLElement, props['date-id'])
+        const desc = isDescendent(e.target as HTMLElement, props['data-id'])
 
         if (desc) {
             const clickInput = getParent(e.target as HTMLElement, 'input')
