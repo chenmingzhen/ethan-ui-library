@@ -122,7 +122,7 @@ const Day: React.FC<DatePickerDayProps> = function (props) {
             }
         } else if (isRange) {
             if (panelDate.getMonth() === date.getMonth()) {
-                if (selectedPanelDates[index]) {
+                if (value) {
                     classList.push(utils.isSameDay(date, selectedPanelDates[index]) && 'active')
                 }
 

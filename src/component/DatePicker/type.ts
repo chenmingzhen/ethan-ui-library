@@ -5,6 +5,8 @@ export interface QuickSelect<Value extends Date | Date[]> {
     value: Value
 }
 
+export type ChangeMode = DatePickerProps['type'] | 'time'
+
 export interface DatePickerProps {
     clearable?: boolean
     disabled?: boolean | ((date: Date) => boolean)
@@ -16,7 +18,7 @@ export interface DatePickerProps {
     onFocus?: (evt: React.FocusEvent<HTMLElement>) => void
     position?: string
     size?: 'small' | 'default' | 'large'
-    type?: 'date' | 'time' | 'date-time' | 'month' | 'week' | 'year'
+    type?: 'date' | 'date-time' | 'month' | 'week' | 'year'
     value?: Date
     portal?: boolean
     zIndex?: number
@@ -48,15 +50,14 @@ export interface PickerProps extends Pick<DatePickerProps, 'type'> {
     format?: string
     max?: Date
     min?: Date
-    onChange: (date: Date, mode: DatePickerProps['type']) => void
+    onChange: (date: Date, mode: ChangeMode) => void
     value: Date
-    quicks: QuickSelect<Date>[]
 }
 
 export interface DatePickerDayProps {
     panelDate: Date
     disabled: (date: Date) => boolean
-    onChange: (date: Date, mode: DatePickerProps['type']) => void
+    onChange: (date: Date, mode: ChangeMode) => void
     format: string
     max: Date
     min: Date
@@ -65,7 +66,7 @@ export interface DatePickerDayProps {
     range: number
     rangeDate: Date[]
     value: Date
-    type: DatePickerProps['type']
+    type: ChangeMode
 }
 
 export interface DatePickerIconProps {
@@ -79,10 +80,10 @@ export interface DatePickerIconProps {
 
 export interface DatePickerYearProps {
     panelDate: Date
-    onChange: (date: Date, mode: DatePickerProps['type']) => void
+    onChange: (date: Date, mode: ChangeMode) => void
     onModeChange: (mode: string) => void
     value: Date
-    type: DatePickerProps['type']
+    type: ChangeMode
     min: Date
     max: Date
     disabled: (date: Date) => boolean
@@ -91,7 +92,7 @@ export interface DatePickerYearProps {
 export interface DatePickerMonthProps extends Pick<DatePickerProps, 'min'> {
     panelDate: Date
     disabled: boolean | ((date: Date) => boolean)
-    onChange: (date: Date, mode: DatePickerProps['type']) => void
+    onChange: (date: Date, mode: ChangeMode) => void
     onModeChange: (mode: string) => void
     value: Date
     range: number
@@ -101,12 +102,12 @@ export interface DatePickerMonthProps extends Pick<DatePickerProps, 'min'> {
 
 export interface DatePickerTimeProps extends Pick<DatePickerProps, 'format'> {
     disabled: (date: Date) => boolean
-    onChange: (date: Date, mode: DatePickerProps['type']) => void
+    onChange: (date: Date, mode: ChangeMode) => void
     value: Date
     min: Date
     max: Date
     panelDate: Date
-    type: DatePickerProps['type']
+    type: ChangeMode
 }
 
 export interface TimeScrollProps {
@@ -136,13 +137,13 @@ export interface RangePickerProps {
     disabled?: boolean | ((date: Date, pos: string, panelDates: Date[]) => boolean)
     format?: string
     inputAble?: boolean
-    placeholder?: [React.ReactNode, React.ReactNode]
+    placeholder?: React.ReactNode | [React.ReactNode, React.ReactNode]
     onBlur?: (e: React.FocusEvent<HTMLElement>) => void
     onFocus?: (evt: React.FocusEvent<HTMLElement>) => void
     onChange?: (dates: Date[], str: string[]) => void
     position?: string
     size?: 'small' | 'default' | 'large'
-    type?: 'date' | 'time' | 'date-time' | 'month' | 'week' | 'year'
+    type?: 'date' | 'date-time' | 'month' | 'week' | 'year'
     value?: Date[]
     portal?: boolean
     zIndex?: number
@@ -161,4 +162,5 @@ export interface RangePickerContextProps {
     index?: number
     onDayHover: (date: Date) => void
     selectedPanelDates: Date[]
+    onHoverPanel: (index: number) => void
 }

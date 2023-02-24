@@ -13,13 +13,21 @@ const style: React.CSSProperties = { marginRight: 12, marginBottom: 10, display:
 const today = new Date()
 const yesterday = addDays(today, -1)
 const tomorrow = addDays(today, 1)
+const lastWeek = addDays(today, -7)
+const nextWeek = addDays(today, 7)
 
 export default function () {
     return (
-        <>
-            <DatePicker type="date-time" placeholder="select Date" style={style} min={today} />
-
+        <div>
+            <DatePicker type="date-time" placeholder="Select Date" style={style} min={today} />
             <DatePicker type="date-time" placeholder="Select Date" style={style} min={yesterday} max={tomorrow} />
-        </>
+            <DatePicker.RangePicker
+                type="date-time"
+                placeholder="Select Date"
+                style={style}
+                min={lastWeek}
+                max={nextWeek}
+            />
+        </div>
     )
 }

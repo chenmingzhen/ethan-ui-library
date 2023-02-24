@@ -12,7 +12,7 @@ import { preventDefault, stopPropagation } from '@/utils/func'
 import { useIsomorphicLayoutEffect } from 'react-use'
 import useMergedValue from '@/hooks/useMergedValue'
 import shallowEqual from '@/utils/shallowEqual'
-import { DatePickerProps } from './type'
+import { ChangeMode, DatePickerProps, QuickSelect } from './type'
 import utils from './utils'
 import Icon from './Icon'
 import Text from './Text'
@@ -117,7 +117,7 @@ const DatePicker: React.FC<DatePickerProps> = function (props) {
         updateValue(date, dateStr)
     })
 
-    const handleChange = useRefMethod((date: Date, mode?: DatePickerProps['type']) => {
+    const handleChange = useRefMethod((date: Date, mode?: ChangeMode) => {
         const dateStr = date ? utils.format(date, format, { weekStartsOn: getLocale('startOfWeek') }) : null
 
         let change = false
@@ -144,8 +144,8 @@ const DatePicker: React.FC<DatePickerProps> = function (props) {
             toggleOpen(false)
         }
 
-        if (date) {
-            /** 点击年月份Icon切换，时间滚动 更新PanelDate */
+        /** 点击年月份Icon切换，时间滚动 更新PanelDate */
+        if (date && !mode) {
             updatePanelDate(date)
         }
     })
@@ -155,6 +155,14 @@ const DatePicker: React.FC<DatePickerProps> = function (props) {
 
         updateValue(null, '')
         toggleOpen(false)
+    })
+
+    const handleQuickChange = useRefMethod((quick: QuickSelect<Date>) => {
+        updateValue(
+            new Date(quick.value),
+            utils.format(quick.value, format, { weekStartsOn: getLocale('startOfWeek') })
+        )
+        updatePanelDate(quick.value)
     })
 
     function renderResult() {
@@ -173,10 +181,7 @@ const DatePicker: React.FC<DatePickerProps> = function (props) {
                     className={classnames(datePickerClass('txt'), utils.isInvalid(value) && inputClass('placeholder'))}
                     value={utils.isInvalid(value) ? undefined : utils.format(value, format)}
                 />
-                <Icon
-                    name={type === 'time' ? 'Clock' : 'Calendar'}
-                    className={empty || !clearable ? '' : 'indecator'}
-                />
+                <Icon name="Calendar" className={empty || !clearable ? '' : 'indicator'} />
                 {!empty && clearable && (
                     <Icon
                         tag="a"
@@ -213,17 +218,33 @@ const DatePicker: React.FC<DatePickerProps> = function (props) {
                     getRef={bindPickerContainerRef}
                     className={datePickerClass('picker', 'location', `absolute-${position}`, quicks.length && 'quick')}
                 >
-                    <Picker
-                        min={min}
-                        max={max}
-                        type={type}
-                        value={value}
-                        quicks={quicks}
-                        format={format}
-                        panelDate={panelDate}
-                        onChange={handleChange}
-                        disabled={isFunc(disabled) ? disabled : undefined}
-                    />
+                    <div className={datePickerClass('split')}>
+                        {quicks.length ? (
+                            <div className={datePickerClass('quick-select')}>
+                                {quicks.map((q) => (
+                                    <div
+                                        key={q.name}
+                                        className={datePickerClass('quick-select-item')}
+                                        onClick={() => {
+                                            handleQuickChange(q)
+                                        }}
+                                    >
+                                        {q.name}
+                                    </div>
+                                ))}
+                            </div>
+                        ) : null}
+                        <Picker
+                            min={min}
+                            max={max}
+                            type={type}
+                            value={value}
+                            format={format}
+                            panelDate={panelDate}
+                            onChange={handleChange}
+                            disabled={isFunc(disabled) ? disabled : undefined}
+                        />
+                    </div>
                 </AnimationList>
             </Portal>
         )

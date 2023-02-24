@@ -41,13 +41,6 @@ export default function () {
                 disabled={(current) => getWeek(current, { weekStartsOn: 1 }) % 2 !== 0}
                 style={style}
             />
-
-            <DatePicker
-                type="time"
-                placeholder="Cannot select before 12 o 'clock"
-                disabled={(current) => current.getHours() < 12}
-                style={style}
-            />
         </>
     )
 }

@@ -10,8 +10,10 @@ import { DatePicker } from 'ethan-ui'
 
 export default function () {
     return (
-        <>
-            <DatePicker type="date" placeholder="Select date" disabled />
-        </>
+        <div>
+            <DatePicker type="date" placeholder="Select date" disabled style={{ marginBottom: 10, display: 'block' }} />
+
+            <DatePicker.RangePicker type="date" placeholder="Select date" disabled style={{ display: 'block' }} />
+        </div>
     )
 }

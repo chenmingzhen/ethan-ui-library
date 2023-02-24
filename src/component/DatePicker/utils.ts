@@ -175,6 +175,31 @@ function getIsDisabledHMS(params: GetIsDisabledHMSParams): [boolean, Date?] {
     return [false, date]
 }
 
+function switchRangeDate(rangeDate: Date[]) {
+    if (!rangeDate[0] || !rangeDate[1]) return
+    const [left, right] = rangeDate
+
+    if (compareAsc(left, right) > 0) {
+        const temp = new Date(left)
+
+        setTime(temp, right)
+
+        rangeDate[1] = compareAsc(left, temp) > 0 ? left : temp
+    }
+}
+
+function compareDateArray(arr1: Date[], arr2: Date[], type = 'date') {
+    if (!arr1 || !arr2 || arr1.length !== arr2.length) return false
+
+    return arr1.every((v, i) => {
+        if (!v || !arr2[i]) return false
+
+        if (type === 'week') return format(v, 'RRRR II') === format(arr2[i], 'RRR II')
+
+        return v.getTime() === arr2[i].getTime()
+    })
+}
+
 export default {
     clearHMS,
     addDays,
@@ -199,4 +224,6 @@ export default {
     TIME_FORMAT,
     getIsDisabledHMS,
     parseISO,
+    switchRangeDate,
+    compareDateArray,
 }

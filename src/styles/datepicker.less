@@ -79,10 +79,17 @@
             border: none;
             box-shadow: none;
             background: transparent;
+            transition: all ease-in-out 0.2s;
 
             input {
                 padding: 0;
             }
+        }
+
+        .@{datepicker-prefix}-text-focus {
+            background: @colors-primary;
+            color: #fff;
+            border-radius: @datepicker-radius;
         }
     }
 
@@ -98,14 +105,8 @@
         margin: 0 @datepicker-margin;
     }
 
-    &-text-focus {
-        background: @colors-primary;
-        color: #fff;
-        border-radius: @datepicker-radius;
-    }
-
     &:hover &-result {
-        .@{datepicker-prefix}-indecator {
+        .@{datepicker-prefix}-indicator {
             display: none;
         }
 

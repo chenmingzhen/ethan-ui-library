@@ -1,19 +1,16 @@
-import useRefMethod from '@/hooks/useRefMethod'
-import { datePickerClass } from '@/styles'
-import React, { useState } from 'react'
+import React, { useContext, useState } from 'react'
+import RangePickerContext from './context'
 import Day from './Day'
 import Month from './Month'
-import Time from './Time'
-import { PickerProps, QuickSelect } from './type'
+import { PickerProps } from './type'
 import Year from './Year'
 
 const Picker: React.FC<PickerProps> = (props) => {
-    const { type, format, children, panelDate, onChange, quicks, ...other } = props
-
+    const { type, format, children, panelDate, onChange, ...other } = props
+    const { onHoverPanel, index } = useContext(RangePickerContext) || {}
     const [mode, updateMode] = useState(() => {
         if (type === 'year') return 'year'
         if (type === 'month') return 'month'
-        if (type === 'time') return 'time'
 
         return 'day'
     })
@@ -27,35 +24,24 @@ const Picker: React.FC<PickerProps> = (props) => {
         case 'month':
             Component = Month
             break
-        case 'time':
-            Component = Time
-            break
         default:
             Component = Day
     }
 
-    const handleQuickChange = useRefMethod((quick: QuickSelect<Date>) => {
-        onChange(quick.value, true, false)
-    })
+    function handleMouseEnter() {
+        if (onHoverPanel) {
+            onHoverPanel(index)
+        }
+    }
+
+    function handleMouseLeave() {
+        if (onHoverPanel) {
+            onHoverPanel(null)
+        }
+    }
 
     return (
-        <div className={datePickerClass('split')}>
-            {quicks.length ? (
-                <div className={datePickerClass('quick-select')}>
-                    {quicks.map((q) => (
-                        <div
-                            key={q.name}
-                            className={datePickerClass('quick-select-item')}
-                            onClick={() => {
-                                handleQuickChange(q)
-                            }}
-                        >
-                            {q.name}
-                        </div>
-                    ))}
-                </div>
-            ) : null}
-
+        <div onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
             <Component
                 {...other}
                 onChange={onChange}
