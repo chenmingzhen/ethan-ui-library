@@ -11,7 +11,7 @@ const style: React.CSSProperties = { marginRight: 12, marginBottom: 10, display:
 
 export default function () {
     return (
-        <>
+        <div>
             <DatePicker
                 placeholder="default date format is yyyy-MM-dd"
                 inputAble
@@ -30,6 +30,8 @@ export default function () {
             />
 
             <DatePicker placeholder="custom format yyyy.MM.dd" inputAble clearable style={style} format="yyyy.MM.dd" />
-        </>
+
+            <DatePicker.RangePicker inputAble clearable style={style} />
+        </div>
     )
 }

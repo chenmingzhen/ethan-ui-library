@@ -118,23 +118,8 @@ const DatePicker: React.FC<DatePickerProps> = function (props) {
     })
 
     const handleChange = useRefMethod((date: Date, mode?: ChangeMode) => {
-        const dateStr = date ? utils.format(date, format, { weekStartsOn: getLocale('startOfWeek') }) : null
-
-        let change = false
-        let dismiss = false
-
-        if ((mode === 'year' && type === 'year') || (mode === 'month' && type === 'month')) {
-            change = true
-            dismiss = true
-        }
-
-        if (mode === 'date' || mode === 'week' || mode === 'date-time' || mode === 'time') {
-            change = true
-        }
-
-        if (mode === 'week' || mode === 'date') {
-            dismiss = true
-        }
+        const dateStr = date ? utils.format(date, format, { weekStartsOn: getLocale('startOfWeek') }) : ''
+        const [change, dismiss] = utils.getChangeState(type, mode)
 
         if (change) {
             updateValue(date ? new Date(date) : null, dateStr)
@@ -144,8 +129,8 @@ const DatePicker: React.FC<DatePickerProps> = function (props) {
             toggleOpen(false)
         }
 
-        /** 点击年月份Icon切换，时间滚动 更新PanelDate */
-        if (date && !mode) {
+        if (date) {
+            /** 点击年月份Icon切换，时间滚动 更新PanelDate */
             updatePanelDate(date)
         }
     })

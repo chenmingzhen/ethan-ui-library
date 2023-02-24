@@ -19,6 +19,7 @@ import {
 import { getLocale } from '@/locale'
 import { isString } from '@/utils/is'
 import { warningOnce } from '@/utils/warning'
+import { ChangeMode, DatePickerProps } from './type'
 
 const TIME_FORMAT = 'HH:mm:ss'
 
@@ -200,6 +201,28 @@ function compareDateArray(arr1: Date[], arr2: Date[], type = 'date') {
     })
 }
 
+const STANDARD_DATE = '1970-01-01 00:00:00'
+
+function getChangeState(type: DatePickerProps['type'], mode: ChangeMode) {
+    let change = false
+    let dismiss = false
+
+    if ((mode === 'year' && type === 'year') || (mode === 'month' && type === 'month')) {
+        change = true
+        dismiss = true
+    }
+
+    if (mode === 'date' || mode === 'week' || mode === 'date-time' || mode === 'time') {
+        change = true
+    }
+
+    if (mode === 'week' || mode === 'date') {
+        dismiss = true
+    }
+
+    return [change, dismiss]
+}
+
 export default {
     clearHMS,
     addDays,
@@ -226,4 +249,6 @@ export default {
     parseISO,
     switchRangeDate,
     compareDateArray,
+    STANDARD_DATE,
+    getChangeState,
 }

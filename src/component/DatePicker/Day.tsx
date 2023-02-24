@@ -13,7 +13,7 @@ const Day: React.FC<DatePickerDayProps> = function (props) {
     const { panelDate, min, max, onChange, onModeChange, disabled, type, value } = props
     const [hover, updateHover] = useState(null)
     const today = useRef(new Date()).current
-    const days = useMemo(() => utils.getDaysOfMonth(panelDate), [panelDate])
+    const days = useMemo(() => utils.getDaysOfMonth(utils.clearHMS(panelDate)), [panelDate])
     const rangePickerProps = useContext(RangePickerContext)
     const isRange = !!rangePickerProps
     const { index, selectedPanelDates } = rangePickerProps || {}
@@ -43,36 +43,60 @@ const Day: React.FC<DatePickerDayProps> = function (props) {
     const handleClickMonthMode = useRefMethod(() => {
         onModeChange('month')
     })
-    const handleClickDay = useRefMethod((date: Date) => {
-        onChange(date, type)
+    const handleClickDay = useRefMethod((noHMSDate: Date) => {
+        if (type === 'week') {
+            /** 星期模式不用将HMS回调 */
+            onChange(noHMSDate, type)
+        } else {
+            const date = new Date(
+                noHMSDate.getFullYear(),
+                noHMSDate.getMonth(),
+                noHMSDate.getDate(),
+                panelDate.getHours(),
+                panelDate.getMinutes(),
+                panelDate.getSeconds()
+            )
+
+            /** 由于渲染的Day是没有HMS，如果选中的值超过min或者max，需要设置为min或max */
+            if (min && utils.compareAsc(date, min) < 0) utils.setTime(date, min)
+            if (max && utils.compareAsc(date, max) > 0) utils.setTime(date, max)
+
+            onChange(date, type)
+        }
     })
     const handleTimeChange = useRefMethod((date) => {
         onChange(date, 'time')
     })
 
+    /** 渲染Day时，将HMS清除,执行onChange时将HMS回调（这样就可以选中disabled当天的值，然后onChange中限制范围） */
     function renderDay(date: Date) {
         let isDisabled = isFunc(disabled) ? disabled(date) : disabled
 
+        const noHMSMin = min ? utils.clearHMS(min) : undefined
+        const noHMSMax = max ? utils.clearHMS(max) : undefined
+        const noHMSSelectedPanelDates = selectedPanelDates ? selectedPanelDates.map((it) => utils.clearHMS(it)) : []
+
         /** DatePicker */
         if (
-            (index === undefined && !isDisabled && min && utils.compareAsc(date, min) < 0) ||
-            (max && utils.compareAsc(date, max) > 0)
+            (index === undefined && !isDisabled && noHMSMin && utils.compareAsc(date, noHMSMin) < 0) ||
+            (noHMSMax && utils.compareAsc(date, noHMSMax) > 0)
         ) {
             isDisabled = true
         }
 
-        /** RangePicker */
+        /** RangePicker Left */
         if (!isDisabled && index === 1) {
             if (
-                (selectedPanelDates[0] && utils.compareAsc(date, selectedPanelDates[0])) < 0 ||
-                utils.compareAsc(date, min) < 0 ||
-                utils.compareAsc(date, max) > 0
+                (noHMSSelectedPanelDates[0] && utils.compareAsc(date, noHMSSelectedPanelDates[0]) < 0) ||
+                utils.compareAsc(date, noHMSMin) < 0 ||
+                utils.compareAsc(date, noHMSMax) > 0
             ) {
                 isDisabled = true
             }
         }
+        /** RangePicker Right */
         if (!isDisabled && index === 0) {
-            if (utils.compareAsc(date, min) < 0 || utils.compareAsc(date, max) > 0) {
+            if (utils.compareAsc(date, noHMSMin) < 0 || utils.compareAsc(date, noHMSMax) > 0) {
                 isDisabled = true
             }
         }
@@ -127,10 +151,11 @@ const Day: React.FC<DatePickerDayProps> = function (props) {
                 }
 
                 rangeCls = datePickerClass(
-                    utils.compareAsc(selectedPanelDates[0], date) <= 0 &&
-                        utils.compareAsc(selectedPanelDates[1], date) >= 0 &&
+                    utils.compareAsc(noHMSSelectedPanelDates[0], date) <= 0 &&
+                        utils.compareAsc(noHMSSelectedPanelDates[1], date) >= 0 &&
                         'hover',
-                    utils.isSameDay(selectedPanelDates[index], date) && `hover-${index === 0 ? 'start' : 'end'} active`
+                    utils.isSameDay(noHMSSelectedPanelDates[index], date) &&
+                        `hover-${index === 0 ? 'start' : 'end'} active`
                 )
             }
         } else {

@@ -5,7 +5,7 @@ export interface QuickSelect<Value extends Date | Date[]> {
     value: Value
 }
 
-export type ChangeMode = DatePickerProps['type'] | 'time'
+export type ChangeMode = Omit<DatePickerProps['type'], 'date-time'> | 'time'
 
 export interface DatePickerProps {
     clearable?: boolean
@@ -160,7 +160,6 @@ export interface RangePickerProps {
 export interface RangePickerContextProps {
     panelDates?: Date[]
     index?: number
-    onDayHover: (date: Date) => void
     selectedPanelDates: Date[]
     onHoverPanel: (index: number) => void
 }

@@ -19,7 +19,7 @@ const Month: React.FC<DatePickerMonthProps> = function (props) {
     })
 
     function handleMonthClick(month: number) {
-        const date = new Date(panelDate.getTime())
+        const date = utils.clearHMS(panelDate)
         const isMonthType = type === 'month'
 
         date.setMonth(month, 1)
@@ -30,18 +30,17 @@ const Month: React.FC<DatePickerMonthProps> = function (props) {
     }
 
     function renderMonth(monthName: string, index: number) {
-        let isDisabled = false
-        const date = new Date()
-
+        const date = new Date(utils.STANDARD_DATE)
         date.setMonth(index)
         date.setFullYear(panelDate.getFullYear())
+        let isDisabled = false
 
         if (min) {
-            isDisabled = utils.compareMonth(new Date(min), date) >= 0
+            isDisabled = utils.compareMonth(min, date) > 0
         }
 
         if (!isDisabled && max) {
-            isDisabled = utils.compareMonth(date, new Date(max)) >= 0
+            isDisabled = utils.compareMonth(date, max) > 0
         }
 
         if (!isDisabled && type === 'month' && isFunc(disabled)) {
@@ -55,7 +54,7 @@ const Month: React.FC<DatePickerMonthProps> = function (props) {
 
         return (
             <span
-                key={index}
+                key={date.getTime()}
                 className={className}
                 onClick={isDisabled ? undefined : handleMonthClick.bind(null, index)}
             >

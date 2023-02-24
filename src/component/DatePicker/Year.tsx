@@ -11,10 +11,11 @@ const Year: React.FC<DatePickerYearProps> = function (props) {
     const { panelDate, onChange, onModeChange, type, value, min, max, disabled } = props
 
     function handleChange(year: number) {
-        const date = new Date(panelDate.getTime())
+        const date = utils.clearHMS(panelDate)
         const isYearType = type === 'year'
 
         date.setFullYear(year)
+        date.setMonth(0, 1)
 
         onChange(date, 'year')
 
@@ -39,7 +40,7 @@ const Year: React.FC<DatePickerYearProps> = function (props) {
             <div className={datePickerClass('list')}>
                 {years.map((y) => {
                     let isDisabled = false
-                    const date = new Date()
+                    const date = new Date(utils.STANDARD_DATE)
 
                     date.setFullYear(y)
 

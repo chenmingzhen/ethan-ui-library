@@ -10,6 +10,7 @@ import { styles } from '@/utils/style/styles'
 import { getPickerPortalStyle } from '@/utils/position'
 import { getLocale } from '@/locale'
 import useSafeState from '@/hooks/useSafeState'
+import { preventDefault, stopPropagation } from '@/utils/func'
 import Container from './Container'
 import useFormat from './hooks/useFormat'
 import useQuicks from './hooks/useQuicks'
@@ -135,27 +136,11 @@ const RangePicker: React.FC<RangePickerProps> = function (props) {
         nextSelectedPanelDates[index] = date
         utils.switchRangeDate(nextSelectedPanelDates)
         const rangeOne = !(nextSelectedPanelDates[1 - index] && nextSelectedPanelDates[index])
+        const [change, dismiss] = rangeOne ? [false, false] : utils.getChangeState(type, mode)
 
+        /** 非点击切换的ICON */
         if (mode) {
             updateSelectedPanelDates(nextSelectedPanelDates)
-        }
-
-        let change = false
-        let dismiss = false
-
-        if (!rangeOne) {
-            if ((mode === 'year' && type === 'year') || (mode === 'month' && type === 'month')) {
-                change = true
-                dismiss = true
-            }
-
-            if (mode === 'date' || mode === 'week' || mode === 'date-time' || mode === 'time') {
-                change = true
-            }
-
-            if (mode === 'week' || mode === 'date') {
-                dismiss = true
-            }
         }
 
         if (change) {
@@ -199,8 +184,6 @@ const RangePicker: React.FC<RangePickerProps> = function (props) {
 
         return false
     })
-
-    const handleDayHover = useRefMethod((date: Date) => {})
 
     const handleHoverPanel = useRefMethod((index: number) => {
         updateHover(index)
@@ -271,7 +254,18 @@ const RangePicker: React.FC<RangePickerProps> = function (props) {
                     index={1}
                 />
                 <Icon className={empty || !clearable ? '' : 'indicator'} name="Calendar" />
-                {!empty && clearable && <Icon name="CloseCircle" className="close" tag="a" onClick={handleClear} />}
+                {!empty && clearable && (
+                    <Icon
+                        name="CloseCircle"
+                        className="close"
+                        tag="a"
+                        onClick={handleClear}
+                        onMouseDown={(e) => {
+                            preventDefault(e)
+                            stopPropagation(e)
+                        }}
+                    />
+                )}
             </div>
         )
     }
@@ -320,7 +314,6 @@ const RangePicker: React.FC<RangePickerProps> = function (props) {
                             value={{
                                 index: 0,
                                 panelDates,
-                                onDayHover: handleDayHover,
                                 selectedPanelDates,
                                 onHoverPanel: handleHoverPanel,
                             }}
@@ -341,7 +334,6 @@ const RangePicker: React.FC<RangePickerProps> = function (props) {
                             value={{
                                 index: 1,
                                 panelDates,
-                                onDayHover: handleDayHover,
                                 selectedPanelDates,
                                 onHoverPanel: handleHoverPanel,
                             }}

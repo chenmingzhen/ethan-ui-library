@@ -5,21 +5,38 @@
  *    -- DatePicker allow clear
  */
 
-import React from 'react'
+import React, { useState } from 'react'
 import { DatePicker } from 'ethan-ui'
 
 export default function () {
-    const [date, updateDate] = React.useState(new Date('2012-12-31'))
+    const [datePickerValue, updateDatePickerValue] = useState(new Date('2012-12-31'))
+    const [rangePickerValue, updateRangePickerValue] = useState([new Date('2012-12-31'), new Date()])
+
     return (
-        <DatePicker
-            placeholder="Select date"
-            clearable
-            value={date}
-            onChange={(value, dateStr) => {
-                console.log('value:', date)
-                console.log('dateStr:', dateStr)
-                updateDate(value)
-            }}
-        />
+        <div>
+            <DatePicker
+                clearable
+                style={{ display: 'block', marginBottom: 10 }}
+                placeholder="Select date"
+                value={datePickerValue}
+                onChange={(value, dateStr) => {
+                    console.log('value:', datePickerValue)
+                    console.log('dateStr:', dateStr)
+                    updateDatePickerValue(value)
+                }}
+            />
+
+            <DatePicker.RangePicker
+                clearable
+                style={{ display: 'block', marginBottom: 10 }}
+                placeholder="Select date"
+                value={rangePickerValue}
+                onChange={(value, dateStr) => {
+                    console.log('value:', value)
+                    console.log('dateStr:', dateStr)
+                    updateRangePickerValue(value)
+                }}
+            />
+        </div>
     )
 }
