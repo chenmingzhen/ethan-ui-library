@@ -42,6 +42,7 @@ export interface DatePickerTextProps {
     value: string
     size: 'small' | 'default' | 'large'
     format: string
+    onInputValidDate(date: Date, index?: number): void
 }
 
 export interface PickerProps extends Pick<DatePickerProps, 'type'> {

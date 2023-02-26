@@ -124,11 +124,17 @@ const RangePicker: React.FC<RangePickerProps> = function (props) {
     }
 
     const handleTextBlur = useRefMethod((date: Date, index: number) => {
-        const dates = index ? [value[0], date] : [date, value[1]]
+        const dates = index ? [selectedPanelDates[0], date] : [date, selectedPanelDates[1]]
         if (utils.compareAsc(dates[0], dates[1]) > 0) dates.push(dates.shift())
         const dateStrings = dates.map((it) => (it ? utils.format(it, format) : '')) as [string, string]
 
-        updateValue(dates, dateStrings)
+        const rangeOne = !(dates[1 - index] && dates[index])
+
+        if (rangeOne) {
+            updateSelectedPanelDates(dates)
+        } else {
+            updateValue(dates, dateStrings)
+        }
     })
 
     const handleChange = useRefMethod((index: number, date: Date, mode?: string) => {
@@ -189,6 +195,20 @@ const RangePicker: React.FC<RangePickerProps> = function (props) {
         updateHover(index)
     })
 
+    const handleInputValidDate = useRefMethod((date: Date, index: number) => {
+        updateSelectedPanelDates((prev) => {
+            const next = [...prev]
+            next[index] = date
+            return next
+        })
+
+        updatePanelDates((prev) => {
+            const next = [...prev]
+            next[index] = date
+            return next
+        })
+    })
+
     function handleQuickChange(quickSelect: QuickSelect<Date[]>) {
         const dateStrings = quickSelect.value.map((it) =>
             it ? utils.format(it, format, { weekStartsOn: getLocale('startOfWeek') }) : ''
@@ -235,6 +255,7 @@ const RangePicker: React.FC<RangePickerProps> = function (props) {
                     )}
                     value={leftValue}
                     index={0}
+                    onInputValidDate={handleInputValidDate}
                 />
                 <span key="-" className={datePickerClass('separate')}>
                     ~
@@ -252,6 +273,7 @@ const RangePicker: React.FC<RangePickerProps> = function (props) {
                     )}
                     value={rightValue}
                     index={1}
+                    onInputValidDate={handleInputValidDate}
                 />
                 <Icon className={empty || !clearable ? '' : 'indicator'} name="Calendar" />
                 {!empty && clearable && (

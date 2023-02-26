@@ -6,8 +6,12 @@
  */
 import React from 'react'
 import { DatePicker } from 'ethan-ui'
+import { addDays } from 'date-fns'
 
 const style: React.CSSProperties = { marginRight: 12, marginBottom: 10, display: 'block', width: 200 }
+
+const today = new Date()
+const tomorrow = addDays(today, 1)
 
 export default function () {
     return (
@@ -17,21 +21,27 @@ export default function () {
                 inputAble
                 clearable
                 style={style}
-                onFocus={(e) => {
-                    console.log('focus:', e)
-                }}
-                onBlur={(e) => {
-                    console.log('blur:', e)
-                }}
-                onChange={(e) => {
-                    console.log('change:', e)
-                }}
-                portal
+                defaultValue={today}
+                onChange={console.log}
             />
 
-            <DatePicker placeholder="custom format yyyy.MM.dd" inputAble clearable style={style} format="yyyy.MM.dd" />
+            <DatePicker
+                placeholder="custom format yyyy.MM.dd"
+                inputAble
+                clearable
+                style={style}
+                format="yyyy.MM.dd"
+                defaultValue={today}
+                onChange={console.log}
+            />
 
-            <DatePicker.RangePicker inputAble clearable style={style} />
+            <DatePicker.RangePicker
+                inputAble
+                clearable
+                style={{ marginRight: 12, marginBottom: 10, display: 'block' }}
+                defaultValue={[today, tomorrow]}
+                onChange={console.log}
+            />
         </div>
     )
 }

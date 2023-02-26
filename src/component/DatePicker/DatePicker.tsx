@@ -150,6 +150,10 @@ const DatePicker: React.FC<DatePickerProps> = function (props) {
         updatePanelDate(quick.value)
     })
 
+    const handleInputValidDate = useRefMethod((date: Date) => {
+        updatePanelDate(date)
+    })
+
     function renderResult() {
         const clearable = disabled ? false : props.clearable
         const empty = isEmpty(value)
@@ -163,6 +167,7 @@ const DatePicker: React.FC<DatePickerProps> = function (props) {
                     placeholder={placeholder}
                     onTextBlur={handleTextBlur}
                     disabled={disabled === true}
+                    onInputValidDate={handleInputValidDate}
                     className={classnames(datePickerClass('txt'), utils.isInvalid(value) && inputClass('placeholder'))}
                     value={utils.isInvalid(value) ? undefined : utils.format(value, format)}
                 />
