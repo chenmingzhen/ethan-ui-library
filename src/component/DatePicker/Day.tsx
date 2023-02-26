@@ -10,7 +10,7 @@ import { DatePickerDayProps } from './type'
 import utils from './utils'
 
 const Day: React.FC<DatePickerDayProps> = function (props) {
-    const { panelDate, min, max, onChange, onModeChange, disabled, type, value } = props
+    const { panelDate, min, max, onChange, onModeChange, disabled, type, selectedDate } = props
     const [hover, updateHover] = useState(null)
     const today = useRef(new Date()).current
     const days = useMemo(() => utils.getDaysOfMonth(utils.clearHMS(panelDate)), [panelDate])
@@ -123,7 +123,7 @@ const Day: React.FC<DatePickerDayProps> = function (props) {
             }
 
             if (
-                utils.isSameWeek(date, value, {
+                utils.isSameWeek(date, selectedDate, {
                     weekStartsOn: weekStart,
                 })
             ) {
@@ -146,7 +146,7 @@ const Day: React.FC<DatePickerDayProps> = function (props) {
             }
         } else if (isRange) {
             if (panelDate.getMonth() === date.getMonth()) {
-                if (value) {
+                if (selectedDate) {
                     classList.push(utils.isSameDay(date, selectedPanelDates[index]) && 'active')
                 }
 
@@ -159,7 +159,7 @@ const Day: React.FC<DatePickerDayProps> = function (props) {
                 )
             }
         } else {
-            classList.push(utils.isSameDay(date, value) && 'active')
+            classList.push(utils.isSameDay(date, selectedDate) && 'active')
         }
 
         return (
@@ -175,7 +175,7 @@ const Day: React.FC<DatePickerDayProps> = function (props) {
     }
 
     function renderTimePicker() {
-        if (type !== 'date-time' || !value) return null
+        if (type !== 'date-time' || !selectedDate) return null
 
         const { format } = props
 
@@ -183,15 +183,14 @@ const Day: React.FC<DatePickerDayProps> = function (props) {
             <div className={datePickerClass('date-time')}>
                 <Time
                     format={format}
-                    value={value}
+                    selectedDate={selectedDate}
                     onChange={handleTimeChange}
-                    panelDate={panelDate}
                     disabled={disabled}
                     min={min}
                     max={max}
                     type={type}
                 />
-                <span>{utils.format(value, format)}</span>
+                <span>{utils.format(selectedDate, format)}</span>
             </div>
         )
     }

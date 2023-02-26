@@ -4,12 +4,11 @@ import { docSize } from '@/utils/dom/document'
 import { isEmpty, isFunc } from '@/utils/is'
 import { getUidStr } from '@/utils/uid'
 import classnames from 'classnames'
-import React, { useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { styles } from '@/utils/style/styles'
 import { getPickerPortalStyle } from '@/utils/position'
 import { getLocale } from '@/locale'
 import { preventDefault, stopPropagation } from '@/utils/func'
-import { useIsomorphicLayoutEffect } from 'react-use'
 import useMergedValue from '@/hooks/useMergedValue'
 import shallowEqual from '@/utils/shallowEqual'
 import { ChangeMode, DatePickerProps, QuickSelect } from './type'
@@ -49,15 +48,22 @@ const DatePicker: React.FC<DatePickerProps> = function (props) {
     const pickerContainerRef = useRef<HTMLDivElement>()
     const format = useFormat(props.format, props.type)
     const quicks = useQuicks(quickSelects, format)
+    /** 面板的参考值，改变Year Month时的参考值 */
     const [panelDate, updatePanelDate] = useState(new Date())
+
     const [show, updateShow] = useState(false)
+    /** 选中的值（缓冲值，不会触发onChange，用于输入时） */
+    const [selectedDate, updateSelectedDate] = useState<Date>(undefined)
     const [position, updatePosition] = useState(props.position)
+    /** 选中的值（最终值，会触发onChange） */
     const [value, updateValue] = useMergedValue<Date, [string]>({
         defaultStateValue: undefined,
         options: {
             defaultValue: props.defaultValue,
             value: props.value,
             onChange(date, prevDate, dateStr) {
+                updateSelectedDate(date)
+
                 /** 至少有一个Date是有值才执行,（避免Input无值失去焦点也执行一次onChange null） */
                 if (onChange && (date || prevDate) && !shallowEqual(date, prevDate)) {
                     onChange(date, dateStr)
@@ -66,7 +72,7 @@ const DatePicker: React.FC<DatePickerProps> = function (props) {
         },
     })
 
-    useIsomorphicLayoutEffect(() => {
+    useEffect(() => {
         if (!show) return
 
         if (value) {
@@ -77,6 +83,12 @@ const DatePicker: React.FC<DatePickerProps> = function (props) {
             updatePanelDate(new Date())
         }
     }, [value, format, show])
+
+    useEffect(() => {
+        if (show) {
+            updateSelectedDate(value)
+        }
+    }, [show])
 
     const bindPickerContainerRef = useRefMethod((el) => {
         pickerContainerRef.current = el
@@ -112,9 +124,13 @@ const DatePicker: React.FC<DatePickerProps> = function (props) {
     }
 
     const handleTextBlur = useRefMethod((date: Date) => {
-        const dateStr = date ? utils.format(date, format) : ''
+        const nextValue = date || value
 
-        updateValue(date, dateStr)
+        if (!nextValue) return
+
+        const dateStr = utils.format(nextValue, format)
+
+        updateValue(nextValue, dateStr)
     })
 
     const handleChange = useRefMethod((date: Date, mode?: ChangeMode) => {
@@ -152,6 +168,7 @@ const DatePicker: React.FC<DatePickerProps> = function (props) {
 
     const handleInputValidDate = useRefMethod((date: Date) => {
         updatePanelDate(date)
+        updateSelectedDate(date)
     })
 
     function renderResult() {
@@ -228,11 +245,11 @@ const DatePicker: React.FC<DatePickerProps> = function (props) {
                             min={min}
                             max={max}
                             type={type}
-                            value={value}
                             format={format}
                             panelDate={panelDate}
                             onChange={handleChange}
                             disabled={isFunc(disabled) ? disabled : undefined}
+                            selectedDate={selectedDate}
                         />
                     </div>
                 </AnimationList>

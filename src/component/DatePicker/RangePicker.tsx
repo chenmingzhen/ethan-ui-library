@@ -50,12 +50,12 @@ const RangePicker: React.FC<RangePickerProps> = function (props) {
     const quicks = useQuicks(quickSelects, format)
     /** 面板显示的时间 */
     const [panelDates, updatePanelDates] = useSafeState([new Date(), new Date()])
-    /** 目前选中的面板时间（缓冲值） */
+    /** 选中的值（缓冲值，不会触发onChange,用于选中一边和输入时） */
     const [selectedPanelDates, updateSelectedPanelDates] = useSafeState<Date[]>([])
     const [show, updateShow] = useSafeState(false)
     const [hover, updateHover] = useSafeState<number>(null)
     const [position, updatePosition] = useSafeState(props.position)
-    /** 目前选中的面板时间（最终值） */
+    /** 选中的值（最终值，会触发onChange） */
     const [value, updateValue] = useMergedValue<Date[], [string[]]>({
         defaultStateValue: [],
         options: {
@@ -82,11 +82,7 @@ const RangePicker: React.FC<RangePickerProps> = function (props) {
     }, [value, format, show])
 
     useEffect(() => {
-        if (!show) {
-            updateSelectedPanelDates([])
-        } else {
-            updateSelectedPanelDates(value)
-        }
+        updateSelectedPanelDates(value)
     }, [show])
 
     const bindPickerContainerRef = useRefMethod((el) => {
@@ -141,6 +137,7 @@ const RangePicker: React.FC<RangePickerProps> = function (props) {
         const nextSelectedPanelDates = [...selectedPanelDates]
         nextSelectedPanelDates[index] = date
         utils.switchRangeDate(nextSelectedPanelDates)
+
         const rangeOne = !(nextSelectedPanelDates[1 - index] && nextSelectedPanelDates[index])
         const [change, dismiss] = rangeOne ? [false, false] : utils.getChangeState(type, mode)
 
@@ -161,9 +158,10 @@ const RangePicker: React.FC<RangePickerProps> = function (props) {
             toggleOpen(false)
         }
 
-        updatePanelDates((current) => {
-            current[index] = date
-            return [...current]
+        updatePanelDates((prev) => {
+            const next = [...prev]
+            next[index] = date
+            return next
         })
     })
 
@@ -177,7 +175,7 @@ const RangePicker: React.FC<RangePickerProps> = function (props) {
 
     const handleDisabledStart = useRefMethod((date: Date) => {
         if (isFunc(disabled)) {
-            return disabled(date, 'start', panelDates)
+            return disabled(date, 'start', selectedPanelDates)
         }
 
         return false
@@ -185,7 +183,7 @@ const RangePicker: React.FC<RangePickerProps> = function (props) {
 
     const handleDisabledEnd = useRefMethod((date: Date) => {
         if (isFunc(disabled)) {
-            return disabled(date, 'end', panelDates)
+            return disabled(date, 'end', selectedPanelDates)
         }
 
         return false
@@ -347,9 +345,9 @@ const RangePicker: React.FC<RangePickerProps> = function (props) {
                                 max={max}
                                 panelDate={panelDates[0]}
                                 onChange={handleChange.bind(null, 0)}
-                                value={selectedPanelDates[0]}
                                 type={type}
                                 format={format}
+                                selectedDate={selectedPanelDates[0]}
                             />
                         </RangePickerContext.Provider>
                         <RangePickerContext.Provider
@@ -367,9 +365,9 @@ const RangePicker: React.FC<RangePickerProps> = function (props) {
                                 max={max}
                                 panelDate={panelDates[1]}
                                 onChange={handleChange.bind(null, 1)}
-                                value={selectedPanelDates[1]}
                                 type={type}
                                 format={format}
+                                selectedDate={selectedPanelDates[1]}
                             />
                         </RangePickerContext.Provider>
                     </div>

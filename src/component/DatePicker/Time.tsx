@@ -6,10 +6,17 @@ import { DatePickerTimeProps } from './type'
 import utils from './utils'
 
 const Time: React.FC<DatePickerTimeProps> = function (props) {
-    const { panelDate, min, max, disabled, onChange } = props
+    const { min, max, disabled, onChange, selectedDate } = props
 
     const handleChange = useRefMethod((mode, scale) => {
-        const [isDisabled, date] = utils.getIsDisabledHMS({ scale, min, max, panelDate, disabled, mode })
+        const [isDisabled, date] = utils.getIsDisabledHMS({
+            scale,
+            min,
+            max,
+            selectedDate,
+            disabled,
+            mode,
+        })
 
         if (isDisabled) return
 
@@ -31,8 +38,8 @@ const Time: React.FC<DatePickerTimeProps> = function (props) {
     return (
         <div className={datePickerClass('time-picker')}>
             <TimeScroll
-                panelDate={panelDate}
-                currentScale={panelDate.getHours()}
+                selectedDate={selectedDate}
+                currentScale={selectedDate.getHours()}
                 mode="hour"
                 min={min}
                 max={max}
@@ -41,8 +48,8 @@ const Time: React.FC<DatePickerTimeProps> = function (props) {
                 onChange={handleHourChange}
             />
             <TimeScroll
-                panelDate={panelDate}
-                currentScale={panelDate.getMinutes()}
+                selectedDate={selectedDate}
+                currentScale={selectedDate.getMinutes()}
                 mode="minute"
                 min={min}
                 max={max}
@@ -51,8 +58,8 @@ const Time: React.FC<DatePickerTimeProps> = function (props) {
                 onChange={handleMinuteChange}
             />
             <TimeScroll
-                panelDate={panelDate}
-                currentScale={panelDate.getSeconds()}
+                selectedDate={selectedDate}
+                currentScale={selectedDate.getSeconds()}
                 mode="second"
                 min={min}
                 max={max}

@@ -13,7 +13,13 @@ export default function () {
     return (
         <div>
             <DatePicker type="date" placeholder="Select date" style={style} onChange={console.log} />
-            <DatePicker type="date-time" placeholder="Select date-time" style={style} onChange={console.log} />
+            <DatePicker
+                type="date-time"
+                placeholder="Select date-time"
+                style={style}
+                onChange={console.log}
+                value={new Date()}
+            />
             <DatePicker type="month" placeholder="Select month" style={style} onChange={console.log} />
             <DatePicker type="week" placeholder="Select week" style={style} onChange={console.log} />
             <DatePicker type="year" placeholder="Select year" style={style} onChange={console.log} />

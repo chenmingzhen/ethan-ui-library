@@ -11,15 +11,14 @@ function useQuicks<Value extends Date | Date[]>(quickSelects: QuickSelect<Value>
 
         quickSelects.forEach((quickSelect) => {
             if (isArray(quickSelect.value)) {
-                const date = quickSelect.value.map((v) => utils.toDateWithFormat(v, format))
+                const dates = quickSelect.value
+                if (utils.isInvalid(dates[0])) return
 
-                if (utils.isInvalid(date[0])) return
+                if (dates[1] && utils.isInvalid(dates[1])) return
 
-                if (date[1] && utils.isInvalid(date[1])) return
-
-                results.push({ name: quickSelect.name, value: date })
+                results.push({ name: quickSelect.name, value: dates })
             } else {
-                const date = utils.toDateWithFormat(quickSelect.value, format)
+                const date = quickSelect.value
 
                 if (utils.isInvalid(date)) return
 

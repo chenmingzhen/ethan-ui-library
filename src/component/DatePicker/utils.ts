@@ -17,7 +17,6 @@ import {
     format as DateFnsFormat,
 } from 'date-fns'
 import { getLocale } from '@/locale'
-import { isString } from '@/utils/is'
 import { warningOnce } from '@/utils/warning'
 import { ChangeMode, DatePickerProps } from './type'
 
@@ -72,26 +71,21 @@ function isInvalid(date) {
     return date === null || date === undefined || isNaN(date)
 }
 
-/** 默认情况下，推荐value是使用Date或者number存储，如果使用string，必须保证与format的格式相符合 */
-function toDateWithFormat(rawDate: string | number | Date, fmt: string) {
+function toDateWithFormat(dateStr: string, fmt: string) {
     let date: Date
 
-    if (isString(rawDate)) {
-        /**
-         * Date.parse() 方法解析一个表示某个日期的字符串，并返回从1970-1-1 00:00:00 UTC 到该日期对象（该日期对象的UTC时间）的毫秒数，
-         * 如果该字符串无法识别，或者一些情况下，包含了不合法的日期数值（如：2015-02-31），则返回值为NaN。
-         */
-        // var result = parse('02/11/2014', 'MM/dd/yyyy', new Date())
-        //= > Tue Feb 11 2014 00:00:00
+    /**
+     * Date.parse() 方法解析一个表示某个日期的字符串，并返回从1970-1-1 00:00:00 UTC 到该日期对象（该日期对象的UTC时间）的毫秒数，
+     * 如果该字符串无法识别，或者一些情况下，包含了不合法的日期数值（如：2015-02-31），则返回值为NaN。
+     */
+    // var result = parse('02/11/2014', 'MM/dd/yyyy', new Date())
+    //= > Tue Feb 11 2014 00:00:00
 
-        /** eg: format="yyyy年-M月" value="2012年-3月" =》可以对上 */
-        /** eg: format="yyyy年-M月" value="1327052443" =》对不上 */
-        date = parse(rawDate, fmt, new Date(), {
-            weekStartsOn: getLocale('startOfWeek'),
-        })
-    } else {
-        date = toDate(rawDate)
-    }
+    /** eg: format="yyyy年-M月" value="2012年-3月" =》可以对上 */
+    /** eg: format="yyyy年-M月" value="1327052443" =》对不上 */
+    date = parse(dateStr, fmt, new Date(), {
+        weekStartsOn: getLocale('startOfWeek'),
+    })
 
     if (isInvalid(date)) date = undefined
 
@@ -115,16 +109,6 @@ function setTime(date: Date, old: Date) {
     return date
 }
 
-function cloneTime(date: Date, old: Date, fmt: string) {
-    if (!date) return date
-
-    old = toDateWithFormat(old, fmt)
-
-    if (isInvalid(old)) return date
-
-    return setTime(date, old)
-}
-
 /** 清除时分秒 */
 function clearHMS(rawDate: Date | number): Date {
     if (!isValid(rawDate)) return rawDate as never
@@ -136,7 +120,7 @@ function clearHMS(rawDate: Date | number): Date {
 
 interface GetIsDisabledHMSParams {
     scale: number
-    panelDate: Date
+    selectedDate: Date
     mode: 'hour' | 'minute' | 'second'
     min: Date
     max: Date
@@ -144,8 +128,8 @@ interface GetIsDisabledHMSParams {
 }
 
 function getIsDisabledHMS(params: GetIsDisabledHMSParams): [boolean, Date?] {
-    const { scale, panelDate, mode, min, max, disabled } = params
-    const date = new Date(panelDate.getTime())
+    const { scale, selectedDate, mode, min, max, disabled } = params
+    const date = new Date(selectedDate.getTime())
 
     switch (mode) {
         case 'hour':
@@ -229,7 +213,6 @@ export default {
     addMonths,
     addYears,
     addSeconds,
-    cloneTime,
     /** 将日期按升序排序。 为此，如果第一个日期在第二个日期之后，则返回1；如果第一个日期在第二个日期之前，则返回-1；如果日期相等，则返回0。 */
     compareAsc,
     compareMonth,

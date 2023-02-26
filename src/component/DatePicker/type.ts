@@ -52,7 +52,7 @@ export interface PickerProps extends Pick<DatePickerProps, 'type'> {
     max?: Date
     min?: Date
     onChange: (date: Date, mode: ChangeMode) => void
-    value: Date
+    selectedDate: Date
 }
 
 export interface DatePickerDayProps {
@@ -66,8 +66,8 @@ export interface DatePickerDayProps {
     onModeChange: (mode: string) => void
     range: number
     rangeDate: Date[]
-    value: Date
     type: ChangeMode
+    selectedDate: Date
 }
 
 export interface DatePickerIconProps {
@@ -83,11 +83,11 @@ export interface DatePickerYearProps {
     panelDate: Date
     onChange: (date: Date, mode: ChangeMode) => void
     onModeChange: (mode: string) => void
-    value: Date
     type: ChangeMode
     min: Date
     max: Date
     disabled: (date: Date) => boolean
+    selectedDate: Date
 }
 
 export interface DatePickerMonthProps extends Pick<DatePickerProps, 'min'> {
@@ -95,20 +95,19 @@ export interface DatePickerMonthProps extends Pick<DatePickerProps, 'min'> {
     disabled: boolean | ((date: Date) => boolean)
     onChange: (date: Date, mode: ChangeMode) => void
     onModeChange: (mode: string) => void
-    value: Date
     range: number
     type: string
     max: Date
+    selectedDate: Date
 }
 
 export interface DatePickerTimeProps extends Pick<DatePickerProps, 'format'> {
     disabled: (date: Date) => boolean
     onChange: (date: Date, mode: ChangeMode) => void
-    value: Date
     min: Date
     max: Date
-    panelDate: Date
     type: ChangeMode
+    selectedDate: Date
 }
 
 export interface TimeScrollProps {
@@ -118,7 +117,7 @@ export interface TimeScrollProps {
     disabled: (date: Date) => boolean
     min: Date
     max: Date
-    panelDate: Date
+    selectedDate: Date
     mode: 'hour' | 'minute' | 'second'
 }
 
@@ -135,7 +134,7 @@ export interface ContainerProps extends React.DetailedHTMLProps<React.HTMLAttrib
 
 export interface RangePickerProps {
     clearable?: boolean
-    disabled?: boolean | ((date: Date, pos: string, panelDates: Date[]) => boolean)
+    disabled?: boolean | ((date: Date, pos: string, selectedPanelDates: Date[]) => boolean)
     format?: string
     inputAble?: boolean
     placeholder?: React.ReactNode | [React.ReactNode, React.ReactNode]

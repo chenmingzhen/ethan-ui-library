@@ -8,7 +8,7 @@ import { DatePickerYearProps } from './type'
 import utils from './utils'
 
 const Year: React.FC<DatePickerYearProps> = function (props) {
-    const { panelDate, onChange, onModeChange, type, value, min, max, disabled } = props
+    const { panelDate, onChange, onModeChange, type, min, max, disabled, selectedDate } = props
 
     function handleChange(year: number) {
         const date = utils.clearHMS(panelDate)
@@ -60,7 +60,7 @@ const Year: React.FC<DatePickerYearProps> = function (props) {
                         <span
                             key={y}
                             className={datePickerClass(
-                                value && value.getFullYear() === y && 'active',
+                                selectedDate && selectedDate.getFullYear() === y && 'active',
                                 isDisabled && 'disabled'
                             )}
                             onClick={isDisabled ? undefined : handleChange.bind(null, y)}

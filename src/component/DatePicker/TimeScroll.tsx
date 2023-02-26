@@ -16,7 +16,7 @@ const grayStyle = {
 }
 
 const TimeScroll: React.FC<TimeScrollProps> = function (props) {
-    const { total, onChange, mode, min, max, panelDate, disabled, currentScale } = props
+    const { total, onChange, mode, min, max, selectedDate, disabled, currentScale } = props
     const elementRef = useRef<HTMLDivElement>()
 
     useEffect(() => {
@@ -47,7 +47,7 @@ const TimeScroll: React.FC<TimeScrollProps> = function (props) {
 
     function renderItem(scale: number) {
         const text: string | number = scale < 10 ? `0${scale}` : scale
-        const [isDisabled] = utils.getIsDisabledHMS({ scale, min, max, panelDate, disabled, mode })
+        const [isDisabled] = utils.getIsDisabledHMS({ scale, min, max, selectedDate, disabled, mode })
         const className = datePickerClass(!isDisabled && currentScale === scale && 'time-active')
 
         return (
