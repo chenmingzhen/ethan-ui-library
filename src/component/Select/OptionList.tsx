@@ -239,7 +239,6 @@ const OptionList: React.ForwardRefRenderFunction<OptionListInstance, OptionListP
 
     return (
         <AnimationList
-            lazyDom
             show={show}
             style={style}
             data-id={selectId}

@@ -2,8 +2,10 @@ import React, { useState } from 'react'
 import { getLocale } from '@/locale'
 import { popoverClass } from '@/styles'
 import Popover, { PopoverProps } from './Popover'
-import Button, { ButtonProps } from '../Button'
-import Alert, { AlertProps } from '../Alert'
+import Button from '../Button'
+import Alert from '../Alert'
+import { ButtonProps } from '../Button/type'
+import { AlertProps } from '../Alert/type'
 
 interface Text {
     ok: string
@@ -12,7 +14,7 @@ interface Text {
 }
 
 export interface ConfirmProps extends PopoverProps {
-    buttonProps?: { ok?: ButtonProps; cancel: ButtonProps }
+    buttonProps?: { ok?: Omit<ButtonProps, 'ref'>; cancel: Omit<ButtonProps, 'ref'> }
 
     /** 按钮文字 */
     text?: Text

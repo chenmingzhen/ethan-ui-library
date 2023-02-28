@@ -25,8 +25,6 @@ class Dropdown extends PureComponent<IDropDownProps, DropdownState> {
 
     timer: NodeJS.Timeout
 
-    isRendered = false
-
     static defaultProps = {
         disabled: false,
         data: [],
@@ -233,9 +231,6 @@ class Dropdown extends PureComponent<IDropDownProps, DropdownState> {
         const { show } = this.state
 
         if (!Array.isArray(data) || data.length === 0) return null
-        if (!this.isRendered && !show) return this.renderButton()
-
-        this.isRendered = true
 
         const rect = this.dropdownParentElementRef.current?.getBoundingClientRect()
 
@@ -244,9 +239,8 @@ class Dropdown extends PureComponent<IDropDownProps, DropdownState> {
         /** 嵌套的Dropdown的portal均为false,基于上一个Dropdown定位 */
         return (
             <>
-                <Portal portal={portal}>
+                <Portal portal={portal} show={show}>
                     <AnimationList
-                        lazyDom
                         tag="ul"
                         show={show}
                         style={ms}

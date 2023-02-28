@@ -217,7 +217,6 @@ const BoxList: React.FC<BoxListProps> = function (props) {
 
     return (
         <AnimationList
-            lazyDom
             style={ms}
             show={show}
             duration="fast"

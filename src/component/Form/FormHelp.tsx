@@ -53,7 +53,6 @@ export default class FormHelp extends PureComponent<FormHelpProps, FormHelpState
         if (cacheError || error) {
             return (
                 <AnimationList
-                    lazyDom
                     duration="fast"
                     className={formClass('error')}
                     animationTypes={animation ? ['fade'] : undefined}

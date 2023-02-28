@@ -39,8 +39,6 @@ const ColorPicker: React.FC<ColorPickerProps> = function (props) {
 
     const colorPickerId = useRef(getUidStr()).current
 
-    const isRenderRef = useRef(false)
-
     const btnContainerRef = useRef<HTMLDivElement>()
 
     useIsomorphicLayoutUpdateEffect(() => {
@@ -92,18 +90,13 @@ const ColorPicker: React.FC<ColorPickerProps> = function (props) {
     }
 
     function renderColorBoard() {
-        if (!show && !isRenderRef.current) return
-
-        isRenderRef.current = true
-
         const rect = btnContainerRef.current?.getBoundingClientRect()
 
         const ms = styles(dropdownStyle, portal && getPickerPortalStyle(rect, position))
 
         return (
-            <Portal portal={portal}>
+            <Portal portal={portal} show={show}>
                 <AnimationList
-                    lazyDom
                     show={show}
                     style={ms}
                     className={classnames(colorPickerClass('dropdown', dropdownClassName))}

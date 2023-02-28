@@ -1,4 +1,4 @@
-import React, { useRef } from 'react'
+import React from 'react'
 import classnames from 'classnames'
 import { cardClass } from '@/styles'
 import { context } from './context'
@@ -8,18 +8,12 @@ import AnimationList from '../List'
 const Body: React.FC<CardBodyProps> = ({ className, ...props }) => {
     const { collapsible, collapsed, onCollapse } = React.useContext(context)
 
-    const isRender = useRef(false)
-
     if (!collapsible) return <div {...props} className={classnames(cardClass('body'), className)} />
-
-    if (!isRender.current && collapsed) return null
-
-    isRender.current = true
 
     const onClick = typeof collapsed === 'boolean' ? onCollapse : undefined
 
     return (
-        <AnimationList show={!collapsed} duration={240} animationTypes={['collapse', 'fade']} lazyDom>
+        <AnimationList show={!collapsed} duration={240} animationTypes={['collapse', 'fade']}>
             <div {...props} className={classnames(cardClass('body'), className)}>
                 {props.children}
                 {collapsible === 'bottom' && (

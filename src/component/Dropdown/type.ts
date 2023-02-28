@@ -48,7 +48,7 @@ export interface DropDownProps {
     style?: React.CSSProperties
     renderItem?(data: DropDownData): React.ReactNode | string
     columns?: number
-    buttonProps?: Omit<ButtonProps, 'children'>
+    buttonProps?: Omit<ButtonProps, 'children' | 'ref'>
     showCaret?: boolean
 }
 

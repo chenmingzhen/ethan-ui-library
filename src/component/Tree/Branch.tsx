@@ -9,8 +9,6 @@ import List from './List'
 import { removePlaceElementDom } from './utils'
 
 class Branch extends PureComponent<TreeBranchProps> {
-    hasExpanded = false
-
     element: HTMLDivElement
 
     static defaultProps = {
@@ -57,13 +55,8 @@ class Branch extends PureComponent<TreeBranchProps> {
     render() {
         const { data, expanded, className, style, isRoot, parentKey, ...rest } = this.props
 
-        if (!expanded && !this.hasExpanded) return null
-
-        this.hasExpanded = true
-
         return (
             <AnimationList
-                lazyDom
                 className={classnames(className, treeClass(isRoot ? 'root' : 'branch', expanded && 'expanded'))}
                 /** 添加empty使拖动时不会出现禁止符号 */
                 onDrop={preventDefault}

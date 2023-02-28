@@ -29,8 +29,6 @@ class Cascader<T> extends PureComponent<CascaderProps, CascaderState> {
 
     datum: TreeDatum
 
-    isRendered = false
-
     cascaderId = getUidStr()
 
     containerElementRef = React.createRef<HTMLDivElement>()
@@ -228,10 +226,6 @@ class Cascader<T> extends PureComponent<CascaderProps, CascaderState> {
         const { zIndex, portal, data } = this.props
         const { focus, position } = this.state
 
-        if (!focus && !this.isRendered) return null
-
-        this.isRendered = true
-
         const portalRootCls = classnames(cascaderClass(focus && 'focus'), selectClass(this.state.position))
 
         const className = classnames(selectClass('options'), cascaderClass('options', !data?.length && 'no-data'))
@@ -249,9 +243,8 @@ class Cascader<T> extends PureComponent<CascaderProps, CascaderState> {
         const ms = styles({ zIndex, width }, portal && getListPortalStyle(rect, position))
 
         return (
-            <Portal rootClass={portalRootCls} portal={portal}>
+            <Portal rootClass={portalRootCls} portal={portal} show={focus}>
                 <AnimationList
-                    lazyDom
                     show={focus}
                     data-id={this.cascaderId}
                     className={className}
@@ -283,7 +276,6 @@ class Cascader<T> extends PureComponent<CascaderProps, CascaderState> {
 
         return (
             <div
-                // eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex
                 tabIndex={disabled === true ? -1 : 0}
                 className={className}
                 onFocus={onFocus}

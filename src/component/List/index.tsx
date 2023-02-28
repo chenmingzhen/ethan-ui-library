@@ -22,9 +22,6 @@ export interface ListProps extends React.DetailedHTMLProps<React.HTMLAttributes<
 
     tag?: keyof HTMLElementTagNameMap
 
-    /** AnimationList是否一开始就存在于DOM中,懒加载的需要设置该值  */
-    lazyDom?: boolean
-
     onTransitionEnd?: React.TransitionEventHandler<HTMLDivElement>
 }
 
@@ -55,6 +52,10 @@ export default class AnimationList extends React.PureComponent<ListProps> {
 
     timer: NodeJS.Timer
 
+    hasInit = false
+
+    isRender = false
+
     static defaultProps = {
         display: 'block',
         tag: 'div',
@@ -62,135 +63,106 @@ export default class AnimationList extends React.PureComponent<ListProps> {
 
     get hasAnimation() {
         const { animationTypes } = this.props
-
         return !isEmpty(animationTypes)
     }
 
     get hasCollapse() {
         const { animationTypes } = this.props
-
         return this.hasAnimation && animationTypes.indexOf('collapse') >= 0
     }
 
     get hasTransform() {
         const { animationTypes } = this.props
-
         return this.hasAnimation && animationTypes.indexOf('scale-y') >= 0
     }
 
     get hasFade() {
         const { animationTypes } = this.props
-
         return this.hasAnimation && animationTypes.indexOf('fade') >= 0
     }
 
     get duration() {
         const { duration } = this.props
-
         return transformDuration(duration)
     }
 
-    componentDidMount() {
-        const { show, lazyDom } = this.props
+    initElement = () => {
+        if (!this.element || this.hasInit) return
 
-        if (!this.hasAnimation) return
+        this.element.style.display = 'none'
+
+        if (this.hasCollapse) {
+            this.element.style.overflow = 'hidden'
+            this.element.style.height = '0'
+        }
+        if (this.hasFade) {
+            this.element.style.opacity = '0'
+        }
+        if (this.hasTransform) {
+            this.element.style.transform = 'scaleY(0)'
+        }
+
+        this.hasInit = true
+    }
+
+    componentDidMount() {
+        const { show } = this.props
 
         if (show) {
-            if (lazyDom) {
-                if (!this.element) return
-                // 不起效果的写法，按常规逻辑，下面的写法是没有问题的，第一帧先将动画置为起始态，第二帧开始将动画置为最终态
-                // 在Chrome中无效果，在火狐开发者版中有效果 (Dropdown是click的情况 hover的情况则相反,Chrome有效果，火狐中没有)
-                // if (this.hasTransform) {
-                //     runInNextFrame(() => {
-                //         this.element.style.transform = 'scaleY(0)'
+            this.handleShow()
+        }
+    }
 
-                //         runInNextFrame(() => {
-                //             this.element.style.transform = 'scaleY(1)'
-                //         })
-                //     })
-                // }
+    handleShow = () => {
+        const { display } = this.props
 
-                /** @see https://zh-hans.reactjs.org/docs/react-component.html#componentdidmount */
-                /** @see https://zhuanlan.zhihu.com/p/388636591 */
+        this.initElement()
 
-                /** 提前获取DOM的完整高度 */
-                const fullHeight = this.getFullElementHeight()
+        runInNextFrame(() => {
+            /** 第一帧先将display从none显示出来 */
+            this.element.style.display = display
 
-                /** 最终版，各个浏览器都能执行动画的版本 */
-                if (this.hasTransform) {
-                    this.element.style.display = 'none'
-                    this.element.style.transform = 'scaleY(0)'
+            /** 在第一帧时获取元素的原始完整高度 */
+            const fullHeight = this.getFullElementHeight()
 
-                    runInNextFrame(() => {
-                        if (!this.element) return
-
-                        this.element.style.display = this.props.display
-
-                        runInNextFrame(() => {
-                            if (!this.element) return
-
-                            this.element.style.transform = 'scaleY(1)'
-                        })
-                    })
+            runInNextFrame(() => {
+                /** 第二帧开始动画的转变 */
+                if (this.hasFade) {
+                    this.element.style.opacity = '1'
                 }
 
-                if (this.hasFade) {
-                    this.element.style.display = 'none'
-                    this.element.style.opacity = '0'
-
-                    runInNextFrame(() => {
-                        if (!this.element) return
-
-                        this.element.style.display = this.props.display
-
-                        runInNextFrame(() => {
-                            if (!this.element) return
-
-                            this.element.style.opacity = '1'
-                        })
-                    })
+                if (this.hasTransform) {
+                    this.element.style.transform = 'scaleY(1)'
                 }
 
                 if (this.hasCollapse) {
-                    this.element.style.display = 'none'
+                    this.element.style.height = `${fullHeight}px`
+
+                    this.timer = setTimeout(() => {
+                        if (isEmpty(this.props.height)) {
+                            this.element.style.height = 'auto'
+                        } else {
+                            this.element.style.height = `${this.props.height}px`
+                        }
+
+                        this.element.style.overflow = ''
+                    }, this.duration)
+                }
+            })
+        })
+    }
+
+    handleHide = () => {
+        runInNextFrame(() => {
+            if (this.hasCollapse) {
+                const newHeight = this.element.offsetHeight
+
+                this.element.style.height = `${newHeight}px`
+
+                runInNextFrame(() => {
                     this.element.style.height = '0'
                     this.element.style.overflow = 'hidden'
-
-                    runInNextFrame(() => {
-                        if (!this.element) return
-
-                        this.element.style.display = this.props.display
-
-                        runInNextFrame(() => {
-                            if (!this.element) return
-
-                            this.element.style.height = `${fullHeight}px`
-
-                            this.timer = setTimeout(() => {
-                                if (!this.element) return
-
-                                if (isEmpty(this.props.height)) {
-                                    this.element.style.height = 'auto'
-                                }
-
-                                this.element.style.overflow = ''
-                            }, this.duration)
-                        })
-                    })
-                }
-            }
-
-            return
-        }
-
-        runInNextFrame(() => {
-            if (!this.element) return
-
-            this.element.style.display = 'none'
-
-            if (this.hasCollapse) {
-                this.element.style.overflow = 'hidden'
-                this.element.style.height = '0'
+                })
             }
 
             if (this.hasFade) {
@@ -200,94 +172,29 @@ export default class AnimationList extends React.PureComponent<ListProps> {
             if (this.hasTransform) {
                 this.element.style.transform = 'scaleY(0)'
             }
+
+            this.timer = setTimeout(() => {
+                if (!this.element) return
+
+                this.element.style.display = 'none'
+            }, this.duration)
         })
     }
 
     componentDidUpdate(prevProps: ListProps) {
-        if (!this.hasAnimation) return
-
-        if (prevProps.show === this.props.show) return
-
+        if (!this.hasAnimation || prevProps.show === this.props.show || !this.element) return
         if (this.timer) {
             clearTimeout(this.timer)
 
             this.timer = null
         }
 
-        const { show, display } = this.props
+        const { show } = this.props
 
         if (show) {
-            runInNextFrame(() => {
-                if (!this.element) return
-
-                /** 第一帧先将display从none显示出来 */
-                this.element.style.display = display
-
-                /** 在第一帧时获取元素的原始完整高度 */
-                const fullHeight = this.getFullElementHeight()
-
-                runInNextFrame(() => {
-                    if (!this.element) return
-
-                    /** 第二帧开始动画的转变 */
-                    if (this.hasFade) {
-                        this.element.style.opacity = '1'
-                    }
-
-                    if (this.hasTransform) {
-                        this.element.style.transform = 'scaleY(1)'
-                    }
-
-                    if (this.hasCollapse) {
-                        this.element.style.height = `${fullHeight}px`
-
-                        this.timer = setTimeout(() => {
-                            runInNextFrame(() => {
-                                if (isEmpty(this.props.height)) {
-                                    this.element.style.height = 'auto'
-                                } else {
-                                    this.element.style.height = `${this.props.height}px`
-                                }
-
-                                this.element.style.overflow = ''
-                            })
-                        }, this.duration)
-                    }
-                })
-            })
+            this.handleShow()
         } else {
-            runInNextFrame(() => {
-                if (!this.element) return
-
-                if (this.hasCollapse) {
-                    const newHeight = this.element.offsetHeight
-
-                    this.element.style.height = `${newHeight}px`
-
-                    runInNextFrame(() => {
-                        if (!this.element) return
-
-                        this.element.style.height = '0'
-                        this.element.style.overflow = 'hidden'
-                    })
-                }
-
-                if (this.hasFade) {
-                    this.element.style.opacity = '0'
-                }
-
-                if (this.hasTransform) {
-                    this.element.style.transform = 'scaleY(0)'
-                }
-
-                this.timer = setTimeout(() => {
-                    runInNextFrame(() => {
-                        if (!this.element) return
-
-                        this.element.style.display = 'none'
-                    })
-                }, this.duration)
-            })
+            this.handleHide()
         }
     }
 
@@ -325,7 +232,11 @@ export default class AnimationList extends React.PureComponent<ListProps> {
     }
 
     render() {
-        const { show, getRef, style = {}, animationTypes, duration, lazyDom, tag, ...other } = this.props
+        const { show, getRef, style = {}, animationTypes, duration, tag, ...other } = this.props
+
+        if (!show && !this.isRender) return null
+
+        this.isRender = true
 
         let animation = `animation-${this.duration}`
 

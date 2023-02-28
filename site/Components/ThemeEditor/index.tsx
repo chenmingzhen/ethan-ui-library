@@ -1,5 +1,5 @@
 import { headerClass } from 'doc/styles'
-import React, { useRef, useState } from 'react'
+import React, { useState } from 'react'
 import cssAccessors from '@/utils/style/css-accessors'
 import AnimationList from '@/component/List'
 import Portal from '@/component/Portal'
@@ -14,22 +14,6 @@ document.body.appendChild(container)
 const ThemeEditor: React.FC = function () {
     const [visible, updateVisible] = useState(false)
 
-    const isRender = useRef(false)
-
-    function renderPanel() {
-        if (!visible && !isRender.current) return null
-
-        isRender.current = true
-
-        return (
-            <Portal portal>
-                <AnimationList lazyDom show={visible} animationTypes={['fade']} duration="fast">
-                    <Editor onClose={handleToggle} />
-                </AnimationList>
-            </Portal>
-        )
-    }
-
     function handleToggle() {
         updateVisible(!visible)
     }
@@ -40,7 +24,11 @@ const ThemeEditor: React.FC = function () {
                 <div className={headerClass('color-current')} style={{ backgroundColor: color.primary }} />
             </span>
 
-            {renderPanel()}
+            <Portal portal show={visible}>
+                <AnimationList show={visible} animationTypes={['fade']} duration="fast">
+                    <Editor onClose={handleToggle} />
+                </AnimationList>
+            </Portal>
         </>
     )
 }

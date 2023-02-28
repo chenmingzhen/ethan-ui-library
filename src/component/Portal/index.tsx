@@ -1,51 +1,36 @@
 import { portalClass } from '@/styles'
+import isDOMElement from '@/utils/dom/isDOMElement'
 import classnames from 'classnames'
-import React, { useRef } from 'react'
+import React, { useMemo, useRef } from 'react'
 import ReactDOM from 'react-dom'
-import { useIsomorphicLayoutEffect } from 'react-use'
 
 interface PortalProps {
     portal?: boolean
-
     rootClass?: string
-
     children: ((params: { style: React.CSSProperties }) => React.ReactNode) | React.ReactNode
+    getContainer?: () => HTMLElement
+    show: boolean
 }
 
-let root: HTMLDivElement
-
-function initRoot() {
-    root = document.createElement('div')
-
-    root.className = portalClass('_')
-
-    document.body.appendChild(root)
-}
-
+/** 一般情况，使用portal就可以满足大部分的场景，portal就渲染在document.body上，否则就在原来的位置渲染 */
 const Portal: React.FC<PortalProps> = function (props) {
-    const { portal, rootClass, children } = props
-
-    const container = useRef(portal ? document.createElement('div') : undefined).current
-
-    useIsomorphicLayoutEffect(() => {
-        if (!portal) return
-
-        if (!root) initRoot()
-
-        root.appendChild(container)
-
-        return () => {
-            root.removeChild(container)
-        }
+    const { portal, rootClass, children, getContainer, show } = props
+    const container = useMemo(() => {
+        const propContainer = getContainer ? getContainer() : undefined
+        if (isDOMElement(propContainer)) return propContainer
+        if (!portal) return undefined
+        return document.body
     }, [])
+    const hasInit = useRef(false)
 
-    if (!portal) {
+    if (!show && !hasInit.current) return null
+    hasInit.current = true
+
+    if (!container) {
         return <>{children}</>
     }
 
-    container.className = classnames(portalClass('wrapper'), rootClass)
-
-    return ReactDOM.createPortal(<>{children}</>, container)
+    return ReactDOM.createPortal(<div className={classnames(portalClass('_'), rootClass)}>{children}</div>, container)
 }
 
 export default React.memo(Portal)

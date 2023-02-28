@@ -77,7 +77,6 @@ function Select<Data extends SelectBaseData = SelectBaseData, FormatData extends
         columnWidth,
     } = props
     const selectId = useRef(getUidStr()).current
-    const isRender = useRef(false)
     const inputRef = useRef<HTMLInputElement>()
     const optionListRef = useRef<OptionListInstance>()
     const containerElementRef = useRef<HTMLDivElement>()
@@ -338,16 +337,12 @@ function Select<Data extends SelectBaseData = SelectBaseData, FormatData extends
     })
 
     function renderList() {
-        if (!show && !isRender.current) return null
-
-        isRender.current = true
-
         const rect = containerElementRef.current?.getBoundingClientRect()
 
         const listStyle = styles(portal && getListPortalStyle(rect, position, autoAdapt ? 'min' : true))
 
         return (
-            <Portal rootClass={selectClass(position)} portal={portal}>
+            <Portal rootClass={selectClass(position)} portal={portal} show={show}>
                 {columns >= 1 || columns === -1 ? (
                     <BoxList
                         style={listStyle}
