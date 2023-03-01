@@ -33,7 +33,8 @@
         "Textarea": "多行文本框",
         "Upload": "上传",
         "Transfer": "穿梭框",
-        "ColorPicker": "颜色选择器"
+        "ColorPicker": "颜色选择器",
+        "DatePicker": "日期选择器"
     },
     "Navigation": {
         "Breadcrumb": "面包屑",
