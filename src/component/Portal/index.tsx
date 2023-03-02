@@ -29,7 +29,7 @@ const Portal: React.FC<PortalProps> = function (props) {
 
     if (!show && !hasInit.current) return null
 
-    if (!hasInit.current) {
+    if (!hasInit.current && onRealMounted) {
         runInNextFrame(() => {
             onRealMounted(portalRootRef.current)
         })
