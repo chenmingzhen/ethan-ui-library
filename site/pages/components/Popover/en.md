@@ -35,4 +35,4 @@
 
 ### PopoverNote
 
-Please ensure that the parent node of `Popover` accepts `onMouseEnter`, `onMouseLeave`, `onFocus`, `onClick` events.
+Please ensure that the child node of `Popover` accepts `onMouseEnter`, `onMouseLeave`, `onClick` events.

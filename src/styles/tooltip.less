@@ -62,17 +62,17 @@
 
     position: absolute;
     z-index: @zindex-tooltip;
-    display: block;
     font-size: @font-size-small;
     word-wrap: break-word;
     pointer-events: none;
+    display: none;
+
+    &-show {
+        display: block;
+    }
 
     &-animation {
         transition: opacity 0.3 ease, transform 0.3s cubic-bezier(0.71, 1.7, 0.77, 1.24);
-    }
-
-    &-disabled-wrapper {
-        display: inline-block;
     }
 
     &-arrow {
@@ -88,7 +88,7 @@
         z-index: 2;
         // max-width: @tooltip-max-width;
         padding: @tooltip-padding-y @tooltip-padding-x;
-        background-color: @tooltip-bg;
+        background-color: var(--var-trigger-color, @tooltip-bg);
         border-radius: 4px;
         color: @tooltip-color;
         text-align: center;
@@ -101,7 +101,7 @@
         .@{tooltip-prefix}-arrow {
             top: 100%;
             left: 50%;
-            border-top: @tooltip-arrow-width solid @tooltip-bg;
+            border-top: @tooltip-arrow-width solid var(--var-trigger-color, @tooltip-bg);
             border-right: @tooltip-arrow-width solid transparent;
             border-left: @tooltip-arrow-width solid transparent;
             transform: translate(-50%, 0);
@@ -120,7 +120,7 @@
             top: 50%;
             right: 100%;
             border-top: @tooltip-arrow-width solid transparent;
-            border-right: @tooltip-arrow-width solid @tooltip-bg;
+            border-right: @tooltip-arrow-width solid var(--var-trigger-color, @tooltip-bg);
             border-bottom: @tooltip-arrow-width solid transparent;
             transform: translateY(-50%);
         }
@@ -139,7 +139,7 @@
             left: 100%;
             border-top: @tooltip-arrow-width solid transparent;
             border-bottom: @tooltip-arrow-width solid transparent;
-            border-left: @tooltip-arrow-width solid @tooltip-bg;
+            border-left: @tooltip-arrow-width solid var(--var-trigger-color, @tooltip-bg);
             transform: translateY(-50%);
         }
     }
@@ -156,7 +156,7 @@
             top: 0;
             left: 50%;
             border-right: @tooltip-arrow-width solid transparent;
-            border-bottom: @tooltip-arrow-width solid @tooltip-bg;
+            border-bottom: @tooltip-arrow-width solid var(--var-trigger-color, @tooltip-bg);
             border-left: @tooltip-arrow-width solid transparent;
             transform: translate(-50%, -100%);
         }
