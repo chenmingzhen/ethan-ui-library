@@ -42,6 +42,17 @@ export default function () {
                     renderItem="label"
                 />
             </div>
+
+            <div>
+                <Checkbox.Group
+                    data={ComplexData}
+                    disabled={(d, values) => !values.includes(d.label) && values.length >= 2}
+                    keygen="value"
+                    format="label"
+                    defaultValue={['blue']}
+                    renderItem="label"
+                />
+            </div>
         </div>
     )
 }

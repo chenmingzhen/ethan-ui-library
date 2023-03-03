@@ -43,6 +43,6 @@ export interface CheckboxGroupProps<
     value?: FormatData[]
     format?: CheckBoxInferFormat<Data>
     prediction?(formatValue: FormatData, data: Data): boolean
-    disabled?: boolean | ((data: Data) => boolean)
+    disabled?: boolean | ((data: Data, values: FormData[]) => boolean)
     onChange?(value: FormatData[], data: Data, checked: boolean)
 }

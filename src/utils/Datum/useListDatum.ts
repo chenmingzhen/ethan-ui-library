@@ -3,11 +3,11 @@ import useRefMethod from '@/hooks/useRefMethod'
 import { isArray, isBoolean, isFunc, isString } from '../is'
 
 interface UseListDatumProps {
-    format?: string | ((value) => string | number)
-    onChange?(value: any, data: any, checked: boolean)
+    format?: string | ((data) => string | number)
+    onChange?(value: any, data: any, checked: boolean): void
     value?: any
     prediction?(formatValue, data): boolean
-    disabled?: boolean | ((value) => boolean)
+    disabled?: boolean | ((data, values) => boolean)
     limit?: number
     defaultValue?: any
 }
@@ -50,7 +50,7 @@ function useListDatum(props: UseListDatumProps) {
             return props.disabled
         }
         if (isFunc(props.disabled)) {
-            return props.disabled(data)
+            return props.disabled(data, values)
         }
         return false
     })
@@ -61,35 +61,35 @@ function useListDatum(props: UseListDatumProps) {
         return formatValue === format(data)
     })
 
-    const add = useRefMethod((data, unshift = false) => {
-        if (data === undefined || data === null) return
+    const add = useRefMethod((dataItem, unshift = false) => {
+        if (dataItem === undefined || dataItem === null) return
 
-        const raws = (Array.isArray(data) ? data : [data]).filter((v) => !disabled(v))
+        const dataList = (Array.isArray(dataItem) ? dataItem : [dataItem]).filter((v) => !disabled(v))
         const nextValues = []
 
-        for (let i = 0; i < raws.length; i++) {
-            const formatDataValue = format(raws[i])
+        for (let i = 0; i < dataList.length; i++) {
+            const dataValue = format(dataList[i])
 
-            if (formatDataValue !== undefined) {
-                nextValues.push(formatDataValue)
+            if (dataValue !== undefined) {
+                nextValues.push(dataValue)
             }
         }
 
-        updateValues(unshift ? nextValues.concat(values) : values.concat(nextValues), data, true)
+        updateValues(unshift ? nextValues.concat(values) : values.concat(nextValues), dataItem, true)
     })
 
     const remove = useRefMethod((dataItem) => {
         if (!dataItem) return
 
-        const raws = (Array.isArray(dataItem) ? dataItem : [dataItem]).filter((v) => !disabled(v))
+        const dataList = (Array.isArray(dataItem) ? dataItem : [dataItem]).filter((v) => !disabled(v))
         const nextValues = []
 
         outer: for (let i = 0; i < values.length; i++) {
             const value = values[i]
 
-            for (let j = 0; j < raws.length; j++) {
-                if (prediction(value, raws[j])) {
-                    raws.splice(j, 1)
+            for (let j = 0; j < dataList.length; j++) {
+                if (prediction(value, dataList[j])) {
+                    dataList.splice(j, 1)
 
                     continue outer
                 }
@@ -109,19 +109,19 @@ function useListDatum(props: UseListDatumProps) {
         return false
     })
 
-    const set = useRefMethod((data) => {
-        const raws = (Array.isArray(data) ? data : [data]).filter((v) => !disabled(v))
+    const set = useRefMethod((dataItem) => {
+        const dataList = (Array.isArray(dataItem) ? dataItem : [dataItem]).filter((v) => !disabled(v))
         const nextValues = []
 
-        for (let i = 0; i < raws.length; i++) {
-            const formatDataValue = format(raws[i])
+        for (let i = 0; i < dataList.length; i++) {
+            const formatDataValue = format(dataList[i])
 
             if (formatDataValue !== undefined) {
                 nextValues.push(formatDataValue)
             }
         }
 
-        updateValues(nextValues, data, true)
+        updateValues(nextValues, dataItem, true)
     })
 
     const getDataByValue = useRefMethod((data, value) => {
