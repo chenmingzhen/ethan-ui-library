@@ -1,26 +1,43 @@
-# ColorPicker _颜色选择器_
+# DatePicker
 
 <example />
 
 ## API
 
-### ColorPicker
+### DatePicker
 
-| 属性          | 类型                                                         | 默认值        | 说明                     |
-| ------------- | ------------------------------------------------------------ | ------------- | ------------------------ |
-| value         | string                                                       | -             | 选中的颜色               |
-| disabled      | boolean                                                      | false         | 是否禁止                 |
-| size          | 'small' \| 'large' \| 'default'                              | 'default'     | 大小                     |
-| mode          | 'rgba' \| 'hex' \| 'hsla'                                    | 'rgba'        | 颜色展示模式             |
-| defaultColors | string[]                                                     | []            | 自定义颜色盘             |
-| style         | React.CSSProperties                                          | -             | 输入框样式               |
-| className     | string                                                       | -             | 输入框样式名             |
-| position      | 'left-bottom' \| 'left-top' \| 'right-bottom' \| 'right-top' | 'left-bottom' | 下拉框弹出位置           |
-| portal        | boolean                                                      | true          | 是否在 body 中弹出下拉框 |
-| defaultValue  | string                                                       | -             | 默认选中的颜色           |
-| onChange      | (color:string)=>void                                         | -             | 颜色改变时回调           |
-| showIcon      | boolean                                                      | true          | 是否显示下拉图标         |
+| Property           | Type                                                         | Default       | Description                                                                                                                     |
+| ------------------ | ------------------------------------------------------------ | ------------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| clearable          | boolean                                                      | false         | whether it can be cleared                                                                                                       |
+| disabled           | boolean \|(date:Date)=>boolean                               | false         | If disabled is true, disable all options. If disabled isa function, disable the options according to the result of the function |
+| size               | 'small' \| 'large' \| 'default'                              | 'default'     | Input size                                                                                                                      |
+| format             | string                                                       | -             | Date format                                                                                                                     |
+| inputAble          | boolean                                                      | false         | Whether the input box can be inputed                                                                                            |
+| placeholder        | ReactNode                                                    | -             | Input placeholder                                                                                                               |
+| className          | string                                                       | -             | Input className                                                                                                                 |
+| style              | CSSProperties                                                | -             | Input style                                                                                                                     |
+| position           | 'left-bottom' \| 'left-top' \| 'right-bottom' \| 'right-top' | 'left-bottom' | Position where the drop-down box is displayed                                                                                   |
+| portal             | boolean                                                      | false         | Whether a drop-down box is displayed in the body                                                                                |
+| defaultValue       | Date                                                         | -             | Default value                                                                                                                   |
+| onChange           | (date:Date,dateString:string)=>void                          | -             | Callback when the date changes                                                                                                  |
+| onBlur             | (e:React.FocusEven)=>void                                    | -             | Callback when lose focus                                                                                                        |
+| onFocus            | (e:React.FocusEvent)=>void                                   | -             | Callback when focus                                                                                                             |
+| type               | 'date' \| 'date-time' \| 'month' \| 'week' \| 'year'         | -             | Sets the selector type                                                                                                          |
+| value              | Date                                                         | -             | Date                                                                                                                            |
+| quickSelects       | QuickSelect<Date>[]                                          | -             | Quick selection                                                                                                                 |
+| mix                | Date                                                         | -             | Optional minimum                                                                                                                |
+| max                | Date                                                         | -             | Optional maximum                                                                                                                |
+| defaultPickerValue | Date                                                         | -             | Default Panel Date                                                                                                              |
+| border             | boolean                                                      | true          | Whether the input box has a border                                                                                              |
 
-### ColorPicker.ColorBoard
+### RangePicker
 
-**_ColorPicker.ColorBoard 与 ColorPicker 保持一致的 props，但是不包含 position,size _**
+**_The RangePicker Api contains all of DatePicker's properties, but note that some RangePicker properties become arrays_**
+
+| Property           | Type                                  |
+| ------------------ | ------------------------------------- |
+| defaultValue       | Date[]                                |
+| onChange           | (date:Date[],dateString:string)=>void |
+| value              | Date[]                                |
+| quickSelects       | QuickSelect<Date[]>[]                 |
+| defaultPickerValue | Date[]                                |

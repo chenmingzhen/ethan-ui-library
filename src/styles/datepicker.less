@@ -79,10 +79,17 @@
             border: none;
             box-shadow: none;
             background: transparent;
+            transition: all ease-in-out 0.2s;
 
             input {
                 padding: 0;
             }
+        }
+
+        .@{datepicker-prefix}-text-focus {
+            background: @colors-primary;
+            color: #fff;
+            border-radius: @datepicker-radius;
         }
     }
 
@@ -98,20 +105,18 @@
         margin: 0 @datepicker-margin;
     }
 
-    &-text-focus {
-        background: @colors-primary;
-        color: #fff;
-        border-radius: @datepicker-radius;
-    }
-
     &:hover &-result {
-        .@{datepicker-prefix}-indecator {
+        .@{datepicker-prefix}-indicator {
             display: none;
         }
 
         .@{datepicker-prefix}-close {
             display: block;
         }
+    }
+
+    &-split {
+        display: flex;
     }
 
     &-picker {
@@ -231,6 +236,46 @@
         top: 100%;
         right: 0;
         margin-top: 4px;
+    }
+
+    &-quick {
+        padding-left: 0;
+    }
+
+    &-quick-select {
+        min-width: 80px;
+        border-right: 1px solid @gray-200;
+
+        &-item {
+            max-width: 120px;
+            text-overflow: ellipsis;
+            overflow: hidden;
+            white-space: nowrap;
+            padding: 4px 12px;
+            cursor: pointer;
+            position: relative;
+            transition: all 0.2s;
+
+            &:hover {
+                background: @primary-color-fade-10;
+            }
+
+            &::after {
+                content: '';
+                transition: all 0.2s;
+                opacity: 0;
+                background: @colors-primary;
+                position: absolute;
+                right: 0;
+                top: 0;
+                bottom: 0;
+                width: 2px;
+                .@{datepicker-prefix}-rtl & {
+                    right: auto;
+                    left: 0;
+                }
+            }
+        }
     }
 
     &-day-picker,
@@ -407,6 +452,11 @@
                 border-radius: @datepicker-rect-active-border-radius;
                 cursor: pointer;
             }
+
+            .@{datepicker-prefix}-disabled {
+                color: @gray-400;
+                cursor: not-allowed;
+            }
         }
     }
 
@@ -451,15 +501,13 @@
                 color: #eee;
                 line-height: @datepicker-time-height;
                 height: @datepicker-time-height;
+                cursor: pointer;
+                user-select: none;
             }
 
             .@{datepicker-prefix}-time-active {
-                color: #000;
+                color: @colors-primary;
                 font-weight: bold;
-            }
-
-            &:hover {
-                overflow: auto;
             }
         }
     }

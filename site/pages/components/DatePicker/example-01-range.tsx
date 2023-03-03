@@ -1,7 +1,7 @@
 /**
- * cn - 基本用法
+ * cn - 范围选择
  *    -- 基本的使用
- * en - Base
+ * en - Range
  *    -- Basic usage
  */
 
@@ -9,5 +9,5 @@ import React from 'react'
 import { DatePicker } from 'ethan-ui'
 
 export default function () {
-    return <DatePicker placeholder="Select date" />
+    return <DatePicker.RangePicker placeholder={['Select date', 'Select date']} onChange={console.log} />
 }
