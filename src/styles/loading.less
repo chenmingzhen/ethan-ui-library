@@ -11,10 +11,10 @@
     bottom: 0;
     right: 0;
     background: rgb(255 255 255 / 60%);
+    transition: opacity 0.5s ease-in-out;
     opacity: 1;
 
     &-fade {
-        transition: opacity 0.5s ease-in-out;
         opacity: 0;
     }
 
@@ -27,13 +27,6 @@
     &-line {
         height: 100%;
         background-color: @colors-primary;
-    }
-
-    &-inner {
-        margin: -17.5px auto 0;
-        position: relative;
-        text-align: center;
-        top: 50%;
     }
 
     &-animation {

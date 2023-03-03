@@ -1,3 +1,3 @@
-import event from './event'
+import LoadingBuilder from './LoadingBuilder'
 
-export default event
+export default LoadingBuilder
