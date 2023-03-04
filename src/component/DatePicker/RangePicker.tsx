@@ -298,9 +298,8 @@ const RangePicker: React.FC<RangePickerProps> = function (props) {
         const ms = styles({ zIndex }, portal && getPickerPortalStyle(rect, position))
 
         return (
-            <Portal portal={portal} rootClass={datePickerClass('absolute')}>
+            <Portal portal={portal} rootClass={datePickerClass('absolute')} show={show}>
                 <AnimationList
-                    lazyDom
                     style={ms}
                     show={show}
                     duration="fast"
