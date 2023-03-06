@@ -12,7 +12,7 @@ const data = ['red', 'orange', 'yellow', 'green', 'cyan', 'blue', 'violet']
 export default function () {
     return (
         <div>
-            <Radio.Group disabled data={data} defaultValue="blue" renderItem={(d) => d} />
+            <Radio.Group disabled data={data} defaultValue="blue" />
         </div>
     )
 }

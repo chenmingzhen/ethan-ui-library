@@ -23,34 +23,21 @@ export default function () {
     return (
         <div>
             <div>
-                <Checkbox.Group
-                    data={baseData}
-                    disabled={(d) => d === 'yellow'}
-                    keygen
-                    defaultValue={['blue']}
-                    renderItem={(d) => d}
-                />
+                <Checkbox.Group data={baseData} disabled={(d) => d === 'yellow'} defaultValue={['blue']} />
+            </div>
+
+            <div>
+                <Checkbox.Group data={ComplexData} disabled={(d) => d.label === 'yellow'} defaultValue={['blue']} />
             </div>
 
             <div>
                 <Checkbox.Group
                     data={ComplexData}
-                    disabled={(d) => d.label === 'yellow'}
-                    keygen="value"
-                    format="label"
-                    defaultValue={['blue']}
-                    renderItem="label"
-                />
-            </div>
-
-            <div>
-                <Checkbox.Group
-                    data={ComplexData}
-                    disabled={(d, values) => !values.includes(d.label) && values.length >= 2}
-                    keygen="value"
-                    format="label"
-                    defaultValue={['blue']}
-                    renderItem="label"
+                    disabled={(d, values) => {
+                        console.log(d, values)
+                        return !values.includes(d.value) && values.length >= 2
+                    }}
+                    defaultValue={[6]}
                 />
             </div>
         </div>

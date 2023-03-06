@@ -6,7 +6,7 @@ const nameIs = curry((name, val) => val?.constructor?.name === name)
 
 export const { isArray } = Array
 
-export const isObject = (val) => val && typeof val === 'object' && !isArray(val)
+export const isObject = (val): val is Record<any, any> => val && typeof val === 'object' && !isArray(val)
 
 export const isDate = (val) => val instanceof Date
 

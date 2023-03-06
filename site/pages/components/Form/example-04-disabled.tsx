@@ -23,7 +23,7 @@ export default function () {
             </Form.Item>
 
             <Form.Item label="Favorite Color" name="favoriteColor">
-                <Checkbox.Group keygen data={['red', 'orange', 'yellow', 'green', 'cyan', 'blue', 'violet']} />
+                <Checkbox.Group data={['red', 'orange', 'yellow', 'green', 'cyan', 'blue', 'violet']} />
             </Form.Item>
 
             <Form.Item label={<></>}>

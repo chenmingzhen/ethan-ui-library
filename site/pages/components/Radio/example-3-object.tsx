@@ -1,8 +1,8 @@
 /**
  * cn - 复杂数据
- *    -- 复杂的数据可以使用 format 处理 value
+ *    -- value为对象
  * en - Complex data
- *    -- Complex data can use format to process value.
+ *    -- Value is object.
  */
 import React from 'react'
 import { Radio } from 'ethan-ui'
@@ -18,5 +18,13 @@ const data = [
 ]
 
 export default function () {
-    return <Radio.Group keygen="id" data={data} format="color" defaultValue="blue" renderItem="color" />
+    return (
+        <Radio.Group defaultValue={{ id: 1, color: 'red' }} onChange={console.log}>
+            {data.map((d) => (
+                <Radio key={d.id} value={d}>
+                    {d.color}
+                </Radio>
+            ))}
+        </Radio.Group>
+    )
 }

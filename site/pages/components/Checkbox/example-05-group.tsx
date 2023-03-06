@@ -16,5 +16,15 @@ function renderItem(color: string) {
 
 export default function () {
     const [value, updateValue] = useState(['blue', 'cyan'])
-    return <Checkbox.Group data={data} value={value} renderItem={renderItem} onChange={updateValue} />
+    return (
+        <Checkbox.Group
+            data={data}
+            value={value}
+            renderItem={renderItem}
+            onChange={(nextValue: string[]) => {
+                console.log('onChange:', nextValue)
+                updateValue(nextValue)
+            }}
+        />
+    )
 }

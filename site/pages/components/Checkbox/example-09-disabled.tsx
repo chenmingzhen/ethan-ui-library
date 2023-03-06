@@ -14,7 +14,6 @@ export default function () {
         <div>
             <Checkbox.Group
                 disabled
-                keygen
                 data={data}
                 defaultValue={['blue', 'cyan']}
                 renderItem={(color) => `I love ${color}`}

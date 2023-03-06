@@ -6,7 +6,7 @@ import { RadioGroupContext } from './context'
 import { RadioProps } from './type'
 
 const Radio: React.FC<RadioProps> = function (props) {
-    const { disabled, style, children, onClick, value, index, onChange } = props
+    const { disabled, style, children, value, index, onChange } = props
     const context = useContext(RadioGroupContext)
     const [checked, updateChecked] = useMergedValue<any, [number]>({
         defaultStateValue: false,
@@ -26,16 +26,14 @@ const Radio: React.FC<RadioProps> = function (props) {
         return checked
     }, [checked, context])
 
-    function handleChange(isChecked: boolean) {
+    function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
         if (disabled) return
+
+        const isChecked = e.target.checked
 
         updateChecked(isChecked, index)
 
         if (context && context.onRadioGroupItemChange) context.onRadioGroupItemChange(value, isChecked)
-    }
-
-    function handleRadioChange(e: React.ChangeEvent<HTMLInputElement>) {
-        handleChange(e.target.checked)
     }
 
     const className = classnames(
@@ -49,8 +47,7 @@ const Radio: React.FC<RadioProps> = function (props) {
                 disabled={disabled}
                 tabIndex={-1}
                 type="radio"
-                onClick={onClick}
-                onChange={handleRadioChange}
+                onChange={handleChange}
                 checked={mergedChecked === true}
                 className={checkInputClass('indicator', 'radio')}
             />

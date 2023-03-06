@@ -1,94 +1,102 @@
 import React from 'react'
 import classnames from 'classnames'
-import { getKey } from '@/utils/uid'
 import { checkInputClass } from '@/styles'
 import useRefMethod from '@/hooks/useRefMethod'
-import useListDatum from '@/utils/Datum/useListDatum'
-import { isFunc, isString } from '@/utils/is'
+import { isObject } from '@/utils/is'
 import Checkbox from './Checkbox'
 import { Provider } from './context'
-import { CheckboxGroupProps, CheckItemGroupBaseData } from './type'
+import { CheckboxData, CheckboxDataValueType, CheckboxGroupProps } from './type'
+import useCheckboxGroupValues from './hooks/useCheckboxGroupValues'
 
-function Group<Data extends CheckItemGroupBaseData, FormatData extends CheckItemGroupBaseData>(
-    props: CheckboxGroupProps<Data, FormatData>
-) {
+function Group<Data = CheckboxData>(props: CheckboxGroupProps<Data>) {
     const {
         block,
         data,
-        keygen,
         children,
         defaultValue,
-        format,
-        prediction,
-        onChange,
         value,
-        renderItem = (d) => d,
-    } = props
-    const { check, add, remove, disabled } = useListDatum({
-        format,
-        prediction,
+        labelKey = 'label',
+        valueKey = 'value',
+        renderItem,
         onChange,
+    } = props
+
+    const {
+        getCheckedStateByDataItem,
+        getCheckedStateByValue,
+        addByDataItem,
+        removeByDataItem,
+        disabled,
+        addByDataValue,
+        removeByDataValue,
+    } = useCheckboxGroupValues({
         defaultValue,
         value,
         disabled: props.disabled,
+        valueKey,
+        onChange,
     })
     const className = classnames(checkInputClass('group', block && 'block'), props.className)
 
-    const handleCheckboxGroupItemChange = useRefMethod((changedValue, checked) => {
+    const handleCheckboxGroupItemChange = useRefMethod((changedValue: CheckboxDataValueType, checked) => {
         if (checked) {
-            add(changedValue)
+            addByDataValue(changedValue)
         } else {
-            remove(changedValue)
+            removeByDataValue(changedValue)
         }
     })
 
     const handleClick = useRefMethod((checked: boolean, index: number) => {
         if (checked) {
-            add(data[index])
+            addByDataItem(data[index])
         } else {
-            remove(data[index])
+            removeByDataItem(data[index])
         }
     })
 
-    const getContent = useRefMethod((item) => {
-        if (isString(renderItem)) {
-            return item[renderItem]
-        }
-
-        if (isFunc(renderItem)) {
-            return renderItem(item)
-        }
-
-        return ''
-    })
-
-    /** 通过wrapperChildren的形式 */
+    /** 通过wrapChildren的形式 */
     if (data === undefined) {
         return (
             <div className={className}>
-                <Provider value={{ onCheckboxGroupItemChange: handleCheckboxGroupItemChange, checked: check }}>
+                <Provider
+                    value={{
+                        onCheckboxGroupItemChange: handleCheckboxGroupItemChange,
+                        checked: getCheckedStateByValue,
+                    }}
+                >
                     {children}
                 </Provider>
             </div>
         )
     }
 
+    function getKey(dataItem: CheckboxData, index: number) {
+        return isObject(dataItem) ? (isObject(dataItem[valueKey]) ? index : dataItem[valueKey]) : dataItem
+    }
+
+    function getContent(dataItem: Data, index: number) {
+        if (renderItem) {
+            return renderItem(dataItem, index)
+        }
+
+        return isObject(dataItem) ? dataItem[labelKey] : dataItem
+    }
+
     /** 通过data的形式 */
     if (data) {
         return (
             <div className={className}>
-                {data.map((d, i) => (
+                {data.map((dataItem, i) => (
                     <Checkbox
-                        checked={check(d)}
-                        disabled={disabled(d)}
-                        key={getKey(d, keygen, i)}
+                        checked={getCheckedStateByDataItem(dataItem)}
+                        disabled={disabled(dataItem)}
+                        key={getKey(dataItem, i)}
                         onChange={handleClick}
                         index={i}
                     >
-                        {getContent(d)}
+                        {getContent(dataItem, i)}
                     </Checkbox>
                 ))}
-                {children}
             </div>
         )
     }

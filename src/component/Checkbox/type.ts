@@ -1,14 +1,15 @@
 import React from 'react'
 
-type KeyGen<T> = T extends string | number ? true : keyof T | true | ((data: T) => string | number)
+export type CheckboxDataValueType = string | number | Record<string | number, string | number>
 
-type CheckBoxInferFormat<Data> = Data extends string | number ? never : keyof Data | ((data: Data) => string | number)
-
-type CheckboxInferRenderItem<Data> =
-    | (Data extends string | number ? React.ReactNode : keyof Data)
-    | ((item: Data) => React.ReactNode)
-
-export type CheckItemGroupBaseData = Record<string, any> | string | number
+export type CheckboxData =
+    | {
+          label: React.ReactNode
+          value: CheckboxDataValueType
+      }
+    | string
+    | number
+    | Record<string, any>
 
 export interface CheckboxProps {
     checked?: boolean
@@ -29,20 +30,16 @@ export interface CheckboxGroupContext<V = any> {
     checked: (value: V) => boolean
 }
 
-export interface CheckboxGroupProps<
-    Data extends CheckItemGroupBaseData,
-    FormatData extends CheckItemGroupBaseData = Data
-> {
+export interface CheckboxGroupProps<Data = CheckboxData> {
     block?: boolean
     data?: Data[]
-    renderItem?: CheckboxInferRenderItem<Data>
     className?: string
-    keygen?: KeyGen<Data>
     children?: React.ReactNode
-    defaultValue?: FormatData[]
-    value?: FormatData[]
-    format?: CheckBoxInferFormat<Data>
-    prediction?(formatValue: FormatData, data: Data): boolean
-    disabled?: boolean | ((data: Data, values: FormData[]) => boolean)
-    onChange?(value: FormatData[], data: Data, checked: boolean)
+    defaultValue?: CheckboxDataValueType[]
+    value?: CheckboxDataValueType[]
+    disabled?: boolean | ((data: Data, values: CheckboxDataValueType[]) => boolean)
+    onChange?: (value: CheckboxDataValueType[], data: Data, checked: boolean) => void
+    renderItem?: (dataItem: Data, index: number) => React.ReactNode
+    labelKey?: string
+    valueKey?: string
 }

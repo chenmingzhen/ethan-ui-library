@@ -1,8 +1,8 @@
 /**
  * cn - 复杂数据
- *    -- 复杂的数据可以使用 format 处理 value
+ *    -- value为对象
  * en - Complex data
- *    -- Complex data can use format to process value.
+ *    -- Value is object.
  */
 import React from 'react'
 import { Checkbox } from 'ethan-ui'
@@ -11,8 +11,6 @@ interface Data {
     id: number
     color: string
 }
-
-type FormatData = string
 
 const data: Data[] = [
     { id: 1, color: 'red' },
@@ -30,13 +28,5 @@ function renderItem(item: Data) {
 }
 
 export default function () {
-    return (
-        <Checkbox.Group<Data, FormatData>
-            keygen="id"
-            data={data}
-            format="color"
-            renderItem={renderItem}
-            defaultValue={['red']}
-        />
-    )
+    return <Checkbox.Group data={data} defaultValue={[1]} valueKey="id" renderItem={renderItem} />
 }

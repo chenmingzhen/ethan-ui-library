@@ -18,5 +18,5 @@ const data = [
 ]
 
 export default function () {
-    return <Radio.Group keygen="id" block data={data} format="id" defaultValue={3} renderItem="color" />
+    return <Radio.Group block data={data} valueKey="id" defaultValue={3} labelKey="color" />
 }

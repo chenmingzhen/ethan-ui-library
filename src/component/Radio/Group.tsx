@@ -1,40 +1,36 @@
 import React from 'react'
 import classnames from 'classnames'
-import { getKey } from '@/utils/uid'
 import { checkInputClass } from '@/styles'
 import useRefMethod from '@/hooks/useRefMethod'
-import useListDatum from '@/utils/Datum/useListDatum'
-import { isFunc, isString } from '@/utils/is'
+import { isObject } from '@/utils/is'
 import Radio from './Radio'
 import { Provider } from './context'
-import { RadioGroupProps, RadioGroupBaseData } from './type'
+import { RadioData, RadioDataValueType, RadioGroupProps } from './type'
+import useRadioGroupValue from './hooks/useRadioGroupValue'
 
-function Group<Data extends RadioGroupBaseData, FormatData extends RadioGroupBaseData>(
-    props: RadioGroupProps<Data, FormatData>
-) {
+function Group<Data = RadioData>(props: RadioGroupProps<Data>) {
     const {
         data,
-        keygen,
         children,
         defaultValue,
-        format,
-        prediction,
         onChange,
         value,
-        renderItem = (d) => d,
         block,
         button,
         size,
+        renderItem,
+        labelKey = 'label',
+        valueKey = 'value',
     } = props
-    const { check, set, disabled } = useListDatum({
-        format,
-        prediction,
-        onChange,
-        defaultValue,
-        value,
-        disabled: props.disabled,
-        limit: 1,
-    })
+
+    const { disabled, setByDataItem, setByDateValue, getCheckedStateByDataItem, getCheckedStateByDataValue } =
+        useRadioGroupValue({
+            onChange,
+            defaultValue,
+            value,
+            disabled: props.disabled,
+            valueKey,
+        })
     const className = classnames(
         checkInputClass(
             'group',
@@ -46,48 +42,50 @@ function Group<Data extends RadioGroupBaseData, FormatData extends RadioGroupBas
         props.className
     )
 
-    const handleRadioGroupItemChange = useRefMethod((changedValue, checked) => {
-        set(checked ? changedValue : [])
+    const handleRadioGroupItemChange = useRefMethod((changedValue: RadioDataValueType) => {
+        setByDateValue(changedValue)
     })
 
-    const handleClick = useRefMethod((checked: boolean, index: number) => {
-        set(checked ? data[index] : [])
-    })
-
-    const getContent = useRefMethod((item) => {
-        if (isString(renderItem)) {
-            return item[renderItem]
-        }
-
-        if (isFunc(renderItem)) {
-            return renderItem(item)
-        }
-
-        return ''
+    const handleChange = useRefMethod((_, index: number) => {
+        setByDataItem(data[index])
     })
 
     if (data === undefined) {
         return (
             <div className={className}>
-                <Provider value={{ onRadioGroupItemChange: handleRadioGroupItemChange, checked: check }}>
+                <Provider
+                    value={{ onRadioGroupItemChange: handleRadioGroupItemChange, checked: getCheckedStateByDataValue }}
+                >
                     {children}
                 </Provider>
             </div>
         )
     }
 
+    function getKey(dataItem: RadioData, index: number) {
+        return isObject(dataItem) ? (isObject(dataItem[valueKey]) ? index : dataItem[valueKey]) : dataItem
+    }
+
+    function getContent(dataItem: Data, index: number) {
+        if (renderItem) {
+            return renderItem(dataItem, index)
+        }
+
+        return isObject(dataItem) ? dataItem[labelKey] : dataItem
+    }
+
     if (data) {
         return (
             <div className={className}>
-                {data.map((d, i) => (
+                {data.map((dataItem, i) => (
                     <Radio
-                        checked={check(d)}
-                        disabled={disabled(d)}
-                        key={getKey(d, keygen, i)}
-                        onChange={handleClick}
+                        checked={getCheckedStateByDataItem(dataItem)}
+                        disabled={disabled(dataItem)}
+                        key={getKey(dataItem, i)}
+                        onChange={handleChange}
                         index={i}
                     >
-                        {getContent(d)}
+                        {getContent(dataItem, i)}
                     </Radio>
                 ))}
                 {children}

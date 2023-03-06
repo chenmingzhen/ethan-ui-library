@@ -20,8 +20,14 @@ const data = [
 export default function () {
     const [value, updateValue] = React.useState([1, 2])
 
+    function handleChange(nextValue) {
+        console.log('nextValue:', nextValue)
+
+        updateValue(nextValue)
+    }
+
     return (
-        <Checkbox.Group value={value} onChange={updateValue}>
+        <Checkbox.Group value={value} onChange={handleChange}>
             {data.map((d) => (
                 <Checkbox key={d.id} value={d.id}>
                     {d.color}
