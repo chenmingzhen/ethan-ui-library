@@ -1,14 +1,10 @@
-import inputBorder from '@/hoc/inputBorder'
-import { compose } from '@/utils/func'
-import { datePickerClass } from '@/styles'
-import withControl from '../../hoc/withControl'
-import Container from './Container'
-import withValue from './Hoc/withValue'
+import DatePicker from './DatePicker'
+import RangePicker from './RangePicker'
 
-const getClassName = (opt) => datePickerClass('_', `${opt.range ? 'r' : 'c'}-${opt.type || 'date'}`)
+type DatePickerComponent = typeof DatePicker & { RangePicker: typeof RangePicker }
 
-const Datepicker = compose(withControl, inputBorder({ className: getClassName }), withValue)(Container)
+const Component = DatePicker as DatePickerComponent
 
-Datepicker.displayName = 'EthanDatepicker'
+Component.RangePicker = RangePicker
 
-export default Datepicker
+export default Component

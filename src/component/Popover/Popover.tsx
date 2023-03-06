@@ -3,7 +3,7 @@ import classnames from 'classnames'
 import { Component } from '@/utils/component'
 import ReactDOM from 'react-dom'
 import { getParent, wrapSpan } from '@/utils/dom/element'
-import { getPositionStr, getPosition } from '@/utils/dom/popover'
+import { getPositionStyle, getPosition } from '@/utils/dom/popover'
 import { popoverClass } from '@/styles/index'
 import isDOMElement from '@/utils/dom/isDOMElement'
 import { parsePxToNumber } from '@/utils/strings'
@@ -298,9 +298,14 @@ class Popover extends Component<IPopoverProps, PopoverState> {
     handlePos = () => {
         const { placement, style, autoAdjustOverflow } = this.props
 
-        const position = getPositionStr(placement, null, this.placeHolderRef.current?.parentElement, this.container)
+        const position = getPosition(
+            placement,
+            null,
+            this.placeHolderRef.current?.nextSibling as HTMLElement,
+            this.container
+        )
 
-        const posStyle = getPosition(position, this.eventHandlerElement, this.container)
+        const posStyle = getPositionStyle(position, this.eventHandlerElement, this.container)
 
         const newStyle = Object.assign({}, style, posStyle)
 

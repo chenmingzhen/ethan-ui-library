@@ -1,145 +1,165 @@
 import React from 'react'
 
-export interface QuickSelect {
+export interface QuickSelect<Value extends Date | Date[]> {
     name: string
-    value: [string, string]
+    value: Value
 }
+
+export type ChangeMode = Omit<DatePickerProps['type'], 'date-time'> | 'time'
 
 export interface DatePickerProps {
     clearable?: boolean
-    disabled?: boolean | (() => boolean)
+    disabled?: boolean | ((date: Date) => boolean)
     format?: string
     inputAble?: boolean
     placeholder?: React.ReactNode
     onBlur?: (e: React.FocusEvent<HTMLElement>) => void
-    onChange?: (value: string) => void
+    onChange?: (date: Date, dateStr: string) => void
     onFocus?: (evt: React.FocusEvent<HTMLElement>) => void
     position?: string
-    range?: boolean | number
     size?: 'small' | 'default' | 'large'
-    type?: 'date' | 'time' | 'date-time' | 'month' | 'week' | 'year'
-    allowSingle?: boolean
-    value?: number | Date | number[] | Date[]
+    type?: 'date' | 'date-time' | 'month' | 'week' | 'year'
+    value?: Date
     portal?: boolean
     zIndex?: number
-    children?: React.ReactNode
-    onValueBlur?: () => void
-    quickSelect?: QuickSelect[]
-    min?: number | Date | string
-    max?: number | Date | string
-    /** number | Date | number[] | Date[] */
-    defaultPickerValue?: number | Date
-    hourStep?: number
-    minuteStep?: number
-    secondStep?: number
-    defaultValue?: number | Date
-    formatResult?: string
+    quickSelects?: QuickSelect<Date>[]
+    min?: Date
+    max?: Date
+    defaultPickerValue?: Date
+    defaultValue?: Date
     border?: boolean
     className?: string
     style?: React.CSSProperties
 }
 
-export interface DatePickerContainerProps extends Omit<DatePickerProps, 'onChange'> {
-    onChange?: (value: string | string[], callback?: () => void) => void
-}
-
-export type WithValueProps = DatePickerProps
-
-export interface DatePickerTextProps extends Pick<DatePickerProps, 'formatResult'> {
+export interface DatePickerTextProps {
     disabled: boolean
     className: string
-    index: number
+    index?: number
     inputAble: boolean
     onTextBlur: (date: Date, index: number) => void
     placeholder: React.ReactNode
     value: string
     size: 'small' | 'default' | 'large'
     format: string
+    onInputValidDate(date: Date, index?: number): void
 }
 
 export interface PickerProps extends Pick<DatePickerProps, 'type'> {
-    current: Date
-    disabled: () => boolean
-    format: string
-    max: Date
-    min: Date
-    onChange: () => void
-    value: any
-    index: number
-    handleHover: (index: number, isEnter: boolean) => void
-    defaultTime: any
+    panelDate: Date
+    disabled?: (date: Date) => boolean
+    format?: string
+    max?: Date
+    min?: Date
+    onChange: (date: Date, mode: ChangeMode) => void
+    selectedDate: Date
 }
 
-export interface DatePickerDayProps extends Pick<PickerProps, 'type'> {
-    current: Date
-    disabled: boolean | ((date: Date) => boolean)
-    onChange: (date: Date, change?: boolean, blur?: boolean, isEnd?: boolean) => void
+export interface DatePickerDayProps {
+    panelDate: Date
+    disabled: (date: Date) => boolean
+    onChange: (date: Date, mode: ChangeMode) => void
     format: string
-    index: number
     max: Date
     min: Date
     onChangeSync: () => void
-    onDayHover: (date: Date) => void
     onModeChange: (mode: string) => void
     range: number
     rangeDate: Date[]
-    showTimePicker: boolean
-    value: any
-    defaultTime: any[]
-    allowSingle: boolean
-    rangeTemp: Date
+    type: ChangeMode
+    selectedDate: Date
 }
 
 export interface DatePickerIconProps {
     className?: string
     name: string
-    onClick?: (e) => void
+    onClick?: (e: React.MouseEvent) => void
+    onMouseDown?: (e: React.MouseEvent) => void
     tag?: keyof HTMLElementTagNameMap
     disabled?: boolean
 }
 
 export interface DatePickerYearProps {
-    current: Date
-    onChange: (date: Date) => void
+    panelDate: Date
+    onChange: (date: Date, mode: ChangeMode) => void
     onModeChange: (mode: string) => void
-    value: Date
-    type: string
+    type: ChangeMode
+    min: Date
+    max: Date
+    disabled: (date: Date) => boolean
+    selectedDate: Date
 }
 
 export interface DatePickerMonthProps extends Pick<DatePickerProps, 'min'> {
-    current: Date
+    panelDate: Date
     disabled: boolean | ((date: Date) => boolean)
-    onChange: (date: Date, change?: boolean, blur?: boolean) => void
+    onChange: (date: Date, mode: ChangeMode) => void
     onModeChange: (mode: string) => void
-    value: Date
     range: number
     type: string
+    max: Date
+    selectedDate: Date
 }
 
 export interface DatePickerTimeProps extends Pick<DatePickerProps, 'format'> {
-    disabled: boolean | ((date: Date) => boolean)
-    onChange
-    range
-    value: Date
-    defaultTime
-    index: number
-    hourStep: number
-    minuteStep: number
-    secondStep: number
-    min
-    max
+    disabled: (date: Date) => boolean
+    onChange: (date: Date, mode: ChangeMode) => void
+    min: Date
+    max: Date
+    type: ChangeMode
+    selectedDate: Date
 }
 
 export interface TimeScrollProps {
-    ampm?: boolean
-    onChange
-    total?
-    value
-    step?
-    disabled
-    min
-    max
-    range
-    current
-    mode
+    onChange: (scale: number) => void
+    total: number
+    currentScale: number
+    disabled: (date: Date) => boolean
+    min: Date
+    max: Date
+    selectedDate: Date
+    mode: 'hour' | 'minute' | 'second'
+}
+
+export interface ContainerProps extends React.DetailedHTMLProps<React.HTMLAttributes<HTMLDivElement>, HTMLDivElement> {
+    disabled: boolean
+    border: boolean
+    size: DatePickerProps['size']
+    type: DatePickerProps['type']
+    toggleOpen: (open: boolean) => void
+    containerClassName: string
+    innerClassName: string
+    containerStyle: React.CSSProperties
+}
+
+export interface RangePickerProps {
+    clearable?: boolean
+    disabled?: boolean | ((date: Date, pos: string, selectedPanelDates: Date[]) => boolean)
+    format?: string
+    inputAble?: boolean
+    placeholder?: React.ReactNode | [React.ReactNode, React.ReactNode]
+    onBlur?: (e: React.FocusEvent<HTMLElement>) => void
+    onFocus?: (evt: React.FocusEvent<HTMLElement>) => void
+    onChange?: (dates: Date[], str: string[]) => void
+    position?: string
+    size?: 'small' | 'default' | 'large'
+    type?: 'date' | 'date-time' | 'month' | 'week' | 'year'
+    value?: Date[]
+    portal?: boolean
+    zIndex?: number
+    quickSelects?: QuickSelect<Date[]>[]
+    min?: Date
+    max?: Date
+    defaultPickerValue?: Date[]
+    defaultValue?: Date[]
+    border?: boolean
+    className?: string
+    style?: React.CSSProperties
+}
+
+export interface RangePickerContextProps {
+    panelDates?: Date[]
+    index?: number
+    selectedPanelDates: Date[]
+    onHoverPanel: (index: number) => void
 }

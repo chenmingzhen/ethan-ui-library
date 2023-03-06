@@ -19,6 +19,7 @@ import {
     Upload,
     Transfer,
     Switch,
+    DatePicker,
 } from 'ethan-ui'
 
 const rule = Rule({
@@ -47,16 +48,16 @@ for (let i = 1; i < 20; i++) {
 export default function App() {
     return (
         <Form onChange={console.log} onSubmit={console.log} onError={console.log}>
-            <Form.Item
-                name="select"
-                label="Select"
-                required
-                rules={[{ required: true, message: 'Please select your country!' }]}
-            >
+            <Form.Item name="select" label="Select" required rules={[{ required: true, message: 'Can not be empty' }]}>
                 <Select placeholder="Please select a country" data={['China', 'U.S.A']} keygen clearable />
             </Form.Item>
 
-            <Form.Item name="select-multiple" label="Select[multiple]" rules={[rule.required]} required>
+            <Form.Item
+                name="select-multiple"
+                label="Select[multiple]"
+                rules={[rule.required('Can not be empty')]}
+                required
+            >
                 <Select
                     multiple
                     placeholder="Please select favorite colors"
@@ -66,25 +67,36 @@ export default function App() {
                 />
             </Form.Item>
 
-            <Form.Item name="checkbox" label="Checkbox" rules={[rule.required]} required>
+            <Form.Item name="checkbox" label="Checkbox" rules={[rule.required('Can not be empty')]} required>
                 <Checkbox>Check</Checkbox>
             </Form.Item>
 
-            <Form.Item name="switch" label="Switch" rules={[rule.required]} required>
+            <Form.Item name="switch" label="Switch" rules={[rule.required('Can not be empty')]} required>
                 <Switch />
             </Form.Item>
 
-            <Form.Item label="InputNumber">
+            <Form.Item label="InputNumber" required>
                 <div style={{ display: 'flex', alignItems: 'center' }}>
                     <Form.Item
                         name="input-number"
                         noStyle
-                        rules={[{ max: 80, min: 10, type: 'number', message: 'It has to be between 10 and 80' }]}
+                        rules={[
+                            rule.required('Can not be empty'),
+                            { max: 80, min: 10, type: 'number', message: 'It has to be between 10 and 80' },
+                        ]}
                     >
                         <Input.Number style={{ width: 200 }} />
                     </Form.Item>
                     <span style={{ marginLeft: '10px' }}> machines</span>
                 </div>
+            </Form.Item>
+
+            <Form.Item label="DatePicker" name="date-picker" rules={[rule.required('Can not be empty')]} required>
+                <DatePicker clearable />
+            </Form.Item>
+
+            <Form.Item label="RatePicker" name="range-picker" rules={[rule.required('Can not be empty')]} required>
+                <DatePicker.RangePicker clearable />
             </Form.Item>
 
             <Form.Item
@@ -99,7 +111,7 @@ export default function App() {
                 <Slider />
             </Form.Item>
 
-            <Form.Item name="radio-group" label="Radio.Group" rules={[rule.required]} required>
+            <Form.Item name="radio-group" label="Radio.Group" rules={[rule.required('Can not be empty')]} required>
                 <Radio.Group>
                     <Radio value="a">item 1</Radio>
                     <Radio value="b">item 2</Radio>
@@ -107,7 +119,7 @@ export default function App() {
                 </Radio.Group>
             </Form.Item>
 
-            <Form.Item name="radio-button" label="Radio.Button" rules={[rule.required]} required>
+            <Form.Item name="radio-button" label="Radio.Button" rules={[rule.required('Can not be empty')]} required>
                 <Radio.Group button>
                     <Radio value="a">item 1</Radio>
                     <Radio value="b">item 2</Radio>
@@ -115,7 +127,12 @@ export default function App() {
                 </Radio.Group>
             </Form.Item>
 
-            <Form.Item name="checkbox-group" label="Checkbox.Group" rules={[rule.required]} required>
+            <Form.Item
+                name="checkbox-group"
+                label="Checkbox.Group"
+                rules={[rule.required('Can not be empty')]}
+                required
+            >
                 <Checkbox.Group>
                     <Checkbox value="A" style={{ lineHeight: '32px' }}>
                         A
@@ -138,11 +155,11 @@ export default function App() {
                 </Checkbox.Group>
             </Form.Item>
 
-            <Form.Item name="rate" label="Rate" rules={[rule.required]} required>
+            <Form.Item name="rate" label="Rate" rules={[rule.required('Can not be empty')]} required>
                 <Rate size={40} background={<FontAwesome name="star" />} front={<FontAwesome name="star" />} />
             </Form.Item>
 
-            <Form.Item name="transfer" label="Transfer" rules={[rule.required]}>
+            <Form.Item name="transfer" label="Transfer" rules={[rule.required('Can not be empty')]}>
                 <Transfer
                     data={transferData}
                     format="id"

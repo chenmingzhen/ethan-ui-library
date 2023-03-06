@@ -1,7 +1,7 @@
 import useMergedValue from '@/hooks/useMergedValue'
 import useRefMethod from '@/hooks/useRefMethod'
 import { tooltipClass } from '@/styles'
-import { getPosition, getPositionStr } from '@/utils/dom/popover'
+import { getPositionStyle, getPosition } from '@/utils/dom/popover'
 import { styles } from '@/utils/style/styles'
 import classnames from 'classnames'
 import React, { cloneElement, useEffect, useMemo, useRef } from 'react'
@@ -136,15 +136,15 @@ const Tooltip: React.FC<TooltipProps> = function (props) {
     )
 
     const [position, style] = useMemo(() => {
-        const el = nsRef.current?.nextSibling
+        const el = nsRef.current?.nextSibling as HTMLElement
 
         if (!el || !show) return [props.position ?? 'top', undefined]
 
         const portalRoot = portalRootRef.current
-        const innerPosition = getPositionStr(props.position, priorityDirection, portalRoot)
+        const innerPosition = getPosition(props.position, priorityDirection, el, getContainer?.())
         const formatPosition = innerPosition.split('-')?.[0]
 
-        return [formatPosition, getPosition(innerPosition, el, portalRoot)]
+        return [formatPosition, getPositionStyle(innerPosition, el, portalRoot)]
     }, undefined)
 
     return (

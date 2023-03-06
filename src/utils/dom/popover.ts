@@ -6,7 +6,7 @@ const posKeys = ['left', 'top', 'bottom', 'right']
 // 此处计算为Popover 或tooltip的children的位置
 // 因为不知道具体Popover的content width与height，所以在css中使用transform使Popover的内容偏移
 // 否则Popover的内容会与Chidlren在同一位置
-export const getPosition = (position, el, container = document.body) => {
+export const getPositionStyle = (position: string, el: HTMLElement, container = document.body) => {
     if (!el) return {}
 
     const rect = el.getBoundingClientRect()
@@ -90,49 +90,28 @@ export const getPosition = (position, el, container = document.body) => {
     )
 }
 
-// TODO 处理自定义容器的情况
-
-export function getPositionStr(position, priorityDirection, parentElement: HTMLElement, container = document.body) {
+export function getPosition(
+    position: string,
+    priorityDirection: string,
+    element: HTMLElement,
+    container: HTMLElement = document.body
+) {
     if (position) return position
+    if (!element) return 'top'
 
-    if (!parentElement) return 'top'
+    const elementRect = element.getBoundingClientRect()
+    const containerRect = container.getBoundingClientRect()
+    const horizontalPoint = elementRect.left + elementRect.width / 2
+    const verticalPoint = elementRect.top + elementRect.height / 2
 
-    const rect = parentElement.getBoundingClientRect()
+    const innerWidth = container === document.body ? docSize.width : containerRect.width
+    const innerHeight = container === document.body ? docSize.height : containerRect.height
 
-    const containerRect = container?.getBoundingClientRect()
-
-    // 父元素水平中点
-    const horizontalPoint = rect.left + rect.width / 2
-
-    // 父元素垂直中点
-    const verticalPoint = rect.top + rect.height / 2
-
-    const windowHeight = container === document.body ? docSize.height : containerRect.height
-
-    const windowWidth = container === document.body ? docSize.width : containerRect.width
-
-    // 计算显示的位置 大于一半 则 上下左右
     if (priorityDirection === 'horizontal') {
-        // 大于屏幕一半 左边
-        if (horizontalPoint > windowWidth / 2) position = 'left'
-        // 小于 右边 以此类推
+        if (horizontalPoint > innerWidth / 2) position = 'left'
         else position = 'right'
-
-        if (verticalPoint > windowHeight * 0.6) {
-            position += '-bottom'
-        } else if (verticalPoint < windowHeight * 0.4) {
-            position += '-top'
-        }
-    } else {
-        if (verticalPoint > windowHeight / 2) position = 'top'
-        else position = 'bottom'
-
-        if (horizontalPoint > windowWidth * 0.6) {
-            position += '-right'
-        } else if (horizontalPoint < windowWidth * 0.4) {
-            position += '-left'
-        }
-    }
+    } else if (verticalPoint > innerHeight / 2) position = 'top'
+    else position = 'bottom'
 
     return position
 }
