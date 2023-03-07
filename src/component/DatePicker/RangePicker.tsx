@@ -42,7 +42,6 @@ const RangePicker: React.FC<RangePickerProps> = function (props) {
         style,
     } = props
 
-    const isRender = useRef(false)
     const pickerId = useRef(getUidStr()).current
     const containerRef = useRef<HTMLDivElement>()
     const pickerContainerRef = useRef<HTMLDivElement>()
@@ -291,9 +290,6 @@ const RangePicker: React.FC<RangePickerProps> = function (props) {
     }
 
     function renderWrappedPicker() {
-        if (!show && !isRender.current) return null
-
-        isRender.current = true
         const rect = containerRef.current?.getBoundingClientRect()
         const ms = styles({ zIndex }, portal && getPickerPortalStyle(rect, position))
 

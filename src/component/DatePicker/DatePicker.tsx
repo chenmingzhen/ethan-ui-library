@@ -42,7 +42,6 @@ const DatePicker: React.FC<DatePickerProps> = function (props) {
         style,
     } = props
 
-    const isRender = useRef(false)
     const pickerId = useRef(getUidStr()).current
     const containerRef = useRef<HTMLDivElement>()
     const pickerContainerRef = useRef<HTMLDivElement>()
@@ -206,10 +205,6 @@ const DatePicker: React.FC<DatePickerProps> = function (props) {
     }
 
     function renderWrappedPicker() {
-        if (!show && !isRender.current) return null
-
-        isRender.current = true
-
         const rect = containerRef.current?.getBoundingClientRect()
         const ms = styles({ zIndex }, portal && getPickerPortalStyle(rect, position))
 
