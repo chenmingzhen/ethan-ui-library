@@ -1,15 +1,14 @@
 import { inputClass, selectClass } from '@/styles'
 import { preventDefault, stopPropagation } from '@/utils/func'
-import { isFunc, isNumber, isString } from '@/utils/is'
-import { warningOnce } from '@/utils/warning'
+import { isString } from '@/utils/is'
 import classnames from 'classnames'
-import React, { isValidElement, useState } from 'react'
+import React, { useState } from 'react'
 import { useUpdateEffect } from 'react-use'
 import Caret from '../icons/Caret'
 import Input from '../Input'
 import Popover from '../Popover/Popover'
 import ResultItem from './ResultItem'
-import { SelectResultProps } from './type'
+import { SelectData, SelectResultProps } from './type'
 
 const Result: React.FC<SelectResultProps> = function (props) {
     const {
@@ -18,7 +17,7 @@ const Result: React.FC<SelectResultProps> = function (props) {
         compressedClassName,
         resultClassName,
         onRemove,
-        result,
+        selectedData,
         multiple,
         compressed,
         size,
@@ -29,6 +28,7 @@ const Result: React.FC<SelectResultProps> = function (props) {
         disabledFunc,
         isDisabled,
         forwardedInputRef,
+        getResultContent,
     } = props
 
     const [showInput, updateShowInput] = useState(!!(show && onInput))
@@ -72,27 +72,7 @@ const Result: React.FC<SelectResultProps> = function (props) {
         )
     }
 
-    function buildResult(item) {
-        let node = null
-
-        if (isFunc(props.renderResult)) {
-            node = props.renderResult(item)
-        }
-
-        if (isString(props.renderResult)) {
-            node = item?.[props.renderResult]
-        }
-
-        if (!isValidElement(node) && !isString(node) && !isNumber(node)) {
-            warningOnce('[Ethan UI:Select]:renderResult must be a string of a function that return ReactNode')
-
-            return null
-        }
-
-        return node
-    }
-
-    function renderMore(resultList: any[]) {
+    function renderMore(resultList: SelectData[]) {
         const className = classnames(selectClass('popover'), compressedClassName)
 
         return (
@@ -110,13 +90,14 @@ const Result: React.FC<SelectResultProps> = function (props) {
                 innerAlwaysUpdate
                 content={
                     <div className={selectClass('popover-result')}>
-                        {resultList.map((r, i) => (
+                        {resultList.map((selectedDataItem, i) => (
                             <ResultItem
                                 key={i}
-                                result={r}
-                                disabled={disabledFunc(r)}
+                                index={i}
+                                selectedDataItem={selectedDataItem}
+                                disabled={disabledFunc(selectedDataItem)}
                                 onRemove={onRemove}
-                                renderResult={buildResult}
+                                getResultContent={getResultContent}
                                 resultClassName={resultClassName}
                             />
                         ))}
@@ -139,27 +120,28 @@ const Result: React.FC<SelectResultProps> = function (props) {
     }
 
     function renderResult() {
-        const value = buildResult(result[0])
+        const value = getResultContent(selectedData[0], undefined)
 
         if (multiple) {
-            const computedResults = compressed ? result.slice(0, 1) : result
+            const computedResults = compressed ? selectedData.slice(0, 1) : selectedData
 
-            const removable = !compressed || result.length === 1
+            const removable = !compressed || selectedData.length === 1
 
-            const items = computedResults.map((r, index) => (
+            const items = computedResults.map((selectedDataItem, index) => (
                 <ResultItem
                     title
                     key={index}
-                    result={r}
-                    disabled={disabledFunc(r)}
+                    selectedDataItem={selectedDataItem}
+                    disabled={disabledFunc(selectedDataItem)}
                     onRemove={removable ? onRemove : undefined}
-                    renderResult={buildResult}
+                    getResultContent={getResultContent}
+                    index={index}
                     resultClassName={resultClassName}
                 />
             ))
 
-            if (compressed && result.length > 1) {
-                const restResult = result.slice(1)
+            if (compressed && selectedData.length > 1) {
+                const restResult = selectedData.slice(1)
 
                 items.push(renderMore(restResult))
             }
@@ -176,10 +158,7 @@ const Result: React.FC<SelectResultProps> = function (props) {
         }
 
         return (
-            <span
-                title={isString(value) ? value : undefined}
-                className={classnames(selectClass('ellipsis'), resultClassName)}
-            >
+            <span title={isString(value) ? value : undefined} className={classnames(selectClass('ellipsis'))}>
                 {value}
             </span>
         )
@@ -205,7 +184,7 @@ const Result: React.FC<SelectResultProps> = function (props) {
     }
 
     function renderClear() {
-        if (onClear && result.length > 0 && isDisabled !== true) {
+        if (onClear && selectedData.length > 0 && isDisabled !== true) {
             return (
                 <div
                     onClick={onClear}
@@ -225,7 +204,7 @@ const Result: React.FC<SelectResultProps> = function (props) {
 
     return (
         <div className={selectClass('result', compressed && 'compressed')}>
-            {!result.length ? renderPlaceholder() : renderResult()}
+            {!selectedData.length ? renderPlaceholder() : renderResult()}
             {renderIndicator()}
             {renderClear()}
         </div>

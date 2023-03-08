@@ -2,68 +2,61 @@ import React, { ReactNode } from 'react'
 import { ListProps } from '../List'
 import { SpinProps } from '../Spin'
 
-export type SelectBaseData = Record<string, any> | string | number
+export type SelectDataValueType = string | number | {}
 
-type SelectInferFormat<Data> = Data extends string | number ? never : keyof Data | ((data: Data) => string | number)
+export type SelectData = string | number | { label: React.ReactNode; value: SelectDataValueType } | {}
 
-type SelectInferRenderItem<Data> =
-    | (Data extends string | number ? React.ReactNode : keyof Data)
-    | ((item: Data, index?: number) => React.ReactNode)
-
-type KeyGen<T> = T extends string | number ? boolean : keyof T | boolean | ((data: T) => string | number)
-
-export interface SelectProps<D extends SelectBaseData = any, FormatData = D> {
+export interface SelectProps<Data = SelectData> {
+    labelKey?: string
+    valueKey?: string
     border?: boolean
     placeholder?: ReactNode
     style?: React.CSSProperties
-    keygen?: KeyGen<D>
     portal?: boolean
     clearable?: boolean
     columns?: number
-    data?: D[]
-    disabled?: boolean | ((data: D) => boolean)
+    data?: Data[]
+    disabled?: boolean | ((data: Data, values: SelectDataValueType[]) => boolean)
     filterText?: string
     height?: number
     loading?: boolean
     multiple?: boolean
     onBlur?: (evt: React.FocusEvent<HTMLDivElement>) => void
-    onCreate?: ((text: string) => D) | boolean
-    onFilter?: (text: string, data: D) => boolean
+    onCreate?: ((text: string) => Data) | boolean
+    onFilter?: (text: string, data: Data) => boolean
     onFocus?(evt: React.FocusEvent<HTMLDivElement>): void
-    onChange?: (values: any, value: FormatData, selected: boolean) => void
+    onChange?: (values: SelectDataValueType | SelectDataValueType[]) => void
     position?: 'drop-down' | 'drop-up'
-    renderItem?: SelectInferRenderItem<D>
-    result?: D[]
+    renderItem?: (data: Data, index: number) => React.ReactNode
+    result?: Data[]
     size?: 'large' | 'default' | 'small'
-    text?: {
-        selectAll?: string
-        noData?: string
-    }
     compressed?: boolean
     autoAdapt?: boolean
     showArrow?: boolean
     compressedClassName?: string
     onCollapse?(focus: boolean): string
-    resultClassName?: string
-    prediction?: (formatValue: FormatData, value: D) => boolean
-    renderResult?: SelectInferRenderItem<D>
+    resultClassName?: string | ((dataItem: SelectData) => string)
+    renderResult?: (data: Data, index: number) => React.ReactNode
     lineHeight?: number
-    value?: any
-    defaultValue?: any
-    groupBy?: (item: any, index: number, items: any) => string | number
+    value?: SelectDataValueType | SelectDataValueType[]
+    defaultValue?: SelectDataValueType | SelectDataValueType[]
+    groupBy?: (item: Data, index: number, items: SelectData[]) => string | number
     spinProps?: Omit<SpinProps, 'children' | 'loading'>
     onScrollRatioChange?: (scrollTopRatio: number, lastScrollTop: number) => void
+    columnWidth?: number
+    className?: string
+    width?: number
+    createOption?: {
+        onCreate: (text: string) => Data
+        onCreateEnd?: (data: Data) => void
+    }
     customRender?: {
         header?: React.ReactNode
         footer?: React.ReactNode
     }
-    columnWidth?: number
-    format?: SelectInferFormat<D>
-    className?: string
-    width?: number
-    createOption?: {
-        onCreate: (text: string) => D
-        onCreateEnd?: (data: D) => void
+    text?: {
+        selectAll?: string
+        noData?: string
     }
 }
 
@@ -72,7 +65,6 @@ export interface OptionListProps extends Pick<ListProps, 'onTransitionEnd'> {
     lineHeight: SelectProps['lineHeight']
     text: SelectProps['text']
     loading: SelectProps['loading']
-    keygen: SelectProps['keygen']
     position: SelectProps['position']
     spinProps: SelectProps['spinProps']
     size: SelectProps['size']
@@ -82,19 +74,19 @@ export interface OptionListProps extends Pick<ListProps, 'onTransitionEnd'> {
     control: 'mouse' | 'keyboard'
     selectId: string
     onControlChange(control: OptionListProps['control']): void
-    onChange(data, fromInput?: boolean): void
-    renderItem(data, index: number): React.ReactNode
+    onChange(data: SelectData, fromInput?: boolean): void
+    getOptionContent(data: SelectData, index: number): React.ReactNode
     parentElement?: HTMLDivElement
-    groupKey?: string
-    data: any[]
+    groupKey: string
+    data: SelectData[]
     show: boolean
-    style?: React.CSSProperties
-    className?: string
-    values?: any[]
-    getDataByValue
-    check
-    disabled
-    set
+    style: React.CSSProperties
+    className: string
+    selectedData: SelectData[]
+    getCheckedStateByDataItem(dataItem: SelectData): boolean
+    disabled(dataItem: SelectData): boolean
+    getKey: (dataItem: SelectData, index: number) => string | number
+    getDataItemValue: (dataItem: SelectData) => SelectDataValueType
 }
 
 export interface BoxListProps extends Pick<SelectProps, 'multiple' | 'columnWidth' | 'columns'> {
@@ -103,32 +95,32 @@ export interface BoxListProps extends Pick<SelectProps, 'multiple' | 'columnWidt
     selectId: string
     customRender: SelectProps['customRender']
     loading: boolean
-    data: any
+    data: SelectData[]
     text: SelectProps['text']
-    onChange(data): void
-    renderItem(data, index: number): React.ReactNode
-    keygen: SelectProps['keygen']
+    onChange(data: SelectData): void
+    getOptionContent(data: SelectData, index: number): React.ReactNode
     groupKey: string
     height: SelectProps['height']
     lineHeight: SelectProps['lineHeight']
     spinProps: SpinProps
-    values: any
-    getDataByValue
-    disabled
-    check
-    set
+    selectedData: SelectData[]
+    disabled(dataItem: SelectData): boolean
+    setValuesByDataItems: (dataItems: SelectData[]) => void
+    getCheckedStateByDataItem: (dataItem: SelectData) => boolean
+    getKey: (dataItem: SelectData, index: number) => string | number
+    getDataItemValue: (dataItem: SelectData) => SelectDataValueType
 }
 
 export interface OptionProps {
-    data: any
+    data: SelectData
     disabled: boolean
     index: number
     isActive: boolean
     isHover: boolean
     onHover: (index: number) => void
     groupKey: string
-    onClick(data): void
-    renderItem(data, index: number): React.ReactNode
+    onClick(data: SelectData): void
+    getOptionContent(data: SelectData, index: number): React.ReactNode
 }
 
 export interface SelectResultProps {
@@ -145,29 +137,30 @@ export interface SelectResultProps {
     compressedClassName: SelectProps['compressedClassName']
     multiple: SelectProps['multiple']
     placeholder: SelectProps['placeholder']
-    result: any[]
-    renderResult: SelectProps['renderResult']
+    selectedData: SelectData[]
+    getResultContent(dataItem: SelectData, index: number): React.ReactNode
     show: boolean
     forwardedInputRef: ((instance: HTMLInputElement) => void) | React.MutableRefObject<HTMLInputElement>
 }
 
 export interface SelectResultItemProps extends Pick<SelectResultProps, 'resultClassName'> {
-    result: any
+    selectedDataItem: SelectData
     disabled: boolean
     onRemove: SelectResultProps['onRemove']
     title?: boolean
-    renderResult: (data) => React.ReactNode
+    getResultContent(dataItem: SelectData, index: number): React.ReactNode
+    index: number
 }
 
 export interface SelectBoxOptionProps {
-    data: any
+    data: SelectData
     disabled: boolean
     index: number
     isActive: boolean
     multiple: boolean
-    onClick(data): void
+    onClick(data: SelectData): void
     columns: number
-    renderItem(data, index: number): React.ReactNode
+    getOptionContent(data: SelectData, index: number): React.ReactNode
 }
 
 export interface BoxListTitleProps {

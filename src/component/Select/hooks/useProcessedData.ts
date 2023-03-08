@@ -1,23 +1,20 @@
-import { isBoolean, isEmpty } from '@/utils/is'
+import { isBoolean, isEmpty, isFunc } from '@/utils/is'
 import { getUidStr } from '@/utils/uid'
 import { useEffect, useMemo, useRef, useState } from 'react'
+import { SelectData, SelectProps } from '../type'
 
 interface UseSelectData {
     filterText: string
-    onCreate: boolean | ((text: string) => any)
-    onFilter: (text: string, data: any) => boolean
-    data: any[]
-    groupBy: (item: any, index: number, items: any) => string | number
+    onCreate: SelectProps['onCreate']
+    onFilter: SelectProps['onFilter']
+    data: SelectProps['data']
+    groupBy: SelectProps['groupBy']
 }
 
-export default function useSelectData(props: UseSelectData) {
-    const { filterText, onCreate, onFilter, data, groupBy } = props
+export default function useProcessedData(props: UseSelectData) {
+    const { filterText, onCreate, onFilter, groupBy } = props
     const [createdData, updateCreatedData] = useState(undefined)
     const groupKey = useRef(getUidStr()).current
-    const memoData = useMemo(
-        () => (onFilter && filterText ? data.filter((d) => onFilter(filterText, d)) : data),
-        [data, filterText]
-    )
 
     function createData(text: string) {
         const createFn = isBoolean(onCreate) ? (t) => t : onCreate
@@ -35,21 +32,22 @@ export default function useSelectData(props: UseSelectData) {
         }
     }, [filterText])
 
-    const selectData = [...memoData]
+    const processedData = useMemo<SelectData[]>(() => {
+        const data: SelectData[] =
+            onFilter && filterText ? props.data.filter((d) => onFilter(filterText, d)) : [...props.data]
 
-    if (createdData) {
-        selectData.unshift(createdData)
-    }
-
-    const groupData = useMemo(() => {
-        if (typeof groupBy !== 'function') {
-            return selectData
+        if (createdData) {
+            data.unshift(createdData)
+        }
+        if (!isFunc(groupBy)) {
+            return data
         }
 
+        /** 构建分组数据 */
         const groupMap = new Map<string | number, any[]>()
-
-        selectData.forEach((item, index) => {
-            const groupName = groupBy(item, index, selectData)
+        const groupData = []
+        data.forEach((item, index) => {
+            const groupName = groupBy(item, index, data)
 
             if (!groupMap.has(groupName)) {
                 groupMap.set(groupName, [{ [groupKey]: groupName }])
@@ -60,20 +58,18 @@ export default function useSelectData(props: UseSelectData) {
             group.push(item)
         })
 
-        const itemList = []
-
-        // 0: {kmqcy6ol: "City"}
+        // 0: {groupKey: "City"}
         // 1: {value: "Beijing", tag: "1"}
         // 2: {value: "Shanghai", tag: "1"}
-        // 3: {kmqcy6ol: "Country"}
+        // 3: {groupKey: "Country"}
         // 4: {value: "China", tag: "2"}
 
         for (const [, groupList] of groupMap) {
-            itemList.push(...groupList)
+            groupData.push(...groupList)
         }
 
-        return itemList
-    }, [memoData, createData])
+        return groupData
+    }, [props.data, createdData, filterText])
 
-    return { selectData: groupData, groupKey }
+    return { data: processedData, groupKey }
 }

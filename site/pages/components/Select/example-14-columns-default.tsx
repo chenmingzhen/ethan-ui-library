@@ -8,36 +8,26 @@ import React from 'react'
 import { Select } from 'ethan-ui'
 import { fetchSync as fetchCity } from 'doc/data/city'
 
-const citys = fetchCity(200)
+const cities = fetchCity(200)
 const style = { width: 300, marginBottom: 12, display: 'block' }
 
 export default function () {
     return (
         <div>
-            <Select
-                data={citys}
-                format="id"
-                keygen="id"
-                columns={3}
-                prediction={(v, d) => v === d.id}
-                style={style}
-                placeholder="Select a city"
-                renderItem="city"
-            />
+            <Select data={cities} valueKey="id" columns={3} style={style} placeholder="Select a city" labelKey="city" />
 
             <Select
-                data={citys}
-                format="id"
-                keygen="id"
+                data={cities}
+                valueKey="city"
                 columns={4}
                 columnWidth={180}
                 multiple
-                prediction={(v, d) => v === d.id}
                 style={style}
-                placeholder="Select citys"
-                renderItem="city"
+                placeholder="Select cities"
+                labelKey="city"
                 onFilter={(text, d) => d.city.toLowerCase().indexOf(text.toLowerCase()) >= 0}
                 portal
+                defaultValue={['Wuhan']}
             />
         </div>
     )

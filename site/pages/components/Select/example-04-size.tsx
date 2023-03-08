@@ -10,7 +10,7 @@ import { Select } from 'ethan-ui'
 const data = ['red', 'orange', 'yellow', 'green', 'cyan', 'blue', 'violet']
 
 export default function () {
-    const props = { data, keygen: true, style: { width: 100, marginRight: 12 } }
+    const props = { data, style: { width: 100, marginRight: 12 } }
 
     return (
         <div>

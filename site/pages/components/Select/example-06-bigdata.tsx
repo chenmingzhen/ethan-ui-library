@@ -15,9 +15,8 @@ export default function () {
     return (
         <Select
             data={users}
-            keygen="id"
-            format="id"
-            defaultValue={3}
+            valueKey="id"
+            defaultValue={100}
             style={style}
             placeholder="Select a user"
             renderItem={(user, i) => `${user.firstName} ${user.lastName} (${i + 1})`}

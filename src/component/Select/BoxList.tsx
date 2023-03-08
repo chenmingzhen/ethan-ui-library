@@ -3,15 +3,15 @@ import { getLocale } from '@/locale'
 import { selectClass } from '@/styles'
 import { isEmpty } from '@/utils/is'
 import { styles } from '@/utils/style/styles'
-import { getKey } from '@/utils/uid'
 import React, { useMemo } from 'react'
+import deepEql from 'deep-eql'
 import Checkbox from '../Checkbox'
 import LazyList from '../LazyList'
 import AnimationList from '../List'
 import Spin from '../Spin'
 import BoxListTitle from './BoxListTitle'
 import BoxOption from './BoxOption'
-import { BoxListProps } from './type'
+import { BoxListProps, SelectData } from './type'
 
 const BoxList: React.FC<BoxListProps> = function (props) {
     const {
@@ -26,67 +26,64 @@ const BoxList: React.FC<BoxListProps> = function (props) {
         multiple,
         text,
         onChange,
-        renderItem,
-        keygen,
         groupKey,
         height,
         lineHeight,
-        values,
-        check,
-        set,
         disabled,
-        getDataByValue,
+        getCheckedStateByDataItem,
+        getKey,
+        setValuesByDataItems,
+        getOptionContent,
+        selectedData,
+        getDataItemValue,
     } = props
     const { footer, header } = customRender
     const width = columns === -1 ? columnWidth : columnWidth * columns
     const ms = styles({}, style, { width })
+    const stack = columns === -1
 
-    /**
-     * 根据列数再次分割数据
-     * columns:3 => [[1,2,3],[4,5,6]]
-     */
-    const sliceData = useMemo(
+    /** 根据列数再次分割数据 columns:3 => [[1,2,3],[4,5,6]] */
+    const columnData = useMemo(
         () =>
-            data.reduce((accumulatedValue, currentValue) => {
-                let lastItem = accumulatedValue[accumulatedValue.length - 1]
+            stack
+                ? []
+                : data.reduce<SelectData[][]>((accumulatedValue, currentValue) => {
+                      const groupTitle = currentValue[groupKey]
+                      let lastItem = accumulatedValue[accumulatedValue.length - 1]
 
-                const groupTitle = currentValue[groupKey]
+                      if (!isEmpty(groupTitle)) {
+                          accumulatedValue.push([currentValue])
+                          accumulatedValue.push([])
 
-                if (!isEmpty(groupTitle)) {
-                    accumulatedValue.push([currentValue])
+                          return accumulatedValue
+                      }
 
-                    accumulatedValue.push([])
+                      if (!lastItem) {
+                          lastItem = []
 
-                    return accumulatedValue
-                }
+                          accumulatedValue.push(lastItem)
+                      }
 
-                if (!lastItem) {
-                    lastItem = []
+                      if (lastItem.length >= columns) {
+                          accumulatedValue.push([currentValue])
+                      } else {
+                          lastItem.push(currentValue)
+                      }
 
-                    accumulatedValue.push(lastItem)
-                }
-
-                if (lastItem.length >= columns) {
-                    accumulatedValue.push([currentValue])
-                } else {
-                    lastItem.push(currentValue)
-                }
-
-                return accumulatedValue
-            }, []),
-        [data]
+                      return accumulatedValue
+                  }, []),
+        [data, stack]
     )
 
     const defaultIndex = useMemo(() => {
-        if (!values.length) return undefined
+        if (!selectedData.length) return undefined
 
-        for (let i = 0; i < sliceData.length; i++) {
-            sliceData[i]
-
-            const item = getDataByValue(sliceData[i], values[0])
-
-            if (item) {
-                return i
+        for (let i = 0; i < columnData.length - 1; i++) {
+            const groupData = columnData[i]
+            for (let j = 0; j < groupData.length - 1; j++) {
+                if (deepEql(getDataItemValue(groupData[j]), getDataItemValue(selectedData[0]))) {
+                    return i
+                }
             }
         }
 
@@ -94,30 +91,30 @@ const BoxList: React.FC<BoxListProps> = function (props) {
     }, [])
 
     const handleSelectAll = useRefMethod((checked: boolean) => {
-        set(checked ? data : [])
+        setValuesByDataItems(checked ? data : [])
     })
 
-    const handleLazyListRenderItem = useRefMethod((itemList: any[], groupIndex: number) => {
+    const handleLazyListRenderItem = useRefMethod((itemList: SelectData[]) => {
         const groupTitle = itemList[0] && itemList[0][groupKey] ? itemList[0][groupKey] : undefined
 
         if (!isEmpty(groupTitle)) {
             return <BoxListTitle title={groupTitle} key={groupTitle} style={{ height: lineHeight }} />
         }
 
-        const lineKey = itemList.map((d, i) => getKey(d, keygen, i)).join()
+        const lineKey = itemList.map((d, i) => getKey(d, i)).join()
 
         return (
             <div key={lineKey} style={{ height: lineHeight }}>
-                {itemList.map((d, i) => (
+                {itemList.map((dataItem, i) => (
                     <BoxOption
-                        key={getKey(d, keygen, groupIndex + i)}
-                        isActive={check(d)}
-                        disabled={disabled(d)}
-                        data={d}
+                        key={getKey(dataItem, undefined)}
+                        isActive={getCheckedStateByDataItem(dataItem)}
+                        disabled={disabled(dataItem)}
+                        data={dataItem}
                         columns={columns}
                         multiple={multiple}
                         onClick={onChange}
-                        renderItem={renderItem}
+                        getOptionContent={getOptionContent}
                         index={i}
                     />
                 ))}
@@ -135,7 +132,7 @@ const BoxList: React.FC<BoxListProps> = function (props) {
         let checked = false
         let indeterminate = false
 
-        const checkedCount = data.filter((d) => check(d)).length
+        const checkedCount = data.filter((d) => getCheckedStateByDataItem(d)).length
 
         if (checkedCount === data.length) {
             checked = true
@@ -163,7 +160,7 @@ const BoxList: React.FC<BoxListProps> = function (props) {
             <LazyList
                 defaultIndex={defaultIndex}
                 lineHeight={lineHeight}
-                data={sliceData}
+                data={columnData}
                 height={height}
                 renderItem={handleLazyListRenderItem}
             />
@@ -171,25 +168,25 @@ const BoxList: React.FC<BoxListProps> = function (props) {
     }
 
     function renderStack() {
-        return data.map((d, i) => {
-            const groupTitle = d[groupKey]
+        return data.map((dataItem, i) => {
+            const groupTitle = dataItem[groupKey]
 
             if (!isEmpty(groupTitle)) {
                 return <BoxListTitle title={groupTitle} key={groupTitle} />
             }
 
-            const isActive = check(d)
+            const isActive = getCheckedStateByDataItem(dataItem)
 
             return (
                 <BoxOption
-                    key={getKey(d, keygen, i)}
+                    key={getKey(dataItem, i)}
                     isActive={isActive}
-                    disabled={disabled(d)}
-                    data={d}
+                    disabled={disabled(dataItem)}
+                    data={dataItem}
                     columns={columns}
                     multiple={multiple}
                     onClick={onChange}
-                    renderItem={renderItem}
+                    getOptionContent={getOptionContent}
                     index={i}
                 />
             )
@@ -197,8 +194,6 @@ const BoxList: React.FC<BoxListProps> = function (props) {
     }
 
     function renderOptions() {
-        const stack = columns === -1
-
         const empty = data.length === 0
 
         if (loading) return null
@@ -226,11 +221,8 @@ const BoxList: React.FC<BoxListProps> = function (props) {
             display="flex"
         >
             {renderHeader()}
-
             {loading && typeof loading === 'boolean' ? <Spin size={30} /> : loading}
-
             {renderOptions()}
-
             {footer ? <div className={selectClass('custom')}>{footer}</div> : null}
         </AnimationList>
     )

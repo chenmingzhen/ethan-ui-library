@@ -14,13 +14,12 @@ export default function () {
 
     return (
         <Select
-            keygen
             style={{ width: 240 }}
             data={data}
             value={value}
-            onChange={(c, v, b) => {
+            onChange={(c: string) => {
+                console.log('onChange:', c)
                 updateValue(c)
-                console.log(c, v, b)
             }}
         />
     )

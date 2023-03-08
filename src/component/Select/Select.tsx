@@ -2,7 +2,7 @@ import useRefMethod from '@/hooks/useRefMethod'
 import { selectClass } from '@/styles'
 import { docSize } from '@/utils/dom/document'
 import { getParent, isDescendent } from '@/utils/dom/element'
-import { isEmpty, isFunc } from '@/utils/is'
+import { isEmpty, isObject } from '@/utils/is'
 import { KeyboardKey } from '@/utils/keyboard'
 import { getListPortalStyle } from '@/utils/position'
 import { styles } from '@/utils/style/styles'
@@ -12,27 +12,13 @@ import useInputStyle from '../Input/hooks/useInputStyle'
 import Portal from '../Portal'
 import BoxList from './BoxList'
 import useFocus from '../../hooks/useLockFocus'
-import useSelectData from './hooks/useSelectData'
-import useSelectValues from './hooks/useSelectValue'
 import OptionList, { OptionListInstance } from './OptionList'
 import Result from './Result'
-import { SelectBaseData, SelectProps } from './type'
+import { SelectData, SelectProps } from './type'
+import useProcessedData from './hooks/useProcessedData'
+import useSelectDatum from './hooks/useSelectDatum'
 
-function defaultRenderItem(item) {
-    if (typeof item === 'string' || typeof item === 'number') {
-        return item
-    }
-
-    console.error(
-        `RenderItem or RenderResult must return reactNode.But Got ${typeof item}.Maybe you passed a wrong value or didn't pass it`
-    )
-
-    return null
-}
-
-function Select<Data extends SelectBaseData = SelectBaseData, FormatData extends SelectBaseData = SelectBaseData>(
-    props: SelectProps<Data, FormatData>
-) {
+function Select<Data = SelectData>(props: SelectProps<Data>) {
     const [show, updateShow] = useState(false)
     const [focus, updateFocus, lockFocus, hasLockFocusRef] = useFocus()
     const [position, updatePosition] = useState<'drop-down' | 'drop-up'>('drop-down')
@@ -53,13 +39,10 @@ function Select<Data extends SelectBaseData = SelectBaseData, FormatData extends
         onCollapse,
         autoAdapt,
         portal,
-        format,
-        data,
         groupBy,
         defaultValue,
         value,
         onChange,
-        prediction,
         placeholder,
         compressed,
         showArrow = true,
@@ -68,13 +51,14 @@ function Select<Data extends SelectBaseData = SelectBaseData, FormatData extends
         lineHeight = 32,
         text = {},
         loading,
-        keygen,
         spinProps,
         onScrollRatioChange,
         customRender,
         clearable,
         columns,
         columnWidth,
+        labelKey = 'label',
+        valueKey = 'value',
     } = props
     const selectId = useRef(getUidStr()).current
     const inputRef = useRef<HTMLInputElement>()
@@ -89,18 +73,50 @@ function Select<Data extends SelectBaseData = SelectBaseData, FormatData extends
         focus,
         className,
     })
-    const { selectData, groupKey } = useSelectData({ filterText, data, groupBy, onFilter, onCreate })
-    const { selectValues, add, remove, disabled, check, getDataByValue, set, updateSelectValues } = useSelectValues({
+    const { data, groupKey } = useProcessedData({ filterText, data: props.data, groupBy, onFilter, onCreate })
+
+    const {
+        /** 选中的数据 */
+        selectedData,
+        disabled,
+        getCheckedStateByDataItem,
+        addByDataItem,
+        removeByDataItem,
+        setValuesByDataItems,
+        getDataItemValue,
+    } = useSelectDatum({
         multiple,
         onCreate,
         onChange,
-        prediction,
         defaultValue,
         value,
         disabled: props.disabled,
-        selectData,
-        format,
+        data,
+        valueKey,
     })
+
+    const getKey = useRefMethod((dataItem: SelectData, index: number) =>
+        isObject(dataItem) ? (isObject(dataItem[valueKey]) ? index : dataItem[valueKey]) : dataItem
+    )
+
+    const getOptionContent = useRefMethod((dataItem: Data, index: number) => {
+        if (props.renderItem) {
+            return props.renderItem(dataItem, index)
+        }
+
+        return isObject(dataItem) ? dataItem[labelKey] : dataItem
+    })
+
+    const getResultContent = useRefMethod((dataItem: Data, index: number) => {
+        if (!dataItem) return null
+
+        if (props.renderResult) {
+            return props.renderResult(dataItem, index)
+        }
+
+        return isObject(dataItem) ? dataItem[labelKey] : dataItem
+    })
+
     const containerCls = selectClass(
         'inner',
         size,
@@ -151,14 +167,14 @@ function Select<Data extends SelectBaseData = SelectBaseData, FormatData extends
         }
     })
 
-    const handleChange = useRefMethod((dataItem) => {
+    const handleChange = useRefMethod((dataItem: SelectData) => {
         if (props.disabled === true) return
 
         if (multiple) {
-            const checked = !check(dataItem)
+            const checked = !getCheckedStateByDataItem(dataItem)
 
             if (checked) {
-                add(dataItem)
+                addByDataItem(dataItem)
 
                 if (handleInput) {
                     handleInput('')
@@ -166,23 +182,23 @@ function Select<Data extends SelectBaseData = SelectBaseData, FormatData extends
                     inputRef.current.focus()
                 }
             } else {
-                remove(dataItem)
+                removeByDataItem(dataItem)
             }
         } else {
-            set(dataItem)
+            setValuesByDataItems([dataItem])
 
             handleShowStateChange(false)
         }
     })
 
-    const handleItemRemove = useRefMethod((dataItem) => {
+    const handleItemRemove = useRefMethod((dataItem: SelectData) => {
         handleChange(dataItem)
     })
 
     const handleClear = useRefMethod((evt: React.MouseEvent) => {
         evt.stopPropagation()
 
-        set([])
+        setValuesByDataItems([])
 
         if (show) {
             handleShowStateChange(false)
@@ -238,7 +254,6 @@ function Select<Data extends SelectBaseData = SelectBaseData, FormatData extends
         if (!optionListRef.current) return
 
         const hoverIndex = optionListRef.current.getHoverIndex()
-
         const hoverData = data[hoverIndex]
 
         if (!isEmpty(hoverData) && !hoverData[groupKey]) {
@@ -250,26 +265,17 @@ function Select<Data extends SelectBaseData = SelectBaseData, FormatData extends
 
     function handleDelete(evt: React.KeyboardEvent<HTMLDivElement>) {
         if (!multiple) return
-
         if (!isEmpty(filterText)) return
-
-        if (!selectValues.length) return
-
-        const afterValues = [...selectValues]
-
-        const deleteValue = afterValues.pop()
-
-        const dataItem = getDataByValue(data, deleteValue)
-
-        if (dataItem) {
-            handleItemRemove(dataItem.data)
-        } else {
-            updateSelectValues(afterValues, deleteValue, false)
-        }
+        if (!selectedData.length) return
+        const deletedData = selectedData[selectedData.length - 1]
+        if (disabled(deletedData)) return
 
         evt.stopPropagation()
-
         evt.preventDefault()
+
+        if (deletedData) {
+            handleItemRemove(deletedData)
+        }
     }
 
     function handleKeydown(evt: React.KeyboardEvent<HTMLDivElement>) {
@@ -328,14 +334,6 @@ function Select<Data extends SelectBaseData = SelectBaseData, FormatData extends
         }
     }
 
-    const renderItem = useRefMethod((item, index?: number) => {
-        if (isEmpty(props.renderItem)) {
-            return defaultRenderItem(item)
-        }
-
-        return isFunc(props.renderItem) ? props.renderItem(item, index) : item[props.renderItem]
-    })
-
     function renderList() {
         const rect = containerElementRef.current?.getBoundingClientRect()
 
@@ -348,42 +346,40 @@ function Select<Data extends SelectBaseData = SelectBaseData, FormatData extends
                         style={listStyle}
                         show={show}
                         selectId={selectId}
-                        renderItem={renderItem}
                         height={height}
                         lineHeight={lineHeight}
                         text={text}
                         loading={loading}
-                        keygen={keygen}
                         spinProps={spinProps}
                         customRender={customRender}
                         onChange={handleChange}
-                        set={set}
-                        disabled={disabled}
-                        getDataByValue={getDataByValue}
-                        check={check}
                         groupKey={groupKey}
-                        data={selectData}
-                        values={selectValues}
+                        data={data}
                         columns={columns}
                         columnWidth={columnWidth}
                         multiple={multiple}
+                        disabled={disabled}
+                        getKey={getKey}
+                        setValuesByDataItems={setValuesByDataItems}
+                        getCheckedStateByDataItem={getCheckedStateByDataItem}
+                        getOptionContent={getOptionContent}
+                        selectedData={selectedData}
+                        getDataItemValue={getDataItemValue}
                     />
                 ) : (
                     <OptionList
-                        values={selectValues}
-                        data={selectData}
+                        selectedData={selectedData}
+                        data={data}
                         show={show}
                         style={listStyle}
                         selectId={selectId}
                         className={selectClass(autoAdapt && 'auto-adapt')}
-                        renderItem={renderItem}
                         onControlChange={updateControl}
                         control={control}
                         height={height}
                         lineHeight={lineHeight}
                         text={text}
                         loading={loading}
-                        keygen={keygen}
                         position={position}
                         spinProps={spinProps}
                         size={size}
@@ -391,20 +387,19 @@ function Select<Data extends SelectBaseData = SelectBaseData, FormatData extends
                         filterText={filterText}
                         customRender={customRender}
                         onChange={handleChange}
-                        set={set}
-                        disabled={disabled}
-                        getDataByValue={getDataByValue}
-                        check={check}
                         groupKey={groupKey}
                         onTransitionEnd={handleTransitionEnd}
                         ref={optionListRef}
+                        getCheckedStateByDataItem={getCheckedStateByDataItem}
+                        disabled={disabled}
+                        getKey={getKey}
+                        getOptionContent={getOptionContent}
+                        getDataItemValue={getDataItemValue}
                     />
                 )}
             </Portal>
         )
     }
-
-    const renderResult = props.renderResult || renderItem
 
     return (
         <div className={cls} style={ms}>
@@ -427,10 +422,10 @@ function Select<Data extends SelectBaseData = SelectBaseData, FormatData extends
                     isDisabled={props.disabled === true}
                     disabledFunc={disabled}
                     show={show}
-                    result={selectValues}
+                    selectedData={selectedData}
                     multiple={multiple}
                     placeholder={placeholder}
-                    renderResult={renderResult}
+                    getResultContent={getResultContent}
                     compressed={compressed}
                     showArrow={showArrow}
                     compressedClassName={compressedClassName}

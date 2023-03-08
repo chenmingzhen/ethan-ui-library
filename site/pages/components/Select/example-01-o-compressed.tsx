@@ -8,13 +8,13 @@ import React from 'react'
 import { Select } from 'ethan-ui'
 
 const data = [
-    { id: 'red' },
-    { id: 'orange' },
-    { id: 'yellow' },
-    { id: 'green' },
-    { id: 'cyan' },
-    { id: 'blue' },
-    { id: 'violet' },
+    { color: 'red' },
+    { color: 'orange' },
+    { color: 'yellow' },
+    { color: 'green' },
+    { color: 'cyan' },
+    { color: 'blue' },
+    { color: 'violet' },
 ]
 
 export default function () {
@@ -23,11 +23,10 @@ export default function () {
             compressed
             style={{ width: 300 }}
             data={data}
-            keygen="id"
             multiple
             placeholder="Multiple select Compressed"
-            renderItem="id"
-            format="id"
+            labelKey="color"
+            valueKey="color"
         />
     )
 }

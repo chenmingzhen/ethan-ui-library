@@ -16,7 +16,6 @@ export default function () {
                 style={{ width: 240, marginBottom: 12 }}
                 data={data}
                 placeholder="input label"
-                keygen
                 onCreate
                 onFilter={(text, d) => d.indexOf(text) >= 0}
             />
@@ -25,7 +24,6 @@ export default function () {
                 style={{ width: 360, marginBottom: 12 }}
                 data={data}
                 placeholder="input label"
-                keygen
                 onCreate
                 multiple
                 onFilter={(text, d) => d.indexOf(text) >= 0}

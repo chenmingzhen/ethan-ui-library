@@ -3,14 +3,14 @@ import { selectClass } from '@/styles'
 import { getRangeValue } from '@/utils/numbers'
 import classnames from 'classnames'
 import React, { useImperativeHandle, useRef } from 'react'
-import { getKey } from '@/utils/uid'
 import useRefMethod from '@/hooks/useRefMethod'
 import { isEmptyStr } from '@/utils/is'
 import { getLocale } from '@/locale'
+import deepEql from 'deep-eql'
 import LazyList, { LazyListState } from '../LazyList'
 import AnimationList from '../List'
 import Spin from '../Spin'
-import { OptionListProps } from './type'
+import { OptionListProps, SelectData } from './type'
 import { transformSizeToPx } from './util'
 import Option from './Option'
 
@@ -37,8 +37,6 @@ const OptionList: React.ForwardRefRenderFunction<OptionListInstance, OptionListP
     const hoverMoveTimer = useRef<NodeJS.Timeout>()
     const scrollTimer = useRef<NodeJS.Timeout>()
     const {
-        values,
-        getDataByValue,
         data,
         show,
         style,
@@ -53,13 +51,16 @@ const OptionList: React.ForwardRefRenderFunction<OptionListInstance, OptionListP
         size,
         lineHeight,
         groupKey,
-        keygen,
         onChange,
         filterText,
         onScrollRatioChange,
-        check,
         disabled,
         customRender = {},
+        getKey,
+        getOptionContent,
+        getCheckedStateByDataItem,
+        selectedData,
+        getDataItemValue,
     } = props
     const [state, setState] = useSetState<OptionListState>(() => {
         const defaultState = {
@@ -70,16 +71,16 @@ const OptionList: React.ForwardRefRenderFunction<OptionListInstance, OptionListP
             defaultIndex: 0,
         }
 
-        if (values.length) return defaultState
+        if (!selectedData.length) return defaultState
 
-        const item = getDataByValue(data, values[0])
+        const index = data.findIndex((dataItem) =>
+            deepEql(getDataItemValue(dataItem), getDataItemValue(selectedData[0]))
+        )
 
-        if (!item) return defaultState
+        if (index === -1) return defaultState
 
-        const { index } = item
         const defaultIndex = getRangeValue({ min: 0, max: data.length - 1, current: index })
 
-        // defaultState.hoverIndex = defaultIndex
         defaultState.defaultIndex = defaultIndex
         return defaultState
     })
@@ -189,19 +190,19 @@ const OptionList: React.ForwardRefRenderFunction<OptionListInstance, OptionListP
         }
     }
 
-    function renderItem(d, i: number) {
+    function renderItem(dataItem: SelectData, i: number) {
         const { currentIndex, hoverIndex } = state
 
         return (
             <Option
-                isActive={check(d)}
-                disabled={disabled(d)}
+                isActive={getCheckedStateByDataItem(dataItem)}
+                disabled={disabled(dataItem)}
                 isHover={hoverIndex === currentIndex + i}
-                key={d[groupKey] ? d[groupKey] : getKey(d, keygen, i)}
+                key={dataItem[groupKey] ? dataItem[groupKey] : getKey(dataItem, i)}
                 index={currentIndex + i}
-                data={d}
+                data={dataItem}
                 onClick={onChange}
-                renderItem={props.renderItem}
+                getOptionContent={getOptionContent}
                 onHover={handleHover}
                 groupKey={groupKey}
             />

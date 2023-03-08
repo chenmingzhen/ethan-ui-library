@@ -17,7 +17,6 @@ export default function () {
             <Select
                 portal
                 data={data}
-                keygen
                 style={{ width: 100, marginRight: 12 }}
                 onFilter={(text, d) => d.indexOf(text) > -1}
                 placeholder="default"
@@ -26,12 +25,11 @@ export default function () {
             <Select
                 multiple
                 data={users}
-                keygen="id"
+                valueKey="id"
                 portal
                 style={{ width: 300 }}
                 placeholder="Select user"
                 onFilter={(text, d) => d.firstName.indexOf(text) > -1}
-                format="id"
                 renderItem={(user) => `${user.firstName} ${user.lastName}`}
             />
         </div>

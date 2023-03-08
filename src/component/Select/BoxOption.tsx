@@ -5,13 +5,13 @@ import Radio from '../Radio/Radio'
 import { SelectBoxOptionProps } from './type'
 
 const BoxOption: React.FC<SelectBoxOptionProps> = function (props) {
-    const { data, index, isActive, renderItem, columns, multiple, disabled, onClick } = props
+    const { data, index, isActive, getOptionContent, columns, multiple, disabled, onClick } = props
 
     const width = `${(1 / columns) * 100}%`
 
     const CheckItem = multiple ? Checkbox : Radio
 
-    const item = renderItem(data, index)
+    const item = getOptionContent(data, index)
 
     function handleChange() {
         if (disabled) return

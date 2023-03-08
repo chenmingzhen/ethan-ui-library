@@ -24,10 +24,9 @@ export default function () {
                 if (d.tag === '2') return 'Country'
                 return 'Other'
             }}
-            keygen="value"
+            labelKey="value"
             style={{ width: 240 }}
             data={data}
-            renderItem="value"
         />
     )
 }

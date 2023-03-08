@@ -7,35 +7,33 @@
 import React, { useState } from 'react'
 import { Select } from 'ethan-ui'
 
-interface Value {
-    id: string
-}
-
-const data: Value[] = [
-    { id: 'red' },
-    { id: 'orange' },
-    { id: 'yellow' },
-    { id: 'green' },
-    { id: 'cyan' },
-    { id: 'blue' },
-    { id: 'violet' },
+const data = [
+    { color: 'red' },
+    { color: 'orange' },
+    { color: 'yellow' },
+    { color: 'green' },
+    { color: 'cyan' },
+    { color: 'blue' },
+    { color: 'violet' },
 ]
 
 export default () => {
-    const [value, updateValue] = useState<string[]>(['blue'])
+    const [value, updateValue] = useState(['blue'])
 
     return (
-        <Select<Value, string>
+        <Select
             style={{ width: 300, marginBottom: 15 }}
             data={data}
-            keygen="id"
             multiple
             placeholder="Multiple select"
-            onChange={updateValue}
             value={value}
-            renderItem="id"
-            format="id"
-            disabled={({ id }) => id === 'blue'}
+            labelKey="color"
+            valueKey="color"
+            disabled={({ color }) => color === 'blue'}
+            onChange={(selectValues: string[]) => {
+                updateValue(selectValues)
+                console.log('onChange:', selectValues)
+            }}
         />
     )
 }
