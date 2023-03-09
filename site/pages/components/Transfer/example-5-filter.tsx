@@ -7,12 +7,7 @@
 import React from 'react'
 import { Transfer } from 'ethan-ui'
 
-interface Data {
-    id: number
-    content: string
-}
-
-const data: Data[] = []
+const data = []
 
 for (let i = 1; i < 20; i++) {
     data.push({
@@ -22,13 +17,5 @@ for (let i = 1; i < 20; i++) {
 }
 
 export default function () {
-    return (
-        <Transfer<Data>
-            onFilter={(t, d) => d.content.indexOf(t) > -1}
-            data={data}
-            format="id"
-            renderItem="content"
-            keygen="id"
-        />
-    )
+    return <Transfer onFilter={(t, d) => d.content.indexOf(t) > -1} data={data} valueKey="id" labelKey="content" />
 }

@@ -1,88 +1,61 @@
 import React, { ReactNode } from 'react'
 
-type KeyGen<T> = T extends string | number ? true : keyof T | true | ((data: T) => string | number)
+export type TransferDataValueType = React.Key
 
-type TransferInferFormat<Data> = Data extends string | number ? never : keyof Data | ((data: Data) => string | number)
+export type TransferData = { label: React.ReactNode; value: TransferDataValueType } | {}
 
-type TransferInferRenderItem<Data> =
-    | (Data extends string | number ? React.ReactNode : keyof Data)
-    | ((item: Data) => React.ReactNode)
-
-export type TransferBaseData = Record<string, any> | string | number
-
-export interface CustomRenderParams<Data, FormatData> {
-    onSelected: (data: FormatData) => void
-    direction: 'left' | 'right'
-    selectedKeys: React.Key[]
-    value: FormatData[]
-    data: Data[]
-    text: string
-}
-
-export interface TransferContextProps {
-    selectedKeys: any[]
-    setSelectedKeys(index: number, selectedKeys: any[]): void
-}
-
-export interface TransferProps<Data extends TransferBaseData, FormatData extends TransferBaseData = Data> {
+export interface TransferProps<Data = TransferData> {
     titles?: [React.ReactNode, React.ReactNode]
     data: Data[]
-    keygen: KeyGen<Data>
-    renderItem?: TransferInferRenderItem<Data>
+    renderItem?: (data: Data, index: number) => React.ReactNode
     footers?: [React.ReactNode, React.ReactNode]
     operations?: [React.ReactNode, React.ReactNode]
     operationIcon?: boolean
-    value?: FormatData[]
-    defaultValue?: FormatData[]
+    value?: TransferDataValueType[]
+    defaultValue?: TransferDataValueType[]
     className?: string
     style?: React.CSSProperties
     listClassName?: string
     listStyle?: React.CSSProperties
-    selectedKeys?: FormatData[]
-    defaultSelectedKeys?: FormatData[]
-    onSelectChange?: (sourceKeys: FormatData[], targetKeys: FormatData[]) => void
+    selectedKeys?: TransferDataValueType[]
+    defaultSelectedKeys?: TransferDataValueType[]
+    onSelectChange?: (sourceKeys: TransferDataValueType[], targetKeys: TransferDataValueType[]) => void
     empty?: React.ReactNode
-    onFilter?: (text: string, value: FormatData, isSource: boolean) => boolean
+    onFilter?: (text: string, data: Data, isSource: boolean) => boolean
     onSearch?: (text: string, isSource: boolean) => boolean
     itemClass?: string
     loading?: boolean | [boolean, boolean]
     lineHeight?: number
     listHeight?: number
-    renderFilter?: any
-    filterText?: string
-    children?: (params: CustomRenderParams<Data, FormatData>) => React.ReactNode
-    format?: TransferInferFormat<Data>
-    prediction?(formatValue: FormatData, data: Data): boolean
-    disabled?: boolean | ((data: Data) => boolean)
-    onChange?(value: FormatData[], data: Data, checked: boolean)
+    disabled?: boolean | ((data: Data, values: TransferDataValueType[]) => boolean)
+    onChange?(value: TransferDataValueType[], data: Data, checked: boolean)
+    labelKey?: string
+    valueKey?: string
+    oneWay?: boolean
 }
 
-export interface TransferCardProps
-    extends Pick<
-        TransferProps<any>,
-        | 'renderItem'
-        | 'listStyle'
-        | 'disabled'
-        | 'empty'
-        | 'onSearch'
-        | 'lineHeight'
-        | 'listHeight'
-        | 'renderFilter'
-        | 'filterText'
-        | 'listClassName'
-        | 'itemClass'
-        | 'onFilter'
-        | 'keygen'
-    > {
+export interface TransferCardProps {
     title: React.ReactNode
-    data: any[]
-    selectedKeys: any[]
+    data: TransferData[]
     footer: React.ReactNode
-    onSelectedKeysChange(index: number, selected: any[]): void
     loading: boolean
     index: number
-    customRender: TransferProps<any>['children']
-    values: any[]
+    getKey: (dataItem: TransferData, index: number) => TransferDataValueType
+    getContent: (dataItem: TransferData, index: number) => React.ReactNode
+    listStyle: TransferProps['listStyle']
+    disabled: (dataItem: TransferData) => boolean
+    isDisabledAll: boolean
+    empty: TransferProps['empty']
+    onSearch: TransferProps['onSearch']
+    lineHeight: TransferProps['lineHeight']
+    listHeight: TransferProps['listHeight']
+    listClassName: TransferProps['listClassName']
+    itemClass: TransferProps['itemClass']
+    onFilter: TransferProps['onFilter']
+    sideSelectedKeys: TransferDataValueType[]
+    oneWay: TransferProps['oneWay']
+    onSelectedKeyChange(index: number, sideSelectedKeys: TransferDataValueType[]): void
+    removeByDataItems?: (dataItems: TransferData[]) => void
 }
 
 export interface TransferItemProps {
@@ -92,10 +65,22 @@ export interface TransferItemProps {
     disabled: boolean
     itemClass: string
     lineHeight: TransferCardProps['lineHeight']
+    sideSelectedKeys: TransferDataValueType[]
+    oneWay: TransferProps['oneWay']
+    onSelectedKeyChange(index: number, sideSelectedKeys: TransferDataValueType[]): void
+    removeByDataItems?: (dataItems: TransferData[]) => void
+    dataItem: TransferData
 }
 
-export interface TransferOperationButtonProps
-    extends Pick<TransferProps<any>, 'disabled' | 'data' | 'operationIcon' | 'operations' | 'keygen'> {
-    add(value, unshift: boolean)
-    remove(value)
+export interface TransferOperationButtonProps {
+    addByDataItems(dataItems: TransferData[])
+    removeByDataItems(dataItems: TransferData[])
+    operationIcon: boolean
+    operations: React.ReactNode[]
+    isDisabledAll: boolean
+    selectedKeys: TransferDataValueType[][]
+    onSelectedKeyChange(index: number, sideSelectedKeys: TransferDataValueType[]): void
+    cacheDataMapping: Map<React.Key, TransferData>
+    disabled: (dataItem: TransferData) => boolean
+    oneWay: TransferProps['oneWay']
 }

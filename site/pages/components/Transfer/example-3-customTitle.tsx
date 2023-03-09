@@ -12,7 +12,7 @@ const data = []
 for (let i = 1; i < 30; i++) {
     data.push({
         id: i,
-        content: `content ${i}`,
+        content: `${i}`,
     })
 }
 
@@ -22,11 +22,11 @@ export default function () {
             titles={['I am left', 'I am right']}
             footers={[<Button style={{ margin: 4 }}>left</Button>, <Button style={{ margin: 4 }}>right</Button>]}
             data={data}
-            format="id"
-            renderItem="content"
-            keygen="id"
+            labelKey="content"
+            valueKey="id"
             operations={['to right', 'to left']}
             listHeight={240}
+            renderItem={(dataItem) => `No.${dataItem.content}`}
         />
     )
 }

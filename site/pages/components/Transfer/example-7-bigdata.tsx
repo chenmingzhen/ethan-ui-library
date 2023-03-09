@@ -17,5 +17,5 @@ for (let i = 0; i < 10000; i++) {
 }
 
 export default function () {
-    return <Transfer data={data} format="id" renderItem="content" keygen="id" titles={['Source', 'Target']} />
+    return <Transfer data={data} valueKey="id" labelKey="content" titles={['Source', 'Target']} />
 }

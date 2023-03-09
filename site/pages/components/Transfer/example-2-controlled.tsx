@@ -7,12 +7,7 @@
 import React, { useState } from 'react'
 import { Transfer } from 'ethan-ui'
 
-interface Data {
-    id: number
-    content: string
-}
-
-const data: Data[] = []
+const data = []
 
 for (let i = 1; i < 20; i++) {
     data.push({
@@ -23,16 +18,23 @@ for (let i = 1; i < 20; i++) {
 
 export default function () {
     const [value, updateValue] = useState([1, 3, 5, 7, 9])
-
+    const [selectedKeys, updateSelectedKeys] = useState([1, 2])
     return (
-        <Transfer<Data, number>
+        <Transfer
             data={data}
             value={value}
-            onChange={updateValue}
-            format="id"
-            renderItem="content"
-            keygen="id"
+            selectedKeys={selectedKeys}
+            valueKey="id"
+            labelKey="content"
             disabled={(d) => d.content.indexOf('1') > -1}
+            onChange={(nextValue: number[]) => {
+                console.log('nextValue:', nextValue)
+                updateValue(nextValue)
+            }}
+            onSelectChange={(left: number[], right: number[]) => {
+                console.log('nextSelectedKeys:', left, right)
+                updateSelectedKeys([...left, ...right])
+            }}
         />
     )
 }

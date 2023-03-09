@@ -24,14 +24,16 @@ export default function () {
         <Transfer
             data={data}
             selectedKeys={selectedKeys}
-            onSelectChange={(sourceKeys, targetKeys) => {
+            onSelectChange={(sourceKeys: number[], targetKeys: number[]) => {
                 updateSelectedKeys([...sourceKeys, ...targetKeys])
             }}
             value={value}
-            onChange={updateValue}
-            format="id"
-            renderItem="content"
-            keygen="id"
+            onChange={(nextValue: number[]) => {
+                console.log('nextValue:', nextValue)
+                updateValue(nextValue)
+            }}
+            valueKey="id"
+            labelKey="content"
         />
     )
 }

@@ -44,7 +44,7 @@
         width: 100%;
         cursor: pointer;
 
-        &-check {
+        &-checkbox {
             width: 100%;
             margin-right: 0;
             padding: 6px 0 6px 12px;
@@ -64,6 +64,43 @@
             &:hover {
                 background-color: transparent;
                 color: var(--gray-500, #adb5bd);
+            }
+        }
+    }
+
+    &-oneWay {
+        .@{transfer-prefix}-item {
+            cursor: default;
+
+            &:hover {
+                background-color: transparent;
+            }
+
+            &-right {
+                width: 100%;
+                height: 100%;
+                margin-right: 0;
+                padding: 6px 0 6px 12px;
+                display: inline-block;
+                position: relative;
+            }
+
+            &-delete {
+                position: absolute;
+                width: 13px;
+                height: 13px;
+                cursor: pointer;
+                font-size: 12px;
+                top: 30%;
+                right: 2px;
+            }
+
+            &-disabled {
+                cursor: not-allowed;
+
+                span {
+                    cursor: not-allowed;
+                }
             }
         }
     }

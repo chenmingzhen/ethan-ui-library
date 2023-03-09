@@ -18,13 +18,6 @@ for (let i = 1; i < 20; i++) {
 
 export default function () {
     return (
-        <Transfer
-            loading={[true, false]}
-            data={data}
-            format="id"
-            renderItem="content"
-            keygen="id"
-            titles={['Source', 'Target']}
-        />
+        <Transfer loading={[true, false]} data={data} labelKey="content" valueKey="id" titles={['Source', 'Target']} />
     )
 }
