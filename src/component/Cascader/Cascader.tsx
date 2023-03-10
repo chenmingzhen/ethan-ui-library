@@ -1,217 +1,220 @@
-import React from 'react'
-import classnames from 'classnames'
-import { PureComponent } from '@/utils/component'
-import { getUidStr } from '@/utils/uid'
-import TreeDatum, { KeygenParams } from '@/utils/Datum/Tree'
+import useLockFocus from '@/hooks/useLockFocus'
+import useRefMethod from '@/hooks/useRefMethod'
+import { getLocale } from '@/locale'
 import { cascaderClass, selectClass } from '@/styles'
 import { docSize } from '@/utils/dom/document'
 import { isDescendent } from '@/utils/dom/element'
-import { runInNextFrame } from '@/utils/nextFrame'
-import { getLocale } from '@/locale'
-import { KeyboardKey } from '@/utils/keyboard'
-import { styles } from '@/utils/style/styles'
 import { getListPortalStyle } from '@/utils/position'
-import Result from './Result'
-import CascaderList from './List'
-import { CascaderState, CascaderProps } from './type'
+import { styles } from '@/utils/style/styles'
+import { getUidStr } from '@/utils/uid'
+import classnames from 'classnames'
+import React, { useRef, useState } from 'react'
+import useInputStyle from '../Input/hooks/useInputStyle'
 import AnimationList from '../List'
 import Portal from '../Portal'
+import CascaderResult from './Result'
+import { CascaderData, CascaderDataValueType, CascaderProps } from './type'
+import CascaderList from './List'
+import useCascaderDatum from './hooks/useCascaderDatum'
 
-class Cascader<T> extends PureComponent<CascaderProps, CascaderState> {
-    static defaultProps = {
-        clearable: true,
-        expandTrigger: 'click',
-        height: 300,
-        data: [],
-        childrenKey: 'children',
-        text: {},
-    }
+function Cascader<Data = CascaderData>(props: CascaderProps<Data>) {
+    const {
+        size,
+        border,
+        onFocus,
+        onBlur,
+        height = 300,
+        onCollapse,
+        placeholder,
+        zIndex,
+        portal,
+        compressed,
+        data = [],
+        clearable = true,
+        onItemClick,
+        changeOnSelect,
+        multiple,
+        expandTrigger = 'click',
+        text = {},
+        labelKey = 'label',
+        valueKey = 'value',
+        childrenKey = 'children',
+    } = props
+    const cascaderId = useRef(getUidStr()).current
+    const [position, updatePosition] = useState(props.position)
+    const [show, updateShow] = useState(false)
+    const [path, updatePath] = useState<CascaderDataValueType[]>([])
+    const [focus, updateFocus, lockFocus, hasLockFocusRef] = useLockFocus()
+    const containerElementRef = useRef<HTMLDivElement>()
+    const { className, style } = useInputStyle({
+        focus,
+        disabled: props.disabled === true,
+        size,
+        border,
+        style: props.style,
+        className: classnames(props.className, selectClass('_')),
+    })
 
-    datum: TreeDatum
+    const cls = classnames(
+        cascaderClass(
+            '_',
+            focus && 'focus',
+            props.mode !== undefined && 'multiple',
+            props.disabled === true && 'disabled'
+        ),
+        selectClass(position)
+    )
 
-    cascaderId = getUidStr()
+    const getKey = useRefMethod((dataItem: CascaderData) => dataItem[valueKey])
 
-    containerElementRef = React.createRef<HTMLDivElement>()
-
-    constructor(props) {
-        super(props)
-
-        this.state = {
-            focus: false,
-            path: [],
-            position: 'drop-down',
+    const getContent = useRefMethod((dataItem: Data) => {
+        if (props.renderItem) {
+            return props.renderItem(dataItem)
         }
 
-        this.datum = new TreeDatum({
-            data: props.data,
-            keygen: this.keygen,
-            mode: props.mode,
-            value: props.value || props.defaultValue,
-            disabled: typeof props.disabled === 'function' ? props.disabled : undefined,
-            childrenKey: props.childrenKey,
-        })
-    }
+        return dataItem[labelKey]
+    })
 
-    componentDidMount() {
-        super.componentDidMount()
+    const { value, setValue, disabled, getNodeInfoByDataItem, getDataItemByKey } = useCascaderDatum({
+        data,
+        childrenKey,
+        disabled: props.disabled,
+        defaultValue: props.defaultValue,
+        value: props.value,
+        onChange: props.onChange,
+        getKey,
+        limit: multiple ? undefined : 1,
+    })
 
-        /** 更新无数据的DOM宽度 */
-        if (!this.props.data?.length) this.forceUpdate()
-    }
-
-    componentDidUpdate(prevProps: CascaderProps) {
-        if (prevProps.value !== this.props.value) this.datum.setValue(this.props.value || [])
-
-        if (prevProps.data !== this.props.data) this.datum.setData(this.props.data)
-    }
-
-    keygen = ({ data, parentKey = '', index }: KeygenParams) => {
-        const { keygen } = this.props
-
-        if (typeof keygen === 'function') return keygen(data, parentKey)
-
-        if (keygen) return data[keygen]
-
-        return parentKey + (parentKey ? ',' : '') + index
-    }
-
-    bindClickAway = () => {
-        document.addEventListener('mousedown', this.handleClickDocumentAway, true)
-    }
-
-    clearClickAway = () => {
-        document.removeEventListener('mousedown', this.handleClickDocumentAway, true)
-    }
-
-    handleClickDocumentAway = (e: MouseEvent) => {
-        const desc = isDescendent(e.target as HTMLElement, this.cascaderId)
-
-        if (desc) return
-
-        this.props.onBlur()
-
-        this.handleFocusChange(false)
-    }
-
-    handleKeyDown: React.KeyboardEventHandler<HTMLDivElement> = (e) => {
-        if (e.key === KeyboardKey.Enter) {
-            e.preventDefault()
-
-            this.handleFocusChange(!this.state.focus)
-        } else if (e.key === KeyboardKey.Escape) {
-            this.props.onBlur()
-
-            if (this.state.focus) {
-                this.handleFocusChange(false)
-            }
+    const handleTransitionEnd = useRefMethod(() => {
+        if (!show) {
+            updatePath([])
         }
-    }
+    })
 
-    handleFocusChange = (focus: boolean, e?) => {
-        const { disabled, height, onCollapse, position } = this.props
+    const handlePathChange = useRefMethod((dataItem: CascaderData, change: boolean, dismiss: boolean) => {
+        const node = getNodeInfoByDataItem(dataItem)
+        if (!node) return
 
-        if (disabled === true || focus === this.state.focus) return
+        const { keyPath } = node
 
-        /** 点击关闭按钮 */
-        if (focus && e && e.target.classList.contains(cascaderClass('close'))) return
+        updatePath(keyPath)
 
-        let newPosition = position
-
-        if (!position) {
-            const windowHeight = docSize.height
-
-            const bottom = height + this.containerElementRef.current.getBoundingClientRect().bottom
-
-            if (bottom > windowHeight) newPosition = 'drop-up'
+        if (change) {
+            setValue([keyPath])
         }
 
-        if (onCollapse) onCollapse(focus)
-
-        this.setState({ focus, position: newPosition || 'drop-down' })
-
-        if (focus) {
-            this.bindClickAway()
-        } else {
-            this.clearClickAway()
+        if (dismiss) {
+            toggleOpen(false)
         }
+    })
+
+    const handleClickAway = useRefMethod((evt: MouseEvent) => {
+        const desc = isDescendent(evt.target as HTMLElement, cascaderId)
+
+        if (desc) {
+            lockFocus(() => {
+                containerElementRef.current.focus()
+            })
+        }
+    })
+
+    function handleFocus(evt: React.FocusEvent<HTMLDivElement, Element>) {
+        if (hasLockFocusRef.current || props.disabled === true) return
+
+        if (onFocus) {
+            onFocus(evt)
+        }
+
+        updateFocus(true)
+
+        lockFocus()
     }
 
-    handleClear = () => {
-        const { mode, onChange } = this.props
+    function toggleOpen(nextShow: boolean) {
+        if (props.disabled === true || show === nextShow) return
 
-        if (mode === undefined) {
-            this.setState({ path: [] })
-        } else {
-            this.datum.setValue([])
+        const windowHeight = docSize.height
+        const bottom = height + containerElementRef.current.getBoundingClientRect().bottom
+        let nextPosition = position || 'drop-down'
+
+        if (bottom > windowHeight && !nextPosition) nextPosition = 'drop-up'
+        if (onCollapse) onCollapse(nextShow)
+        if (nextShow) {
+            updatePath(value[value.length - 1] || [])
+            document.addEventListener('mousedown', handleClickAway, true)
         }
 
-        this.props.onBlur()
-
-        onChange([])
-
-        runInNextFrame(() => {
-            this.handleFocusChange(false)
-        })
+        updateShow(nextShow)
+        updatePosition(nextPosition)
     }
 
-    handlePathChange = (id: React.Key, fromListData: T, path: React.Key[]) => {
-        const { childrenKey, finalDismiss } = this.props
-
-        if (fromListData) {
-            const leaf = !fromListData[childrenKey] || fromListData[childrenKey].length === 0
-
-            if (finalDismiss && leaf) this.handleFocusChange(false)
+    function handleBlur(evt: React.FocusEvent<HTMLDivElement, Element>) {
+        if (hasLockFocusRef.current || props.disabled === true) return
+        if (onBlur) {
+            onBlur(evt)
         }
 
-        this.setState({ path: [...path, id] })
+        document.removeEventListener('mousedown', handleClickAway, true)
+        toggleOpen(false)
+        updateFocus(false)
     }
 
-    renderList = () => {
-        const { data, renderItem, mode, onChange, loader, onItemClick, expandTrigger, childrenKey, text } = this.props
+    function handleClear() {
+        setValue([])
+        updatePath([])
+        toggleOpen(false)
+    }
 
-        if (!data?.length) {
-            return <span>{text?.noData || getLocale('noData')}</span>
-        }
+    function handleContainerMouseDown(evt: React.MouseEvent) {
+        toggleOpen(true)
+    }
 
-        const { path } = this.state
+    function handleKeydown(evt: React.KeyboardEvent<HTMLDivElement>) {}
 
-        const props = {
-            datum: this.datum,
-            renderItem,
-            keygen: this.keygen,
-            loader,
-            onPathChange: this.handlePathChange,
-            onChange,
-            onItemClick,
-            multiple: mode !== undefined,
-            expandTrigger,
-            childrenKey,
-            text,
-        }
+    function renderList() {
+        if (!data?.length) return <span>{text.noData || getLocale('noData')}</span>
 
-        let nextPathData: any[] = data
+        let currentData: CascaderData | CascaderData[] = data
 
         return (
             <>
-                <CascaderList {...props} key="root" data={data} currentPathActiveId={path[0]} parentId="" path={[]} />
+                <CascaderList
+                    key="root"
+                    currentData={data}
+                    currentPathActiveId={path[0]}
+                    getKey={getKey}
+                    multiple={false}
+                    loader={undefined}
+                    expandTrigger={expandTrigger}
+                    childrenKey={childrenKey}
+                    getContent={getContent}
+                    onItemClick={onItemClick}
+                    disabled={disabled}
+                    changeOnSelect={changeOnSelect}
+                    onPathChange={handlePathChange}
+                />
                 {path.map((id, index) => {
-                    nextPathData = nextPathData?.find((d) => {
-                        const nextPathId = this.keygen({ data: d, parentKey: path[index - 1], index })
+                    currentData = (currentData as CascaderData[])?.find((dataItem) => getKey(dataItem) === id)
 
-                        return nextPathId === id
-                    })
-
-                    if (nextPathData?.[childrenKey]?.length > 0) {
-                        nextPathData = nextPathData[childrenKey]
+                    if (currentData?.[childrenKey]?.length > 0) {
+                        currentData = currentData[childrenKey]
 
                         return (
                             <CascaderList
-                                {...props}
                                 key={id}
-                                data={nextPathData}
+                                currentData={currentData as CascaderData[]}
                                 currentPathActiveId={path[index + 1]}
-                                parentId={path[index]}
-                                path={path.slice(0, index + 1)}
+                                getKey={getKey}
+                                multiple={false}
+                                loader={undefined}
+                                expandTrigger={expandTrigger}
+                                childrenKey={childrenKey}
+                                getContent={getContent}
+                                onItemClick={onItemClick}
+                                disabled={disabled}
+                                changeOnSelect={changeOnSelect}
+                                onPathChange={handlePathChange}
                             />
                         )
                     }
@@ -222,83 +225,67 @@ class Cascader<T> extends PureComponent<CascaderProps, CascaderState> {
         )
     }
 
-    renderAbsoluteList = () => {
-        const { zIndex, portal, data } = this.props
-        const { focus, position } = this.state
-
-        const portalRootCls = classnames(cascaderClass(focus && 'focus'), selectClass(this.state.position))
-
-        const className = classnames(selectClass('options'), cascaderClass('options', !data?.length && 'no-data'))
+    function renderAnimationList() {
+        const portalRootCls = classnames(cascaderClass(focus && 'focus'), selectClass(position))
+        const rect = containerElementRef.current?.getBoundingClientRect()
 
         let width
 
         if (!data?.length) {
-            width = this.containerElementRef.current
-                ? this.containerElementRef.current.getBoundingClientRect().width
-                : 0
+            width = containerElementRef.current ? containerElementRef.current.getBoundingClientRect().width : 0
         }
 
-        const rect = this.containerElementRef.current?.getBoundingClientRect()
-
-        const ms = styles({ zIndex, width }, portal && getListPortalStyle(rect, position))
-
         return (
-            <Portal rootClass={portalRootCls} portal={portal} show={focus}>
+            <Portal rootClass={portalRootCls} portal={portal} show={show}>
                 <AnimationList
-                    show={focus}
-                    data-id={this.cascaderId}
-                    className={className}
+                    show={show}
+                    data-id={cascaderId}
+                    className={classnames(selectClass('options'), cascaderClass('options', !data?.length && 'no-data'))}
                     animationTypes={['fade', 'scale-y']}
                     duration="fast"
                     display="inline-flex"
-                    style={ms}
+                    style={styles({ zIndex, width }, portal && getListPortalStyle(rect, position))}
+                    onTransitionEnd={handleTransitionEnd}
                 >
-                    {this.renderList()}
+                    {renderList()}
                 </AnimationList>
             </Portal>
         )
     }
 
-    render() {
-        const { placeholder, disabled, spinProps, onFocus, onBlur, keygen, ...other } = this.props
-
-        const { focus, position } = this.state
-
-        const className = classnames(
-            cascaderClass(
-                '_',
-                focus && 'focus',
-                other.mode !== undefined && 'multiple',
-                disabled === true && 'disabled'
-            ),
-            selectClass(position)
-        )
-
-        return (
+    return (
+        <div className={className} style={style}>
             <div
-                tabIndex={disabled === true ? -1 : 0}
-                className={className}
-                onFocus={onFocus}
-                ref={this.containerElementRef}
-                onClick={this.handleFocusChange.bind(this, true)}
-                onKeyDown={this.handleKeyDown}
-                data-id={this.cascaderId}
+                tabIndex={props.disabled === true ? -1 : 0}
+                className={cls}
+                onFocus={handleFocus}
+                ref={containerElementRef}
+                onMouseDown={handleContainerMouseDown}
+                onBlur={handleBlur}
+                onKeyDown={handleKeydown}
+                data-id={cascaderId}
             >
-                <Result
-                    {...other}
-                    multiple={other.mode !== undefined}
-                    datum={this.datum}
+                <CascaderResult
+                    multiple={false}
+                    isDisabled={props.disabled === true}
+                    onClear={handleClear}
                     placeholder={placeholder}
-                    onClear={this.handleClear}
-                    onPathChange={this.handlePathChange}
-                    disabled={disabled}
-                    cascaderId={this.cascaderId}
+                    cascaderId={cascaderId}
+                    onPathChange={handlePathChange}
+                    getDataItemByKey={getDataItemByKey}
+                    getContent={getContent}
+                    value={value}
+                    clearable={clearable}
+                    compressed={compressed}
+                    getNodeInfoByDataItem={getNodeInfoByDataItem}
                 />
 
-                {this.renderAbsoluteList()}
+                {renderAnimationList()}
             </div>
-        )
-    }
+        </div>
+    )
 }
 
-export default Cascader
+Cascader.displayName = 'EthanCascader'
+
+export default React.memo(Cascader)

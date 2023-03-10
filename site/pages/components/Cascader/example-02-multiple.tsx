@@ -53,7 +53,7 @@ export default class extends React.Component {
 
     render() {
         const { mode, value } = this.state
-
+        return null
         return (
             <div>
                 <Radio.Group

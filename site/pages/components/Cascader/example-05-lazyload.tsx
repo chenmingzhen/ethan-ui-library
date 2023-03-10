@@ -41,6 +41,7 @@ export default class extends Component {
     renderItem = (node) => `node ${node.id}`
 
     render() {
+        return null
         return (
             <Cascader
                 data={this.state.data}

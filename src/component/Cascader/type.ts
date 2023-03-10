@@ -1,87 +1,98 @@
 import React from 'react'
-import TreeDatum, { TreeDatumOptions } from '@/utils/Datum/Tree'
 import { SpinProps } from '../Spin'
 
-export interface CascaderState {
-    focus: boolean
-    path: React.Key[]
-    position: CascaderProps['position']
-}
+export type CascaderDataValueType = string | number
+export type CascaderData = { label: React.ReactNode; value: CascaderDataValueType; children?: CascaderData[] } | {}
 
-export interface CascaderProps<T = any> {
+export interface CascaderProps<Data = CascaderData> {
+    labelKey?: string
+    valueKey?: string
+    childrenKey?: string
     clearable?: boolean
-    data: T[]
-    defaultValue?: T[]
-    disabled?: boolean | ((data: T) => boolean)
+    data: Data[]
+    defaultValue?: CascaderDataValueType[]
+    disabled?: boolean | ((data: Data) => boolean)
     expandTrigger?: 'click' | 'hover' | 'hover-only'
     height?: number
-    keygen?: keyof T | ((data: T, parentKey: React.Key) => React.Key)
-    loader?: (key: React.Key, data: T) => void
+    loader?: (key: React.Key, data: Data) => void
     mode?: number
-    onBlur?: () => void
-    onChange?: (value: React.Key[], selected?: T[]) => void
+    onBlur?: (e: React.FocusEvent<HTMLDivElement>) => void
+    onChange?: (value: CascaderDataValueType[] | CascaderDataValueType[][], selected?: Data[]) => void
     onFocus?: (e: React.FocusEvent<HTMLDivElement>) => void
     placeholder?: React.ReactNode
     position?: 'drop-up' | 'drop-down'
-    renderItem?: keyof T | ((data: T, active: boolean) => React.ReactNode)
+    renderItem?: (data: Data) => React.ReactNode
     spinProps?: SpinProps
     style?: React.CSSProperties
-    value?: T[]
+    value?: CascaderDataValueType[] | CascaderDataValueType[][]
     portal?: boolean
     zIndex?: number
-    childrenKey?: keyof T
     finalDismiss?: boolean
     onCollapse?: (collapse: boolean) => void
     text?: { noData?: React.ReactNode }
     multiple?: boolean
-    onItemClick?: (data: T) => void
-    renderResult?: keyof T | ((data: T) => React.ReactNode)
+    onItemClick?: (data: Data) => void
     changeOnSelect?: boolean
     compressed?: boolean
+    size?: 'large' | 'default' | 'small'
+    border?: boolean
+    className?: string
 }
 
-export interface CascaderListProps extends Omit<CascaderNodeProps, 'active' | 'id'> {
-    data: CascaderProps['data']
+export interface CascaderListProps {
+    getKey: (data: CascaderData) => CascaderDataValueType
+    currentData: CascaderProps['data']
     currentPathActiveId: React.Key
-    parentId: React.Key
-    keygen: TreeDatumOptions['keygen']
+    expandTrigger: CascaderProps['expandTrigger']
+    loader: CascaderProps['loader']
+    multiple: CascaderProps['multiple']
+    onPathChange: (data: CascaderData, change: boolean, dismiss: boolean) => void
+    childrenKey: CascaderProps['childrenKey']
+    onItemClick: CascaderProps['onItemClick']
+    changeOnSelect: CascaderProps['changeOnSelect']
+    getContent(dataItem: CascaderData): React.ReactNode
+    disabled(dataItem: CascaderData): boolean
 }
 
 export interface CascaderNodeProps {
-    active?: boolean
-    data?: CascaderProps['data']
-    datum: TreeDatum
-    expandTrigger?: CascaderProps['expandTrigger']
+    active: boolean
+    dataItem: CascaderData
+    expandTrigger: CascaderProps['expandTrigger']
     id: React.Key
-    loader?: CascaderProps['loader']
-    multiple?: CascaderProps['multiple']
-    onChange?: CascaderProps['onChange']
-    onPathChange: (id: React.Key, data: any, path: React.Key[]) => void
-    path: React.Key[]
-    renderItem?: CascaderProps['renderItem']
-    childrenKey?: CascaderProps['childrenKey']
-    onItemClick?: CascaderProps['onItemClick']
-    changeOnSelect?: CascaderProps['changeOnSelect']
+    loader: CascaderProps['loader']
+    multiple: CascaderProps['multiple']
+    onPathChange: (data: CascaderData, change: boolean, dismiss: boolean) => void
+    childrenKey: CascaderProps['childrenKey']
+    onItemClick: CascaderProps['onItemClick']
+    changeOnSelect: CascaderProps['changeOnSelect']
+    getContent(dataItem: CascaderData): React.ReactNode
+    disabled(dataItem: CascaderData): boolean
 }
 
 export interface CascaderResultProps {
-    clearable?: CascaderProps['clearable']
-    datum: TreeDatum
-    disabled?: CascaderProps['disabled']
-    multiple?: CascaderProps['multiple']
+    clearable: CascaderProps['clearable']
+    isDisabled: boolean
+    multiple: CascaderProps['multiple']
     onClear: () => void
-    onPathChange: (id: React.Key, data: any, path: React.Key[]) => void
-    placeholder?: CascaderProps['placeholder']
-    renderItem?: CascaderProps['renderItem']
-    renderResult?: CascaderProps['renderResult']
-    style?: CascaderProps['style']
-    value?: CascaderProps['value']
-    compressed?: CascaderProps['compressed']
+    onPathChange: (data: CascaderData, change: boolean, dismiss: boolean) => void
+    placeholder: CascaderProps['placeholder']
+    getContent: (dataItem: CascaderData) => React.ReactNode
+    value: CascaderDataValueType[][]
+    compressed: CascaderProps['compressed']
     cascaderId: React.Key
+    getDataItemByKey(key: CascaderDataValueType): CascaderData
+    getNodeInfoByDataItem(dataItem: CascaderData): CascaderNode
 }
 
 export interface CascaderMoreProps {
     showNum: number
     itemNodes: React.ReactNode[]
     dataId: React.Key
+}
+
+export interface CascaderNode {
+    children: CascaderDataValueType[]
+    keyPath: CascaderDataValueType[]
+    isDisabled: boolean
+    indexPath: number[]
 }

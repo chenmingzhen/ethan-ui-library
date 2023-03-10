@@ -10,26 +10,32 @@ import { Cascader } from 'ethan-ui'
 
 const data = [
     {
-        value: 'jiangsu',
+        value: 'zhejiang',
+        label: 'Zhejiang',
         children: [
             {
-                value: 'nanjing',
+                value: 'hangzhou',
+                label: 'Hangzhou',
                 children: [
                     {
-                        value: 'jiangning',
+                        value: 'xihu',
+                        label: 'West Lake',
                     },
                 ],
             },
         ],
     },
     {
-        value: 'anhui',
+        value: 'jiangsu',
+        label: 'Jiangsu',
         children: [
             {
-                value: 'hefei',
+                value: 'nanjing',
+                label: 'Nanjing',
                 children: [
                     {
-                        value: 'feidong',
+                        value: 'zhonghuamen',
+                        label: 'Zhong Hua Men',
                     },
                 ],
             },
@@ -38,5 +44,16 @@ const data = [
 ]
 
 export default function () {
-    return <Cascader data={data} portal keygen="value" renderItem={(n) => `${n.value}`} />
+    return (
+        <Cascader
+            data={data}
+            onChange={console.log}
+            onFocus={() => {
+                console.log('focus')
+            }}
+            onBlur={() => {
+                console.log('blur')
+            }}
+        />
+    )
 }
