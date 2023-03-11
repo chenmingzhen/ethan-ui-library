@@ -29,6 +29,7 @@ function Cascader<Data = CascaderData>(props: CascaderProps<Data>) {
         zIndex,
         portal,
         compressed,
+        loader,
         data = [],
         clearable = true,
         onItemClick,
@@ -186,7 +187,7 @@ function Cascader<Data = CascaderData>(props: CascaderProps<Data>) {
                     currentPathActiveId={path[0]}
                     getKey={getKey}
                     multiple={false}
-                    loader={undefined}
+                    loader={loader}
                     expandTrigger={expandTrigger}
                     childrenKey={childrenKey}
                     getContent={getContent}
@@ -194,6 +195,7 @@ function Cascader<Data = CascaderData>(props: CascaderProps<Data>) {
                     disabled={disabled}
                     changeOnSelect={changeOnSelect}
                     onPathChange={handlePathChange}
+                    getNodeInfoByDataItem={getNodeInfoByDataItem}
                 />
                 {path.map((id, index) => {
                     currentData = (currentData as CascaderData[])?.find((dataItem) => getKey(dataItem) === id)
@@ -208,7 +210,7 @@ function Cascader<Data = CascaderData>(props: CascaderProps<Data>) {
                                 currentPathActiveId={path[index + 1]}
                                 getKey={getKey}
                                 multiple={false}
-                                loader={undefined}
+                                loader={loader}
                                 expandTrigger={expandTrigger}
                                 childrenKey={childrenKey}
                                 getContent={getContent}
@@ -216,6 +218,7 @@ function Cascader<Data = CascaderData>(props: CascaderProps<Data>) {
                                 disabled={disabled}
                                 changeOnSelect={changeOnSelect}
                                 onPathChange={handlePathChange}
+                                getNodeInfoByDataItem={getNodeInfoByDataItem}
                             />
                         )
                     }

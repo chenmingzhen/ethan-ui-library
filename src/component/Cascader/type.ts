@@ -14,7 +14,7 @@ export interface CascaderProps<Data = CascaderData> {
     disabled?: boolean | ((data: Data) => boolean)
     expandTrigger?: 'click' | 'hover'
     height?: number
-    loader?: (key: React.Key, data: Data) => void
+    loader?: (dataItem: Data, node: CascaderNode) => void
     mode?: number
     onBlur?: (e: React.FocusEvent<HTMLDivElement>) => void
     onChange?: (value: CascaderDataValueType[] | CascaderDataValueType[][], selected?: Data[]) => void
@@ -52,6 +52,7 @@ export interface CascaderListProps {
     changeOnSelect: CascaderProps['changeOnSelect']
     getContent(dataItem: CascaderData): React.ReactNode
     disabled(dataItem: CascaderData): boolean
+    getNodeInfoByDataItem(dataItem: CascaderData): CascaderNode
 }
 
 export interface CascaderNodeProps {
@@ -67,6 +68,7 @@ export interface CascaderNodeProps {
     changeOnSelect: CascaderProps['changeOnSelect']
     getContent(dataItem: CascaderData): React.ReactNode
     disabled(dataItem: CascaderData): boolean
+    getNodeInfoByDataItem(dataItem: CascaderData): CascaderNode
 }
 
 export interface CascaderResultProps {

@@ -1,6 +1,7 @@
 import { cascaderClass } from '@/styles'
 import React, { useState } from 'react'
 import Caret from '../icons/Caret'
+import Spin from '../Spin'
 import { CascaderNodeProps } from './type'
 
 const CascaderNode: React.FC<CascaderNodeProps> = function (props) {
@@ -16,14 +17,22 @@ const CascaderNode: React.FC<CascaderNodeProps> = function (props) {
         getContent,
         onItemClick,
         changeOnSelect,
+        getNodeInfoByDataItem,
     } = props
     const children = dataItem[childrenKey]
     const isDisabled = disabled(dataItem)
     const hasChildren = children?.length > 0
-    const className = cascaderClass('node', active && 'active', isDisabled && 'disabled', hasChildren && 'has-children')
     const events: React.DetailedHTMLProps<React.HTMLAttributes<HTMLDivElement>, HTMLDivElement> = {}
     const style: React.CSSProperties = {}
     const [loading, updateLoading] = useState(false)
+    const mayChildren = loader && !loading && children === undefined
+    const className = cascaderClass(
+        'node',
+        active && 'active',
+        isDisabled && 'disabled',
+        hasChildren && 'has-children',
+        mayChildren && 'may-be-children'
+    )
 
     function getIsLeaf() {
         if (children && children.length > 0) return false
@@ -54,6 +63,14 @@ const CascaderNode: React.FC<CascaderNodeProps> = function (props) {
 
         onPathChange(dataItem, change, dismiss)
 
+        if (loader && !loading && children === undefined) {
+            updateLoading(true)
+
+            const nodeInfo = getNodeInfoByDataItem(dataItem)
+
+            loader(dataItem, nodeInfo)
+        }
+
         if (onItemClick) {
             onItemClick(dataItem)
         }
@@ -75,7 +92,8 @@ const CascaderNode: React.FC<CascaderNodeProps> = function (props) {
     return (
         <div className={className} style={style} {...events}>
             {getContent(dataItem)}
-            {hasChildren && (
+            {loading && children === undefined && <Spin className={cascaderClass('loading')} size={10} name="ring" />}
+            {(hasChildren || mayChildren) && (
                 <span className={cascaderClass('caret')}>
                     <Caret />
                 </span>
