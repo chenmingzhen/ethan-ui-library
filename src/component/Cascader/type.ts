@@ -12,7 +12,7 @@ export interface CascaderProps<Data = CascaderData> {
     data: Data[]
     defaultValue?: CascaderDataValueType[]
     disabled?: boolean | ((data: Data) => boolean)
-    expandTrigger?: 'click' | 'hover' | 'hover-only'
+    expandTrigger?: 'click' | 'hover'
     height?: number
     loader?: (key: React.Key, data: Data) => void
     mode?: number

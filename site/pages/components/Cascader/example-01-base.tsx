@@ -47,6 +47,7 @@ export default function () {
     return (
         <Cascader
             data={data}
+            style={{ width: 300 }}
             onChange={console.log}
             onFocus={() => {
                 console.log('focus')

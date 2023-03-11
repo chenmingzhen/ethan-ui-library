@@ -94,6 +94,7 @@ function Cascader<Data = CascaderData>(props: CascaderProps<Data>) {
 
     const handlePathChange = useRefMethod((dataItem: CascaderData, change: boolean, dismiss: boolean) => {
         const node = getNodeInfoByDataItem(dataItem)
+
         if (!node) return
 
         const { keyPath } = node

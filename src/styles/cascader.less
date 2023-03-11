@@ -34,6 +34,7 @@
             border-radius: @select-result-border-radius;
             color: inherit;
             text-overflow: ellipsis;
+            white-space: nowrap;
 
             &-compressed {
                 padding: 0 8px;
@@ -127,6 +128,7 @@
         padding: @dropdown-item-padding-y @dropdown-padding-x+16 @dropdown-item-padding-y @dropdown-padding-x;
         color: @dropdown-link-color;
         white-space: nowrap;
+        cursor: pointer;
 
         &:hover {
             background-color: @dropdown-link-hover-bg;
@@ -139,6 +141,13 @@
             &:hover {
                 background-color: transparent;
             }
+        }
+
+        &.@{cascader-prefix}-active {
+            background-color: @cascader-active-bg-color;
+            color: @dropdown-link-active-color;
+            font-weight: bold;
+            text-decoration: none;
         }
     }
 
@@ -163,12 +172,5 @@
 
     &-may-be-children .@{cascader-prefix}-caret {
         fill: @gray-300;
-    }
-
-    &-active {
-        background-color: @dropdown-link-active-bg;
-        color: @dropdown-link-active-color;
-        font-weight: bold;
-        text-decoration: none;
     }
 }

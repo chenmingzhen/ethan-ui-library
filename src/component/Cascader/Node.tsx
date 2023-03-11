@@ -59,9 +59,17 @@ const CascaderNode: React.FC<CascaderNodeProps> = function (props) {
         }
     }
 
-    if (!isDisabled && (expandTrigger !== 'hover-only' || !children || children.length === 0)) {
+    function handleMouseEnter() {
+        onPathChange(dataItem, false, false)
+    }
+
+    if (!isDisabled && (expandTrigger === 'click' || !children || children?.length === 0)) {
         events.onClick = handleClick
         style.cursor = 'pointer'
+    }
+
+    if (expandTrigger === 'hover') {
+        events.onMouseEnter = handleMouseEnter
     }
 
     return (
