@@ -53,6 +53,9 @@ export interface CascaderListProps {
     getContent(dataItem: CascaderData): React.ReactNode
     disabled(dataItem: CascaderData): boolean
     getNodeInfoByDataItem(dataItem: CascaderData): CascaderNode
+    getCheckboxStateByDataItem(dataItem: CascaderData): CascaderNodeValue
+    addValue(dataItem: CascaderData): void
+    removeValue(dataItem: CascaderData): void
 }
 
 export interface CascaderNodeProps {
@@ -69,6 +72,10 @@ export interface CascaderNodeProps {
     getContent(dataItem: CascaderData): React.ReactNode
     disabled(dataItem: CascaderData): boolean
     getNodeInfoByDataItem(dataItem: CascaderData): CascaderNode
+    checked: boolean
+    indeterminate: boolean
+    addValue(dataItem: CascaderData): void
+    removeValue(dataItem: CascaderData): void
 }
 
 export interface CascaderResultProps {
@@ -97,4 +104,9 @@ export interface CascaderNode {
     keyPath: CascaderDataValueType[]
     isDisabled: boolean
     indexPath: number[]
+}
+
+export interface CascaderNodeValue {
+    checked: boolean
+    indeterminate: boolean
 }

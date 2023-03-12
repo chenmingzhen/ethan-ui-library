@@ -1,5 +1,8 @@
+import useRefMethod from '@/hooks/useRefMethod'
 import { cascaderClass } from '@/styles'
+import { stopPropagation } from '@/utils/func'
 import React, { useState } from 'react'
+import Checkbox from '../Checkbox'
 import Caret from '../icons/Caret'
 import Spin from '../Spin'
 import { CascaderNodeProps } from './type'
@@ -18,6 +21,11 @@ const CascaderNode: React.FC<CascaderNodeProps> = function (props) {
         onItemClick,
         changeOnSelect,
         getNodeInfoByDataItem,
+        multiple,
+        addValue,
+        checked,
+        indeterminate,
+        removeValue,
     } = props
     const children = dataItem[childrenKey]
     const isDisabled = disabled(dataItem)
@@ -43,6 +51,8 @@ const CascaderNode: React.FC<CascaderNodeProps> = function (props) {
     }
 
     function getPathChangeState() {
+        if (multiple) return [false, false]
+
         let change = false
         let dismiss = false
         const isLeaf = getIsLeaf()
@@ -80,6 +90,14 @@ const CascaderNode: React.FC<CascaderNodeProps> = function (props) {
         onPathChange(dataItem, false, false)
     }
 
+    const handleCheck = useRefMethod((isChecked: boolean) => {
+        if (isChecked) {
+            addValue(dataItem)
+        } else {
+            removeValue(dataItem)
+        }
+    })
+
     if (!isDisabled && (expandTrigger === 'click' || !children || children?.length === 0)) {
         events.onClick = handleClick
         style.cursor = 'pointer'
@@ -91,6 +109,15 @@ const CascaderNode: React.FC<CascaderNodeProps> = function (props) {
 
     return (
         <div className={className} style={style} {...events}>
+            {multiple && (
+                <Checkbox
+                    checked={checked}
+                    indeterminate={indeterminate}
+                    disabled={disabled(dataItem)}
+                    onChange={handleCheck}
+                    style={{ marginRight: 8, marginTop: -1, verticalAlign: 'top' }}
+                />
+            )}
             {getContent(dataItem)}
             {loading && children === undefined && <Spin className={cascaderClass('loading')} size={10} name="ring" />}
             {(hasChildren || mayChildren) && (

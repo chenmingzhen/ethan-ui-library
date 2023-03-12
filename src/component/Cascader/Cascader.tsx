@@ -76,7 +76,17 @@ function Cascader<Data = CascaderData>(props: CascaderProps<Data>) {
         return dataItem[labelKey]
     })
 
-    const { value, setValue, disabled, getNodeInfoByDataItem, getDataItemByKey } = useCascaderDatum({
+    const {
+        value,
+        setValue,
+        disabled,
+        getNodeInfoByDataItem,
+        getDataItemByKey,
+        getCheckboxStateByDataItem,
+        addValue,
+        removeValue,
+        setSingleValue,
+    } = useCascaderDatum({
         data,
         childrenKey,
         disabled: props.disabled,
@@ -103,7 +113,7 @@ function Cascader<Data = CascaderData>(props: CascaderProps<Data>) {
         updatePath(keyPath)
 
         if (change) {
-            setValue([keyPath])
+            setSingleValue(dataItem)
         }
 
         if (dismiss) {
@@ -186,7 +196,7 @@ function Cascader<Data = CascaderData>(props: CascaderProps<Data>) {
                     currentData={data}
                     currentPathActiveId={path[0]}
                     getKey={getKey}
-                    multiple={false}
+                    multiple={multiple}
                     loader={loader}
                     expandTrigger={expandTrigger}
                     childrenKey={childrenKey}
@@ -196,6 +206,9 @@ function Cascader<Data = CascaderData>(props: CascaderProps<Data>) {
                     changeOnSelect={changeOnSelect}
                     onPathChange={handlePathChange}
                     getNodeInfoByDataItem={getNodeInfoByDataItem}
+                    getCheckboxStateByDataItem={getCheckboxStateByDataItem}
+                    addValue={addValue}
+                    removeValue={removeValue}
                 />
                 {path.map((id, index) => {
                     currentData = (currentData as CascaderData[])?.find((dataItem) => getKey(dataItem) === id)
@@ -209,7 +222,7 @@ function Cascader<Data = CascaderData>(props: CascaderProps<Data>) {
                                 currentData={currentData as CascaderData[]}
                                 currentPathActiveId={path[index + 1]}
                                 getKey={getKey}
-                                multiple={false}
+                                multiple={multiple}
                                 loader={loader}
                                 expandTrigger={expandTrigger}
                                 childrenKey={childrenKey}
@@ -219,6 +232,9 @@ function Cascader<Data = CascaderData>(props: CascaderProps<Data>) {
                                 changeOnSelect={changeOnSelect}
                                 onPathChange={handlePathChange}
                                 getNodeInfoByDataItem={getNodeInfoByDataItem}
+                                getCheckboxStateByDataItem={getCheckboxStateByDataItem}
+                                addValue={addValue}
+                                removeValue={removeValue}
                             />
                         )
                     }
@@ -270,7 +286,7 @@ function Cascader<Data = CascaderData>(props: CascaderProps<Data>) {
                 data-id={cascaderId}
             >
                 <CascaderResult
-                    multiple={false}
+                    multiple={multiple}
                     isDisabled={props.disabled === true}
                     onClear={handleClear}
                     placeholder={placeholder}
