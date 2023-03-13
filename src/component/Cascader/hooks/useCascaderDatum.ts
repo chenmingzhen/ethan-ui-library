@@ -93,22 +93,30 @@ export default function useCascaderDatum(props: UseCascaderDatumProps) {
 
         function initValue(keys: CascaderDataValueType[]) {
             if (isEmpty(data)) return
-
-            let inderminate = false
+            /** 当前层级是否都为选中状态 */
+            let currentLevelAllCheck = true
 
             keys.forEach((key) => {
                 const { children } = nodeMapping.get(key)
-
                 const checked = valueSet.has(key)
 
+                /** 子层级是否都为选中状态 */
+                let isAllChildCheck = checked
+
                 if (children.length > 0) {
-                    inderminate = initValue(children)
+                    isAllChildCheck = initValue(children)
                 }
 
-                nextValueMapping.set(key, { checked, indeterminate: false })
+                if (!isAllChildCheck) {
+                    currentLevelAllCheck = false
+                }
+
+                const indeterminate = checked && !isAllChildCheck
+
+                nextValueMapping.set(key, { checked, indeterminate })
             })
 
-            return inderminate
+            return currentLevelAllCheck
         }
 
         const rootKeys = []
@@ -183,9 +191,16 @@ export default function useCascaderDatum(props: UseCascaderDatumProps) {
         return valueMapping.get(key)
     })
 
+    const getDisabledByDataItem = useRefMethod((dataItem: CascaderData) => {
+        const key = getKey(dataItem)
+        const node = nodeMapping.get(key)
+
+        return node?.isDisabled
+    })
+
     return {
         value,
-        disabled,
+        getDisabledByDataItem,
         getNodeInfoByDataItem,
         setValue,
         getDataItemByKey,

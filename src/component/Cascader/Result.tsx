@@ -4,7 +4,7 @@ import classnames from 'classnames'
 import React, { useRef, useState } from 'react'
 import Caret from '../icons/Caret'
 import More from './More'
-import { CascaderResultProps } from './type'
+import { CascaderData, CascaderDataValueType, CascaderResultProps } from './type'
 
 const CascaderResult: React.FC<CascaderResultProps> = function (props) {
     const {
@@ -20,12 +20,13 @@ const CascaderResult: React.FC<CascaderResultProps> = function (props) {
         isDisabled,
         onClear,
         onPathChange,
+        showResultMode,
     } = props
     const [showNum, setShowNum] = useState(-1)
 
     function buildResult() {
         /** 存放所有选中的路径中的最后一个dataItem */
-        const dataItems = []
+        const dataItems: CascaderData[] = []
 
         value.forEach((pathValue) => {
             /** 判断当前路径的所有value是否存在对应的Data */
@@ -41,28 +42,44 @@ const CascaderResult: React.FC<CascaderResultProps> = function (props) {
 
         const items: React.ReactNode[] = []
 
-        dataItems.forEach((dataItem, index) => {
-            /** 将整个路径的内容都渲染出来 */
-            const groupLastDataItem = getNodeInfoByDataItem(dataItem)
-            if (!groupLastDataItem) return
-            const { keyPath } = groupLastDataItem
-            const content = keyPath.map((key) => getContent(getDataItemByKey(key))).join('/')
+        if (showResultMode === 'parent') {
+        } else if (showResultMode === 'child') {
+            /** 只显示child */
+            dataItems.forEach((dataItem, index) => {
+                const groupLastDataItem = getNodeInfoByDataItem(dataItem)
+                if (!groupLastDataItem) return
+                const { keyPath } = groupLastDataItem
+                const content = getContent(getDataItemByKey(keyPath[keyPath.length - 1]))
 
-            items.push(
-                <a
-                    key={index}
-                    tabIndex={-1}
-                    className={cascaderClass('item')}
-                    title={content}
-                    onClick={() => {
-                        /** @todo 支持多选后开放 */
-                        // onPathChange(groupLastDataItem, false, false)
-                    }}
-                >
-                    {content}
-                </a>
-            )
-        })
+                items.push(
+                    <a key={index} tabIndex={-1} className={cascaderClass('item')}>
+                        {content}
+                    </a>
+                )
+            })
+        } else {
+            /** 将整个路径的内容都渲染出来 */
+            dataItems.forEach((dataItem, index) => {
+                const groupLastDataItem = getNodeInfoByDataItem(dataItem)
+                if (!groupLastDataItem) return
+                const { keyPath } = groupLastDataItem
+                const content = keyPath.map((key) => getContent(getDataItemByKey(key))).join('/')
+
+                items.push(
+                    <a
+                        key={index}
+                        tabIndex={-1}
+                        className={cascaderClass('item')}
+                        onClick={() => {
+                            /** @todo 支持多选后开放 */
+                            // onPathChange(groupLastDataItem, false, false)
+                        }}
+                    >
+                        {content}
+                    </a>
+                )
+            })
+        }
 
         return items
     }

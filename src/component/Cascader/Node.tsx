@@ -1,6 +1,5 @@
 import useRefMethod from '@/hooks/useRefMethod'
 import { cascaderClass } from '@/styles'
-import { stopPropagation } from '@/utils/func'
 import React, { useState } from 'react'
 import Checkbox from '../Checkbox'
 import Caret from '../icons/Caret'
@@ -11,7 +10,6 @@ const CascaderNode: React.FC<CascaderNodeProps> = function (props) {
     const {
         dataItem,
         childrenKey,
-        id,
         loader,
         active,
         expandTrigger,
@@ -28,7 +26,6 @@ const CascaderNode: React.FC<CascaderNodeProps> = function (props) {
         removeValue,
     } = props
     const children = dataItem[childrenKey]
-    const isDisabled = disabled(dataItem)
     const hasChildren = children?.length > 0
     const events: React.DetailedHTMLProps<React.HTMLAttributes<HTMLDivElement>, HTMLDivElement> = {}
     const style: React.CSSProperties = {}
@@ -37,7 +34,7 @@ const CascaderNode: React.FC<CascaderNodeProps> = function (props) {
     const className = cascaderClass(
         'node',
         active && 'active',
-        isDisabled && 'disabled',
+        disabled && 'disabled',
         hasChildren && 'has-children',
         mayChildren && 'may-be-children'
     )
@@ -53,17 +50,9 @@ const CascaderNode: React.FC<CascaderNodeProps> = function (props) {
     function getPathChangeState() {
         if (multiple) return [false, false]
 
-        let change = false
-        let dismiss = false
         const isLeaf = getIsLeaf()
-
-        if (changeOnSelect || isLeaf) {
-            change = true
-        }
-
-        if (isLeaf) {
-            dismiss = true
-        }
+        const change = changeOnSelect || isLeaf || false
+        const dismiss = isLeaf || false
 
         return [change, dismiss]
     }
@@ -98,7 +87,7 @@ const CascaderNode: React.FC<CascaderNodeProps> = function (props) {
         }
     })
 
-    if (!isDisabled && (expandTrigger === 'click' || !children || children?.length === 0)) {
+    if (!disabled && (expandTrigger === 'click' || !children || children?.length === 0)) {
         events.onClick = handleClick
         style.cursor = 'pointer'
     }
@@ -113,7 +102,7 @@ const CascaderNode: React.FC<CascaderNodeProps> = function (props) {
                 <Checkbox
                     checked={checked}
                     indeterminate={indeterminate}
-                    disabled={disabled(dataItem)}
+                    disabled={disabled}
                     onChange={handleCheck}
                     style={{ marginRight: 8, marginTop: -1, verticalAlign: 'top' }}
                 />

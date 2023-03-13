@@ -40,6 +40,7 @@ function Cascader<Data = CascaderData>(props: CascaderProps<Data>) {
         labelKey = 'label',
         valueKey = 'value',
         childrenKey = 'children',
+        showResultMode = 'full',
     } = props
     const cascaderId = useRef(getUidStr()).current
     const [position, updatePosition] = useState(props.position)
@@ -57,12 +58,7 @@ function Cascader<Data = CascaderData>(props: CascaderProps<Data>) {
     })
 
     const cls = classnames(
-        cascaderClass(
-            '_',
-            focus && 'focus',
-            props.mode !== undefined && 'multiple',
-            props.disabled === true && 'disabled'
-        ),
+        cascaderClass('_', focus && 'focus', props.multiple && 'multiple', props.disabled === true && 'disabled'),
         selectClass(position)
     )
 
@@ -79,7 +75,7 @@ function Cascader<Data = CascaderData>(props: CascaderProps<Data>) {
     const {
         value,
         setValue,
-        disabled,
+        getDisabledByDataItem,
         getNodeInfoByDataItem,
         getDataItemByKey,
         getCheckboxStateByDataItem,
@@ -202,7 +198,7 @@ function Cascader<Data = CascaderData>(props: CascaderProps<Data>) {
                     childrenKey={childrenKey}
                     getContent={getContent}
                     onItemClick={onItemClick}
-                    disabled={disabled}
+                    getDisabledByDataItem={getDisabledByDataItem}
                     changeOnSelect={changeOnSelect}
                     onPathChange={handlePathChange}
                     getNodeInfoByDataItem={getNodeInfoByDataItem}
@@ -228,7 +224,7 @@ function Cascader<Data = CascaderData>(props: CascaderProps<Data>) {
                                 childrenKey={childrenKey}
                                 getContent={getContent}
                                 onItemClick={onItemClick}
-                                disabled={disabled}
+                                getDisabledByDataItem={getDisabledByDataItem}
                                 changeOnSelect={changeOnSelect}
                                 onPathChange={handlePathChange}
                                 getNodeInfoByDataItem={getNodeInfoByDataItem}
@@ -298,6 +294,7 @@ function Cascader<Data = CascaderData>(props: CascaderProps<Data>) {
                     clearable={clearable}
                     compressed={compressed}
                     getNodeInfoByDataItem={getNodeInfoByDataItem}
+                    showResultMode={showResultMode}
                 />
 
                 {renderAnimationList()}

@@ -49,5 +49,5 @@ const data = [
 ]
 
 export default function () {
-    return <Cascader data={data} style={{ width: 300 }} onChange={console.log} multiple />
+    return <Cascader data={data} style={{ width: 300 }} multiple showResultMode="child" />
 }

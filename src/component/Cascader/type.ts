@@ -3,6 +3,7 @@ import { SpinProps } from '../Spin'
 
 export type CascaderDataValueType = string | number
 export type CascaderData = { label: React.ReactNode; value: CascaderDataValueType; children?: CascaderData[] } | {}
+export type ShowResultMode = 'parent' | 'child' | 'full'
 
 export interface CascaderProps<Data = CascaderData> {
     labelKey?: string
@@ -15,7 +16,6 @@ export interface CascaderProps<Data = CascaderData> {
     expandTrigger?: 'click' | 'hover'
     height?: number
     loader?: (dataItem: Data, node: CascaderNode) => void
-    mode?: number
     onBlur?: (e: React.FocusEvent<HTMLDivElement>) => void
     onChange?: (value: CascaderDataValueType[] | CascaderDataValueType[][], selected?: Data[]) => void
     onFocus?: (e: React.FocusEvent<HTMLDivElement>) => void
@@ -37,6 +37,7 @@ export interface CascaderProps<Data = CascaderData> {
     size?: 'large' | 'default' | 'small'
     border?: boolean
     className?: string
+    showResultMode?: ShowResultMode
 }
 
 export interface CascaderListProps {
@@ -51,18 +52,17 @@ export interface CascaderListProps {
     onItemClick: CascaderProps['onItemClick']
     changeOnSelect: CascaderProps['changeOnSelect']
     getContent(dataItem: CascaderData): React.ReactNode
-    disabled(dataItem: CascaderData): boolean
     getNodeInfoByDataItem(dataItem: CascaderData): CascaderNode
     getCheckboxStateByDataItem(dataItem: CascaderData): CascaderNodeValue
     addValue(dataItem: CascaderData): void
     removeValue(dataItem: CascaderData): void
+    getDisabledByDataItem(dataItem: CascaderData): boolean
 }
 
 export interface CascaderNodeProps {
     active: boolean
     dataItem: CascaderData
     expandTrigger: CascaderProps['expandTrigger']
-    id: React.Key
     loader: CascaderProps['loader']
     multiple: CascaderProps['multiple']
     onPathChange: (data: CascaderData, change: boolean, dismiss: boolean) => void
@@ -70,12 +70,12 @@ export interface CascaderNodeProps {
     onItemClick: CascaderProps['onItemClick']
     changeOnSelect: CascaderProps['changeOnSelect']
     getContent(dataItem: CascaderData): React.ReactNode
-    disabled(dataItem: CascaderData): boolean
     getNodeInfoByDataItem(dataItem: CascaderData): CascaderNode
     checked: boolean
     indeterminate: boolean
     addValue(dataItem: CascaderData): void
     removeValue(dataItem: CascaderData): void
+    disabled: boolean
 }
 
 export interface CascaderResultProps {
@@ -91,6 +91,7 @@ export interface CascaderResultProps {
     cascaderId: React.Key
     getDataItemByKey(key: CascaderDataValueType): CascaderData
     getNodeInfoByDataItem(dataItem: CascaderData): CascaderNode
+    showResultMode: ShowResultMode
 }
 
 export interface CascaderMoreProps {
