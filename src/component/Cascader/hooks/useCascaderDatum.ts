@@ -2,7 +2,7 @@ import useMergedValue from '@/hooks/useMergedValue'
 import useRefMethod from '@/hooks/useRefMethod'
 import { flattenArray } from '@/utils/flat'
 import { isArray, isBoolean, isEmpty, isFunc } from '@/utils/is'
-import { useEffect, useState } from 'react'
+import { useMemo } from 'react'
 import deepEql from 'deep-eql'
 import { CascaderData, CascaderDataValueType, CascaderNode, CascaderNodeValue, CascaderProps } from '../type'
 
@@ -27,9 +27,6 @@ function transformValue2Array(value, limit) {
 
 export default function useCascaderDatum(props: UseCascaderDatumProps) {
     const { data, childrenKey, onChange, getKey, limit } = props
-    const [nodeMapping, updateNodeMapping] = useState(new Map<CascaderDataValueType, CascaderNode>())
-    const [dataMapping, updateDataMapping] = useState(new Map<CascaderDataValueType, CascaderData>())
-    const [valueMapping, updateValueMapping] = useState(new Map<CascaderDataValueType, CascaderNodeValue>())
     const [value, setValue] = useMergedValue<CascaderDataValueType[][]>({
         defaultStateValue: [],
         options: {
@@ -44,7 +41,17 @@ export default function useCascaderDatum(props: UseCascaderDatumProps) {
         },
     })
 
-    useEffect(() => {
+    const disabled = useRefMethod((dataItem: CascaderData) => {
+        if (isBoolean(props.disabled)) {
+            return props.disabled
+        }
+        if (isFunc(props.disabled)) {
+            return props.disabled(dataItem)
+        }
+        return false
+    })
+
+    const [nodeMapping, dataMapping] = useMemo(() => {
         const nextNodeMapping = new Map<CascaderDataValueType, CascaderNode>()
         const nextDataMapping = new Map<CascaderDataValueType, CascaderData>()
 
@@ -76,16 +83,15 @@ export default function useCascaderDatum(props: UseCascaderDatumProps) {
 
         initData(data)
 
-        updateNodeMapping(nextNodeMapping)
-        updateDataMapping(nextDataMapping)
+        return [nextNodeMapping, nextDataMapping]
     }, [data])
 
-    useEffect(() => {
+    const [valueMapping] = useMemo(() => {
+        const nextValueMapping = new Map<CascaderDataValueType, CascaderNodeValue>()
         /** 只处理多选的情况 */
-        if (limit === 1) return
+        if (limit === 1) return [nextValueMapping]
 
         const valueSet = new Set<CascaderDataValueType>()
-        const nextValueMapping = new Map<CascaderDataValueType, CascaderNodeValue>()
         const flattenValue = flattenArray(value) as CascaderDataValueType[]
         flattenValue.forEach((key) => {
             valueSet.add(key)
@@ -127,18 +133,8 @@ export default function useCascaderDatum(props: UseCascaderDatumProps) {
 
         initValue(rootKeys)
 
-        updateValueMapping(nextValueMapping)
-    }, [nodeMapping, value])
-
-    const disabled = useRefMethod((dataItem: CascaderData) => {
-        if (isBoolean(props.disabled)) {
-            return props.disabled
-        }
-        if (isFunc(props.disabled)) {
-            return props.disabled(dataItem)
-        }
-        return false
-    })
+        return [nextValueMapping]
+    }, [value, nodeMapping])
 
     const getNodeInfoByDataItem = useRefMethod((dataItem: CascaderData) => {
         const key = getKey(dataItem)

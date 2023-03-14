@@ -282,6 +282,7 @@ function Cascader<Data = CascaderData>(props: CascaderProps<Data>) {
                 data-id={cascaderId}
             >
                 <CascaderResult
+                    getCheckboxStateByDataItem={getCheckboxStateByDataItem}
                     multiple={multiple}
                     isDisabled={props.disabled === true}
                     onClear={handleClear}

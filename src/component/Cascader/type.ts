@@ -92,6 +92,7 @@ export interface CascaderResultProps {
     getDataItemByKey(key: CascaderDataValueType): CascaderData
     getNodeInfoByDataItem(dataItem: CascaderData): CascaderNode
     showResultMode: ShowResultMode
+    getCheckboxStateByDataItem(dataItem: CascaderData): CascaderNodeValue
 }
 
 export interface CascaderMoreProps {

@@ -1,7 +1,9 @@
+import useRefMethod from '@/hooks/useRefMethod'
 import { cascaderClass, inputClass, selectClass } from '@/styles'
+import { flattenArray } from '@/utils/flat'
 import { preventDefault, stopPropagation } from '@/utils/func'
 import classnames from 'classnames'
-import React, { useRef, useState } from 'react'
+import React, { useMemo, useRef, useState } from 'react'
 import Caret from '../icons/Caret'
 import More from './More'
 import { CascaderData, CascaderDataValueType, CascaderResultProps } from './type'
@@ -21,10 +23,52 @@ const CascaderResult: React.FC<CascaderResultProps> = function (props) {
         onClear,
         onPathChange,
         showResultMode,
+        getCheckboxStateByDataItem,
     } = props
     const [showNum, setShowNum] = useState(-1)
 
-    function buildResult() {
+    const getIsFullChecked = useRefMethod((key: CascaderDataValueType) => {
+        const dataItem = getDataItemByKey(key)
+        const { checked, indeterminate } = getCheckboxStateByDataItem(dataItem)
+
+        return checked && !indeterminate
+    })
+
+    /** @todo 重命名 */
+    const isParentFullChecked = useRefMethod((key: CascaderDataValueType) => {
+        const dataItem = getDataItemByKey(key)
+        const { keyPath, children } = getNodeInfoByDataItem(dataItem)
+        const parentId = keyPath[keyPath.length - 2]
+
+        if (parentId === undefined) {
+            /** 如果已经是根节点，则根据子节点是否完全选中判断 */
+            return !children.every(getIsFullChecked)
+        }
+
+        return getIsFullChecked(parentId)
+    })
+
+    const showParentModeDataItems = useMemo(() => {
+        if (showResultMode !== 'parent') return []
+
+        const flattenValue = flattenArray(value) as CascaderDataValueType[]
+        const valueSet = new Set<CascaderDataValueType>()
+        const dataItems: CascaderData[] = []
+
+        flattenValue.forEach((v) => {
+            if (getIsFullChecked(v) && !isParentFullChecked(v)) {
+                valueSet.add(v)
+            }
+        })
+
+        valueSet.forEach((v) => {
+            dataItems.push(getDataItemByKey(v))
+        })
+
+        return dataItems
+    }, [value])
+
+    const showFullOrChildModeDataItems = useMemo(() => {
         /** 存放所有选中的路径中的最后一个dataItem */
         const dataItems: CascaderData[] = []
 
@@ -40,12 +84,14 @@ const CascaderResult: React.FC<CascaderResultProps> = function (props) {
             }
         })
 
+        return dataItems
+    }, [value])
+
+    function buildResult() {
         const items: React.ReactNode[] = []
 
         if (showResultMode === 'parent') {
-        } else if (showResultMode === 'child') {
-            /** 只显示child */
-            dataItems.forEach((dataItem, index) => {
+            showParentModeDataItems.forEach((dataItem, index) => {
                 const groupLastDataItem = getNodeInfoByDataItem(dataItem)
                 if (!groupLastDataItem) return
                 const { keyPath } = groupLastDataItem
@@ -58,23 +104,17 @@ const CascaderResult: React.FC<CascaderResultProps> = function (props) {
                 )
             })
         } else {
-            /** 将整个路径的内容都渲染出来 */
-            dataItems.forEach((dataItem, index) => {
+            showFullOrChildModeDataItems.forEach((dataItem, index) => {
                 const groupLastDataItem = getNodeInfoByDataItem(dataItem)
                 if (!groupLastDataItem) return
                 const { keyPath } = groupLastDataItem
-                const content = keyPath.map((key) => getContent(getDataItemByKey(key))).join('/')
+                const content =
+                    showResultMode === 'child'
+                        ? getContent(getDataItemByKey(keyPath[keyPath.length - 1]))
+                        : keyPath.map((key) => getContent(getDataItemByKey(key))).join('/')
 
                 items.push(
-                    <a
-                        key={index}
-                        tabIndex={-1}
-                        className={cascaderClass('item')}
-                        onClick={() => {
-                            /** @todo 支持多选后开放 */
-                            // onPathChange(groupLastDataItem, false, false)
-                        }}
-                    >
+                    <a key={index} tabIndex={-1} className={cascaderClass('item')}>
                         {content}
                     </a>
                 )
