@@ -36,6 +36,24 @@ const data = [
                     },
                 ],
             },
+            {
+                label: 'Little2',
+                value: 'little2',
+                children: [
+                    {
+                        label: 'Toy Fish2',
+                        value: 'fish2',
+                    },
+                    {
+                        label: 'Toy Cards2',
+                        value: 'cards2',
+                    },
+                    {
+                        label: 'Toy Bird2',
+                        value: 'bird2',
+                    },
+                ],
+            },
         ],
     },
 ]
@@ -43,9 +61,19 @@ const data = [
 export default function () {
     return (
         <div>
-            <Cascader data={data} style={{ width: 300, marginBottom: 20 }} multiple showResultMode="parent" />
-            <Cascader data={data} style={{ width: 300, marginBottom: 20 }} multiple />
-            <Cascader data={data} style={{ width: 300, marginBottom: 20 }} multiple showResultMode="child" />
+            <Cascader
+                data={data}
+                style={{ width: 300, marginBottom: 20, display: 'block' }}
+                multiple
+                showResultMode="parent"
+            />
+            <Cascader data={data} style={{ width: 300, marginBottom: 20, display: 'block' }} multiple />
+            <Cascader
+                data={data}
+                style={{ width: 300, marginBottom: 20, display: 'block' }}
+                multiple
+                showResultMode="child"
+            />
         </div>
     )
 }

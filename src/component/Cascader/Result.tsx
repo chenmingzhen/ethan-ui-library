@@ -27,6 +27,7 @@ const CascaderResult: React.FC<CascaderResultProps> = function (props) {
     } = props
     const [showNum, setShowNum] = useState(-1)
 
+    /** 是否完全选中 */
     const getIsFullChecked = useRefMethod((key: CascaderDataValueType) => {
         const dataItem = getDataItemByKey(key)
         const { checked, indeterminate } = getCheckboxStateByDataItem(dataItem)
@@ -34,18 +35,21 @@ const CascaderResult: React.FC<CascaderResultProps> = function (props) {
         return checked && !indeterminate
     })
 
-    /** @todo 重命名 */
-    const isParentFullChecked = useRefMethod((key: CascaderDataValueType) => {
+    /** 判断当前的dataItem是否可以展示到result中 */
+    const getIsShowParentModeValue = useRefMethod((key: CascaderDataValueType) => {
+        /** 如果当前节点没有被完全选中，则不用添加到result的显示中 */
+        if (!getIsFullChecked(key)) return false
         const dataItem = getDataItemByKey(key)
         const { keyPath, children } = getNodeInfoByDataItem(dataItem)
         const parentId = keyPath[keyPath.length - 2]
 
+        /** 如果是根节点,当所有子节点完全选中,则将根节点添加到Result中显示 */
         if (parentId === undefined) {
-            /** 如果已经是根节点，则根据子节点是否完全选中判断 */
-            return !children.every(getIsFullChecked)
+            return children.every(getIsFullChecked)
         }
 
-        return getIsFullChecked(parentId)
+        /** 如果是子节点，当父节点没有完全被选中时，将本身节点添加到Result中显示 */
+        return !getIsFullChecked(parentId)
     })
 
     const showParentModeDataItems = useMemo(() => {
@@ -56,7 +60,7 @@ const CascaderResult: React.FC<CascaderResultProps> = function (props) {
         const dataItems: CascaderData[] = []
 
         flattenValue.forEach((v) => {
-            if (getIsFullChecked(v) && !isParentFullChecked(v)) {
+            if (getIsShowParentModeValue(v)) {
                 valueSet.add(v)
             }
         })
