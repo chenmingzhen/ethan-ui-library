@@ -65,7 +65,7 @@ export default function useCascaderDatum(props: UseCascaderDatumProps) {
             for (let i = 0; i < currentData.length; i++) {
                 const dataItem = currentData[i]
                 const key = getKey(dataItem)
-                const isDisabled = currentDisabled || disabled(currentData)
+                const isDisabled = currentDisabled || disabled(dataItem)
                 const indexPath = [...currentIndexPath, i]
                 const childrenData = dataItem[childrenKey]
                 const keyPath = [...currentKeyPath, key]

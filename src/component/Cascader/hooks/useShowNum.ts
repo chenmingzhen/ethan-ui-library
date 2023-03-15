@@ -1,10 +1,11 @@
 import useRefMethod from '@/hooks/useRefMethod'
-import { RefObject, useEffect, useRef, useState } from 'react'
+import { RefObject, useEffect, useRef } from 'react'
 import { useUpdate } from 'react-use'
 import { runInNextFrame } from '@/utils/nextFrame'
 import { addResizeObserver } from '@/utils/dom/element'
 import { debounce } from '@/utils/func'
 import { cascaderClass } from '@/styles'
+import useSafeState from '@/hooks/useSafeState'
 import { CascaderProps } from '../type'
 import { getResetMore } from '../util'
 
@@ -16,7 +17,7 @@ interface UseShowNumProps {
 
 export default function useShowNum(props: UseShowNumProps) {
     const { value, compressed, resultElementRef } = props
-    const [showNum, setShowNum] = useState(-1)
+    const [showNum, setShowNum] = useSafeState(-1)
     const update = useUpdate()
     const shouldResetMoreRef = useRef(false)
     const resetMore = useRefMethod(() => {

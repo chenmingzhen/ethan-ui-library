@@ -1,5 +1,6 @@
 import useRefMethod from '@/hooks/useRefMethod'
 import { cascaderClass } from '@/styles'
+import { getParent } from '@/utils/dom/element'
 import React, { useState } from 'react'
 import Checkbox from '../Checkbox'
 import Caret from '../icons/Caret'
@@ -57,17 +58,21 @@ const CascaderNode: React.FC<CascaderNodeProps> = function (props) {
         return [change, dismiss]
     }
 
-    function handleClick() {
+    function handleClick(evt: React.MouseEvent) {
         const [change, dismiss] = getPathChangeState()
 
-        onPathChange(dataItem, change, dismiss)
+        const isClickCheckbox = getParent(evt.target, `.${cascaderClass('checkbox')}`)
 
-        if (loader && !loading && children === undefined) {
-            updateLoading(true)
+        if (!isClickCheckbox) {
+            onPathChange(dataItem, change, dismiss)
 
-            const nodeInfo = getNodeInfoByDataItem(dataItem)
+            if (loader && !loading && children === undefined) {
+                updateLoading(true)
 
-            loader(dataItem, nodeInfo)
+                const nodeInfo = getNodeInfoByDataItem(dataItem)
+
+                loader(dataItem, nodeInfo)
+            }
         }
 
         if (onItemClick) {
@@ -80,7 +85,7 @@ const CascaderNode: React.FC<CascaderNodeProps> = function (props) {
     }
 
     const handleCheck = useRefMethod((isChecked: boolean) => {
-        if (isChecked) {
+        if (isChecked || indeterminate) {
             addValue(dataItem)
         } else {
             removeValue(dataItem)
@@ -105,6 +110,7 @@ const CascaderNode: React.FC<CascaderNodeProps> = function (props) {
                     disabled={disabled}
                     onChange={handleCheck}
                     style={{ marginRight: 8, marginTop: -1, verticalAlign: 'top' }}
+                    className={cascaderClass('checkbox')}
                 />
             )}
             {getContent(dataItem)}
