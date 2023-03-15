@@ -88,7 +88,6 @@ export interface CascaderResultProps {
     getContent: (dataItem: CascaderData) => React.ReactNode
     value: CascaderDataValueType[][]
     compressed: CascaderProps['compressed']
-    cascaderId: React.Key
     getDataItemByKey(key: CascaderDataValueType): CascaderData
     getNodeInfoByDataItem(dataItem: CascaderData): CascaderNode
     showResultMode: ShowResultMode
@@ -98,7 +97,6 @@ export interface CascaderResultProps {
 export interface CascaderMoreProps {
     showNum: number
     itemNodes: React.ReactNode[]
-    dataId: React.Key
 }
 
 export interface CascaderNode {

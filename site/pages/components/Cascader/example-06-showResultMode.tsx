@@ -1,8 +1,8 @@
 /**
- * cn - 显示结果的模式
- *    -- 设置 mode 属性，使组件变为多选，mode 可选值如下
+ * cn - 显示结果的方式
+ *    -- 通过设置 showResultMode 选择结果的显示方式。
  * en - ShowResultMode
- *    -- 3: Return only the parent node, if the parent node is selected.
+ *    -- The showResultMode command is used to select a result display mode.
  */
 
 import React from 'react'

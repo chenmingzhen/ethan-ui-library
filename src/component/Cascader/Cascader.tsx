@@ -293,7 +293,6 @@ function Cascader<Data = CascaderData>(props: CascaderProps<Data>) {
                     isDisabled={props.disabled === true}
                     onClear={handleClear}
                     placeholder={placeholder}
-                    cascaderId={cascaderId}
                     onPathChange={handlePathChange}
                     getDataItemByKey={getDataItemByKey}
                     getContent={getContent}

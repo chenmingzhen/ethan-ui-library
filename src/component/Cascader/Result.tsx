@@ -3,8 +3,9 @@ import { cascaderClass, inputClass, selectClass } from '@/styles'
 import { flattenArray } from '@/utils/flat'
 import { preventDefault, stopPropagation } from '@/utils/func'
 import classnames from 'classnames'
-import React, { useMemo, useRef, useState } from 'react'
+import React, { useMemo, useRef } from 'react'
 import Caret from '../icons/Caret'
+import useShowNum from './hooks/useShowNum'
 import More from './More'
 import { CascaderData, CascaderDataValueType, CascaderResultProps } from './type'
 
@@ -15,7 +16,6 @@ const CascaderResult: React.FC<CascaderResultProps> = function (props) {
         compressed,
         getContent,
         getDataItemByKey,
-        cascaderId,
         getNodeInfoByDataItem,
         multiple,
         clearable,
@@ -25,8 +25,8 @@ const CascaderResult: React.FC<CascaderResultProps> = function (props) {
         showResultMode,
         getCheckboxStateByDataItem,
     } = props
-    const [showNum, setShowNum] = useState(-1)
     const resultElementRef = useRef<HTMLDivElement>()
+    const [showNum] = useShowNum({ value, compressed, resultElementRef })
     /** 是否完全选中 */
     const getIsFullChecked = useRefMethod((key: CascaderDataValueType) => {
         const dataItem = getDataItemByKey(key)
@@ -35,7 +35,7 @@ const CascaderResult: React.FC<CascaderResultProps> = function (props) {
         return checked && !indeterminate
     })
 
-    /** 判断当前的dataItem是否可以展示到result中 */
+    /** 当showResultMode为parent时，判断当前的dataItem是否可以展示到result中 */
     const getIsShowParentModeValue = useRefMethod((key: CascaderDataValueType) => {
         /** 如果当前节点没有被完全选中，则不用添加到result的显示中 */
         if (!getIsFullChecked(key)) return false
@@ -127,7 +127,7 @@ const CascaderResult: React.FC<CascaderResultProps> = function (props) {
     }
 
     function buildMore(nodes: React.ReactNode[]) {
-        return [<More itemNodes={nodes} key="ethan-cascader-more" showNum={showNum} dataId={cascaderId} />]
+        return [<More itemNodes={nodes} key="ethan-cascader-more" showNum={showNum} />]
     }
 
     function renderIndicator() {
