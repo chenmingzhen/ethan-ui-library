@@ -9,6 +9,7 @@ import { styles } from '@/utils/style/styles'
 import { getUidStr } from '@/utils/uid'
 import classnames from 'classnames'
 import React, { useRef, useState } from 'react'
+import { KeyboardKey } from '@/utils/keyboard'
 import useInputStyle from '../Input/hooks/useInputStyle'
 import AnimationList from '../List'
 import Portal from '../Portal'
@@ -174,11 +175,16 @@ function Cascader<Data = CascaderData>(props: CascaderProps<Data>) {
         toggleOpen(false)
     }
 
-    function handleContainerMouseDown(evt: React.MouseEvent) {
+    function handleContainerMouseDown() {
         toggleOpen(true)
     }
 
-    function handleKeydown(evt: React.KeyboardEvent<HTMLDivElement>) {}
+    function handleKeydown(evt: React.KeyboardEvent<HTMLDivElement>) {
+        if (evt.key === KeyboardKey.Enter) {
+            evt.preventDefault()
+            toggleOpen(!show)
+        }
+    }
 
     function renderList() {
         if (!data?.length) return <span>{text.noData || getLocale('noData')}</span>

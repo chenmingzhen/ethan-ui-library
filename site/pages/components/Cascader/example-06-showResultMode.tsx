@@ -56,6 +56,10 @@ const data = [
             },
         ],
     },
+    {
+        label: 'Dark',
+        value: 'dark',
+    },
 ]
 
 export default function () {

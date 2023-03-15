@@ -26,7 +26,7 @@ const CascaderResult: React.FC<CascaderResultProps> = function (props) {
         getCheckboxStateByDataItem,
     } = props
     const [showNum, setShowNum] = useState(-1)
-
+    const resultElementRef = useRef<HTMLDivElement>()
     /** 是否完全选中 */
     const getIsFullChecked = useRefMethod((key: CascaderDataValueType) => {
         const dataItem = getDataItemByKey(key)
@@ -91,39 +91,37 @@ const CascaderResult: React.FC<CascaderResultProps> = function (props) {
         return dataItems
     }, [value])
 
+    function handleResultItemClick(dataItem: CascaderData) {
+        onPathChange(dataItem, false, false)
+    }
+
     function buildResult() {
         const items: React.ReactNode[] = []
+        const dataItems: CascaderData[] =
+            showResultMode === 'parent' ? showParentModeDataItems : showFullOrChildModeDataItems
 
-        if (showResultMode === 'parent') {
-            showParentModeDataItems.forEach((dataItem, index) => {
-                const groupLastDataItem = getNodeInfoByDataItem(dataItem)
-                if (!groupLastDataItem) return
-                const { keyPath } = groupLastDataItem
-                const content = getContent(getDataItemByKey(keyPath[keyPath.length - 1]))
+        dataItems.forEach((dataItem, index) => {
+            const node = getNodeInfoByDataItem(dataItem)
+            if (!node) return
+            const { keyPath } = node
+            const content =
+                showResultMode !== 'full'
+                    ? getContent(getDataItemByKey(keyPath[keyPath.length - 1]))
+                    : keyPath.map((key) => getContent(getDataItemByKey(key))).join('/')
 
-                items.push(
-                    <a key={index} tabIndex={-1} className={cascaderClass('item')}>
-                        {content}
-                    </a>
-                )
-            })
-        } else {
-            showFullOrChildModeDataItems.forEach((dataItem, index) => {
-                const groupLastDataItem = getNodeInfoByDataItem(dataItem)
-                if (!groupLastDataItem) return
-                const { keyPath } = groupLastDataItem
-                const content =
-                    showResultMode === 'child'
-                        ? getContent(getDataItemByKey(keyPath[keyPath.length - 1]))
-                        : keyPath.map((key) => getContent(getDataItemByKey(key))).join('/')
-
-                items.push(
-                    <a key={index} tabIndex={-1} className={cascaderClass('item')}>
-                        {content}
-                    </a>
-                )
-            })
-        }
+            items.push(
+                <a
+                    key={index}
+                    tabIndex={-1}
+                    className={cascaderClass('item')}
+                    onClick={() => {
+                        handleResultItemClick(dataItem)
+                    }}
+                >
+                    {content}
+                </a>
+            )
+        })
 
         return items
     }
@@ -184,7 +182,6 @@ const CascaderResult: React.FC<CascaderResultProps> = function (props) {
     }
 
     const result = value.length === 0 ? renderPlaceholder() : renderResult()
-    const resultElementRef = useRef<HTMLDivElement>()
 
     return (
         <div className={cascaderClass('result')} ref={resultElementRef}>
