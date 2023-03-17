@@ -82,6 +82,7 @@ function Cascader<Data = CascaderData>(props: CascaderProps<Data>) {
         getCheckboxStateByDataItem,
         addValue,
         removeValue,
+        replaceValue,
         setSingleValue,
     } = useCascaderDatum({
         data,
@@ -211,6 +212,7 @@ function Cascader<Data = CascaderData>(props: CascaderProps<Data>) {
                     getCheckboxStateByDataItem={getCheckboxStateByDataItem}
                     addValue={addValue}
                     removeValue={removeValue}
+                    replaceValue={replaceValue}
                 />
                 {path.map((id, index) => {
                     currentData = (currentData as CascaderData[])?.find((dataItem) => getKey(dataItem) === id)
@@ -237,6 +239,7 @@ function Cascader<Data = CascaderData>(props: CascaderProps<Data>) {
                                 getCheckboxStateByDataItem={getCheckboxStateByDataItem}
                                 addValue={addValue}
                                 removeValue={removeValue}
+                                replaceValue={replaceValue}
                             />
                         )
                     }

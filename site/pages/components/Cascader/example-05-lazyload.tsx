@@ -42,5 +42,17 @@ export default function () {
         }, 1000)
     }
 
-    return <Cascader data={data} loader={loadData} onChange={onChange} style={{ width: 300 }} />
+    return (
+        <div>
+            <Cascader data={data} loader={loadData} onChange={onChange} style={{ width: 300 }} />
+            <br />
+            <Cascader
+                data={data}
+                loader={loadData}
+                onChange={onChange}
+                style={{ width: 300, marginTop: 10 }}
+                multiple
+            />
+        </div>
+    )
 }

@@ -57,6 +57,7 @@ export interface CascaderListProps {
     addValue(dataItem: CascaderData): void
     removeValue(dataItem: CascaderData): void
     getDisabledByDataItem(dataItem: CascaderData): boolean
+    replaceValue(dataItem: CascaderData): void
 }
 
 export interface CascaderNodeProps {
@@ -76,6 +77,7 @@ export interface CascaderNodeProps {
     addValue(dataItem: CascaderData): void
     removeValue(dataItem: CascaderData): void
     disabled: boolean
+    replaceValue(dataItem: CascaderData): void
 }
 
 export interface CascaderResultProps {

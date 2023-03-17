@@ -2,6 +2,7 @@ import useRefMethod from '@/hooks/useRefMethod'
 import { cascaderClass } from '@/styles'
 import { getParent } from '@/utils/dom/element'
 import React, { useState } from 'react'
+import { usePrevious, useUpdateEffect } from 'react-use'
 import Checkbox from '../Checkbox'
 import Caret from '../icons/Caret'
 import Spin from '../Spin'
@@ -25,6 +26,7 @@ const CascaderNode: React.FC<CascaderNodeProps> = function (props) {
         checked,
         indeterminate,
         removeValue,
+        replaceValue,
     } = props
     const children = dataItem[childrenKey]
     const hasChildren = children?.length > 0
@@ -39,6 +41,14 @@ const CascaderNode: React.FC<CascaderNodeProps> = function (props) {
         hasChildren && 'has-children',
         mayChildren && 'may-be-children'
     )
+    const prevChildrenLength = usePrevious(children?.length)
+
+    useUpdateEffect(() => {
+        /** 懒加载且是选中的情况下加载出新的children时，需要重新触发选中该Node的行为（更换新的Value） */
+        if (!multiple || !loader || !checked || prevChildrenLength === children?.length) return
+
+        replaceValue(dataItem)
+    }, [children])
 
     function getIsLeaf() {
         if (children && children.length > 0) return false

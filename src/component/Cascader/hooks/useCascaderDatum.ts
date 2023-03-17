@@ -150,12 +150,13 @@ export default function useCascaderDatum(props: UseCascaderDatumProps) {
         setValue([keyPath])
     })
 
-    /**
-     * 多选模式中使用
-     * 计算所有新增、减少的值，注入到一个数组中
-     */
+    /** 多选模式中使用 */
+
+    /** 计算所有新增、减少的值，注入到一个数组中 */
     const inject = useRefMethod((dataItem: CascaderData, temp: CascaderDataValueType[][]) => {
-        const { keyPath, children } = getNodeInfoByDataItem(dataItem)
+        const node = getNodeInfoByDataItem(dataItem)
+        if (!node) return
+        const { keyPath, children } = node
         if (children.length) {
             children.forEach((c) => {
                 inject(getDataItemByKey(c), temp)
@@ -182,6 +183,17 @@ export default function useCascaderDatum(props: UseCascaderDatumProps) {
         })
     })
 
+    const replaceValue = (dataItem: CascaderData) => {
+        const node = getNodeInfoByDataItem(dataItem)
+        const { keyPath } = node
+        const nextValue = value.filter((it) => !deepEql(it, keyPath))
+
+        inject(dataItem, nextValue)
+        setValue(nextValue)
+    }
+
+    /** --------------------- */
+
     const getCheckboxStateByDataItem = useRefMethod((dataItem: CascaderData) => {
         const key = getKey(dataItem)
         return valueMapping.get(key)
@@ -202,6 +214,7 @@ export default function useCascaderDatum(props: UseCascaderDatumProps) {
         getDataItemByKey,
         addValue,
         removeValue,
+        replaceValue,
         getCheckboxStateByDataItem,
         setSingleValue,
     }
