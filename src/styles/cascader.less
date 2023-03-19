@@ -173,4 +173,24 @@
     &-may-be-children .@{cascader-prefix}-caret {
         fill: @gray-300;
     }
+
+    &-small &-result {
+        padding: @padding-small-vertical @padding-small-horizontal+12 0 @padding-small-horizontal;
+
+        .@{cascader-prefix}-item,
+        .@{cascader-prefix}-input {
+            margin-bottom: @padding-small-vertical;
+            font-size: @font-size-small;
+        }
+    }
+
+    &-large &-result {
+        padding: @padding-large-vertical @padding-large-horizontal+12 0 @padding-large-horizontal;
+
+        .@{cascader-prefix}-item,
+        .@{cascader-prefix}-input {
+            margin-bottom: @padding-large-vertical;
+            font-size: @font-size-large;
+        }
+    }
 }
