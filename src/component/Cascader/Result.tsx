@@ -3,8 +3,10 @@ import { cascaderClass, inputClass, selectClass } from '@/styles'
 import { flattenArray } from '@/utils/flat'
 import { preventDefault, stopPropagation } from '@/utils/func'
 import classnames from 'classnames'
-import React, { useMemo, useRef } from 'react'
+import React, { useMemo, useRef, useState } from 'react'
+import { useUpdateEffect } from 'react-use'
 import Caret from '../icons/Caret'
+import Input from '../Input'
 import useShowNum from './hooks/useShowNum'
 import More from './More'
 import { CascaderData, CascaderDataValueType, CascaderResultProps } from './type'
@@ -24,9 +26,27 @@ const CascaderResult: React.FC<CascaderResultProps> = function (props) {
         onPathChange,
         showResultMode,
         getCheckboxStateByDataItem,
+        show,
+        onInput,
+        filterText,
+        size,
     } = props
     const resultElementRef = useRef<HTMLDivElement>()
+    const [showInput, updateShowInput] = useState(!!(show && onInput))
     const [showNum] = useShowNum({ value, compressed, resultElementRef })
+
+    useUpdateEffect(() => {
+        if (!onInput) return
+
+        if (!show) {
+            setTimeout(() => {
+                updateShowInput(false)
+            }, 10)
+        } else {
+            updateShowInput(show)
+        }
+    }, [show])
+
     /** 是否完全选中 */
     const getIsFullChecked = useRefMethod((key: CascaderDataValueType) => {
         const dataItem = getDataItemByKey(key)
@@ -158,11 +178,28 @@ const CascaderResult: React.FC<CascaderResultProps> = function (props) {
         return null
     }
 
+    function renderInput() {
+        return (
+            <Input
+                autoFocus
+                key="input"
+                value={filterText}
+                className={cascaderClass('input')}
+                size={size}
+                onChange={onInput}
+            />
+        )
+    }
+
     function renderResult() {
         let items = buildResult()
 
         if (compressed) {
             items = buildMore(items)
+        }
+
+        if (showInput) {
+            items.push(renderInput())
         }
 
         if (items.length === 0) {
@@ -173,6 +210,10 @@ const CascaderResult: React.FC<CascaderResultProps> = function (props) {
     }
 
     function renderPlaceholder() {
+        if (showInput) {
+            return renderInput()
+        }
+
         return (
             <span className={classnames(inputClass('placeholder'), selectClass('ellipsis'))} key="placeholder">
                 {placeholder}

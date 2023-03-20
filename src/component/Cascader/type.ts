@@ -38,6 +38,7 @@ export interface CascaderProps<Data = CascaderData> {
     border?: boolean
     className?: string
     showResultMode?: ShowResultMode
+    onFilter?: boolean | ((text: string, node: CascaderNode) => boolean)
 }
 
 export interface CascaderListProps {
@@ -94,6 +95,10 @@ export interface CascaderResultProps {
     getNodeInfoByDataItem(dataItem: CascaderData): CascaderNode
     showResultMode: ShowResultMode
     getCheckboxStateByDataItem(dataItem: CascaderData): CascaderNodeValue
+    show?: boolean
+    onInput?: (text: string) => void
+    filterText?: string
+    size?: CascaderProps['size']
 }
 
 export interface CascaderMoreProps {
@@ -106,9 +111,55 @@ export interface CascaderNode {
     keyPath: CascaderDataValueType[]
     isDisabled: boolean
     indexPath: number[]
+    key: CascaderDataValueType
 }
 
 export interface CascaderNodeValue {
     checked: boolean
     indeterminate: boolean
+}
+
+export interface FilterListProps {
+    filterText: string
+    nodeMapping: Map<CascaderDataValueType, CascaderNode>
+    onFilter?: ((text: string, node: CascaderNode) => boolean) | boolean
+    getDataItemByKey(key: CascaderDataValueType): CascaderData
+    getContent(dataItem: CascaderData): React.ReactNode
+    getKey: (data: CascaderData) => CascaderDataValueType
+    onPathChange: (data: CascaderData, change: boolean, dismiss: boolean) => void
+    onFilterTextChange: (text: string) => void
+    multiple: boolean
+    getCheckboxStateByDataItem(dataItem: CascaderData): CascaderNodeValue
+    addValue(dataItem: CascaderData): void
+    removeValue(dataItem: CascaderData): void
+}
+
+export interface FilterListOptionProps {
+    dataItem: CascaderData
+    onPathChange: (data: CascaderData, change: boolean, dismiss: boolean) => void
+    onFilterTextChange: (text: string) => void
+    multiple: boolean
+    getCheckboxStateByDataItem(dataItem: CascaderData): CascaderNodeValue
+    addValue(dataItem: CascaderData): void
+    removeValue(dataItem: CascaderData): void
+    getDataItemByKey(key: CascaderDataValueType): CascaderData
+    nodeMapping: Map<CascaderDataValueType, CascaderNode>
+    node: CascaderNode
+    getContent(dataItem: CascaderData): React.ReactNode
+    filterText: string
+}
+
+export interface FilterListOptionItemProps {
+    pathNode: CascaderNode
+    pathDataItem: CascaderData
+    addValue(dataItem: CascaderData): void
+    removeValue(dataItem: CascaderData): void
+    isPathHeader: boolean
+    onPathChange: (data: CascaderData, change: boolean, dismiss: boolean) => void
+    onFilterTextChange: (text: string) => void
+    getContent(dataItem: CascaderData): React.ReactNode
+    multiple: boolean
+    isDisabledOption: boolean
+    checked: boolean
+    filterText: string
 }

@@ -66,6 +66,21 @@
         .@{cascader-prefix}-item {
             background: @select-result-bg;
         }
+
+        .@{cascader-prefix}-input {
+            margin-bottom: @padding-base-vertical;
+            border-width: 0;
+            border-color: @input-border;
+            background: transparent;
+            border-radius: 0;
+            box-shadow: none;
+            width: auto;
+            flex: 1;
+
+            input {
+                padding: 0;
+            }
+        }
     }
 
     &-popover {
@@ -172,6 +187,42 @@
 
     &-may-be-children .@{cascader-prefix}-caret {
         fill: @gray-300;
+    }
+
+    &-filter {
+        display: block;
+        min-width: 100%;
+        width: auto;
+
+        &-list {
+            overflow: auto;
+            width: 100%;
+
+            &-separator {
+                margin: 0 4px;
+            }
+
+            &-content {
+                display: inline-block;
+                transition: all 0.2s;
+                &.@{cascader-prefix}-disabled {
+                    color: @gray-400;
+                    cursor: not-allowed;
+                }
+            }
+
+            .@{cascader-prefix}-node {
+                cursor: pointer;
+            }
+        }
+
+        &:not(.@{cascader-prefix}-leaf-only) {
+            .@{cascader-prefix}-filter-list-content {
+                &:not(.@{cascader-prefix}-disabled):hover {
+                    color: @colors-primary;
+                }
+            }
+        }
     }
 
     &-small &-result {

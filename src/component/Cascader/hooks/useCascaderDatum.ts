@@ -75,7 +75,7 @@ export default function useCascaderDatum(props: UseCascaderDatumProps) {
 
                 currentIds.push(key)
                 nextDataMapping.set(key, dataItem)
-                nextNodeMapping.set(key, { children, indexPath, isDisabled, keyPath })
+                nextNodeMapping.set(key, { children, indexPath, isDisabled, keyPath, key })
             }
 
             return currentIds
@@ -196,7 +196,8 @@ export default function useCascaderDatum(props: UseCascaderDatumProps) {
 
     const getCheckboxStateByDataItem = useRefMethod((dataItem: CascaderData) => {
         const key = getKey(dataItem)
-        return valueMapping.get(key)
+
+        return valueMapping.get(key) || { indeterminate: false, checked: false }
     })
 
     const getDisabledByDataItem = useRefMethod((dataItem: CascaderData) => {
@@ -208,6 +209,7 @@ export default function useCascaderDatum(props: UseCascaderDatumProps) {
 
     return {
         value,
+        nodeMapping,
         getDisabledByDataItem,
         getNodeInfoByDataItem,
         setValue,

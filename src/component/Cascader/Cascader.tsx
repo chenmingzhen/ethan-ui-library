@@ -3,7 +3,7 @@ import useRefMethod from '@/hooks/useRefMethod'
 import { getLocale } from '@/locale'
 import { cascaderClass, selectClass } from '@/styles'
 import { docSize } from '@/utils/dom/document'
-import { isDescendent } from '@/utils/dom/element'
+import { getParent, isDescendent } from '@/utils/dom/element'
 import { getListPortalStyle } from '@/utils/position'
 import { styles } from '@/utils/style/styles'
 import { getUidStr } from '@/utils/uid'
@@ -17,6 +17,8 @@ import CascaderResult from './Result'
 import { CascaderData, CascaderDataValueType, CascaderProps } from './type'
 import CascaderList from './List'
 import useCascaderDatum from './hooks/useCascaderDatum'
+import FilterList from './FilterList'
+import { useLockAnimation } from './hooks/useLockAnimation'
 
 function Cascader<Data = CascaderData>(props: CascaderProps<Data>) {
     const {
@@ -32,6 +34,7 @@ function Cascader<Data = CascaderData>(props: CascaderProps<Data>) {
         compressed,
         loader,
         data = [],
+        onFilter,
         clearable = true,
         onItemClick,
         changeOnSelect,
@@ -47,6 +50,7 @@ function Cascader<Data = CascaderData>(props: CascaderProps<Data>) {
     const [position, updatePosition] = useState(props.position)
     const [show, updateShow] = useState(false)
     const [path, updatePath] = useState<CascaderDataValueType[]>([])
+    const [lockAnimation, startLockAnimation] = useLockAnimation()
     const [focus, updateFocus, lockFocus, hasLockFocusRef] = useLockFocus()
     const containerElementRef = useRef<HTMLDivElement>()
     const { className, style } = useInputStyle({
@@ -57,9 +61,9 @@ function Cascader<Data = CascaderData>(props: CascaderProps<Data>) {
         style: props.style,
         className: classnames(props.className, selectClass('_')),
     })
-
+    const [filterText, updateFilterText] = useState('')
     const cls = classnames(
-        cascaderClass('_', focus && 'focus', props.multiple && 'multiple', props.disabled === true && 'disabled'),
+        cascaderClass('_', focus && 'focus', props.multiple && 'multiple', props.disabled === true && 'disabled', size),
         selectClass(position)
     )
 
@@ -76,6 +80,7 @@ function Cascader<Data = CascaderData>(props: CascaderProps<Data>) {
     const {
         value,
         setValue,
+        nodeMapping,
         getDisabledByDataItem,
         getNodeInfoByDataItem,
         getDataItemByKey,
@@ -121,12 +126,24 @@ function Cascader<Data = CascaderData>(props: CascaderProps<Data>) {
 
     const handleClickAway = useRefMethod((evt: MouseEvent) => {
         const desc = isDescendent(evt.target as HTMLElement, cascaderId)
+        const clickInput = getParent(evt.target as HTMLElement, `.${cascaderClass('input')}`)
 
         if (desc) {
             lockFocus(() => {
-                containerElementRef.current.focus()
+                if (!clickInput) {
+                    containerElementRef.current.focus()
+                }
             })
         }
+    })
+
+    const handleInput = useRefMethod((inputText: string) => {
+        /** 无输入内容时，转换成OptionList，不触发动画 */
+        if (!inputText) {
+            startLockAnimation()
+        }
+
+        updateFilterText(inputText)
     })
 
     function handleFocus(evt: React.FocusEvent<HTMLDivElement, Element>) {
@@ -161,13 +178,25 @@ function Cascader<Data = CascaderData>(props: CascaderProps<Data>) {
 
     function handleBlur(evt: React.FocusEvent<HTMLDivElement, Element>) {
         if (hasLockFocusRef.current || props.disabled === true) return
+        if (evt.relatedTarget && getParent(evt.relatedTarget as HTMLElement, `.${cascaderClass('result')}`)) return
         if (onBlur) {
             onBlur(evt)
         }
 
         document.removeEventListener('mousedown', handleClickAway, true)
-        toggleOpen(false)
-        updateFocus(false)
+
+        if (!filterText) {
+            toggleOpen(false)
+            updateFocus(false)
+        } else {
+            startLockAnimation()
+            updateFilterText('')
+            updateFocus(false)
+
+            setTimeout(() => {
+                toggleOpen(false)
+            }, 20)
+        }
     }
 
     function handleClear() {
@@ -187,7 +216,7 @@ function Cascader<Data = CascaderData>(props: CascaderProps<Data>) {
         }
     }
 
-    function renderList() {
+    function renderCascaderList() {
         if (!data?.length) return <span>{text.noData || getLocale('noData')}</span>
 
         let currentData: CascaderData | CascaderData[] = data
@@ -250,15 +279,41 @@ function Cascader<Data = CascaderData>(props: CascaderProps<Data>) {
         )
     }
 
-    function renderAnimationList() {
-        const portalRootCls = classnames(cascaderClass(focus && 'focus'), selectClass(position))
-        const rect = containerElementRef.current?.getBoundingClientRect()
-
+    function renderPanel() {
         let width
 
         if (!data?.length) {
             width = containerElementRef.current ? containerElementRef.current.getBoundingClientRect().width : 0
         }
+        const portalRootCls = classnames(cascaderClass(focus && 'focus'), selectClass(position))
+        const rect = containerElementRef.current?.getBoundingClientRect()
+        const listStyle = styles({ zIndex, width, height }, portal && getListPortalStyle(rect, position))
+
+        if (filterText)
+            return (
+                <Portal rootClass={portalRootCls} portal={portal} show={show}>
+                    <div
+                        data-id={cascaderId}
+                        className={classnames(selectClass('options'), cascaderClass('options', 'filter'))}
+                        style={styles(listStyle, { display: 'inline-flex' })}
+                    >
+                        <FilterList
+                            filterText={filterText}
+                            nodeMapping={nodeMapping}
+                            onFilter={onFilter}
+                            getDataItemByKey={getDataItemByKey}
+                            getContent={getContent}
+                            getKey={getKey}
+                            onPathChange={handlePathChange}
+                            onFilterTextChange={handleInput}
+                            multiple={multiple}
+                            addValue={addValue}
+                            removeValue={removeValue}
+                            getCheckboxStateByDataItem={getCheckboxStateByDataItem}
+                        />
+                    </div>
+                </Portal>
+            )
 
         return (
             <Portal rootClass={portalRootCls} portal={portal} show={show}>
@@ -266,13 +321,13 @@ function Cascader<Data = CascaderData>(props: CascaderProps<Data>) {
                     show={show}
                     data-id={cascaderId}
                     className={classnames(selectClass('options'), cascaderClass('options', !data?.length && 'no-data'))}
-                    animationTypes={['fade', 'scale-y']}
+                    animationTypes={!lockAnimation ? ['fade', 'scale-y'] : undefined}
                     duration="fast"
                     display="inline-flex"
-                    style={styles({ zIndex, width }, portal && getListPortalStyle(rect, position))}
+                    style={listStyle}
                     onTransitionEnd={handleTransitionEnd}
                 >
-                    {renderList()}
+                    {renderCascaderList()}
                 </AnimationList>
             </Portal>
         )
@@ -304,9 +359,13 @@ function Cascader<Data = CascaderData>(props: CascaderProps<Data>) {
                     compressed={compressed}
                     getNodeInfoByDataItem={getNodeInfoByDataItem}
                     showResultMode={showResultMode}
+                    show={onFilter ? show : undefined}
+                    onInput={onFilter ? handleInput : undefined}
+                    filterText={onFilter ? filterText : undefined}
+                    size={onFilter ? size : undefined}
                 />
 
-                {renderAnimationList()}
+                {renderPanel()}
             </div>
         </div>
     )
