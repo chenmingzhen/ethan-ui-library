@@ -39,6 +39,7 @@ export interface CascaderProps<Data = CascaderData> {
     className?: string
     showResultMode?: ShowResultMode
     onFilter?: boolean | ((text: string, node: CascaderNode) => boolean)
+    loading?: boolean
 }
 
 export interface CascaderListProps {

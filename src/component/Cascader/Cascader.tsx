@@ -1,3 +1,5 @@
+/** 不明原因:此处的input focus，blur与Select不一致(添加setTimeout才会Select一致) */
+/** @todo 后续统一废弃tabIndex，使用内部input管理focus blur事件 */
 import useLockFocus from '@/hooks/useLockFocus'
 import useRefMethod from '@/hooks/useRefMethod'
 import { getLocale } from '@/locale'
@@ -19,6 +21,7 @@ import CascaderList from './List'
 import useCascaderDatum from './hooks/useCascaderDatum'
 import FilterList from './FilterList'
 import { useLockAnimation } from './hooks/useLockAnimation'
+import Spin from '../Spin'
 
 function Cascader<Data = CascaderData>(props: CascaderProps<Data>) {
     const {
@@ -39,6 +42,7 @@ function Cascader<Data = CascaderData>(props: CascaderProps<Data>) {
         onItemClick,
         changeOnSelect,
         multiple,
+        loading,
         expandTrigger = 'click',
         text = {},
         labelKey = 'label',
@@ -66,7 +70,6 @@ function Cascader<Data = CascaderData>(props: CascaderProps<Data>) {
         cascaderClass('_', focus && 'focus', props.multiple && 'multiple', props.disabled === true && 'disabled', size),
         selectClass(position)
     )
-
     const getKey = useRefMethod((dataItem: CascaderData) => dataItem[valueKey])
 
     const getContent = useRefMethod((dataItem: Data) => {
@@ -126,13 +129,10 @@ function Cascader<Data = CascaderData>(props: CascaderProps<Data>) {
 
     const handleClickAway = useRefMethod((evt: MouseEvent) => {
         const desc = isDescendent(evt.target as HTMLElement, cascaderId)
-        const clickInput = getParent(evt.target as HTMLElement, `.${cascaderClass('input')}`)
 
         if (desc) {
             lockFocus(() => {
-                if (!clickInput) {
-                    containerElementRef.current.focus()
-                }
+                containerElementRef.current.focus()
             })
         }
     })
@@ -217,6 +217,7 @@ function Cascader<Data = CascaderData>(props: CascaderProps<Data>) {
     }
 
     function renderCascaderList() {
+        if (loading) return <Spin size={20} />
         if (!data?.length) return <span>{text.noData || getLocale('noData')}</span>
 
         let currentData: CascaderData | CascaderData[] = data
@@ -287,7 +288,10 @@ function Cascader<Data = CascaderData>(props: CascaderProps<Data>) {
         }
         const portalRootCls = classnames(cascaderClass(focus && 'focus'), selectClass(position))
         const rect = containerElementRef.current?.getBoundingClientRect()
-        const listStyle = styles({ zIndex, width, height }, portal && getListPortalStyle(rect, position))
+        const listStyle = styles(
+            { zIndex, width, height: data?.length ? height : undefined },
+            portal && getListPortalStyle(rect, position)
+        )
 
         if (filterText)
             return (
@@ -314,7 +318,6 @@ function Cascader<Data = CascaderData>(props: CascaderProps<Data>) {
                     </div>
                 </Portal>
             )
-
         return (
             <Portal rootClass={portalRootCls} portal={portal} show={show}>
                 <AnimationList
