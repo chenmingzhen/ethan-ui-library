@@ -8,7 +8,6 @@ import { getListPortalStyle } from '@/utils/position'
 import { styles } from '@/utils/style/styles'
 import { getUidStr } from '@/utils/uid'
 import React, { useRef, useState } from 'react'
-import useInputStyle from '../Input/hooks/useInputStyle'
 import Portal from '../Portal'
 import BoxList from './BoxList'
 import useFocus from '../../hooks/useLockFocus'
@@ -17,6 +16,7 @@ import Result from './Result'
 import { SelectData, SelectProps } from './type'
 import useProcessedData from './hooks/useProcessedData'
 import useSelectDatum from './hooks/useSelectDatum'
+import useInputStyle from '../Input/hooks/useInputStyle'
 
 function Select<Data = SelectData>(props: SelectProps<Data>) {
     const [show, updateShow] = useState(false)
@@ -26,8 +26,7 @@ function Select<Data = SelectData>(props: SelectProps<Data>) {
     const [filterText, updateFilterText] = useState('')
     const {
         size,
-        border,
-        width,
+        border = true,
         style,
         className,
         multiple = false,
@@ -59,20 +58,12 @@ function Select<Data = SelectData>(props: SelectProps<Data>) {
         columnWidth,
         labelKey = 'label',
         valueKey = 'value',
+        width,
     } = props
     const selectId = useRef(getUidStr()).current
     const inputRef = useRef<HTMLInputElement>()
     const optionListRef = useRef<OptionListInstance>()
     const containerElementRef = useRef<HTMLDivElement>()
-    const { className: cls, style: ms } = useInputStyle({
-        border,
-        size,
-        disabled: props.disabled === true,
-        width,
-        style,
-        focus,
-        className,
-    })
     const { data, groupKey } = useProcessedData({ filterText, data: props.data, groupBy, onFilter, onCreate })
 
     const {
@@ -93,6 +84,16 @@ function Select<Data = SelectData>(props: SelectProps<Data>) {
         disabled: props.disabled,
         data,
         valueKey,
+    })
+
+    const { className: cls, style: ms } = useInputStyle({
+        border,
+        size,
+        disabled: props.disabled === true,
+        width,
+        style,
+        focus,
+        className,
     })
 
     const getKey = useRefMethod((dataItem: SelectData, index: number) =>
@@ -117,14 +118,13 @@ function Select<Data = SelectData>(props: SelectProps<Data>) {
         return isObject(dataItem) ? dataItem[labelKey] : dataItem
     })
 
-    const containerCls = selectClass(
-        'inner',
-        size,
-        focus && 'focus',
-        position,
-        multiple && 'multiple',
-        props.disabled === true && 'disabled'
-    )
+    const focusSelect = useRefMethod(() => {
+        if (!inputRef.current) return
+
+        setTimeout(() => {
+            inputRef.current.focus()
+        })
+    })
 
     function handleFocus(e: React.FocusEvent<HTMLDivElement, Element>) {
         if (hasLockFocusRef.current || props.disabled === true) return
@@ -134,14 +134,10 @@ function Select<Data = SelectData>(props: SelectProps<Data>) {
         }
 
         updateFocus(true)
-
-        lockFocus()
     }
 
     function handleBlur(evt: React.FocusEvent<HTMLDivElement, Element>) {
         if (hasLockFocusRef.current || props.disabled === true) return
-        /** @see https://developer.mozilla.org/en-US/docs/Web/API/FocusEvent/relatedTarget */
-        if (evt.relatedTarget && getParent(evt.relatedTarget as HTMLElement, `.${selectClass('result')}`)) return
 
         if (onBlur) {
             onBlur(evt)
@@ -156,20 +152,14 @@ function Select<Data = SelectData>(props: SelectProps<Data>) {
         const desc = isDescendent(evt.target as HTMLElement, selectId)
 
         if (desc) {
-            const clickInput = getParent(evt.target as HTMLElement, `.${selectClass('input')}`)
-            const clickCustom = getParent(evt.target as HTMLElement, `.${selectClass('custom')}`)
-
             lockFocus(() => {
-                if (!clickInput && !clickCustom) {
-                    containerElementRef.current.focus()
-                }
+                focusSelect()
             })
         }
     })
 
     const handleChange = useRefMethod((dataItem: SelectData) => {
         if (props.disabled === true) return
-
         if (multiple) {
             const checked = !getCheckedStateByDataItem(dataItem)
 
@@ -178,8 +168,6 @@ function Select<Data = SelectData>(props: SelectProps<Data>) {
 
                 if (handleInput) {
                     handleInput('')
-                    lockFocus()
-                    inputRef.current.focus()
                 }
             } else {
                 removeByDataItem(dataItem)
@@ -215,13 +203,14 @@ function Select<Data = SelectData>(props: SelectProps<Data>) {
 
         if (bottom > windowHeight && !nextPosition) nextPosition = 'drop-up'
         if (onCollapse) onCollapse(nextShow)
+
+        updateShow(nextShow)
+        updatePosition(nextPosition)
+
         if (nextShow) {
             /** @see https://developer.mozilla.org/zh-CN/docs/Web/API/EventTarget/addEventListener */
             document.addEventListener('mousedown', handleClickAway, true)
         }
-
-        updateShow(nextShow)
-        updatePosition(nextPosition)
     }
 
     const handleInput = onFilter || onCreate ? updateFilterText : undefined
@@ -233,11 +222,10 @@ function Select<Data = SelectData>(props: SelectProps<Data>) {
     })
 
     function handleContainerMouseDown(evt: React.MouseEvent) {
-        const isClickOption =
+        if (
             !getParent(evt.target as HTMLElement, `.${selectClass('result')}`) &&
             evt.target !== containerElementRef.current
-
-        if (isClickOption) {
+        ) {
             return
         }
 
@@ -248,6 +236,9 @@ function Select<Data = SelectData>(props: SelectProps<Data>) {
         } else {
             handleShowStateChange(true)
         }
+
+        /** 有可能是非直接点击到Input上，需要手动获取焦点 */
+        focusSelect()
     }
 
     function handleEnter() {
@@ -401,12 +392,20 @@ function Select<Data = SelectData>(props: SelectProps<Data>) {
         )
     }
 
+    const containerCls = selectClass(
+        'inner',
+        size,
+        focus && 'focus',
+        position,
+        multiple && 'multiple',
+        props.disabled === true && 'disabled'
+    )
+
     return (
         <div className={cls} style={ms}>
             <div
-                tabIndex={props.disabled === true ? -1 : 0}
-                ref={containerElementRef}
                 className={containerCls}
+                ref={containerElementRef}
                 onFocus={handleFocus}
                 onMouseDown={handleContainerMouseDown}
                 onBlur={handleBlur}

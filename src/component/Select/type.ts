@@ -10,6 +10,7 @@ export interface SelectProps<Data = SelectData> {
     labelKey?: string
     valueKey?: string
     border?: boolean
+    width?: number
     placeholder?: ReactNode
     style?: React.CSSProperties
     portal?: boolean
@@ -45,7 +46,6 @@ export interface SelectProps<Data = SelectData> {
     onScrollRatioChange?: (scrollTopRatio: number, lastScrollTop: number) => void
     columnWidth?: number
     className?: string
-    width?: number
     createOption?: {
         onCreate: (text: string) => Data
         onCreateEnd?: (data: Data) => void
@@ -125,11 +125,11 @@ export interface OptionProps {
 
 export interface SelectResultProps {
     onClear(e: React.MouseEvent): void
-    onRemove(data: any): void
+    onRemove(data: SelectData): void
     compressed: boolean
     onInput(text: string): void
     isDisabled: boolean
-    disabledFunc: (data) => boolean
+    disabledFunc: (data: SelectData) => boolean
     filterText: string
     size: SelectProps['size']
     showArrow: SelectProps['showArrow']
@@ -140,10 +140,41 @@ export interface SelectResultProps {
     selectedData: SelectData[]
     getResultContent(dataItem: SelectData, index: number): React.ReactNode
     show: boolean
-    forwardedInputRef: ((instance: HTMLInputElement) => void) | React.MutableRefObject<HTMLInputElement>
+    forwardedInputRef: React.MutableRefObject<HTMLInputElement>
 }
 
-export interface SelectResultItemProps extends Pick<SelectResultProps, 'resultClassName'> {
+export interface SingleResultProps {
+    selectedData: SelectData[]
+    getResultContent(dataItem: SelectData, index: number): React.ReactNode
+    filterText: string
+    size: SelectProps['size']
+    onInput(text: string): void
+    forwardedInputRef: React.MutableRefObject<HTMLInputElement>
+    showInput: boolean
+    placeholder: SelectProps['placeholder']
+    show: boolean
+    isDisabled: boolean
+}
+
+export interface MultipleResultProps {
+    selectedData: SelectData[]
+    getResultContent(dataItem: SelectData, index: number): React.ReactNode
+    filterText: string
+    size: SelectProps['size']
+    onInput(text: string): void
+    forwardedInputRef: React.MutableRefObject<HTMLInputElement>
+    showInput: boolean
+    placeholder: SelectProps['placeholder']
+    compressed: SelectProps['compressed']
+    disabledFunc: (data: SelectData) => boolean
+    onRemove(data: SelectData): void
+    resultClassName: SelectProps['resultClassName']
+    compressedClassName: SelectProps['compressedClassName']
+    show: boolean
+    isDisabled: boolean
+}
+
+export interface MultipleResultItemProps extends Pick<SelectResultProps, 'resultClassName'> {
     selectedDataItem: SelectData
     disabled: boolean
     onRemove: SelectResultProps['onRemove']

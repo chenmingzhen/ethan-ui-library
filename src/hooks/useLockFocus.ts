@@ -10,7 +10,7 @@ function useFocus(): [
     const hasLockFocusRef = useRef(false)
     const lockTimer = useRef<NodeJS.Timeout>()
 
-    /** 阻止执行onFocus */
+    /** 短暂阻止执行onFocus和onBlur，callback内可以操作重新获取焦点 */
     const lockFocus = useCallback((callback?: () => void) => {
         hasLockFocusRef.current = true
 
@@ -19,7 +19,9 @@ function useFocus(): [
                 callback()
             }
 
-            hasLockFocusRef.current = false
+            setTimeout(() => {
+                hasLockFocusRef.current = false
+            })
         }, 30)
     }, [])
 

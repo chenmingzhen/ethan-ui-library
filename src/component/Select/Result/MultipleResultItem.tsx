@@ -3,15 +3,12 @@ import classnames from 'classnames'
 import { selectClass } from '@/styles'
 import { isEmpty, isFunc, isString } from '@/utils/is'
 import { preventDefault, stopPropagation } from '@/utils/func'
-import { SelectResultItemProps } from './type'
+import { MultipleResultItemProps } from '../type'
 
-const ResultItem: React.FC<SelectResultItemProps> = function (props) {
+const MultipleResultItem: React.FC<MultipleResultItemProps> = function (props) {
     const { selectedDataItem, onRemove, disabled, title, getResultContent, resultClassName, index } = props
-
     const remove = disabled || !onRemove ? undefined : () => onRemove(selectedDataItem)
-
     const hideRemove = disabled || !remove
-
     const content = getResultContent(selectedDataItem, index)
 
     if (isEmpty(content)) return null
@@ -37,4 +34,4 @@ const ResultItem: React.FC<SelectResultItemProps> = function (props) {
     )
 }
 
-export default React.memo(ResultItem)
+export default React.memo(MultipleResultItem)

@@ -1,6 +1,7 @@
 import FormItemContext from '@/component/Form/context/formItemContext'
 import { PopoverProps } from '@/component/Popover'
 import { inputClass } from '@/styles'
+import { styles } from '@/utils/style/styles'
 import classnames from 'classnames'
 import { useContext } from 'react'
 
@@ -18,11 +19,8 @@ interface UseInputStyleProps {
 
 function useInputStyle(props: UseInputStyleProps) {
     const { border = true, size, disabled, focus, className, width, style, popoverProps, hasError } = props
-
     const { hasItemError } = useContext(FormItemContext) || {}
-
-    const ms = Object.assign({ width }, style)
-
+    const ms = styles({ width }, style)
     const cls = classnames(
         inputClass(
             '_',
