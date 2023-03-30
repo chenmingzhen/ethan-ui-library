@@ -1,5 +1,5 @@
 import useRefMethod from '@/hooks/useRefMethod'
-import { datePickerClass, inputClass } from '@/styles'
+import { datePickerClass } from '@/styles'
 import { docSize } from '@/utils/dom/document'
 import { isEmpty, isFunc } from '@/utils/is'
 import { getUidStr } from '@/utils/uid'
@@ -30,7 +30,7 @@ const DatePicker: React.FC<DatePickerProps> = function (props) {
         type = 'date',
         onFocus,
         defaultPickerValue,
-        placeholder = <span>&nbsp;</span>,
+        placeholder,
         inputAble,
         onBlur,
         zIndex,
@@ -47,9 +47,9 @@ const DatePicker: React.FC<DatePickerProps> = function (props) {
     const pickerContainerRef = useRef<HTMLDivElement>()
     const format = useFormat(props.format, props.type)
     const quicks = useQuicks(quickSelects, format)
+    const inputRef = useRef<HTMLInputElement>()
     /** 面板的参考值，改变Year Month时的参考值 */
     const [panelDate, updatePanelDate] = useState(new Date())
-
     const [show, updateShow] = useState(false)
     /** 选中的值（缓冲值，不会触发onChange，用于输入时） */
     const [selectedDate, updateSelectedDate] = useState<Date>(undefined)
@@ -120,6 +120,7 @@ const DatePicker: React.FC<DatePickerProps> = function (props) {
 
     function handleMouseDown() {
         toggleOpen(true)
+        inputRef.current.focus()
     }
 
     const handleTextBlur = useRefMethod((date: Date) => {
@@ -170,6 +171,18 @@ const DatePicker: React.FC<DatePickerProps> = function (props) {
         updateSelectedDate(date)
     })
 
+    function handleDescClick() {
+        inputRef.current.focus()
+    }
+
+    function handleContainerBlur(e: React.FocusEvent<HTMLDivElement>) {
+        if (onBlur) {
+            onBlur(e)
+        }
+
+        toggleOpen(false)
+    }
+
     function renderResult() {
         const clearable = disabled ? false : props.clearable
         const empty = isEmpty(value)
@@ -184,8 +197,8 @@ const DatePicker: React.FC<DatePickerProps> = function (props) {
                     onTextBlur={handleTextBlur}
                     disabled={disabled === true}
                     onInputValidDate={handleInputValidDate}
-                    className={classnames(datePickerClass('txt'), utils.isInvalid(value) && inputClass('placeholder'))}
                     value={utils.isInvalid(value) ? undefined : utils.format(value, format)}
+                    forwardedInputRef={inputRef}
                 />
                 <Icon name="Calendar" className={empty || !clearable ? '' : 'indicator'} />
                 {!empty && clearable && (
@@ -256,16 +269,16 @@ const DatePicker: React.FC<DatePickerProps> = function (props) {
             size={size}
             type={type}
             border={border}
-            onBlur={onBlur}
+            onBlur={handleContainerBlur}
             onFocus={onFocus}
             data-id={pickerId}
             ref={containerRef}
             containerStyle={style}
-            toggleOpen={toggleOpen}
             disabled={disabled === true}
             onMouseDown={handleMouseDown}
             containerClassName={classnames(props.className, datePickerClass('_', `c-${type || 'date'}`))}
             innerClassName={datePickerClass('inner', size && `size-${size}`, disabled === true && 'disabled', position)}
+            onDescClick={handleDescClick}
         >
             {renderResult()}
             {renderWrappedPicker()}

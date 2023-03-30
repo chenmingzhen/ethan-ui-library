@@ -2,16 +2,32 @@ import useRefMethod from '@/hooks/useRefMethod'
 import { KeyboardKey } from '@/utils/keyboard'
 import React, { useCallback, useEffect, useState } from 'react'
 import { debounce } from '@/utils/func'
+import { datePickerClass } from '@/styles'
+import { isEmpty } from '@/utils/is'
 import { DatePickerTextProps } from './type'
 import Input from '../Input'
 import utils from './utils'
 
 const Text: React.FC<DatePickerTextProps> = function (props) {
-    const { disabled, className, index, inputAble, onTextBlur, format, placeholder, value, size, onInputValidDate } =
-        props
+    const {
+        disabled,
+        index,
+        inputAble,
+        onTextBlur,
+        format,
+        placeholder,
+        value,
+        size,
+        onInputValidDate,
+        forwardedInputRef,
+        hover,
+    } = props
+    const readOnly = !inputAble || disabled
     const [textValue, updateTextValue] = useState(value || '')
     const [blur, updateBlur] = useState({})
     const handleBlur = useRefMethod(() => {
+        if (readOnly || textValue === value) return
+
         if (!textValue.length) {
             onTextBlur(null, index)
         } else {
@@ -56,17 +72,20 @@ const Text: React.FC<DatePickerTextProps> = function (props) {
         }
     })
 
-    if (!inputAble || disabled) return <span className={className}>{textValue || placeholder}</span>
-
     return (
         <Input
+            trim
+            disabled={disabled}
+            autoComplete="off"
             onBlur={handleBlur}
             onChange={handleChange}
-            className={className}
             value={textValue}
             onKeyDown={handleKeyDown}
             size={size}
-            trim
+            readOnly={readOnly}
+            forwardedRef={forwardedInputRef}
+            placeholder={placeholder}
+            className={datePickerClass('input', !isEmpty(hover) && !isEmpty(index) && hover === index && 'panel-hover')}
         />
     )
 }

@@ -6,7 +6,7 @@ import { PickerProps } from './type'
 import Year from './Year'
 
 const Picker: React.FC<PickerProps> = (props) => {
-    const { type, format, children, panelDate, onChange, ...other } = props
+    const { type, format, children, panelDate, onChange, className, pickerId, ...other } = props
     const { onHoverPanel, index } = useContext(RangePickerContext) || {}
     const [mode, updateMode] = useState(() => {
         if (type === 'year') return 'year'
@@ -41,7 +41,7 @@ const Picker: React.FC<PickerProps> = (props) => {
     }
 
     return (
-        <div onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
+        <div onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} data-id={pickerId}>
             <Component
                 {...other}
                 onChange={onChange}

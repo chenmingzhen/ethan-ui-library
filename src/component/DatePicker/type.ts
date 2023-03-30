@@ -12,7 +12,7 @@ export interface DatePickerProps {
     disabled?: boolean | ((date: Date) => boolean)
     format?: string
     inputAble?: boolean
-    placeholder?: React.ReactNode
+    placeholder: string
     onBlur?: (e: React.FocusEvent<HTMLElement>) => void
     onChange?: (date: Date, dateStr: string) => void
     onFocus?: (evt: React.FocusEvent<HTMLElement>) => void
@@ -34,15 +34,16 @@ export interface DatePickerProps {
 
 export interface DatePickerTextProps {
     disabled: boolean
-    className: string
     index?: number
     inputAble: boolean
     onTextBlur: (date: Date, index: number) => void
-    placeholder: React.ReactNode
+    placeholder: string
     value: string
     size: 'small' | 'default' | 'large'
     format: string
     onInputValidDate(date: Date, index?: number): void
+    forwardedInputRef: React.MutableRefObject<HTMLInputElement>
+    hover?: number
 }
 
 export interface PickerProps extends Pick<DatePickerProps, 'type'> {
@@ -53,6 +54,8 @@ export interface PickerProps extends Pick<DatePickerProps, 'type'> {
     min?: Date
     onChange: (date: Date, mode: ChangeMode) => void
     selectedDate: Date
+    className?: string
+    pickerId?: string
 }
 
 export interface DatePickerDayProps {
@@ -126,10 +129,10 @@ export interface ContainerProps extends React.DetailedHTMLProps<React.HTMLAttrib
     border: boolean
     size: DatePickerProps['size']
     type: DatePickerProps['type']
-    toggleOpen: (open: boolean) => void
     containerClassName: string
     innerClassName: string
     containerStyle: React.CSSProperties
+    onDescClick: (evt: MouseEvent) => void
 }
 
 export interface RangePickerProps {
@@ -137,7 +140,7 @@ export interface RangePickerProps {
     disabled?: boolean | ((date: Date, pos: string, selectedPanelDates: Date[]) => boolean)
     format?: string
     inputAble?: boolean
-    placeholder?: React.ReactNode | [React.ReactNode, React.ReactNode]
+    placeholder?: string | [string, string]
     onBlur?: (e: React.FocusEvent<HTMLElement>) => void
     onFocus?: (evt: React.FocusEvent<HTMLElement>) => void
     onChange?: (dates: Date[], str: string[]) => void

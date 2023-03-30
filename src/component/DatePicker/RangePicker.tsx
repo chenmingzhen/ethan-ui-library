@@ -1,6 +1,6 @@
 import useMergedValue from '@/hooks/useMergedValue'
 import useRefMethod from '@/hooks/useRefMethod'
-import { datePickerClass, inputClass } from '@/styles'
+import { datePickerClass } from '@/styles'
 import { docSize } from '@/utils/dom/document'
 import { isArray, isEmpty, isFunc } from '@/utils/is'
 import { getUidStr } from '@/utils/uid'
@@ -11,6 +11,7 @@ import { getPickerPortalStyle } from '@/utils/position'
 import { getLocale } from '@/locale'
 import useSafeState from '@/hooks/useSafeState'
 import { preventDefault, stopPropagation } from '@/utils/func'
+import { isDescendent } from '@/utils/dom/element'
 import Container from './Container'
 import useFormat from './hooks/useFormat'
 import useQuicks from './hooks/useQuicks'
@@ -54,15 +55,19 @@ const RangePicker: React.FC<RangePickerProps> = function (props) {
     const [show, updateShow] = useSafeState(false)
     const [hover, updateHover] = useSafeState<number>(null)
     const [position, updatePosition] = useSafeState(props.position)
+    const leftInputRef = useRef<HTMLInputElement>()
+    const rightInputRef = useRef<HTMLInputElement>()
+    const leftPickerId = useRef(getUidStr()).current
+    const rightPickerId = useRef(getUidStr()).current
     /** 选中的值（最终值，会触发onChange） */
     const [value, updateValue] = useMergedValue<Date[], [string[]]>({
         defaultStateValue: [],
         options: {
             defaultValue: props.defaultValue,
             value: props.value,
-            onChange(date, prevDate, dateStrings) {
+            onChange(dates, prevDates, dateStrings) {
                 if (onChange) {
-                    onChange(date, dateStrings)
+                    onChange(dates, dateStrings)
                 }
             },
         },
@@ -114,8 +119,16 @@ const RangePicker: React.FC<RangePickerProps> = function (props) {
         }
     }
 
-    function handleMouseDown() {
+    function handleMouseDown(evt: React.MouseEvent) {
+        if (show) return
+
         toggleOpen(true)
+
+        if (evt.target === rightInputRef.current) {
+            rightInputRef.current.focus()
+        } else {
+            leftInputRef.current.focus()
+        }
     }
 
     const handleTextBlur = useRefMethod((date: Date, index: number) => {
@@ -131,6 +144,14 @@ const RangePicker: React.FC<RangePickerProps> = function (props) {
             updateValue(dates, dateStrings)
         }
     })
+
+    function handleContainerBlur(e: React.FocusEvent<HTMLDivElement>) {
+        if (onBlur) {
+            onBlur(e)
+        }
+
+        toggleOpen(false)
+    }
 
     const handleChange = useRefMethod((index: number, date: Date, mode?: string) => {
         const nextSelectedPanelDates = [...selectedPanelDates]
@@ -220,7 +241,17 @@ const RangePicker: React.FC<RangePickerProps> = function (props) {
             return props.placeholder[index]
         }
 
-        return props.placeholder || <span>&nbsp;</span>
+        return props.placeholder
+    }
+
+    function handleDescClick(evt: MouseEvent) {
+        const isRightDesc = isDescendent(evt.target as HTMLElement, rightPickerId)
+
+        if (isRightDesc || evt.target === rightInputRef.current) {
+            rightInputRef.current.focus()
+        } else {
+            leftInputRef.current.focus()
+        }
     }
 
     function renderResult() {
@@ -246,13 +277,11 @@ const RangePicker: React.FC<RangePickerProps> = function (props) {
                     placeholder={getPlaceholder(0)}
                     onTextBlur={handleTextBlur}
                     disabled={disabled === true}
-                    className={classnames(
-                        datePickerClass('txt', hover === 0 && 'text-focus'),
-                        utils.isInvalid(selectedPanelDates[0] || value[0]) && inputClass('placeholder')
-                    )}
+                    hover={hover}
                     value={leftValue}
                     index={0}
                     onInputValidDate={handleInputValidDate}
+                    forwardedInputRef={leftInputRef}
                 />
                 <span key="-" className={datePickerClass('separate')}>
                     ~
@@ -264,13 +293,11 @@ const RangePicker: React.FC<RangePickerProps> = function (props) {
                     placeholder={getPlaceholder(1)}
                     onTextBlur={handleTextBlur}
                     disabled={disabled === true}
-                    className={classnames(
-                        datePickerClass('txt', hover === 1 && 'text-focus'),
-                        utils.isInvalid(selectedPanelDates[1] || value[1]) && inputClass('placeholder')
-                    )}
+                    hover={hover}
                     value={rightValue}
                     index={1}
                     onInputValidDate={handleInputValidDate}
+                    forwardedInputRef={rightInputRef}
                 />
                 <Icon className={empty || !clearable ? '' : 'indicator'} name="Calendar" />
                 {!empty && clearable && (
@@ -335,6 +362,7 @@ const RangePicker: React.FC<RangePickerProps> = function (props) {
                         >
                             <Picker
                                 {...props}
+                                pickerId={leftPickerId}
                                 disabled={handleDisabledStart}
                                 min={min}
                                 max={max}
@@ -355,6 +383,7 @@ const RangePicker: React.FC<RangePickerProps> = function (props) {
                         >
                             <Picker
                                 {...props}
+                                pickerId={rightPickerId}
                                 disabled={handleDisabledEnd}
                                 min={selectedPanelDates[0] ? selectedPanelDates[0] : min}
                                 max={max}
@@ -376,14 +405,14 @@ const RangePicker: React.FC<RangePickerProps> = function (props) {
             size={size}
             type={type}
             border={border}
-            onBlur={onBlur}
+            onBlur={handleContainerBlur}
             onFocus={onFocus}
             data-id={pickerId}
             ref={containerRef}
             containerStyle={style}
-            toggleOpen={toggleOpen}
             disabled={disabled === true}
             onMouseDown={handleMouseDown}
+            onDescClick={handleDescClick}
             containerClassName={classnames(props.className, datePickerClass('_', `r-${type || 'date'}`))}
             innerClassName={datePickerClass(
                 'inner',

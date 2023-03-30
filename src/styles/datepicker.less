@@ -32,7 +32,6 @@
     &-title {
         padding: 0 0 8px;
         text-align: center;
-        // border-bottom: 1px solid @table-border-color;
     }
 
     &-inner {
@@ -55,6 +54,34 @@
         display: flex;
         cursor: pointer;
 
+        .@{datepicker-prefix}-input {
+            cursor: pointer;
+            flex: 1;
+            outline: none;
+            border: none;
+            box-shadow: none;
+            background: transparent;
+            transition: all ease-in-out 0.2s;
+            display: block;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+
+            &.@{datepicker-prefix}-panel-hover {
+                background: @colors-primary;
+                color: #fff;
+            }
+
+            input {
+                cursor: inherit;
+                padding: 0;
+
+                &:placeholder-shown {
+                    text-overflow: ellipsis;
+                }
+            }
+        }
+
         .@{datepicker-prefix}-icon {
             position: absolute;
             top: 50%;
@@ -72,33 +99,12 @@
         .@{datepicker-prefix}-close {
             display: none;
         }
-
-        .@{datepicker-prefix}-txt {
-            flex: 1;
-            outline: none;
-            border: none;
-            box-shadow: none;
-            background: transparent;
-            transition: all ease-in-out 0.2s;
-
-            input {
-                padding: 0;
-            }
-        }
-
-        .@{datepicker-prefix}-text-focus {
-            background: @colors-primary;
-            color: #fff;
-            border-radius: @datepicker-radius;
-        }
     }
 
-    &-disabled &-result {
+    &-disabled&-inner,
+    &-disabled &-result,
+    &-disabled &-result &-input {
         cursor: not-allowed;
-    }
-
-    &-range &-result &-txt {
-        text-align: center;
     }
 
     &-separate {
@@ -247,12 +253,13 @@
         border-right: 1px solid @gray-200;
 
         &-item {
+            cursor: pointer;
+            margin: 12px 0;
             max-width: 120px;
             text-overflow: ellipsis;
             overflow: hidden;
             white-space: nowrap;
             padding: 4px 12px;
-            cursor: pointer;
             position: relative;
             transition: all 0.2s;
 
@@ -274,6 +281,15 @@
                     right: auto;
                     left: 0;
                 }
+            }
+
+            &:first-child {
+                margin-top: 0;
+            }
+
+            &-active {
+                color: @colors-primary;
+                border-right: 2px solid @colors-primary;
             }
         }
     }
@@ -519,25 +535,6 @@
 
         .@{datepicker-prefix}-absolute-right-top {
             box-shadow: 0 0 1px 1px rgb(0 0 0 / 2%), @datepicker-box-shadow-up;
-        }
-    }
-
-    &-quick-select {
-        min-width: 80px;
-        border-right: 1px solid @gray-300;
-
-        &-item {
-            margin: 12px 0;
-            cursor: pointer;
-
-            &:first-child {
-                margin-top: 0;
-            }
-
-            &-active {
-                color: @colors-primary;
-                border-right: 2px solid @colors-primary;
-            }
         }
     }
 }

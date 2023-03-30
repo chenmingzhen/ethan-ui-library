@@ -1,6 +1,6 @@
 import useLockFocus from '@/hooks/useLockFocus'
 import useRefMethod from '@/hooks/useRefMethod'
-import { getParent, isDescendent } from '@/utils/dom/element'
+import { isDescendent } from '@/utils/dom/element'
 import React, { ForwardRefRenderFunction, useImperativeHandle, useRef } from 'react'
 import useInputStyle from '../Input/hooks/useInputStyle'
 import { ContainerProps } from './type'
@@ -13,10 +13,10 @@ const Container: ForwardRefRenderFunction<HTMLDivElement, ContainerProps> = func
         border,
         size,
         type,
-        toggleOpen,
         containerClassName,
         innerClassName,
         containerStyle,
+        onDescClick,
         ...other
     } = props
     const [focus, updateFocus, lockFocus, hasLockFocusRef] = useLockFocus()
@@ -34,12 +34,8 @@ const Container: ForwardRefRenderFunction<HTMLDivElement, ContainerProps> = func
         const desc = isDescendent(e.target as HTMLElement, props['data-id'])
 
         if (desc) {
-            const clickInput = getParent(e.target as HTMLElement, 'input')
-
             lockFocus(() => {
-                if (!clickInput) {
-                    containerRef.current.focus()
-                }
+                onDescClick(e)
             })
         }
     })
@@ -50,7 +46,8 @@ const Container: ForwardRefRenderFunction<HTMLDivElement, ContainerProps> = func
             onFocus(e)
         }
 
-        document.addEventListener('mousedown', handleClickAway)
+        document.addEventListener('mousedown', handleClickAway, true)
+
         updateFocus(true)
         lockFocus()
     }
@@ -61,8 +58,8 @@ const Container: ForwardRefRenderFunction<HTMLDivElement, ContainerProps> = func
             onBlur(e)
         }
 
-        document.removeEventListener('mousedown', handleClickAway)
-        toggleOpen(false)
+        document.removeEventListener('mousedown', handleClickAway, true)
+
         updateFocus(false)
     }
 
@@ -70,14 +67,7 @@ const Container: ForwardRefRenderFunction<HTMLDivElement, ContainerProps> = func
 
     return (
         <div className={className} style={style}>
-            <div
-                {...other}
-                tabIndex={disabled ? -1 : 0}
-                onFocus={handleFocus}
-                onBlur={handleBlur}
-                className={innerClassName}
-                ref={containerRef}
-            />
+            <div {...other} onFocus={handleFocus} onBlur={handleBlur} className={innerClassName} ref={containerRef} />
         </div>
     )
 }
