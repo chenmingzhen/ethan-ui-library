@@ -115,7 +115,7 @@ function Select<Data = SelectData>(props: SelectProps<Data>) {
             return props.renderResult(dataItem, index)
         }
 
-        return isObject(dataItem) ? dataItem[labelKey] : dataItem
+        return getOptionContent(dataItem, index)
     })
 
     const focusSelect = useRefMethod(() => {
