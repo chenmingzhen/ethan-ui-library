@@ -1,7 +1,7 @@
 /**
- * cn - 基本用法
+ * cn - 过滤
  *    -- 基础的级联用法
- * en - Base
+ * en - Filter
  *   -- Basic usage of Cascader
  */
 
@@ -55,6 +55,8 @@ export default function () {
             onBlur={() => {
                 console.log('blur')
             }}
+            onFilter
+            disabled={({ value }) => value === 'hangzhou'}
         />
     )
 }

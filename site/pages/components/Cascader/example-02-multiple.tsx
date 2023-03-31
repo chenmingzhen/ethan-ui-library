@@ -14,68 +14,40 @@
  */
 
 import React from 'react'
-import { Cascader, Radio } from 'ethan-ui'
-import { cascader as data } from 'doc/data/tree'
+import { Cascader } from 'ethan-ui'
 
-const modeList = [
-    { value: 0, text: 'mode=0 (full)' },
-    { value: 1, text: 'mode=1 (half)' },
-    { value: 2, text: 'mode=2 (child only)' },
-    { value: 3, text: 'mode=3 (shallow)' },
+const data = [
+    {
+        label: 'Light',
+        value: 'light',
+        children: new Array(20).fill(null).map((_, index) => ({ label: `Number ${index}`, value: index })),
+    },
+    {
+        label: 'Bamboo',
+        value: 'bamboo',
+        children: [
+            {
+                label: 'Little',
+                value: 'little',
+                children: [
+                    {
+                        label: 'Toy Fish',
+                        value: 'fish',
+                    },
+                    {
+                        label: 'Toy Cards',
+                        value: 'cards',
+                    },
+                    {
+                        label: 'Toy Bird',
+                        value: 'bird',
+                    },
+                ],
+            },
+        ],
+    },
 ]
 
-function getValue(list, value) {
-    const [node] = list
-    if (!node) return
-    value.push(node.id)
-    if (node.children) getValue(node.children, value)
-}
-
-export default class extends React.Component {
-    constructor(props) {
-        super(props)
-
-        const value = []
-        getValue(data, value)
-
-        this.state = { mode: 1, value }
-    }
-
-    handleChange = (value) => {
-        this.setState({ value })
-    }
-
-    handleModeChange = (mode) => {
-        this.setState({ mode, value: [] })
-    }
-
-    renderItem = (node) => `node ${node.id}`
-
-    render() {
-        const { mode, value } = this.state
-
-        return (
-            <div>
-                <Radio.Group
-                    keygen="value"
-                    value={mode}
-                    format="value"
-                    onChange={this.handleModeChange}
-                    data={modeList}
-                    renderItem="text"
-                />
-
-                <br />
-
-                <Cascader
-                    data={data}
-                    keygen="id"
-                    mode={mode}
-                    onChange={this.handleChange}
-                    renderItem={this.renderItem}
-                    value={value}
-                />
-            </div>
-        )
-    }
+export default function () {
+    return <Cascader data={data} style={{ width: 300 }} multiple />
 }

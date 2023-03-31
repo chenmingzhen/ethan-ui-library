@@ -1,7 +1,7 @@
 /**
- * cn - 基本用法
+ * cn - 大小
  *    -- 基础的级联用法
- * en - Base
+ * en - Size
  *   -- Basic usage of Cascader
  */
 
@@ -45,16 +45,10 @@ const data = [
 
 export default function () {
     return (
-        <Cascader
-            data={data}
-            style={{ width: 300 }}
-            onChange={console.log}
-            onFocus={() => {
-                console.log('focus')
-            }}
-            onBlur={() => {
-                console.log('blur')
-            }}
-        />
+        <div>
+            <Cascader data={data} style={{ width: 300, display: 'block', marginBottom: 10 }} size="small" />
+            <Cascader data={data} style={{ width: 300, display: 'block', marginBottom: 10 }} size="default" />
+            <Cascader data={data} style={{ width: 300, display: 'block', marginBottom: 10 }} size="large" />
+        </div>
     )
 }

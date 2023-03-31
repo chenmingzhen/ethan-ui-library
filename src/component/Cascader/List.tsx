@@ -1,26 +1,40 @@
 import React from 'react'
-import { getLocale } from '@/locale'
 import { cascaderClass } from '@/styles'
 import Node from './Node'
 import { CascaderListProps } from './type'
 
 const CascaderList: React.FC<CascaderListProps> = (props) => {
-    const { data, currentPathActiveId, keygen, parentId, ...other } = props
+    const {
+        currentData,
+        currentPathActiveId = '',
+        getCheckboxStateByDataItem,
+        getKey,
+        getDisabledByDataItem,
+        ...other
+    } = props
 
     return (
         <div className={cascaderClass('list')}>
-            {data.map((d, index) => {
-                const id = keygen({ data: d, parentKey: parentId, index })
+            {currentData.map((dataItem) => {
+                const key = getKey(dataItem)
+                const { checked, indeterminate } = getCheckboxStateByDataItem(dataItem) || {}
+                const disabled = getDisabledByDataItem(dataItem)
 
-                return <Node {...other} key={id} active={currentPathActiveId === id} id={id} data={d} />
+                return (
+                    <Node
+                        {...other}
+                        disabled={disabled}
+                        checked={checked}
+                        indeterminate={indeterminate}
+                        key={key}
+                        active={currentPathActiveId === key}
+                        dataItem={dataItem}
+                    />
+                )
             })}
         </div>
     )
 }
 
-CascaderList.defaultProps = {
-    currentPathActiveId: '',
-    parentId: '',
-}
-
-export default React.memo(CascaderList)
+/** 不需要Memo，当value改变时，需要反馈到Node中 */
+export default CascaderList
