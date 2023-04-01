@@ -85,7 +85,11 @@ const Text: React.FC<DatePickerTextProps> = function (props) {
             readOnly={readOnly}
             forwardedRef={forwardedInputRef}
             placeholder={placeholder}
-            className={datePickerClass('input', !isEmpty(hover) && !isEmpty(index) && hover === index && 'panel-hover')}
+            className={datePickerClass(
+                'input',
+                !readOnly && 'search',
+                !isEmpty(hover) && !isEmpty(index) && hover === index && 'panel-hover'
+            )}
         />
     )
 }

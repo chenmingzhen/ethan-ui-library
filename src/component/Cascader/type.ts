@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { RefObject } from 'react'
 import { SpinProps } from '../Spin'
 
 export type CascaderDataValueType = string | number
@@ -19,7 +19,7 @@ export interface CascaderProps<Data = CascaderData> {
     onBlur?: (e: React.FocusEvent<HTMLDivElement>) => void
     onChange?: (value: CascaderDataValueType[] | CascaderDataValueType[][], selected?: Data[]) => void
     onFocus?: (e: React.FocusEvent<HTMLDivElement>) => void
-    placeholder?: React.ReactNode
+    placeholder?: string
     position?: 'drop-up' | 'drop-down'
     renderItem?: (data: Data) => React.ReactNode
     spinProps?: SpinProps
@@ -96,10 +96,10 @@ export interface CascaderResultProps {
     getNodeInfoByDataItem(dataItem: CascaderData): CascaderNode
     showResultMode: ShowResultMode
     getCheckboxStateByDataItem(dataItem: CascaderData): CascaderNodeValue
-    show?: boolean
     onInput?: (text: string) => void
     filterText?: string
     size?: CascaderProps['size']
+    forwardedInputRef: RefObject<HTMLInputElement>
 }
 
 export interface CascaderMoreProps {

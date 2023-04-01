@@ -68,6 +68,7 @@
         }
 
         .@{cascader-prefix}-input {
+            cursor: inherit;
             margin-bottom: @padding-base-vertical;
             border-width: 0;
             border-color: @input-border;
@@ -78,7 +79,16 @@
             flex: 1;
 
             input {
+                cursor: inherit;
                 padding: 0;
+
+                &:placeholder-shown {
+                    text-overflow: ellipsis;
+                }
+            }
+
+            &.@{cascader-prefix}-search {
+                cursor: initial;
             }
         }
     }
@@ -182,6 +192,17 @@
             top: 50%;
             right: 12px;
             transform: translateY(-50%) rotate(-90deg);
+        }
+    }
+
+    &-large {
+        .@{cascader-prefix}-has-children,
+        .@{cascader-prefix}-may-be-children {
+            .@{cascader-prefix}-caret {
+                width: 14px;
+                height: 14px;
+                right: 16px;
+            }
         }
     }
 

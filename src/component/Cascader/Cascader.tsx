@@ -1,17 +1,16 @@
-/** 不明原因:此处的input focus，blur与Select不一致(添加setTimeout才会Select一致) */
-/** @todo 后续统一废弃tabIndex，使用内部input管理focus blur事件 */
 import useLockFocus from '@/hooks/useLockFocus'
 import useRefMethod from '@/hooks/useRefMethod'
 import { getLocale } from '@/locale'
 import { cascaderClass, selectClass } from '@/styles'
 import { docSize } from '@/utils/dom/document'
-import { getParent, isDescendent } from '@/utils/dom/element'
+import { isDescendent } from '@/utils/dom/element'
 import { getListPortalStyle } from '@/utils/position'
 import { styles } from '@/utils/style/styles'
 import { getUidStr } from '@/utils/uid'
 import classnames from 'classnames'
 import React, { useRef, useState } from 'react'
 import { KeyboardKey } from '@/utils/keyboard'
+import { isEmpty } from '@/utils/is'
 import useInputStyle from '../Input/hooks/useInputStyle'
 import AnimationList from '../List'
 import Portal from '../Portal'
@@ -65,6 +64,7 @@ function Cascader<Data = CascaderData>(props: CascaderProps<Data>) {
         style: props.style,
         className: classnames(props.className, selectClass('_')),
     })
+    const inputRef = useRef<HTMLInputElement>()
     const [filterText, updateFilterText] = useState('')
     const cls = classnames(
         cascaderClass('_', focus && 'focus', props.multiple && 'multiple', props.disabled === true && 'disabled', size),
@@ -132,7 +132,7 @@ function Cascader<Data = CascaderData>(props: CascaderProps<Data>) {
 
         if (desc) {
             lockFocus(() => {
-                containerElementRef.current.focus()
+                inputRef.current.focus()
             })
         }
     })
@@ -178,7 +178,6 @@ function Cascader<Data = CascaderData>(props: CascaderProps<Data>) {
 
     function handleBlur(evt: React.FocusEvent<HTMLDivElement, Element>) {
         if (hasLockFocusRef.current || props.disabled === true) return
-        if (evt.relatedTarget && getParent(evt.relatedTarget as HTMLElement, `.${cascaderClass('result')}`)) return
         if (onBlur) {
             onBlur(evt)
         }
@@ -206,7 +205,11 @@ function Cascader<Data = CascaderData>(props: CascaderProps<Data>) {
     }
 
     function handleContainerMouseDown() {
+        if (show) return
+
         toggleOpen(true)
+
+        inputRef.current.focus()
     }
 
     function handleKeydown(evt: React.KeyboardEvent<HTMLDivElement>) {
@@ -293,9 +296,25 @@ function Cascader<Data = CascaderData>(props: CascaderProps<Data>) {
             portal && getListPortalStyle(rect, position)
         )
 
-        if (filterText)
-            return (
-                <Portal rootClass={portalRootCls} portal={portal} show={show}>
+        return (
+            <Portal rootClass={portalRootCls} portal={portal} show={show}>
+                {isEmpty(filterText) ? (
+                    <AnimationList
+                        show={show}
+                        data-id={cascaderId}
+                        className={classnames(
+                            selectClass('options'),
+                            cascaderClass('options', !data?.length && 'no-data')
+                        )}
+                        animationTypes={!lockAnimation ? ['fade', 'scale-y'] : undefined}
+                        duration="fast"
+                        display="inline-flex"
+                        style={listStyle}
+                        onTransitionEnd={handleTransitionEnd}
+                    >
+                        {renderCascaderList()}
+                    </AnimationList>
+                ) : (
                     <div
                         data-id={cascaderId}
                         className={classnames(selectClass('options'), cascaderClass('options', 'filter'))}
@@ -316,22 +335,7 @@ function Cascader<Data = CascaderData>(props: CascaderProps<Data>) {
                             getCheckboxStateByDataItem={getCheckboxStateByDataItem}
                         />
                     </div>
-                </Portal>
-            )
-        return (
-            <Portal rootClass={portalRootCls} portal={portal} show={show}>
-                <AnimationList
-                    show={show}
-                    data-id={cascaderId}
-                    className={classnames(selectClass('options'), cascaderClass('options', !data?.length && 'no-data'))}
-                    animationTypes={!lockAnimation ? ['fade', 'scale-y'] : undefined}
-                    duration="fast"
-                    display="inline-flex"
-                    style={listStyle}
-                    onTransitionEnd={handleTransitionEnd}
-                >
-                    {renderCascaderList()}
-                </AnimationList>
+                )}
             </Portal>
         )
     }
@@ -339,7 +343,6 @@ function Cascader<Data = CascaderData>(props: CascaderProps<Data>) {
     return (
         <div className={className} style={style}>
             <div
-                tabIndex={props.disabled === true ? -1 : 0}
                 className={cls}
                 onFocus={handleFocus}
                 ref={containerElementRef}
@@ -349,6 +352,7 @@ function Cascader<Data = CascaderData>(props: CascaderProps<Data>) {
                 data-id={cascaderId}
             >
                 <CascaderResult
+                    forwardedInputRef={inputRef}
                     getCheckboxStateByDataItem={getCheckboxStateByDataItem}
                     multiple={multiple}
                     isDisabled={props.disabled === true}
@@ -362,7 +366,6 @@ function Cascader<Data = CascaderData>(props: CascaderProps<Data>) {
                     compressed={compressed}
                     getNodeInfoByDataItem={getNodeInfoByDataItem}
                     showResultMode={showResultMode}
-                    show={onFilter ? show : undefined}
                     onInput={onFilter ? handleInput : undefined}
                     filterText={onFilter ? filterText : undefined}
                     size={onFilter ? size : undefined}
