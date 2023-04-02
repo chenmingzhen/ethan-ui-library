@@ -176,7 +176,7 @@ const CascaderResult: React.FC<CascaderResultProps> = function (props) {
     }
 
     const showPlaceHolder = value.length === 0 && isEmpty(filterText)
-    const readOnly = !onInput || isDisabled
+    const readOnly = !onInput || isDisabled || (!multiple && value.length !== 0)
 
     return (
         <div className={cascaderClass('result')} ref={resultElementRef}>

@@ -121,7 +121,9 @@ export interface CascaderNodeValue {
 }
 
 export interface FilterListProps {
+    cascaderId: string
     filterText: string
+    listStyle: React.CSSProperties
     nodeMapping: Map<CascaderDataValueType, CascaderNode>
     onFilter?: ((text: string, node: CascaderNode) => boolean) | boolean
     getDataItemByKey(key: CascaderDataValueType): CascaderData
@@ -133,6 +135,7 @@ export interface FilterListProps {
     getCheckboxStateByDataItem(dataItem: CascaderData): CascaderNodeValue
     addValue(dataItem: CascaderData): void
     removeValue(dataItem: CascaderData): void
+    text: CascaderProps['text']
 }
 
 export interface FilterListOptionProps {

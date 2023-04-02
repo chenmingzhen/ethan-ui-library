@@ -286,9 +286,10 @@ function Cascader<Data = CascaderData>(props: CascaderProps<Data>) {
     function renderPanel() {
         let width
 
-        if (!data?.length) {
+        if (!data?.length || loading) {
             width = containerElementRef.current ? containerElementRef.current.getBoundingClientRect().width : 0
         }
+
         const portalRootCls = classnames(cascaderClass(focus && 'focus'), selectClass(position))
         const rect = containerElementRef.current?.getBoundingClientRect()
         const listStyle = styles(
@@ -298,7 +299,7 @@ function Cascader<Data = CascaderData>(props: CascaderProps<Data>) {
 
         return (
             <Portal rootClass={portalRootCls} portal={portal} show={show}>
-                {isEmpty(filterText) ? (
+                {isEmpty(filterText) || loading ? (
                     <AnimationList
                         show={show}
                         data-id={cascaderId}
@@ -315,26 +316,23 @@ function Cascader<Data = CascaderData>(props: CascaderProps<Data>) {
                         {renderCascaderList()}
                     </AnimationList>
                 ) : (
-                    <div
-                        data-id={cascaderId}
-                        className={classnames(selectClass('options'), cascaderClass('options', 'filter'))}
-                        style={styles(listStyle, { display: 'inline-flex' })}
-                    >
-                        <FilterList
-                            filterText={filterText}
-                            nodeMapping={nodeMapping}
-                            onFilter={onFilter}
-                            getDataItemByKey={getDataItemByKey}
-                            getContent={getContent}
-                            getKey={getKey}
-                            onPathChange={handlePathChange}
-                            onFilterTextChange={handleInput}
-                            multiple={multiple}
-                            addValue={addValue}
-                            removeValue={removeValue}
-                            getCheckboxStateByDataItem={getCheckboxStateByDataItem}
-                        />
-                    </div>
+                    <FilterList
+                        cascaderId={cascaderId}
+                        listStyle={listStyle}
+                        filterText={filterText}
+                        nodeMapping={nodeMapping}
+                        onFilter={onFilter}
+                        getDataItemByKey={getDataItemByKey}
+                        getContent={getContent}
+                        getKey={getKey}
+                        onPathChange={handlePathChange}
+                        onFilterTextChange={handleInput}
+                        multiple={multiple}
+                        addValue={addValue}
+                        removeValue={removeValue}
+                        getCheckboxStateByDataItem={getCheckboxStateByDataItem}
+                        text={text}
+                    />
                 )}
             </Portal>
         )
