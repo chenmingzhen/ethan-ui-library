@@ -209,7 +209,10 @@ function Cascader<Data = CascaderData>(props: CascaderProps<Data>) {
 
         toggleOpen(true)
 
-        inputRef.current.focus()
+        /** 延迟聚焦，避免body最后获取焦点 */
+        setTimeout(() => {
+            inputRef.current.focus()
+        })
     }
 
     function handleKeydown(evt: React.KeyboardEvent<HTMLDivElement>) {
