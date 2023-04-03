@@ -1,4 +1,4 @@
-import React, { ReactNode } from 'react'
+import React from 'react'
 import { ListProps } from '../List'
 import { SpinProps } from '../Spin'
 
@@ -11,7 +11,7 @@ export interface SelectProps<Data = SelectData> {
     valueKey?: string
     border?: boolean
     width?: number
-    placeholder?: ReactNode
+    placeholder?: string
     style?: React.CSSProperties
     portal?: boolean
     clearable?: boolean
@@ -139,7 +139,6 @@ export interface SelectResultProps {
     placeholder: SelectProps['placeholder']
     selectedData: SelectData[]
     getResultContent(dataItem: SelectData, index: number): React.ReactNode
-    show: boolean
     forwardedInputRef: React.MutableRefObject<HTMLInputElement>
 }
 
@@ -150,9 +149,7 @@ export interface SingleResultProps {
     size: SelectProps['size']
     onInput(text: string): void
     forwardedInputRef: React.MutableRefObject<HTMLInputElement>
-    showInput: boolean
     placeholder: SelectProps['placeholder']
-    show: boolean
     isDisabled: boolean
 }
 
@@ -163,14 +160,12 @@ export interface MultipleResultProps {
     size: SelectProps['size']
     onInput(text: string): void
     forwardedInputRef: React.MutableRefObject<HTMLInputElement>
-    showInput: boolean
     placeholder: SelectProps['placeholder']
     compressed: SelectProps['compressed']
     disabledFunc: (data: SelectData) => boolean
     onRemove(data: SelectData): void
     resultClassName: SelectProps['resultClassName']
     compressedClassName: SelectProps['compressedClassName']
-    show: boolean
     isDisabled: boolean
 }
 

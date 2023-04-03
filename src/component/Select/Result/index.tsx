@@ -1,7 +1,6 @@
 import { selectClass } from '@/styles'
 import { preventDefault, stopPropagation } from '@/utils/func'
-import React, { useState } from 'react'
-import { useUpdateEffect } from 'react-use'
+import React from 'react'
 import Caret from '../../icons/Caret'
 import { SelectResultProps } from '../type'
 import MultipleResult from './MultipleResult'
@@ -9,7 +8,6 @@ import SingleResult from './SingleResult'
 
 const Result: React.FC<SelectResultProps> = function (props) {
     const {
-        show,
         onInput,
         compressedClassName,
         resultClassName,
@@ -27,20 +25,6 @@ const Result: React.FC<SelectResultProps> = function (props) {
         forwardedInputRef,
         getResultContent,
     } = props
-
-    const [showInput, updateShowInput] = useState(!!(show && onInput))
-
-    useUpdateEffect(() => {
-        if (!onInput) return
-
-        if (!show) {
-            setTimeout(() => {
-                updateShowInput(false)
-            }, 10)
-        } else {
-            updateShowInput(show)
-        }
-    }, [show])
 
     function renderIndicator() {
         if (!showArrow || (multiple && !compressed)) return null
@@ -78,14 +62,12 @@ const Result: React.FC<SelectResultProps> = function (props) {
             size={size}
             onInput={onInput}
             forwardedInputRef={forwardedInputRef}
-            showInput={showInput}
             placeholder={placeholder}
             compressed={compressed}
             compressedClassName={compressedClassName}
             onRemove={onRemove}
             resultClassName={resultClassName}
             disabledFunc={disabledFunc}
-            show={show}
         />
     ) : (
         <SingleResult
@@ -95,9 +77,7 @@ const Result: React.FC<SelectResultProps> = function (props) {
             size={size}
             onInput={onInput}
             forwardedInputRef={forwardedInputRef}
-            showInput={showInput}
             placeholder={placeholder}
-            show={show}
             isDisabled={isDisabled}
         />
     )

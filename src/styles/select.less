@@ -58,25 +58,25 @@
             border-radius: 0;
             box-shadow: none;
             width: auto;
-            flex: 1;
+            flex: 0;
             cursor: pointer;
+
+            &.@{select-prefix}-search {
+                cursor: initial;
+            }
+
+            &.@{select-prefix}-f1 {
+                flex: 1;
+            }
 
             input {
                 padding: 0;
                 cursor: inherit;
-            }
 
-            &:not(.@{select-prefix}-search) {
-                position: absolute;
-                left: @padding-base-horizontal;
-                right: @padding-base-horizontal+12;
+                &:placeholder-shown {
+                    text-overflow: ellipsis;
+                }
             }
-        }
-
-        .@{select-prefix}-placeholder.@{select-prefix}-search {
-            position: absolute;
-            left: @padding-base-horizontal;
-            right: @padding-base-horizontal+12;
         }
 
         .@{select-prefix}-item {
@@ -232,10 +232,6 @@
         display: block;
     }
 
-    &-focus .@{select-prefix}-caret {
-        // transform: rotate(180deg);
-    }
-
     &-options,
     &-box-list {
         position: absolute;
@@ -385,20 +381,6 @@
             margin-bottom: @padding-small-vertical;
             font-size: @font-size-small;
         }
-
-        .@{select-prefix}-input {
-            &:not(.@{select-prefix}-search) {
-                position: absolute;
-                left: @padding-small-horizontal;
-                right: @padding-small-horizontal+12;
-            }
-        }
-
-        .@{select-prefix}-placeholder.@{select-prefix}-search {
-            position: absolute;
-            left: @padding-small-horizontal;
-            right: @padding-small-horizontal+12;
-        }
     }
 
     &-large &-result {
@@ -409,20 +391,6 @@
         .@{select-prefix}-input {
             margin-bottom: @padding-large-vertical;
             font-size: @font-size-large;
-        }
-
-        .@{select-prefix}-input {
-            &:not(.@{select-prefix}-search) {
-                position: absolute;
-                left: @padding-large-horizontal;
-                right: @padding-large-horizontal+12;
-            }
-        }
-
-        .@{select-prefix}-placeholder.@{select-prefix}-search {
-            position: absolute;
-            left: @padding-large-horizontal;
-            right: @padding-large-horizontal+12;
         }
     }
 

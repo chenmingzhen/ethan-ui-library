@@ -1,6 +1,6 @@
 import Input from '@/component/Input'
 import Popover from '@/component/Popover/Popover'
-import { inputClass, selectClass } from '@/styles'
+import { selectClass } from '@/styles'
 import { preventDefault, stopPropagation } from '@/utils/func'
 import classnames from 'classnames'
 import React from 'react'
@@ -16,14 +16,12 @@ const MultipleResult: React.FC<MultipleResultProps> = function (props) {
         size,
         onInput,
         forwardedInputRef,
-        showInput,
         compressed,
         placeholder,
         disabledFunc,
         onRemove,
         resultClassName,
         compressedClassName,
-        show,
         isDisabled,
     } = props
 
@@ -64,9 +62,6 @@ const MultipleResult: React.FC<MultipleResultProps> = function (props) {
         )
     }
 
-    const search = !!(show && onInput)
-    const showPlaceHolder = selectedData.length === 0 && isEmpty(filterText)
-
     function buildItem() {
         const computedResults = compressed ? selectedData.slice(0, 1) : selectedData
 
@@ -94,30 +89,23 @@ const MultipleResult: React.FC<MultipleResultProps> = function (props) {
         return items
     }
 
+    const showPlaceHolder = selectedData.length === 0 && isEmpty(filterText)
+    const readOnly = !onInput || isDisabled
+
     return (
         <>
             {buildItem()}
 
             <Input
                 value={filterText}
-                className={selectClass('input', search && 'search')}
+                className={selectClass('input', 'f1', !readOnly && 'search')}
                 size={size}
                 onChange={onInput}
                 forwardedRef={forwardedInputRef}
-                readOnly={!showInput}
+                readOnly={readOnly}
                 disabled={isDisabled}
+                placeholder={showPlaceHolder ? placeholder : undefined}
             />
-
-            {showPlaceHolder && (
-                <span
-                    className={classnames(
-                        inputClass('placeholder'),
-                        selectClass('ellipsis', search && 'search', 'placeholder')
-                    )}
-                >
-                    {placeholder}
-                </span>
-            )}
         </>
     )
 }

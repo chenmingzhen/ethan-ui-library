@@ -420,7 +420,6 @@ function Select<Data = SelectData>(props: SelectProps<Data>) {
                     onRemove={handleItemRemove}
                     isDisabled={props.disabled === true}
                     disabledFunc={disabled}
-                    show={show}
                     selectedData={selectedData}
                     multiple={multiple}
                     placeholder={placeholder}
