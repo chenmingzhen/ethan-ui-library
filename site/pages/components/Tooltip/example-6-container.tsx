@@ -11,7 +11,11 @@ export default function () {
     return (
         <div id="popup-target" style={{ height: 200, overflowY: 'auto', position: 'relative' }}>
             <div style={{ margin: '100px 0' }}>PlaceHolder</div>
-            <Tooltip tip="Some text." getContainer={() => document.querySelector('#popup-target')} trigger="mousedown">
+            <Tooltip
+                tip="Some text."
+                getPopupContainer={() => document.querySelector('#popup-target')}
+                trigger="mousedown"
+            >
                 <Button>Mousedown</Button>
             </Tooltip>
         </div>

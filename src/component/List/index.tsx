@@ -114,7 +114,9 @@ export default class AnimationList extends React.PureComponent<ListProps> {
     }
 
     handleShow = () => {
-        const { display } = this.props
+        const { display, animationTypes } = this.props
+
+        if (isEmpty(animationTypes)) return
 
         this.initElement()
 
@@ -153,6 +155,10 @@ export default class AnimationList extends React.PureComponent<ListProps> {
     }
 
     handleHide = () => {
+        const { animationTypes } = this.props
+
+        if (isEmpty(animationTypes)) return
+
         runInNextFrame(() => {
             if (this.hasCollapse) {
                 const newHeight = this.element.offsetHeight
