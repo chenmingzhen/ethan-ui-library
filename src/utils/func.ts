@@ -39,7 +39,7 @@ export function createFunc(func) {
     return (data) => (func ? data[func] : data)
 }
 
-export function debounce(fn, delay = 80) {
+export function debounce(fn, duration = 80) {
     let timer: NodeJS.Timeout
 
     const cancel = () => {
@@ -55,7 +55,7 @@ export function debounce(fn, delay = 80) {
 
         timer = setTimeout(() => {
             fn(...args)
-        }, delay)
+        }, duration)
     }
 
     invoke.cancel = cancel
@@ -63,7 +63,7 @@ export function debounce(fn, delay = 80) {
     return invoke
 }
 
-export function throttleWrapper(cb, delay = 80) {
+export function throttleWrapper(cb, duration = 80) {
     let timer = null
 
     return (...args) => {
@@ -71,7 +71,13 @@ export function throttleWrapper(cb, delay = 80) {
             timer = setTimeout(() => {
                 cb.apply(this, args)
                 timer = null
-            }, delay)
+            }, duration)
         }
     }
+}
+
+export default function delay(duration: number) {
+    return new Promise<void>((resolve) => {
+        setTimeout(resolve, duration)
+    })
 }
