@@ -9,7 +9,6 @@ export { FontAwesome } from './component/Icon'
 export { default as Lazyload } from './component/LazyLoad'
 
 export { default as Alert } from './component/Alert'
-export { default as Animation } from './component/Animation'
 export { default as Avatar } from './component/Avatar'
 export { default as BackTop } from './component/BackTop'
 export { default as Badge } from './component/Badge'

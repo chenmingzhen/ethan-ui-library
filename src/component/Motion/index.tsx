@@ -6,22 +6,24 @@ import useRefMethod from '@/hooks/useRefMethod'
 import { MotionProps, MotionStatus, MotionStep } from './type'
 import useStatus from './hooks/useStatus'
 
-const eventSteps = [MotionStep.START, MotionStep.ACTIVE, MotionStep.END]
+/** 可执行动画的阶段 */
+const animationSteps = [MotionStep.START, MotionStep.ACTIVE, MotionStep.END]
 
 function getMotionClassName(motionName: string, status: MotionStatus, step: MotionStep, leaveClassName: string) {
     if (!motionName) return undefined
 
+    /** 如果忽略进场动画，则不做任何处理 */
     if (status === MotionStatus.IGNORE_ENTER) return undefined
 
+    /** 如果忽略退场动画，返回退场之后样式名称 */
     if (status === MotionStatus.IGNORE_LEAVE) return leaveClassName
 
-    if (status === MotionStatus.ENTER && step === MotionStep.PREPARE) return leaveClassName
-
+    /** 已完成退场动画，直接返回退场之后的样式名称 */
     if (step === MotionStep.NONE && status === MotionStatus.LEAVE) {
         return leaveClassName
     }
 
-    if (eventSteps.includes(step)) {
+    if (animationSteps.includes(step)) {
         return classnames(`${motionName}`, `${motionName}-${status}`, `${motionName}-${status}-${step}`)
     }
 
@@ -43,8 +45,6 @@ const Motion: React.FC<MotionProps> = function (props) {
         onLeaveStart,
         onLeaveActive,
         onLeaveEnd,
-        enterDelay,
-        leaveDelay,
     } = props
     const transitionDOMRef = useRef<HTMLElement>()
     const getElement = useRefMethod(() => transitionDOMRef.current)
@@ -55,18 +55,16 @@ const Motion: React.FC<MotionProps> = function (props) {
         visible,
         enter,
         leave,
-        enterDelay,
         onEnterStart,
         onEnterActive,
         onEnterEnd,
-        leaveDelay,
         onLeaveStart,
         onLeaveActive,
         onLeaveEnd,
         destroyOnLeave,
     })
 
-    let mergeChild: React.ReactNode
+    let mergeChild: JSX.Element
 
     if (
         !children ||
@@ -98,7 +96,7 @@ const Motion: React.FC<MotionProps> = function (props) {
         }
     }
 
-    return <>{mergeChild}</>
+    return mergeChild
 }
 
 export default React.memo(Motion)

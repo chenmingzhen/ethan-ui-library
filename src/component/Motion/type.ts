@@ -8,12 +8,10 @@ export interface MotionProps {
     leaveClassName?: string
     children: React.ReactNode | MotionChildrenFunc
     name?: string
-    enterDelay?: number
     enter?: boolean
     onEnterStart?: (element: HTMLElement) => void
     onEnterActive?: (element: HTMLElement) => void
     onEnterEnd?: (element: HTMLElement) => void
-    leaveDelay?: number
     leave?: boolean
     onLeaveStart?: (element: HTMLElement) => void
     onLeaveActive?: (element: HTMLElement) => void
