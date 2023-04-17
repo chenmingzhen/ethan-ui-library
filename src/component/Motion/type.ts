@@ -4,15 +4,17 @@ type MotionChildrenFunc = (
 ) => React.ReactNode
 
 export interface MotionProps {
-    destroyOnLeave?: boolean
+    destroyAfterLeave?: boolean
     leaveClassName?: string
     children: React.ReactNode | MotionChildrenFunc
     name?: string
     enter?: boolean
+    onEnterPrepare?: (element: HTMLElement) => void
     onEnterStart?: (element: HTMLElement) => void
     onEnterActive?: (element: HTMLElement) => void
     onEnterEnd?: (element: HTMLElement) => void
     leave?: boolean
+    onLeavePrepare?: (element: HTMLElement) => void
     onLeaveStart?: (element: HTMLElement) => void
     onLeaveActive?: (element: HTMLElement) => void
     onLeaveEnd?: (element: HTMLElement) => void
@@ -40,4 +42,19 @@ export enum MotionStep {
     START = 'start',
     ACTIVE = 'active',
     END = 'end',
+}
+
+type TransitionType = 'fade' | 'collapse' | 'scale-y'
+
+export interface TransitionProps<Tag extends HTMLElement = HTMLDivElement>
+    extends React.DetailedHTMLProps<React.HTMLAttributes<Tag>, Tag> {
+    visible: boolean
+    height?: number
+    className?: string
+    transitionTypes?: TransitionType[]
+    display?: React.CSSProperties['display']
+    duration?: 'fast' | 'slow' | 'medium'
+    tag?: keyof HTMLElementTagNameMap
+    destroyAfterLeave?: MotionProps['destroyAfterLeave']
+    hideDisplayAfterLeave?: boolean
 }

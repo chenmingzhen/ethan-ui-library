@@ -11,7 +11,7 @@ export default function () {
     const [visible, updateVisible] = useState(false)
     const [enter, setEnter] = useState(true)
     const [leave, setLeave] = useState(true)
-    const [destroyOnLeave, setDestroyOnLeave] = useState(true)
+    const [destroyAfterLeave, setDestroyAfterLeave] = useState(true)
 
     return (
         <div>
@@ -33,8 +33,8 @@ export default function () {
                 <Checkbox onChange={setLeave} value={leave}>
                     Leave
                 </Checkbox>
-                <Checkbox onChange={setDestroyOnLeave} value={destroyOnLeave}>
-                    DestroyOnLeave
+                <Checkbox onChange={setDestroyAfterLeave} value={destroyAfterLeave}>
+                    DestroyAfterLeave
                 </Checkbox>
             </div>
 
@@ -52,7 +52,7 @@ export default function () {
                 name="animation"
                 visible={visible}
                 leaveClassName="hidden"
-                destroyOnLeave={destroyOnLeave}
+                destroyAfterLeave={destroyAfterLeave}
                 enter={enter}
                 leave={leave}
             >

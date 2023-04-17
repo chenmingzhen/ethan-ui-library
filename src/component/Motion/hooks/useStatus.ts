@@ -5,13 +5,15 @@ import useStep from './useStep'
 
 interface UseStatusProps {
     getElement: () => HTMLElement
-    destroyOnLeave: MotionProps['destroyOnLeave']
+    destroyAfterLeave: MotionProps['destroyAfterLeave']
     visible: MotionProps['visible']
     enter: MotionProps['enter']
     leave: MotionProps['leave']
+    onEnterPrepare: MotionProps['onEnterPrepare']
     onEnterStart: MotionProps['onEnterStart']
     onEnterActive: MotionProps['onEnterActive']
     onEnterEnd: MotionProps['onEnterEnd']
+    onLeavePrepare: MotionProps['onEnterPrepare']
     onLeaveStart: MotionProps['onLeaveStart']
     onLeaveActive: MotionProps['onLeaveActive']
     onLeaveEnd: MotionProps['onLeaveEnd']
@@ -21,12 +23,14 @@ export default function useStatus(props: UseStatusProps): [MotionStatus, MotionS
     const {
         visible,
         getElement,
-        destroyOnLeave,
+        destroyAfterLeave,
         enter = true,
         leave = true,
+        onEnterPrepare,
         onEnterStart,
         onEnterActive,
         onEnterEnd,
+        onLeavePrepare,
         onLeaveStart,
         onLeaveActive,
         onLeaveEnd,
@@ -36,13 +40,15 @@ export default function useStatus(props: UseStatusProps): [MotionStatus, MotionS
     const [step, startStep] = useStep({
         status,
         getElement,
+        onEnterPrepare,
         onEnterStart,
         onEnterActive,
+        onLeavePrepare,
         onLeaveStart,
         onLeaveActive,
         onEnterEnd,
         onLeaveEnd,
-        onDestroy: destroyOnLeave ? () => updateStatus(MotionStatus.NONE) : undefined,
+        onDestroy: destroyAfterLeave ? () => updateStatus(MotionStatus.NONE) : undefined,
     })
 
     /** 当第一次visible值为false时不需要执行动画 */

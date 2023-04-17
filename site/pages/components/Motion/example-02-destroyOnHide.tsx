@@ -30,7 +30,7 @@ export default function () {
                 Toggle
             </Button>
 
-            <Motion name="example-02" visible={visible} destroyOnLeave>
+            <Motion name="example-02" visible={visible} destroyAfterLeave>
                 <div>
                     <DatePicker placeholder="Select Date" />
                 </div>

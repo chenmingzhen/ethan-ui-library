@@ -62,6 +62,7 @@
         "Progress": "进度条",
         "Tooltip": "提示",
         "Tag": "标签",
-        "Loading": "顶部进度条"
+        "Loading": "顶部进度条",
+        "Motion": "动画/渐变"
     }
 }
