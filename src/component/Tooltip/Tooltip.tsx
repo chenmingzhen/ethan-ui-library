@@ -1,4 +1,3 @@
-import useMergedValue from '@/hooks/useMergedValue'
 import { tooltipClass } from '@/styles'
 import { getPositionStyle, getPosition } from '@/utils/dom/popover'
 import { styles } from '@/utils/style/styles'
@@ -10,43 +9,32 @@ import Trigger from '../Trigger'
 
 const Tooltip: React.FC<TooltipProps> = function (props) {
     const {
-        children,
         tip,
+        color,
+        children,
+        className,
+        getPopupContainer,
+        visible,
         trigger = 'hover',
         delay = 0,
         priorityDirection,
-        visible,
         onVisibleChange,
-        className,
         animation = true,
-        color,
-        getPopupContainer,
     } = props
 
     const triggerActions = isArray(trigger) ? trigger : [trigger]
     const [triggerEl, setTriggerEl] = useState<HTMLElement>()
     const [popupEl, setPopupEl] = useState<HTMLElement>()
-    const [show, updateShow] = useMergedValue({
-        defaultStateValue: false,
-        options: {
-            value: visible,
-            onChange(nextVisible) {
-                if (onVisibleChange) {
-                    onVisibleChange(nextVisible)
-                }
-            },
-        },
-    })
 
     /** 样式注入 */
     useEffect(() => {
         if (!popupEl) return
 
         popupEl.style.setProperty('--var-trigger-color', color || null)
-    }, [color, show, popupEl])
+    }, [color, popupEl])
 
     const [position, style] = useMemo(() => {
-        if (!triggerEl || !show) return [props.position ?? 'top', undefined]
+        if (!triggerEl) return [props.position ?? 'top', undefined]
 
         const innerPosition = getPosition(props.position, priorityDirection, triggerEl, getPopupContainer?.())
         const formatPosition = innerPosition.split('-')?.[0]
@@ -58,23 +46,27 @@ const Tooltip: React.FC<TooltipProps> = function (props) {
         <Trigger
             portal
             delay={delay}
-            visible={show}
-            onVisibleChange={updateShow}
+            visible={visible}
+            onVisibleChange={onVisibleChange}
             getPopupContainer={getPopupContainer}
-            bindPopupElement={setPopupEl}
             bindTriggerElement={setTriggerEl}
             triggerActions={triggerActions}
-            popupStyle={styles(props.style, style)}
+            motionComponentProps={{
+                enter: animation,
+                leave: false,
+                leaveClassName: tooltipClass('hidden'),
+                name: tooltipClass('_'),
+            }}
             popup={
-                <>
+                <div
+                    ref={setPopupEl}
+                    style={styles(props.style, style)}
+                    className={classnames(tooltipClass('_', position), className)}
+                >
                     <div className={tooltipClass('arrow')} />
                     <div className={tooltipClass('inner')}>{tip}</div>
-                </>
+                </div>
             }
-            popupClassName={classnames(
-                tooltipClass('_', position, animation && 'animation', show && 'show'),
-                className
-            )}
         >
             {children}
         </Trigger>

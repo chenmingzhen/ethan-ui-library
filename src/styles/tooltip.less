@@ -65,14 +65,17 @@
     font-size: @font-size-small;
     word-wrap: break-word;
     pointer-events: none;
-    display: none;
 
-    &-show {
+    &-enter-start {
+        display: none;
+    }
+
+    &-enter-active {
         display: block;
     }
 
-    &-animation {
-        transition: opacity 0.3 ease, transform 0.3s cubic-bezier(0.71, 1.7, 0.77, 1.24);
+    &-hidden {
+        display: none;
     }
 
     &-arrow {
@@ -108,7 +111,7 @@
         }
     }
 
-    &-top&-animation {
+    &-top&-enter-active {
         animation: @keyframe-opacity 0.3s ease, @keyframe-top 0.3s cubic-bezier(0.71, 1.7, 0.77, 1.24);
     }
 
@@ -126,7 +129,7 @@
         }
     }
 
-    &-right&-animation {
+    &-right&-enter-active {
         animation: @keyframe-opacity 0.3s ease, @keyframe-right 0.3s cubic-bezier(0.71, 1.7, 0.77, 1.24);
     }
 
@@ -144,7 +147,7 @@
         }
     }
 
-    &-left&-animation {
+    &-left&-enter-active {
         animation: @keyframe-opacity 0.3s ease, @keyframe-left 0.3s cubic-bezier(0.71, 1.7, 0.77, 1.24);
     }
 
@@ -162,7 +165,7 @@
         }
     }
 
-    &-bottom&-animation {
+    &-bottom&-enter-active {
         animation: @keyframe-opacity 0.3s ease, @keyframe-bottom 0.3s cubic-bezier(0.71, 1.7, 0.77, 1.24);
     }
 }

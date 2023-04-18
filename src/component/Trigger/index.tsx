@@ -2,29 +2,28 @@ import React, { cloneElement, useEffect, useMemo, useRef, useState } from 'react
 import useMergedValue from '@/hooks/useMergedValue'
 import useRefMethod from '@/hooks/useRefMethod'
 import { isFunc } from '@/utils/is'
+import { isDescendent } from '@/utils/dom/element'
 import { TriggerProps } from './type'
 import Portal from '../Portal'
-import AnimationList from '../List'
+import Transition from '../Motion/Transition'
+import Motion from '../Motion/Motion'
 
 const Trigger: React.FC<TriggerProps> = function (props) {
     const {
-        triggerActions,
+        triggerActions = ['mousedown'],
         children,
         portal,
-        animationTypes,
-        triggerContainerTag,
+        dataId,
         defaultVisible,
         visible,
         onVisibleChange,
         popup,
         delay,
-        popupClassName,
-        popupStyle,
-        popupExtraProps = {},
         portalClassName,
         getPopupContainer,
-        bindPopupElement,
         bindTriggerElement,
+        motionComponentProps,
+        transitionComponentProps,
     } = props
     const [showNoScript, updateShowNoScript] = useState(true)
     const timer = useRef<NodeJS.Timeout>()
@@ -82,14 +81,6 @@ const Trigger: React.FC<TriggerProps> = function (props) {
         })
     })
 
-    const bindPopupDOMNode = useRefMethod((dom) => {
-        if (isFunc(bindPopupElement)) {
-            bindPopupElement(dom)
-        } else if (bindPopupElement && Object.prototype.hasOwnProperty.call(bindPopupElement, 'current')) {
-            bindPopupElement.current = dom
-        }
-    })
-
     const bindNoScriptDOMNode = useRefMethod((dom: HTMLElement) => {
         if (dom) {
             const triggerDOMNode = dom.nextSibling as HTMLElement
@@ -114,7 +105,11 @@ const Trigger: React.FC<TriggerProps> = function (props) {
         []
     )
 
-    const handleClickAway = useRefMethod(() => {
+    const handleClickAway = useRefMethod((evt: MouseEvent) => {
+        const desc = isDescendent(evt.target as HTMLElement, dataId)
+
+        if (desc) return
+
         updateShow(false)
     })
 
@@ -135,22 +130,20 @@ const Trigger: React.FC<TriggerProps> = function (props) {
 
     return (
         <>
-            <Portal show={show} portal={portal} rootClass={portalClassName} getContainer={getPopupContainer}>
-                <AnimationList
-                    {...popupExtraProps}
-                    tag={triggerContainerTag}
-                    animationTypes={animationTypes}
-                    show={show}
-                    className={popupClassName}
-                    style={popupStyle}
-                    getRef={bindPopupDOMNode}
-                >
-                    {popup}
-                </AnimationList>
-            </Portal>
-
             {showNoScript && <noscript ref={bindNoScriptDOMNode} />}
             {cloneElement(children, triggerProps)}
+
+            <Portal show={show} portal={portal} rootClass={portalClassName} getContainer={getPopupContainer}>
+                {transitionComponentProps ? (
+                    <Transition {...transitionComponentProps} visible={show} data-id={dataId}>
+                        {popup}
+                    </Transition>
+                ) : (
+                    <Motion {...motionComponentProps} visible={show}>
+                        {popup}
+                    </Motion>
+                )}
+            </Portal>
         </>
     )
 }
