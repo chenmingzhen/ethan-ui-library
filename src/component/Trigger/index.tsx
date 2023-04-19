@@ -10,20 +10,22 @@ import Motion from '../Motion/Motion'
 
 const Trigger: React.FC<TriggerProps> = function (props) {
     const {
-        triggerActions = ['mousedown'],
-        children,
+        popup,
         portal,
         dataId,
-        defaultVisible,
         visible,
+        children,
+        defaultVisible,
         onVisibleChange,
-        popup,
-        delay,
+        mouseEnterDelay,
+        mouseLeaveDelay,
         portalClassName,
+        bindPortalElement,
         getPopupContainer,
         bindTriggerElement,
         motionComponentProps,
         transitionComponentProps,
+        triggerActions = ['mousedown'],
     } = props
     const [showNoScript, updateShowNoScript] = useState(true)
     const timer = useRef<NodeJS.Timeout>()
@@ -47,10 +49,10 @@ const Trigger: React.FC<TriggerProps> = function (props) {
             timer.current = null
         }
 
-        if (delay) {
+        if (mouseEnterDelay) {
             timer.current = setTimeout(() => {
                 updateShow(true)
-            }, delay)
+            }, mouseEnterDelay * 1000)
         } else {
             updateShow(true)
         }
@@ -67,7 +69,13 @@ const Trigger: React.FC<TriggerProps> = function (props) {
             children.props.onMouseLeave(e)
         }
 
-        updateShow(false)
+        if (mouseLeaveDelay) {
+            timer.current = setTimeout(() => {
+                updateShow(false)
+            }, mouseLeaveDelay * 1000)
+        } else {
+            updateShow(false)
+        }
     })
 
     const handleMousedown = useRefMethod((e: React.MouseEvent) => {
@@ -133,7 +141,13 @@ const Trigger: React.FC<TriggerProps> = function (props) {
             {showNoScript && <noscript ref={bindNoScriptDOMNode} />}
             {cloneElement(children, triggerProps)}
 
-            <Portal show={show} portal={portal} rootClass={portalClassName} getContainer={getPopupContainer}>
+            <Portal
+                show={show}
+                portal={portal}
+                rootClass={portalClassName}
+                getPopupContainer={getPopupContainer}
+                ref={bindPortalElement}
+            >
                 {transitionComponentProps ? (
                     <Transition {...transitionComponentProps} visible={show} data-id={dataId}>
                         {popup}

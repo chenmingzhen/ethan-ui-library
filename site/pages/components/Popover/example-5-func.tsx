@@ -10,7 +10,7 @@ import { Button, Popover, Message } from 'ethan-ui'
 export default function () {
     return (
         <Popover
-            trigger="click"
+            trigger="mousedown"
             content={(close) => (
                 <div style={{ padding: 20 }}>
                     <div>Are you sure you want to close this panel?</div>

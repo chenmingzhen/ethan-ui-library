@@ -16,7 +16,7 @@ const Tooltip: React.FC<TooltipProps> = function (props) {
         getPopupContainer,
         visible,
         trigger = 'hover',
-        delay = 0,
+        delay = 0.2,
         priorityDirection,
         onVisibleChange,
         animation = true,
@@ -26,10 +26,9 @@ const Tooltip: React.FC<TooltipProps> = function (props) {
     const [triggerEl, setTriggerEl] = useState<HTMLElement>()
     const [popupEl, setPopupEl] = useState<HTMLElement>()
 
-    /** 样式注入 */
     useEffect(() => {
         if (!popupEl) return
-
+        /** color样式注入 */
         popupEl.style.setProperty('--var-trigger-color', color || null)
     }, [color, popupEl])
 
@@ -45,8 +44,9 @@ const Tooltip: React.FC<TooltipProps> = function (props) {
     return (
         <Trigger
             portal
-            delay={delay}
             visible={visible}
+            mouseEnterDelay={delay}
+            mouseLeaveDelay={delay}
             onVisibleChange={onVisibleChange}
             getPopupContainer={getPopupContainer}
             bindTriggerElement={setTriggerEl}

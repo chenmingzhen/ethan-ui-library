@@ -8,7 +8,7 @@ import React from 'react'
 import { Button, Popover } from 'ethan-ui'
 
 export default () => {
-    const [visible, updateVisible] = React.useState(true)
+    const [visible, updateVisible] = React.useState(false)
 
     return (
         <div>
@@ -17,7 +17,7 @@ export default () => {
                 style={{ width: 200, padding: 20 }}
                 content="some text"
                 title="control"
-                trigger="click"
+                trigger="mousedown"
                 onVisibleChange={(v) => {
                     console.log('onVisibleChange:', v)
 

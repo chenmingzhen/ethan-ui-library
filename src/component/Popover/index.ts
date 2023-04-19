@@ -1,12 +1,11 @@
 import React from 'react'
-import Popover, { PopoverProps } from './Popover'
-import Confirm, { ConfirmProps as PopoverConfirmProps } from './Confirm'
+import Popover from './Popover'
+import Confirm from './Confirm'
+import { PopoverProps } from './type'
 
 export interface PopoverComponent extends React.ComponentClass<PopoverProps> {
     Confirm: typeof Confirm
 }
-
-export { PopoverProps, PopoverConfirmProps }
 
 const ComputedPopover = Popover as unknown as PopoverComponent
 

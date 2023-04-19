@@ -1,34 +1,10 @@
 import React, { useState } from 'react'
 import { getLocale } from '@/locale'
 import { popoverClass } from '@/styles'
-import Popover, { PopoverProps } from './Popover'
+import Popover from './Popover'
 import Button from '../Button'
 import Alert from '../Alert'
-import { ButtonProps } from '../Button/type'
-import { AlertProps } from '../Alert/type'
-
-interface Text {
-    ok: string
-
-    cancel: string
-}
-
-export interface ConfirmProps extends PopoverProps {
-    buttonProps?: { ok?: Omit<ButtonProps, 'ref'>; cancel: Omit<ButtonProps, 'ref'> }
-
-    /** 按钮文字 */
-    text?: Text
-
-    onOk?(): void | Promise<void>
-
-    onCancel?(): void | Promise<void>
-
-    /** icon类型 */
-    type?: AlertProps['type']
-
-    /** 确认框的描述 */
-    description?: React.ReactNode
-}
+import { ConfirmProps } from './type'
 
 const Confirm: React.FC<ConfirmProps> = (props) => {
     const { buttonProps = { ok: {}, cancel: {} }, text, onOk, onCancel, type, children, description, ...other } = props
@@ -100,7 +76,7 @@ const Confirm: React.FC<ConfirmProps> = (props) => {
     }
 
     return (
-        <Popover {...other} trigger="click" content={buildContent} isConfirmLoading={okLoading || cancelLoading}>
+        <Popover {...other} trigger="mousedown" content={buildContent} isConfirmLoading={okLoading || cancelLoading}>
             {children}
         </Popover>
     )

@@ -13,9 +13,11 @@ export interface TriggerProps {
     popup: React.ReactNode
     portalClassName?: string
     bindTriggerElement?: React.MutableRefObject<any> | React.RefCallback<any>
+    bindPortalElement?: React.MutableRefObject<any> | React.RefCallback<any>
     getPopupContainer?: () => HTMLElement
-    delay?: number
     motionComponentProps?: Omit<MotionProps, 'visible' | 'children'>
     transitionComponentProps?: Omit<TransitionProps, 'visible'>
     dataId?: string
+    mouseEnterDelay?: number
+    mouseLeaveDelay?: number
 }

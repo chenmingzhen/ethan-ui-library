@@ -30,7 +30,13 @@ export default function () {
         <div key={i}>
             {row.map((p, j) =>
                 p ? (
-                    <Popover key={`${i}-${j}`} trigger="click" placement={p} content={<div>Some text</div>} title={p}>
+                    <Popover
+                        key={`${i}-${j}`}
+                        trigger="mousedown"
+                        placement={p}
+                        content={<div>Some text</div>}
+                        title={p}
+                    >
                         <div style={style}>{p}</div>
                     </Popover>
                 ) : (

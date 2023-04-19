@@ -13,7 +13,7 @@ export default function () {
             <Tooltip
                 tip="Some text."
                 trigger="hover"
-                delay={500}
+                delay={1}
                 onVisibleChange={(visible) => {
                     console.log('visible change:', visible)
                 }}

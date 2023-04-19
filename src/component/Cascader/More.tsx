@@ -43,7 +43,7 @@ const More: React.FC<CascaderMoreProps> = function (props) {
             {beforeNumNodes}
 
             <Popover
-                trigger="click"
+                trigger="mousedown"
                 className={popoverCls}
                 content={<div className={popoverContentCls}>{afterNumNodes}</div>}
                 arrowProps={{ ...coverPopoverProps }}

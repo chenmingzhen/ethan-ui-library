@@ -1,6 +1,7 @@
 import { isEmpty } from '@/utils/is'
 import React, { useEffect, useState } from 'react'
-import Popover, { PopoverProps } from '../Popover/Popover'
+import Popover from '../Popover/Popover'
+import { PopoverProps } from '../Popover/type'
 
 interface WrapperPopoverProps {
     children?: JSX.Element
@@ -48,14 +49,13 @@ const WrapperPopover: React.FC<WrapperPopoverProps> = function (props) {
     return (
         <Popover
             animation={false}
-            trigger="click"
+            trigger="mousedown"
             {...popoverProps}
             visible={popoverVisible}
             style={popoverStyles}
             className={className}
             placement={placement}
             content={tip}
-            innerAlwaysUpdate
         >
             {children}
         </Popover>
