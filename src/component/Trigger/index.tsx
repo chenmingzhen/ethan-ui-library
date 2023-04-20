@@ -49,6 +49,8 @@ const Trigger: React.FC<TriggerProps> = function (props) {
             timer.current = null
         }
 
+        if (isDescendent(e.relatedTarget as HTMLElement, dataId)) return
+
         if (mouseEnterDelay) {
             timer.current = setTimeout(() => {
                 updateShow(true)
@@ -68,6 +70,8 @@ const Trigger: React.FC<TriggerProps> = function (props) {
         if (children && children.props && children.props.onMouseLeave) {
             children.props.onMouseLeave(e)
         }
+
+        if (isDescendent(e.relatedTarget as HTMLElement, dataId)) return
 
         if (mouseLeaveDelay) {
             timer.current = setTimeout(() => {

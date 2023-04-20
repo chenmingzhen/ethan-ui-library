@@ -1,7 +1,6 @@
-import { LiteralUnion } from '@/utils/utilityTypes'
 import { MotionProps, TransitionProps } from '../Motion/type'
 
-export type TriggerAction = LiteralUnion<'mousedown' | 'hover', string>
+export type TriggerAction = 'mousedown' | 'hover'
 
 export interface TriggerProps {
     triggerActions?: TriggerAction[]

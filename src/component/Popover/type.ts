@@ -21,9 +21,7 @@ export interface PopoverProps {
     defaultVisible?: boolean
     getPopupContainer?: () => HTMLElement
     className?: string
-    /** @deprecated */
     arrowProps?: React.DetailedHTMLProps<React.HTMLAttributes<HTMLDivElement>, HTMLDivElement>
-    /** @deprecated */
     innerProps?: React.DetailedHTMLProps<React.HTMLAttributes<HTMLDivElement>, HTMLDivElement>
     popupProps?: React.DetailedHTMLProps<React.HTMLAttributes<HTMLDivElement>, HTMLDivElement>
     showArrow?: boolean

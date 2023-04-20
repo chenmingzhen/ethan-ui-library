@@ -7,6 +7,7 @@ import { MotionProps, MotionStatus, MotionStep } from '../type'
 
 interface UseStepProps {
     status: MotionStatus
+    forceStep: MotionProps['forceStep']
     getElement(): HTMLElement
     onDestroy?: () => void
     onEnterPrepare: MotionProps['onEnterPrepare']
@@ -18,6 +19,8 @@ interface UseStepProps {
     onLeaveActive: MotionProps['onLeaveActive']
     onLeaveEnd: MotionProps['onLeaveEnd']
 }
+
+type MotionEvent = TransitionEvent | AnimationEvent
 
 const STEP_QUEUE: MotionStep[] = [
     MotionStep.PREPARE,
@@ -31,6 +34,7 @@ export default function useStep(props: UseStepProps): [MotionStep, () => void] {
     const [step, setStep] = useSafeState<MotionStep>(MotionStep.NONE)
     const {
         status,
+        forceStep,
         onEnterPrepare,
         onEnterStart,
         onEnterActive,
@@ -45,7 +49,7 @@ export default function useStep(props: UseStepProps): [MotionStep, () => void] {
 
     const cancelRafRef = useRef<() => void>()
 
-    const onMotionEnd = useRefMethod((evt: TransitionEvent | AnimationEvent) => {
+    const onMotionEnd = useRefMethod((evt: MotionEvent) => {
         const element = getElement()
 
         if (evt.target !== element || cancelRafRef.current) return
@@ -107,7 +111,15 @@ export default function useStep(props: UseStepProps): [MotionStep, () => void] {
         }
 
         cancelRafRef.current = runInNextFrame(() => {
-            if (step !== MotionStep.ACTIVE) {
+            /** forceStep没有enter或leave，需要手动模拟触发onMotionEnd */
+            if (step === MotionStep.ACTIVE && forceStep) {
+                /** 延迟触发，待cancelRafRef清空后再执行 */
+                setTimeout(() => {
+                    const mockMotionEvent = { target: getElement() } as unknown as MotionEvent
+
+                    onMotionEnd(mockMotionEvent)
+                })
+            } else if (step !== MotionStep.ACTIVE) {
                 /** active状态由MotionEnd驱动下一步骤 */
                 setStep(nextStep)
             }

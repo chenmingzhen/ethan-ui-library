@@ -11,7 +11,7 @@ export default function () {
     return (
         <Popover
             style={{ marginRight: 12 }}
-            trigger={['click', 'hover']}
+            trigger={['mousedown', 'hover']}
             content={
                 <Card style={{ width: 300, border: 0, background: 'transparent' }}>
                     <Card.Header>Header</Card.Header>

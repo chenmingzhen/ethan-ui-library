@@ -19,6 +19,11 @@ export interface MotionProps {
     onLeaveActive?: (element: HTMLElement) => void
     onLeaveEnd?: (element: HTMLElement) => void
     visible?: boolean
+    /**
+     * @private 无进场出场动画但触发事件
+     * 不设置forceStep，没有enter和leave不会触发对应的事件
+     */
+    forceStep?: boolean
 }
 
 export enum MotionStatus {
@@ -28,7 +33,7 @@ export enum MotionStatus {
     IGNORE_ENTER = 'ignore_enter',
     /** 忽略退出状态 */
     IGNORE_LEAVE = 'ignore_leave',
-
+    /** 当DOM出现时 (未用到) */
     APPEAR = 'appear',
     /** 进入状态 */
     ENTER = 'enter',

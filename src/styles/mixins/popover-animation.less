@@ -49,11 +49,7 @@
 
     @keyframe-right-top-zoom-out: ~'@{popover-prefix}-kf-right-top-zoom-out';
 
-    &-hidden {
-        display: none;
-    }
-
-    &[data-placement='top']&-enter {
+    &[data-placement='top']&-enter&-animation {
         // 由于设置了translate 所以transform-origin不是center bottom;
         // 同理下面的placement 需要推算transform-origin
 
@@ -72,7 +68,7 @@
         animation: @keyframe-top-zoom-in 0.25s forwards cubic-bezier(0.71, 1.7, 0.77, 1.24);
     }
 
-    &[data-placement='top']&-leave {
+    &[data-placement='top']&-leave&-animation {
         @keyframes @keyframe-top-zoom-out {
             from {
                 opacity: 1;
@@ -88,7 +84,7 @@
         animation: @keyframe-top-zoom-out 0.25s forwards cubic-bezier(0.71, 1.7, 0.77, 1.24);
     }
 
-    &[data-placement='bottom']&-enter {
+    &[data-placement='bottom']&-enter&-animation {
         @keyframes @keyframe-bottom-zoom-in {
             from {
                 opacity: 0;
@@ -104,7 +100,7 @@
         animation: @keyframe-bottom-zoom-in 0.25s forwards cubic-bezier(0.71, 1.7, 0.77, 1.24);
     }
 
-    &[data-placement='bottom']&-leave {
+    &[data-placement='bottom']&-leave&-animation {
         @keyframes @keyframe-bottom-zoom-out {
             from {
                 opacity: 1;
@@ -120,7 +116,7 @@
         animation: @keyframe-bottom-zoom-out 0.25s forwards cubic-bezier(0.71, 1.7, 0.77, 1.24);
     }
 
-    &[data-placement='left']&-enter {
+    &[data-placement='left']&-enter&-animation {
         @keyframes @keyframe-left-zoom-in {
             from {
                 opacity: 0;
@@ -136,7 +132,7 @@
         animation: @keyframe-left-zoom-in 0.25s forwards cubic-bezier(0.71, 1.7, 0.77, 1.24);
     }
 
-    &[data-placement='left']&-leave {
+    &[data-placement='left']&-leave&-animation {
         @keyframes @keyframe-left-zoom-out {
             from {
                 opacity: 1;
@@ -152,7 +148,7 @@
         animation: @keyframe-left-zoom-out 0.25s forwards cubic-bezier(0.71, 1.7, 0.77, 1.24);
     }
 
-    &[data-placement='right']&-enter {
+    &[data-placement='right']&-enter&-animation {
         @keyframes @keyframe-right-zoom-in {
             from {
                 opacity: 0;
@@ -168,7 +164,7 @@
         animation: @keyframe-right-zoom-in 0.25s forwards cubic-bezier(0.71, 1.7, 0.77, 1.24);
     }
 
-    &[data-placement='right']&-leave {
+    &[data-placement='right']&-leave&-animation {
         @keyframes @keyframe-right-zoom-out {
             from {
                 opacity: 1;
@@ -184,7 +180,7 @@
         animation: @keyframe-right-zoom-out 0.25s forwards cubic-bezier(0.71, 1.7, 0.77, 1.24);
     }
 
-    &[data-placement='bottom-left']&-enter {
+    &[data-placement='bottom-left']&-enter&-animation {
         @keyframes @keyframe-bottom-left-zoom-in {
             from {
                 opacity: 0;
@@ -200,7 +196,7 @@
         animation: @keyframe-bottom-left-zoom-in 0.25s forwards cubic-bezier(0.71, 1.7, 0.77, 1.24);
     }
 
-    &[data-placement='bottom-left']&-leave {
+    &[data-placement='bottom-left']&-leave&-animation {
         @keyframes @keyframe-bottom-left-zoom-out {
             from {
                 opacity: 1;
@@ -216,7 +212,7 @@
         animation: @keyframe-bottom-left-zoom-out 0.25s forwards cubic-bezier(0.71, 1.7, 0.77, 1.24);
     }
 
-    &[data-placement='bottom-right']&-enter {
+    &[data-placement='bottom-right']&-enter&-animation {
         @keyframes @keyframe-bottom-right-zoom-in {
             from {
                 opacity: 0;
@@ -232,7 +228,7 @@
         animation: @keyframe-bottom-right-zoom-in 0.25s forwards cubic-bezier(0.71, 1.7, 0.77, 1.24);
     }
 
-    &[data-placement='bottom-right']&-leave {
+    &[data-placement='bottom-right']&-leave&-animation {
         @keyframes @keyframe-bottom-right-zoom-out {
             from {
                 opacity: 1;
@@ -248,7 +244,7 @@
         animation: @keyframe-bottom-right-zoom-out 0.25s forwards cubic-bezier(0.71, 1.7, 0.77, 1.24);
     }
 
-    &[data-placement='top-left']&-enter {
+    &[data-placement='top-left']&-enter&-animation {
         @keyframes @keyframe-top-left-zoom-in {
             from {
                 opacity: 0;
@@ -264,7 +260,7 @@
         animation: @keyframe-top-left-zoom-in 0.25s forwards cubic-bezier(0.71, 1.7, 0.77, 1.24);
     }
 
-    &[data-placement='top-left']&-leave {
+    &[data-placement='top-left']&-leave&-animation {
         @keyframes @keyframe-top-left-zoom-out {
             from {
                 opacity: 1;
@@ -280,7 +276,7 @@
         animation: @keyframe-top-left-zoom-out 0.25s forwards cubic-bezier(0.71, 1.7, 0.77, 1.24);
     }
 
-    &[data-placement='top-right']&-enter {
+    &[data-placement='top-right']&-enter&-animation {
         @keyframes @keyframe-top-right-zoom-in {
             from {
                 opacity: 0;
@@ -296,7 +292,7 @@
         animation: @keyframe-top-right-zoom-in 0.25s forwards cubic-bezier(0.71, 1.7, 0.77, 1.24);
     }
 
-    &[data-placement='top-right']&-leave {
+    &[data-placement='top-right']&-leave&-animation {
         @keyframes @keyframe-top-right-zoom-out {
             from {
                 opacity: 1;
@@ -312,7 +308,7 @@
         animation: @keyframe-top-right-zoom-out 0.25s forwards cubic-bezier(0.71, 1.7, 0.77, 1.24);
     }
 
-    &[data-placement='left-bottom']&-enter {
+    &[data-placement='left-bottom']&-enter&-animation {
         @keyframes @keyframe-left-bottom-zoom-in {
             from {
                 opacity: 0;
@@ -328,7 +324,7 @@
         animation: @keyframe-left-bottom-zoom-in 0.25s forwards cubic-bezier(0.71, 1.7, 0.77, 1.24);
     }
 
-    &[data-placement='left-bottom']&-leave {
+    &[data-placement='left-bottom']&-leave&-animation {
         @keyframes @keyframe-left-bottom-zoom-out {
             from {
                 opacity: 1;
@@ -344,7 +340,7 @@
         animation: @keyframe-left-bottom-zoom-out 0.25s forwards cubic-bezier(0.71, 1.7, 0.77, 1.24);
     }
 
-    &[data-placement='left-top']&-enter {
+    &[data-placement='left-top']&-enter&-animation {
         @keyframes @keyframe-left-top-zoom-in {
             from {
                 opacity: 0;
@@ -360,7 +356,7 @@
         animation: @keyframe-left-top-zoom-in 0.25s forwards cubic-bezier(0.71, 1.7, 0.77, 1.24);
     }
 
-    &[data-placement='left-top']&-leave {
+    &[data-placement='left-top']&-leave&-animation {
         @keyframes @keyframe-left-top-zoom-out {
             from {
                 opacity: 1;
@@ -376,7 +372,7 @@
         animation: @keyframe-left-top-zoom-out 0.25s forwards cubic-bezier(0.71, 1.7, 0.77, 1.24);
     }
 
-    &[data-placement='right-bottom']&-enter {
+    &[data-placement='right-bottom']&-enter&-animation {
         @keyframes @keyframe-right-bottom-zoom-in {
             from {
                 opacity: 0;
@@ -392,7 +388,7 @@
         animation: @keyframe-right-bottom-zoom-in 0.25s forwards cubic-bezier(0.71, 1.7, 0.77, 1.24);
     }
 
-    &[data-placement='right-bottom']&-leave {
+    &[data-placement='right-bottom']&-leave&-animation {
         @keyframes @keyframe-right-bottom-zoom-out {
             from {
                 opacity: 1;
@@ -408,7 +404,7 @@
         animation: @keyframe-right-bottom-zoom-out 0.25s forwards cubic-bezier(0.71, 1.7, 0.77, 1.24);
     }
 
-    &[data-placement='right-top']&-enter {
+    &[data-placement='right-top']&-enter&-animation {
         @keyframes @keyframe-right-top-zoom-in {
             from {
                 opacity: 0;
@@ -424,7 +420,7 @@
         animation: @keyframe-right-top-zoom-in 0.25s forwards cubic-bezier(0.71, 1.7, 0.77, 1.24);
     }
 
-    &[data-placement='right-top']&-leave {
+    &[data-placement='right-top']&-leave&-animation {
         @keyframes @keyframe-right-top-zoom-out {
             from {
                 opacity: 1;

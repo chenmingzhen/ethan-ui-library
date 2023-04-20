@@ -33,8 +33,7 @@ const MultipleResult: React.FC<MultipleResultProps> = function (props) {
                 key="more"
                 className={className}
                 trigger="hover"
-                innerAlwaysUpdate
-                innerProps={{
+                popupProps={{
                     onMouseDown(e) {
                         preventDefault(e)
                         stopPropagation(e)

@@ -16,7 +16,7 @@ export default function () {
             onOk={() =>
                 new Promise((resolve) => {
                     console.log('ok')
-                    setTimeout(() => resolve(true), 2000)
+                    setTimeout(() => resolve(), 2000)
                 })
             }
             text={{ ok: 'Yes', cancel: 'No' }}

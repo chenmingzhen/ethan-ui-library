@@ -34,6 +34,7 @@ const Motion: React.FC<MotionProps> = function (props) {
         destroyAfterLeave,
         leaveClassName,
         children,
+        forceStep,
         name = '',
         visible,
         enter,
@@ -64,6 +65,7 @@ const Motion: React.FC<MotionProps> = function (props) {
 
     const [status, step] = useStatus({
         getElement,
+        forceStep,
         visible,
         enter,
         leave,

@@ -5,6 +5,7 @@ import useStep from './useStep'
 
 interface UseStatusProps {
     getElement: () => HTMLElement
+    forceStep: MotionProps['forceStep']
     destroyAfterLeave: MotionProps['destroyAfterLeave']
     visible: MotionProps['visible']
     enter: MotionProps['enter']
@@ -22,6 +23,7 @@ interface UseStatusProps {
 export default function useStatus(props: UseStatusProps): [MotionStatus, MotionStep] {
     const {
         visible,
+        forceStep,
         getElement,
         destroyAfterLeave,
         enter = true,
@@ -39,6 +41,7 @@ export default function useStatus(props: UseStatusProps): [MotionStatus, MotionS
 
     const [step, startStep] = useStep({
         status,
+        forceStep,
         getElement,
         onEnterPrepare,
         onEnterStart,
@@ -63,11 +66,11 @@ export default function useStatus(props: UseStatusProps): [MotionStatus, MotionS
 
         let nextStatus: MotionStatus = visible ? MotionStatus.IGNORE_ENTER : MotionStatus.IGNORE_LEAVE
 
-        if (visible && enter) {
+        if (visible && (enter || forceStep)) {
             nextStatus = MotionStatus.ENTER
         }
 
-        if (!visible && leave) {
+        if (!visible && (leave || forceStep)) {
             nextStatus = MotionStatus.LEAVE
         }
 

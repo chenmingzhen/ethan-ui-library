@@ -3,7 +3,6 @@ import useMergedValue from '@/hooks/useMergedValue'
 import { popoverClass } from '@/styles'
 import classnames from 'classnames'
 import useSafeState from '@/hooks/useSafeState'
-import useRefMethod from '@/hooks/useRefMethod'
 import { isArray } from '@/utils/is'
 import { getPosition, getPositionStyle } from '@/utils/dom/popover'
 import { parsePxToNumber } from '@/utils/strings'
@@ -49,14 +48,6 @@ const Popover: React.FC<PopoverProps> = function (props) {
         },
     })
 
-    const handlePopupElementMouseEnter = useRefMethod(() => {
-        updateVisible(true)
-    })
-
-    const handlePopupElementMouseLeave = useRefMethod(() => {
-        updateVisible(false)
-    })
-
     return (
         <Trigger
             visible={visible}
@@ -68,7 +59,14 @@ const Popover: React.FC<PopoverProps> = function (props) {
             mouseEnterDelay={!triggerActions.includes('mousedown') ? mouseEnterDelay : undefined}
             mouseLeaveDelay={!triggerActions.includes('mousedown') ? mouseLeaveDelay : undefined}
             popup={
-                <div {...popupProps} className={classnames(popoverClass('_', !showArrow && 'hide-arrow'), className)}>
+                <div
+                    {...popupProps}
+                    data-id={popoverId}
+                    className={classnames(
+                        popoverClass('_', !showArrow && 'hide-arrow', animation && 'animation'),
+                        className
+                    )}
+                >
                     {showArrow && (
                         <div className={popoverClass('arrow')} {...arrowProps}>
                             <div className={popoverClass('arrow-content')} />
@@ -90,14 +88,10 @@ const Popover: React.FC<PopoverProps> = function (props) {
             motionComponentProps={{
                 enter: animation,
                 leave: animation,
+                forceStep: !animation,
                 name: popoverClass('_'),
                 destroyAfterLeave: destroyOnClose,
                 onEnterPrepare(element) {
-                    if (triggerActions.includes('hover')) {
-                        element.addEventListener('mouseenter', handlePopupElementMouseEnter)
-                        element.addEventListener('mouseleave', handlePopupElementMouseLeave)
-                    }
-
                     const position = getPosition(placement, null, triggerElement, element.parentElement)
                     const posStyle = getPositionStyle(position, triggerElement, element.parentElement)
                     const ms = styles(style, posStyle)
@@ -125,12 +119,6 @@ const Popover: React.FC<PopoverProps> = function (props) {
                         element.style.top = `${parsePxToNumber(element.style.top) + Math.abs(top)}px`
                     } else if (bottom < 0) {
                         element.style.bottom = `${parsePxToNumber(element.style.bottom) + Math.abs(bottom)}px`
-                    }
-                },
-                onLeavePrepare(element) {
-                    if (triggerActions.includes('hover')) {
-                        element.removeEventListener('mouseenter', handlePopupElementMouseEnter)
-                        element.removeEventListener('mouseleave', handlePopupElementMouseLeave)
                     }
                 },
                 onLeaveEnd(element) {

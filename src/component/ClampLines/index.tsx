@@ -162,7 +162,6 @@ export default class ClampLines extends PureComponent<ClampLinesProps, ClampLine
             return (
                 <div className={className} style={styles({ wordBreak: 'break-all' }, style)}>
                     <Popover
-                        innerAlwaysUpdate
                         content={this.originalText}
                         innerProps={{ style: { width, whiteSpace: 'break-spaces' } }}
                         mouseEnterDelay={0.3}
