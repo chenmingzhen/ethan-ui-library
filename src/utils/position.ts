@@ -56,6 +56,40 @@ export function getDropdownPortalStyle(rect: DOMRect, position: string): React.C
     return style
 }
 
+export function getPortalListStyle(
+    element: HTMLElement,
+    container: HTMLElement,
+    position: string,
+    fixed: boolean | 'min' = false
+) {
+    if (!container || !element) return {}
+
+    const elementRect = element.getBoundingClientRect()
+    const containerRect = container.getBoundingClientRect()
+    const style: React.CSSProperties = {
+        position: 'absolute',
+    }
+
+    if (fixed) {
+        const widthKey = fixed === 'min' ? 'minWidth' : 'width'
+
+        style[widthKey] = elementRect.width
+    }
+
+    if (listPosition.includes(position)) {
+        style.left = elementRect.left - containerRect.left
+
+        if (position === 'drop-down') {
+            style.top = elementRect.top + elementRect.height - containerRect.top
+        } else {
+            style.bottom = -(containerRect.top - elementRect.top)
+        }
+    }
+
+    return style
+}
+
+/** @deprecated */
 export function getListPortalStyle(
     rect: DOMRect,
     position: string,

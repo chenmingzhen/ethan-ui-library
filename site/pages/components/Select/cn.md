@@ -8,7 +8,7 @@
 | ------------------- | ----------------------------------------------------------------------- | ---------- | ----------------------------------------------------------------------------------- |
 | width               | number                                                                  | -          | 宽度                                                                                |
 | style               | object                                                                  | -          | 扩展外层 style                                                                      |
-| portal              | boolean                                                                 | false      | 为 true 时，选项弹出层在 DOM 中独立 render                                          |
+| getPopupElement     | ()=>HTMLElement                                                         | -          | 选项弹出层在指定的 DOM 中渲染，容器需要为相对定位                                   |
 | autoAdapt           | boolean                                                                 | false      | 下拉列表宽度根据内容自由展开                                                        |
 | clearable           | boolean                                                                 | false      | 是否可清除值                                                                        |
 | multiple            | boolean                                                                 | false      | 是否是多选                                                                          |

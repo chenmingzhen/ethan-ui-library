@@ -5,24 +5,24 @@ import React, { useMemo, useRef } from 'react'
 import ReactDOM from 'react-dom'
 
 interface PortalProps {
-    portal?: boolean
-    rootClass?: string
-    children: React.ReactNode
-    /** @deprecated 改用getPopupContainer */
-    getContainer?: () => HTMLElement
-    getPopupContainer?: () => HTMLElement
     show: boolean
+    /** @deprecated 使用portalClassName */
+    rootClass?: string
+    portalClassName?: string
+    children: React.ReactNode
+    getPopupContainer?: () => HTMLElement
 }
 
-/** 一般情况，使用portal就可以满足大部分的场景，portal就渲染在document.body上，否则就在原来的位置渲染 */
 const Portal: React.ForwardRefRenderFunction<HTMLDivElement, PortalProps> = function (props, ref) {
-    const { portal, rootClass, children, getContainer, show, getPopupContainer } = props
+    const { rootClass, portalClassName, children, show, getPopupContainer } = props
 
     const container = useMemo(() => {
-        const propContainer = getPopupContainer ? getPopupContainer() : getContainer ? getContainer() : undefined
+        if (!getPopupContainer) return undefined
 
-        if (isDOMElement(propContainer)) return propContainer
-        if (!portal) return undefined
+        const popupContainer = getPopupContainer ? getPopupContainer() : undefined
+
+        if (isDOMElement(popupContainer)) return popupContainer
+
         return document.body
     }, undefined)
 
@@ -37,7 +37,7 @@ const Portal: React.ForwardRefRenderFunction<HTMLDivElement, PortalProps> = func
     }
 
     return ReactDOM.createPortal(
-        <div className={classnames(portalClass('_'), rootClass)} ref={ref}>
+        <div className={classnames(portalClass('_'), rootClass, portalClassName)} ref={ref}>
             {children}
         </div>,
         container

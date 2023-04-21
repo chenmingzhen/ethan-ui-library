@@ -4,8 +4,7 @@ import { docSize } from '@/utils/dom/document'
 import { getParent, isDescendent } from '@/utils/dom/element'
 import { isEmpty, isObject } from '@/utils/is'
 import { KeyboardKey } from '@/utils/keyboard'
-import { getListPortalStyle } from '@/utils/position'
-import { styles } from '@/utils/style/styles'
+import { getPortalListStyle } from '@/utils/position'
 import { getUidStr } from '@/utils/uid'
 import React, { useRef, useState } from 'react'
 import Portal from '../Portal'
@@ -37,7 +36,6 @@ function Select<Data = SelectData>(props: SelectProps<Data>) {
         height = 256,
         onCollapse,
         autoAdapt,
-        portal,
         groupBy,
         defaultValue,
         value,
@@ -59,6 +57,7 @@ function Select<Data = SelectData>(props: SelectProps<Data>) {
         labelKey = 'label',
         valueKey = 'value',
         width,
+        getPopupContainer,
     } = props
     const selectId = useRef(getUidStr()).current
     const inputRef = useRef<HTMLInputElement>()
@@ -325,13 +324,26 @@ function Select<Data = SelectData>(props: SelectProps<Data>) {
         }
     }
 
-    function renderList() {
-        const rect = containerElementRef.current?.getBoundingClientRect()
+    const portalRef = useRef<HTMLDivElement>()
 
-        const listStyle = styles(portal && getListPortalStyle(rect, position, autoAdapt ? 'min' : true))
+    function renderList() {
+        const portal = getPopupContainer
+        const listStyle =
+            portal &&
+            getPortalListStyle(
+                containerElementRef.current,
+                portalRef.current?.parentElement,
+                position,
+                autoAdapt ? 'min' : true
+            )
 
         return (
-            <Portal rootClass={selectClass(position)} portal={portal} show={show}>
+            <Portal
+                show={show}
+                ref={portalRef}
+                getPopupContainer={getPopupContainer}
+                portalClassName={selectClass(position)}
+            >
                 {columns >= 1 || columns === -1 ? (
                     <BoxList
                         style={listStyle}

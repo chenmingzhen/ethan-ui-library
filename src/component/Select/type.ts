@@ -13,7 +13,6 @@ export interface SelectProps<Data = SelectData> {
     width?: number
     placeholder?: string
     style?: React.CSSProperties
-    portal?: boolean
     clearable?: boolean
     columns?: number
     data?: Data[]
@@ -58,6 +57,7 @@ export interface SelectProps<Data = SelectData> {
         selectAll?: string
         noData?: string
     }
+    getPopupContainer?: () => HTMLElement
 }
 
 export interface OptionListProps extends Pick<ListProps, 'onTransitionEnd'> {
