@@ -1,4 +1,5 @@
 import React from 'react'
+import { debounce } from '../func'
 
 /** @see https://developer.mozilla.org/zh-CN/docs/Web/API/Element/matches */
 if (Element && !Element.prototype.matches) {
@@ -122,25 +123,28 @@ function end(element) {
 }
 
 // 判断点击的内容是否在容器或容器内
-export function isDescendent(el: HTMLElement, id: string) {
-    if (el.getAttribute('data-id') === id) return true
+export function isDescendent(el: HTMLElement, componentKey: string) {
+    /** @deprecated 废弃，逐步过渡 */
+    if (el.getAttribute('data-id') === componentKey) return true
+    if (el.getAttribute('data-ck') === componentKey) return true
     if (!el.parentElement) return false
 
-    return isDescendent(el.parentElement, id)
+    return isDescendent(el.parentElement, componentKey)
 }
 
-interface AddResizeObserverOptions {
-    direction: 'x' | 'y'
+export interface AddResizeObserverOptions {
+    direction: 'x' | 'y' | 'xy'
+    callbackDebounce?: number
 }
 
-export function addResizeObserver(element: HTMLElement, handler: () => void, options: AddResizeObserverOptions) {
+export function addResizeObserver(element: HTMLElement, callback: () => void, options: AddResizeObserverOptions) {
     let lastClientWidth
-
     let lastClientHeight
+    const { direction, callbackDebounce } = options
+
+    const debounceCallback = callbackDebounce ? debounce(callback, callbackDebounce) : callback
 
     if (window.ResizeObserver) {
-        const { direction } = options
-
         if (direction) {
             lastClientWidth = element.clientWidth
             lastClientHeight = element.clientHeight
@@ -151,16 +155,17 @@ export function addResizeObserver(element: HTMLElement, handler: () => void, opt
 
             if (direction === 'x') {
                 if (lastClientWidth !== width) {
-                    handler()
+                    debounceCallback()
                 }
             } else if (direction === 'y') {
                 if (lastClientHeight !== height) {
-                    handler()
+                    debounceCallback()
                 }
+            } else if (lastClientWidth !== width || lastClientHeight !== height) {
+                debounceCallback()
             }
 
             lastClientWidth = width
-
             lastClientHeight = height
         }
 
@@ -169,15 +174,19 @@ export function addResizeObserver(element: HTMLElement, handler: () => void, opt
         observer.observe(element)
 
         return () => {
+            if ('cancel' in debounceCallback) {
+                debounceCallback.cancel()
+            }
+
             observer.disconnect()
 
             observer = null
         }
     }
 
-    window.addEventListener('resize', handler)
+    window.addEventListener('resize', debounceCallback)
 
-    return () => window.removeEventListener('resize', handler)
+    return () => window.removeEventListener('resize', debounceCallback)
 }
 
 export function mockAnchorClick(url: string, target = '_blank') {

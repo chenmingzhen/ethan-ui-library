@@ -11,15 +11,15 @@ const Tooltip: React.FC<TooltipProps> = function (props) {
     const {
         tip,
         color,
+        visible,
         children,
         className,
-        getPopupContainer,
-        visible,
-        trigger = 'hover',
         delay = 0.2,
-        priorityDirection,
         onVisibleChange,
         animation = true,
+        trigger = 'hover',
+        priorityDirection,
+        getPopupContainer = () => document.body,
     } = props
 
     const triggerActions = isArray(trigger) ? trigger : [trigger]
@@ -43,7 +43,6 @@ const Tooltip: React.FC<TooltipProps> = function (props) {
 
     return (
         <Trigger
-            portal
             visible={visible}
             mouseEnterDelay={delay}
             mouseLeaveDelay={delay}

@@ -3,6 +3,7 @@ import useMergedValue from '@/hooks/useMergedValue'
 import useRefMethod from '@/hooks/useRefMethod'
 import { isFunc } from '@/utils/is'
 import { isDescendent } from '@/utils/dom/element'
+import useResizeObserver from '@/hooks/useResizeObserver'
 import { TriggerProps } from './type'
 import Portal from '../Portal'
 import Transition from '../Motion/Transition'
@@ -11,23 +12,26 @@ import Motion from '../Motion/Motion'
 const Trigger: React.FC<TriggerProps> = function (props) {
     const {
         popup,
-        portal,
-        dataId,
+        componentKey,
         visible,
         children,
         defaultVisible,
+        resizeDebounce,
         onVisibleChange,
         mouseEnterDelay,
         mouseLeaveDelay,
         portalClassName,
+        getPopupElement,
         bindPortalElement,
         getPopupContainer,
         bindTriggerElement,
         motionComponentProps,
+        onTriggerElementResize,
         transitionComponentProps,
         triggerActions = ['mousedown'],
     } = props
     const [showNoScript, updateShowNoScript] = useState(true)
+    const triggerElementRef = useRef<HTMLElement>()
     const timer = useRef<NodeJS.Timeout>()
     const [show, updateShow] = useMergedValue({
         defaultStateValue: false,
@@ -45,11 +49,8 @@ const Trigger: React.FC<TriggerProps> = function (props) {
 
         if (timer.current) {
             clearTimeout(timer.current)
-
             timer.current = null
         }
-
-        if (isDescendent(e.relatedTarget as HTMLElement, dataId)) return
 
         if (mouseEnterDelay) {
             timer.current = setTimeout(() => {
@@ -63,7 +64,6 @@ const Trigger: React.FC<TriggerProps> = function (props) {
     const handleMouseLeave = useRefMethod((e: React.MouseEvent) => {
         if (timer.current) {
             clearTimeout(timer.current)
-
             timer.current = null
         }
 
@@ -71,7 +71,7 @@ const Trigger: React.FC<TriggerProps> = function (props) {
             children.props.onMouseLeave(e)
         }
 
-        if (isDescendent(e.relatedTarget as HTMLElement, dataId)) return
+        if (isDescendent(e.relatedTarget as HTMLElement, componentKey)) return
 
         if (mouseLeaveDelay) {
             timer.current = setTimeout(() => {
@@ -102,6 +102,8 @@ const Trigger: React.FC<TriggerProps> = function (props) {
             } else if (bindTriggerElement && Object.prototype.hasOwnProperty.call(bindTriggerElement, 'current')) {
                 bindTriggerElement.current = triggerDOMNode
             }
+
+            triggerElementRef.current = triggerDOMNode
         }
 
         updateShowNoScript(false)
@@ -118,11 +120,33 @@ const Trigger: React.FC<TriggerProps> = function (props) {
     )
 
     const handleClickAway = useRefMethod((evt: MouseEvent) => {
-        const desc = isDescendent(evt.target as HTMLElement, dataId)
+        const desc = isDescendent(evt.target as HTMLElement, componentKey)
 
         if (desc) return
 
         updateShow(false)
+    })
+
+    const handlePopupElementMouseLeave = useRefMethod((e: MouseEvent) => {
+        if (e.relatedTarget === triggerElementRef.current) return
+
+        updateShow(false)
+    })
+
+    const addPopupEventListener = useRefMethod(() => {
+        const popupElement = getPopupElement()
+
+        if (!popupElement) return
+
+        popupElement.addEventListener('mouseleave', handlePopupElementMouseLeave)
+    })
+
+    const removePopupEventListener = useRefMethod(() => {
+        const popupElement = getPopupElement()
+
+        if (!popupElement) return
+
+        popupElement.removeEventListener('mouseleave', handlePopupElementMouseLeave)
     })
 
     useEffect(() => {
@@ -138,7 +162,30 @@ const Trigger: React.FC<TriggerProps> = function (props) {
             /** 统一处理受控模式和mousedown模式 */
             document.removeEventListener('mousedown', handleClickAway)
         }
+
+        if (triggerActions.includes('hover') && getPopupElement) {
+            if (show) {
+                /** 等待DOM挂载后再添加事件 */
+                setTimeout(addPopupEventListener)
+
+                return removePopupEventListener
+            }
+        }
     }, [show])
+
+    useResizeObserver({
+        watch: !!(onTriggerElementResize && show),
+        onResize: onTriggerElementResize,
+        options: { direction: 'xy', callbackDebounce: resizeDebounce },
+        getTargetElement: () => triggerElementRef.current,
+    })
+
+    useResizeObserver({
+        watch: !!(onTriggerElementResize && show),
+        onResize: onTriggerElementResize,
+        options: { direction: 'x', callbackDebounce: resizeDebounce },
+        getTargetElement: () => triggerElementRef.current,
+    })
 
     return (
         <>
@@ -147,13 +194,12 @@ const Trigger: React.FC<TriggerProps> = function (props) {
 
             <Portal
                 show={show}
-                portal={portal}
-                rootClass={portalClassName}
-                getPopupContainer={getPopupContainer}
                 ref={bindPortalElement}
+                portalClassName={portalClassName}
+                getPopupContainer={getPopupContainer}
             >
                 {transitionComponentProps ? (
-                    <Transition {...transitionComponentProps} visible={show} data-id={dataId}>
+                    <Transition {...transitionComponentProps} visible={show}>
                         {popup}
                     </Transition>
                 ) : (
