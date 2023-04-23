@@ -1,4 +1,4 @@
-import React, { useRef } from 'react'
+import React, { useEffect, useRef } from 'react'
 import useMergedValue from '@/hooks/useMergedValue'
 import { popoverClass } from '@/styles'
 import classnames from 'classnames'
@@ -9,6 +9,7 @@ import { parsePxToNumber } from '@/utils/strings'
 import { getUidStr } from '@/utils/uid'
 import { styles } from '@/utils/style/styles'
 import useRefMethod from '@/hooks/useRefMethod'
+import { debounce } from '@/utils/func'
 import { PopoverProps } from './type'
 import Trigger from '../Trigger'
 
@@ -89,22 +90,26 @@ const Popover: React.FC<PopoverProps> = function (props) {
         }
     })
 
-    const handleResize = useRefMethod(() => {
-        computedPopupElementPosition()
-        adjustPopupElementPosition()
-    })
+    const handleResize = useRefMethod(
+        debounce(() => {
+            computedPopupElementPosition()
+            adjustPopupElementPosition()
+        }, 300)
+    )
+
+    useEffect(() => handleResize.cancel, [])
 
     return (
         <Trigger
             visible={visible}
-            resizeDebounce={300}
             componentKey={componentKey}
+            onWindowResize={handleResize}
             triggerActions={triggerActions}
             onVisibleChange={updateVisible}
-            bindTriggerElement={setTriggerElement}
-            getPopupContainer={getPopupContainer}
             getPopupElement={getPopupElement}
+            getPopupContainer={getPopupContainer}
             onTriggerElementResize={handleResize}
+            bindTriggerElement={setTriggerElement}
             mouseEnterDelay={!triggerActions.includes('mousedown') ? mouseEnterDelay : undefined}
             mouseLeaveDelay={!triggerActions.includes('mousedown') ? mouseLeaveDelay : undefined}
             popup={

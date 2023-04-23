@@ -2,8 +2,9 @@ import { tooltipClass } from '@/styles'
 import { getPositionStyle, getPosition } from '@/utils/dom/popover'
 import { styles } from '@/utils/style/styles'
 import classnames from 'classnames'
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { isArray } from '@/utils/is'
+import useUpdate from '@/hooks/useUpdate'
 import { TooltipProps } from './type'
 import Trigger from '../Trigger'
 
@@ -25,6 +26,7 @@ const Tooltip: React.FC<TooltipProps> = function (props) {
     const triggerActions = isArray(trigger) ? trigger : [trigger]
     const [triggerEl, setTriggerEl] = useState<HTMLElement>()
     const [popupEl, setPopupEl] = useState<HTMLElement>()
+    const update = useUpdate({ debounceDuration: 300 })
 
     useEffect(() => {
         if (!popupEl) return
@@ -32,24 +34,26 @@ const Tooltip: React.FC<TooltipProps> = function (props) {
         popupEl.style.setProperty('--var-trigger-color', color || null)
     }, [color, popupEl])
 
-    const [position, style] = useMemo(() => {
+    const [position, style] = (() => {
         if (!triggerEl) return [props.position ?? 'top', undefined]
 
         const innerPosition = getPosition(props.position, priorityDirection, triggerEl, getPopupContainer?.())
         const formatPosition = innerPosition.split('-')?.[0]
 
         return [formatPosition, getPositionStyle(innerPosition, triggerEl, popupEl?.parentElement)]
-    }, undefined)
+    })()
 
     return (
         <Trigger
             visible={visible}
+            onWindowResize={update}
             mouseEnterDelay={delay}
             mouseLeaveDelay={delay}
-            onVisibleChange={onVisibleChange}
-            getPopupContainer={getPopupContainer}
-            bindTriggerElement={setTriggerEl}
+            onTriggerElementResize={update}
             triggerActions={triggerActions}
+            onVisibleChange={onVisibleChange}
+            bindTriggerElement={setTriggerEl}
+            getPopupContainer={getPopupContainer}
             motionComponentProps={{
                 enter: animation,
                 leave: false,

@@ -1,6 +1,6 @@
 /**
  * cn - 触发方式
- *    -- 默认是移入组件触发，设置 trigger 为 'click'或Trigger数组，可以改变触发方式
+ *    -- 默认是移入组件触发，设置 trigger 为 'mousedown'或Trigger数组，可以改变触发方式
  * en - Trigger
  *    -- Set the trigger property to change the trigger event.
  */

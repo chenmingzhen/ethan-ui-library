@@ -53,6 +53,12 @@ export function debounce(fn, duration = 80) {
     function invoke(...args) {
         cancel()
 
+        if (!duration) {
+            fn(...args)
+
+            return
+        }
+
         timer = setTimeout(() => {
             fn(...args)
         }, duration)

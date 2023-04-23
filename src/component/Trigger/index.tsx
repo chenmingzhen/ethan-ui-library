@@ -17,6 +17,7 @@ const Trigger: React.FC<TriggerProps> = function (props) {
         children,
         defaultVisible,
         resizeDebounce,
+        onWindowResize,
         onVisibleChange,
         mouseEnterDelay,
         mouseLeaveDelay,
@@ -46,7 +47,6 @@ const Trigger: React.FC<TriggerProps> = function (props) {
         if (children && children.props && children.props.onMouseEnter) {
             children.props.onMouseEnter(e)
         }
-
         if (timer.current) {
             clearTimeout(timer.current)
             timer.current = null
@@ -66,13 +66,10 @@ const Trigger: React.FC<TriggerProps> = function (props) {
             clearTimeout(timer.current)
             timer.current = null
         }
-
         if (children && children.props && children.props.onMouseLeave) {
             children.props.onMouseLeave(e)
         }
-
         if (isDescendent(e.relatedTarget as HTMLElement, componentKey)) return
-
         if (mouseLeaveDelay) {
             timer.current = setTimeout(() => {
                 updateShow(false)
@@ -121,7 +118,6 @@ const Trigger: React.FC<TriggerProps> = function (props) {
 
     const handleClickAway = useRefMethod((evt: MouseEvent) => {
         const desc = isDescendent(evt.target as HTMLElement, componentKey)
-
         if (desc) return
 
         updateShow(false)
@@ -135,7 +131,6 @@ const Trigger: React.FC<TriggerProps> = function (props) {
 
     const addPopupEventListener = useRefMethod(() => {
         const popupElement = getPopupElement()
-
         if (!popupElement) return
 
         popupElement.addEventListener('mouseleave', handlePopupElementMouseLeave)
@@ -143,7 +138,6 @@ const Trigger: React.FC<TriggerProps> = function (props) {
 
     const removePopupEventListener = useRefMethod(() => {
         const popupElement = getPopupElement()
-
         if (!popupElement) return
 
         popupElement.removeEventListener('mouseleave', handlePopupElementMouseLeave)
@@ -153,7 +147,6 @@ const Trigger: React.FC<TriggerProps> = function (props) {
         if (triggerActions.includes('mousedown')) {
             if (show) {
                 document.addEventListener('mousedown', handleClickAway)
-
                 return () => {
                     document.addEventListener('mousedown', handleClickAway)
                 }
@@ -162,12 +155,10 @@ const Trigger: React.FC<TriggerProps> = function (props) {
             /** 统一处理受控模式和mousedown模式 */
             document.removeEventListener('mousedown', handleClickAway)
         }
-
         if (triggerActions.includes('hover') && getPopupElement) {
             if (show) {
                 /** 等待DOM挂载后再添加事件 */
                 setTimeout(addPopupEventListener)
-
                 return removePopupEventListener
             }
         }
@@ -181,10 +172,10 @@ const Trigger: React.FC<TriggerProps> = function (props) {
     })
 
     useResizeObserver({
-        watch: !!(onTriggerElementResize && show),
-        onResize: onTriggerElementResize,
-        options: { direction: 'x', callbackDebounce: resizeDebounce },
-        getTargetElement: () => triggerElementRef.current,
+        watch: !!(onWindowResize && show),
+        onResize: onWindowResize,
+        options: { direction: 'xy', callbackDebounce: resizeDebounce },
+        getTargetElement: () => document.body,
     })
 
     return (
