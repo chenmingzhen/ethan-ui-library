@@ -1,6 +1,6 @@
 import { MotionProps, TransitionProps } from '../Motion/type'
 
-export type TriggerAction = 'mousedown' | 'hover'
+export type TriggerAction = 'mousedown' | 'hover' | 'focus'
 
 export interface TriggerProps {
     triggerActions?: TriggerAction[]

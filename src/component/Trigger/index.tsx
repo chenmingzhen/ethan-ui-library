@@ -12,9 +12,9 @@ import Motion from '../Motion/Motion'
 const Trigger: React.FC<TriggerProps> = function (props) {
     const {
         popup,
-        componentKey,
         visible,
         children,
+        componentKey,
         defaultVisible,
         resizeDebounce,
         onWindowResize,
@@ -33,7 +33,7 @@ const Trigger: React.FC<TriggerProps> = function (props) {
     } = props
     const [showNoScript, updateShowNoScript] = useState(true)
     const triggerElementRef = useRef<HTMLElement>()
-    const timer = useRef<NodeJS.Timeout>()
+    const mouseTimer = useRef<NodeJS.Timeout>()
     const [show, updateShow] = useMergedValue({
         defaultStateValue: false,
         options: {
@@ -43,17 +43,22 @@ const Trigger: React.FC<TriggerProps> = function (props) {
         },
     })
 
+    const clearMouseTimer = useRefMethod(() => {
+        if (mouseTimer.current) {
+            clearTimeout(mouseTimer.current)
+            mouseTimer.current = null
+        }
+    })
+
     const handleMouseEnter = useRefMethod((e: React.MouseEvent) => {
         if (children && children.props && children.props.onMouseEnter) {
             children.props.onMouseEnter(e)
         }
-        if (timer.current) {
-            clearTimeout(timer.current)
-            timer.current = null
-        }
+
+        clearMouseTimer()
 
         if (mouseEnterDelay) {
-            timer.current = setTimeout(() => {
+            mouseTimer.current = setTimeout(() => {
                 updateShow(true)
             }, mouseEnterDelay * 1000)
         } else {
@@ -62,16 +67,14 @@ const Trigger: React.FC<TriggerProps> = function (props) {
     })
 
     const handleMouseLeave = useRefMethod((e: React.MouseEvent) => {
-        if (timer.current) {
-            clearTimeout(timer.current)
-            timer.current = null
-        }
+        clearMouseTimer()
+
         if (children && children.props && children.props.onMouseLeave) {
             children.props.onMouseLeave(e)
         }
         if (isDescendent(e.relatedTarget as HTMLElement, componentKey)) return
         if (mouseLeaveDelay) {
-            timer.current = setTimeout(() => {
+            mouseTimer.current = setTimeout(() => {
                 updateShow(false)
             }, mouseLeaveDelay * 1000)
         } else {
@@ -90,6 +93,14 @@ const Trigger: React.FC<TriggerProps> = function (props) {
         })
     })
 
+    const handleFocus = useRefMethod((e: React.FocusEvent) => {
+        if (children && children.props && children.props.onFocus) {
+            children.props.onFocus(e)
+        }
+
+        updateShow(!show)
+    })
+
     const bindNoScriptDOMNode = useRefMethod((dom: HTMLElement) => {
         if (dom) {
             const triggerDOMNode = dom.nextSibling as HTMLElement
@@ -106,12 +117,13 @@ const Trigger: React.FC<TriggerProps> = function (props) {
         updateShowNoScript(false)
     })
 
-    const triggerProps = useMemo(
+    const triggerProps = useMemo<React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>>(
         () => ({
             /** 绑定Action */
             onMouseEnter: triggerActions.includes('hover') ? handleMouseEnter : undefined,
             onMouseLeave: triggerActions.includes('hover') ? handleMouseLeave : undefined,
             onMouseDown: triggerActions.includes('mousedown') ? handleMousedown : undefined,
+            onFocus: triggerActions.includes('focus') ? handleFocus : undefined,
         }),
         []
     )
@@ -144,7 +156,7 @@ const Trigger: React.FC<TriggerProps> = function (props) {
     })
 
     useEffect(() => {
-        if (triggerActions.includes('mousedown')) {
+        if (triggerActions.includes('mousedown') || triggerActions.includes('focus')) {
             if (show) {
                 document.addEventListener('mousedown', handleClickAway)
                 return () => {
@@ -177,6 +189,8 @@ const Trigger: React.FC<TriggerProps> = function (props) {
         options: { direction: 'xy', callbackDebounce: resizeDebounce },
         getTargetElement: () => document.body,
     })
+
+    useEffect(() => clearMouseTimer, [])
 
     return (
         <>
