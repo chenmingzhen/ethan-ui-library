@@ -330,12 +330,7 @@ function Select<Data = SelectData>(props: SelectProps<Data>) {
         const portal = getPopupContainer
         const listStyle =
             portal &&
-            getPortalListStyle(
-                containerElementRef.current,
-                portalRef.current?.parentElement,
-                position,
-                autoAdapt ? 'min' : true
-            )
+            getPortalListStyle(containerElementRef.current, portalRef.current, position, autoAdapt ? 'min' : true)
 
         return (
             <Portal
