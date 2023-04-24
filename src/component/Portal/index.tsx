@@ -5,6 +5,8 @@ import React, { useMemo, useRef } from 'react'
 import ReactDOM from 'react-dom'
 
 interface PortalProps {
+    /** @deprecated  */
+    portal?: boolean
     show: boolean
     /** @deprecated 使用portalClassName */
     rootClass?: string
@@ -14,9 +16,11 @@ interface PortalProps {
 }
 
 const Portal: React.ForwardRefRenderFunction<HTMLDivElement, PortalProps> = function (props, ref) {
-    const { rootClass, portalClassName, children, show, getPopupContainer } = props
+    const { rootClass, portalClassName, children, show, getPopupContainer, portal } = props
 
     const container = useMemo(() => {
+        if (portal) return document.body
+
         if (!getPopupContainer) return undefined
 
         const popupContainer = getPopupContainer ? getPopupContainer() : undefined
