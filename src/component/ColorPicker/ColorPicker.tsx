@@ -1,22 +1,20 @@
-import React, { useCallback, useRef, useState } from 'react'
+import React, { useRef, useState } from 'react'
 import classnames from 'classnames'
 import { colorPickerClass } from '@/styles'
-import { isDescendent } from '@/utils/dom/element'
 import { getUidStr } from '@/utils/uid'
 import useSafeState from '@/hooks/useSafeState'
 import useIsomorphicLayoutUpdateEffect from '@/hooks/useIsomorphicLayoutUpdateEffect'
 import { styles } from '@/utils/style/styles'
-import { getPickerPortalStyle } from '@/utils/position'
+import { getPortalPickerStyle } from '@/utils/position'
+import useRefMethod from '@/hooks/useRefMethod'
 import { ColorPickerProps } from './type'
 import Caret from '../icons/Caret'
-import AnimationList from '../List'
 import ColorBoard from './ColorBoard'
 import { getDefaultColor } from './util'
-import Portal from '../Portal'
+import Trigger from '../Trigger'
 
 const ColorPicker: React.FC<ColorPickerProps> = function (props) {
     const {
-        portal = true,
         size,
         disabled,
         className,
@@ -30,32 +28,23 @@ const ColorPicker: React.FC<ColorPickerProps> = function (props) {
         showIcon = true,
         dropdownClassName,
         dropdownStyle,
+        getPopupContainer,
         ...other
     } = props
-
-    const [show, updateShow] = useState(false)
-
+    const [visible, updateVisible] = useSafeState(false)
     const [currentValue, updateCurrentValue] = useSafeState(value || defaultValue || getDefaultColor(format))
+    const componentKey = useRef(getUidStr()).current
+    const [triggerElement, setTriggerElement] = useState<HTMLDivElement>()
+    const [portalElement, setPortalElement] = useState<HTMLDivElement>()
+    const handleVisibleChange = useRefMethod((nextVisible: boolean) => {
+        if (disabled) return
 
-    const colorPickerId = useRef(getUidStr()).current
-
-    const btnContainerRef = useRef<HTMLDivElement>()
+        updateVisible(nextVisible)
+    })
 
     useIsomorphicLayoutUpdateEffect(() => {
         updateCurrentValue(value || getDefaultColor(format))
     }, [value])
-
-    const cls = classnames(className, colorPickerClass('preview-btn', size && size, disabled && 'disabled'))
-
-    const handleClickAway = useCallback((evt: MouseEvent) => {
-        const desc = isDescendent(evt.target as HTMLElement, colorPickerId)
-
-        if (desc) return
-
-        updateShow(false)
-
-        clearClickAway()
-    }, [])
 
     const handleChange = (color: string) => {
         if (onChange) {
@@ -69,68 +58,55 @@ const ColorPicker: React.FC<ColorPickerProps> = function (props) {
         updateCurrentValue(color)
     }
 
-    const bindClickAway = () => {
-        document.addEventListener('click', handleClickAway)
-    }
+    const portal = !!getPopupContainer
 
-    const clearClickAway = () => {
-        document.removeEventListener('click', handleClickAway)
-    }
-
-    function togglePanel() {
-        if (disabled) return
-
-        if (!show) {
-            bindClickAway()
-        } else {
-            clearClickAway()
-        }
-
-        updateShow(!show)
-    }
-
-    function renderColorBoard() {
-        const rect = btnContainerRef.current?.getBoundingClientRect()
-
-        const ms = styles(dropdownStyle, portal && getPickerPortalStyle(rect, position))
-
-        return (
-            <Portal portal={portal} show={show}>
-                <AnimationList
-                    show={show}
-                    style={ms}
-                    className={classnames(colorPickerClass('dropdown', dropdownClassName))}
-                    animationTypes={['fade']}
-                    duration="fast"
-                    data-id={colorPickerId}
-                >
-                    <ColorBoard
-                        {...other}
-                        disabled={disabled}
-                        mode={mode}
-                        format={format}
-                        value={currentValue}
-                        onChange={handleChange}
-                    />
-                </AnimationList>
-            </Portal>
-        )
-    }
+    const transitionStyle = styles(
+        dropdownStyle,
+        portal && getPortalPickerStyle(triggerElement, portalElement, position)
+    )
+    const transitionCls = classnames(colorPickerClass('dropdown', dropdownClassName))
 
     return (
-        <div className={colorPickerClass('_', position)} data-id={colorPickerId}>
-            <div className={cls} style={style} ref={btnContainerRef}>
-                <div className={colorPickerClass('result')} onClick={togglePanel}>
-                    <div className={colorPickerClass('color')} style={{ backgroundColor: currentValue }} />
+        <div style={style} data-id={componentKey} className={classnames(colorPickerClass('_', position), className)}>
+            <Trigger
+                visible={visible}
+                componentKey={componentKey}
+                bindPortalElement={setPortalElement}
+                getPopupContainer={getPopupContainer}
+                onVisibleChange={handleVisibleChange}
+                transitionComponentProps={{
+                    style: transitionStyle,
+                    duration: 'fast',
+                    transitionTypes: ['fade'],
+                    hideDisplayAfterLeave: true,
+                    className: transitionCls,
+                }}
+                popup={
+                    <ColorBoard
+                        {...other}
+                        mode={mode}
+                        format={format}
+                        disabled={disabled}
+                        value={currentValue}
+                        onChange={handleChange}
+                        componentKey={componentKey}
+                    />
+                }
+            >
+                <div
+                    className={colorPickerClass('inner', size && size, disabled && 'disabled')}
+                    ref={setTriggerElement}
+                >
+                    <div className={colorPickerClass('result')}>
+                        <div className={colorPickerClass('color')} style={{ backgroundColor: currentValue }} />
+                    </div>
+                    {showIcon && (
+                        <span className={colorPickerClass('caret')}>
+                            <Caret />
+                        </span>
+                    )}
                 </div>
-                {showIcon && (
-                    <span className={colorPickerClass('caret')} onClick={togglePanel}>
-                        <Caret />
-                    </span>
-                )}
-            </div>
-
-            {renderColorBoard()}
+            </Trigger>
         </div>
     )
 }

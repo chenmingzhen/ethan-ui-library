@@ -8,7 +8,6 @@ export interface ColorPickerProps {
     defaultColors?: string[]
     style?: React.CSSProperties
     className?: string
-    portal?: boolean
     position?: 'left-bottom' | 'left-top' | 'right-bottom' | 'right-top'
     defaultValue?: string
     onChange?: (color: string) => void
@@ -16,12 +15,14 @@ export interface ColorPickerProps {
     showIcon?: boolean
     dropdownClassName?: string
     dropdownStyle?: React.CSSProperties
+    getPopupContainer?: () => HTMLElement
 }
 
-export type ColorBoardProps = Omit<
-    ColorPickerProps,
-    'position' | 'size' | 'showIcon' | 'dropdownClassName' | 'dropdownStyle'
->
+export interface ColorBoardProps
+    extends Omit<ColorPickerProps, 'position' | 'size' | 'showIcon' | 'dropdownClassName' | 'dropdownStyle'> {
+    /** @private */
+    componentKey?: string
+}
 
 export interface ColorBoardState {
     r: number

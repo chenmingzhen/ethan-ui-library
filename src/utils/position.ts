@@ -9,6 +9,71 @@ export const horizontalDropdownPosition = ['right-top', 'left-top', 'right-botto
 
 export const verticalDropdownPosition = ['bottom-left', 'bottom-right', 'top-left', 'top-right']
 
+export function getPortalListStyle(
+    element: HTMLElement,
+    portalElement: HTMLElement,
+    position: string,
+    fixed: boolean | 'min' = false
+) {
+    if (!portalElement || !element) return {}
+
+    const elementRect = element.getBoundingClientRect()
+    const containerRect = portalElement.getBoundingClientRect()
+    const style: React.CSSProperties = {
+        position: 'absolute',
+    }
+
+    if (fixed) {
+        const widthKey = fixed === 'min' ? 'minWidth' : 'width'
+
+        style[widthKey] = elementRect.width
+    }
+
+    if (listPosition.includes(position)) {
+        style.left = elementRect.left - containerRect.left
+
+        if (position === 'drop-down') {
+            style.top = elementRect.top + elementRect.height - containerRect.top
+        } else {
+            style.bottom = -(containerRect.top - elementRect.top)
+        }
+    }
+
+    return style
+}
+
+export function getPortalPickerStyle(element: HTMLElement, popupParentElement: HTMLElement, position: string) {
+    if (!element || !popupParentElement) return {}
+
+    const elementRect = element.getBoundingClientRect()
+    const containerRect = popupParentElement.getBoundingClientRect()
+
+    const style: React.CSSProperties = {
+        position: 'absolute',
+    }
+
+    /** 对用非Portal的marginTop或marginBottom */
+    const REDUNDANT = 4
+
+    if (pickerPosition.includes(position)) {
+        const [h, v] = position.split('-')
+
+        if (h === 'left') {
+            style.left = elementRect.left - containerRect.left
+        } else {
+            style.right = containerRect.right - elementRect.right
+        }
+
+        if (v === 'bottom') {
+            style.top = elementRect.bottom - containerRect.bottom + REDUNDANT
+        } else {
+            style.bottom = containerRect.top - elementRect.top + REDUNDANT
+        }
+    }
+
+    return style
+}
+
 export function getDropdownPortalStyle(rect: DOMRect, position: string): React.CSSProperties {
     if (!rect) return {}
 
@@ -56,40 +121,7 @@ export function getDropdownPortalStyle(rect: DOMRect, position: string): React.C
     return style
 }
 
-export function getPortalListStyle(
-    element: HTMLElement,
-    container: HTMLElement,
-    position: string,
-    fixed: boolean | 'min' = false
-) {
-    if (!container || !element) return {}
-
-    const elementRect = element.getBoundingClientRect()
-    const containerRect = container.getBoundingClientRect()
-    const style: React.CSSProperties = {
-        position: 'absolute',
-    }
-
-    if (fixed) {
-        const widthKey = fixed === 'min' ? 'minWidth' : 'width'
-
-        style[widthKey] = elementRect.width
-    }
-
-    if (listPosition.includes(position)) {
-        style.left = elementRect.left - containerRect.left
-
-        if (position === 'drop-down') {
-            style.top = elementRect.top + elementRect.height - containerRect.top
-        } else {
-            style.bottom = -(containerRect.top - elementRect.top)
-        }
-    }
-
-    return style
-}
-
-/** @deprecated */
+/** @deprecated 使用getPortalListStyle代替 */
 export function getListPortalStyle(
     rect: DOMRect,
     position: string,
@@ -120,6 +152,7 @@ export function getListPortalStyle(
     return style
 }
 
+/** @deprecated 使用getPortalPickerStyle代替 */
 export function getPickerPortalStyle(rect: DOMRect, position: string) {
     if (!rect) return {}
 
