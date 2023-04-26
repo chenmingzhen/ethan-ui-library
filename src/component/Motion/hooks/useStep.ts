@@ -1,7 +1,8 @@
-import { useEffect, useMemo, useRef } from 'react'
+import { useMemo, useRef } from 'react'
 import useSafeState from '@/hooks/useSafeState'
 import { runInNextFrame } from '@/utils/nextFrame'
 import useRefMethod from '@/hooks/useRefMethod'
+import { useIsomorphicLayoutEffect } from 'react-use'
 import useMotionEvents from './useMotionEvents'
 import { MotionProps, MotionStatus, MotionStep } from '../type'
 
@@ -88,7 +89,9 @@ export default function useStep(props: UseStepProps): [MotionStep, () => void] {
         return {}
     }, [status])
 
-    useEffect(() => {
+    /** ❗ssr环境中，如果在 PREPARE 中处理DOM，大概率会出现异常，因为DOM已经出现在屏幕中，但是 useEffect 却后于重绘回流中  */
+    /** @todo 考虑在startStep 中触发PREPARE事件 */
+    useIsomorphicLayoutEffect(() => {
         if (step === MotionStep.NONE) return
 
         /** 中止上个Status残留的动画 */
