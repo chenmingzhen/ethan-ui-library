@@ -98,7 +98,15 @@ const Trigger: React.FC<TriggerProps> = function (props) {
             children.props.onFocus(e)
         }
 
-        updateShow(!show)
+        updateShow(true)
+    })
+
+    const handleBlur = useRefMethod((e: React.FocusEvent) => {
+        if (children && children.props && children.props.onBlur) {
+            children.props.onBlur(e)
+        }
+
+        updateShow(false)
     })
 
     const bindNoScriptDOMNode = useRefMethod((dom: HTMLElement) => {
@@ -117,16 +125,25 @@ const Trigger: React.FC<TriggerProps> = function (props) {
         updateShowNoScript(false)
     })
 
-    const triggerProps = useMemo<React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>>(
-        () => ({
-            /** 绑定Action */
-            onMouseEnter: triggerActions.includes('hover') ? handleMouseEnter : undefined,
-            onMouseLeave: triggerActions.includes('hover') ? handleMouseLeave : undefined,
-            onMouseDown: triggerActions.includes('mousedown') ? handleMousedown : undefined,
-            onFocus: triggerActions.includes('focus') ? handleFocus : undefined,
-        }),
-        []
-    )
+    const triggerProps = useMemo<React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>>(() => {
+        const injectEventProps: React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement> = {}
+
+        if (triggerActions.includes('hover')) {
+            injectEventProps.onMouseEnter = handleMouseEnter
+            injectEventProps.onMouseLeave = handleMouseLeave
+        }
+
+        if (triggerActions.includes('mousedown')) {
+            injectEventProps.onMouseDown = handleMousedown
+        }
+
+        if (triggerActions.includes('focus')) {
+            injectEventProps.onFocus = handleFocus
+            injectEventProps.onBlur = handleBlur
+        }
+
+        return injectEventProps
+    }, [])
 
     const handleClickAway = useRefMethod((evt: MouseEvent) => {
         const desc = isDescendent(evt.target as HTMLElement, componentKey)
@@ -156,7 +173,7 @@ const Trigger: React.FC<TriggerProps> = function (props) {
     })
 
     useEffect(() => {
-        if (triggerActions.includes('mousedown') || triggerActions.includes('focus')) {
+        if (triggerActions.includes('mousedown')) {
             if (show) {
                 document.addEventListener('mousedown', handleClickAway)
                 return () => {
@@ -204,7 +221,7 @@ const Trigger: React.FC<TriggerProps> = function (props) {
                 getPopupContainer={getPopupContainer}
             >
                 {transitionComponentProps ? (
-                    <Transition {...transitionComponentProps} visible={show}>
+                    <Transition data-ck={componentKey} {...transitionComponentProps} visible={show}>
                         {popup}
                     </Transition>
                 ) : (
