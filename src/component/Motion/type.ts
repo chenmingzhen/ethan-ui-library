@@ -24,6 +24,7 @@ export interface MotionProps {
      * 不设置forceStep，没有enter和leave不会触发对应的事件
      */
     forceStep?: boolean
+    bindMotionElement?: (element: HTMLElement) => void
 }
 
 export enum MotionStatus {
@@ -62,4 +63,5 @@ export interface TransitionProps<Tag extends HTMLElement = HTMLDivElement>
     tag?: keyof HTMLElementTagNameMap
     destroyAfterLeave?: MotionProps['destroyAfterLeave']
     hideDisplayAfterLeave?: boolean
+    bindMotionElement?: (element: HTMLElement) => void
 }

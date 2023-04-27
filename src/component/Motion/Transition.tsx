@@ -20,6 +20,7 @@ function Transition<Tag extends HTMLElement = HTMLDivElement>(props: TransitionP
         hideDisplayAfterLeave,
         destroyAfterLeave,
         duration: rawDuration,
+        bindMotionElement,
         ...other
     } = props
 
@@ -68,8 +69,9 @@ function Transition<Tag extends HTMLElement = HTMLDivElement>(props: TransitionP
 
     return (
         <Motion
-            destroyAfterLeave={destroyAfterLeave}
             visible={visible}
+            destroyAfterLeave={destroyAfterLeave}
+            bindMotionElement={bindMotionElement}
             onEnterPrepare={(element) => {
                 if (!hasAnimation) return
                 /** 此逻辑相当于在onAppearPrepare周期执行,考虑在Motion中新增Appear的处理 */

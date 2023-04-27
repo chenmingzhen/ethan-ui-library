@@ -14,6 +14,7 @@ const Trigger: React.FC<TriggerProps> = function (props) {
         popup,
         visible,
         children,
+        onDescClick,
         componentKey,
         defaultVisible,
         resizeDebounce,
@@ -22,7 +23,6 @@ const Trigger: React.FC<TriggerProps> = function (props) {
         mouseEnterDelay,
         mouseLeaveDelay,
         portalClassName,
-        getPopupElement,
         bindPortalElement,
         getPopupContainer,
         bindTriggerElement,
@@ -34,6 +34,7 @@ const Trigger: React.FC<TriggerProps> = function (props) {
     const [showNoScript, updateShowNoScript] = useState(true)
     const triggerElementRef = useRef<HTMLElement>()
     const mouseTimer = useRef<NodeJS.Timeout>()
+    const [popupElement, setPopupElement] = useState<HTMLElement>()
     const [show, updateShow] = useMergedValue({
         defaultStateValue: false,
         options: {
@@ -87,10 +88,7 @@ const Trigger: React.FC<TriggerProps> = function (props) {
             children.props.onMouseDown(e)
         }
 
-        /** 避免mousedown动作之后，马上触发document的mousedown，添加延迟设置show，待document mousedown完成后再显示 */
-        setTimeout(() => {
-            updateShow(!show)
-        })
+        updateShow(!show)
     })
 
     const handleFocus = useRefMethod((e: React.FocusEvent) => {
@@ -146,68 +144,81 @@ const Trigger: React.FC<TriggerProps> = function (props) {
     }, [])
 
     const handleClickAway = useRefMethod((evt: MouseEvent) => {
+        if (!show) return
+
         const desc = isDescendent(evt.target as HTMLElement, componentKey)
-        if (desc) return
+        if (desc) {
+            if (onDescClick) {
+                onDescClick(evt)
+            }
+
+            return
+        }
 
         updateShow(false)
     })
 
     const handlePopupElementMouseLeave = useRefMethod((e: MouseEvent) => {
-        if (e.relatedTarget === triggerElementRef.current) return
+        if (!show || e.relatedTarget === triggerElementRef.current) return
 
         updateShow(false)
     })
 
-    const addPopupEventListener = useRefMethod(() => {
-        const popupElement = getPopupElement()
-        if (!popupElement) return
-
-        popupElement.addEventListener('mouseleave', handlePopupElementMouseLeave)
-    })
-
-    const removePopupEventListener = useRefMethod(() => {
-        const popupElement = getPopupElement()
-        if (!popupElement) return
-
-        popupElement.removeEventListener('mouseleave', handlePopupElementMouseLeave)
-    })
-
     useEffect(() => {
-        if (triggerActions.includes('mousedown')) {
-            if (show) {
-                document.addEventListener('mousedown', handleClickAway)
-                return () => {
-                    document.addEventListener('mousedown', handleClickAway)
-                }
+        if (!show) return
+
+        const hasMousedownTrigger = triggerActions.includes('mousedown')
+        const hasHoverTrigger = triggerActions.includes('hover')
+
+        if (hasMousedownTrigger) {
+            /* 捕获阶段执行，避免点击TriggerElement后马上执行document的mousedown */
+            document.addEventListener('mousedown', handleClickAway, true)
+        }
+
+        if (hasHoverTrigger && popupElement) {
+            popupElement.addEventListener('mouseleave', handlePopupElementMouseLeave)
+        }
+
+        return () => {
+            if (hasMousedownTrigger) {
+                document.removeEventListener('mousedown', handleClickAway)
             }
 
-            /** 统一处理受控模式和mousedown模式 */
-            document.removeEventListener('mousedown', handleClickAway)
-        }
-        if (triggerActions.includes('hover') && getPopupElement) {
-            if (show) {
-                /** 等待DOM挂载后再添加事件 */
-                setTimeout(addPopupEventListener)
-                return removePopupEventListener
+            if (hasHoverTrigger && popupElement) {
+                popupElement.removeEventListener('mouseleave', handlePopupElementMouseLeave)
             }
         }
-    }, [show])
+    }, [show, popupElement])
+
+    const handleTriggerElementResize = useRefMethod(() => {
+        if (onTriggerElementResize) {
+            onTriggerElementResize(popupElement)
+        }
+    })
+
+    const handleWindowsResize = useRefMethod(() => {
+        if (onWindowResize) {
+            onWindowResize(popupElement)
+        }
+    })
 
     useResizeObserver({
         watch: !!(onTriggerElementResize && show),
-        onResize: onTriggerElementResize,
+        onResize: handleTriggerElementResize,
         options: { direction: 'xy', callbackDebounce: resizeDebounce },
         getTargetElement: () => triggerElementRef.current,
     })
 
     useResizeObserver({
         watch: !!(onWindowResize && show),
-        onResize: onWindowResize,
+        onResize: handleWindowsResize,
         options: { direction: 'xy', callbackDebounce: resizeDebounce },
         getTargetElement: () => document.body,
     })
 
     useEffect(() => clearMouseTimer, [])
+
+    const wrapGetPopupContainer = useRefMethod(() => getPopupContainer?.(triggerElementRef.current))
 
     return (
         <>
@@ -218,14 +229,19 @@ const Trigger: React.FC<TriggerProps> = function (props) {
                 show={show}
                 ref={bindPortalElement}
                 portalClassName={portalClassName}
-                getPopupContainer={getPopupContainer}
+                getPopupContainer={getPopupContainer ? wrapGetPopupContainer : undefined}
             >
                 {transitionComponentProps ? (
-                    <Transition data-ck={componentKey} {...transitionComponentProps} visible={show}>
+                    <Transition
+                        data-ck={componentKey}
+                        {...transitionComponentProps}
+                        visible={show}
+                        bindMotionElement={setPopupElement}
+                    >
                         {popup}
                     </Transition>
                 ) : (
-                    <Motion {...motionComponentProps} visible={show}>
+                    <Motion {...motionComponentProps} visible={show} bindMotionElement={setPopupElement}>
                         {popup}
                     </Motion>
                 )}

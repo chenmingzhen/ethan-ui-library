@@ -37,8 +37,6 @@ const Popover: React.FC<PopoverProps> = function (props) {
     } = props
     const triggerActions = isArray(trigger) ? trigger : [trigger]
     const componentKey = useRef(getUidStr()).current
-    const popupElementRef = useRef<HTMLDivElement>()
-
     const [triggerElement, setTriggerElement] = useSafeState<HTMLElement>()
     const [visible, updateVisible] = useMergedValue({
         defaultStateValue: defaultVisible,
@@ -52,49 +50,45 @@ const Popover: React.FC<PopoverProps> = function (props) {
         },
     })
 
-    const getPopupElement = useRefMethod(() => popupElementRef.current)
+    const computedPopupElementPosition = useRefMethod((popupElement: HTMLElement) => {
+        if (!popupElement) return
 
-    const computedPopupElementPosition = useRefMethod(() => {
-        const element = popupElementRef.current
-        if (!element) return
-
-        const position = getPosition(placement, null, triggerElement, element.parentElement)
-        const posStyle = getPositionStyle(position, triggerElement, element.parentElement)
+        const position = getPosition(placement, null, triggerElement, popupElement.parentElement)
+        const posStyle = getPositionStyle(position, triggerElement, popupElement.parentElement)
         const ms = styles(style, posStyle)
 
         Object.keys(ms).forEach((k) => {
-            element.style[k] = ms[k]
+            popupElement.style[k] = ms[k]
         })
 
-        element.setAttribute('data-placement', position)
+        popupElement.setAttribute('data-placement', position)
     })
 
-    const adjustPopupElementPosition = useRefMethod(() => {
+    const adjustPopupElementPosition = useRefMethod((popupElement: HTMLElement) => {
         if (!autoAdjustOverflow) return
 
-        const element = popupElementRef.current
-        if (!element) return
+        if (!popupElement) return
 
-        const { left, right, top, bottom } = element.getBoundingClientRect()
+        const { left, right, top, bottom } = popupElement.getBoundingClientRect()
 
         if (left < 0) {
-            element.style.left = `${parsePxToNumber(element.style.left) + Math.abs(left)}px`
+            popupElement.style.left = `${parsePxToNumber(popupElement.style.left) + Math.abs(left)}px`
         } else if (right < 0) {
-            element.style.right = `${parsePxToNumber(element.style.right) + Math.abs(right)}px`
+            popupElement.style.right = `${parsePxToNumber(popupElement.style.right) + Math.abs(right)}px`
         }
 
         if (top < 0) {
-            element.style.top = `${parsePxToNumber(element.style.top) + Math.abs(top)}px`
+            popupElement.style.top = `${parsePxToNumber(popupElement.style.top) + Math.abs(top)}px`
         } else if (bottom < 0) {
-            element.style.bottom = `${parsePxToNumber(element.style.bottom) + Math.abs(bottom)}px`
+            popupElement.style.bottom = `${parsePxToNumber(popupElement.style.bottom) + Math.abs(bottom)}px`
         }
     })
 
     const handleResize = useRefMethod(
-        debounce(() => {
-            computedPopupElementPosition()
-            adjustPopupElementPosition()
-        }, 300)
+        debounce((popupElement: HTMLElement) => {
+            computedPopupElementPosition(popupElement)
+            adjustPopupElementPosition(popupElement)
+        }, 100)
     )
 
     useEffect(() => handleResize.cancel, [])
@@ -106,7 +100,6 @@ const Popover: React.FC<PopoverProps> = function (props) {
             onWindowResize={handleResize}
             triggerActions={triggerActions}
             onVisibleChange={updateVisible}
-            getPopupElement={getPopupElement}
             getPopupContainer={getPopupContainer}
             onTriggerElementResize={handleResize}
             bindTriggerElement={setTriggerElement}
@@ -115,7 +108,6 @@ const Popover: React.FC<PopoverProps> = function (props) {
             popup={
                 <div
                     {...popupProps}
-                    ref={popupElementRef}
                     data-ck={componentKey}
                     className={classnames(
                         popoverClass('_', !showArrow && 'hide-arrow', animation && 'animation'),

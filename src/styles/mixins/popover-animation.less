@@ -49,6 +49,13 @@
 
     @keyframe-right-top-zoom-out: ~'@{popover-prefix}-kf-right-top-zoom-out';
 
+    &-animation {
+        // 用于重新计算位置时的过渡
+        transition-property: top, bottom, left, right;
+        transition-duration: 0.25s;
+        transition-timing-function: ease-in-out;
+    }
+
     &[data-placement='top']&-enter&-animation {
         // 由于设置了translate 所以transform-origin不是center bottom;
         // 同理下面的placement 需要推算transform-origin

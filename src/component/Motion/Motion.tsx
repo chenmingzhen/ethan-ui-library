@@ -48,11 +48,15 @@ const Motion: React.FC<MotionProps> = function (props) {
         onLeaveActive,
         onLeaveEnd,
     } = props
-    const transitionDOMRef = useRef<HTMLElement>()
-    const getElement = useRefMethod(() => transitionDOMRef.current)
+    const motionElementRef = useRef<HTMLElement>()
+    const getElement = useRefMethod(() => motionElementRef.current)
 
-    const bindChildrenElement = useRefMethod((element) => {
-        transitionDOMRef.current = element
+    const bindMotionElement = useRefMethod((element) => {
+        motionElementRef.current = element
+
+        if (props.bindMotionElement) {
+            props.bindMotionElement(element)
+        }
 
         const forwardedRef = isValidElement(children) ? (children as any).ref : undefined
 
@@ -96,12 +100,12 @@ const Motion: React.FC<MotionProps> = function (props) {
                 {
                     className: cls,
                 },
-                transitionDOMRef
+                motionElementRef
             )
         } else if (isValidElement(children)) {
             mergeChild = cloneElement(children as any, {
                 className: children.props.className || cls ? classnames(children.props.className, cls) : undefined,
-                ref: bindChildrenElement,
+                ref: bindMotionElement,
             })
         }
     }
