@@ -16,19 +16,19 @@ import Trigger from '../Trigger'
 const ColorPicker: React.FC<ColorPickerProps> = function (props) {
     const {
         size,
-        disabled,
-        className,
+        mode,
         style,
         value,
-        defaultValue,
-        position = 'left-bottom',
         onChange,
-        mode,
+        disabled,
+        className,
+        defaultValue,
+        dropdownStyle,
         format = 'rgba',
         showIcon = true,
         dropdownClassName,
-        dropdownStyle,
-        getPopupContainer,
+        position = 'left-bottom',
+        getPopupContainer = () => document.body,
         ...other
     } = props
     const [visible, updateVisible] = useSafeState(false)
@@ -58,45 +58,42 @@ const ColorPicker: React.FC<ColorPickerProps> = function (props) {
         updateCurrentValue(color)
     }
 
-    const portal = !!getPopupContainer
-
-    const transitionStyle = styles(
-        dropdownStyle,
-        portal && getPortalPickerStyle(triggerElement, portalElement, position)
-    )
+    const transitionStyle = styles(dropdownStyle, getPortalPickerStyle(triggerElement, portalElement, position))
     const transitionCls = classnames(colorPickerClass('dropdown', dropdownClassName))
 
     return (
-        <div style={style} data-id={componentKey} className={classnames(colorPickerClass('_', position), className)}>
-            <Trigger
-                visible={visible}
-                componentKey={componentKey}
-                bindPortalElement={setPortalElement}
-                getPopupContainer={getPopupContainer}
-                onVisibleChange={handleVisibleChange}
-                transitionComponentProps={{
-                    style: transitionStyle,
-                    duration: 'fast',
-                    transitionTypes: ['fade'],
-                    hideDisplayAfterLeave: true,
-                    className: transitionCls,
-                }}
-                popup={
-                    <ColorBoard
-                        {...other}
-                        mode={mode}
-                        format={format}
-                        disabled={disabled}
-                        value={currentValue}
-                        onChange={handleChange}
-                        componentKey={componentKey}
-                    />
-                }
+        <Trigger
+            visible={visible}
+            componentKey={componentKey}
+            bindPortalElement={setPortalElement}
+            getPopupContainer={getPopupContainer}
+            onVisibleChange={handleVisibleChange}
+            bindTriggerElement={setTriggerElement}
+            transitionComponentProps={{
+                style: transitionStyle,
+                duration: 'fast',
+                transitionTypes: ['fade'],
+                hideDisplayAfterLeave: true,
+                className: transitionCls,
+            }}
+            popup={
+                <ColorBoard
+                    {...other}
+                    mode={mode}
+                    format={format}
+                    disabled={disabled}
+                    value={currentValue}
+                    onChange={handleChange}
+                    componentKey={componentKey}
+                />
+            }
+        >
+            <div
+                style={style}
+                data-id={componentKey}
+                className={classnames(colorPickerClass('_', position, size && size, disabled && 'disabled'), className)}
             >
-                <div
-                    className={colorPickerClass('inner', size && size, disabled && 'disabled')}
-                    ref={setTriggerElement}
-                >
+                <div className={colorPickerClass('inner')}>
                     <div className={colorPickerClass('result')}>
                         <div className={colorPickerClass('color')} style={{ backgroundColor: currentValue }} />
                     </div>
@@ -106,8 +103,8 @@ const ColorPicker: React.FC<ColorPickerProps> = function (props) {
                         </span>
                     )}
                 </div>
-            </Trigger>
-        </div>
+            </div>
+        </Trigger>
     )
 }
 

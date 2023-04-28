@@ -15,7 +15,7 @@ export interface ColorPickerProps {
     showIcon?: boolean
     dropdownClassName?: string
     dropdownStyle?: React.CSSProperties
-    getPopupContainer?: () => HTMLElement
+    getPopupContainer?: (triggerElement: HTMLElement) => HTMLElement
 }
 
 export interface ColorBoardProps

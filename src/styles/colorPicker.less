@@ -6,38 +6,14 @@
 .@{colorPicker-prefix} {
     display: inline-block;
     position: relative;
+    height: 30px;
 
     &-dropdown {
         position: absolute;
         z-index: @zindex-dropdown;
     }
 
-    &-left-bottom &-dropdown {
-        top: 100%;
-        left: 0;
-        margin-top: 4px;
-    }
-
-    &-left-top &-dropdown {
-        bottom: 100%;
-        left: 0;
-        margin-bottom: 4px;
-    }
-
-    &-right-top &-dropdown {
-        right: 0;
-        bottom: 100%;
-        margin-bottom: 4px;
-    }
-
-    &-right-bottom &-dropdown {
-        top: 100%;
-        right: 0;
-        margin-top: 4px;
-    }
-
     &-inner {
-        height: 30px;
         border: 1px solid #d8d8d8;
         border-radius: 2px;
         display: inline-flex;
@@ -71,29 +47,29 @@
                 fill: var(--gray-500, #adb5bd);
             }
         }
+    }
 
-        &.@{colorPicker-prefix}-small {
-            height: 25px;
-            .@{colorPicker-prefix}-result {
-                width: 22px;
-                height: 22px;
-            }
-            .@{colorPicker-prefix}-caret {
-                width: 12px;
-                height: 17px;
-            }
+    &.@{colorPicker-prefix}-small {
+        height: 26px;
+        .@{colorPicker-prefix}-result {
+            width: 22px;
+            height: 22px;
         }
+        .@{colorPicker-prefix}-caret {
+            width: 12px;
+            height: 17px;
+        }
+    }
 
-        &.@{colorPicker-prefix}-large {
-            height: 40px;
-            .@{colorPicker-prefix}-result {
-                width: 35.5px;
-                height: 35.5px;
-            }
-            .@{colorPicker-prefix}-caret {
-                width: 19px;
-                height: 19px;
-            }
+    &.@{colorPicker-prefix}-large {
+        height: 40px;
+        .@{colorPicker-prefix}-result {
+            width: 36px;
+            height: 36px;
+        }
+        .@{colorPicker-prefix}-caret {
+            width: 19px;
+            height: 19px;
         }
     }
 
@@ -101,10 +77,15 @@
         cursor: @cursor-disabled;
         background: #f3f3f3;
         border-color: #d0d0d0;
+
+        .@{colorPicker-prefix}-inner {
+            cursor: @cursor-disabled;
+        }
     }
 
     &-board {
         width: 255px;
+        height: auto;
         font-size: 0;
         box-shadow: 0 2px 8px rgb(0 0 0 / 15%);
         border-radius: 2px;
