@@ -1,4 +1,5 @@
 import React from 'react'
+import { TriggerProps } from '../Trigger/type'
 
 export interface QuickSelect<Value extends Date | Date[]> {
     name: string
@@ -20,7 +21,6 @@ export interface DatePickerProps {
     size?: 'small' | 'default' | 'large'
     type?: 'date' | 'date-time' | 'month' | 'week' | 'year'
     value?: Date
-    portal?: boolean
     zIndex?: number
     quickSelects?: QuickSelect<Date>[]
     min?: Date
@@ -30,6 +30,7 @@ export interface DatePickerProps {
     border?: boolean
     className?: string
     style?: React.CSSProperties
+    getPopupContainer?: TriggerProps['getPopupContainer']
 }
 
 export interface DatePickerTextProps {
@@ -132,7 +133,6 @@ export interface ContainerProps extends React.DetailedHTMLProps<React.HTMLAttrib
     containerClassName: string
     innerClassName: string
     containerStyle: React.CSSProperties
-    onDescClick: (evt: MouseEvent) => void
 }
 
 export interface RangePickerProps {
@@ -148,7 +148,6 @@ export interface RangePickerProps {
     size?: 'small' | 'default' | 'large'
     type?: 'date' | 'date-time' | 'month' | 'week' | 'year'
     value?: Date[]
-    portal?: boolean
     zIndex?: number
     quickSelects?: QuickSelect<Date[]>[]
     min?: Date
@@ -158,6 +157,7 @@ export interface RangePickerProps {
     border?: boolean
     className?: string
     style?: React.CSSProperties
+    getPopupContainer?: TriggerProps['getPopupContainer']
 }
 
 export interface RangePickerContextProps {

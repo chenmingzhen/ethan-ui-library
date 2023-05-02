@@ -6,51 +6,52 @@ import { getUidStr } from '@/utils/uid'
 import classnames from 'classnames'
 import React, { useEffect, useRef, useState } from 'react'
 import { styles } from '@/utils/style/styles'
-import { getPickerPortalStyle } from '@/utils/position'
+import { getPortalPickerStyle } from '@/utils/position'
 import { getLocale } from '@/locale'
 import { preventDefault, stopPropagation } from '@/utils/func'
 import useMergedValue from '@/hooks/useMergedValue'
 import shallowEqual from '@/utils/shallowEqual'
+import useLockFocus from '@/hooks/useLockFocus'
 import { ChangeMode, DatePickerProps, QuickSelect } from './type'
 import utils from './utils'
 import Icon from './Icon'
 import Text from './Text'
-import Portal from '../Portal'
-import AnimationList from '../List'
 import Picker from './Picker'
 import useFormat from './hooks/useFormat'
 import useQuicks from './hooks/useQuicks'
-import Container from './Container'
+import Trigger from '../Trigger'
+import useInputStyle from '../Input/hooks/useInputStyle'
 
 const DatePicker: React.FC<DatePickerProps> = function (props) {
     const {
-        disabled,
-        border,
-        size,
-        type = 'date',
-        onFocus,
-        defaultPickerValue,
-        placeholder,
-        inputAble,
-        onBlur,
-        zIndex,
-        portal,
         min,
         max,
-        onChange,
-        quickSelects,
+        size,
         style,
+        border,
+        zIndex,
+        onBlur,
+        onFocus,
+        onChange,
+        disabled,
+        inputAble,
+        placeholder,
+        quickSelects,
+        type = 'date',
+        defaultPickerValue,
+        getPopupContainer = () => document.body,
     } = props
 
-    const pickerId = useRef(getUidStr()).current
-    const containerRef = useRef<HTMLDivElement>()
+    const componentKey = useRef(getUidStr()).current
+    const [triggerElement, setTriggerElement] = useState<HTMLDivElement>()
     const pickerContainerRef = useRef<HTMLDivElement>()
     const format = useFormat(props.format, props.type)
     const quicks = useQuicks(quickSelects, format)
     const inputRef = useRef<HTMLInputElement>()
+    const portalElementRef = useRef<HTMLDivElement>()
     /** 面板的参考值，改变Year Month时的参考值 */
     const [panelDate, updatePanelDate] = useState(new Date())
-    const [show, updateShow] = useState(false)
+    const [visible, updateVisible] = useState(false)
     /** 选中的值（缓冲值，不会触发onChange，用于输入时） */
     const [selectedDate, updateSelectedDate] = useState<Date>(undefined)
     const [position, updatePosition] = useState(props.position)
@@ -71,8 +72,19 @@ const DatePicker: React.FC<DatePickerProps> = function (props) {
         },
     })
 
+    const [focus, updateFocus, lockFocus, hasLockFocusRef] = useLockFocus()
+
+    const { className: cls, style: ms } = useInputStyle({
+        focus,
+        disabled: disabled === true,
+        border,
+        size,
+        className: classnames(props.className, datePickerClass('_', `c-${type || 'date'}`)),
+        style,
+    })
+
     useEffect(() => {
-        if (!show) return
+        if (!visible) return
 
         if (value) {
             updatePanelDate(value)
@@ -81,23 +93,27 @@ const DatePicker: React.FC<DatePickerProps> = function (props) {
         } else {
             updatePanelDate(new Date())
         }
-    }, [value, format, show])
+    }, [value, format, visible])
 
     useEffect(() => {
-        if (show) {
+        if (visible) {
             updateSelectedDate(value)
         }
-    }, [show])
+    }, [visible])
 
     const bindPickerContainerRef = useRefMethod((el) => {
         pickerContainerRef.current = el
     })
 
+    const inputFocus = useRefMethod(() => {
+        inputRef.current.focus({ preventScroll: true })
+    })
+
     function toggleOpen(nextOpen: boolean) {
-        if (props.disabled === true || nextOpen === show) return
+        if (props.disabled === true || nextOpen === visible) return
 
         if (nextOpen) {
-            const rect = containerRef.current.getBoundingClientRect()
+            const rect = triggerElement.getBoundingClientRect()
             const windowHeight = docSize.height
             const windowWidth = docSize.width
             const hasQuick = quicks.length > 0
@@ -111,16 +127,11 @@ const DatePicker: React.FC<DatePickerProps> = function (props) {
                 } else if (rect.left + pickerWidth > windowWidth) nextPosition = 'right-bottom'
                 else nextPosition = 'left-bottom'
             }
-            updateShow(true)
+            updateVisible(true)
             updatePosition(nextPosition)
         } else {
-            updateShow(false)
+            updateVisible(false)
         }
-    }
-
-    function handleMouseDown() {
-        toggleOpen(true)
-        inputRef.current.focus()
     }
 
     const handleTextBlur = useRefMethod((date: Date) => {
@@ -171,16 +182,24 @@ const DatePicker: React.FC<DatePickerProps> = function (props) {
         updateSelectedDate(date)
     })
 
-    function handleDescClick() {
-        inputRef.current.focus()
+    function handleFocus(e: React.FocusEvent<HTMLDivElement>) {
+        if (hasLockFocusRef.current || disabled === true) return
+        if (onFocus) {
+            onFocus(e)
+        }
+
+        updateFocus(true)
+        lockFocus()
     }
 
-    function handleContainerBlur(e: React.FocusEvent<HTMLDivElement>) {
+    function handleBlur(e: React.FocusEvent<HTMLDivElement>) {
+        if (hasLockFocusRef.current || disabled === true) return
         if (onBlur) {
             onBlur(e)
         }
 
         toggleOpen(false)
+        updateFocus(false)
     }
 
     function renderResult() {
@@ -217,72 +236,87 @@ const DatePicker: React.FC<DatePickerProps> = function (props) {
         )
     }
 
-    function renderWrappedPicker() {
-        const rect = containerRef.current?.getBoundingClientRect()
-        const ms = styles({ zIndex }, portal && getPickerPortalStyle(rect, position))
+    function handleDescClick() {
+        lockFocus(() => {
+            inputFocus()
+        })
+    }
 
-        return (
-            <Portal portal={portal} rootClass={datePickerClass('absolute')} show={show}>
-                <AnimationList
-                    style={ms}
-                    show={show}
-                    duration="fast"
-                    data-id={pickerId}
-                    animationTypes={['fade']}
-                    getRef={bindPickerContainerRef}
-                    className={datePickerClass('picker', 'location', `absolute-${position}`, quicks.length && 'quick')}
-                >
-                    <div className={datePickerClass('split')}>
-                        {quicks.length ? (
-                            <div className={datePickerClass('quick-select')}>
-                                {quicks.map((q) => (
-                                    <div
-                                        key={q.name}
-                                        className={datePickerClass('quick-select-item')}
-                                        onClick={() => {
-                                            handleQuickChange(q)
-                                        }}
-                                    >
-                                        {q.name}
-                                    </div>
-                                ))}
-                            </div>
-                        ) : null}
-                        <Picker
-                            min={min}
-                            max={max}
-                            type={type}
-                            format={format}
-                            panelDate={panelDate}
-                            onChange={handleChange}
-                            disabled={isFunc(disabled) ? disabled : undefined}
-                            selectedDate={selectedDate}
-                        />
-                    </div>
-                </AnimationList>
-            </Portal>
-        )
+    function handleMouseDown(e: React.MouseEvent) {
+        // 阻止document获取到焦点
+        e.preventDefault()
+
+        inputFocus()
     }
 
     return (
-        <Container
-            size={size}
-            type={type}
-            border={border}
-            onBlur={handleContainerBlur}
-            onFocus={onFocus}
-            data-id={pickerId}
-            ref={containerRef}
-            containerStyle={style}
-            disabled={disabled === true}
-            onMouseDown={handleMouseDown}
-            containerClassName={classnames(props.className, datePickerClass('_', `c-${type || 'date'}`))}
-            innerClassName={datePickerClass('inner', size && `size-${size}`, disabled === true && 'disabled', position)}
+        <Trigger
+            visible={visible}
+            componentKey={componentKey}
+            onVisibleChange={toggleOpen}
             onDescClick={handleDescClick}
+            bindPortalElement={portalElementRef}
+            getPopupContainer={getPopupContainer}
+            portalClassName={datePickerClass('absolute')}
+            bindTriggerElement={setTriggerElement}
+            transitionComponentProps={{
+                duration: 'fast',
+                transitionTypes: ['fade'],
+                ref: bindPickerContainerRef,
+                hideDisplayAfterLeave: true,
+                className: datePickerClass('picker', 'location', `absolute-${position}`, quicks.length && 'quick'),
+                style: styles({ zIndex }, getPortalPickerStyle(triggerElement, portalElementRef.current, position)),
+            }}
+            popup={
+                <div className={datePickerClass('split')}>
+                    {quicks.length ? (
+                        <div className={datePickerClass('quick-select')}>
+                            {quicks.map((q) => (
+                                <div
+                                    key={q.name}
+                                    className={datePickerClass('quick-select-item')}
+                                    onClick={() => {
+                                        handleQuickChange(q)
+                                    }}
+                                >
+                                    {q.name}
+                                </div>
+                            ))}
+                        </div>
+                    ) : null}
+                    <Picker
+                        min={min}
+                        max={max}
+                        type={type}
+                        format={format}
+                        panelDate={panelDate}
+                        onChange={handleChange}
+                        disabled={isFunc(disabled) ? disabled : undefined}
+                        selectedDate={selectedDate}
+                    />
+                </div>
+            }
         >
-            {renderResult()}
-            {renderWrappedPicker()}
-        </Container>
+            <div
+                className={cls}
+                style={ms}
+                onMouseDown={handleMouseDown}
+                onFocus={handleFocus}
+                onBlur={handleBlur}
+                data-ck={componentKey}
+            >
+                <div
+                    className={datePickerClass(
+                        'inner',
+                        size && `size-${size}`,
+                        disabled === true && 'disabled',
+                        position
+                    )}
+                >
+                    {renderResult()}
+                </div>
+            </div>
+        </Trigger>
     )
 }
 

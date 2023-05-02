@@ -46,7 +46,7 @@ const Container: ForwardRefRenderFunction<HTMLDivElement, ContainerProps> = func
             onFocus(e)
         }
 
-        document.addEventListener('mousedown', handleClickAway, true)
+        document.addEventListener('mousedown', handleClickAway)
 
         updateFocus(true)
         lockFocus()
@@ -58,7 +58,7 @@ const Container: ForwardRefRenderFunction<HTMLDivElement, ContainerProps> = func
             onBlur(e)
         }
 
-        document.removeEventListener('mousedown', handleClickAway, true)
+        document.removeEventListener('mousedown', handleClickAway)
 
         updateFocus(false)
     }

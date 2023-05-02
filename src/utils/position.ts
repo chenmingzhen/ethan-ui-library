@@ -42,11 +42,11 @@ export function getPortalListStyle(
     return style
 }
 
-export function getPortalPickerStyle(element: HTMLElement, popupParentElement: HTMLElement, position: string) {
-    if (!element || !popupParentElement) return {}
+export function getPortalPickerStyle(triggerElement: HTMLElement, portalElement: HTMLElement, position: string) {
+    if (!triggerElement || !portalElement) return {}
 
-    const elementRect = element.getBoundingClientRect()
-    const containerRect = popupParentElement.getBoundingClientRect()
+    const elementRect = triggerElement.getBoundingClientRect()
+    const containerRect = portalElement.getBoundingClientRect()
 
     const style: React.CSSProperties = {
         position: 'absolute',

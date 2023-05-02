@@ -7,22 +7,22 @@ import { getUidStr } from '@/utils/uid'
 import classnames from 'classnames'
 import React, { useEffect, useRef } from 'react'
 import { styles } from '@/utils/style/styles'
-import { getPickerPortalStyle } from '@/utils/position'
+import { getPortalPickerStyle } from '@/utils/position'
 import { getLocale } from '@/locale'
 import useSafeState from '@/hooks/useSafeState'
 import { preventDefault, stopPropagation } from '@/utils/func'
 import { isDescendent } from '@/utils/dom/element'
-import Container from './Container'
+import useLockFocus from '@/hooks/useLockFocus'
 import useFormat from './hooks/useFormat'
 import useQuicks from './hooks/useQuicks'
 import { QuickSelect, RangePickerProps } from './type'
 import Text from './Text'
 import utils from './utils'
 import Icon from './Icon'
-import Portal from '../Portal'
-import AnimationList from '../List'
 import Picker from './Picker'
 import RangePickerContext from './context'
+import useInputStyle from '../Input/hooks/useInputStyle'
+import Trigger from '../Trigger'
 
 const RangePicker: React.FC<RangePickerProps> = function (props) {
     const {
@@ -35,24 +35,24 @@ const RangePicker: React.FC<RangePickerProps> = function (props) {
         inputAble,
         onBlur,
         zIndex,
-        portal,
         min,
         max,
         onChange,
         quickSelects,
         style,
+        getPopupContainer = () => document.body,
     } = props
 
-    const pickerId = useRef(getUidStr()).current
-    const containerRef = useRef<HTMLDivElement>()
-    const pickerContainerRef = useRef<HTMLDivElement>()
+    const componentKey = useRef(getUidStr()).current
+    const portalElementRef = useRef<HTMLDivElement>()
     const format = useFormat(props.format, props.type)
     const quicks = useQuicks(quickSelects, format)
+    const [triggerElement, setTriggerElement] = useSafeState<HTMLDivElement>()
     /** 面板显示的时间 */
     const [panelDates, updatePanelDates] = useSafeState([new Date(), new Date()])
     /** 选中的值（缓冲值，不会触发onChange,用于选中一边和输入时） */
     const [selectedPanelDates, updateSelectedPanelDates] = useSafeState<Date[]>([])
-    const [show, updateShow] = useSafeState(false)
+    const [visible, updateVisible] = useSafeState(false)
     const [hover, updateHover] = useSafeState<number>(null)
     const [position, updatePosition] = useSafeState(props.position)
     const leftInputRef = useRef<HTMLInputElement>()
@@ -73,8 +73,19 @@ const RangePicker: React.FC<RangePickerProps> = function (props) {
         },
     })
 
+    const [focus, updateFocus, lockFocus, hasLockFocusRef] = useLockFocus()
+
+    const { className: cls, style: ms } = useInputStyle({
+        focus,
+        disabled: disabled === true,
+        border,
+        size,
+        className: classnames(props.className, datePickerClass('_', `r-${type || 'date'}`)),
+        style,
+    })
+
     useEffect(() => {
-        if (!show) return
+        if (!visible) return
 
         if (!isEmpty(value)) {
             updatePanelDates(value)
@@ -83,21 +94,17 @@ const RangePicker: React.FC<RangePickerProps> = function (props) {
         } else {
             updatePanelDates([new Date(), new Date()])
         }
-    }, [value, format, show])
+    }, [value, format, visible])
 
     useEffect(() => {
         updateSelectedPanelDates(value)
-    }, [show])
-
-    const bindPickerContainerRef = useRefMethod((el) => {
-        pickerContainerRef.current = el
-    })
+    }, [visible])
 
     function toggleOpen(nextOpen: boolean) {
-        if (props.disabled === true || nextOpen === show) return
+        if (props.disabled === true || nextOpen === visible) return
 
         if (nextOpen) {
-            const rect = containerRef.current.getBoundingClientRect()
+            const rect = triggerElement.getBoundingClientRect()
             const windowHeight = docSize.height
             const windowWidth = docSize.width
             const hasQuick = quicks.length > 0
@@ -112,15 +119,18 @@ const RangePicker: React.FC<RangePickerProps> = function (props) {
                 else nextPosition = 'left-bottom'
             }
 
-            updateShow(true)
+            updateVisible(true)
             updatePosition(nextPosition)
         } else {
-            updateShow(false)
+            updateVisible(false)
         }
     }
 
     function handleMouseDown(evt: React.MouseEvent) {
-        if (show) return
+        evt.preventDefault()
+
+        /** 如果是打开状态，不做任何处理，避免重复执行focus blur，然后descClick中Input重新获取焦点 */
+        if (visible) return
 
         toggleOpen(true)
 
@@ -144,14 +154,6 @@ const RangePicker: React.FC<RangePickerProps> = function (props) {
             updateValue(dates, dateStrings)
         }
     })
-
-    function handleContainerBlur(e: React.FocusEvent<HTMLDivElement>) {
-        if (onBlur) {
-            onBlur(e)
-        }
-
-        toggleOpen(false)
-    }
 
     const handleChange = useRefMethod((index: number, date: Date, mode?: string) => {
         const nextSelectedPanelDates = [...selectedPanelDates]
@@ -247,11 +249,33 @@ const RangePicker: React.FC<RangePickerProps> = function (props) {
     function handleDescClick(evt: MouseEvent) {
         const isRightDesc = isDescendent(evt.target as HTMLElement, rightPickerId)
 
-        if (isRightDesc || evt.target === rightInputRef.current) {
-            rightInputRef.current.focus()
-        } else {
-            leftInputRef.current.focus()
+        lockFocus(() => {
+            if (isRightDesc || evt.target === rightInputRef.current) {
+                rightInputRef.current.focus()
+            } else {
+                leftInputRef.current.focus()
+            }
+        })
+    }
+
+    function handleFocus(e: React.FocusEvent<HTMLDivElement>) {
+        if (hasLockFocusRef.current || disabled === true) return
+        if (onFocus) {
+            onFocus(e)
         }
+
+        updateFocus(true)
+        lockFocus()
+    }
+
+    function handleBlur(e: React.FocusEvent<HTMLDivElement>) {
+        if (hasLockFocusRef.current || disabled === true) return
+        if (onBlur) {
+            onBlur(e)
+        }
+
+        toggleOpen(false)
+        updateFocus(false)
     }
 
     function renderResult() {
@@ -316,115 +340,111 @@ const RangePicker: React.FC<RangePickerProps> = function (props) {
         )
     }
 
-    function renderWrappedPicker() {
-        const rect = containerRef.current?.getBoundingClientRect()
-        const ms = styles({ zIndex }, portal && getPickerPortalStyle(rect, position))
-
-        return (
-            <Portal portal={portal} rootClass={datePickerClass('absolute')} show={show}>
-                <AnimationList
-                    style={ms}
-                    show={show}
-                    duration="fast"
-                    data-id={pickerId}
-                    animationTypes={['fade']}
-                    getRef={bindPickerContainerRef}
-                    className={datePickerClass('picker', 'location', `absolute-${position}`, quicks.length && 'quick')}
-                >
-                    <div className={datePickerClass('range-picker')}>
-                        {quicks.length ? (
-                            <div className={datePickerClass('quick-select')}>
-                                {quicks.map((q) => (
-                                    <div
-                                        key={q.name}
-                                        onClick={() => {
-                                            handleQuickChange(q)
-                                        }}
-                                        className={datePickerClass(
-                                            'quick-select-item',
-                                            utils.compareDateArray(q.value, panelDates, type) &&
-                                                'quick-select-item-active'
-                                        )}
-                                    >
-                                        {q.name}
-                                    </div>
-                                ))}
-                            </div>
-                        ) : null}
-
-                        <RangePickerContext.Provider
-                            value={{
-                                index: 0,
-                                panelDates,
-                                selectedPanelDates,
-                                onHoverPanel: handleHoverPanel,
-                            }}
-                        >
-                            <Picker
-                                {...props}
-                                pickerId={leftPickerId}
-                                disabled={handleDisabledStart}
-                                min={min}
-                                max={max}
-                                panelDate={panelDates[0]}
-                                onChange={handleChange.bind(null, 0)}
-                                type={type}
-                                format={format}
-                                selectedDate={selectedPanelDates[0]}
-                            />
-                        </RangePickerContext.Provider>
-                        <RangePickerContext.Provider
-                            value={{
-                                index: 1,
-                                panelDates,
-                                selectedPanelDates,
-                                onHoverPanel: handleHoverPanel,
-                            }}
-                        >
-                            <Picker
-                                {...props}
-                                pickerId={rightPickerId}
-                                disabled={handleDisabledEnd}
-                                min={selectedPanelDates[0] ? selectedPanelDates[0] : min}
-                                max={max}
-                                panelDate={panelDates[1]}
-                                onChange={handleChange.bind(null, 1)}
-                                type={type}
-                                format={format}
-                                selectedDate={selectedPanelDates[1]}
-                            />
-                        </RangePickerContext.Provider>
-                    </div>
-                </AnimationList>
-            </Portal>
-        )
-    }
-
     return (
-        <Container
-            size={size}
-            type={type}
-            border={border}
-            onBlur={handleContainerBlur}
-            onFocus={onFocus}
-            data-id={pickerId}
-            ref={containerRef}
-            containerStyle={style}
-            disabled={disabled === true}
-            onMouseDown={handleMouseDown}
+        <Trigger
+            visible={visible}
+            componentKey={componentKey}
+            // 不同于DatePicker，由于RangePicker有两个Input(避免多次执行mousedown)，需要完全由该组件维护visible状态
+            // onVisibleChange={toggleOpen}
             onDescClick={handleDescClick}
-            containerClassName={classnames(props.className, datePickerClass('_', `r-${type || 'date'}`))}
-            innerClassName={datePickerClass(
-                'inner',
-                'range',
-                size && `size-${size}`,
-                disabled === true && 'disabled',
-                position
-            )}
+            bindPortalElement={portalElementRef}
+            getPopupContainer={getPopupContainer}
+            bindTriggerElement={setTriggerElement}
+            portalClassName={datePickerClass('absolute')}
+            transitionComponentProps={{
+                duration: 'fast',
+                transitionTypes: ['fade'],
+                hideDisplayAfterLeave: true,
+                className: datePickerClass('picker', 'location', `absolute-${position}`, quicks.length && 'quick'),
+                style: styles({ zIndex }, getPortalPickerStyle(triggerElement, portalElementRef.current, position)),
+            }}
+            popup={
+                <div className={datePickerClass('range-picker')}>
+                    {quicks.length ? (
+                        <div className={datePickerClass('quick-select')}>
+                            {quicks.map((q) => (
+                                <div
+                                    key={q.name}
+                                    onClick={() => {
+                                        handleQuickChange(q)
+                                    }}
+                                    className={datePickerClass(
+                                        'quick-select-item',
+                                        utils.compareDateArray(q.value, panelDates, type) && 'quick-select-item-active'
+                                    )}
+                                >
+                                    {q.name}
+                                </div>
+                            ))}
+                        </div>
+                    ) : null}
+
+                    <RangePickerContext.Provider
+                        value={{
+                            index: 0,
+                            panelDates,
+                            selectedPanelDates,
+                            onHoverPanel: handleHoverPanel,
+                        }}
+                    >
+                        <Picker
+                            {...props}
+                            pickerId={leftPickerId}
+                            disabled={handleDisabledStart}
+                            min={min}
+                            max={max}
+                            panelDate={panelDates[0]}
+                            onChange={handleChange.bind(null, 0)}
+                            type={type}
+                            format={format}
+                            selectedDate={selectedPanelDates[0]}
+                        />
+                    </RangePickerContext.Provider>
+                    <RangePickerContext.Provider
+                        value={{
+                            index: 1,
+                            panelDates,
+                            selectedPanelDates,
+                            onHoverPanel: handleHoverPanel,
+                        }}
+                    >
+                        <Picker
+                            {...props}
+                            pickerId={rightPickerId}
+                            disabled={handleDisabledEnd}
+                            min={selectedPanelDates[0] ? selectedPanelDates[0] : min}
+                            max={max}
+                            panelDate={panelDates[1]}
+                            onChange={handleChange.bind(null, 1)}
+                            type={type}
+                            format={format}
+                            selectedDate={selectedPanelDates[1]}
+                        />
+                    </RangePickerContext.Provider>
+                </div>
+            }
         >
-            {renderResult()}
-            {renderWrappedPicker()}
-        </Container>
+            <div
+                className={cls}
+                style={ms}
+                data-ck={componentKey}
+                onFocus={handleFocus}
+                onBlur={handleBlur}
+                onMouseDown={handleMouseDown}
+            >
+                <div
+                    className={datePickerClass(
+                        'inner',
+                        'range',
+                        size && `size-${size}`,
+                        disabled === true && 'disabled',
+                        position
+                    )}
+                >
+                    {renderResult()}
+                </div>
+            </div>
+        </Trigger>
     )
 }
 
