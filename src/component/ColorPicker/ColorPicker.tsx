@@ -69,24 +69,24 @@ const ColorPicker: React.FC<ColorPickerProps> = function (props) {
             getPopupContainer={getPopupContainer}
             onVisibleChange={handleVisibleChange}
             bindTriggerElement={setTriggerElement}
-            transitionComponentProps={{
+            transitionPopupProps={{
                 style: transitionStyle,
                 duration: 'fast',
                 transitionTypes: ['fade'],
                 hideDisplayAfterLeave: true,
                 className: transitionCls,
+                popup: (
+                    <ColorBoard
+                        {...other}
+                        mode={mode}
+                        format={format}
+                        disabled={disabled}
+                        value={currentValue}
+                        onChange={handleChange}
+                        componentKey={componentKey}
+                    />
+                ),
             }}
-            popup={
-                <ColorBoard
-                    {...other}
-                    mode={mode}
-                    format={format}
-                    disabled={disabled}
-                    value={currentValue}
-                    onChange={handleChange}
-                    componentKey={componentKey}
-                />
-            }
         >
             <div
                 style={style}

@@ -259,43 +259,43 @@ const DatePicker: React.FC<DatePickerProps> = function (props) {
             getPopupContainer={getPopupContainer}
             portalClassName={datePickerClass('absolute')}
             bindTriggerElement={setTriggerElement}
-            transitionComponentProps={{
+            transitionPopupProps={{
                 duration: 'fast',
                 transitionTypes: ['fade'],
                 ref: bindPickerContainerRef,
                 hideDisplayAfterLeave: true,
                 className: datePickerClass('picker', 'location', `absolute-${position}`, quicks.length && 'quick'),
                 style: styles({ zIndex }, getPortalPickerStyle(triggerElement, portalElementRef.current, position)),
+                popup: (
+                    <div className={datePickerClass('split')}>
+                        {quicks.length ? (
+                            <div className={datePickerClass('quick-select')}>
+                                {quicks.map((q) => (
+                                    <div
+                                        key={q.name}
+                                        className={datePickerClass('quick-select-item')}
+                                        onClick={() => {
+                                            handleQuickChange(q)
+                                        }}
+                                    >
+                                        {q.name}
+                                    </div>
+                                ))}
+                            </div>
+                        ) : null}
+                        <Picker
+                            min={min}
+                            max={max}
+                            type={type}
+                            format={format}
+                            panelDate={panelDate}
+                            onChange={handleChange}
+                            disabled={isFunc(disabled) ? disabled : undefined}
+                            selectedDate={selectedDate}
+                        />
+                    </div>
+                ),
             }}
-            popup={
-                <div className={datePickerClass('split')}>
-                    {quicks.length ? (
-                        <div className={datePickerClass('quick-select')}>
-                            {quicks.map((q) => (
-                                <div
-                                    key={q.name}
-                                    className={datePickerClass('quick-select-item')}
-                                    onClick={() => {
-                                        handleQuickChange(q)
-                                    }}
-                                >
-                                    {q.name}
-                                </div>
-                            ))}
-                        </div>
-                    ) : null}
-                    <Picker
-                        min={min}
-                        max={max}
-                        type={type}
-                        format={format}
-                        panelDate={panelDate}
-                        onChange={handleChange}
-                        disabled={isFunc(disabled) ? disabled : undefined}
-                        selectedDate={selectedDate}
-                    />
-                </div>
-            }
         >
             <div
                 className={cls}

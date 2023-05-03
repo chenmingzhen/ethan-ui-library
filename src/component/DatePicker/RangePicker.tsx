@@ -351,78 +351,79 @@ const RangePicker: React.FC<RangePickerProps> = function (props) {
             getPopupContainer={getPopupContainer}
             bindTriggerElement={setTriggerElement}
             portalClassName={datePickerClass('absolute')}
-            transitionComponentProps={{
+            transitionPopupProps={{
                 duration: 'fast',
                 transitionTypes: ['fade'],
                 hideDisplayAfterLeave: true,
                 className: datePickerClass('picker', 'location', `absolute-${position}`, quicks.length && 'quick'),
                 style: styles({ zIndex }, getPortalPickerStyle(triggerElement, portalElementRef.current, position)),
-            }}
-            popup={
-                <div className={datePickerClass('range-picker')}>
-                    {quicks.length ? (
-                        <div className={datePickerClass('quick-select')}>
-                            {quicks.map((q) => (
-                                <div
-                                    key={q.name}
-                                    onClick={() => {
-                                        handleQuickChange(q)
-                                    }}
-                                    className={datePickerClass(
-                                        'quick-select-item',
-                                        utils.compareDateArray(q.value, panelDates, type) && 'quick-select-item-active'
-                                    )}
-                                >
-                                    {q.name}
-                                </div>
-                            ))}
-                        </div>
-                    ) : null}
+                popup: (
+                    <div className={datePickerClass('range-picker')}>
+                        {quicks.length ? (
+                            <div className={datePickerClass('quick-select')}>
+                                {quicks.map((q) => (
+                                    <div
+                                        key={q.name}
+                                        onClick={() => {
+                                            handleQuickChange(q)
+                                        }}
+                                        className={datePickerClass(
+                                            'quick-select-item',
+                                            utils.compareDateArray(q.value, panelDates, type) &&
+                                                'quick-select-item-active'
+                                        )}
+                                    >
+                                        {q.name}
+                                    </div>
+                                ))}
+                            </div>
+                        ) : null}
 
-                    <RangePickerContext.Provider
-                        value={{
-                            index: 0,
-                            panelDates,
-                            selectedPanelDates,
-                            onHoverPanel: handleHoverPanel,
-                        }}
-                    >
-                        <Picker
-                            {...props}
-                            pickerId={leftPickerId}
-                            disabled={handleDisabledStart}
-                            min={min}
-                            max={max}
-                            panelDate={panelDates[0]}
-                            onChange={handleChange.bind(null, 0)}
-                            type={type}
-                            format={format}
-                            selectedDate={selectedPanelDates[0]}
-                        />
-                    </RangePickerContext.Provider>
-                    <RangePickerContext.Provider
-                        value={{
-                            index: 1,
-                            panelDates,
-                            selectedPanelDates,
-                            onHoverPanel: handleHoverPanel,
-                        }}
-                    >
-                        <Picker
-                            {...props}
-                            pickerId={rightPickerId}
-                            disabled={handleDisabledEnd}
-                            min={selectedPanelDates[0] ? selectedPanelDates[0] : min}
-                            max={max}
-                            panelDate={panelDates[1]}
-                            onChange={handleChange.bind(null, 1)}
-                            type={type}
-                            format={format}
-                            selectedDate={selectedPanelDates[1]}
-                        />
-                    </RangePickerContext.Provider>
-                </div>
-            }
+                        <RangePickerContext.Provider
+                            value={{
+                                index: 0,
+                                panelDates,
+                                selectedPanelDates,
+                                onHoverPanel: handleHoverPanel,
+                            }}
+                        >
+                            <Picker
+                                {...props}
+                                pickerId={leftPickerId}
+                                disabled={handleDisabledStart}
+                                min={min}
+                                max={max}
+                                panelDate={panelDates[0]}
+                                onChange={handleChange.bind(null, 0)}
+                                type={type}
+                                format={format}
+                                selectedDate={selectedPanelDates[0]}
+                            />
+                        </RangePickerContext.Provider>
+                        <RangePickerContext.Provider
+                            value={{
+                                index: 1,
+                                panelDates,
+                                selectedPanelDates,
+                                onHoverPanel: handleHoverPanel,
+                            }}
+                        >
+                            <Picker
+                                {...props}
+                                pickerId={rightPickerId}
+                                disabled={handleDisabledEnd}
+                                min={selectedPanelDates[0] ? selectedPanelDates[0] : min}
+                                max={max}
+                                panelDate={panelDates[1]}
+                                onChange={handleChange.bind(null, 1)}
+                                type={type}
+                                format={format}
+                                selectedDate={selectedPanelDates[1]}
+                            />
+                        </RangePickerContext.Provider>
+                    </div>
+                ),
+            }}
         >
             <div
                 className={cls}

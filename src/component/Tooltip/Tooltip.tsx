@@ -54,22 +54,22 @@ const Tooltip: React.FC<TooltipProps> = function (props) {
             onVisibleChange={onVisibleChange}
             bindTriggerElement={setTriggerEl}
             getPopupContainer={getPopupContainer}
-            motionComponentProps={{
+            motionPopupProps={{
                 enter: animation,
                 leave: false,
                 leaveClassName: tooltipClass('hidden'),
                 name: tooltipClass('_'),
+                popup: (
+                    <div
+                        ref={setPopupEl}
+                        style={styles(props.style, style)}
+                        className={classnames(tooltipClass('_', position), className)}
+                    >
+                        <div className={tooltipClass('arrow')} />
+                        <div className={tooltipClass('inner')}>{tip}</div>
+                    </div>
+                ),
             }}
-            popup={
-                <div
-                    ref={setPopupEl}
-                    style={styles(props.style, style)}
-                    className={classnames(tooltipClass('_', position), className)}
-                >
-                    <div className={tooltipClass('arrow')} />
-                    <div className={tooltipClass('inner')}>{tip}</div>
-                </div>
-            }
         >
             {children}
         </Trigger>

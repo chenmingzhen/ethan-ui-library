@@ -16,8 +16,12 @@ const ThemeEditor: React.FC = function () {
     return (
         <Trigger
             visible={visible}
-            transitionComponentProps={{ duration: 'fast', transitionTypes: ['fade'], hideDisplayAfterLeave: true }}
-            popup={<Editor onClose={handleToggle} />}
+            transitionPopupProps={{
+                duration: 'fast',
+                transitionTypes: ['fade'],
+                hideDisplayAfterLeave: true,
+                popup: <Editor onClose={handleToggle} />,
+            }}
             getPopupContainer={() => document.body}
         >
             <span key="color" className={headerClass('color')} onClick={handleToggle}>

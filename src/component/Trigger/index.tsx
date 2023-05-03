@@ -6,12 +6,10 @@ import { isDescendent } from '@/utils/dom/element'
 import useResizeObserver from '@/hooks/useResizeObserver'
 import { TriggerProps } from './type'
 import Portal from '../Portal'
-import Transition from '../Motion/Transition'
-import Motion from '../Motion/Motion'
+import Motion from '../Motion'
 
 const Trigger: React.FC<TriggerProps> = function (props) {
     const {
-        popup,
         visible,
         children,
         onDescClick,
@@ -23,16 +21,17 @@ const Trigger: React.FC<TriggerProps> = function (props) {
         mouseEnterDelay,
         mouseLeaveDelay,
         portalClassName,
+        motionPopupProps,
         bindPortalElement,
         getPopupContainer,
+        customPopupRender,
         bindTriggerElement,
-        motionComponentProps,
+        transitionPopupProps,
         onTriggerElementResize,
-        transitionComponentProps,
         triggerActions = ['mousedown'],
     } = props
     const [showNoScript, updateShowNoScript] = useState(true)
-    const triggerElementRef = useRef<HTMLElement>()
+    const [triggerElement, setTriggerElement] = useState<HTMLElement>()
     const mouseTimer = useRef<NodeJS.Timeout>()
     const [popupElement, setPopupElement] = useState<HTMLElement>()
     const [show, updateShow] = useMergedValue({
@@ -117,7 +116,7 @@ const Trigger: React.FC<TriggerProps> = function (props) {
                 bindTriggerElement.current = triggerDOMNode
             }
 
-            triggerElementRef.current = triggerDOMNode
+            setTriggerElement(triggerDOMNode)
         }
 
         updateShowNoScript(false)
@@ -159,7 +158,7 @@ const Trigger: React.FC<TriggerProps> = function (props) {
     })
 
     const handlePopupElementMouseLeave = useRefMethod((e: MouseEvent) => {
-        if (!show || e.relatedTarget === triggerElementRef.current) return
+        if (!show || e.relatedTarget === triggerElement) return
 
         updateShow(false)
     })
@@ -206,7 +205,7 @@ const Trigger: React.FC<TriggerProps> = function (props) {
         watch: !!(onTriggerElementResize && show),
         onResize: handleTriggerElementResize,
         options: { direction: 'xy', callbackDebounce: resizeDebounce },
-        getTargetElement: () => triggerElementRef.current,
+        getTargetElement: () => triggerElement,
     })
 
     useResizeObserver({
@@ -218,7 +217,35 @@ const Trigger: React.FC<TriggerProps> = function (props) {
 
     useEffect(() => clearMouseTimer, [])
 
-    const wrapGetPopupContainer = useRefMethod(() => getPopupContainer?.(triggerElementRef.current))
+    const wrapGetPopupContainer = useRefMethod(() => getPopupContainer?.(triggerElement))
+
+    function buildPortalContent() {
+        if (transitionPopupProps) {
+            const { popup, ...other } = transitionPopupProps
+
+            return (
+                <Motion.Transition {...other} data-ck={componentKey} visible={show} bindMotionElement={setPopupElement}>
+                    {popup}
+                </Motion.Transition>
+            )
+        }
+
+        if (motionPopupProps) {
+            const { popup, ...other } = motionPopupProps
+
+            return (
+                <Motion {...other} visible={show} bindMotionElement={setPopupElement}>
+                    {popup}
+                </Motion>
+            )
+        }
+
+        if (isFunc(customPopupRender)) {
+            return customPopupRender({ visible: show, setPopupElement })
+        }
+
+        return null
+    }
 
     return (
         <>
@@ -231,20 +258,7 @@ const Trigger: React.FC<TriggerProps> = function (props) {
                 portalClassName={portalClassName}
                 getPopupContainer={getPopupContainer ? wrapGetPopupContainer : undefined}
             >
-                {transitionComponentProps ? (
-                    <Transition
-                        data-ck={componentKey}
-                        {...transitionComponentProps}
-                        visible={show}
-                        bindMotionElement={setPopupElement}
-                    >
-                        {popup}
-                    </Transition>
-                ) : (
-                    <Motion {...motionComponentProps} visible={show} bindMotionElement={setPopupElement}>
-                        {popup}
-                    </Motion>
-                )}
+                {buildPortalContent()}
             </Portal>
         </>
     )

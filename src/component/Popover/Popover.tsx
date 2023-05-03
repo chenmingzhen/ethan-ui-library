@@ -105,34 +105,7 @@ const Popover: React.FC<PopoverProps> = function (props) {
             bindTriggerElement={setTriggerElement}
             mouseEnterDelay={!triggerActions.includes('mousedown') ? mouseEnterDelay : undefined}
             mouseLeaveDelay={!triggerActions.includes('mousedown') ? mouseLeaveDelay : undefined}
-            popup={
-                <div
-                    {...popupProps}
-                    data-ck={componentKey}
-                    className={classnames(
-                        popoverClass('_', !showArrow && 'hide-arrow', animation && 'animation'),
-                        className
-                    )}
-                >
-                    {showArrow && (
-                        <div className={popoverClass('arrow')} {...arrowProps}>
-                            <div className={popoverClass('arrow-content')} />
-                        </div>
-                    )}
-                    <div className={popoverClass('inner')} {...innerProps}>
-                        {title && <div className={popoverClass('title')}>{title}</div>}
-
-                        <div className={popoverClass('inner-content')}>
-                            {typeof content === 'function'
-                                ? content(() => {
-                                      updateVisible(false)
-                                  })
-                                : content}
-                        </div>
-                    </div>
-                </div>
-            }
-            motionComponentProps={{
+            motionPopupProps={{
                 enter: animation,
                 leave: animation,
                 forceStep: !animation,
@@ -146,6 +119,33 @@ const Popover: React.FC<PopoverProps> = function (props) {
                 onLeaveEnd(element) {
                     element.style.display = 'none'
                 },
+                popup: (
+                    <div
+                        {...popupProps}
+                        data-ck={componentKey}
+                        className={classnames(
+                            popoverClass('_', !showArrow && 'hide-arrow', animation && 'animation'),
+                            className
+                        )}
+                    >
+                        {showArrow && (
+                            <div className={popoverClass('arrow')} {...arrowProps}>
+                                <div className={popoverClass('arrow-content')} />
+                            </div>
+                        )}
+                        <div className={popoverClass('inner')} {...innerProps}>
+                            {title && <div className={popoverClass('title')}>{title}</div>}
+
+                            <div className={popoverClass('inner-content')}>
+                                {typeof content === 'function'
+                                    ? content(() => {
+                                          updateVisible(false)
+                                      })
+                                    : content}
+                            </div>
+                        </div>
+                    </div>
+                ),
             }}
         >
             {children}
