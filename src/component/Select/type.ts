@@ -57,7 +57,7 @@ export interface SelectProps<Data = SelectData> {
         selectAll?: string
         noData?: string
     }
-    getPopupContainer?: () => HTMLElement
+    getPopupContainer?: (triggerElement: HTMLElement) => HTMLElement
 }
 
 export interface OptionListProps extends Pick<ListProps, 'onTransitionEnd'> {
@@ -72,7 +72,7 @@ export interface OptionListProps extends Pick<ListProps, 'onTransitionEnd'> {
     filterText: SelectProps['filterText']
     customRender: SelectProps['customRender']
     control: 'mouse' | 'keyboard'
-    selectId: string
+    componentKey: string
     onControlChange(control: OptionListProps['control']): void
     onChange(data: SelectData, fromInput?: boolean): void
     getOptionContent(data: SelectData, index: number): React.ReactNode
@@ -92,7 +92,7 @@ export interface OptionListProps extends Pick<ListProps, 'onTransitionEnd'> {
 export interface BoxListProps extends Pick<SelectProps, 'multiple' | 'columnWidth' | 'columns'> {
     style: React.CSSProperties
     show: boolean
-    selectId: string
+    componentKey: string
     customRender: SelectProps['customRender']
     loading: boolean
     data: SelectData[]

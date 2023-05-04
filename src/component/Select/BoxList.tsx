@@ -7,18 +7,18 @@ import React, { useMemo } from 'react'
 import deepEql from 'deep-eql'
 import Checkbox from '../Checkbox'
 import LazyList from '../LazyList'
-import AnimationList from '../List'
 import Spin from '../Spin'
 import BoxListTitle from './BoxListTitle'
 import BoxOption from './BoxOption'
 import { BoxListProps, SelectData } from './type'
+import Motion from '../Motion'
 
 const BoxList: React.FC<BoxListProps> = function (props) {
     const {
         columnWidth = 160,
         style,
         show,
-        selectId,
+        componentKey,
         customRender = {},
         loading,
         columns,
@@ -211,20 +211,20 @@ const BoxList: React.FC<BoxListProps> = function (props) {
     }
 
     return (
-        <AnimationList
+        <Motion.Transition
             style={ms}
-            show={show}
+            visible={show}
             duration="fast"
-            data-id={selectId}
+            data-ck={componentKey}
             className={selectClass('box-list')}
-            animationTypes={['scale-y', 'fade']}
+            transitionTypes={['scale-y', 'fade']}
             display="flex"
         >
             {renderHeader()}
             {loading && typeof loading === 'boolean' ? <Spin size={30} /> : loading}
             {renderOptions()}
             {footer ? <div className={selectClass('custom')}>{footer}</div> : null}
-        </AnimationList>
+        </Motion.Transition>
     )
 }
 

@@ -1,13 +1,13 @@
 import useRefMethod from '@/hooks/useRefMethod'
 import { selectClass } from '@/styles'
 import { docSize } from '@/utils/dom/document'
-import { getParent, isDescendent } from '@/utils/dom/element'
+import { isDescendent } from '@/utils/dom/element'
 import { isEmpty, isObject } from '@/utils/is'
 import { KeyboardKey } from '@/utils/keyboard'
 import { getPortalListStyle } from '@/utils/position'
 import { getUidStr } from '@/utils/uid'
 import React, { useRef, useState } from 'react'
-import Portal from '../Portal'
+import useUpdate from '@/hooks/useUpdate'
 import BoxList from './BoxList'
 import useFocus from '../../hooks/useLockFocus'
 import OptionList, { OptionListInstance } from './OptionList'
@@ -16,6 +16,7 @@ import { SelectData, SelectProps } from './type'
 import useProcessedData from './hooks/useProcessedData'
 import useSelectDatum from './hooks/useSelectDatum'
 import useInputStyle from '../Input/hooks/useInputStyle'
+import Trigger from '../Trigger'
 
 function Select<Data = SelectData>(props: SelectProps<Data>) {
     const [show, updateShow] = useState(false)
@@ -23,6 +24,8 @@ function Select<Data = SelectData>(props: SelectProps<Data>) {
     const [position, updatePosition] = useState<'drop-down' | 'drop-up'>('drop-down')
     const [control, updateControl] = useState<'mouse' | 'keyboard'>('mouse')
     const [filterText, updateFilterText] = useState('')
+    const [portalElement, setPortalElement] = useState<HTMLElement>()
+    const [triggerElement, setTriggerElement] = useState<HTMLElement>()
     const {
         size,
         border = true,
@@ -57,14 +60,13 @@ function Select<Data = SelectData>(props: SelectProps<Data>) {
         labelKey = 'label',
         valueKey = 'value',
         width,
-        getPopupContainer,
+        getPopupContainer = () => document.body,
     } = props
-    const selectId = useRef(getUidStr()).current
+    const componentKey = useRef(getUidStr()).current
     const inputRef = useRef<HTMLInputElement>()
     const optionListRef = useRef<OptionListInstance>()
-    const containerElementRef = useRef<HTMLDivElement>()
     const { data, groupKey } = useProcessedData({ filterText, data: props.data, groupBy, onFilter, onCreate })
-
+    const update = useUpdate()
     const {
         /** 选中的数据 */
         selectedData,
@@ -148,7 +150,7 @@ function Select<Data = SelectData>(props: SelectProps<Data>) {
     }
 
     const handleClickAway = useRefMethod((evt: MouseEvent) => {
-        const desc = isDescendent(evt.target as HTMLElement, selectId)
+        const desc = isDescendent(evt.target as HTMLElement, componentKey)
 
         if (desc) {
             lockFocus(() => {
@@ -198,7 +200,7 @@ function Select<Data = SelectData>(props: SelectProps<Data>) {
         let nextPosition = position || 'drop-down'
 
         const windowHeight = docSize.height
-        const bottom = height + containerElementRef.current.getBoundingClientRect().bottom
+        const bottom = height + triggerElement.getBoundingClientRect().bottom
 
         if (bottom > windowHeight && !nextPosition) nextPosition = 'drop-up'
         if (onCollapse) onCollapse(nextShow)
@@ -220,13 +222,14 @@ function Select<Data = SelectData>(props: SelectProps<Data>) {
         updateFilterText('')
     })
 
-    function handleContainerMouseDown(evt: React.MouseEvent) {
-        if (
-            !getParent(evt.target as HTMLElement, `.${selectClass('result')}`) &&
-            evt.target !== containerElementRef.current
-        ) {
-            return
-        }
+    function handleDescClick() {
+        lockFocus(() => {
+            focusSelect()
+        })
+    }
+
+    function handleMouseDown(evt: React.MouseEvent) {
+        evt.preventDefault()
 
         const plain = !handleInput
 
@@ -236,7 +239,6 @@ function Select<Data = SelectData>(props: SelectProps<Data>) {
             handleShowStateChange(true)
         }
 
-        /** 有可能是非直接点击到Input上，需要手动获取焦点 */
         focusSelect()
     }
 
@@ -324,26 +326,34 @@ function Select<Data = SelectData>(props: SelectProps<Data>) {
         }
     }
 
-    const portalRef = useRef<HTMLDivElement>()
+    const containerCls = selectClass(
+        'inner',
+        size,
+        focus && 'focus',
+        position,
+        multiple && 'multiple',
+        props.disabled === true && 'disabled'
+    )
 
-    function renderList() {
-        const portal = getPopupContainer
-        const listStyle =
-            portal &&
-            getPortalListStyle(containerElementRef.current, portalRef.current, position, autoAdapt ? 'min' : true)
+    return (
+        <Trigger
+            visible={show}
+            componentKey={componentKey}
+            bindPortalElement={setPortalElement}
+            getPopupContainer={getPopupContainer}
+            bindTriggerElement={setTriggerElement}
+            portalClassName={selectClass(position)}
+            // onVisibleChange={handleShowStateChange}
+            onTriggerElementResize={update}
+            onDescClick={handleDescClick}
+            customPopupRender={() => {
+                const listStyle = getPortalListStyle(triggerElement, portalElement, position, autoAdapt ? 'min' : true)
 
-        return (
-            <Portal
-                show={show}
-                ref={portalRef}
-                getPopupContainer={getPopupContainer}
-                portalClassName={selectClass(position)}
-            >
-                {columns >= 1 || columns === -1 ? (
+                return columns >= 1 || columns === -1 ? (
                     <BoxList
                         style={listStyle}
                         show={show}
-                        selectId={selectId}
+                        componentKey={componentKey}
                         height={height}
                         lineHeight={lineHeight}
                         text={text}
@@ -370,7 +380,7 @@ function Select<Data = SelectData>(props: SelectProps<Data>) {
                         data={data}
                         show={show}
                         style={listStyle}
-                        selectId={selectId}
+                        componentKey={componentKey}
                         className={selectClass(autoAdapt && 'auto-adapt')}
                         onControlChange={updateControl}
                         control={control}
@@ -394,53 +404,40 @@ function Select<Data = SelectData>(props: SelectProps<Data>) {
                         getOptionContent={getOptionContent}
                         getDataItemValue={getDataItemValue}
                     />
-                )}
-            </Portal>
-        )
-    }
-
-    const containerCls = selectClass(
-        'inner',
-        size,
-        focus && 'focus',
-        position,
-        multiple && 'multiple',
-        props.disabled === true && 'disabled'
-    )
-
-    return (
-        <div className={cls} style={ms}>
+                )
+            }}
+        >
             <div
-                className={containerCls}
-                ref={containerElementRef}
+                style={ms}
+                className={cls}
                 onFocus={handleFocus}
-                onMouseDown={handleContainerMouseDown}
+                onMouseDown={handleMouseDown}
                 onBlur={handleBlur}
-                data-id={selectId}
+                data-ck={componentKey}
                 onKeyDown={handleKeydown}
             >
-                <Result
-                    size={size}
-                    filterText={filterText}
-                    onClear={clearable ? handleClear : undefined}
-                    onInput={handleInput}
-                    onRemove={handleItemRemove}
-                    isDisabled={props.disabled === true}
-                    disabledFunc={disabled}
-                    selectedData={selectedData}
-                    multiple={multiple}
-                    placeholder={placeholder}
-                    getResultContent={getResultContent}
-                    compressed={compressed}
-                    showArrow={showArrow}
-                    compressedClassName={compressedClassName}
-                    resultClassName={resultClassName}
-                    forwardedInputRef={inputRef}
-                />
-
-                {renderList()}
+                <div className={containerCls}>
+                    <Result
+                        size={size}
+                        filterText={filterText}
+                        onClear={clearable ? handleClear : undefined}
+                        onInput={handleInput}
+                        onRemove={handleItemRemove}
+                        isDisabled={props.disabled === true}
+                        disabledFunc={disabled}
+                        selectedData={selectedData}
+                        multiple={multiple}
+                        placeholder={placeholder}
+                        getResultContent={getResultContent}
+                        compressed={compressed}
+                        showArrow={showArrow}
+                        compressedClassName={compressedClassName}
+                        resultClassName={resultClassName}
+                        forwardedInputRef={inputRef}
+                    />
+                </div>
             </div>
-        </div>
+        </Trigger>
     )
 }
 

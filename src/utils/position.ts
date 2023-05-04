@@ -10,14 +10,14 @@ export const horizontalDropdownPosition = ['right-top', 'left-top', 'right-botto
 export const verticalDropdownPosition = ['bottom-left', 'bottom-right', 'top-left', 'top-right']
 
 export function getPortalListStyle(
-    element: HTMLElement,
+    triggerElement: HTMLElement,
     portalElement: HTMLElement,
     position: string,
     fixed: boolean | 'min' = false
 ) {
-    if (!portalElement || !element) return {}
+    if (!portalElement || !triggerElement) return {}
 
-    const elementRect = element.getBoundingClientRect()
+    const elementRect = triggerElement.getBoundingClientRect()
     const containerRect = portalElement.getBoundingClientRect()
     const style: React.CSSProperties = {
         position: 'absolute',

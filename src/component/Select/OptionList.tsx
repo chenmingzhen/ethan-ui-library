@@ -8,11 +8,11 @@ import { isEmptyStr } from '@/utils/is'
 import { getLocale } from '@/locale'
 import deepEql from 'deep-eql'
 import LazyList, { LazyListState } from '../LazyList'
-import AnimationList from '../List'
 import Spin from '../Spin'
 import { OptionListProps, SelectData } from './type'
 import { transformSizeToPx } from './util'
 import Option from './Option'
+import Motion from '../Motion'
 
 interface OptionListState {
     /* 目前选中的index */
@@ -40,7 +40,7 @@ const OptionList: React.ForwardRefRenderFunction<OptionListInstance, OptionListP
         data,
         show,
         style,
-        selectId,
+        componentKey,
         className,
         onTransitionEnd,
         control,
@@ -239,20 +239,20 @@ const OptionList: React.ForwardRefRenderFunction<OptionListInstance, OptionListP
     const { header, footer } = customRender
 
     return (
-        <AnimationList
-            show={show}
+        <Motion.Transition
+            visible={show}
             style={style}
-            data-id={selectId}
+            data-ck={componentKey}
             duration="fast"
             className={classnames(selectClass('options'), className)}
-            animationTypes={['fade', 'scale-y']}
+            transitionTypes={['fade', 'scale-y']}
             onMouseMove={handleMouseMove}
             onTransitionEnd={onTransitionEnd}
         >
             {header ? <div className={selectClass('custom')}>{header}</div> : null}
             {renderList()}
             {footer ? <div className={selectClass('custom')}>{footer}</div> : null}
-        </AnimationList>
+        </Motion.Transition>
     )
 }
 
