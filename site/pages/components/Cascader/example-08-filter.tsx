@@ -1,8 +1,8 @@
 /**
  * cn - 过滤
- *    -- 基础的级联用法
+ *    -- 可以直接搜索选项并选择。
  * en - Filter
- *   -- Basic usage of Cascader
+ *   -- Search and select options directly.
  */
 
 import React from 'react'
@@ -45,18 +45,24 @@ const data = [
 
 export default function () {
     return (
-        <Cascader
-            data={data}
-            style={{ width: 300 }}
-            onChange={console.log}
-            onFocus={() => {
-                console.log('focus')
-            }}
-            onBlur={() => {
-                console.log('blur')
-            }}
-            onFilter
-            disabled={({ value }) => value === 'hangzhou'}
-        />
+        <div>
+            <Cascader
+                data={data}
+                placeholder="single"
+                style={{ width: 300 }}
+                onChange={console.log}
+                onFilter
+                disabled={({ value }) => value === 'hangzhou'}
+            />
+            <br />
+            <Cascader
+                data={data}
+                multiple
+                placeholder="multiple"
+                style={{ width: 300, marginTop: 20 }}
+                onChange={console.log}
+                onFilter
+            />
+        </div>
     )
 }

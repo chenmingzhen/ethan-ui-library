@@ -28,6 +28,7 @@ const Trigger: React.FC<TriggerProps> = function (props) {
         bindTriggerElement,
         transitionPopupProps,
         onTriggerElementResize,
+        allowClickTriggerClose = true,
         triggerActions = ['mousedown'],
     } = props
     const [showNoScript, updateShowNoScript] = useState(true)
@@ -87,7 +88,11 @@ const Trigger: React.FC<TriggerProps> = function (props) {
             children.props.onMouseDown(e)
         }
 
-        updateShow(!show)
+        if (allowClickTriggerClose) {
+            updateShow(!show)
+        } else if (!show) {
+            updateShow(true)
+        }
     })
 
     const handleFocus = useRefMethod((e: React.FocusEvent) => {

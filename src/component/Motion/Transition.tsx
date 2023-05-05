@@ -114,13 +114,15 @@ function Transition<Tag extends HTMLElement = HTMLDivElement>(props: TransitionP
             onEnterEnd={(element) => {
                 if (!hasAnimation) return
 
-                if (isEmpty(props.height)) {
-                    element.style.height = 'auto'
-                } else {
-                    element.style.height = `${props.height}px`
-                }
+                if (hasCollapse) {
+                    if (isEmpty(props.height)) {
+                        element.style.height = 'auto'
+                    } else {
+                        element.style.height = `${props.height}px`
+                    }
 
-                element.style.overflow = ''
+                    element.style.overflow = ''
+                }
             }}
             onLeavePrepare={(element) => {
                 if (hasCollapse) {

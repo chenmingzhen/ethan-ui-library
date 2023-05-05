@@ -3,24 +3,24 @@ import useRefMethod from '@/hooks/useRefMethod'
 import { getLocale } from '@/locale'
 import { cascaderClass, selectClass } from '@/styles'
 import { docSize } from '@/utils/dom/document'
-import { isDescendent } from '@/utils/dom/element'
-import { getListPortalStyle } from '@/utils/position'
+import { getPortalListStyle } from '@/utils/position'
 import { styles } from '@/utils/style/styles'
 import { getUidStr } from '@/utils/uid'
 import classnames from 'classnames'
 import React, { useRef, useState } from 'react'
 import { KeyboardKey } from '@/utils/keyboard'
 import { isEmpty } from '@/utils/is'
+import useUpdate from '@/hooks/useUpdate'
 import useInputStyle from '../Input/hooks/useInputStyle'
-import AnimationList from '../List'
-import Portal from '../Portal'
 import CascaderResult from './Result'
 import { CascaderData, CascaderDataValueType, CascaderProps } from './type'
 import CascaderList from './List'
 import useCascaderDatum from './hooks/useCascaderDatum'
-import FilterList from './FilterList'
-import { useLockAnimation } from './hooks/useLockAnimation'
 import Spin from '../Spin'
+import Trigger from '../Trigger'
+import Motion from '../Motion'
+import useFilteredData from './hooks/useFilteredData'
+import FilterListOption from './FilterListOption'
 
 function Cascader<Data = CascaderData>(props: CascaderProps<Data>) {
     const {
@@ -32,7 +32,6 @@ function Cascader<Data = CascaderData>(props: CascaderProps<Data>) {
         onCollapse,
         placeholder,
         zIndex,
-        portal,
         compressed,
         loader,
         data = [],
@@ -48,14 +47,15 @@ function Cascader<Data = CascaderData>(props: CascaderProps<Data>) {
         valueKey = 'value',
         childrenKey = 'children',
         showResultMode = 'full',
+        getPopupContainer = () => document.body,
     } = props
-    const cascaderId = useRef(getUidStr()).current
+    const componentKey = useRef(getUidStr()).current
     const [position, updatePosition] = useState(props.position)
     const [show, updateShow] = useState(false)
     const [path, updatePath] = useState<CascaderDataValueType[]>([])
-    const [lockAnimation, startLockAnimation] = useLockAnimation()
     const [focus, updateFocus, lockFocus, hasLockFocusRef] = useLockFocus()
-    const containerElementRef = useRef<HTMLDivElement>()
+    const [triggerElement, setTriggerElement] = useState<HTMLElement>()
+    const [portalElement, setPortalElement] = useState<HTMLElement>()
     const { className, style } = useInputStyle({
         focus,
         disabled: props.disabled === true,
@@ -71,7 +71,7 @@ function Cascader<Data = CascaderData>(props: CascaderProps<Data>) {
         selectClass(position)
     )
     const getKey = useRefMethod((dataItem: CascaderData) => dataItem[valueKey])
-
+    const update = useUpdate()
     const getContent = useRefMethod((dataItem: Data) => {
         if (props.renderItem) {
             return props.renderItem(dataItem)
@@ -103,6 +103,8 @@ function Cascader<Data = CascaderData>(props: CascaderProps<Data>) {
         limit: multiple ? undefined : 1,
     })
 
+    const filteredData = useFilteredData({ filterText, nodeMapping, onFilter, getDataItemByKey, getContent })
+
     const handleTransitionEnd = useRefMethod(() => {
         if (!show) {
             updatePath([])
@@ -127,23 +129,10 @@ function Cascader<Data = CascaderData>(props: CascaderProps<Data>) {
         }
     })
 
-    const handleClickAway = useRefMethod((evt: MouseEvent) => {
-        const desc = isDescendent(evt.target as HTMLElement, cascaderId)
-
-        if (desc) {
-            lockFocus(() => {
-                inputRef.current.focus()
-            })
-        }
-    })
-
-    const handleInput = useRefMethod((inputText: string) => {
-        /** 无输入内容时，转换成OptionList，不触发动画 */
-        if (!inputText) {
-            startLockAnimation()
-        }
-
-        updateFilterText(inputText)
+    const handleDescClick = useRefMethod(() => {
+        lockFocus(() => {
+            inputRef.current.focus()
+        })
     })
 
     function handleFocus(evt: React.FocusEvent<HTMLDivElement, Element>) {
@@ -162,14 +151,13 @@ function Cascader<Data = CascaderData>(props: CascaderProps<Data>) {
         if (props.disabled === true || show === nextShow) return
 
         const windowHeight = docSize.height
-        const bottom = height + containerElementRef.current.getBoundingClientRect().bottom
+        const bottom = height + triggerElement.getBoundingClientRect().bottom
         let nextPosition = position || 'drop-down'
 
         if (bottom > windowHeight && !nextPosition) nextPosition = 'drop-up'
         if (onCollapse) onCollapse(nextShow)
         if (nextShow) {
             updatePath(value[value.length - 1] || [])
-            document.addEventListener('mousedown', handleClickAway, true)
         }
 
         updateShow(nextShow)
@@ -182,20 +170,14 @@ function Cascader<Data = CascaderData>(props: CascaderProps<Data>) {
             onBlur(evt)
         }
 
-        document.removeEventListener('mousedown', handleClickAway, true)
-
         if (!filterText) {
-            toggleOpen(false)
             updateFocus(false)
         } else {
-            startLockAnimation()
             updateFilterText('')
             updateFocus(false)
-
-            setTimeout(() => {
-                toggleOpen(false)
-            }, 20)
         }
+
+        toggleOpen(false)
     }
 
     function handleClear() {
@@ -204,15 +186,10 @@ function Cascader<Data = CascaderData>(props: CascaderProps<Data>) {
         toggleOpen(false)
     }
 
-    function handleContainerMouseDown() {
-        if (show) return
+    function handleMouseDown(e: React.MouseEvent) {
+        e.preventDefault()
 
-        toggleOpen(true)
-
-        /** 延迟聚焦，避免body最后获取焦点 */
-        setTimeout(() => {
-            inputRef.current.focus()
-        })
+        inputRef.current.focus()
     }
 
     function handleKeydown(evt: React.KeyboardEvent<HTMLDivElement>) {
@@ -223,7 +200,6 @@ function Cascader<Data = CascaderData>(props: CascaderProps<Data>) {
     }
 
     function renderCascaderList() {
-        if (loading) return <Spin size={20} />
         if (!data?.length) return <span>{text.noData || getLocale('noData')}</span>
 
         let currentData: CascaderData | CascaderData[] = data
@@ -286,95 +262,129 @@ function Cascader<Data = CascaderData>(props: CascaderProps<Data>) {
         )
     }
 
-    function renderPanel() {
-        let width
-
-        if (!data?.length || loading) {
-            width = containerElementRef.current ? containerElementRef.current.getBoundingClientRect().width : 0
-        }
-
-        const portalRootCls = classnames(cascaderClass(focus && 'focus'), selectClass(position))
-        const rect = containerElementRef.current?.getBoundingClientRect()
-        const listStyle = styles(
-            { zIndex, width, height: data?.length ? height : undefined },
-            portal && getListPortalStyle(rect, position)
-        )
-
+    function renderFilterList() {
         return (
-            <Portal rootClass={portalRootCls} portal={portal} show={show}>
-                {isEmpty(filterText) || loading ? (
-                    <AnimationList
-                        show={show}
-                        data-id={cascaderId}
-                        className={classnames(
-                            selectClass('options'),
-                            cascaderClass('options', !data?.length && 'no-data')
-                        )}
-                        animationTypes={!lockAnimation ? ['fade', 'scale-y'] : undefined}
-                        duration="fast"
-                        display="inline-flex"
-                        style={listStyle}
-                        onTransitionEnd={handleTransitionEnd}
-                    >
-                        {renderCascaderList()}
-                    </AnimationList>
+            <>
+                {filteredData.length ? (
+                    <div className={cascaderClass('filter-list')}>
+                        {filteredData.map((dataItem) => {
+                            const currentDataItemKey = getKey(dataItem)
+                            const node = nodeMapping.get(currentDataItemKey)
+
+                            if (!node) return null
+
+                            return (
+                                <FilterListOption
+                                    key={currentDataItemKey}
+                                    multiple={multiple}
+                                    dataItem={dataItem}
+                                    onPathChange={handlePathChange}
+                                    onFilterTextChange={updateFilterText}
+                                    node={node}
+                                    nodeMapping={nodeMapping}
+                                    getDataItemByKey={getDataItemByKey}
+                                    getContent={getContent}
+                                    getCheckboxStateByDataItem={getCheckboxStateByDataItem}
+                                    removeValue={removeValue}
+                                    addValue={addValue}
+                                    filterText={filterText}
+                                />
+                            )
+                        })}
+                    </div>
                 ) : (
-                    <FilterList
-                        cascaderId={cascaderId}
-                        listStyle={listStyle}
-                        filterText={filterText}
-                        nodeMapping={nodeMapping}
-                        onFilter={onFilter}
-                        getDataItemByKey={getDataItemByKey}
-                        getContent={getContent}
-                        getKey={getKey}
-                        onPathChange={handlePathChange}
-                        onFilterTextChange={handleInput}
-                        multiple={multiple}
-                        addValue={addValue}
-                        removeValue={removeValue}
-                        getCheckboxStateByDataItem={getCheckboxStateByDataItem}
-                        text={text}
-                    />
+                    <span>{text.noData || getLocale('noData')}</span>
                 )}
-            </Portal>
+            </>
         )
     }
 
     return (
-        <div className={className} style={style}>
+        <Trigger
+            visible={show}
+            allowClickTriggerClose={!onFilter}
+            componentKey={componentKey}
+            onVisibleChange={toggleOpen}
+            bindPortalElement={setPortalElement}
+            bindTriggerElement={setTriggerElement}
+            portalClassName={classnames(cascaderClass(focus && 'focus'), selectClass(position))}
+            getPopupContainer={getPopupContainer}
+            onTriggerElementResize={update}
+            onDescClick={handleDescClick}
+            customPopupRender={() => {
+                let listWidth
+                let listHeight
+
+                const showCascader = isEmpty(filterText)
+
+                if ((showCascader && !data?.length) || !showCascader || loading) {
+                    listWidth = triggerElement ? triggerElement.getBoundingClientRect().width : 0
+                }
+
+                if ((showCascader && data?.length) || (!showCascader && filteredData?.length)) {
+                    listHeight = height
+                }
+
+                const listStyle = styles(
+                    { zIndex, width: listWidth, height: listHeight },
+                    getPortalListStyle(triggerElement, portalElement, position)
+                )
+
+                return (
+                    <Motion.Transition
+                        visible={show}
+                        duration="fast"
+                        style={listStyle}
+                        data-ck={componentKey}
+                        display="inline-flex"
+                        onTransitionEnd={handleTransitionEnd}
+                        transitionTypes={['fade', 'scale-y']}
+                        className={classnames(
+                            selectClass('options'),
+                            cascaderClass(
+                                'options',
+                                !data?.length && 'no-data',
+                                !showCascader && !filteredData.length ? 'no-data' : null
+                            )
+                        )}
+                    >
+                        {loading ? <Spin size={20} /> : showCascader ? renderCascaderList() : renderFilterList()}
+                    </Motion.Transition>
+                )
+            }}
+        >
             <div
-                className={cls}
+                className={className}
+                style={style}
                 onFocus={handleFocus}
-                ref={containerElementRef}
-                onMouseDown={handleContainerMouseDown}
+                onMouseDown={handleMouseDown}
                 onBlur={handleBlur}
                 onKeyDown={handleKeydown}
-                data-id={cascaderId}
+                data-ck={componentKey}
             >
-                <CascaderResult
-                    forwardedInputRef={inputRef}
-                    getCheckboxStateByDataItem={getCheckboxStateByDataItem}
-                    multiple={multiple}
-                    isDisabled={props.disabled === true}
-                    onClear={handleClear}
-                    placeholder={placeholder}
-                    onPathChange={handlePathChange}
-                    getDataItemByKey={getDataItemByKey}
-                    getContent={getContent}
-                    value={value}
-                    clearable={clearable}
-                    compressed={compressed}
-                    getNodeInfoByDataItem={getNodeInfoByDataItem}
-                    showResultMode={showResultMode}
-                    onInput={onFilter ? handleInput : undefined}
-                    filterText={onFilter ? filterText : undefined}
-                    size={onFilter ? size : undefined}
-                />
-
-                {renderPanel()}
+                <div className={cls}>
+                    <CascaderResult
+                        forwardedInputRef={inputRef}
+                        getCheckboxStateByDataItem={getCheckboxStateByDataItem}
+                        multiple={multiple}
+                        isDisabled={props.disabled === true}
+                        onClear={handleClear}
+                        placeholder={placeholder}
+                        onPathChange={handlePathChange}
+                        getDataItemByKey={getDataItemByKey}
+                        getContent={getContent}
+                        value={value}
+                        clearable={clearable}
+                        compressed={compressed}
+                        getNodeInfoByDataItem={getNodeInfoByDataItem}
+                        showResultMode={showResultMode}
+                        onInput={onFilter ? updateFilterText : undefined}
+                        filterText={onFilter ? filterText : undefined}
+                        size={onFilter ? size : undefined}
+                    />
+                </div>
             </div>
-        </div>
+        </Trigger>
     )
 }
 

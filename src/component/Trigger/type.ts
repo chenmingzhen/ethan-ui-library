@@ -32,4 +32,5 @@ export interface TriggerProps {
     onWindowResize?: (popupElement: HTMLElement) => void
     resizeDebounce?: number
     onDescClick?: (evt: MouseEvent) => void
+    allowClickTriggerClose?: boolean
 }

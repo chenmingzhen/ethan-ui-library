@@ -1,8 +1,8 @@
 /**
  * cn - 大小
- *    -- 基础的级联用法
+ *    -- 不同大小的级联选择器。
  * en - Size
- *   -- Basic usage of Cascader
+ *   -- Cascade selection box of different sizes.
  */
 
 import React from 'react'

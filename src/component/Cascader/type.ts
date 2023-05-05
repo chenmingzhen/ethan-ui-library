@@ -25,7 +25,6 @@ export interface CascaderProps<Data = CascaderData> {
     spinProps?: SpinProps
     style?: React.CSSProperties
     value?: CascaderDataValueType[] | CascaderDataValueType[][]
-    portal?: boolean
     zIndex?: number
     finalDismiss?: boolean
     onCollapse?: (collapse: boolean) => void
@@ -40,6 +39,7 @@ export interface CascaderProps<Data = CascaderData> {
     showResultMode?: ShowResultMode
     onFilter?: boolean | ((text: string, node: CascaderNode) => boolean)
     loading?: boolean
+    getPopupContainer?: () => HTMLElement
 }
 
 export interface CascaderListProps {
