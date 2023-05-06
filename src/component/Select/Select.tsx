@@ -231,14 +231,6 @@ function Select<Data = SelectData>(props: SelectProps<Data>) {
     function handleMouseDown(evt: React.MouseEvent) {
         evt.preventDefault()
 
-        const plain = !handleInput
-
-        if (plain && show) {
-            handleShowStateChange(false)
-        } else {
-            handleShowStateChange(true)
-        }
-
         focusSelect()
     }
 
@@ -339,13 +331,14 @@ function Select<Data = SelectData>(props: SelectProps<Data>) {
         <Trigger
             visible={show}
             componentKey={componentKey}
+            onDescClick={handleDescClick}
+            onTriggerElementResize={update}
             bindPortalElement={setPortalElement}
+            allowClickTriggerClose={!handleInput}
             getPopupContainer={getPopupContainer}
             bindTriggerElement={setTriggerElement}
             portalClassName={selectClass(position)}
-            // onVisibleChange={handleShowStateChange}
-            onTriggerElementResize={update}
-            onDescClick={handleDescClick}
+            onVisibleChange={handleShowStateChange}
             customPopupRender={() => {
                 const listStyle = getPortalListStyle(triggerElement, portalElement, position, autoAdapt ? 'min' : true)
 
