@@ -97,7 +97,7 @@ const MultipleResult: React.FC<MultipleResultProps> = function (props) {
 
             <Input
                 value={filterText}
-                className={selectClass('input', 'f1', !readOnly && 'search')}
+                className={selectClass('input')}
                 size={size}
                 onChange={onInput}
                 forwardedRef={forwardedInputRef}

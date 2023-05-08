@@ -1,12 +1,11 @@
 import useRefMethod from '@/hooks/useRefMethod'
 import { selectClass } from '@/styles'
 import { docSize } from '@/utils/dom/document'
-import { isDescendent } from '@/utils/dom/element'
 import { isEmpty, isObject } from '@/utils/is'
 import { KeyboardKey } from '@/utils/keyboard'
 import { getPortalListStyle } from '@/utils/position'
 import { getUidStr } from '@/utils/uid'
-import React, { useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import useUpdate from '@/hooks/useUpdate'
 import BoxList from './BoxList'
 import useFocus from '../../hooks/useLockFocus'
@@ -28,38 +27,38 @@ function Select<Data = SelectData>(props: SelectProps<Data>) {
     const [triggerElement, setTriggerElement] = useState<HTMLElement>()
     const {
         size,
-        border = true,
         style,
-        className,
-        multiple = false,
-        onFocus,
+        value,
+        width,
         onBlur,
+        columns,
+        onFocus,
+        loading,
+        groupBy,
+        onChange,
         onFilter,
         onCreate,
-        height = 256,
-        onCollapse,
+        text = {},
+        className,
         autoAdapt,
-        groupBy,
-        defaultValue,
-        value,
-        onChange,
-        placeholder,
+        clearable,
+        spinProps,
+        onCollapse,
         compressed,
-        showArrow = true,
-        compressedClassName,
+        columnWidth,
+        placeholder,
+        customRender,
+        defaultValue,
+        height = 256,
+        border = true,
         resultClassName,
         lineHeight = 32,
-        text = {},
-        loading,
-        spinProps,
-        onScrollRatioChange,
-        customRender,
-        clearable,
-        columns,
-        columnWidth,
+        multiple = false,
+        showArrow = true,
         labelKey = 'label',
         valueKey = 'value',
-        width,
+        compressedClassName,
+        onScrollRatioChange,
         getPopupContainer = () => document.body,
     } = props
     const componentKey = useRef(getUidStr()).current
@@ -96,6 +95,12 @@ function Select<Data = SelectData>(props: SelectProps<Data>) {
         focus,
         className,
     })
+
+    useEffect(() => {
+        if (filterText && !show) {
+            toggleOpen(true)
+        }
+    }, [filterText])
 
     const getKey = useRefMethod((dataItem: SelectData, index: number) =>
         isObject(dataItem) ? (isObject(dataItem[valueKey]) ? index : dataItem[valueKey]) : dataItem
@@ -144,20 +149,9 @@ function Select<Data = SelectData>(props: SelectProps<Data>) {
             onBlur(evt)
         }
 
-        document.removeEventListener('mousedown', handleClickAway, true)
-        handleShowStateChange(false)
+        toggleOpen(false)
         updateFocus(false)
     }
-
-    const handleClickAway = useRefMethod((evt: MouseEvent) => {
-        const desc = isDescendent(evt.target as HTMLElement, componentKey)
-
-        if (desc) {
-            lockFocus(() => {
-                focusSelect()
-            })
-        }
-    })
 
     const handleChange = useRefMethod((dataItem: SelectData) => {
         if (props.disabled === true) return
@@ -176,7 +170,7 @@ function Select<Data = SelectData>(props: SelectProps<Data>) {
         } else {
             setValuesByDataItems([dataItem])
 
-            handleShowStateChange(false)
+            toggleOpen(false)
         }
     })
 
@@ -190,11 +184,11 @@ function Select<Data = SelectData>(props: SelectProps<Data>) {
         setValuesByDataItems([])
 
         if (show) {
-            handleShowStateChange(false)
+            toggleOpen(false)
         }
     })
 
-    function handleShowStateChange(nextShow: boolean) {
+    function toggleOpen(nextShow: boolean) {
         if (props.disabled === true || show === nextShow) return
 
         let nextPosition = position || 'drop-down'
@@ -207,17 +201,12 @@ function Select<Data = SelectData>(props: SelectProps<Data>) {
 
         updateShow(nextShow)
         updatePosition(nextPosition)
-
-        if (nextShow) {
-            /** @see https://developer.mozilla.org/zh-CN/docs/Web/API/EventTarget/addEventListener */
-            document.addEventListener('mousedown', handleClickAway, true)
-        }
     }
 
     const handleInput = onFilter || onCreate ? updateFilterText : undefined
 
-    const handleTransitionEnd = useRefMethod(() => {
-        if (!handleInput) return
+    const handleCloseTransitionEnd = useRefMethod(() => {
+        if (!handleInput || show) return
 
         updateFilterText('')
     })
@@ -266,13 +255,13 @@ function Select<Data = SelectData>(props: SelectProps<Data>) {
         if (evt.key === KeyboardKey.Enter && !show) {
             evt.preventDefault()
 
-            handleShowStateChange(true)
+            toggleOpen(true)
 
             return
         }
 
         if (evt.key === KeyboardKey.Tab && show) {
-            handleShowStateChange(false)
+            toggleOpen(false)
 
             return
         }
@@ -338,64 +327,64 @@ function Select<Data = SelectData>(props: SelectProps<Data>) {
             getPopupContainer={getPopupContainer}
             bindTriggerElement={setTriggerElement}
             portalClassName={selectClass(position)}
-            onVisibleChange={handleShowStateChange}
+            onVisibleChange={toggleOpen}
             customPopupRender={() => {
                 const listStyle = getPortalListStyle(triggerElement, portalElement, position, autoAdapt ? 'min' : true)
 
                 return columns >= 1 || columns === -1 ? (
                     <BoxList
-                        style={listStyle}
                         show={show}
-                        componentKey={componentKey}
-                        height={height}
-                        lineHeight={lineHeight}
                         text={text}
-                        loading={loading}
-                        spinProps={spinProps}
-                        customRender={customRender}
-                        onChange={handleChange}
-                        groupKey={groupKey}
                         data={data}
+                        getKey={getKey}
+                        height={height}
+                        loading={loading}
+                        style={listStyle}
                         columns={columns}
-                        columnWidth={columnWidth}
                         multiple={multiple}
                         disabled={disabled}
-                        getKey={getKey}
+                        groupKey={groupKey}
+                        spinProps={spinProps}
+                        lineHeight={lineHeight}
+                        onChange={handleChange}
+                        columnWidth={columnWidth}
+                        selectedData={selectedData}
+                        componentKey={componentKey}
+                        customRender={customRender}
+                        getOptionContent={getOptionContent}
+                        getDataItemValue={getDataItemValue}
                         setValuesByDataItems={setValuesByDataItems}
                         getCheckedStateByDataItem={getCheckedStateByDataItem}
-                        getOptionContent={getOptionContent}
-                        selectedData={selectedData}
-                        getDataItemValue={getDataItemValue}
                     />
                 ) : (
                     <OptionList
-                        selectedData={selectedData}
                         data={data}
                         show={show}
-                        style={listStyle}
-                        componentKey={componentKey}
-                        className={selectClass(autoAdapt && 'auto-adapt')}
-                        onControlChange={updateControl}
-                        control={control}
-                        height={height}
-                        lineHeight={lineHeight}
                         text={text}
-                        loading={loading}
-                        position={position}
-                        spinProps={spinProps}
                         size={size}
-                        onScrollRatioChange={onScrollRatioChange}
-                        filterText={filterText}
-                        customRender={customRender}
-                        onChange={handleChange}
-                        groupKey={groupKey}
-                        onTransitionEnd={handleTransitionEnd}
-                        ref={optionListRef}
-                        getCheckedStateByDataItem={getCheckedStateByDataItem}
-                        disabled={disabled}
+                        height={height}
                         getKey={getKey}
+                        control={control}
+                        loading={loading}
+                        style={listStyle}
+                        groupKey={groupKey}
+                        position={position}
+                        ref={optionListRef}
+                        disabled={disabled}
+                        spinProps={spinProps}
+                        lineHeight={lineHeight}
+                        filterText={filterText}
+                        onChange={handleChange}
+                        customRender={customRender}
+                        selectedData={selectedData}
+                        componentKey={componentKey}
+                        onControlChange={updateControl}
                         getOptionContent={getOptionContent}
                         getDataItemValue={getDataItemValue}
+                        onScrollRatioChange={onScrollRatioChange}
+                        onTransitionEnd={handleCloseTransitionEnd}
+                        className={selectClass(autoAdapt && 'auto-adapt')}
+                        getCheckedStateByDataItem={getCheckedStateByDataItem}
                     />
                 )
             }}
@@ -403,30 +392,30 @@ function Select<Data = SelectData>(props: SelectProps<Data>) {
             <div
                 style={ms}
                 className={cls}
-                onFocus={handleFocus}
-                onMouseDown={handleMouseDown}
                 onBlur={handleBlur}
+                onFocus={handleFocus}
                 data-ck={componentKey}
                 onKeyDown={handleKeydown}
+                onMouseDown={handleMouseDown}
             >
                 <div className={containerCls}>
                     <Result
                         size={size}
-                        filterText={filterText}
-                        onClear={clearable ? handleClear : undefined}
-                        onInput={handleInput}
-                        onRemove={handleItemRemove}
-                        isDisabled={props.disabled === true}
-                        disabledFunc={disabled}
-                        selectedData={selectedData}
                         multiple={multiple}
-                        placeholder={placeholder}
-                        getResultContent={getResultContent}
-                        compressed={compressed}
                         showArrow={showArrow}
-                        compressedClassName={compressedClassName}
-                        resultClassName={resultClassName}
+                        onInput={handleInput}
+                        compressed={compressed}
+                        filterText={filterText}
+                        disabledFunc={disabled}
+                        placeholder={placeholder}
+                        onRemove={handleItemRemove}
+                        selectedData={selectedData}
                         forwardedInputRef={inputRef}
+                        resultClassName={resultClassName}
+                        getResultContent={getResultContent}
+                        isDisabled={props.disabled === true}
+                        compressedClassName={compressedClassName}
+                        onClear={clearable ? handleClear : undefined}
                     />
                 </div>
             </div>
