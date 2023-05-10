@@ -1,8 +1,9 @@
 import React from 'react'
 import { PureComponent } from '@/utils/component'
 import { formClass } from '@/styles'
-import AnimationList, { FAST_TRANSITION_DURATION } from '../List'
+import Motion from '../Motion'
 import { FormHelpProps } from './type'
+import { FAST_TRANSITION_DURATION } from '../Motion/Transition'
 
 interface FormHelpState {
     cacheError: Error
@@ -52,14 +53,14 @@ export default class FormHelp extends PureComponent<FormHelpProps, FormHelpState
 
         if (cacheError || error) {
             return (
-                <AnimationList
+                <Motion.Transition
                     duration="fast"
                     className={formClass('error')}
-                    animationTypes={animation ? ['fade'] : undefined}
-                    show={!!error}
+                    transitionTypes={animation ? ['fade'] : undefined}
+                    visible={!!error}
                 >
                     {error ? error.message : cacheError.message}
-                </AnimationList>
+                </Motion.Transition>
             )
         }
 

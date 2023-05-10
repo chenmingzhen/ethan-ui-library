@@ -49,7 +49,7 @@ export default function App() {
     return (
         <Form onChange={console.log} onSubmit={console.log} onError={console.log}>
             <Form.Item name="select" label="Select" required rules={[{ required: true, message: 'Can not be empty' }]}>
-                <Select placeholder="Please select a country" data={['China', 'U.S.A']} keygen clearable />
+                <Select placeholder="Please select a country" data={['China', 'U.S.A']} clearable />
             </Form.Item>
 
             <Form.Item
@@ -62,7 +62,6 @@ export default function App() {
                     multiple
                     placeholder="Please select favorite colors"
                     data={['red', 'green', 'blur']}
-                    keygen
                     clearable
                 />
             </Form.Item>
@@ -160,13 +159,7 @@ export default function App() {
             </Form.Item>
 
             <Form.Item name="transfer" label="Transfer" rules={[rule.required('Can not be empty')]}>
-                <Transfer
-                    data={transferData}
-                    format="id"
-                    renderItem="content"
-                    keygen="id"
-                    titles={['Source', 'Target']}
-                />
+                <Transfer data={transferData} titles={['Source', 'Target']} />
             </Form.Item>
 
             <Form.Item

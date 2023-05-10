@@ -3,7 +3,7 @@ import classnames from 'classnames'
 import { cardClass } from '@/styles'
 import { context } from './context'
 import { CardBodyProps } from './type'
-import AnimationList from '../List'
+import Motion from '../Motion'
 
 const Body: React.FC<CardBodyProps> = ({ className, ...props }) => {
     const { collapsible, collapsed, onCollapse } = React.useContext(context)
@@ -13,7 +13,7 @@ const Body: React.FC<CardBodyProps> = ({ className, ...props }) => {
     const onClick = typeof collapsed === 'boolean' ? onCollapse : undefined
 
     return (
-        <AnimationList show={!collapsed} duration={240} animationTypes={['collapse', 'fade']}>
+        <Motion.Transition visible={!collapsed} duration="fast" transitionTypes={['collapse', 'fade']}>
             <div {...props} className={classnames(cardClass('body'), className)}>
                 {props.children}
                 {collapsible === 'bottom' && (
@@ -22,7 +22,7 @@ const Body: React.FC<CardBodyProps> = ({ className, ...props }) => {
                     </div>
                 )}
             </div>
-        </AnimationList>
+        </Motion.Transition>
     )
 }
 
