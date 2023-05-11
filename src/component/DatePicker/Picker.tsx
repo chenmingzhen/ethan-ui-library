@@ -41,7 +41,7 @@ const Picker: React.FC<PickerProps> = (props) => {
     }
 
     return (
-        <div onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} data-id={pickerId}>
+        <div onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} data-ck={pickerId}>
             <Component
                 {...other}
                 onChange={onChange}

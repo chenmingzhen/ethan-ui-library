@@ -13,7 +13,7 @@ export interface DatePickerProps {
     disabled?: boolean | ((date: Date) => boolean)
     format?: string
     inputAble?: boolean
-    placeholder: string
+    placeholder?: string
     onBlur?: (e: React.FocusEvent<HTMLElement>) => void
     onChange?: (date: Date, dateStr: string) => void
     onFocus?: (evt: React.FocusEvent<HTMLElement>) => void
@@ -38,7 +38,7 @@ export interface DatePickerTextProps {
     index?: number
     inputAble: boolean
     onTextBlur: (date: Date, index: number) => void
-    placeholder: string
+    placeholder?: string
     value: string
     size: 'small' | 'default' | 'large'
     format: string
