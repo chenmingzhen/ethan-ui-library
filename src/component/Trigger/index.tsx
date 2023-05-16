@@ -12,6 +12,7 @@ const Trigger: React.FC<TriggerProps> = function (props) {
     const {
         visible,
         children,
+        onClickAway,
         onDescClick,
         componentKey,
         defaultVisible,
@@ -159,13 +160,25 @@ const Trigger: React.FC<TriggerProps> = function (props) {
             return
         }
 
+        if (onClickAway) {
+            onClickAway(evt)
+        }
+
         updateShow(false)
     })
 
     const handlePopupElementMouseLeave = useRefMethod((e: MouseEvent) => {
-        if (!show || e.relatedTarget === triggerElement) return
+        if (!show || e.relatedTarget === triggerElement || isDescendent(e.relatedTarget as HTMLElement, componentKey))
+            return
 
-        updateShow(false)
+        clearMouseTimer()
+        if (mouseLeaveDelay) {
+            mouseTimer.current = setTimeout(() => {
+                updateShow(false)
+            }, mouseLeaveDelay * 1000)
+        } else {
+            updateShow(false)
+        }
     })
 
     useEffect(() => {
