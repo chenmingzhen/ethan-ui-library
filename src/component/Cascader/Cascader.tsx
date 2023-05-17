@@ -360,7 +360,6 @@ function Cascader<Data = CascaderData>(props: CascaderProps<Data>) {
                 onMouseDown={handleMouseDown}
                 onBlur={handleBlur}
                 onKeyDown={handleKeydown}
-                data-ck={componentKey}
             >
                 <div className={cls}>
                     <CascaderResult

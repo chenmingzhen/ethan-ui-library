@@ -122,7 +122,6 @@ const Popover: React.FC<PopoverProps> = function (props) {
                 popup: (
                     <div
                         {...popupProps}
-                        data-ck={componentKey}
                         className={classnames(
                             popoverClass('_', !showArrow && 'hide-arrow', animation && 'animation'),
                             className

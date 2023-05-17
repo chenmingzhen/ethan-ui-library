@@ -4,6 +4,7 @@ import useRefMethod from '@/hooks/useRefMethod'
 import { isFunc } from '@/utils/is'
 import { isDescendent } from '@/utils/dom/element'
 import useResizeObserver from '@/hooks/useResizeObserver'
+import { warningOnce } from '@/utils/warning'
 import { TriggerProps } from './type'
 import Portal from '../Portal'
 import Motion from '../Motion'
@@ -27,6 +28,7 @@ const Trigger: React.FC<TriggerProps> = function (props) {
         getPopupContainer,
         customPopupRender,
         bindTriggerElement,
+        isChainComponentKey,
         transitionPopupProps,
         onTriggerElementResize,
         allowClickTriggerClose = true,
@@ -52,6 +54,11 @@ const Trigger: React.FC<TriggerProps> = function (props) {
         }
     })
 
+    const isDescendentAction = useRefMethod((element: HTMLElement) => {
+        if (componentKey && isDescendent(element, componentKey, isChainComponentKey)) return true
+    })
+
+    // -------------------------MouseMove---------------------------------
     const handleMouseEnter = useRefMethod((e: React.MouseEvent) => {
         if (children && children.props && children.props.onMouseEnter) {
             children.props.onMouseEnter(e)
@@ -74,7 +81,7 @@ const Trigger: React.FC<TriggerProps> = function (props) {
         if (children && children.props && children.props.onMouseLeave) {
             children.props.onMouseLeave(e)
         }
-        if (isDescendent(e.relatedTarget as HTMLElement, componentKey)) return
+        if (isDescendentAction(e.relatedTarget as HTMLElement)) return
         if (mouseLeaveDelay) {
             mouseTimer.current = setTimeout(() => {
                 updateShow(false)
@@ -82,6 +89,43 @@ const Trigger: React.FC<TriggerProps> = function (props) {
         } else {
             updateShow(false)
         }
+    })
+
+    const handlePopupElementMouseLeave = useRefMethod((e: MouseEvent) => {
+        if (!show || e.relatedTarget === triggerElement || isDescendentAction(e.relatedTarget as HTMLElement)) return
+
+        clearMouseTimer()
+        if (mouseLeaveDelay) {
+            mouseTimer.current = setTimeout(() => {
+                updateShow(false)
+            }, mouseLeaveDelay * 1000)
+        } else {
+            updateShow(false)
+        }
+    })
+
+    useEffect(() => clearMouseTimer, [])
+    // ------------------------------------------------------------------
+
+    // -------------------------MouseTap---------------------------------
+    const handleClickAway = useRefMethod((evt: MouseEvent) => {
+        if (!show) return
+
+        const desc = isDescendentAction(evt.target as HTMLElement)
+
+        if (desc) {
+            if (onDescClick) {
+                onDescClick(evt)
+            }
+
+            return
+        }
+
+        if (onClickAway) {
+            onClickAway(evt)
+        }
+
+        updateShow(false)
     })
 
     const handleMousedown = useRefMethod((e: React.MouseEvent) => {
@@ -96,6 +140,20 @@ const Trigger: React.FC<TriggerProps> = function (props) {
         }
     })
 
+    const handleMouseClick = useRefMethod((e: React.MouseEvent) => {
+        if (children && children.props && children.props.onClick) {
+            children.props.onClick(e)
+        }
+
+        if (allowClickTriggerClose) {
+            updateShow(!show)
+        } else if (!show) {
+            updateShow(true)
+        }
+    })
+    // -------------------------------------------------------------------
+
+    // -------------------------MouseFocus---------------------------------
     const handleFocus = useRefMethod((e: React.FocusEvent) => {
         if (children && children.props && children.props.onFocus) {
             children.props.onFocus(e)
@@ -111,6 +169,7 @@ const Trigger: React.FC<TriggerProps> = function (props) {
 
         updateShow(false)
     })
+    // --------------------------------------------------------------------
 
     const bindNoScriptDOMNode = useRefMethod((dom: HTMLElement) => {
         if (dom) {
@@ -145,51 +204,31 @@ const Trigger: React.FC<TriggerProps> = function (props) {
             injectEventProps.onBlur = handleBlur
         }
 
+        if (triggerActions.includes('click')) {
+            injectEventProps.onClick = handleMouseClick
+        }
+
         return injectEventProps
     }, [])
-
-    const handleClickAway = useRefMethod((evt: MouseEvent) => {
-        if (!show) return
-
-        const desc = isDescendent(evt.target as HTMLElement, componentKey)
-        if (desc) {
-            if (onDescClick) {
-                onDescClick(evt)
-            }
-
-            return
-        }
-
-        if (onClickAway) {
-            onClickAway(evt)
-        }
-
-        updateShow(false)
-    })
-
-    const handlePopupElementMouseLeave = useRefMethod((e: MouseEvent) => {
-        if (!show || e.relatedTarget === triggerElement || isDescendent(e.relatedTarget as HTMLElement, componentKey))
-            return
-
-        clearMouseTimer()
-        if (mouseLeaveDelay) {
-            mouseTimer.current = setTimeout(() => {
-                updateShow(false)
-            }, mouseLeaveDelay * 1000)
-        } else {
-            updateShow(false)
-        }
-    })
 
     useEffect(() => {
         if (!show) return
 
         const hasMousedownTrigger = triggerActions.includes('mousedown')
         const hasHoverTrigger = triggerActions.includes('hover')
+        const hasMouseClickTrigger = triggerActions.includes('click')
+
+        if (hasMouseClickTrigger && hasMouseClickTrigger) {
+            warningOnce('Mousedown and click should not be used together')
+        }
 
         if (hasMousedownTrigger) {
             /* 捕获阶段执行，避免点击TriggerElement后马上执行document的mousedown */
             document.addEventListener('mousedown', handleClickAway, true)
+        }
+
+        if (hasMouseClickTrigger) {
+            document.addEventListener('click', handleClickAway, true)
         }
 
         if (hasHoverTrigger && popupElement) {
@@ -198,7 +237,11 @@ const Trigger: React.FC<TriggerProps> = function (props) {
 
         return () => {
             if (hasMousedownTrigger) {
-                document.removeEventListener('mousedown', handleClickAway)
+                document.removeEventListener('mousedown', handleClickAway, true)
+            }
+
+            if (hasMouseClickTrigger) {
+                document.removeEventListener('click', handleClickAway, true)
             }
 
             if (hasHoverTrigger && popupElement) {
@@ -206,7 +249,7 @@ const Trigger: React.FC<TriggerProps> = function (props) {
             }
         }
     }, [show, popupElement])
-
+    // -------------------------Resize---------------------------------
     const handleTriggerElementResize = useRefMethod(() => {
         if (onTriggerElementResize) {
             onTriggerElementResize(popupElement)
@@ -232,8 +275,21 @@ const Trigger: React.FC<TriggerProps> = function (props) {
         options: { direction: 'xy', callbackDebounce: resizeDebounce },
         getTargetElement: () => document.body,
     })
+    // --------------------------------------------------------------
 
-    useEffect(() => clearMouseTimer, [])
+    // -------------------------Inject key---------------------------------
+    useEffect(() => {
+        if (triggerElement && componentKey) {
+            triggerElement.setAttribute('data-ck', componentKey)
+        }
+    }, [triggerElement])
+
+    useEffect(() => {
+        if (popupElement && componentKey) {
+            popupElement.setAttribute('data-ck', componentKey)
+        }
+    }, [popupElement])
+    // --------------------------------------------------------------
 
     const wrapGetPopupContainer = useRefMethod(() => getPopupContainer?.(triggerElement))
 
@@ -242,7 +298,7 @@ const Trigger: React.FC<TriggerProps> = function (props) {
             const { popup, ...other } = transitionPopupProps
 
             return (
-                <Motion.Transition {...other} data-ck={componentKey} visible={show} bindMotionElement={setPopupElement}>
+                <Motion.Transition {...other} visible={show} bindMotionElement={setPopupElement}>
                     {popup}
                 </Motion.Transition>
             )

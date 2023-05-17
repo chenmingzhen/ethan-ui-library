@@ -394,7 +394,6 @@ function Select<Data = SelectData>(props: SelectProps<Data>) {
                 className={cls}
                 onBlur={handleBlur}
                 onFocus={handleFocus}
-                data-ck={componentKey}
                 onKeyDown={handleKeydown}
                 onMouseDown={handleMouseDown}
             >

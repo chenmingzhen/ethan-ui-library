@@ -425,14 +425,7 @@ const RangePicker: React.FC<RangePickerProps> = function (props) {
                 ),
             }}
         >
-            <div
-                className={cls}
-                style={ms}
-                data-ck={componentKey}
-                onFocus={handleFocus}
-                onBlur={handleBlur}
-                onMouseDown={handleMouseDown}
-            >
+            <div className={cls} style={ms} onFocus={handleFocus} onBlur={handleBlur} onMouseDown={handleMouseDown}>
                 <div
                     className={datePickerClass(
                         'inner',

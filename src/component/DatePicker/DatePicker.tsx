@@ -297,14 +297,7 @@ const DatePicker: React.FC<DatePickerProps> = function (props) {
                 ),
             }}
         >
-            <div
-                className={cls}
-                style={ms}
-                onMouseDown={handleMouseDown}
-                onFocus={handleFocus}
-                onBlur={handleBlur}
-                data-ck={componentKey}
-            >
+            <div className={cls} style={ms} onMouseDown={handleMouseDown} onFocus={handleFocus} onBlur={handleBlur}>
                 <div
                     className={datePickerClass(
                         'inner',

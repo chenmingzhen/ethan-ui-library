@@ -90,7 +90,6 @@ const ColorPicker: React.FC<ColorPickerProps> = function (props) {
         >
             <div
                 style={style}
-                data-ck={componentKey}
                 className={classnames(colorPickerClass('_', position, size && size, disabled && 'disabled'), className)}
             >
                 <div className={colorPickerClass('inner')}>
