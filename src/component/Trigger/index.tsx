@@ -218,7 +218,7 @@ const Trigger: React.FC<TriggerProps> = function (props) {
         const hasHoverTrigger = triggerActions.includes('hover')
         const hasMouseClickTrigger = triggerActions.includes('click')
 
-        if (hasMouseClickTrigger && hasMouseClickTrigger) {
+        if (hasMouseClickTrigger && hasMousedownTrigger) {
             warningOnce('Mousedown and click should not be used together')
         }
 

@@ -25,6 +25,26 @@ const data = [
             {
                 key: '5',
                 title: 'Option 2',
+                children: [
+                    {
+                        key: '44',
+                        title: 'Option 11',
+                        children: [
+                            {
+                                key: '444',
+                                title: 'Option 444',
+                            },
+                            {
+                                key: '555',
+                                title: 'Option 555',
+                            },
+                        ],
+                    },
+                    {
+                        key: '55',
+                        title: 'Option 22',
+                    },
+                ],
             },
         ],
     },
@@ -36,34 +56,7 @@ const data = [
         key: '22',
         title: 'Navigation 22',
     },
-    {
-        key: '23',
-        title: 'Navigation 23',
-    },
-    {
-        key: '24',
-        title: 'Navigation 24',
-    },
-    {
-        key: '25',
-        title: 'Navigation 25',
-    },
-    {
-        key: '26',
-        title: 'Navigation 26',
-    },
-    {
-        key: '27',
-        title: 'Navigation 27',
-    },
-    {
-        key: '28',
-        title: 'Navigation 28',
-    },
-    {
-        key: '29',
-        title: 'Navigation 29',
-    },
+
     {
         key: '30',
         title: 'Navigation 30',
@@ -88,66 +81,14 @@ const data = [
             },
         ],
     },
-    {
-        key: '31',
-        title: 'Navigation 31',
-    },
-    {
-        key: '32',
-        title: 'Navigation 32',
-    },
-    {
-        key: '33',
-        title: 'Navigation 33',
-    },
-    {
-        key: '34',
-        title: 'Navigation 34',
-    },
-    {
-        key: '35',
-        title: 'Navigation 35',
-    },
-    {
-        key: '36',
-        title: 'Navigation 36',
-    },
-    {
-        key: '37',
-        title: 'Navigation 37',
-    },
-    {
-        key: '38',
-        title: 'Navigation 38',
-    },
-    {
-        key: '39',
-        title: 'Navigation 39',
-    },
-    {
-        key: '40',
-        title: 'Navigation 40',
-    },
-    {
-        key: '41',
-        title: 'Navigation 41',
-    },
-    {
-        key: '42',
-        title: 'Navigation 42',
-    },
-    {
-        key: '43',
-        title: 'Navigation 43',
-    },
-    {
-        key: '44',
-        title: 'Navigation 44',
-    },
-    {
-        key: '45',
-        title: 'Navigation 45',
-    },
 ]
 
-export default () => <Menu mode="vertical-auto" data={data} style={{ width: 256, height: 300 }} inlineIndent={24} />
+export default () => (
+    <Menu
+        mode="vertical"
+        data={data}
+        style={{ width: 256, height: 300 }}
+        inlineIndent={24}
+        subMenuTriggerActions={['hover']}
+    />
+)

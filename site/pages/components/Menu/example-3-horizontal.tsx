@@ -148,6 +148,4 @@ const data = [
     },
 ]
 
-export default () => (
-    <Menu mode="horizontal" data={data} inlineIndent={24} defaultActiveKey="1" style={{ height: 62 }} />
-)
+export default () => null

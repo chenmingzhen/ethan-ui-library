@@ -74,6 +74,22 @@ export function getPortalPickerStyle(triggerElement: HTMLElement, portalElement:
     return style
 }
 
+export function getPortalSubMenuStyle(triggerElement: HTMLElement, portalElement: HTMLElement): React.CSSProperties {
+    if (!triggerElement || !portalElement) return {}
+
+    const triggerRect = triggerElement.getBoundingClientRect()
+    const containerRect = portalElement.getBoundingClientRect()
+    const style: React.CSSProperties = {
+        position: 'absolute',
+    }
+
+    // right-top
+    style.left = triggerRect.right - containerRect.left
+    style.top = triggerRect.top - containerRect.top
+
+    return style
+}
+
 export function getDropdownPortalStyle(rect: DOMRect, position: string): React.CSSProperties {
     if (!rect) return {}
 

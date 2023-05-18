@@ -1,3 +1,3 @@
-import Menu from './Root'
+import Menu from './Menu'
 
 export default Menu
