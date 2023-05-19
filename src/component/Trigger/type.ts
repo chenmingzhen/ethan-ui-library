@@ -34,7 +34,7 @@ export interface TriggerProps {
     componentKey?: string
     /**
      * 是否为链式的componentKey
-     * 如组件A的componentKey为KEY_A,鼠标响应点为KEY_A_NEXT。这种情况仍然可判断为处于KEY_A的作用域中
+     * 如组件A的componentKey为KEY_A,鼠标响应点为KEY_A_NEXT。这种情况仍然可判断为处于KEY_A的作用域中,点击KEY_B时，不处于KEY_A的作用域中
      */
     isChainComponentKey?: boolean
 

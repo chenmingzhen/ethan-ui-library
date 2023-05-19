@@ -126,11 +126,14 @@ function end(element) {
 export function isDescendent(el: HTMLElement, componentKey: string, isChainComponentKey = false) {
     /** @deprecated 废弃，逐步过渡 */
     if (el.getAttribute('data-id') === componentKey) return true
-    if (
-        el.getAttribute('data-ck') === componentKey ||
-        (isChainComponentKey && el.getAttribute('data-ck')?.startsWith(componentKey))
-    )
-        return true
+
+    const ck = el.getAttribute('data-ck')
+
+    if (isChainComponentKey && ck) {
+        if (ck.startsWith(componentKey) || componentKey.startsWith(ck)) return true
+    }
+
+    if (el.getAttribute('data-ck') === componentKey) return true
     if (!el.parentElement) return false
 
     return isDescendent(el.parentElement, componentKey)

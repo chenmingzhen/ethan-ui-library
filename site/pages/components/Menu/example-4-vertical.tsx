@@ -15,67 +15,101 @@ const data = [
         title: 'Navigation 1',
     },
     {
-        key: '3',
-        title: 'Navigation 3',
+        key: '2',
+        title: 'Navigation 2>',
         children: [
             {
-                key: '4',
-                title: 'Option 1',
+                key: '21',
+                title: 'Option 21',
             },
             {
-                key: '5',
-                title: 'Option 2',
+                key: '22',
+                title: 'Option 22>',
                 children: [
                     {
-                        key: '44',
-                        title: 'Option 11',
+                        key: '221',
+                        title: 'Option 221>',
                         children: [
                             {
-                                key: '444',
-                                title: 'Option 444',
+                                key: '2211',
+                                title: 'Option 2211',
                             },
                             {
-                                key: '555',
-                                title: 'Option 555',
+                                key: '2212',
+                                title: 'Option 2212',
                             },
                         ],
                     },
                     {
-                        key: '55',
-                        title: 'Option 22',
+                        key: '222',
+                        title: 'Option 222',
+                    },
+                ],
+            },
+            {
+                key: '23',
+                title: 'Option 23>',
+                children: [
+                    {
+                        key: '231',
+                        title: 'Option 231>',
+                        children: [
+                            {
+                                key: '2311',
+                                title: 'Option 2311',
+                            },
+                            {
+                                key: '2312',
+                                title: 'Option 2312',
+                            },
+                        ],
+                    },
+                    {
+                        key: '232',
+                        title: 'Option 232>',
+                        children: [
+                            {
+                                key: '2321',
+                                title: 'Option 2321',
+                            },
+                            {
+                                key: '2322',
+                                title: 'Option 2322',
+                            },
+                        ],
                     },
                 ],
             },
         ],
     },
     {
-        key: '21',
-        title: 'Navigation 21',
+        key: '3',
+        title: 'Navigation 3',
     },
     {
-        key: '22',
-        title: 'Navigation 22',
+        key: '4',
+        title: 'Navigation 4',
     },
 
     {
-        key: '30',
-        title: 'Navigation 30',
+        key: '5',
+        title: 'Navigation 5',
         children: [
             {
-                key: '7',
-                title: 'Option 3',
+                key: '51',
+                title: 'Option 51',
             },
             {
-                key: '8',
-                title: 'Option 4',
+                key: '52',
+                title: 'Option 52',
                 children: [
                     {
-                        key: '9',
-                        title: 'Optic 1',
+                        key: '521',
+                        title: 'Optic 521',
                     },
                     {
-                        key: '10',
-                        title: 'Optic 2',
+                        key: '522',
+                        title: 'Optic 522',
                     },
                 ],
             },
@@ -89,6 +123,6 @@ export default () => (
         data={data}
         style={{ width: 256, height: 300 }}
         inlineIndent={24}
-        subMenuTriggerActions={['hover']}
+        // subMenuTriggerActions={['hover']}
     />
 )

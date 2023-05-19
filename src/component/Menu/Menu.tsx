@@ -163,20 +163,21 @@ const Menu: React.FC<MenuProps> = function (props) {
         dispatchSubMenuActions()
     }, [openKeys, activePath])
 
-    const updateKeys = useRefMethod(
+    /** 避免MouseLeave和MouseEnter执行两次setOpenKeys，从而导致异常 */
+    const ensureSetKeysAtOnce = useRefMethod(
         debounce((keys) => {
             setOpenKeys(keys)
-        }, 50)
+        }, 25)
     )
 
     const onMouseEnter = useRefMethod(({ key }) => {
         const path = key2PathMapping.get(key)
 
-        updateKeys(path)
+        ensureSetKeysAtOnce(path)
     })
 
     const onMouseLeave = useRefMethod(() => {
-        updateKeys([])
+        ensureSetKeysAtOnce([])
     })
 
     const isVertical = mode === 'vertical'

@@ -9,6 +9,12 @@ import Trigger from '../Trigger'
 import MenuContext from './context/MenuContext'
 import { getPathStr } from './util'
 
+/**
+ * 不同模式下触发打开Menu机制
+ * 1.hover模式下，SubMenu和MenuItem触发MouseEnter和MouseLeave，打开对应路径
+ * 2.click模式下，SubMenu和MenuItem触发Click，当点击document时，传入isChainComponentKey和onClickAway到trigger中，由Trigger关闭Menu
+ */
+
 const VerticalTrigger: React.FC<VerticalTriggerProps> = function (props) {
     const { visible, dataItem, path, popupContent, children } = props
     const { disabled } = dataItem
@@ -43,12 +49,14 @@ const VerticalTrigger: React.FC<VerticalTriggerProps> = function (props) {
 
     const popupStyle = styles(
         getPortalSubMenuStyle(triggerElement, portalElement),
+        /** 避免在进行关闭动画中，鼠标动作再次触发打开SubMenu的行为，导致异常 */
         !visible && { pointerEvents: 'none' }
     )
 
     return (
         <Trigger
             visible={visible}
+            isChainComponentKey
             componentKey={pathStr}
             bindPortalElement={setPortalElement}
             bindTriggerElement={setTriggerElement}
@@ -71,8 +79,8 @@ const VerticalTrigger: React.FC<VerticalTriggerProps> = function (props) {
             <span
                 className={classnames(menuClass('title'))}
                 onClick={hasClickTriggerAction ? handleTriggerClick : undefined}
-                onMouseEnter={handleMouseEnter}
-                onMouseLeave={handleMouseLeave}
+                onMouseEnter={hasHoverTriggerAction ? handleMouseEnter : undefined}
+                onMouseLeave={hasHoverTriggerAction ? handleMouseLeave : undefined}
             >
                 {children}
             </span>

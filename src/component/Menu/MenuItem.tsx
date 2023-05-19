@@ -13,7 +13,7 @@ const MenuItem: React.FC<MenuItemProps> = function (props) {
     const { key, title, disabled } = itemData
     const [active, updateActive] = useState(false)
     const { path } = useMenuPath(key)
-    const { bindMenuItem, unbindMenuItem, onMenuItemClick, componentKey, onMouseEnter, onMouseLeave } =
+    const { bindMenuItem, unbindMenuItem, onMenuItemClick, onMouseEnter, onMouseLeave, subMenuTriggerActions } =
         useContext(MenuContext)
 
     useIsomorphicLayoutEffect(() => {
@@ -38,6 +38,7 @@ const MenuItem: React.FC<MenuItemProps> = function (props) {
     const inlineIndentStyle = useInlineIndentStyle(path)
 
     const className = menuClass('item', disabled === true && 'disabled', active && 'active')
+    const hasHoverTriggerAction = subMenuTriggerActions.includes('hover')
 
     function handleMouseEnter() {
         onMouseEnter(itemData)
@@ -52,8 +53,8 @@ const MenuItem: React.FC<MenuItemProps> = function (props) {
             className={className}
             data-ck={getPathStr(path)}
             tabIndex={-1}
-            onMouseEnter={handleMouseEnter}
-            onMouseLeave={handleMouseLeave}
+            onMouseEnter={hasHoverTriggerAction ? handleMouseEnter : undefined}
+            onMouseLeave={hasHoverTriggerAction ? handleMouseLeave : undefined}
         >
             <span className={classnames(menuClass('title'))} style={inlineIndentStyle} onClick={handleMenuItemClick}>
                 {title}
