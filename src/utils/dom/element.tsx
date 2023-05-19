@@ -136,7 +136,7 @@ export function isDescendent(el: HTMLElement, componentKey: string, isChainCompo
     if (el.getAttribute('data-ck') === componentKey) return true
     if (!el.parentElement) return false
 
-    return isDescendent(el.parentElement, componentKey)
+    return isDescendent(el.parentElement, componentKey, isChainComponentKey)
 }
 
 export interface AddResizeObserverOptions {
