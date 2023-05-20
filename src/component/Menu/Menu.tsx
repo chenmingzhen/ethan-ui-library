@@ -5,7 +5,6 @@ import useRefMethod from '@/hooks/useRefMethod'
 import useMergedValue from '@/hooks/useMergedValue'
 import shallowEqual from '@/utils/shallowEqual'
 import { getUidStr } from '@/utils/uid'
-import { useIsomorphicLayoutEffect } from 'react-use'
 import { debounce } from '@/utils/func'
 import {
     BindMenuItemOptions,

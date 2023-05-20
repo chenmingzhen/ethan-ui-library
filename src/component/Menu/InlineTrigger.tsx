@@ -7,7 +7,7 @@ import useInlineIndentStyle from './hooks/useInlineIndentStyle'
 import MenuContext from './context/MenuContext'
 
 const InlineTrigger: React.FC<InlineTriggerProps> = function (props) {
-    const { visible, path, popupContent, dataItem, children } = props
+    const { visible, path, popupContent, dataItem, children, className } = props
     const inlineIndentStyle = useInlineIndentStyle(path)
     const { onInlineSubMenuClick } = useContext(MenuContext)
 
@@ -21,15 +21,17 @@ const InlineTrigger: React.FC<InlineTriggerProps> = function (props) {
                 popup: <ul className={menuClass('list', 'inline')}>{popupContent}</ul>,
             }}
         >
-            <span
-                style={inlineIndentStyle}
-                className={classnames(menuClass('title'))}
-                onClick={() => {
-                    onInlineSubMenuClick(dataItem, !visible)
-                }}
-            >
-                {children}
-            </span>
+            <li className={className} tabIndex={-1}>
+                <span
+                    style={inlineIndentStyle}
+                    className={classnames(menuClass('title'))}
+                    onClick={() => {
+                        onInlineSubMenuClick(dataItem, !visible)
+                    }}
+                >
+                    {children}
+                </span>
+            </li>
         </Trigger>
     )
 }

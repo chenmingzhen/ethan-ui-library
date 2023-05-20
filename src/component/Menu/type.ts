@@ -156,6 +156,7 @@ export interface InlineTriggerProps {
     popupContent: React.ReactNode
     children: React.ReactNode
     dataItem: MenuBaseData
+    className: string
 }
 
 export interface VerticalTriggerProps {
@@ -164,4 +165,5 @@ export interface VerticalTriggerProps {
     popupContent: React.ReactNode
     children: React.ReactNode
     dataItem: MenuBaseData
+    className: string
 }

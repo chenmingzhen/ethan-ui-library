@@ -16,7 +16,7 @@ import { getPathStr } from './util'
  */
 
 const VerticalTrigger: React.FC<VerticalTriggerProps> = function (props) {
-    const { visible, dataItem, path, popupContent, children } = props
+    const { visible, dataItem, path, popupContent, children, className } = props
     const { disabled } = dataItem
 
     const [triggerElement, setTriggerElement] = useState<HTMLElement>()
@@ -76,14 +76,16 @@ const VerticalTrigger: React.FC<VerticalTriggerProps> = function (props) {
                 ),
             }}
         >
-            <span
-                className={classnames(menuClass('title'))}
-                onClick={hasClickTriggerAction ? handleTriggerClick : undefined}
-                onMouseEnter={hasHoverTriggerAction ? handleMouseEnter : undefined}
-                onMouseLeave={hasHoverTriggerAction ? handleMouseLeave : undefined}
-            >
-                {children}
-            </span>
+            <li className={className} tabIndex={-1}>
+                <span
+                    className={classnames(menuClass('title'))}
+                    onClick={hasClickTriggerAction ? handleTriggerClick : undefined}
+                    onMouseEnter={hasHoverTriggerAction ? handleMouseEnter : undefined}
+                    onMouseLeave={hasHoverTriggerAction ? handleMouseLeave : undefined}
+                >
+                    {children}
+                </span>
+            </li>
         </Trigger>
     )
 }

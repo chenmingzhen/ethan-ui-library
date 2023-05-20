@@ -5,7 +5,6 @@ import useMenuPath from './hooks/useMenuPath'
 import PathContext from './context/PathContext'
 import { SubMenuProps } from './type'
 import MenuContext from './context/MenuContext'
-import { getPathStr } from './util'
 import InlineTrigger from './InlineTrigger'
 import VerticalTrigger from './VerticalTrigger'
 
@@ -27,12 +26,16 @@ const SubMenu: React.FC<SubMenuProps> = function (props) {
 
     const className = menuClass('item', 'submenu', disabled === true && 'disabled', open && 'open', inPath && 'in-path')
 
-    const pathStr = getPathStr(path)
-
     function buildTrigger() {
         if (mode === 'inline') {
             return (
-                <InlineTrigger dataItem={dataItem} visible={open} path={path} popupContent={children}>
+                <InlineTrigger
+                    dataItem={dataItem}
+                    visible={open}
+                    path={path}
+                    popupContent={children}
+                    className={className}
+                >
                     {title}
                 </InlineTrigger>
             )
@@ -40,20 +43,20 @@ const SubMenu: React.FC<SubMenuProps> = function (props) {
 
         if (mode === 'vertical') {
             return (
-                <VerticalTrigger dataItem={dataItem} visible={open} path={path} popupContent={children}>
+                <VerticalTrigger
+                    dataItem={dataItem}
+                    visible={open}
+                    path={path}
+                    popupContent={children}
+                    className={className}
+                >
                     {title}
                 </VerticalTrigger>
             )
         }
     }
 
-    return (
-        <PathContext.Provider value={{ path }}>
-            <li className={className} data-ck={pathStr} tabIndex={-1}>
-                {buildTrigger()}
-            </li>
-        </PathContext.Provider>
-    )
+    return <PathContext.Provider value={{ path }}>{buildTrigger()}</PathContext.Provider>
 }
 
 export default React.memo(SubMenu)
