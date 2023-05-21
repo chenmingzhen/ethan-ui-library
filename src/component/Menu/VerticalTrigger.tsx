@@ -36,14 +36,10 @@ const VerticalTrigger: React.FC<VerticalTriggerProps> = function (props) {
     })
 
     const handleMouseEnter = useRefMethod(() => {
-        if (!hasHoverTriggerAction) return
-
         onMouseEnter(dataItem)
     })
 
     const handleMouseLeave = useRefMethod(() => {
-        if (!hasHoverTriggerAction) return
-
         onMouseLeave(dataItem)
     })
 
@@ -76,15 +72,14 @@ const VerticalTrigger: React.FC<VerticalTriggerProps> = function (props) {
                 ),
             }}
         >
-            <li className={className} tabIndex={-1}>
-                <span
-                    className={classnames(menuClass('title'))}
-                    onClick={hasClickTriggerAction ? handleTriggerClick : undefined}
-                    onMouseEnter={hasHoverTriggerAction ? handleMouseEnter : undefined}
-                    onMouseLeave={hasHoverTriggerAction ? handleMouseLeave : undefined}
-                >
-                    {children}
-                </span>
+            <li
+                tabIndex={-1}
+                className={className}
+                onClick={hasClickTriggerAction ? handleTriggerClick : undefined}
+                onMouseEnter={hasHoverTriggerAction ? handleMouseEnter : undefined}
+                onMouseLeave={hasHoverTriggerAction ? handleMouseLeave : undefined}
+            >
+                <span className={classnames(menuClass('title'))}>{children}</span>
             </li>
         </Trigger>
     )

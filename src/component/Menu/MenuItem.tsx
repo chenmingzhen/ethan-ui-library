@@ -50,13 +50,14 @@ const MenuItem: React.FC<MenuItemProps> = function (props) {
 
     return (
         <li
+            tabIndex={-1}
             className={className}
             data-ck={getPathStr(path)}
-            tabIndex={-1}
+            onClick={handleMenuItemClick}
             onMouseEnter={hasHoverTriggerAction ? handleMouseEnter : undefined}
             onMouseLeave={hasHoverTriggerAction ? handleMouseLeave : undefined}
         >
-            <span className={classnames(menuClass('title'))} style={inlineIndentStyle} onClick={handleMenuItemClick}>
+            <span className={classnames(menuClass('title'))} style={inlineIndentStyle}>
                 {title}
             </span>
         </li>

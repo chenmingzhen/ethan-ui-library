@@ -124,6 +124,8 @@ function end(element) {
 
 // 判断点击的内容是否在容器或容器内
 export function isDescendent(el: HTMLElement, componentKey: string, isChainComponentKey = false) {
+    if (!(el instanceof HTMLElement)) return false
+
     /** @deprecated 废弃，逐步过渡 */
     if (el.getAttribute('data-id') === componentKey) return true
 

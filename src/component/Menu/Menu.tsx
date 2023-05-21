@@ -166,7 +166,7 @@ const Menu: React.FC<MenuProps> = function (props) {
     const ensureSetKeysAtOnce = useRefMethod(
         debounce((keys) => {
             setOpenKeys(keys)
-        }, 25)
+        }, 100)
     )
 
     const onMouseEnter = useRefMethod(({ key }) => {
