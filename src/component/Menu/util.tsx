@@ -24,9 +24,9 @@ export function getOption(mode): GetOptionReturn {
           }
 }
 
-export function getPathStr(path: React.Key[]) {
-    const ETHAN_MENU_SEPARATOR = '_@ETHAN@_'
+export const ETHAN_MENU_SEPARATOR = '_E@T_'
 
+export function getPathStr(path: React.Key[]) {
     return path.join(ETHAN_MENU_SEPARATOR)
 }
 

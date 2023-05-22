@@ -12,6 +12,7 @@ import Motion from '../Motion'
 const Trigger: React.FC<TriggerProps> = function (props) {
     const {
         visible,
+        chainKey,
         children,
         onClickAway,
         onDescClick,
@@ -55,7 +56,7 @@ const Trigger: React.FC<TriggerProps> = function (props) {
     })
 
     const isDescendentAction = useRefMethod((element: HTMLElement) => {
-        if (componentKey && isDescendent(element, componentKey, isChainComponentKey)) return true
+        if (componentKey && isDescendent(element, componentKey, chainKey)) return true
     })
 
     // -------------------------MouseMove---------------------------------
@@ -81,7 +82,9 @@ const Trigger: React.FC<TriggerProps> = function (props) {
         if (children && children.props && children.props.onMouseLeave) {
             children.props.onMouseLeave(e)
         }
+
         if (isDescendentAction(e.relatedTarget as HTMLElement)) return
+
         if (mouseLeaveDelay) {
             mouseTimer.current = setTimeout(() => {
                 updateShow(false)

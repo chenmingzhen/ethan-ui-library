@@ -118,10 +118,8 @@ export interface MenuContextProps {
 
     subMenuTriggerActions: MenuProps['subMenuTriggerActions']
 
-    onMouseEnter: (dataItem: MenuBaseData) => void
-    onMouseLeave: (dataItem: MenuBaseData) => void
     onInlineSubMenuClick: (dataItem: MenuBaseData, open: boolean) => void
-    onDirectionalSubMenuClick: (dataItem: MenuBaseData, open: boolean) => void
+    onDirectionalSubMenuToggleOpenKeys: (dataItem: MenuBaseData, open: boolean) => void
 }
 
 export interface PathContextProps {

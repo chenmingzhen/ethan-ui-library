@@ -13,7 +13,8 @@ const MenuItem: React.FC<MenuItemProps> = function (props) {
     const { key, title, disabled } = itemData
     const [active, updateActive] = useState(false)
     const { path } = useMenuPath(key)
-    const { bindMenuItem, unbindMenuItem, onMenuItemClick, onMouseEnter, onMouseLeave, subMenuTriggerActions } =
+
+    const { bindMenuItem, unbindMenuItem, onMenuItemClick, subMenuTriggerActions, onDirectionalSubMenuToggleOpenKeys } =
         useContext(MenuContext)
 
     useIsomorphicLayoutEffect(() => {
@@ -41,11 +42,11 @@ const MenuItem: React.FC<MenuItemProps> = function (props) {
     const hasHoverTriggerAction = subMenuTriggerActions.includes('hover')
 
     function handleMouseEnter() {
-        onMouseEnter(itemData)
+        onDirectionalSubMenuToggleOpenKeys(itemData, true)
     }
 
     function handleMouseLeave() {
-        onMouseLeave(itemData)
+        onDirectionalSubMenuToggleOpenKeys(itemData, false)
     }
 
     return (

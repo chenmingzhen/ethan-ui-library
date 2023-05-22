@@ -122,23 +122,38 @@ function end(element) {
     }
 }
 
+// 仍处于容器中的情况 连接符为_
+// 2 => 2_1 => 2_1_1
+// 2_1_1 => 2_1 =>2
+// 仍处于容器中的情况
+// 2 -> 21 => 211
+// 211 -> 21 -> 2
+
 // 判断点击的内容是否在容器或容器内
-export function isDescendent(el: HTMLElement, componentKey: string, isChainComponentKey = false) {
+export function isDescendent(el: HTMLElement, elementComponentKey: string, chainKey?: string) {
     if (!(el instanceof HTMLElement)) return false
 
     /** @deprecated 废弃，逐步过渡 */
-    if (el.getAttribute('data-id') === componentKey) return true
+    if (el.getAttribute('data-id') === elementComponentKey) return true
 
-    const ck = el.getAttribute('data-ck')
+    const targetComponentKey = el.getAttribute('data-ck')
 
-    if (isChainComponentKey && ck) {
-        if (ck.startsWith(componentKey) || componentKey.startsWith(ck)) return true
+    if (chainKey && targetComponentKey) {
+        if (targetComponentKey === elementComponentKey) {
+            return true
+        }
+        if (targetComponentKey.length > elementComponentKey.length) {
+            /** 判断目标是否为下游组件 */
+            return targetComponentKey.startsWith(elementComponentKey + chainKey)
+        }
+
+        return elementComponentKey.startsWith(targetComponentKey + chainKey)
     }
 
-    if (el.getAttribute('data-ck') === componentKey) return true
+    if (el.getAttribute('data-ck') === elementComponentKey) return true
     if (!el.parentElement) return false
 
-    return isDescendent(el.parentElement, componentKey, isChainComponentKey)
+    return isDescendent(el.parentElement, elementComponentKey, chainKey)
 }
 
 export interface AddResizeObserverOptions {

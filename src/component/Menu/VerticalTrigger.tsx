@@ -7,7 +7,7 @@ import { styles } from '@/utils/style/styles'
 import { VerticalTriggerProps } from './type'
 import Trigger from '../Trigger'
 import MenuContext from './context/MenuContext'
-import { getPathStr } from './util'
+import { ETHAN_MENU_SEPARATOR, getPathStr } from './util'
 
 /**
  * 不同模式下触发打开Menu机制
@@ -21,26 +21,14 @@ const VerticalTrigger: React.FC<VerticalTriggerProps> = function (props) {
 
     const [triggerElement, setTriggerElement] = useState<HTMLElement>()
     const [portalElement, setPortalElement] = useState<HTMLElement>()
-    const { subMenuTriggerActions, onMouseEnter, onMouseLeave, onDirectionalSubMenuClick } = useContext(MenuContext)
+    const { subMenuTriggerActions, onDirectionalSubMenuToggleOpenKeys } = useContext(MenuContext)
     const pathStr = getPathStr(path)
 
     const hasClickTriggerAction = subMenuTriggerActions.includes('click')
     const hasHoverTriggerAction = subMenuTriggerActions.includes('hover')
 
     const handleClickAway = useRefMethod(() => {
-        onDirectionalSubMenuClick(dataItem, false)
-    })
-
-    const handleTriggerClick = useRefMethod(() => {
-        onDirectionalSubMenuClick(dataItem, !visible)
-    })
-
-    const handleMouseEnter = useRefMethod(() => {
-        onMouseEnter(dataItem)
-    })
-
-    const handleMouseLeave = useRefMethod(() => {
-        onMouseLeave(dataItem)
+        onDirectionalSubMenuToggleOpenKeys(dataItem, false)
     })
 
     const popupStyle = styles(
@@ -52,7 +40,7 @@ const VerticalTrigger: React.FC<VerticalTriggerProps> = function (props) {
     return (
         <Trigger
             visible={visible}
-            isChainComponentKey
+            chainKey={ETHAN_MENU_SEPARATOR}
             componentKey={pathStr}
             bindPortalElement={setPortalElement}
             bindTriggerElement={setTriggerElement}
@@ -75,9 +63,15 @@ const VerticalTrigger: React.FC<VerticalTriggerProps> = function (props) {
             <li
                 tabIndex={-1}
                 className={className}
-                onClick={hasClickTriggerAction ? handleTriggerClick : undefined}
-                onMouseEnter={hasHoverTriggerAction ? handleMouseEnter : undefined}
-                onMouseLeave={hasHoverTriggerAction ? handleMouseLeave : undefined}
+                onClick={
+                    hasClickTriggerAction ? () => onDirectionalSubMenuToggleOpenKeys(dataItem, !visible) : undefined
+                }
+                onMouseEnter={
+                    hasHoverTriggerAction ? () => onDirectionalSubMenuToggleOpenKeys(dataItem, true) : undefined
+                }
+                onMouseLeave={
+                    hasHoverTriggerAction ? () => onDirectionalSubMenuToggleOpenKeys(dataItem, false) : undefined
+                }
             >
                 <span className={classnames(menuClass('title'))}>{children}</span>
             </li>

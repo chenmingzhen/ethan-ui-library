@@ -38,6 +38,8 @@ export interface TriggerProps {
      */
     isChainComponentKey?: boolean
 
+    chainKey?: string
+
     mouseEnterDelay?: number
     mouseLeaveDelay?: number
     onTriggerElementResize?: (popupElement: HTMLElement) => void
