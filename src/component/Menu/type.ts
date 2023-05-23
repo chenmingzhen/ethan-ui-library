@@ -83,7 +83,7 @@ export interface MenuListProps {
 }
 
 export interface MenuItemProps extends MenuContext {
-    itemData: MenuBaseData
+    dataItem: MenuBaseData
     children: React.ReactNode
 }
 
@@ -112,7 +112,7 @@ export interface MenuContextProps {
     inlineIndent: MenuProps['inlineIndent']
     mode: MenuProps['mode']
 
-    onMenuItemClick(key: React.Key, itemData: MenuBaseData): void
+    onMenuItemClick(dataItem: MenuBaseData): void
 
     componentKey: string
 

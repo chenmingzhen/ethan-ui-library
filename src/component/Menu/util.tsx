@@ -32,21 +32,21 @@ export function getPathStr(path: React.Key[]) {
 
 export function parseChildren(data: MenuBaseData[]) {
     return (data || [])
-        .map((item, index) => {
-            if (isObject(item)) {
-                const { title, children, key, ...restProps } = item
+        .map((dataItem, index) => {
+            if (isObject(dataItem)) {
+                const { title, children, key, ...restProps } = dataItem
                 const mergedKey = key || index
 
                 if (children) {
                     return (
-                        <SubMenu key={mergedKey} {...restProps} dataItem={item}>
+                        <SubMenu key={mergedKey} {...restProps} dataItem={dataItem}>
                             {parseChildren(children)}
                         </SubMenu>
                     )
                 }
 
                 return (
-                    <MenuItem key={mergedKey} {...restProps} itemData={item}>
+                    <MenuItem key={mergedKey} {...restProps} dataItem={dataItem}>
                         {title}
                     </MenuItem>
                 )

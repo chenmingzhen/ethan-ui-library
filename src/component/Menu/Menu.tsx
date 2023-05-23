@@ -2,10 +2,8 @@ import React, { useEffect, useRef, useState } from 'react'
 import classnames from 'classnames'
 import { menuClass } from '@/styles'
 import useRefMethod from '@/hooks/useRefMethod'
-import useMergedValue from '@/hooks/useMergedValue'
 import shallowEqual from '@/utils/shallowEqual'
 import { getUidStr } from '@/utils/uid'
-import { debounce } from '@/utils/func'
 import {
     BindMenuItemOptions,
     BindSubMenuOptions,
@@ -98,15 +96,15 @@ const Menu: React.FC<MenuProps> = function (props) {
         })
     })
 
-    const handleMenuItemClick = useRefMethod((key: React.Key, itemData: MenuBaseData) => {
-        const path = key2PathMapping.get(key)
+    const onMenuItemClick = useRefMethod((dataItem: MenuBaseData) => {
+        const path = key2PathMapping.get(dataItem.key)
 
-        if (!path) return
+        if (!path || dataItem.disabled) return
 
         setActivePath(path)
 
         if (onClick) {
-            onClick(itemData)
+            onClick(dataItem)
         }
 
         if (mode !== 'inline') {
@@ -158,7 +156,7 @@ const Menu: React.FC<MenuProps> = function (props) {
                 unbindSubMenu,
                 inlineIndent,
                 subMenuTriggerActions,
-                onMenuItemClick: handleMenuItemClick,
+                onMenuItemClick,
                 componentKey,
                 onInlineSubMenuClick,
                 onDirectionalSubMenuToggleOpenKeys,

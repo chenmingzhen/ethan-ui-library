@@ -40,8 +40,8 @@ const VerticalTrigger: React.FC<VerticalTriggerProps> = function (props) {
     return (
         <Trigger
             visible={visible}
-            chainKey={ETHAN_MENU_SEPARATOR}
             componentKey={pathStr}
+            chainKey={ETHAN_MENU_SEPARATOR}
             bindPortalElement={setPortalElement}
             bindTriggerElement={setTriggerElement}
             getPopupContainer={() => document.body}
