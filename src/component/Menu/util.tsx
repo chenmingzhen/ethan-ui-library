@@ -3,6 +3,7 @@ import { isObject } from '@/utils/is'
 import MenuItem from './MenuItem'
 import { MenuBaseData } from './type'
 import SubMenu from './SubMenu'
+import MenuItemGroup from './MenuItemGroup'
 
 interface GetOptionReturn {
     key: 'height' | 'width'
@@ -34,8 +35,16 @@ export function parseChildren(data: MenuBaseData[]) {
     return (data || [])
         .map((dataItem, index) => {
             if (isObject(dataItem)) {
-                const { title, children, key, ...restProps } = dataItem
+                const { title, children, key, type, ...restProps } = dataItem
                 const mergedKey = key || index
+
+                if (type === 'group') {
+                    return (
+                        <MenuItemGroup key={mergedKey} {...restProps} dataItem={dataItem}>
+                            {parseChildren(children)}
+                        </MenuItemGroup>
+                    )
+                }
 
                 if (children) {
                     return (

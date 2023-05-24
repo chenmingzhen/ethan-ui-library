@@ -14,14 +14,19 @@ const MenuItem: React.FC<MenuItemProps> = function (props) {
     const [active, updateActive] = useState(false)
     const { path } = useMenuPath(key)
 
-    const { bindMenuItem, unbindMenuItem, onMenuItemClick, subMenuTriggerActions, onDirectionalSubMenuToggleOpenKeys } =
-        useContext(MenuContext)
+    const {
+        registerMenuItem,
+        unregisterMenuItem,
+        onMenuItemClick,
+        subMenuTriggerActions,
+        onDirectionalToggleOpenKeys,
+    } = useContext(MenuContext)
 
     useIsomorphicLayoutEffect(() => {
-        bindMenuItem(key, { path, updateActive } as any)
+        registerMenuItem(key, { path, updateActive } as any)
 
         return () => {
-            unbindMenuItem(key)
+            unregisterMenuItem(key)
         }
     }, [path])
 
@@ -30,14 +35,25 @@ const MenuItem: React.FC<MenuItemProps> = function (props) {
     const className = menuClass('item', disabled === true && 'disabled', active && 'active')
     const hasHoverTriggerAction = subMenuTriggerActions.includes('hover')
 
+    function handleMouseEnter() {
+        if (!hasHoverTriggerAction) return
+        onDirectionalToggleOpenKeys(dataItem, true)
+    }
+
+    function handleMouseLeave() {
+        if (!hasHoverTriggerAction) return
+
+        onDirectionalToggleOpenKeys(dataItem, false)
+    }
+
     return (
         <li
             tabIndex={-1}
             className={className}
             data-ck={getPathStr(path)}
             onClick={() => onMenuItemClick(dataItem)}
-            onMouseEnter={hasHoverTriggerAction ? () => onDirectionalSubMenuToggleOpenKeys(dataItem, true) : undefined}
-            onMouseLeave={hasHoverTriggerAction ? () => onDirectionalSubMenuToggleOpenKeys(dataItem, false) : undefined}
+            onMouseEnter={handleMouseEnter}
+            onMouseLeave={handleMouseLeave}
         >
             <span className={classnames(menuClass('title'))} style={inlineIndentStyle}>
                 {title}

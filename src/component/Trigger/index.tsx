@@ -29,7 +29,6 @@ const Trigger: React.FC<TriggerProps> = function (props) {
         getPopupContainer,
         customPopupRender,
         bindTriggerElement,
-        isChainComponentKey,
         transitionPopupProps,
         onTriggerElementResize,
         allowClickTriggerClose = true,

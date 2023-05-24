@@ -8,6 +8,7 @@ export interface MenuBaseData {
     title?: React.ReactNode
     disabled?: boolean
     children?: MenuBaseData[]
+    type?: string
 }
 
 export type UpdateActive = (activePath: string) => void
@@ -104,22 +105,22 @@ export interface MenuEventRegisterContextProps {
 }
 
 export interface MenuContextProps {
-    bindMenuItem(key: React.Key, options: BindMenuItemOptions): void
-    unbindMenuItem(key: React.Key): void
-    bindSubMenu(key: React.Key, options: BindSubMenuOptions): void
-    unbindSubMenu(key: React.Key): void
+    registerMenuItem(key: React.Key, options: RegisterMenuItemOptions): void
+    unregisterMenuItem(key: React.Key): void
+    registerSubMenu(key: React.Key, options: RegisterSubMenuOptions): void
+    unregisterSubMenu(key: React.Key): void
+    registerMenuItemGroup(key: React.Key, options: RegisterMenuItemGroupOptions): void
+    unregisterMenuItemGroup(key: React.Key): void
 
-    inlineIndent: MenuProps['inlineIndent']
     mode: MenuProps['mode']
+    inlineIndent: MenuProps['inlineIndent']
 
     onMenuItemClick(dataItem: MenuBaseData): void
-
-    componentKey: string
 
     subMenuTriggerActions: MenuProps['subMenuTriggerActions']
 
     onInlineSubMenuClick: (dataItem: MenuBaseData, open: boolean) => void
-    onDirectionalSubMenuToggleOpenKeys: (dataItem: MenuBaseData, open: boolean) => void
+    onDirectionalToggleOpenKeys: (dataItem: MenuBaseData, open: boolean) => void
 }
 
 export interface PathContextProps {
@@ -135,11 +136,15 @@ export interface SubMenuActions {
     updateInPath(inPath: boolean): void
 }
 
-export interface BindMenuItemOptions extends MenuItemActions {
+export interface RegisterMenuItemOptions extends MenuItemActions {
     path: React.Key[]
 }
 
-export interface BindSubMenuOptions extends SubMenuActions {
+export interface RegisterSubMenuOptions extends SubMenuActions {
+    path: React.Key[]
+}
+
+export interface RegisterMenuItemGroupOptions {
     path: React.Key[]
 }
 
@@ -164,4 +169,8 @@ export interface VerticalTriggerProps {
     children: React.ReactNode
     dataItem: MenuBaseData
     className: string
+}
+
+export interface MenuItemGroupProps {
+    dataItem: MenuBaseData
 }

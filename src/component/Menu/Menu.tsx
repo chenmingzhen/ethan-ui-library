@@ -1,20 +1,13 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import classnames from 'classnames'
 import { menuClass } from '@/styles'
 import useRefMethod from '@/hooks/useRefMethod'
 import shallowEqual from '@/utils/shallowEqual'
-import { getUidStr } from '@/utils/uid'
-import {
-    BindMenuItemOptions,
-    BindSubMenuOptions,
-    MenuBaseData,
-    MenuItemActions,
-    MenuProps,
-    SubMenuActions,
-} from './type'
+import { MenuBaseData, MenuProps } from './type'
 import MenuContext from './context/MenuContext'
-import { getPathStr, parseChildren } from './util'
+import { parseChildren } from './util'
 import useOpenKeys from './hooks/useOpenKeys'
+import useRegister from './hooks/useRegister'
 
 const Menu: React.FC<MenuProps> = function (props) {
     const {
@@ -36,47 +29,8 @@ const Menu: React.FC<MenuProps> = function (props) {
         value: props.openKeys,
         onChange: onOpenChange,
     })
-    const componentKey = useRef(getUidStr()).current
-    const key2PathMapping = useRef(new Map<React.Key, React.Key[]>()).current
-    const path2KeyMapping = useRef(new Map<string, React.Key>()).current
-    const menuItemActionMapping = useRef(new Map<React.Key, MenuItemActions>()).current
-    const subMenuActionMapping = useRef(new Map<React.Key, SubMenuActions>()).current
 
-    /**  */
-    const bindMenuItem = useRefMethod((key: string, options: BindMenuItemOptions) => {
-        const { path, updateActive } = options
-        const pathStr = getPathStr(path)
-
-        key2PathMapping.set(key, path)
-        path2KeyMapping.set(pathStr, key)
-        menuItemActionMapping.set(key, { updateActive })
-    })
-    const unbindMenuItem = useRefMethod((key: string) => {
-        const path = key2PathMapping.get(key)
-        const pathStr = getPathStr(path)
-
-        key2PathMapping.delete(key)
-        path2KeyMapping.delete(pathStr)
-        menuItemActionMapping.delete(key)
-    })
-
-    /**  */
-    const bindSubMenu = useRefMethod((key: string, options: BindSubMenuOptions) => {
-        const { path, updateOpen, updateInPath } = options
-        const pathStr = getPathStr(path)
-
-        key2PathMapping.set(key, path)
-        path2KeyMapping.set(pathStr, key)
-        subMenuActionMapping.set(key, { updateInPath, updateOpen })
-    })
-    const unbindSubMenu = useRefMethod((key: string) => {
-        const path = key2PathMapping.get(key)
-        const pathStr = getPathStr(path)
-
-        key2PathMapping.delete(key)
-        path2KeyMapping.delete(pathStr)
-        subMenuActionMapping.delete(key)
-    })
+    const { key2PathMapping, path2KeyMapping, menuItemActionMapping, subMenuActionMapping, ...events } = useRegister()
 
     /** 触发SubMenu和MenuItem状态更新 */
     const dispatchMenuItemActions = useRefMethod(() => {
@@ -125,7 +79,7 @@ const Menu: React.FC<MenuProps> = function (props) {
         }
     })
 
-    const onDirectionalSubMenuToggleOpenKeys = useRefMethod((dataItem: MenuBaseData, open: boolean) => {
+    const onDirectionalToggleOpenKeys = useRefMethod((dataItem: MenuBaseData, open: boolean) => {
         const { key, disabled } = dataItem
         const path = key2PathMapping.get(key)
 
@@ -150,16 +104,12 @@ const Menu: React.FC<MenuProps> = function (props) {
         <MenuContext.Provider
             value={{
                 mode,
-                bindMenuItem,
-                unbindMenuItem,
-                bindSubMenu,
-                unbindSubMenu,
                 inlineIndent,
                 subMenuTriggerActions,
                 onMenuItemClick,
-                componentKey,
                 onInlineSubMenuClick,
-                onDirectionalSubMenuToggleOpenKeys,
+                onDirectionalToggleOpenKeys,
+                ...events,
             }}
         >
             <div style={style} className={menuCls}>

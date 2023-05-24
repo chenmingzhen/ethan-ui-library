@@ -1,6 +1,5 @@
-import React, { useContext, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { menuClass } from '@/styles'
-import { useIsomorphicLayoutEffect } from 'react-use'
 import useMenuPath from './hooks/useMenuPath'
 import PathContext from './context/PathContext'
 import { SubMenuProps } from './type'
@@ -14,13 +13,13 @@ const SubMenu: React.FC<SubMenuProps> = function (props) {
     const { path } = useMenuPath(key)
     const [open, updateOpen] = useState(false)
     const [inPath, updateInPath] = useState(false)
-    const { bindSubMenu, unbindSubMenu, mode } = useContext(MenuContext)
+    const { registerSubMenu, unregisterSubMenu, mode } = useContext(MenuContext)
 
-    useIsomorphicLayoutEffect(() => {
-        bindSubMenu(key, { updateInPath, updateOpen, path })
+    useEffect(() => {
+        registerSubMenu(key, { updateInPath, updateOpen, path })
 
         return () => {
-            unbindSubMenu(key)
+            unregisterSubMenu(key)
         }
     }, [path])
 
