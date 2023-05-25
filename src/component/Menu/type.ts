@@ -51,6 +51,7 @@ export interface MenuProps<T = MenuBaseData> {
     onOpenChange?(keys: (string | number)[]): void
     theme?: 'light' | 'dark'
     subMenuTriggerActions?: Exclude<TriggerAction, 'focus' | 'mousedown'>[]
+    onSelectChange?: (dataItem: T, path: React.Key[]) => void
 }
 
 export interface MenuListProps {
@@ -115,12 +116,13 @@ export interface MenuContextProps {
     mode: MenuProps['mode']
     inlineIndent: MenuProps['inlineIndent']
 
-    onMenuItemClick(dataItem: MenuBaseData): void
+    onLeafClick(dataItem: MenuBaseData): void
+    onInlineSubMenuTitleClick: (dataItem: MenuBaseData, open: boolean) => void
 
+    onMouseEnterOpen: (dataItem: MenuBaseData) => void
+    onMouseLeaveClose: (dataItem: MenuBaseData) => void
+    onMouseClickToggle: (dataItem: MenuBaseData, open: boolean) => void
     subMenuTriggerActions: MenuProps['subMenuTriggerActions']
-
-    onInlineSubMenuClick: (dataItem: MenuBaseData, open: boolean) => void
-    onDirectionalToggleOpenKeys: (dataItem: MenuBaseData, open: boolean) => void
 }
 
 export interface PathContextProps {
@@ -173,4 +175,5 @@ export interface VerticalTriggerProps {
 
 export interface MenuItemGroupProps {
     dataItem: MenuBaseData
+    children: React.ReactNode
 }

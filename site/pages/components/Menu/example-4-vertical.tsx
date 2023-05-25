@@ -19,62 +19,139 @@ const data = [
         title: 'Navigation 2>',
         children: [
             {
-                key: '21',
-                title: 'Option 21',
-            },
-            {
-                key: '22',
-                title: 'Option 22>',
+                key: 'group2-1',
+                type: 'group',
+                title: 'Group2',
                 children: [
                     {
-                        key: '221',
-                        title: 'Option 221>',
+                        key: 'group2-1-21',
+                        title: 'Option 21',
+                    },
+                    {
+                        key: 'group2-1-22',
+                        title: 'Option 22>',
                         children: [
                             {
-                                key: '2211',
-                                title: 'Option 2211',
+                                key: 'group2-1-221',
+                                title: 'Option 221>',
+                                children: [
+                                    {
+                                        key: 'group2-1-2211',
+                                        title: 'Option 2211',
+                                    },
+                                    {
+                                        key: 'group2-1-2212',
+                                        title: 'Option 2212',
+                                    },
+                                ],
                             },
                             {
-                                key: '2212',
-                                title: 'Option 2212',
+                                key: 'group2-1-222',
+                                title: 'Option 222',
                             },
                         ],
                     },
                     {
-                        key: '222',
-                        title: 'Option 222',
+                        key: 'group2-1-23',
+                        title: 'Option 23>',
+                        children: [
+                            {
+                                key: 'group2-1-231',
+                                title: 'Option 231>',
+                                children: [
+                                    {
+                                        key: 'group2-1-2311',
+                                        title: 'Option 2311',
+                                    },
+                                    {
+                                        key: 'group2-1-2312',
+                                        title: 'Option 2312',
+                                    },
+                                ],
+                            },
+                            {
+                                key: 'group2-1-232',
+                                title: 'Option 232>',
+                                children: [
+                                    {
+                                        key: 'group2-1-2321',
+                                        title: 'Option 2321',
+                                    },
+                                    {
+                                        key: 'group2-1-2322',
+                                        title: 'Option 2322',
+                                    },
+                                ],
+                            },
+                        ],
                     },
                 ],
             },
             {
-                key: '23',
-                title: 'Option 23>',
+                key: 'group2-2',
+                type: 'group',
+                title: 'Group2-2',
                 children: [
                     {
-                        key: '231',
-                        title: 'Option 231>',
+                        key: 'group2-2-22',
+                        title: 'Option 22>',
                         children: [
                             {
-                                key: '2311',
-                                title: 'Option 2311',
+                                key: 'group2-2-221',
+                                title: 'Option 221>',
+                                children: [
+                                    {
+                                        key: 'group2-2-2211',
+                                        title: 'Option 2211',
+                                    },
+                                    {
+                                        key: 'group2-2-2212',
+                                        title: 'Option 2212',
+                                    },
+                                ],
                             },
                             {
-                                key: '2312',
-                                title: 'Option 2312',
+                                key: 'group2-2-222',
+                                title: 'Option 222',
                             },
                         ],
                     },
                     {
-                        key: '232',
-                        title: 'Option 232>',
+                        key: 'group2-2-21',
+                        title: 'Option 21',
+                    },
+
+                    {
+                        key: 'group2-2-23',
+                        title: 'Option 23>',
                         children: [
                             {
-                                key: '2321',
-                                title: 'Option 2321',
+                                key: 'group2-2-231',
+                                title: 'Option 231>',
+                                children: [
+                                    {
+                                        key: 'group2-2-2311',
+                                        title: 'Option 2311',
+                                    },
+                                    {
+                                        key: 'group2-2-2312',
+                                        title: 'Option 2312',
+                                    },
+                                ],
                             },
                             {
-                                key: '2322',
-                                title: 'Option 2322',
+                                key: 'group2-2-232',
+                                title: 'Option 232>',
+                                children: [
+                                    {
+                                        key: 'group2-2-2321',
+                                        title: 'Option 2321',
+                                    },
+                                    {
+                                        key: 'group2-2-2322',
+                                        title: 'Option 2322',
+                                    },
+                                ],
                             },
                         ],
                     },
@@ -123,6 +200,6 @@ export default () => (
         data={data}
         style={{ width: 256, height: 300 }}
         inlineIndent={24}
-        // subMenuTriggerActions={['hover']}
+        subMenuTriggerActions={['hover']}
     />
 )

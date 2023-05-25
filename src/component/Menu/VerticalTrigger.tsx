@@ -2,7 +2,6 @@ import React, { useContext, useState } from 'react'
 import classnames from 'classnames'
 import { menuClass } from '@/styles'
 import { getPortalSubMenuStyle } from '@/utils/position'
-import useRefMethod from '@/hooks/useRefMethod'
 import { styles } from '@/utils/style/styles'
 import { VerticalTriggerProps } from './type'
 import Trigger from '../Trigger'
@@ -21,39 +20,14 @@ const VerticalTrigger: React.FC<VerticalTriggerProps> = function (props) {
 
     const [triggerElement, setTriggerElement] = useState<HTMLElement>()
     const [portalElement, setPortalElement] = useState<HTMLElement>()
-    const { subMenuTriggerActions, onDirectionalToggleOpenKeys } = useContext(MenuContext)
+    const { onMouseEnterOpen, onMouseLeaveClose, onMouseClickToggle, subMenuTriggerActions } = useContext(MenuContext)
     const pathStr = getPathStr(path)
-
-    const hasClickTriggerAction = subMenuTriggerActions.includes('click')
-    const hasHoverTriggerAction = subMenuTriggerActions.includes('hover')
-
-    const handleClickAway = useRefMethod(() => {
-        onDirectionalToggleOpenKeys(dataItem, false)
-    })
 
     const popupStyle = styles(
         getPortalSubMenuStyle(triggerElement, portalElement),
         /** 避免在进行关闭动画中，鼠标动作再次触发打开SubMenu的行为，导致异常 */
         !visible && { pointerEvents: 'none' }
     )
-
-    function handleClick() {
-        if (!hasClickTriggerAction) return
-
-        onDirectionalToggleOpenKeys(dataItem, !visible)
-    }
-
-    function handleMouseEnter() {
-        if (!hasHoverTriggerAction) return
-
-        onDirectionalToggleOpenKeys(dataItem, true)
-    }
-
-    function handleMouseLeave() {
-        if (!hasHoverTriggerAction) return
-
-        onDirectionalToggleOpenKeys(dataItem, false)
-    }
 
     return (
         <Trigger
@@ -65,7 +39,7 @@ const VerticalTrigger: React.FC<VerticalTriggerProps> = function (props) {
             getPopupContainer={() => document.body}
             portalClassName={menuClass('absolute')}
             triggerActions={disabled ? [] : subMenuTriggerActions}
-            onClickAway={hasClickTriggerAction ? handleClickAway : undefined}
+            onClickAway={() => onMouseClickToggle(dataItem, false)}
             motionPopupProps={{
                 enter: true,
                 leave: true,
@@ -81,9 +55,9 @@ const VerticalTrigger: React.FC<VerticalTriggerProps> = function (props) {
             <li
                 tabIndex={-1}
                 className={className}
-                onClick={handleClick}
-                onMouseEnter={handleMouseEnter}
-                onMouseLeave={handleMouseLeave}
+                onMouseEnter={() => onMouseEnterOpen(dataItem)}
+                onMouseLeave={() => onMouseLeaveClose(dataItem)}
+                onClick={() => onMouseClickToggle(dataItem, !visible)}
             >
                 <span className={classnames(menuClass('title'))}>{children}</span>
             </li>

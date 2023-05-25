@@ -9,15 +9,15 @@ import MenuContext from './context/MenuContext'
 const InlineTrigger: React.FC<InlineTriggerProps> = function (props) {
     const { visible, path, popupContent, dataItem, children, className } = props
     const inlineIndentStyle = useInlineIndentStyle(path)
-    const { onInlineSubMenuClick } = useContext(MenuContext)
+    const { onInlineSubMenuTitleClick } = useContext(MenuContext)
 
     return (
         <Trigger
             visible={visible}
             transitionPopupProps={{
-                transitionTypes: ['collapse', 'fade'],
                 duration: 'fast',
                 hideDisplayAfterLeave: true,
+                transitionTypes: ['collapse', 'fade'],
                 popup: <ul className={menuClass('list', 'inline')}>{popupContent}</ul>,
             }}
         >
@@ -25,9 +25,7 @@ const InlineTrigger: React.FC<InlineTriggerProps> = function (props) {
                 <span
                     style={inlineIndentStyle}
                     className={classnames(menuClass('title'))}
-                    onClick={() => {
-                        onInlineSubMenuClick(dataItem, !visible)
-                    }}
+                    onClick={() => onInlineSubMenuTitleClick(dataItem, !visible)}
                 >
                     {children}
                 </span>

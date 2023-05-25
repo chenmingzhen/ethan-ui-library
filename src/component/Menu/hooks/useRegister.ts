@@ -12,8 +12,8 @@ import { getPathStr } from '../util'
 export default function useRegister() {
     const key2PathMapping = useRef(new Map<React.Key, React.Key[]>()).current
     const path2KeyMapping = useRef(new Map<string, React.Key>()).current
-    const menuItemActionMapping = useRef(new Map<React.Key, MenuItemActions>()).current
-    const subMenuActionMapping = useRef(new Map<React.Key, SubMenuActions>()).current
+    const menuItemMapping = useRef(new Map<React.Key, MenuItemActions>()).current
+    const subMenuMapping = useRef(new Map<React.Key, SubMenuActions>()).current
 
     /**  */
     const registerMenuItem = useRefMethod((key: string, options: RegisterMenuItemOptions) => {
@@ -22,7 +22,7 @@ export default function useRegister() {
 
         key2PathMapping.set(key, path)
         path2KeyMapping.set(pathStr, key)
-        menuItemActionMapping.set(key, { updateActive })
+        menuItemMapping.set(key, { updateActive })
     })
     const unregisterMenuItem = useRefMethod((key: string) => {
         const path = key2PathMapping.get(key)
@@ -30,7 +30,7 @@ export default function useRegister() {
 
         key2PathMapping.delete(key)
         path2KeyMapping.delete(pathStr)
-        menuItemActionMapping.delete(key)
+        menuItemMapping.delete(key)
     })
 
     /**  */
@@ -40,7 +40,7 @@ export default function useRegister() {
 
         key2PathMapping.set(key, path)
         path2KeyMapping.set(pathStr, key)
-        subMenuActionMapping.set(key, { updateInPath, updateOpen })
+        subMenuMapping.set(key, { updateInPath, updateOpen })
     })
     const unregisterSubMenu = useRefMethod((key: string) => {
         const path = key2PathMapping.get(key)
@@ -48,7 +48,7 @@ export default function useRegister() {
 
         key2PathMapping.delete(key)
         path2KeyMapping.delete(pathStr)
-        subMenuActionMapping.delete(key)
+        subMenuMapping.delete(key)
     })
 
     const registerMenuItemGroup = useRefMethod((key: string, options: RegisterMenuItemGroupOptions) => {
@@ -69,8 +69,8 @@ export default function useRegister() {
     return {
         key2PathMapping,
         path2KeyMapping,
-        menuItemActionMapping,
-        subMenuActionMapping,
+        menuItemMapping,
+        subMenuMapping,
         /**  */
         registerMenuItem,
         unregisterMenuItem,

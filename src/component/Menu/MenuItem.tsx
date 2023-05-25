@@ -1,6 +1,5 @@
-import React, { useContext, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { menuClass } from '@/styles'
-import { useIsomorphicLayoutEffect } from 'react-use'
 import classnames from 'classnames'
 import { MenuItemProps } from './type'
 import useMenuPath from './hooks/useMenuPath'
@@ -11,18 +10,12 @@ import { getPathStr } from './util'
 const MenuItem: React.FC<MenuItemProps> = function (props) {
     const { dataItem } = props
     const { key, title, disabled } = dataItem
-    const [active, updateActive] = useState(false)
     const { path } = useMenuPath(key)
+    const [active, updateActive] = useState(false)
+    const { registerMenuItem, unregisterMenuItem, onLeafClick, onMouseEnterOpen, onMouseLeaveClose } =
+        useContext(MenuContext)
 
-    const {
-        registerMenuItem,
-        unregisterMenuItem,
-        onMenuItemClick,
-        subMenuTriggerActions,
-        onDirectionalToggleOpenKeys,
-    } = useContext(MenuContext)
-
-    useIsomorphicLayoutEffect(() => {
+    useEffect(() => {
         registerMenuItem(key, { path, updateActive } as any)
 
         return () => {
@@ -31,29 +24,16 @@ const MenuItem: React.FC<MenuItemProps> = function (props) {
     }, [path])
 
     const inlineIndentStyle = useInlineIndentStyle(path)
-
     const className = menuClass('item', disabled === true && 'disabled', active && 'active')
-    const hasHoverTriggerAction = subMenuTriggerActions.includes('hover')
-
-    function handleMouseEnter() {
-        if (!hasHoverTriggerAction) return
-        onDirectionalToggleOpenKeys(dataItem, true)
-    }
-
-    function handleMouseLeave() {
-        if (!hasHoverTriggerAction) return
-
-        onDirectionalToggleOpenKeys(dataItem, false)
-    }
 
     return (
         <li
             tabIndex={-1}
             className={className}
             data-ck={getPathStr(path)}
-            onClick={() => onMenuItemClick(dataItem)}
-            onMouseEnter={handleMouseEnter}
-            onMouseLeave={handleMouseLeave}
+            onClick={() => onLeafClick(dataItem)}
+            onMouseEnter={() => onMouseEnterOpen(dataItem)}
+            onMouseLeave={() => onMouseLeaveClose(dataItem)}
         >
             <span className={classnames(menuClass('title'))} style={inlineIndentStyle}>
                 {title}

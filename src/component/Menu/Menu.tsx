@@ -1,64 +1,59 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import classnames from 'classnames'
 import { menuClass } from '@/styles'
 import useRefMethod from '@/hooks/useRefMethod'
-import shallowEqual from '@/utils/shallowEqual'
 import { MenuBaseData, MenuProps } from './type'
 import MenuContext from './context/MenuContext'
 import { parseChildren } from './util'
 import useOpenKeys from './hooks/useOpenKeys'
 import useRegister from './hooks/useRegister'
+import useActionEffect from './hooks/useActionEffect'
 
 const Menu: React.FC<MenuProps> = function (props) {
     const {
-        className,
-        style,
-        mode = 'inline',
-        theme,
         data,
+        style,
+        theme,
+        onClick,
+        className,
+        onOpenChange,
+        onSelectChange,
+        defaultOpenKeys,
+        mode = 'inline',
         inlineIndent = 24,
         subMenuTriggerActions = ['click'],
-        defaultOpenKeys,
-        onOpenChange,
-        onClick,
     } = props
 
     const [activePath, setActivePath] = useState<React.Key[]>([])
+    const { key2PathMapping, path2KeyMapping, menuItemMapping, subMenuMapping, ...registerEvents } = useRegister()
     const { openKeys, syncSetOpenKeys, delaySetOpenKeys } = useOpenKeys({
+        subMenuMapping,
         defaultValue: defaultOpenKeys,
         value: props.openKeys,
         onChange: onOpenChange,
     })
 
-    const { key2PathMapping, path2KeyMapping, menuItemActionMapping, subMenuActionMapping, ...events } = useRegister()
-
-    /** 触发SubMenu和MenuItem状态更新 */
-    const dispatchMenuItemActions = useRefMethod(() => {
-        menuItemActionMapping.forEach((actions, key) => {
-            const path = key2PathMapping.get(key)
-
-            actions.updateActive(shallowEqual(activePath, path))
-        })
+    useActionEffect({
+        openKeys,
+        activePath,
+        subMenuMapping,
+        key2PathMapping,
+        menuItemMapping,
     })
 
-    const dispatchSubMenuActions = useRefMethod(() => {
-        subMenuActionMapping.forEach((actions, key) => {
-            const path = key2PathMapping.get(key)
+    /** -------------------------- Menu events-------------------------- */
+    const hasClickTriggerAction = subMenuTriggerActions.includes('click')
+    const hasHoverTriggerAction = subMenuTriggerActions.includes('hover')
 
-            actions.updateOpen(openKeys.includes(key))
-            actions.updateInPath(path.every((r) => activePath.includes(r)))
-        })
-    })
-
-    const onMenuItemClick = useRefMethod((dataItem: MenuBaseData) => {
+    const onLeafClick = useRefMethod((dataItem: MenuBaseData) => {
         const path = key2PathMapping.get(dataItem.key)
 
         if (!path || dataItem.disabled) return
 
         setActivePath(path)
 
-        if (onClick) {
-            onClick(dataItem)
+        if (onSelectChange) {
+            onSelectChange(dataItem, path)
         }
 
         if (mode !== 'inline') {
@@ -66,7 +61,7 @@ const Menu: React.FC<MenuProps> = function (props) {
         }
     })
 
-    const onInlineSubMenuClick = useRefMethod((dataItem: MenuBaseData, open: boolean) => {
+    const onInlineSubMenuTitleClick = useRefMethod((dataItem: MenuBaseData, open: boolean) => {
         const { key, disabled } = dataItem
         const path = key2PathMapping.get(key)
 
@@ -92,24 +87,40 @@ const Menu: React.FC<MenuProps> = function (props) {
         }
     })
 
-    useEffect(() => {
-        dispatchMenuItemActions()
-        dispatchSubMenuActions()
-    }, [openKeys, activePath])
+    const onMouseEnterOpen = useRefMethod((dataItem: MenuBaseData) => {
+        if (!hasHoverTriggerAction) return
+        onDirectionalToggleOpenKeys(dataItem, true)
+    })
 
-    const isVertical = mode === 'vertical'
-    const menuCls = classnames(menuClass('_', isVertical ? 'vertical' : mode, theme === 'dark' && 'dark'), className)
+    const onMouseLeaveClose = useRefMethod((dataItem: MenuBaseData) => {
+        if (!hasHoverTriggerAction) return
+        onDirectionalToggleOpenKeys(dataItem, false)
+    })
+
+    const onMouseClickToggle = useRefMethod((dataItem: MenuBaseData, open: boolean) => {
+        if (!hasClickTriggerAction) return
+        onDirectionalToggleOpenKeys(dataItem, open)
+    })
+
+    /** -------------------------------------------------------- */
+
+    const menuCls = classnames(
+        menuClass('_', mode === 'vertical' ? 'vertical' : mode, theme === 'dark' && 'dark'),
+        className
+    )
 
     return (
         <MenuContext.Provider
             value={{
                 mode,
+                onLeafClick,
                 inlineIndent,
+                onInlineSubMenuTitleClick,
                 subMenuTriggerActions,
-                onMenuItemClick,
-                onInlineSubMenuClick,
-                onDirectionalToggleOpenKeys,
-                ...events,
+                onMouseEnterOpen,
+                onMouseLeaveClose,
+                onMouseClickToggle,
+                ...registerEvents,
             }}
         >
             <div style={style} className={menuCls}>
