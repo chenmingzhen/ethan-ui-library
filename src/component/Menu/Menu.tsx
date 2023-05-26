@@ -14,7 +14,6 @@ const Menu: React.FC<MenuProps> = function (props) {
         data,
         style,
         theme,
-        onClick,
         className,
         onOpenChange,
         onSelectChange,
@@ -99,7 +98,19 @@ const Menu: React.FC<MenuProps> = function (props) {
 
     const onMouseClickToggle = useRefMethod((dataItem: MenuBaseData, open: boolean) => {
         if (!hasClickTriggerAction) return
-        onDirectionalToggleOpenKeys(dataItem, open)
+        const { key, disabled } = dataItem
+        const path = key2PathMapping.get(key)
+
+        if (!path || disabled) return
+
+        if (open) {
+            syncSetOpenKeys(path)
+        } else {
+            const index = path.indexOf(key)
+            const nextOpenKeys = path.slice(0, index)
+
+            syncSetOpenKeys(nextOpenKeys)
+        }
     })
 
     /** -------------------------------------------------------- */

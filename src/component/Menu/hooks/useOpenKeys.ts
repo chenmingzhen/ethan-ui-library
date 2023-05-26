@@ -1,7 +1,7 @@
 import useMergedValue from '@/hooks/useMergedValue'
 import useRefMethod from '@/hooks/useRefMethod'
-import { debounce } from '@/utils/func'
 import shallowEqual from '@/utils/shallowEqual'
+import { useRef } from 'react'
 import { SubMenuActions } from '../type'
 
 interface UseOpenKeysProps {
@@ -13,6 +13,7 @@ interface UseOpenKeysProps {
 
 function useOpenKeys(props: UseOpenKeysProps) {
     const { defaultValue, value, onChange, subMenuMapping } = props
+
     const [openKeys, setOpenKeys] = useMergedValue<React.Key[]>({
         defaultStateValue: [],
         options: {
@@ -30,12 +31,23 @@ function useOpenKeys(props: UseOpenKeysProps) {
         }
     })
 
-    /** 当鼠标离开操作范围时，不能立即消失，需要延迟一段时间，当鼠标划入到另外的操作范围时，应将上一次的动作取消 */
-    const delaySetOpenKeys = useRefMethod(
-        debounce((keys) => {
+    /** 立即打开，延迟关闭(避免移动到另一node时即触发关闭)  */
+    const timer = useRef<NodeJS.Timeout>()
+    const delaySetOpenKeys = useRefMethod((keys: React.Key[]) => {
+        if (timer.current) {
+            clearTimeout(timer.current)
+
+            timer.current = null
+        }
+
+        if (keys.length) {
             updateOpenKeys(keys)
-        }, 150)
-    )
+        } else {
+            timer.current = setTimeout(() => {
+                updateOpenKeys(keys)
+            }, 150)
+        }
+    })
 
     return { openKeys, delaySetOpenKeys, syncSetOpenKeys: updateOpenKeys }
 }
