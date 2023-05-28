@@ -72,8 +72,7 @@
             background: @menu-bg;
             border-radius: 4px;
             box-shadow: @menu-box-shadow-base;
-
-            
+            z-index: 1000;
         }
     }
 
@@ -118,10 +117,6 @@
                 background: none;
             }
         }
-    }
-
-    &-sub-menu {
-        position: relative;
     }
 
     &-group {
@@ -213,14 +208,7 @@
     }
 
     &-horizontal {
-        height: 42px;
-
-        .@{menu-prefix}-list {
-            display: none;
-        }
-
         .@{menu-prefix}-wrapper {
-            position: absolute;
             overflow: hidden;
             width: 100%;
         }
@@ -237,7 +225,7 @@
             opacity: 1;
         }
 
-        & > .@{menu-prefix}-item {
+        .@{menu-prefix}-item {
             position: relative;
             display: inline-block;
         }
@@ -376,6 +364,14 @@
             > span {
                 color: @menu-bg;
             }
+        }
+    }
+
+    &-submenu {
+        position: relative;
+
+        .@{menu-prefix}-item {
+            display: block;
         }
     }
 }

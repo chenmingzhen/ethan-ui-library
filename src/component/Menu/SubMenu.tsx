@@ -5,7 +5,7 @@ import PathContext from './context/PathContext'
 import { SubMenuProps } from './type'
 import MenuContext from './context/MenuContext'
 import InlineTrigger from './InlineTrigger'
-import VerticalTrigger from './VerticalTrigger'
+import DirectionalTrigger from './DirectionalTrigger'
 
 const SubMenu: React.FC<SubMenuProps> = function (props) {
     const { dataItem, children } = props
@@ -42,17 +42,35 @@ const SubMenu: React.FC<SubMenuProps> = function (props) {
 
         if (mode === 'vertical') {
             return (
-                <VerticalTrigger
+                <DirectionalTrigger
                     dataItem={dataItem}
                     visible={open}
                     path={path}
                     popupContent={children}
                     className={className}
+                    direction="vertical"
                 >
                     {title}
-                </VerticalTrigger>
+                </DirectionalTrigger>
             )
         }
+
+        if (mode === 'horizontal') {
+            return (
+                <DirectionalTrigger
+                    dataItem={dataItem}
+                    visible={open}
+                    path={path}
+                    popupContent={children}
+                    className={className}
+                    direction="horizontal"
+                >
+                    {title}
+                </DirectionalTrigger>
+            )
+        }
+
+        return null
     }
 
     return <PathContext.Provider value={{ path }}>{buildTrigger()}</PathContext.Provider>

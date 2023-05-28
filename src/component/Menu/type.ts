@@ -173,6 +173,16 @@ export interface VerticalTriggerProps {
     className: string
 }
 
+export interface DirectionalTriggerProps {
+    visible: boolean
+    path: React.Key[]
+    popupContent: React.ReactNode
+    children: React.ReactNode
+    dataItem: MenuBaseData
+    className: string
+    direction: 'vertical' | 'horizontal'
+}
+
 export interface MenuItemGroupProps {
     dataItem: MenuBaseData
     children: React.ReactNode

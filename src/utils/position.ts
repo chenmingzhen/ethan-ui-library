@@ -74,7 +74,11 @@ export function getPortalPickerStyle(triggerElement: HTMLElement, portalElement:
     return style
 }
 
-export function getPortalSubMenuStyle(triggerElement: HTMLElement, portalElement: HTMLElement): React.CSSProperties {
+export function getPortalSubMenuStyle(
+    triggerElement: HTMLElement,
+    portalElement: HTMLElement,
+    direction: 'vertical' | 'horizontal'
+): React.CSSProperties {
     if (!triggerElement || !portalElement) return {}
 
     const triggerRect = triggerElement.getBoundingClientRect()
@@ -83,9 +87,18 @@ export function getPortalSubMenuStyle(triggerElement: HTMLElement, portalElement
         position: 'absolute',
     }
 
-    // right-top
-    style.left = triggerRect.right - containerRect.left
-    style.top = triggerRect.top - containerRect.top
+    if (direction === 'vertical') {
+        // right-top
+        style.left = triggerRect.right - containerRect.left
+        style.top = triggerRect.top - containerRect.top
+
+        return style
+    }
+
+    style.width = triggerRect.width
+
+    style.left = triggerRect.left - containerRect.left
+    style.top = triggerRect.bottom - containerRect.bottom + 4
 
     return style
 }
