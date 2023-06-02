@@ -10,11 +10,11 @@ import { parsePxToNumber } from '@/utils/strings'
 interface MoreProps<T = any> {
     data: T[]
     compressed: boolean
-    getItemDoms(target: HTMLElement): NodeListOf<HTMLElement>
-    getRestElement(): HTMLElement
-    getTargetElement(): HTMLElement
-    renderItem?: (dataItem: T, index: number) => React.ReactNode
-    renderRest: (restNode?: React.ReactNode[]) => React.ReactNode
+    getItemDoms(container: HTMLElement): NodeListOf<HTMLElement>
+    getRestElement(container: HTMLElement): HTMLElement
+    getContainerElement(): HTMLElement
+    renderItem: (dataItem: T, index: number) => React.ReactNode
+    renderMore: (restNode?: React.ReactNode[]) => React.ReactNode
 }
 
 const defaultRenderMore = (rest: number) => `+${rest}`
@@ -23,7 +23,7 @@ const NO_COUNT = -2
 const PENDING_COUNT = -1
 
 function More<T = any>(props: MoreProps<T>) {
-    const { compressed, getTargetElement, data, getItemDoms, renderRest, renderItem, getRestElement } = props
+    const { compressed, getContainerElement, data, getItemDoms, renderMore, renderItem, getRestElement } = props
     /**
      * showCount NO_COUNT 不计算
      * showCount PENDING_COUNT 进行计算的阶段
@@ -36,25 +36,29 @@ function More<T = any>(props: MoreProps<T>) {
     const resetMore = useRefMethod(() => {
         /** 由于不确定执行update之后，是否会马上执行render，再而执行effect，使得shouldResetMoreRef.current = true的操作会在最后执行,导致无法计算。 */
         shouldResetMoreRef.current = true
-        setShowCount(PENDING_COUNT)
+
+        runInNextFrame(() => {
+            setShowCount(PENDING_COUNT)
+        })
+
         update()
     })
 
     const itemNodes = data.map(renderItem)
 
     const computedMoreNum = useRefMethod(() => {
-        const target = getTargetElement()
+        const container = getContainerElement()
 
-        if (!target) return NO_COUNT
+        if (!container) return NO_COUNT
 
-        const doms = getItemDoms(target)
+        const doms = getItemDoms(container)
         const items = Array.from(doms)
-        const containerStyle = getComputedStyle(target)
-        const { clientWidth } = target
+        const containerStyle = getComputedStyle(container)
+        const { clientWidth } = container
         const paddingLeft = parsePxToNumber(containerStyle.paddingLeft)
         const paddingRight = parsePxToNumber(containerStyle.paddingRight)
         const contentWidth = clientWidth - paddingLeft - paddingRight
-        const moreElement = getRestElement()
+        const moreElement = getRestElement(container)
         const moreElementStyle = getComputedStyle(moreElement)
         const moreElementMargin =
             parsePxToNumber(moreElementStyle.marginLeft) + parsePxToNumber(moreElementStyle.marginRight)
@@ -105,11 +109,11 @@ function More<T = any>(props: MoreProps<T>) {
     useEffect(() => {
         if (!compressed) return
 
-        const target = getTargetElement()
+        const container = getContainerElement()
 
-        if (!target) return
+        if (!container) return
 
-        return addResizeObserver(target, debounce(resetMore), { direction: 'x' })
+        return addResizeObserver(container, resetMore, { direction: 'x' })
     }, [compressed])
 
     useIsomorphicLayoutEffect(() => {
@@ -123,9 +127,9 @@ function More<T = any>(props: MoreProps<T>) {
     useIsomorphicLayoutEffect(() => {
         if (!compressed) return
 
-        const target = getTargetElement()
+        const container = getContainerElement()
 
-        if (!target) return
+        if (!container) return
 
         if (shouldResetMoreRef.current) {
             runInNextFrame(() => {
@@ -143,7 +147,7 @@ function More<T = any>(props: MoreProps<T>) {
         return (
             <>
                 {itemNodes}
-                {renderRest?.(itemNodes)}
+                {renderMore?.(itemNodes)}
             </>
         )
     }
@@ -159,7 +163,7 @@ function More<T = any>(props: MoreProps<T>) {
         <>
             {beforeNumNodes}
 
-            {renderRest?.(afterNumNodes)}
+            {renderMore?.(afterNumNodes)}
         </>
     )
 }
