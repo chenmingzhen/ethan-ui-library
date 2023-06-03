@@ -23,6 +23,7 @@ const itemStyle: React.CSSProperties = {
     background: 'rgba(255, 0, 0, 0.2)',
     display: 'inline-block',
     width: 65,
+    overflow: 'hidden',
 }
 
 function renderItem(item, index: number) {
@@ -75,7 +76,7 @@ export default () => {
                     renderItem={renderItem}
                     renderMore={renderRest}
                     getContainerElement={() => targetRef.current}
-                    getRestElement={() => document.getElementById('rest')}
+                    getMoreElement={() => document.getElementById('rest')}
                     getItemDoms={() => targetRef.current.querySelectorAll(`.item`)}
                 />
             </div>

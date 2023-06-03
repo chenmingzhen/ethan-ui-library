@@ -1,9 +1,8 @@
 import useSafeState from '@/hooks/useSafeState'
 import { addResizeObserver } from '@/utils/dom/element'
-import { debounce } from '@/utils/func'
 import { runInNextFrame } from '@/utils/nextFrame'
-import React, { useEffect, useRef } from 'react'
-import { useIsomorphicLayoutEffect, useUpdate } from 'react-use'
+import React, { useEffect, useState } from 'react'
+import { useIsomorphicLayoutEffect } from 'react-use'
 import useRefMethod from '@/hooks/useRefMethod'
 import { parsePxToNumber } from '@/utils/strings'
 
@@ -11,37 +10,42 @@ interface MoreProps<T = any> {
     data: T[]
     compressed: boolean
     getItemDoms(container: HTMLElement): NodeListOf<HTMLElement>
-    getRestElement(container: HTMLElement): HTMLElement
+    getMoreElement(container: HTMLElement): HTMLElement
     getContainerElement(): HTMLElement
+    getMoreText?(moreNodesLen: number): string
     renderItem: (dataItem: T, index: number) => React.ReactNode
-    renderMore: (restNode?: React.ReactNode[]) => React.ReactNode
+    renderMore: (moreNodes?: React.ReactNode[]) => React.ReactNode
 }
 
-const defaultRenderMore = (rest: number) => `+${rest}`
+const defaultGetMoreText = (rest: number) => `+${rest}`
 
 const NO_COUNT = -2
 const PENDING_COUNT = -1
 
 function More<T = any>(props: MoreProps<T>) {
-    const { compressed, getContainerElement, data, getItemDoms, renderMore, renderItem, getRestElement } = props
+    const {
+        compressed,
+        getContainerElement,
+        data,
+        getItemDoms,
+        renderMore,
+        renderItem,
+        getMoreElement,
+        getMoreText = defaultGetMoreText,
+    } = props
     /**
      * showCount NO_COUNT 不计算
      * showCount PENDING_COUNT 进行计算的阶段
      * showCount number 计算完成的阶段
      */
     const [showCount, setShowCount] = useSafeState(NO_COUNT)
-    const update = useUpdate()
-    const shouldResetMoreRef = useRef(false)
+    const [shouldReset, updateReset] = useState(false)
 
     const resetMore = useRefMethod(() => {
-        /** 由于不确定执行update之后，是否会马上执行render，再而执行effect，使得shouldResetMoreRef.current = true的操作会在最后执行,导致无法计算。 */
-        shouldResetMoreRef.current = true
-
         runInNextFrame(() => {
             setShowCount(PENDING_COUNT)
         })
-
-        update()
+        updateReset(true)
     })
 
     const itemNodes = data.map(renderItem)
@@ -58,7 +62,7 @@ function More<T = any>(props: MoreProps<T>) {
         const paddingLeft = parsePxToNumber(containerStyle.paddingLeft)
         const paddingRight = parsePxToNumber(containerStyle.paddingRight)
         const contentWidth = clientWidth - paddingLeft - paddingRight
-        const moreElement = getRestElement(container)
+        const moreElement = getMoreElement(container)
         const moreElementStyle = getComputedStyle(moreElement)
         const moreElementMargin =
             parsePxToNumber(moreElementStyle.marginLeft) + parsePxToNumber(moreElementStyle.marginRight)
@@ -82,7 +86,7 @@ function More<T = any>(props: MoreProps<T>) {
             for (let i = 0; i < itemWidthList.length; i++) {
                 totalWidth += itemWidthList[i]
 
-                const reset = defaultRenderMore(items.length - 1 - i)
+                const reset = getMoreText(items.length - 1 - i)
                 ;(moreElement.childNodes[0] as HTMLElement).innerText = reset
                 const moreWidth = moreElement.offsetWidth + moreElementMargin
 
@@ -93,13 +97,10 @@ function More<T = any>(props: MoreProps<T>) {
                 currentShowNum += 1
 
                 if (i === items.length - 1) {
-                    // currentShowNum = -1
                     currentShowNum = NO_COUNT
                 }
             }
         } else {
-            // currentShowNum = -1
-
             currentShowNum = NO_COUNT
         }
 
@@ -119,7 +120,7 @@ function More<T = any>(props: MoreProps<T>) {
     useIsomorphicLayoutEffect(() => {
         if (!compressed) return
 
-        if (!shouldResetMoreRef.current) {
+        if (!shouldReset) {
             resetMore()
         }
     }, [data])
@@ -131,13 +132,14 @@ function More<T = any>(props: MoreProps<T>) {
 
         if (!container) return
 
-        if (shouldResetMoreRef.current) {
+        if (shouldReset) {
             runInNextFrame(() => {
                 setShowCount(computedMoreNum())
             })
-            shouldResetMoreRef.current = false
+
+            updateReset(false)
         }
-    }, [shouldResetMoreRef.current])
+    }, [shouldReset])
 
     if (!compressed || showCount === NO_COUNT) return <>{itemNodes}</>
 
