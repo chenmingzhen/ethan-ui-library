@@ -1,7 +1,7 @@
 import React from 'react'
 import { TriggerAction } from '../Trigger/type'
 
-export type Mode = 'inline' | 'vertical' | 'horizontal' | 'vertical-auto'
+export type Mode = 'inline' | 'vertical' | 'horizontal'
 
 export interface MenuBaseData {
     key: React.Key

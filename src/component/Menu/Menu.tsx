@@ -115,10 +115,7 @@ const Menu: React.FC<MenuProps> = function (props) {
 
     /** -------------------------------------------------------- */
 
-    const menuCls = classnames(
-        menuClass('_', mode === 'vertical' ? 'vertical' : mode, theme === 'dark' && 'dark'),
-        className
-    )
+    const menuCls = classnames(menuClass('_', mode, theme === 'dark' && 'dark'), className)
 
     return (
         <MenuContext.Provider

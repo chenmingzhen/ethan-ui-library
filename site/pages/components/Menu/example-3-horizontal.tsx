@@ -14,7 +14,7 @@ const data = [
     },
     {
         key: '2',
-        title: 'Navigation 2↓',
+        title: 'Navigation 2',
         children: [
             {
                 key: 'group2-1',
@@ -27,11 +27,11 @@ const data = [
                     },
                     {
                         key: 'group2-1-22',
-                        title: 'Option 22>',
+                        title: 'Option 22',
                         children: [
                             {
                                 key: 'group2-1-221',
-                                title: 'Option 221>',
+                                title: 'Option 221',
                                 children: [
                                     {
                                         key: 'group2-1-2211',
@@ -51,11 +51,11 @@ const data = [
                     },
                     {
                         key: 'group2-1-23',
-                        title: 'Option 23>',
+                        title: 'Option 23',
                         children: [
                             {
                                 key: 'group2-1-231',
-                                title: 'Option 231>',
+                                title: 'Option 231',
                                 children: [
                                     {
                                         key: 'group2-1-2311',
@@ -69,7 +69,7 @@ const data = [
                             },
                             {
                                 key: 'group2-1-232',
-                                title: 'Option 232>',
+                                title: 'Option 232',
                                 children: [
                                     {
                                         key: 'group2-1-2321',
@@ -92,11 +92,11 @@ const data = [
                 children: [
                     {
                         key: 'group2-2-22',
-                        title: 'Option 22>',
+                        title: 'Option 22',
                         children: [
                             {
                                 key: 'group2-2-221',
-                                title: 'Option 221>',
+                                title: 'Option 221',
                                 children: [
                                     {
                                         key: 'group2-2-2211',
@@ -121,11 +121,11 @@ const data = [
 
                     {
                         key: 'group2-2-23',
-                        title: 'Option 23>',
+                        title: 'Option 23',
                         children: [
                             {
                                 key: 'group2-2-231',
-                                title: 'Option 231>',
+                                title: 'Option 231',
                                 children: [
                                     {
                                         key: 'group2-2-2311',
@@ -139,7 +139,7 @@ const data = [
                             },
                             {
                                 key: 'group2-2-232',
-                                title: 'Option 232>',
+                                title: 'Option 232',
                                 children: [
                                     {
                                         key: 'group2-2-2321',

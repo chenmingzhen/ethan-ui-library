@@ -28,6 +28,7 @@ const InlineTrigger: React.FC<InlineTriggerProps> = function (props) {
                     onClick={() => onInlineSubMenuTitleClick(dataItem, !visible)}
                 >
                     {children}
+                    <span className={menuClass('expand')} />
                 </span>
             </li>
         </Trigger>

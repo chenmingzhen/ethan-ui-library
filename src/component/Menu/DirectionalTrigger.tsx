@@ -23,9 +23,11 @@ const DirectionalTrigger: React.FC<DirectionalTriggerProps> = function (props) {
     const { onMouseEnterOpen, onMouseLeaveClose, onMouseClickToggle, subMenuTriggerActions } = useContext(MenuContext)
     const pathStr = getPathStr(path)
 
+    const realDirection = path.length > 1 ? 'vertical' : direction
+
     /** horizontal下只有root的submenu才是horizontal样式  */
     const popupStyle = styles(
-        getPortalSubMenuStyle(triggerElement, portalElement, path.length > 1 ? 'vertical' : direction),
+        getPortalSubMenuStyle(triggerElement, portalElement, realDirection),
         /** 避免在进行关闭动画中，鼠标动作再次触发打开SubMenu的行为，导致异常 */
         !visible && { pointerEvents: 'none' }
     )
@@ -47,7 +49,7 @@ const DirectionalTrigger: React.FC<DirectionalTriggerProps> = function (props) {
                 name: menuClass('_'),
                 leaveClassName: menuClass('hidden'),
                 popup: (
-                    <ul style={popupStyle} className={menuClass('list', direction, 'submenu')}>
+                    <ul style={popupStyle} className={menuClass('list', realDirection, 'submenu')}>
                         {popupContent}
                     </ul>
                 ),
@@ -60,7 +62,10 @@ const DirectionalTrigger: React.FC<DirectionalTriggerProps> = function (props) {
                 onMouseLeave={() => onMouseLeaveClose(dataItem)}
                 onClick={() => onMouseClickToggle(dataItem, !visible)}
             >
-                <span className={classnames(menuClass('title'))}>{children}</span>
+                <span className={classnames(menuClass('title'))}>
+                    {children}
+                    <span className={menuClass('expand')} />
+                </span>
             </li>
         </Trigger>
     )

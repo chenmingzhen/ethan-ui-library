@@ -3,6 +3,7 @@ import { menuClass } from '@/styles'
 import { MenuItemGroupProps } from './type'
 import MenuContext from './context/MenuContext'
 import useMenuPath from './hooks/useMenuPath'
+import useInlineIndentStyle from './hooks/useInlineIndentStyle'
 
 const MenuItemGroup: React.FC<MenuItemGroupProps> = function (props) {
     const { dataItem, children } = props
@@ -10,6 +11,8 @@ const MenuItemGroup: React.FC<MenuItemGroupProps> = function (props) {
     const { path } = useMenuPath(key)
     const { registerMenuItemGroup, unregisterMenuItemGroup, onMouseEnterOpen, onMouseLeaveClose } =
         useContext(MenuContext)
+
+    const inlineIndentStyle = useInlineIndentStyle(path, true)
 
     useEffect(() => {
         registerMenuItemGroup(key, { path })
@@ -22,6 +25,7 @@ const MenuItemGroup: React.FC<MenuItemGroupProps> = function (props) {
     return (
         <li tabIndex={-1} className={menuClass('group')}>
             <div
+                style={inlineIndentStyle}
                 className={menuClass('group-title')}
                 onMouseEnter={() => onMouseEnterOpen(dataItem)}
                 onMouseLeave={() => onMouseLeaveClose(dataItem)}
