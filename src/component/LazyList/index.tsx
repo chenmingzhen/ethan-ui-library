@@ -6,6 +6,7 @@ import { isZero } from '@/utils/is'
 import { computeScroll, getVirtualScrollCurrentIndex } from '@/utils/virtual-scroll'
 import { KeyboardKey } from '@/utils/keyboard'
 import Scroll from '../Scroll'
+import { ScrollChangeEvent } from '../Scroll/type'
 
 interface LazyListProps<T = any> {
     data: T[]
@@ -175,12 +176,10 @@ export default class LazyList<T = any> extends Component<LazyListProps<T>, LazyL
         this.optionInner = el
     }
 
-    private handleScroll = (_, scrollTopRatio, __, ___, ____, scrollContainerHeight, _____, pixelY) => {
+    private handleScroll = (evt: ScrollChangeEvent) => {
         if (!this.optionInner) return
-
+        const { contentHeight, pixelY, scrollTopRatio } = evt
         const { lineHeight, data } = this.props
-
-        const contentHeight = data.length * lineHeight - scrollContainerHeight
 
         let { lastScrollTop } = this.state
 
@@ -246,7 +245,7 @@ export default class LazyList<T = any> extends Component<LazyListProps<T>, LazyL
                 style={{ height: this.scroll ? height : undefined }}
                 onScroll={this.handleScroll}
                 scrollHeight={this.scrollHeight}
-                scrollTop={scrollTopRatio}
+                scrollTopRatio={scrollTopRatio}
             >
                 <div
                     ref={this.bindOptionInner}

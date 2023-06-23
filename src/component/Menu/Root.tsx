@@ -378,7 +378,7 @@ class Menu<T extends MenuBaseData> extends React.PureComponent<MenuProps<T>, Men
                     className={menuClass('bar')}
                     length={width}
                     scrollLength={scrollWidth}
-                    offset={this.state.scrollLeft}
+                    scrollRatio={this.state.scrollLeft}
                     onScroll={this.handleScroll.bind(this, 'Left')}
                     direction="x"
                 />
@@ -398,7 +398,7 @@ class Menu<T extends MenuBaseData> extends React.PureComponent<MenuProps<T>, Men
                 className={menuClass('bar')}
                 length={length}
                 scrollLength={scrollHeight}
-                offset={this.state.scrollTop}
+                scrollRatio={this.state.scrollTop}
                 onScroll={this.handleScroll.bind(this, 'Top')}
             />
         )

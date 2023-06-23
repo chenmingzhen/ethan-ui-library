@@ -1,6 +1,8 @@
 /**
  * @see https://github.com/facebookarchive/fixed-data-table/blob/master/src/vendor_upstream/dom/normalizeWheel.js
  * @see https://developer.mozilla.org/zh-CN/docs/Web/API/Element/mousewheel_event
+ *
+ * 为什么deltaX总为0 @see https://www.w3schools.com/jsref/event_wheel_deltax.asp
  */
 
 const PIXEL_STEP = 10
