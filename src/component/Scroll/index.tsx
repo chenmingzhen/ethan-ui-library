@@ -4,13 +4,16 @@ import { scrollClass } from '@/styles'
 import useRefMethod from '@/hooks/useRefMethod'
 import normalizeWheel from '@/utils/dom/normalizeWheel'
 import { getRangeValue } from '@/utils/numbers'
+import classnames from 'classnames'
+import useResizeObserver from '@/hooks/useResizeObserver'
+import useUpdate from '@/hooks/useUpdate'
 import { ScrollProps } from './type'
 import Bar from './Bar'
 
 export const BAR_WIDTH = 16
 
 const Scroll: React.FC<ScrollProps> = function (props) {
-    const { scroll, style, className, children, scrollHeight = 0, scrollWidth = 0, onScroll } = props
+    const { scroll, style, children, scrollHeight = 0, scrollWidth = 0, onScroll } = props
     const [scrollLeftRatio, setScrollLeftRatio] = useMergedValue<number, [number?]>({
         defaultStateValue: 0,
         options: {
@@ -29,6 +32,7 @@ const Scroll: React.FC<ScrollProps> = function (props) {
             },
         },
     })
+    const update = useUpdate()
     const touchPosition = useRef({ lastClientX: 0, lastClientY: 0 }).current
     const wheelElementRef = useRef<HTMLDivElement>()
     const scrollX = scroll === 'x' || scroll === 'both'
@@ -48,6 +52,8 @@ const Scroll: React.FC<ScrollProps> = function (props) {
     const { width, height } = getWheelRect()
 
     const handleScroll = useRefMethod((leftRadio: number, topRadio: number, pixelX?: number, pixelY?: number) => {
+        if (!onScroll) return
+
         const contentHeight = scrollHeight - height
         const contentWidth = scrollWidth - width
 
@@ -160,6 +166,22 @@ const Scroll: React.FC<ScrollProps> = function (props) {
             wheelElementRef.current.removeEventListener('touchmove', handleTouchMove)
         }
     }, [])
+
+    useResizeObserver({
+        watch: true,
+        options: {
+            direction: 'xy',
+        },
+        getTargetElement() {
+            return wheelElementRef.current
+        },
+        onResize() {
+            handleScroll(scrollLeftRatio, scrollTopRatio)
+            update()
+        },
+    })
+
+    const className = classnames(scrollClass('_', scrollX && 'show-x', scrollY && 'show-y'), props.className)
 
     return (
         <div style={style} ref={wheelElementRef} className={className}>
