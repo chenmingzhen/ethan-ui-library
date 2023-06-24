@@ -153,6 +153,8 @@ const Scroll: React.FC<ScrollProps> = function (props) {
         wheelElementRef.current.addEventListener('touchmove', handleTouchMove, { passive: false })
 
         return () => {
+            if (!wheelElementRef.current) return
+
             wheelElementRef.current.removeEventListener('wheel', handleWheel)
             wheelElementRef.current.removeEventListener('touchstart', handleTouchStart)
             wheelElementRef.current.removeEventListener('touchmove', handleTouchMove)
