@@ -49,10 +49,9 @@ const Scroll: React.FC<ScrollProps> = function (props) {
         return { width, height }
     })
 
-    const { width, height } = getWheelRect()
-
     const handleScroll = useRefMethod((leftRadio: number, topRadio: number, pixelX?: number, pixelY?: number) => {
         if (!onScroll) return
+        const { width, height } = getWheelRect()
 
         const contentHeight = scrollHeight - height
         const contentWidth = scrollWidth - width
@@ -102,6 +101,8 @@ const Scroll: React.FC<ScrollProps> = function (props) {
     })
 
     const computedPixel = useRefMethod((pixelX: number, pixelY: number) => {
+        const { width, height } = getWheelRect()
+
         const contentHeight = scrollHeight - height
         const contentWidth = scrollWidth - width
 
@@ -131,6 +132,8 @@ const Scroll: React.FC<ScrollProps> = function (props) {
     })
 
     const handleWheel = useRefMethod((evt: WheelEvent) => {
+        const { width, height } = getWheelRect()
+
         const wheelY = Math.ceil(scrollHeight) > Math.ceil(height)
         const wheelX = Math.ceil(scrollWidth) > Math.ceil(width)
 
@@ -182,6 +185,7 @@ const Scroll: React.FC<ScrollProps> = function (props) {
     })
 
     const className = classnames(scrollClass('_', scrollX && 'show-x', scrollY && 'show-y'), props.className)
+    const { width, height } = getWheelRect()
 
     return (
         <div style={style} ref={wheelElementRef} className={className}>
