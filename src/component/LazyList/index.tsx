@@ -1,6 +1,6 @@
 import React from 'react'
 import { setTranslate } from '@/utils/dom/translate'
-import { Component } from '@/utils/component'
+import { PureComponent } from '@/utils/component'
 import { getRangeValue } from '@/utils/numbers'
 import { isZero } from '@/utils/is'
 import { computeScroll, getVirtualScrollCurrentIndex } from '@/utils/virtual-scroll'
@@ -30,8 +30,7 @@ export interface LazyListState {
 /** 预留前后两个位置的偏差值 */
 const LAZY_LIST_DATA_OFFSET = 2
 
-/** 不能使用PureComponent，因为Item的部分状态是在上层中使用的，例如Select OptionList Option的hoverIndex prop， */
-export default class LazyList<T = any> extends Component<LazyListProps<T>, LazyListState> {
+export default class LazyList<T = any> extends PureComponent<LazyListProps<T>, LazyListState> {
     static defaultProps = {
         data: [],
         shouldRecomputed: () => true,
