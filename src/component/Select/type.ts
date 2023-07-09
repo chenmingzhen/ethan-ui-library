@@ -42,7 +42,7 @@ export interface SelectProps<Data = SelectData> {
     defaultValue?: SelectDataValueType | SelectDataValueType[]
     groupBy?: (item: Data, index: number, items: SelectData[]) => string | number
     spinProps?: Omit<SpinProps, 'children' | 'loading'>
-    onScrollRatioChange?: (scrollTopRatio: number, lastScrollTop: number) => void
+    onScrollRatioChange?: (scrollTopRatio: number) => void
     columnWidth?: number
     className?: string
     createOption?: {

@@ -7,13 +7,26 @@ import { getRangeValue } from '@/utils/numbers'
 import classnames from 'classnames'
 import useResizeObserver from '@/hooks/useResizeObserver'
 import useUpdate from '@/hooks/useUpdate'
+import { setTranslate } from '@/utils/dom/translate'
 import { ScrollProps } from './type'
 import Bar from './Bar'
 
 export const BAR_WIDTH = 16
 
 const Scroll: React.FC<ScrollProps> = function (props) {
-    const { scroll, style, children, scrollHeight = 0, scrollWidth = 0, onScroll } = props
+    const { scroll, style, children, onScroll } = props
+    const [scrollHeight, setScrollHeight] = useMergedValue({
+        defaultStateValue: 0,
+        options: {
+            value: props.scrollHeight,
+        },
+    })
+    const [scrollWidth, setScrollWidth] = useMergedValue({
+        defaultStateValue: 0,
+        options: {
+            value: props.scrollWidth,
+        },
+    })
     const [scrollLeftRatio, setScrollLeftRatio] = useMergedValue<number, [number?]>({
         defaultStateValue: 0,
         options: {
@@ -32,6 +45,14 @@ const Scroll: React.FC<ScrollProps> = function (props) {
             },
         },
     })
+
+    useEffect(() => {
+        const { height, width } = wrapChildrenRef.current.getBoundingClientRect()
+
+        setScrollHeight(height)
+        setScrollWidth(width)
+    }, [])
+
     const update = useUpdate()
     const touchPosition = useRef({ lastClientX: 0, lastClientY: 0 }).current
     const wheelElementRef = useRef<HTMLDivElement>()
@@ -49,22 +70,42 @@ const Scroll: React.FC<ScrollProps> = function (props) {
         return { width, height }
     })
 
-    const handleScroll = useRefMethod((leftRadio: number, topRadio: number, pixelX?: number, pixelY?: number) => {
+    const computedScrollValue = useRefMethod((leftRatio: number, topRatio: number) => {
+        const { width, height } = getWheelRect()
+        const contentHeight = scrollHeight - height
+        const contentWidth = scrollWidth - width
+
+        let scrollTop = topRatio * contentHeight
+        if (scrollTop > contentHeight) scrollTop = contentHeight
+        if (scrollTop < 0) scrollTop = 0
+
+        let scrollLeft = leftRatio * contentWidth
+        if (scrollLeft > contentWidth) scrollLeft = contentWidth
+        if (scrollLeft < 0) scrollLeft = 0
+
+        return { scrollTop, scrollLeft }
+    })
+
+    const handleScroll = useRefMethod((leftRatio: number, topRatio: number, pixelX?: number, pixelY?: number) => {
         if (!onScroll) return
         const { width, height } = getWheelRect()
 
         const contentHeight = scrollHeight - height
         const contentWidth = scrollWidth - width
 
+        const { scrollLeft, scrollTop } = computedScrollValue(leftRatio, topRatio)
+
         onScroll({
             contentHeight,
             contentWidth,
-            scrollLeftRatio: leftRadio,
-            scrollTopRatio: topRadio,
+            scrollLeftRatio: leftRatio,
+            scrollTopRatio: topRatio,
             wheelWidth: width,
             wheelHeight: height,
             pixelX,
             pixelY,
+            scrollLeft,
+            scrollTop,
         })
     })
 
@@ -114,13 +155,13 @@ const Scroll: React.FC<ScrollProps> = function (props) {
         }
 
         const leftRatio = getRangeValue({
-            current: scrollWidth === 0 ? 0 : scrollLeftRatio + pixelX / contentWidth,
+            current: scrollWidth === 0 || contentWidth === 0 ? 0 : scrollLeftRatio + pixelX / contentWidth,
             min: 0,
             max: 1,
         })
 
         const topRatio = getRangeValue({
-            current: scrollHeight === 0 ? 0 : scrollTopRatio + pixelY / contentHeight,
+            current: scrollHeight === 0 || contentHeight === 0 ? 0 : scrollTopRatio + pixelY / contentHeight,
             min: 0,
             max: 1,
         })
@@ -185,11 +226,22 @@ const Scroll: React.FC<ScrollProps> = function (props) {
     })
 
     const className = classnames(scrollClass('_', scrollX && 'show-x', scrollY && 'show-y'), props.className)
+    const wrapChildrenRef = useRef<HTMLDivElement>()
     const { width, height } = getWheelRect()
+
+    useEffect(() => {
+        if (!scrollY && !scrollX) return
+
+        const { scrollTop, scrollLeft } = computedScrollValue(scrollLeftRatio, scrollTopRatio)
+
+        setTranslate(wrapChildrenRef.current, `-${scrollLeft}px`, `-${scrollTop}px`)
+    }, [scrollTopRatio, scrollLeftRatio])
 
     return (
         <div style={style} ref={wheelElementRef} className={className}>
-            <div className={scrollClass('inner')}>{children}</div>
+            <div className={scrollClass('inner')}>
+                <div ref={wrapChildrenRef}>{children}</div>
+            </div>
             {scrollY && (
                 <Bar
                     direction="y"

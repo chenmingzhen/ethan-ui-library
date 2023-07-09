@@ -17,6 +17,10 @@ export interface ScrollChangeEvent {
     pixelX?: number
     /** y轴滚轮单次滚动的距离 */
     pixelY?: number
+    /** x轴滚动的值 */
+    scrollLeft: number
+    /** y轴滚动的值 */
+    scrollTop: number
 }
 
 export interface ScrollProps {

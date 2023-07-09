@@ -19,7 +19,7 @@ function hasValue(value: any) {
     return value !== undefined
 }
 
-function useMergedValue<T, R extends Array<any> = never>(props: UseMergedValueProps<T, R>): [T, Updater<T, R>, T] {
+function useMergedValue<T, R extends Array<any> = any>(props: UseMergedValueProps<T, R>): [T, Updater<T, R>, T] {
     const { defaultStateValue, options = {} } = props
     const { defaultValue, value, onChange } = options
 

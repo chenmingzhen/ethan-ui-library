@@ -1,5 +1,4 @@
 import React from 'react'
-import { setTranslate } from '@/utils/dom/translate'
 import { PureComponent } from '@/utils/component'
 import { getRangeValue } from '@/utils/numbers'
 import { isZero } from '@/utils/is'
@@ -24,7 +23,7 @@ interface LazyListProps<T = any> {
 export interface LazyListState {
     currentIndex: number
     scrollTopRatio: number
-    lastScrollTop: number
+    scrollTop: number
 }
 
 /** 预留前后两个位置的偏差值 */
@@ -60,14 +59,12 @@ export default class LazyList<T = any> extends PureComponent<LazyListProps<T>, L
         return Math.ceil(height / lineHeight)
     }
 
-    private optionInner: HTMLDivElement
-
     getInitState = (): LazyListState => {
         const { defaultIndex, lineHeight, height, data } = this.props
 
         /** 默认值小于容器高度，不计算 */
         if ((defaultIndex + 1) * lineHeight <= height) {
-            return { currentIndex: 0, lastScrollTop: 0, scrollTopRatio: 0 }
+            return { currentIndex: 0, scrollTopRatio: 0, scrollTop: 0 }
         }
 
         const currentIndex = getVirtualScrollCurrentIndex({
@@ -77,7 +74,7 @@ export default class LazyList<T = any> extends PureComponent<LazyListProps<T>, L
             dataLength: data.length,
         })
 
-        const { scrollTopRatio, lastScrollTop } = computeScroll({
+        const { scrollTopRatio, scrollTop } = computeScroll({
             dataLength: this.props.data.length,
             lineHeight,
             height,
@@ -86,8 +83,8 @@ export default class LazyList<T = any> extends PureComponent<LazyListProps<T>, L
 
         return {
             currentIndex,
-            lastScrollTop,
             scrollTopRatio,
+            scrollTop,
         }
     }
 
@@ -102,10 +99,6 @@ export default class LazyList<T = any> extends PureComponent<LazyListProps<T>, L
 
         if (onScrollStateChange) {
             onScrollStateChange(this.state)
-        }
-
-        if (this.state.lastScrollTop) {
-            setTranslate(this.optionInner, '0rem', `-${this.state.lastScrollTop}px`)
         }
     }
 
@@ -127,15 +120,15 @@ export default class LazyList<T = any> extends PureComponent<LazyListProps<T>, L
                     current: prevScrollTopRatio * (prevContentHeight / nextContentHeight),
                 })
 
-                const lastScrollTop = nextContentHeight * nextScrollTopRatio
+                const scrollTop = nextContentHeight * nextScrollTopRatio
 
                 this.dispatchState({
                     scrollTopRatio: nextScrollTopRatio,
-                    lastScrollTop,
                     currentIndex: this.state.currentIndex,
+                    scrollTop,
                 })
             } else {
-                this.dispatchState({ currentIndex: 0, scrollTopRatio: 0, lastScrollTop: 0 })
+                this.dispatchState({ currentIndex: 0, scrollTopRatio: 0, scrollTop: 0 })
             }
         }
     }
@@ -149,14 +142,14 @@ export default class LazyList<T = any> extends PureComponent<LazyListProps<T>, L
 
         const currentIndex = getVirtualScrollCurrentIndex({ height, lineHeight, scrollIndex, dataLength: data.length })
 
-        const { lastScrollTop, scrollTopRatio } = computeScroll({
+        const { scrollTopRatio, scrollTop } = computeScroll({
             currentIndex,
             dataLength: data.length,
             lineHeight,
             height,
         })
 
-        this.dispatchState({ lastScrollTop, scrollTopRatio, currentIndex })
+        this.dispatchState({ scrollTopRatio, currentIndex, scrollTop })
     }
 
     private dispatchState = (state: LazyListState) => {
@@ -167,41 +160,19 @@ export default class LazyList<T = any> extends PureComponent<LazyListProps<T>, L
         if (onScrollStateChange) {
             onScrollStateChange(state)
         }
-
-        setTranslate(this.optionInner, '0rem', `-${state.lastScrollTop}px`)
-    }
-
-    private bindOptionInner = (el: HTMLDivElement) => {
-        this.optionInner = el
     }
 
     private handleScroll = (evt: ScrollChangeEvent) => {
-        if (!this.optionInner) return
-        const { contentHeight, pixelY, scrollTopRatio } = evt
+        const { scrollTopRatio, scrollTop } = evt
         const { lineHeight, data } = this.props
 
-        let { lastScrollTop } = this.state
-
-        if (!pixelY) {
-            /** 拖动bar */
-            lastScrollTop = scrollTopRatio * contentHeight
-        } else {
-            /** wheel滚动 */
-            lastScrollTop += pixelY
-
-            if (lastScrollTop < 0) lastScrollTop = 0
-
-            /** 滚动到底部 */
-            if (lastScrollTop > contentHeight) lastScrollTop = contentHeight
-        }
-
-        let currentIndex = Math.floor(lastScrollTop / lineHeight) - 1
+        let currentIndex = Math.floor(scrollTop / lineHeight) - 1
 
         if (data.length - this.itemsInView < currentIndex) currentIndex = data.length - this.itemsInView
 
         if (currentIndex < 0) currentIndex = 0
 
-        this.dispatchState({ scrollTopRatio, currentIndex, lastScrollTop })
+        this.dispatchState({ scrollTopRatio, currentIndex, scrollTop })
     }
 
     handleKeydown: React.KeyboardEventHandler<HTMLDivElement> = (evt) => {
@@ -232,7 +203,7 @@ export default class LazyList<T = any> extends PureComponent<LazyListProps<T>, L
     }
 
     render() {
-        const { height, lineHeight, data, renderItem, keyboardControl } = this.props
+        const { height, lineHeight, data, renderItem } = this.props
 
         const { scrollTopRatio, currentIndex } = this.state
 
@@ -246,14 +217,8 @@ export default class LazyList<T = any> extends PureComponent<LazyListProps<T>, L
                 scrollHeight={this.scrollHeight}
                 scrollTopRatio={scrollTopRatio}
             >
-                <div
-                    ref={this.bindOptionInner}
-                    tabIndex={keyboardControl ? -1 : undefined}
-                    onKeyDown={this.handleKeydown}
-                >
-                    <div style={{ height: currentIndex * lineHeight }} />
-                    {sliceData.map((d, i) => renderItem(d, i))}
-                </div>
+                <div style={{ height: currentIndex * lineHeight }} />
+                {sliceData.map((d, i) => renderItem(d, i))}
             </Scroll>
         )
     }
