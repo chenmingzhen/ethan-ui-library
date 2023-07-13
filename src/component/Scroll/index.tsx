@@ -8,6 +8,7 @@ import classnames from 'classnames'
 import useResizeObserver from '@/hooks/useResizeObserver'
 import useUpdate from '@/hooks/useUpdate'
 import { setTranslate } from '@/utils/dom/translate'
+import { useIsomorphicLayoutEffect } from 'react-use'
 import { ScrollProps } from './type'
 import Bar from './Bar'
 
@@ -33,6 +34,9 @@ const Scroll: React.FC<ScrollProps> = function (props) {
             value: props.scrollLeftRatio,
             onChange(nextXScrollRatio, _, pixelX) {
                 handleScroll(nextXScrollRatio, scrollTopRatio, pixelX, 0)
+                /** 兼容ssr的情况useIsomorphicLayoutEffect是useEffect的效果（拖动会闪烁） */
+                const { scrollTop, scrollLeft } = computedScrollValue(nextXScrollRatio, scrollTopRatio)
+                setTranslate(wrapChildrenRef.current, `-${scrollLeft}px`, `-${scrollTop}px`)
             },
         },
     })
@@ -42,6 +46,9 @@ const Scroll: React.FC<ScrollProps> = function (props) {
             value: props.scrollTopRatio,
             onChange(nextYScrollRatio, _, pixelY) {
                 handleScroll(scrollLeftRatio, nextYScrollRatio, 0, pixelY)
+                /** 兼容ssr的情况useIsomorphicLayoutEffect是useEffect的效果（拖动会闪烁） */
+                const { scrollTop, scrollLeft } = computedScrollValue(scrollLeftRatio, nextYScrollRatio)
+                setTranslate(wrapChildrenRef.current, `-${scrollLeft}px`, `-${scrollTop}px`)
             },
         },
     })
@@ -229,11 +236,11 @@ const Scroll: React.FC<ScrollProps> = function (props) {
     const wrapChildrenRef = useRef<HTMLDivElement>()
     const { width, height } = getWheelRect()
 
-    useEffect(() => {
+    /** 非SSR的，通常在副作用的设置Translate即可,为了兼容SSR的情况，在设置Ratio中就设置Translate，这里主要处理Prop的Ratio不一致时重置到Prop的Ratio */
+    useIsomorphicLayoutEffect(() => {
         if (!scrollY && !scrollX) return
 
         const { scrollTop, scrollLeft } = computedScrollValue(scrollLeftRatio, scrollTopRatio)
-
         setTranslate(wrapChildrenRef.current, `-${scrollLeft}px`, `-${scrollTop}px`)
     }, [scrollTopRatio, scrollLeftRatio])
 
