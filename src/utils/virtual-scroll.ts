@@ -49,11 +49,11 @@ interface ComputedScrollParams {
 export function computeScroll(params: ComputedScrollParams) {
     const { dataLength, lineHeight, height, currentIndex } = params
 
-    const lastScrollTop = currentIndex * lineHeight
+    const scrollTop = currentIndex * lineHeight
 
     const contentHeight = dataLength * lineHeight - height
 
-    const scrollTopRatio = lastScrollTop / contentHeight
+    const scrollTopRatio = scrollTop / contentHeight
 
-    return { lastScrollTop, scrollTopRatio }
+    return { scrollTop, scrollTopRatio }
 }

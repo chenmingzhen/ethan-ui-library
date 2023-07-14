@@ -21,8 +21,7 @@ interface OptionListState {
     hoverIndex: number
     /* scroll的Top比例值 */
     scrollTopRatio: number
-    /* Scroll的Top值 */
-    lastScrollTop: number
+    scrollTop: number
     defaultIndex: number
 }
 
@@ -67,7 +66,7 @@ const OptionList: React.ForwardRefRenderFunction<OptionListInstance, OptionListP
             currentIndex: 0,
             hoverIndex: undefined,
             scrollTopRatio: 0,
-            lastScrollTop: 0,
+            scrollTop: 0,
             defaultIndex: 0,
         }
 
@@ -107,7 +106,8 @@ const OptionList: React.ForwardRefRenderFunction<OptionListInstance, OptionListP
 
         const max = data.length
         let { hoverIndex, currentIndex } = state
-        const { lastScrollTop } = state
+        const { scrollTop } = state
+
         /** 无hover 取当前的index */
         if (hoverIndex === undefined) hoverIndex = currentIndex
         else hoverIndex += step
@@ -128,10 +128,10 @@ const OptionList: React.ForwardRefRenderFunction<OptionListInstance, OptionListP
 
         const emptyHeight = hoverIndex * lineHeight
 
-        if (emptyHeight < lastScrollTop) {
+        if (emptyHeight < scrollTop) {
             /** 到达当前视图的顶部 */
             currentIndex = hoverIndex
-        } else if (emptyHeight + lineHeight > lastScrollTop + height) {
+        } else if (emptyHeight + lineHeight > scrollTop + height) {
             /** 到达当前视图的底部 */
 
             /** 如果可以整除，证明每个Item是与滚动容器贴合，加1，避免出现计算滚动值时缺少一个Item的高度 */
@@ -175,10 +175,10 @@ const OptionList: React.ForwardRefRenderFunction<OptionListInstance, OptionListP
     })
 
     const handleScrollStateChange = useRefMethod((lazyListState: LazyListState) => {
-        const { scrollTopRatio, lastScrollTop } = lazyListState
+        const { scrollTopRatio } = lazyListState
 
         if (onScrollRatioChange) {
-            onScrollRatioChange(scrollTopRatio, lastScrollTop)
+            onScrollRatioChange(scrollTopRatio)
         }
 
         setState(lazyListState)
