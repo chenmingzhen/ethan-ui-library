@@ -15,16 +15,10 @@
     list-style: none;
     outline: none;
 
-    &-submenu {
-        position: relative;
-
-        .@{menu-prefix}-item {
-            display: block;
-        }
-
-        .@{menu-prefix}-title {
-            padding-right: @expand-width;
-        }
+    ul {
+        padding: 0;
+        margin: 0;
+        list-style: none;
     }
 
     &-hidden {
@@ -33,7 +27,6 @@
 
     &-enter {
         transform-origin: left top;
-
         @keyframes submenu-enter {
             from {
                 opacity: 0;
@@ -51,7 +44,6 @@
 
     &-leave {
         transform-origin: left top;
-
         @keyframes submenu-leave {
             from {
                 opacity: 1;
@@ -81,7 +73,6 @@
             position: absolute;
             top: 50%;
             right: 16px;
-            // transform-origin: @menu-title-transform-origin;
             transform: @menu-title-transform;
         }
     }
@@ -106,12 +97,6 @@
             box-shadow: @menu-box-shadow-base;
             z-index: 1000;
         }
-    }
-
-    ul {
-        padding: 0;
-        margin: 0;
-        list-style: none;
     }
 
     &-item {
@@ -238,6 +223,18 @@
         }
     }
 
+    &-submenu {
+        position: relative;
+
+        .@{menu-prefix}-item {
+            display: block;
+        }
+
+        .@{menu-prefix}-title {
+            padding-right: @expand-width;
+        }
+    }
+
     &-inline {
         &:hover .@{menu-prefix}-bar {
             opacity: 1;
@@ -295,70 +292,6 @@
         .@{menu-prefix}-expand {
             &::after {
                 transform: @menu-title-vertical-transform;
-            }
-        }
-    }
-
-    &-dark {
-        &,
-        .@{menu-prefix}-list {
-            background-color: @menu-dark-bg;
-            color: @menu-dark-item;
-        }
-
-        .@{menu-prefix}-item {
-            span {
-                color: @menu-dark-item;
-
-                &:hover {
-                    color: @menu-item-dark-hover-color;
-                    background-color: @menu-item-dark-hover-bgc;
-                }
-            }
-
-            &.@{menu-prefix}-disabled a,
-            &.@{menu-prefix}-disabled span {
-                &:hover {
-                    color: @menu-dark-item;
-                    background: none;
-                }
-            }
-        }
-
-        &.@{menu-prefix}-horizontal,
-        &.@{menu-prefix}-vertical {
-            border-color: @menu-dark-bg;
-
-            .@{menu-prefix}-list {
-                background-color: @menu-dark-bg;
-                color: @menu-dark-item;
-            }
-        }
-
-        &.@{menu-prefix}-inline,
-        &.@{menu-prefix}-vertical,
-        &.@{menu-prefix}-horizontal {
-            .@{menu-prefix}-active.@{menu-prefix}-no-children span {
-                background: @menu-dark-active-bg;
-                color: @menu-dark-active-color;
-
-                &::after,
-                &after::before {
-                    width: 0;
-                    height: 0;
-                }
-            }
-
-            .@{menu-prefix}-active > span {
-                color: @menu-dark-active-color;
-            }
-        }
-
-        .@{menu-prefix}-submenu-title:hover {
-            color: @menu-bg;
-
-            > span {
-                color: @menu-bg;
             }
         }
     }
