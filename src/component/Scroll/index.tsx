@@ -15,7 +15,7 @@ import Bar from './Bar'
 export const BAR_WIDTH = 16
 
 const Scroll: React.FC<ScrollProps> = function (props) {
-    const { scroll, style, children, onScroll } = props
+    const { scroll, children, onScroll, containerHeight, containerWidth } = props
     const [scrollHeight, setScrollHeight] = useMergedValue({
         defaultStateValue: 0,
         options: {
@@ -71,8 +71,8 @@ const Scroll: React.FC<ScrollProps> = function (props) {
 
         let { width, height } = wheelElementRef.current.getBoundingClientRect()
 
-        width = ((style.width as number) || width) - (scrollY ? BAR_WIDTH : 0)
-        height = ((style.height as number) || height) - (scrollX ? BAR_WIDTH : 0)
+        width = (containerWidth || width) - (scrollY ? BAR_WIDTH : 0)
+        height = (containerHeight || height) - (scrollX ? BAR_WIDTH : 0)
 
         return { width, height }
     })
@@ -244,12 +244,17 @@ const Scroll: React.FC<ScrollProps> = function (props) {
         setTranslate(wrapChildrenRef.current, `-${scrollLeft}px`, `-${scrollTop}px`)
     }, [scrollTopRatio, scrollLeftRatio])
 
+    const style: React.CSSProperties = { height: containerHeight, width: containerWidth }
+
+    const showScrollYBar = scrollY && scrollHeight > height
+    const showScrollXBar = scrollX && scrollWidth > width
+
     return (
         <div style={style} ref={wheelElementRef} className={className}>
             <div className={scrollClass('inner')}>
                 <div ref={wrapChildrenRef}>{children}</div>
             </div>
-            {scrollY && (
+            {showScrollYBar && (
                 <Bar
                     direction="y"
                     length={height}
@@ -258,7 +263,7 @@ const Scroll: React.FC<ScrollProps> = function (props) {
                     onScroll={setScrollTopRatio}
                 />
             )}
-            {scrollX && (
+            {showScrollXBar && (
                 <Bar
                     direction="x"
                     length={width}

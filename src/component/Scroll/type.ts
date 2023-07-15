@@ -33,10 +33,13 @@ export interface ScrollProps {
     scrollHeight?: number
     /** 滚动x的总长度 */
     scrollWidth?: number
-    style?: React.CSSProperties
     className?: string
     onScroll?: (evt: ScrollChangeEvent) => void
     children: React.ReactNode
+    /** 滚动容器的宽度 */
+    containerWidth?: number
+    /** 滚动容器的长度 */
+    containerHeight?: number
 }
 
 export interface ScrollBarProps {

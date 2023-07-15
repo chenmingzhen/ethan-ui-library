@@ -3,7 +3,6 @@ import { PureComponent } from '@/utils/component'
 import { getRangeValue } from '@/utils/numbers'
 import { isZero } from '@/utils/is'
 import { computeScroll, getVirtualScrollCurrentIndex } from '@/utils/virtual-scroll'
-import { KeyboardKey } from '@/utils/keyboard'
 import Scroll from '../Scroll'
 import { ScrollChangeEvent } from '../Scroll/type'
 
@@ -17,7 +16,6 @@ interface LazyListProps<T = any> {
     /** 数据源起始的Index,默认hover的位置，视图会滚动到此处 */
     defaultIndex?: number
     onScrollStateChange?(params: LazyListState): void
-    keyboardControl?: boolean
 }
 
 export interface LazyListState {
@@ -34,7 +32,6 @@ export default class LazyList<T = any> extends PureComponent<LazyListProps<T>, L
         data: [],
         shouldRecomputed: () => true,
         defaultIndex: 0,
-        keyboardControl: false,
     }
 
     private get scrollHeight() {
@@ -175,33 +172,6 @@ export default class LazyList<T = any> extends PureComponent<LazyListProps<T>, L
         this.dispatchState({ scrollTopRatio, currentIndex, scrollTop })
     }
 
-    handleKeydown: React.KeyboardEventHandler<HTMLDivElement> = (evt) => {
-        if (!this.props.keyboardControl) return
-
-        const { currentIndex } = this.state
-
-        const { data } = this.props
-
-        const { key } = evt
-
-        switch (key) {
-            case KeyboardKey.ArrowUp:
-                evt.preventDefault()
-
-                this.scrollToView(currentIndex - 1 < 0 ? data.length - 1 : currentIndex - 1)
-
-                break
-            case KeyboardKey.ArrowDown:
-                evt.preventDefault()
-
-                this.scrollToView(currentIndex + 1 > data.length - this.itemsInView ? 0 : currentIndex + 1)
-
-                break
-            default:
-                break
-        }
-    }
-
     render() {
         const { height, lineHeight, data, renderItem } = this.props
 
@@ -212,10 +182,10 @@ export default class LazyList<T = any> extends PureComponent<LazyListProps<T>, L
         return (
             <Scroll
                 scroll={this.scroll}
-                style={{ height: this.scroll ? height : undefined }}
                 onScroll={this.handleScroll}
-                scrollHeight={this.scrollHeight}
                 scrollTopRatio={scrollTopRatio}
+                scrollHeight={this.scrollHeight}
+                containerHeight={this.scroll ? height : undefined}
             >
                 <div style={{ height: currentIndex * lineHeight }} />
                 {sliceData.map((d, i) => renderItem(d, i))}
