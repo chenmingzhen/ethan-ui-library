@@ -131,9 +131,9 @@ const Menu: React.FC<MenuProps> = function (props) {
                 ...registerEvents,
             }}
         >
-            <div style={style} className={menuCls}>
-                <ul className={menuClass('wrapper')}>{parseChildren(data)}</ul>
-            </div>
+            <ul className={menuCls} style={style}>
+                {parseChildren(data)}
+            </ul>
         </MenuContext.Provider>
     )
 }

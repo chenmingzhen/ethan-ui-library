@@ -18,7 +18,7 @@ const InlineTrigger: React.FC<InlineTriggerProps> = function (props) {
                 duration: 'fast',
                 hideDisplayAfterLeave: true,
                 transitionTypes: ['collapse', 'fade'],
-                popup: <ul className={menuClass('list', 'inline')}>{popupContent}</ul>,
+                popup: <ul className={menuClass('inline')}>{popupContent}</ul>,
             }}
         >
             <li className={className} tabIndex={-1}>

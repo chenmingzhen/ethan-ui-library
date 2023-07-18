@@ -49,7 +49,7 @@ const DirectionalTrigger: React.FC<DirectionalTriggerProps> = function (props) {
                 name: menuClass('_'),
                 leaveClassName: menuClass('hidden'),
                 popup: (
-                    <ul style={popupStyle} className={menuClass('list', realDirection, 'submenu')}>
+                    <ul style={popupStyle} className={menuClass('list', realDirection)}>
                         {popupContent}
                     </ul>
                 ),

@@ -11,7 +11,7 @@
     padding: 0;
     margin: 0;
     background: @menu-bg;
-    line-height: 0; // Fix display inline-block gap
+    line-height: 0;
     list-style: none;
     outline: none;
 
@@ -96,29 +96,24 @@
             border-radius: 4px;
             box-shadow: @menu-box-shadow-base;
             z-index: 1000;
+
+            &.@{menu-prefix}-horizontal {
+                .@{menu-prefix}-expand {
+                    &::after {
+                        transform: @menu-title-vertical-transform;
+                    }
+                }
+            }
         }
     }
 
     &-item {
-        span,
-        a {
+        .@{menu-prefix}-title {
             display: block;
             color: @menu-item-color;
             white-space: nowrap;
             cursor: pointer;
-        }
 
-        a {
-            &:focus {
-                text-decoration: none;
-            }
-
-            &:hover {
-                color: @menu-item-light-hover-color;
-            }
-        }
-
-        span {
             &:hover {
                 color: @menu-item-light-hover-color;
                 background-color: @menu-item-light-hover-bgc;
@@ -129,8 +124,7 @@
             }
         }
 
-        &.@{menu-prefix}-disabled a,
-        &.@{menu-prefix}-disabled span {
+        &.@{menu-prefix}-disabled .@{menu-prefix}-title {
             color: @menu-disabled-color;
             cursor: not-allowed;
 
@@ -168,40 +162,15 @@
         border-right: solid 1px @menu-border-color;
     }
 
-    .@{menu-prefix}-active {
-        padding: @menu-active-padding-vertical @menu-active-padding-horizontal;
-
-        > span {
-            background: @menu-item-active-bg;
-            color: @menu-item-active-color;
-            border-radius: @menu-active-border-radius;
-            text-indent: @menu-active-padding-horizontal-negative;
-
-            &::after {
-                position: absolute;
-                top: 0;
-                right: 0;
-                width: 3px;
-                height: 100%;
-                background: @menu-item-active-indicator;
-                content: ' ';
-            }
-        }
-    }
-
     &-horizontal {
-        .@{menu-prefix}-wrapper {
-            overflow: hidden;
-            width: 100%;
-            border-bottom: solid 1px @menu-border-color;
-        }
+        border-bottom: solid 1px @menu-border-color;
 
         .@{menu-prefix}-item {
             position: relative;
             display: inline-block;
         }
 
-        & > .@{menu-prefix}-active > span {
+        & > .@{menu-prefix}-active > .@{menu-prefix}-title {
             position: relative;
             color: @menu-item-active-indicator;
 
@@ -210,15 +179,9 @@
                 right: 0;
                 bottom: -1px;
                 left: 0;
-                height: 2px;
+                height: 3px;
                 background: @menu-item-active-indicator;
                 content: ' ';
-            }
-        }
-
-        .@{menu-prefix}-active.@{menu-prefix}-no-children > span {
-            &::after {
-                width: 0;
             }
         }
     }
@@ -236,23 +199,35 @@
     }
 
     &-inline {
-        &:hover .@{menu-prefix}-bar {
-            opacity: 1;
-        }
-
-        .@{menu-prefix}-wrapper {
-            overflow: hidden;
-            height: 100%;
-        }
-
         & > .@{menu-prefix}-item {
             display: block;
+        }
+
+        .@{menu-prefix}-active {
+            padding: @menu-active-padding-vertical @menu-active-padding-horizontal;
+
+            .@{menu-prefix}-title {
+                background: @menu-item-active-bg;
+                color: @menu-item-active-color;
+                border-radius: @menu-active-border-radius;
+                text-indent: @menu-active-padding-horizontal-negative;
+
+                &::after {
+                    position: absolute;
+                    top: 0;
+                    right: 0;
+                    width: 3px;
+                    height: 100%;
+                    background: @menu-item-active-indicator;
+                    content: ' ';
+                }
+            }
         }
     }
 
     &-inline,
     &-horizontal {
-        .@{menu-prefix}-in-path.@{menu-prefix}-submenu > span {
+        .@{menu-prefix}-in-path .@{menu-prefix}-title {
             color: @colors-primary;
 
             .@{menu-prefix}-expand {
@@ -266,16 +241,7 @@
             position: relative;
         }
 
-        .@{menu-prefix}-wrapper {
-            overflow: hidden;
-            height: 100%;
-        }
-
-        &.@{menu-prefix}-has-open .@{menu-prefix}-wrapper {
-            width: 100vw;
-        }
-
-        .@{menu-prefix}-in-path.@{menu-prefix}-submenu > span {
+        .@{menu-prefix}-in-path .@{menu-prefix}-title {
             background: @menu-item-active-bg;
             color: @menu-item-active-color;
 
@@ -284,7 +250,7 @@
             }
         }
 
-        .@{menu-prefix}-active > span {
+        .@{menu-prefix}-active > .@{menu-prefix}-title {
             background: @menu-item-active-bg;
             color: @menu-item-active-color;
         }
