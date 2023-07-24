@@ -98,6 +98,10 @@
             z-index: 1000;
 
             &.@{menu-prefix}-horizontal {
+                .@{menu-prefix}-item {
+                    display: block;
+                }
+
                 .@{menu-prefix}-expand {
                     &::after {
                         transform: @menu-title-vertical-transform;
