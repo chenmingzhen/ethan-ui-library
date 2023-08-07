@@ -94,7 +94,7 @@ const BoxList: React.FC<BoxListProps> = function (props) {
         setValuesByDataItems(checked ? data : [])
     })
 
-    const handleLazyListRenderItem = useRefMethod((itemList: SelectData[]) => {
+    function handleLazyListRenderItem(itemList: SelectData[]) {
         const groupTitle = itemList[0] && itemList[0][groupKey] ? itemList[0][groupKey] : undefined
 
         if (!isEmpty(groupTitle)) {
@@ -120,7 +120,7 @@ const BoxList: React.FC<BoxListProps> = function (props) {
                 ))}
             </div>
         )
-    })
+    }
 
     function getText(key: string) {
         return text[key] || getLocale(key)
