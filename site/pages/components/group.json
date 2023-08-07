@@ -8,7 +8,8 @@
         "Dropdown": "下拉菜单",
         "Icon": "图标",
         "Image": "图片",
-        "ProImage": "高级图片"
+        "ProImage": "高级图片",
+        "Scroll":"滚动"
     },
     "Layout": {
         "Card": "卡片",

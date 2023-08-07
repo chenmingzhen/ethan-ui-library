@@ -36,10 +36,16 @@ export interface ScrollProps {
     className?: string
     onScroll?: (evt: ScrollChangeEvent) => void
     children: React.ReactNode
-    /** 滚动容器的宽度 */
-    containerWidth?: number
-    /** 滚动容器的长度 */
+    style?: React.CSSProperties
+    /** 如果存在动画使高度延迟展开，需要指明最终的高度 */
     containerHeight?: number
+    containerWidth?: number
+
+    /** 最大长度限制 */
+    maxHeight?: number
+    maxWidth?: number
+
+    symbol?: any
 }
 
 export interface ScrollBarProps {

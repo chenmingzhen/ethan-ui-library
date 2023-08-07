@@ -5,17 +5,24 @@ import useRefMethod from '@/hooks/useRefMethod'
 import normalizeWheel from '@/utils/dom/normalizeWheel'
 import { getRangeValue } from '@/utils/numbers'
 import classnames from 'classnames'
-import useResizeObserver from '@/hooks/useResizeObserver'
-import useUpdate from '@/hooks/useUpdate'
-import { setTranslate } from '@/utils/dom/translate'
-import { useIsomorphicLayoutEffect } from 'react-use'
+import { useIsomorphicLayoutEffect, usePrevious } from 'react-use'
+import { styles } from '@/utils/style/styles'
+import useIsomorphicLayoutUpdateEffect from '@/hooks/useIsomorphicLayoutUpdateEffect'
 import { ScrollProps } from './type'
 import Bar from './Bar'
 
 export const BAR_WIDTH = 16
 
 const Scroll: React.FC<ScrollProps> = function (props) {
-    const { scroll, children, onScroll, containerHeight, containerWidth } = props
+    const { scroll, children, onScroll, style, maxHeight, maxWidth, symbol, containerHeight, containerWidth } = props
+    const touchPosition = useRef({ lastClientX: 0, lastClientY: 0 }).current
+    const wheelElementRef = useRef<HTMLDivElement>()
+    const scrollX = scroll === 'x' || scroll === 'both'
+    const scrollY = scroll === 'y' || scroll === 'both'
+    const className = classnames(scrollClass('_', scrollX && 'show-x', scrollY && 'show-y'), props.className)
+    const viewRef = useRef<HTMLDivElement>()
+    const innerRef = useRef<HTMLDivElement>()
+
     const [scrollHeight, setScrollHeight] = useMergedValue({
         defaultStateValue: 0,
         options: {
@@ -34,9 +41,6 @@ const Scroll: React.FC<ScrollProps> = function (props) {
             value: props.scrollLeftRatio,
             onChange(nextXScrollRatio, _, pixelX) {
                 handleScroll(nextXScrollRatio, scrollTopRatio, pixelX, 0)
-                /** 兼容ssr的情况useIsomorphicLayoutEffect是useEffect的效果（拖动会闪烁） */
-                const { scrollTop, scrollLeft } = computedScrollValue(nextXScrollRatio, scrollTopRatio)
-                setTranslate(wrapChildrenRef.current, `-${scrollLeft}px`, `-${scrollTop}px`)
             },
         },
     })
@@ -46,25 +50,59 @@ const Scroll: React.FC<ScrollProps> = function (props) {
             value: props.scrollTopRatio,
             onChange(nextYScrollRatio, _, pixelY) {
                 handleScroll(scrollLeftRatio, nextYScrollRatio, 0, pixelY)
-                /** 兼容ssr的情况useIsomorphicLayoutEffect是useEffect的效果（拖动会闪烁） */
-                const { scrollTop, scrollLeft } = computedScrollValue(scrollLeftRatio, nextYScrollRatio)
-                setTranslate(wrapChildrenRef.current, `-${scrollLeft}px`, `-${scrollTop}px`)
             },
         },
     })
 
-    useEffect(() => {
-        const { height, width } = wrapChildrenRef.current.getBoundingClientRect()
-
-        setScrollHeight(height)
-        setScrollWidth(width)
+    useIsomorphicLayoutEffect(() => {
+        setScrollHeight(innerRef.current.scrollHeight)
+        setScrollWidth(innerRef.current.scrollWidth)
     }, [])
 
-    const update = useUpdate()
-    const touchPosition = useRef({ lastClientX: 0, lastClientY: 0 }).current
-    const wheelElementRef = useRef<HTMLDivElement>()
-    const scrollX = scroll === 'x' || scroll === 'both'
-    const scrollY = scroll === 'y' || scroll === 'both'
+    useIsomorphicLayoutEffect(() => {
+        if (!scrollY && !scrollX) return
+
+        const { scrollTop, scrollLeft } = getComputeScrollValue(scrollLeftRatio, scrollTopRatio)
+
+        viewRef.current.scrollLeft = scrollLeft
+        viewRef.current.scrollTop = scrollTop
+    }, [scrollTopRatio, scrollLeftRatio])
+
+    useIsomorphicLayoutUpdateEffect(() => {
+        const { height, width } = getWheelRect()
+        const nextContentHeight = innerRef.current.scrollHeight - height
+        const nextContentWidth = innerRef.current.scrollWidth - width
+
+        setScrollHeight(innerRef.current.scrollHeight)
+        setScrollWidth(innerRef.current.scrollWidth)
+
+        if (prevContentHeight !== nextContentHeight) {
+            setScrollTopRatio(scrollTopRatio * (prevContentHeight / nextContentHeight))
+        }
+
+        if (prevContentWidth !== nextContentWidth) {
+            setScrollLeftRatio(scrollLeftRatio * (prevContentWidth / nextContentWidth))
+        }
+    }, [symbol])
+
+    useEffect(() => {
+        /**
+         * passive: 布尔值，为true时，表示listener永远不会调用preventDefault()阻止默认行为的方法。
+         * 根据规范，默认值为false，但是Chrome, Firefox等浏览器为了保证滚动时的性能，在文档节点(Window, Document,Document,body)上针对touchstart和touchmove事件将passive默认值改为了true保证了在页面滚时不会因为自定义事件中调用了preventDefault而阻塞页面渲染。
+         */
+
+        wheelElementRef.current.addEventListener('wheel', handleWheel, { passive: false })
+        wheelElementRef.current.addEventListener('touchstart', handleTouchStart, { passive: false })
+        wheelElementRef.current.addEventListener('touchmove', handleTouchMove, { passive: false })
+
+        return () => {
+            if (!wheelElementRef.current) return
+
+            wheelElementRef.current.removeEventListener('wheel', handleWheel)
+            wheelElementRef.current.removeEventListener('touchstart', handleTouchStart)
+            wheelElementRef.current.removeEventListener('touchmove', handleTouchMove)
+        }
+    }, [])
 
     const getWheelRect = useRefMethod(() => {
         if (!wheelElementRef.current) return { width: 0, height: 0 }
@@ -74,13 +112,19 @@ const Scroll: React.FC<ScrollProps> = function (props) {
         width = (containerWidth || width) - (scrollY ? BAR_WIDTH : 0)
         height = (containerHeight || height) - (scrollX ? BAR_WIDTH : 0)
 
+        if (maxHeight) {
+            height = getRangeValue({ min: 0, max: maxHeight, current: height })
+        }
+
+        if (maxWidth) {
+            width = getRangeValue({ min: 0, max: maxWidth, current: width })
+        }
+
         return { width, height }
     })
 
-    const computedScrollValue = useRefMethod((leftRatio: number, topRatio: number) => {
-        const { width, height } = getWheelRect()
-        const contentHeight = scrollHeight - height
-        const contentWidth = scrollWidth - width
+    const getComputeScrollValue = useRefMethod((leftRatio: number, topRatio: number) => {
+        const { contentHeight, contentWidth } = getComputeContent()
 
         let scrollTop = topRatio * contentHeight
         if (scrollTop > contentHeight) scrollTop = contentHeight
@@ -93,14 +137,22 @@ const Scroll: React.FC<ScrollProps> = function (props) {
         return { scrollTop, scrollLeft }
     })
 
-    const handleScroll = useRefMethod((leftRatio: number, topRatio: number, pixelX?: number, pixelY?: number) => {
-        if (!onScroll) return
+    const getComputeContent = useRefMethod(() => {
         const { width, height } = getWheelRect()
-
         const contentHeight = scrollHeight - height
         const contentWidth = scrollWidth - width
 
-        const { scrollLeft, scrollTop } = computedScrollValue(leftRatio, topRatio)
+        return { contentHeight, contentWidth }
+    })
+
+    const prevContentHeight = usePrevious(getComputeContent().contentHeight)
+    const prevContentWidth = usePrevious(getComputeContent().contentWidth)
+
+    const handleScroll = useRefMethod((leftRatio: number, topRatio: number, pixelX?: number, pixelY?: number) => {
+        if (!onScroll) return
+
+        const { contentHeight, contentWidth } = getComputeContent()
+        const { scrollLeft, scrollTop } = getComputeScrollValue(leftRatio, topRatio)
 
         onScroll({
             contentHeight,
@@ -149,10 +201,7 @@ const Scroll: React.FC<ScrollProps> = function (props) {
     })
 
     const computedPixel = useRefMethod((pixelX: number, pixelY: number) => {
-        const { width, height } = getWheelRect()
-
-        const contentHeight = scrollHeight - height
-        const contentWidth = scrollWidth - width
+        const { contentHeight, contentWidth } = getComputeContent()
 
         /** 只能一个方向滚动 一个方向滚动 另外一个方向设置为0 */
         if (Math.abs(pixelX) > Math.abs(pixelY)) {
@@ -199,60 +248,25 @@ const Scroll: React.FC<ScrollProps> = function (props) {
         }
     })
 
-    useEffect(() => {
-        /**
-         * passive: 布尔值，为true时，表示listener永远不会调用preventDefault()阻止默认行为的方法。
-         * 根据规范，默认值为false，但是Chrome, Firefox等浏览器为了保证滚动时的性能，在文档节点(Window, Document,Document,body)上针对touchstart和touchmove事件将passive默认值改为了true保证了在页面滚时不会因为自定义事件中调用了preventDefault而阻塞页面渲染。
-         */
-
-        wheelElementRef.current.addEventListener('wheel', handleWheel, { passive: false })
-        wheelElementRef.current.addEventListener('touchstart', handleTouchStart, { passive: false })
-        wheelElementRef.current.addEventListener('touchmove', handleTouchMove, { passive: false })
-
-        return () => {
-            if (!wheelElementRef.current) return
-
-            wheelElementRef.current.removeEventListener('wheel', handleWheel)
-            wheelElementRef.current.removeEventListener('touchstart', handleTouchStart)
-            wheelElementRef.current.removeEventListener('touchmove', handleTouchMove)
-        }
-    }, [])
-
-    useResizeObserver({
-        watch: true,
-        options: {
-            direction: 'xy',
-        },
-        getTargetElement() {
-            return wheelElementRef.current
-        },
-        onResize() {
-            handleScroll(scrollLeftRatio, scrollTopRatio)
-            update()
-        },
-    })
-
-    const className = classnames(scrollClass('_', scrollX && 'show-x', scrollY && 'show-y'), props.className)
-    const wrapChildrenRef = useRef<HTMLDivElement>()
     const { width, height } = getWheelRect()
-
-    /** 非SSR的，通常在副作用的设置Translate即可,为了兼容SSR的情况，在设置Ratio中就设置Translate，这里主要处理Prop的Ratio不一致时重置到Prop的Ratio */
-    useIsomorphicLayoutEffect(() => {
-        if (!scrollY && !scrollX) return
-
-        const { scrollTop, scrollLeft } = computedScrollValue(scrollLeftRatio, scrollTopRatio)
-        setTranslate(wrapChildrenRef.current, `-${scrollLeft}px`, `-${scrollTop}px`)
-    }, [scrollTopRatio, scrollLeftRatio])
-
-    const style: React.CSSProperties = { height: containerHeight, width: containerWidth }
-
     const showScrollYBar = scrollY && scrollHeight > height
     const showScrollXBar = scrollX && scrollWidth > width
+    const ms = styles(
+        style,
+        containerHeight && { height: containerHeight },
+        containerWidth && { width: containerWidth },
+        /** X轴方向下,view层的宽度始终与wheel的宽度一致，所以可以使用maxWidth */
+        /** Y轴放下下,如果wheel设置maxHeight，并不能限制view层与wheel一致的高度,如果存在滚动，需要将wheel的高度限制住,使view保持100% */
+        maxHeight && scrollHeight > height && { height: maxHeight },
+        maxWidth && { maxWidth }
+    )
 
     return (
-        <div style={style} ref={wheelElementRef} className={className}>
-            <div className={scrollClass('inner')}>
-                <div ref={wrapChildrenRef}>{children}</div>
+        <div style={ms} ref={wheelElementRef} className={className}>
+            <div ref={viewRef} className={scrollClass('view')}>
+                <div className={scrollClass('inner')} ref={innerRef}>
+                    {children}
+                </div>
             </div>
             {showScrollYBar && (
                 <Bar
