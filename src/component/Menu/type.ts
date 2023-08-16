@@ -1,5 +1,6 @@
 import React from 'react'
 import { TriggerAction } from '../Trigger/type'
+import { MoreContextProps } from '../More/type'
 
 export type Mode = 'inline' | 'vertical' | 'horizontal'
 
@@ -9,6 +10,7 @@ export interface MenuBaseData {
     disabled?: boolean
     children?: MenuBaseData[]
     type?: string
+    className?: string
 }
 
 export type UpdateActive = (activePath: string) => void
@@ -84,7 +86,7 @@ export interface MenuListProps {
     handleScrollPosUpdate?(): void
 }
 
-export interface MenuItemProps extends MenuContext {
+export interface MenuItemProps extends MenuContext, Partial<MoreContextProps> {
     dataItem: MenuBaseData
     children: React.ReactNode
 }
@@ -150,7 +152,7 @@ export interface RegisterMenuItemGroupOptions {
     path: React.Key[]
 }
 
-export interface SubMenuProps {
+export interface SubMenuProps extends Partial<MoreContextProps> {
     dataItem: MenuBaseData
     children: React.ReactNode
 }
@@ -183,7 +185,7 @@ export interface DirectionalTriggerProps {
     direction: 'vertical' | 'horizontal'
 }
 
-export interface MenuItemGroupProps {
+export interface MenuItemGroupProps extends Partial<MoreContextProps> {
     dataItem: MenuBaseData
     children: React.ReactNode
 }

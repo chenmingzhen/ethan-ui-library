@@ -7,6 +7,7 @@ import useRefMethod from '@/hooks/useRefMethod'
 import { parsePxToNumber } from '@/utils/strings'
 import { MoreProps } from './type'
 import Item from './Item'
+import MoreContext from './context'
 
 const defaultGetMoreText = (rest: number) => `+${rest}`
 
@@ -24,6 +25,7 @@ function More<T = any>(props: MoreProps<T>) {
         getMoreElement,
         getMoreText = defaultGetMoreText,
         children,
+        onComputeFinish,
     } = props
     /**
      * showCount NO_COUNT 不计算
@@ -149,16 +151,23 @@ function More<T = any>(props: MoreProps<T>) {
         }
     }, [shouldReset])
 
-    if (!compressed || showCount === NO_COUNT || showCount > itemNodes.length) return <>{itemNodes}</>
+    useEffect(() => {
+        if (showCount !== NO_COUNT && onComputeFinish) {
+            onComputeFinish(showCount)
+        }
+    }, [showCount])
+
+    if (!compressed || showCount === NO_COUNT || showCount > itemNodes.length)
+        return <MoreContext.Provider value={{ showCount }}>{itemNodes}</MoreContext.Provider>
 
     /** ----------------------------Computed------------------------ */
 
     if (showCount === PENDING_COUNT) {
         return (
-            <>
+            <MoreContext.Provider value={{ showCount }}>
                 {itemNodes}
                 {renderMore?.(itemNodes)}
-            </>
+            </MoreContext.Provider>
         )
     }
 
@@ -170,11 +179,11 @@ function More<T = any>(props: MoreProps<T>) {
         .map((_, index) => itemNodes[showCount + index])
 
     return (
-        <>
+        <MoreContext.Provider value={{ showCount }}>
             {beforeNumNodes}
 
             {renderMore?.(afterNumNodes)}
-        </>
+        </MoreContext.Provider>
     )
 }
 

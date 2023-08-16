@@ -27,7 +27,7 @@ export function getOption(mode): GetOptionReturn {
 
 export const ETHAN_MENU_SEPARATOR = '_E@T_'
 
-export function getPathStr(path: React.Key[]) {
+export function getPathStr(path: React.Key[] = []) {
     return path.join(ETHAN_MENU_SEPARATOR)
 }
 
@@ -65,3 +65,5 @@ export function parseChildren(data: MenuBaseData[]) {
         })
         .filter((opt) => opt)
 }
+
+export const INTERNAL_MORE_KEY = '__INTERNAL_MORE_KEY__'

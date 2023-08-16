@@ -95,7 +95,7 @@ export function getPortalSubMenuStyle(
         return style
     }
 
-    style.width = triggerRect.width
+    style.minWidth = triggerRect.width
 
     style.left = triggerRect.left - containerRect.left
     style.top = triggerRect.bottom - containerRect.bottom + 4

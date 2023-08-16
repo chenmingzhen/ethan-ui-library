@@ -8,8 +8,8 @@ import useInlineIndentStyle from './hooks/useInlineIndentStyle'
 import { getPathStr } from './util'
 
 const MenuItem: React.FC<MenuItemProps> = function (props) {
-    const { dataItem } = props
-    const { key, title, disabled } = dataItem
+    const { dataItem, showCount } = props
+    const { key, title, disabled, className } = dataItem
     const { path } = useMenuPath(key)
     const [active, updateActive] = useState(false)
     const { registerMenuItem, unregisterMenuItem, onLeafClick, onMouseEnterOpen, onMouseLeaveClose } =
@@ -21,15 +21,15 @@ const MenuItem: React.FC<MenuItemProps> = function (props) {
         return () => {
             unregisterMenuItem(key)
         }
-    }, [path])
+    }, [path.join(','), showCount])
 
     const inlineIndentStyle = useInlineIndentStyle(path)
-    const className = menuClass('item', disabled === true && 'disabled', active && 'active')
+    const ms = classnames(menuClass('item', disabled === true && 'disabled', active && 'active'), className)
 
     return (
         <li
             tabIndex={-1}
-            className={className}
+            className={ms}
             data-ck={getPathStr(path)}
             onClick={() => onLeafClick(dataItem)}
             onMouseEnter={() => onMouseEnterOpen(dataItem)}

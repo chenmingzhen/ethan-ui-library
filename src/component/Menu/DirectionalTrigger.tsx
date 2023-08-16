@@ -25,7 +25,6 @@ const DirectionalTrigger: React.FC<DirectionalTriggerProps> = function (props) {
 
     const realDirection = path.length > 1 ? 'vertical' : direction
 
-    /** horizontal下只有root的submenu才是horizontal样式  */
     const popupStyle = styles(
         getPortalSubMenuStyle(triggerElement, portalElement, realDirection),
         /** 避免在进行关闭动画中，鼠标动作再次触发打开SubMenu的行为，导致异常 */

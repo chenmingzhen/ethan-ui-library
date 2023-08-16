@@ -8,8 +8,13 @@ export interface MoreProps<T = any> {
     renderItem?: (dataItem: T, index: number) => React.ReactNode
     renderMore: (moreNodes?: React.ReactNode[]) => React.ReactNode
     children?: React.ReactNode
+    onComputeFinish?: (count: number) => void
 }
 
 export interface MoreItemProps {
-    children: React.ReactNode
+    children: JSX.Element
+}
+
+export interface MoreContextProps {
+    showCount: number
 }

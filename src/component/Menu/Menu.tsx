@@ -1,13 +1,19 @@
-import React, { useState } from 'react'
+import React, { useRef, useState } from 'react'
 import classnames from 'classnames'
 import { menuClass } from '@/styles'
 import useRefMethod from '@/hooks/useRefMethod'
+import { isObject } from '@/utils/is'
+import { More } from '@/index'
+import { debounce } from '@/utils/func'
 import { MenuBaseData, MenuProps } from './type'
 import MenuContext from './context/MenuContext'
-import { parseChildren } from './util'
+import { INTERNAL_MORE_KEY, parseChildren } from './util'
 import useOpenKeys from './hooks/useOpenKeys'
 import useRegister from './hooks/useRegister'
 import useActionEffect from './hooks/useActionEffect'
+import SubMenu from './SubMenu'
+import MenuItemGroup from './MenuItemGroup'
+import MenuItem from './MenuItem'
 
 const Menu: React.FC<MenuProps> = function (props) {
     const {
@@ -116,6 +122,26 @@ const Menu: React.FC<MenuProps> = function (props) {
     /** -------------------------------------------------------- */
 
     const menuCls = classnames(menuClass('_', mode, theme === 'dark' && 'dark'), className)
+    const ulRef = useRef<HTMLUListElement>()
+
+    /** @todo 展开或收缩会导致状态丢失 */
+    const handleComputeFinish = useRefMethod(
+        debounce(() => {
+            if (activePath.length) {
+                const activeMenuItemKey = activePath[activePath.length - 1]
+                const path = key2PathMapping.get(activeMenuItemKey)
+
+                // /** 如果不存在path，可能是Trigger未展开，导致MenuItem未注册 */
+                // if (!path) {
+                //     setActivePath([INTERNAL_MORE_KEY, ...activePath])
+                // } else {
+                //     setActivePath(key2PathMapping.get(activeMenuItemKey))
+                // }
+
+                setActivePath(path || [])
+            }
+        })
+    )
 
     return (
         <MenuContext.Provider
@@ -131,8 +157,57 @@ const Menu: React.FC<MenuProps> = function (props) {
                 ...registerEvents,
             }}
         >
-            <ul className={menuCls} style={style}>
-                {parseChildren(data)}
+            <ul className={menuCls} style={style} ref={ulRef}>
+                <More
+                    data={data}
+                    getMoreText={() => '...'}
+                    compressed={mode === 'horizontal'}
+                    onComputeFinish={handleComputeFinish}
+                    getContainerElement={() => ulRef.current}
+                    getMoreElement={(container) => container.querySelector(`.${menuClass('more')}`)}
+                    getItemDoms={(container) => container.querySelectorAll(`.${menuClass('item')}`)}
+                    renderMore={(rest) => (
+                        <SubMenu dataItem={{ key: INTERNAL_MORE_KEY, title: '...', className: menuClass('more') }}>
+                            {rest}
+                        </SubMenu>
+                    )}
+                    renderItem={(dataItem, index) => {
+                        if (isObject(dataItem)) {
+                            const { title, children, key, type, ...restProps } = dataItem
+                            const mergedKey = key || index
+
+                            if (type === 'group') {
+                                return (
+                                    <More.Item key={mergedKey}>
+                                        <MenuItemGroup {...restProps} dataItem={dataItem}>
+                                            {parseChildren(children)}
+                                        </MenuItemGroup>
+                                    </More.Item>
+                                )
+                            }
+
+                            if (children) {
+                                return (
+                                    <More.Item key={mergedKey}>
+                                        <SubMenu {...restProps} dataItem={dataItem}>
+                                            {parseChildren(children)}
+                                        </SubMenu>
+                                    </More.Item>
+                                )
+                            }
+
+                            return (
+                                <More.Item key={mergedKey}>
+                                    <MenuItem {...restProps} dataItem={dataItem}>
+                                        {title}
+                                    </MenuItem>
+                                </More.Item>
+                            )
+                        }
+
+                        return null
+                    }}
+                />
             </ul>
         </MenuContext.Provider>
     )
