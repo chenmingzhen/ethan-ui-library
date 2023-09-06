@@ -100,3 +100,26 @@
         .caret-solid(@direction; @width);
     }
 }
+
+.caretColor(@color) {
+    & when (@ethan-theme = antd) {
+        &::after {
+            border-color: @color;
+        }
+    }
+    & when (@ethan-theme = antd2) {
+        &::after {
+            border-color: @color;
+        }
+    }
+    & when (@ethan-theme = default) {
+        &::after {
+            border-top-color: @color;
+        }
+    }
+    & when(@ethan-theme = ethan) {
+        &::after {
+            border-color: @color;
+        }
+    }
+}

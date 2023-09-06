@@ -5,7 +5,10 @@ import useSetState from './useSetState'
 
 interface UseResizeSizeProps {
     getResizeTarget?: () => HTMLElement
+    dirs?: Dir[]
 }
+
+type Dir = 'e' | 's' | 'se'
 
 interface ResizableState {
     /** 当前拖动的摇杆方向 */
@@ -21,7 +24,7 @@ interface ResizableState {
 }
 
 export default function useResizeSize(props: UseResizeSizeProps) {
-    const { getResizeTarget } = props
+    const { getResizeTarget, dirs = ['e', 's', 'se'] } = props
     const [state, setState] = useSetState<ResizableState>({
         activeDir: '',
         moveX: 0,
@@ -79,8 +82,6 @@ export default function useResizeSize(props: UseResizeSizeProps) {
         const target = getResizeTarget()
 
         if (target) {
-            const dirs = ['e', 's', 'se']
-
             const { offsetWidth, offsetHeight } = target
 
             targetSize.clientWidth = offsetWidth
@@ -106,7 +107,7 @@ export default function useResizeSize(props: UseResizeSizeProps) {
                 handlers.clear()
             }
         }
-    }, [getResizeTarget])
+    }, [dirs?.join()])
 
     const width = targetSize.clientWidth + state.moveX + state.x
     const height = targetSize.clientHeight + state.moveY + state.y

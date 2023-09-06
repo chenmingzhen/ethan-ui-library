@@ -69,10 +69,6 @@ class Menu<T extends MenuBaseData> extends React.PureComponent<MenuProps<T>, Men
 
     rootElement: HTMLDivElement
 
-    scrollTimer: NodeJS.Timeout
-
-    scrollCache = 0
-
     shouldBindWheel = false
 
     hasBindWheel = false
@@ -284,44 +280,6 @@ class Menu<T extends MenuBaseData> extends React.PureComponent<MenuProps<T>, Men
         e.preventDefault()
 
         this.wrapper[scrollPos] += wheel.pixelY
-
-        return
-
-        /** @TODO bug fix  */
-
-        /** 平滑滚动计算 */
-
-        if (this.scrollTimer) clearInterval(this.scrollTimer)
-
-        /** X方向值始终为0 同一使用Y direction */
-        this.scrollCache = wheel.pixelY
-
-        const { scrollCache } = this
-
-        const targetValue =
-            scrollCache > 0
-                ? Math.min(this.wrapper[scrollPos] + scrollCache, scrollSize)
-                : Math.max(this.wrapper[scrollPos] + scrollCache, 0)
-
-        this.scrollTimer = setInterval(() => {
-            if (this.wrapper[scrollPos] === targetValue || !scrollCache) {
-                this.scrollCache = 0
-
-                clearInterval(this.scrollTimer)
-
-                this.scrollTimer = null
-
-                return
-            }
-
-            const computedValue = this.wrapper[scrollPos] + scrollCache / 8
-
-            if (scrollCache > 0) {
-                this.wrapper[scrollPos] = Math.min(computedValue, targetValue)
-            } else {
-                this.wrapper[scrollPos] = Math.max(computedValue, targetValue)
-            }
-        }, 10)
     }
 
     handleClick = (id, data) => {

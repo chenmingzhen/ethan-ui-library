@@ -32,11 +32,8 @@ export interface TriggerProps {
      *  2.如果使用transitionPopupProps或者motionPopupProps,将会自动注入的PopupElement中，如果使用customPopupRender，需要手动将componentKey注入到PopupElement的data-ck
      */
     componentKey?: string
-    /**
-     * 是否为链式的componentKey
-     * 如组件A的componentKey为KEY_A,鼠标响应点为KEY_A_NEXT。这种情况仍然可判断为处于KEY_A的作用域中
-     */
-    isChainComponentKey?: boolean
+
+    chainKey?: string
 
     mouseEnterDelay?: number
     mouseLeaveDelay?: number

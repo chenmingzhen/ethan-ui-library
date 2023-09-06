@@ -52,7 +52,8 @@
         "Tree": "树",
         "Timeline": "时间轴",
         "LazyList": "高性能列表",
-        "ClampLines": "多行裁剪"
+        "ClampLines": "多行裁剪",
+        "More":"省略显示"
     },
     "Feedback": {
         "Alert": "提示框",

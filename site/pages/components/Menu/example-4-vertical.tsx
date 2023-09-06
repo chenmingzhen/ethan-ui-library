@@ -15,139 +15,191 @@ const data = [
         title: 'Navigation 1',
     },
     {
-        key: '3',
-        title: 'Navigation 3',
+        key: '2',
+        title: 'Navigation 2',
         children: [
             {
-                key: '4',
-                title: 'Option 1',
-            },
-            {
-                key: '5',
-                title: 'Option 2',
-            },
-        ],
-    },
-    {
-        key: '21',
-        title: 'Navigation 21',
-    },
-    {
-        key: '22',
-        title: 'Navigation 22',
-    },
-    {
-        key: '23',
-        title: 'Navigation 23',
-    },
-    {
-        key: '24',
-        title: 'Navigation 24',
-    },
-    {
-        key: '25',
-        title: 'Navigation 25',
-    },
-    {
-        key: '26',
-        title: 'Navigation 26',
-    },
-    {
-        key: '27',
-        title: 'Navigation 27',
-    },
-    {
-        key: '28',
-        title: 'Navigation 28',
-    },
-    {
-        key: '29',
-        title: 'Navigation 29',
-    },
-    {
-        key: '30',
-        title: 'Navigation 30',
-        children: [
-            {
-                key: '7',
-                title: 'Option 3',
-            },
-            {
-                key: '8',
-                title: 'Option 4',
+                key: 'group2-1',
+                type: 'group',
+                title: 'Group2',
                 children: [
                     {
-                        key: '9',
-                        title: 'Optic 1',
+                        key: 'group2-1-21',
+                        title: 'Option 21',
                     },
                     {
-                        key: '10',
-                        title: 'Optic 2',
+                        key: 'group2-1-22',
+                        title: 'Option 22',
+                        children: [
+                            {
+                                key: 'group2-1-221',
+                                title: 'Option 221',
+                                children: [
+                                    {
+                                        key: 'group2-1-2211',
+                                        title: 'Option 2211',
+                                    },
+                                    {
+                                        key: 'group2-1-2212',
+                                        title: 'Option 2212',
+                                    },
+                                ],
+                            },
+                            {
+                                key: 'group2-1-222',
+                                title: 'Option 222',
+                            },
+                        ],
+                    },
+                    {
+                        key: 'group2-1-23',
+                        title: 'Option 23',
+                        children: [
+                            {
+                                key: 'group2-1-231',
+                                title: 'Option 231',
+                                children: [
+                                    {
+                                        key: 'group2-1-2311',
+                                        title: 'Option 2311',
+                                    },
+                                    {
+                                        key: 'group2-1-2312',
+                                        title: 'Option 2312',
+                                    },
+                                ],
+                            },
+                            {
+                                key: 'group2-1-232',
+                                title: 'Option 232',
+                                children: [
+                                    {
+                                        key: 'group2-1-2321',
+                                        title: 'Option 2321',
+                                    },
+                                    {
+                                        key: 'group2-1-2322',
+                                        title: 'Option 2322',
+                                    },
+                                ],
+                            },
+                        ],
+                    },
+                ],
+            },
+            {
+                key: 'group2-2',
+                type: 'group',
+                title: 'Group2-2',
+                children: [
+                    {
+                        key: 'group2-2-22',
+                        title: 'Option 22',
+                        children: [
+                            {
+                                key: 'group2-2-221',
+                                title: 'Option 221',
+                                children: [
+                                    {
+                                        key: 'group2-2-2211',
+                                        title: 'Option 2211',
+                                    },
+                                    {
+                                        key: 'group2-2-2212',
+                                        title: 'Option 2212',
+                                    },
+                                ],
+                            },
+                            {
+                                key: 'group2-2-222',
+                                title: 'Option 222',
+                            },
+                        ],
+                    },
+                    {
+                        key: 'group2-2-21',
+                        title: 'Option 21',
+                    },
+
+                    {
+                        key: 'group2-2-23',
+                        title: 'Option 23',
+                        children: [
+                            {
+                                key: 'group2-2-231',
+                                title: 'Option 231',
+                                children: [
+                                    {
+                                        key: 'group2-2-2311',
+                                        title: 'Option 2311',
+                                    },
+                                    {
+                                        key: 'group2-2-2312',
+                                        title: 'Option 2312',
+                                    },
+                                ],
+                            },
+                            {
+                                key: 'group2-2-232',
+                                title: 'Option 232',
+                                children: [
+                                    {
+                                        key: 'group2-2-2321',
+                                        title: 'Option 2321',
+                                    },
+                                    {
+                                        key: 'group2-2-2322',
+                                        title: 'Option 2322',
+                                    },
+                                ],
+                            },
+                        ],
                     },
                 ],
             },
         ],
     },
     {
-        key: '31',
-        title: 'Navigation 31',
+        key: '3',
+        title: 'Navigation 3',
     },
     {
-        key: '32',
-        title: 'Navigation 32',
+        key: '4',
+        title: 'Navigation 4',
     },
+
     {
-        key: '33',
-        title: 'Navigation 33',
-    },
-    {
-        key: '34',
-        title: 'Navigation 34',
-    },
-    {
-        key: '35',
-        title: 'Navigation 35',
-    },
-    {
-        key: '36',
-        title: 'Navigation 36',
-    },
-    {
-        key: '37',
-        title: 'Navigation 37',
-    },
-    {
-        key: '38',
-        title: 'Navigation 38',
-    },
-    {
-        key: '39',
-        title: 'Navigation 39',
-    },
-    {
-        key: '40',
-        title: 'Navigation 40',
-    },
-    {
-        key: '41',
-        title: 'Navigation 41',
-    },
-    {
-        key: '42',
-        title: 'Navigation 42',
-    },
-    {
-        key: '43',
-        title: 'Navigation 43',
-    },
-    {
-        key: '44',
-        title: 'Navigation 44',
-    },
-    {
-        key: '45',
-        title: 'Navigation 45',
+        key: '5',
+        title: 'Navigation 5',
+        children: [
+            {
+                key: '51',
+                title: 'Option 51',
+            },
+            {
+                key: '52',
+                title: 'Option 52',
+                children: [
+                    {
+                        key: '521',
+                        title: 'Optic 521',
+                    },
+                    {
+                        key: '522',
+                        title: 'Optic 522',
+                    },
+                ],
+            },
+        ],
     },
 ]
 
-export default () => <Menu mode="vertical-auto" data={data} style={{ width: 256, height: 300 }} inlineIndent={24} />
+export default () => (
+    <Menu
+        mode="vertical"
+        data={data}
+        style={{ width: 256, height: 300 }}
+        inlineIndent={24}
+        // subMenuTriggerActions={['hover']}
+    />
+)

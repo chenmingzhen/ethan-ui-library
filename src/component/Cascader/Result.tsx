@@ -5,11 +5,13 @@ import { preventDefault, stopPropagation } from '@/utils/func'
 import { isEmpty } from '@/utils/is'
 import classnames from 'classnames'
 import React, { useMemo, useRef } from 'react'
+import { getUidStr } from '@/utils/uid'
 import Caret from '../icons/Caret'
 import Input from '../Input'
 import useShowNum from './hooks/useShowNum'
-import More from './More'
 import { CascaderData, CascaderDataValueType, CascaderResultProps } from './type'
+import More from '../More'
+import Popover from '../Popover'
 
 const CascaderResult: React.FC<CascaderResultProps> = function (props) {
     const {
@@ -33,7 +35,7 @@ const CascaderResult: React.FC<CascaderResultProps> = function (props) {
     } = props
     const resultElementRef = useRef<HTMLDivElement>()
     const [showNum] = useShowNum({ value, compressed, resultElementRef })
-
+    const restId = useRef(getUidStr()).current
     /** 是否完全选中 */
     const getIsFullChecked = useRefMethod((key: CascaderDataValueType) => {
         const dataItem = getDataItemByKey(key)
@@ -103,38 +105,67 @@ const CascaderResult: React.FC<CascaderResultProps> = function (props) {
     }
 
     function buildResult() {
-        const items: React.ReactNode[] = []
         const dataItems: CascaderData[] =
             showResultMode === 'parent' ? showParentModeDataItems : showFullOrChildModeDataItems
 
-        dataItems.forEach((dataItem, index) => {
-            const node = getNodeInfoByDataItem(dataItem)
-            if (!node) return
-            const { keyPath } = node
-            const content =
-                showResultMode !== 'full'
-                    ? getContent(getDataItemByKey(keyPath[keyPath.length - 1]))
-                    : keyPath.map((key) => getContent(getDataItemByKey(key))).join('/')
+        const coverPopoverProps: React.DetailedHTMLProps<React.HTMLAttributes<HTMLDivElement>, HTMLDivElement> = {
+            onMouseDown(e) {
+                stopPropagation(e)
+                preventDefault(e)
+            },
+        }
 
-            items.push(
-                <a
-                    key={index}
-                    tabIndex={-1}
-                    className={cascaderClass('item')}
-                    onClick={() => {
-                        handleResultItemClick(dataItem)
-                    }}
-                >
-                    {content}
-                </a>
-            )
-        })
+        return (
+            <More
+                data={dataItems}
+                compressed={compressed}
+                getContainerElement={() => resultElementRef.current}
+                getMoreElement={() => document.getElementById(restId)}
+                getItemDoms={() => resultElementRef.current.querySelectorAll(`.${cascaderClass('item')}`)}
+                renderItem={(dataItem, index) => {
+                    const node = getNodeInfoByDataItem(dataItem)
+                    if (!node) return
+                    const { keyPath } = node
+                    const content =
+                        showResultMode !== 'full'
+                            ? getContent(getDataItemByKey(keyPath[keyPath.length - 1]))
+                            : keyPath.map((key) => getContent(getDataItemByKey(key))).join('/')
 
-        return items
-    }
-
-    function buildMore(nodes: React.ReactNode[]) {
-        return [<More itemNodes={nodes} key="ethan-cascader-more" showNum={showNum} />]
+                    return (
+                        <a
+                            key={index}
+                            tabIndex={-1}
+                            className={cascaderClass('item')}
+                            onClick={() => {
+                                handleResultItemClick(dataItem)
+                            }}
+                        >
+                            {content}
+                        </a>
+                    )
+                }}
+                renderMore={(afterNumNodes) => (
+                    <Popover
+                        trigger="mousedown"
+                        className={cascaderClass('popover')}
+                        content={<div className={cascaderClass('result')}>{afterNumNodes}</div>}
+                        arrowProps={{ ...coverPopoverProps }}
+                        innerProps={{ ...coverPopoverProps }}
+                    >
+                        <a
+                            id={restId}
+                            className={cascaderClass('item', 'item-compressed')}
+                            onMouseDown={(e) => {
+                                stopPropagation(e)
+                                preventDefault(e)
+                            }}
+                        >
+                            +{afterNumNodes.length}
+                        </a>
+                    </Popover>
+                )}
+            />
+        )
     }
 
     function renderIndicator() {
@@ -166,11 +197,7 @@ const CascaderResult: React.FC<CascaderResultProps> = function (props) {
     }
 
     function renderResult() {
-        let items = buildResult()
-
-        if (compressed) {
-            items = buildMore(items)
-        }
+        const items = buildResult()
 
         return items
     }
@@ -181,7 +208,6 @@ const CascaderResult: React.FC<CascaderResultProps> = function (props) {
     return (
         <div className={cascaderClass('result')} ref={resultElementRef}>
             {renderResult()}
-
             <Input
                 readOnly={readOnly}
                 forwardedRef={forwardedInputRef}

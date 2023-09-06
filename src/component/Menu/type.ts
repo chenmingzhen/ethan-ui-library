@@ -1,22 +1,17 @@
 import React from 'react'
+import { TriggerAction } from '../Trigger/type'
+import { MoreContextProps } from '../More/type'
 
-export type Mode = 'inline' | 'vertical' | 'horizontal' | 'vertical-auto'
+export type Mode = 'inline' | 'vertical' | 'horizontal'
 
 export interface MenuBaseData {
-    key: string | number
-
+    key: React.Key
     title?: React.ReactNode
-
     disabled?: boolean
-
-    linkKey?: string
-
-    target?: string
-
     children?: MenuBaseData[]
+    type?: string
+    className?: string
 }
-
-export type Theme = 'light' | 'dark'
 
 export type UpdateActive = (activePath: string) => void
 
@@ -43,32 +38,22 @@ export interface MenuContext {
 }
 export interface MenuProps<T = MenuBaseData> {
     style?: React.CSSProperties
-
     className?: string
-
     data: T[]
-
     disabled?: (data: T) => boolean
-
     defaultActiveKey?: string | number
-
     defaultOpenKeys?: (string | number)[]
-
     /** 展开的菜单(受控) */
     openKeys?: string[] | number[]
-
     /** 每一层缩进宽度 */
     inlineIndent?: number
-
     mode?: Mode
-
     onClick?(data: T): void
-
     renderItem?: (data: T) => React.ReactNode
-
     onOpenChange?(keys: (string | number)[]): void
-
-    theme: Theme
+    theme?: 'light' | 'dark'
+    subMenuTriggerActions?: Exclude<TriggerAction, 'focus' | 'mousedown'>[]
+    onSelectChange?: (dataItem: T, path: React.Key[]) => void
 }
 
 export interface MenuListProps {
@@ -101,28 +86,106 @@ export interface MenuListProps {
     handleScrollPosUpdate?(): void
 }
 
-export interface MenuItemProps extends MenuContext {
-    bottomLine?: number
+export interface MenuItemProps extends MenuContext, Partial<MoreContextProps> {
+    dataItem: MenuBaseData
+    children: React.ReactNode
+}
 
-    topLine?: number
+export interface MenuItemTriggerActions {
+    updateActive: (activePath: string) => void
+    updateOpen: () => void
+    updateInPath: () => void
+}
 
-    data: MenuBaseData
+export interface MenuPathRegisterContextProps {
+    registerPath(key: React.Key, trigger: MenuItemTriggerActions): void
+    unregisterPath(key: React.Key): void
+}
 
-    index: number
+export interface MenuEventRegisterContextProps {
+    registerEvents(key: React.Key): void
+    unregisterEvents(key: React.Key): void
+}
 
-    inlineIndent?: number
+export interface MenuContextProps {
+    registerMenuItem(key: React.Key, options: RegisterMenuItemOptions): void
+    unregisterMenuItem(key: React.Key): void
+    registerSubMenu(key: React.Key, options: RegisterSubMenuOptions): void
+    unregisterSubMenu(key: React.Key): void
+    registerMenuItemGroup(key: React.Key, options: RegisterMenuItemGroupOptions): void
+    unregisterMenuItemGroup(key: React.Key): void
 
-    level?: number
+    mode: MenuProps['mode']
+    inlineIndent: MenuProps['inlineIndent']
 
-    mode: Mode
+    onLeafClick(dataItem: MenuBaseData): void
+    onInlineSubMenuTitleClick: (dataItem: MenuBaseData, open: boolean) => void
 
-    onClick: (id: string | number, data: MenuBaseData) => void
+    onMouseEnterOpen: (dataItem: MenuBaseData) => void
+    onMouseLeaveClose: (dataItem: MenuBaseData) => void
+    onMouseClickToggle: (dataItem: MenuBaseData, open: boolean) => void
+    subMenuTriggerActions: MenuProps['subMenuTriggerActions']
+}
 
-    path?: string | number
+export interface PathContextProps {
+    path: React.Key[]
+}
 
-    renderItem: (data: MenuBaseData) => React.ReactNode
+export interface MenuItemActions {
+    updateActive(active: boolean): void
+}
 
-    toggleOpenKeys: (id: string | number, open: boolean) => void
+export interface SubMenuActions {
+    updateOpen(open: boolean): void
+    updateInPath(inPath: boolean): void
+}
 
-    handleScrollPosUpdate?(): void
+export interface RegisterMenuItemOptions extends MenuItemActions {
+    path: React.Key[]
+}
+
+export interface RegisterSubMenuOptions extends SubMenuActions {
+    path: React.Key[]
+}
+
+export interface RegisterMenuItemGroupOptions {
+    path: React.Key[]
+}
+
+export interface SubMenuProps extends Partial<MoreContextProps> {
+    dataItem: MenuBaseData
+    children: React.ReactNode
+}
+
+export interface InlineTriggerProps {
+    visible: boolean
+    path: React.Key[]
+    popupContent: React.ReactNode
+    children: React.ReactNode
+    dataItem: MenuBaseData
+    className: string
+}
+
+export interface VerticalTriggerProps {
+    visible: boolean
+    path: React.Key[]
+    popupContent: React.ReactNode
+    children: React.ReactNode
+    dataItem: MenuBaseData
+    className: string
+}
+
+export interface DirectionalTriggerProps {
+    visible: boolean
+    path: React.Key[]
+    popupContent: React.ReactNode
+    children: React.ReactNode
+    dataItem: MenuBaseData
+    className: string
+    direction: 'vertical' | 'horizontal'
+}
+
+export interface MenuItemGroupProps extends Partial<MoreContextProps> {
+    dataItem: MenuBaseData
+    children: React.ReactNode
 }
