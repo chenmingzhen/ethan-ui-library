@@ -51,7 +51,6 @@ export interface MenuProps<T = MenuBaseData> {
     onClick?(data: T): void
     renderItem?: (data: T) => React.ReactNode
     onOpenChange?(keys: (string | number)[]): void
-    theme?: 'light' | 'dark'
     subMenuTriggerActions?: Exclude<TriggerAction, 'focus' | 'mousedown'>[]
     onSelectChange?: (dataItem: T, path: React.Key[]) => void
 }

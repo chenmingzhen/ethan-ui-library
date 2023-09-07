@@ -5,26 +5,6 @@ import { MenuBaseData } from './type'
 import SubMenu from './SubMenu'
 import MenuItemGroup from './MenuItemGroup'
 
-interface GetOptionReturn {
-    key: 'height' | 'width'
-    pos: 'Top' | 'Left'
-    direction: 'Y' | 'X'
-}
-
-export function getOption(mode): GetOptionReturn {
-    return mode.indexOf('vertical') === 0 || mode === 'inline'
-        ? {
-              key: 'height',
-              pos: 'Top',
-              direction: 'Y',
-          }
-        : {
-              key: 'width',
-              pos: 'Left',
-              direction: 'X',
-          }
-}
-
 export const ETHAN_MENU_SEPARATOR = '_E@T_'
 
 export function getPathStr(path: React.Key[] = []) {

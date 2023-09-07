@@ -19,7 +19,6 @@ const Menu: React.FC<MenuProps> = function (props) {
     const {
         data,
         style,
-        theme,
         className,
         onOpenChange,
         onSelectChange,
@@ -121,7 +120,7 @@ const Menu: React.FC<MenuProps> = function (props) {
 
     /** -------------------------------------------------------- */
 
-    const menuCls = classnames(menuClass('_', mode, theme === 'dark' && 'dark'), className)
+    const menuCls = classnames(menuClass('_', mode), className)
     const ulRef = useRef<HTMLUListElement>()
 
     /** @todo 展开或收缩会导致状态丢失 */
