@@ -161,7 +161,11 @@ export interface AddResizeObserverOptions {
     callbackDebounce?: number
 }
 
-export function addResizeObserver(element: HTMLElement, callback: () => void, options: AddResizeObserverOptions) {
+export function addResizeObserver(
+    element: HTMLElement | Element,
+    callback: (rect: DOMRect, element: Element) => void,
+    options: AddResizeObserverOptions
+) {
     let lastClientWidth
     let lastClientHeight
     const { direction, callbackDebounce } = options
@@ -175,18 +179,19 @@ export function addResizeObserver(element: HTMLElement, callback: () => void, op
         }
 
         const observerCallback: ResizeObserverCallback = (entries) => {
-            const { width, height } = entries[0].contentRect
+            const rect = entries[0].contentRect
+            const { width, height } = rect
 
             if (direction === 'x') {
                 if (lastClientWidth !== width) {
-                    debounceCallback()
+                    debounceCallback(rect, element)
                 }
             } else if (direction === 'y') {
                 if (lastClientHeight !== height) {
-                    debounceCallback()
+                    debounceCallback(rect, element)
                 }
             } else if (lastClientWidth !== width || lastClientHeight !== height) {
-                debounceCallback()
+                debounceCallback(rect, element)
             }
 
             lastClientWidth = width
@@ -207,10 +212,6 @@ export function addResizeObserver(element: HTMLElement, callback: () => void, op
             observer = null
         }
     }
-
-    window.addEventListener('resize', debounceCallback)
-
-    return () => window.removeEventListener('resize', debounceCallback)
 }
 
 export function mockAnchorClick(url: string, target = '_blank') {

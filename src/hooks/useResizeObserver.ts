@@ -1,11 +1,11 @@
 import { AddResizeObserverOptions, addResizeObserver } from '@/utils/dom/element'
 import { useEffect } from 'react'
 
-interface UseResizeObserverProps {
+export interface UseResizeObserverProps {
     watch: boolean
-    getTargetElement(): HTMLElement
+    getTargetElement(): HTMLElement | Element
     options: AddResizeObserverOptions
-    onResize: () => void
+    onResize: (rect: DOMRect, element: Element) => void
 }
 
 export default function useResizeObserver(props: UseResizeObserverProps) {
