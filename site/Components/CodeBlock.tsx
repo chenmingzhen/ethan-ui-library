@@ -7,27 +7,20 @@ import { exampleClass } from 'doc/styles'
 interface CodeBlockProps {
     /** md文件中代码块注明的语言类型 */
     language?: string
-
-    onHighLight?(height: number): void
-
     value: string
 }
 
 const CodeBlock: React.FC<CodeBlockProps> = (props) => {
-    const { language = 'lang-jsx', onHighLight, value } = props
+    const { language = 'lang-jsx', value } = props
 
     const elRef = useRef<HTMLPreElement>(null)
 
     useEffect(() => {
-        const el = elRef.current
-
-        Prism.highlightElement(el, false, () => {
-            if (onHighLight) onHighLight(el.offsetHeight)
-        })
+        Prism.highlightElement(elRef.current, false)
     }, [])
 
     return (
-        <pre ref={elRef} className={classnames(language || 'lang-jsx', exampleClass('pre'))}>
+        <pre ref={elRef} className={classnames(language, exampleClass('pre'))}>
             <code>{value}</code>
         </pre>
     )

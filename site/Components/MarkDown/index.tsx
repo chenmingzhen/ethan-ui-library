@@ -106,11 +106,11 @@ function MarkDown({ onHeadingSet, examples, source }: MarkdownProps) {
                 // markdown header 渲染方式
                 heading: renderHeading,
                 html: (prop) => {
-                    if (prop.value === '<example />') return renderExamples()
+                    if (prop.value === '<example />') return <>{renderExamples()}</>
 
                     const example = prop.value.match(exampleReg)
 
-                    if (example) return renderExample(example[1])
+                    if (example) return <>{renderExample(example[1])}</>
 
                     if (prop.value === '<br>' || prop.value === '<br />') return <br />
 
