@@ -42,5 +42,5 @@ yarn-error.log*
 /docs-pages
 
 #temp
-/temp
+/uploads
 /site/chunks/Components
