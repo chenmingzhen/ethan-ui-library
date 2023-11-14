@@ -45,7 +45,7 @@ router.post<any, { req: { file: multer.File } }>('/upload/', upload.single('file
 router.get('/*.hot-update.js(on)?', async (ctx) => {
     ctx.set('Access-Control-Allow-Origin', '*')
 
-    ctx.body = await got(`http://localhost:${config.dev.webpackPort}/${ctx.url}`).then((data) => data.body)
+    ctx.body = await got(`http://localhost:${config.dev.webpackPort}${ctx.url}`).then((data) => data.body)
 })
 
 router.get(config.dev.scriptPath, async (ctx) => {
