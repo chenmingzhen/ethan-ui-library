@@ -7,12 +7,9 @@ import Log from './utils/log'
 
 const pagesPath = path.resolve(__dirname, '../site/pages')
 const chunkPath = path.resolve(__dirname, '../site/chunks')
-const componentPath = path.resolve(pagesPath, './components')
-
-const componentsCache = {}
-const ComponentsGroups = JSON.parse(fs.readFileSync(path.resolve(componentPath, 'group.json')).toString())
-
-let lastComponentText = null
+const componentExampleRootPath = path.resolve(pagesPath, './components')
+const componentExamplePathOptionsCache = {}
+const ComponentsGroups = JSON.parse(fs.readFileSync(path.resolve(componentExampleRootPath, 'group.json')).toString())
 
 // 获取当前行的指定内容
 function getComment(text, key) {
@@ -25,17 +22,17 @@ function getComment(text, key) {
     return null
 }
 
-function getComponentPage(componentName: string, file: string) {
-    const componentPagePath = path.resolve(componentPath, componentName)
+function buildComponentExamplePage(componentName: string, filePath: string) {
+    const componentPagePath = path.resolve(componentExampleRootPath, componentName)
 
-    let componentPage = componentsCache[componentName]
+    let componentExamplePageOptions = componentExamplePathOptionsCache[componentName]
 
     /** 只有目前file所在的目录变化才重新构建 */
-    if (componentPage && file.indexOf(componentPagePath) < 0) {
-        return componentPage
+    if (componentExamplePageOptions && filePath.indexOf(componentPagePath) < 0) {
+        return componentExamplePageOptions
     }
 
-    componentPage = {
+    componentExamplePageOptions = {
         examples: [],
         group: '',
         name: componentName,
@@ -43,25 +40,22 @@ function getComponentPage(componentName: string, file: string) {
 
     /** 左侧栏分类逻辑 */
     Object.keys(ComponentsGroups).forEach((group) => {
-        /** Layout|Form|Feedback */
         const classifyGroup = ComponentsGroups[group]
 
         if (classifyGroup[componentName] !== undefined) {
-            componentPage.group = group
+            componentExamplePageOptions.group = group
 
-            componentPage.cn = classifyGroup[componentName]
+            componentExamplePageOptions.cn = classifyGroup[componentName]
         }
     })
 
-    /** 获取实例代码 */
+    const exampleFileNameList = fs.readdirSync(componentPagePath).filter((n) => n.indexOf('example-') === 0)
 
-    const exampleNames = fs.readdirSync(componentPagePath).filter((n) => n.indexOf('example-') === 0)
-
-    exampleNames.forEach((exampleName) => {
-        const text = fs.readFileSync(path.resolve(componentPagePath, exampleName)).toString()
+    exampleFileNameList.forEach((exampleFileName) => {
+        const text = fs.readFileSync(path.resolve(componentPagePath, exampleFileName)).toString()
         // 获取example内注释说明
         const comment = /(^|\n|\r)\s*\/\*[\s\S]*?\*\/\s*(?:\r|\n|$)/.exec(text)
-        const exam = { path: exampleName, cn: '', en: '' }
+        const exam = { path: exampleFileName, cn: '', en: '' }
 
         if (comment) {
             let langLabel = ''
@@ -94,63 +88,71 @@ function getComponentPage(componentName: string, file: string) {
             })
         }
 
-        componentPage.examples.push(exam)
+        componentExamplePageOptions.examples.push(exam)
     })
 
     const pageTemplateFunction = ejs.compile(fs.readFileSync(path.resolve(__dirname, './component-page.ejs'), 'utf-8'))
 
-    const text = pageTemplateFunction({ ...componentPage })
+    const text = pageTemplateFunction({ ...componentExamplePageOptions })
 
-    if (!componentsCache[componentName] || text !== componentsCache[componentName].text) {
-        Log.success(`write file chunks/Components/${componentName}.js`)
+    if (
+        !componentExamplePathOptionsCache[componentName] ||
+        text !== componentExamplePathOptionsCache[componentName].text
+    ) {
+        Log.info(`成功读取${componentName}示例`)
 
-        fs.writeFileSync(path.resolve(chunkPath, './Components', `${componentName}.js`), text)
+        fs.writeFileSync(path.resolve(chunkPath, './Components', `${componentName}.tsx`), text)
 
-        componentPage.text = text
+        componentExamplePageOptions.text = text
     }
 
-    componentsCache[componentName] = componentPage
+    componentExamplePathOptionsCache[componentName] = componentExamplePageOptions
 
-    return componentPage
+    return componentExamplePageOptions
 }
 
-/** 生成chunks */
-function generateComponents(file = '') {
-    /** 获取ejs模板文件 */
-    const indexTemplateFunction = ejs.compile(
-        fs.readFileSync(path.resolve(__dirname, './component-index.ejs'), 'utf-8')
-    )
+let lastComponentRoutePageText = null
 
+function buildComponentRoutePage(filePath = '') {
     const groups = {}
 
-    Object.keys(ComponentsGroups).forEach((key) => {
-        groups[key] = []
-    })
+    Object.keys(ComponentsGroups).forEach((type) => {
+        Object.keys(ComponentsGroups[type]).forEach((componentName) => {
+            const componentExamplePath = `${componentExampleRootPath}/${componentName}`
 
-    fs.readdirSync(componentPath).forEach((dirName) => {
-        /** lstatSync 获取文件信息 */
-        const state = fs.lstatSync(`${componentPath}/${dirName}`)
+            if (!fs.existsSync(componentExamplePath)) {
+                if (!filePath) {
+                    Log.warn(`已配置${componentName}组件，但无示例。`)
+                }
 
-        if (state.isDirectory()) {
-            const page = getComponentPage(dirName, file)
-
-            if (page) {
-                groups[page.group].push(page)
+                return
             }
-        }
+
+            const state = fs.lstatSync(componentExamplePath)
+
+            if (state.isDirectory()) {
+                const page = buildComponentExamplePage(componentName, filePath)
+
+                if (page) {
+                    if (!groups[page.group]) {
+                        groups[page.group] = []
+                    }
+
+                    groups[page.group].push(page)
+                }
+            }
+        })
     })
 
-    const text = indexTemplateFunction({ groups })
+    const templateRender = ejs.compile(fs.readFileSync(path.resolve(__dirname, './component-index.ejs'), 'utf-8'))
+    const componentRoutePageText = templateRender({ groups })
 
-    if (lastComponentText !== text) {
-        Log.success('write file chunks/Components/index.js')
-
-        /** 将模板内容写入chunks/Components/index */
-        fs.writeFile(path.resolve(chunkPath, './Components/index.js'), text, (err) => {
+    if (lastComponentRoutePageText !== componentRoutePageText) {
+        fs.writeFile(path.resolve(chunkPath, './Components/index.ts'), componentRoutePageText, (err) => {
             if (err) Log.error(err.message)
         })
 
-        lastComponentText = text
+        lastComponentRoutePageText = componentRoutePageText
     }
 }
 
@@ -169,17 +171,16 @@ function initSite() {
 
     fs.mkdirSync(chunksComponentsPath)
 
-    generateComponents()
+    buildComponentRoutePage()
 
     if (process.env.NODE_ENV !== 'production') {
-        Log.info('watch site/pages')
+        chokidar
+            .watch(componentExampleRootPath, { ignored: /index\.js$/, ignoreInitial: true })
+            .on('all', (e, filePath) => {
+                Log.info(`文件${filePath}发生改变!`)
 
-        // 文件改变更新
-        chokidar.watch(componentPath, { ignored: /index\.js$/, ignoreInitial: true }).on('all', (e, file) => {
-            generateComponents(file)
-
-            Log.info(`${file} has changed!`)
-        })
+                buildComponentRoutePage(filePath)
+            })
     }
 }
 

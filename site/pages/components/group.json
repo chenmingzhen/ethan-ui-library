@@ -3,17 +3,15 @@
         "Start": "快速上手"
     },
     "General": {
-        "Avatar": "头像",
         "Button": "按钮",
         "Dropdown": "下拉菜单",
         "Icon": "图标",
         "Image": "图片",
         "ProImage": "高级图片",
-        "Scroll":"滚动"
+        "Scroll": "滚动"
     },
     "Layout": {
         "Card": "卡片",
-        "CardGroup": "卡片组",
         "Grid": "栅格",
         "Sticky": "附着",
         "Tabs": "标签页"
@@ -26,10 +24,8 @@
         "Input": "输入框",
         "Radio": "单选框",
         "Rate": "评分",
-        "Rule": "校验规则",
         "Select": "选择框",
         "Switch": "开关",
-        "TreeSelect": "树选择",
         "Slider": "滑块",
         "Textarea": "多行文本框",
         "Upload": "上传",
@@ -53,7 +49,7 @@
         "Timeline": "时间轴",
         "LazyList": "高性能列表",
         "ClampLines": "多行裁剪",
-        "More":"省略显示"
+        "More": "省略显示"
     },
     "Feedback": {
         "Alert": "提示框",
