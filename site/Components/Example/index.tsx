@@ -1,16 +1,13 @@
-import React, { useState, useRef, createElement } from 'react'
-import { Lazyload, Motion, Spin } from 'ethan-ui'
+import React, { useState, createElement, useRef } from 'react'
+import { LazyLoad, Motion, Spin } from 'ethan-ui'
 import Icon from 'doc/icons/Icon'
 import { exampleClass } from 'doc/styles'
-import CodeBlock from '../CodeBlock'
+import CodeBlock from '../MarkDown/CodeBlock'
 
 interface ExampleProps {
     component: React.ComponentType
-
     id: string
-
     rawText: string
-
     title: string
 }
 
@@ -30,7 +27,7 @@ const Example: React.FC<ExampleProps> = ({ component, id, rawText = '', title: p
         <>
             {title && <h3 id={id}>{title}</h3>}
 
-            <Lazyload
+            <LazyLoad
                 placeholder={
                     <div className={exampleClass('placeholder')}>
                         <Spin size="54px" name="four-dots" color="#53a0fd" />
@@ -60,7 +57,7 @@ const Example: React.FC<ExampleProps> = ({ component, id, rawText = '', title: p
                         </a>
                     </Motion.Transition>
                 </div>
-            </Lazyload>
+            </LazyLoad>
         </>
     )
 }

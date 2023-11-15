@@ -1,5 +1,12 @@
-import { createBrowserHistory as createHistory } from 'history'
-import getBasePath from '../utils/basepath'
+import { createBrowserHistory } from 'history'
 
-// 新的路由形式 basename是基地址 /cn或者/en
-export default createHistory({ basename: getBasePath() })
+const reg = /(\/[c|e]n)/
+
+const getBasePath = () => {
+    const { pathname } = window.location
+    const regExpExecArray = reg.exec(pathname) || { index: 0 }
+
+    return pathname.substring(0, regExpExecArray.index + 3)
+}
+
+export default createBrowserHistory({ basename: getBasePath() })

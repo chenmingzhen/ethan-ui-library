@@ -1,8 +1,8 @@
 /**
 * 此文件根据 scripts/component-index.ejs 生成，不要手动修改
 */
-import { lazy } from 'react'
-import Page from 'doc/pages/Page'
+import React,{ lazy } from 'react'
+import ComponentPage from 'doc/pages/ComponentPage'
 
 const pages = [
 <% Object.keys(groups).forEach(function(key) { -%>
@@ -20,4 +20,4 @@ const pages = [
 <% }) -%>
 ]
 
-export default Page(pages)
+export default React.memo(()=><ComponentPage pages={pages}></ComponentPage>)

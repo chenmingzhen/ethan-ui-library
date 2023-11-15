@@ -2,7 +2,7 @@
 * 此文件根据 scripts/components-page.ejs 生成，不要手动修改
 */
 import React from 'react'
-import navable from 'docs/Navable'
+import Navigation from 'docs/Navigation'
 import MarkDown from 'docs/MarkDown'
 import locate from 'doc/utils/locate'
 
@@ -14,6 +14,7 @@ const source = locate(cn, en)
 const examples = [
 <% examples.forEach(function (exam, i) { -%>
     {
+    name: '<%= exam.path.replace("example-", "").replace(".tsx", "") %>',
     title: locate(
     '<%- exam.cn.replace(/'/g, '\\\'') %>',
     '<%- exam.en.replace(/'/g, '\\\'') %>'
@@ -24,6 +25,6 @@ const examples = [
 <% }) -%>
 ]
 
-export default navable(props => (
-<MarkDown {...props} source={source} examples={examples} />
-))
+export default React.memo(()=><Navigation><MarkDown source={source} examples={examples} /></Navigation>)
+
+

@@ -148,7 +148,7 @@ function buildComponentRoutePage(filePath = '') {
     const componentRoutePageText = templateRender({ groups })
 
     if (lastComponentRoutePageText !== componentRoutePageText) {
-        fs.writeFile(path.resolve(chunkPath, './Components/index.ts'), componentRoutePageText, (err) => {
+        fs.writeFile(path.resolve(chunkPath, './Components/index.tsx'), componentRoutePageText, (err) => {
             if (err) Log.error(err.message)
         })
 
