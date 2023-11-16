@@ -15,7 +15,7 @@ import SubMenu from './SubMenu'
 import MenuItemGroup from './MenuItemGroup'
 import MenuItem from './MenuItem'
 
-const Menu: React.FC<MenuProps> = function (props) {
+function Menu<T extends MenuBaseData = MenuBaseData>(props: MenuProps<T>): JSX.Element {
     const {
         data,
         style,
@@ -49,7 +49,7 @@ const Menu: React.FC<MenuProps> = function (props) {
     const hasClickTriggerAction = subMenuTriggerActions.includes('click')
     const hasHoverTriggerAction = subMenuTriggerActions.includes('hover')
 
-    const onLeafClick = useRefMethod((dataItem: MenuBaseData) => {
+    const onLeafClick = useRefMethod((dataItem: T) => {
         const path = key2PathMapping.get(dataItem.key)
 
         if (!path || dataItem.disabled) return
@@ -65,7 +65,7 @@ const Menu: React.FC<MenuProps> = function (props) {
         }
     })
 
-    const onInlineSubMenuTitleClick = useRefMethod((dataItem: MenuBaseData, open: boolean) => {
+    const onInlineSubMenuTitleClick = useRefMethod((dataItem: T, open: boolean) => {
         const { key, disabled } = dataItem
         const path = key2PathMapping.get(key)
 
@@ -78,7 +78,7 @@ const Menu: React.FC<MenuProps> = function (props) {
         }
     })
 
-    const onDirectionalToggleOpenKeys = useRefMethod((dataItem: MenuBaseData, open: boolean) => {
+    const onDirectionalToggleOpenKeys = useRefMethod((dataItem: T, open: boolean) => {
         const { key, disabled } = dataItem
         const path = key2PathMapping.get(key)
 
@@ -91,17 +91,17 @@ const Menu: React.FC<MenuProps> = function (props) {
         }
     })
 
-    const onMouseEnterOpen = useRefMethod((dataItem: MenuBaseData) => {
+    const onMouseEnterOpen = useRefMethod((dataItem: T) => {
         if (!hasHoverTriggerAction) return
         onDirectionalToggleOpenKeys(dataItem, true)
     })
 
-    const onMouseLeaveClose = useRefMethod((dataItem: MenuBaseData) => {
+    const onMouseLeaveClose = useRefMethod((dataItem: T) => {
         if (!hasHoverTriggerAction) return
         onDirectionalToggleOpenKeys(dataItem, false)
     })
 
-    const onMouseClickToggle = useRefMethod((dataItem: MenuBaseData, open: boolean) => {
+    const onMouseClickToggle = useRefMethod((dataItem: T, open: boolean) => {
         if (!hasClickTriggerAction) return
         const { key, disabled } = dataItem
         const path = key2PathMapping.get(key)
@@ -212,4 +212,4 @@ const Menu: React.FC<MenuProps> = function (props) {
     )
 }
 
-export default React.memo(Menu)
+export default React.memo(Menu) as unknown as typeof Menu

@@ -36,7 +36,7 @@ export interface MenuContext {
 
     checkInPath?: (id: string) => boolean
 }
-export interface MenuProps<T = MenuBaseData> {
+export interface MenuProps<T extends MenuBaseData = MenuBaseData> {
     style?: React.CSSProperties
     className?: string
     data: T[]
