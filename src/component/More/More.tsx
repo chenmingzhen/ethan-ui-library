@@ -1,72 +1,47 @@
+import React, { useEffect, useMemo } from 'react'
 import useSafeState from '@/hooks/useSafeState'
-import { addResizeObserver } from '@/utils/dom/element'
-import { runInNextFrame } from '@/utils/nextFrame'
-import React, { Children, useEffect, useMemo } from 'react'
-import { useIsomorphicLayoutEffect } from 'react-use'
 import useRefMethod from '@/hooks/useRefMethod'
+import { useIsomorphicLayoutEffect } from 'react-use'
+import { addResizeObserver } from '@/utils/dom/element'
 import { parsePxToNumber } from '@/utils/strings'
+import { runInNextFrame } from '@/utils/nextFrame'
+import { getDataItemKey } from '@/utils/keygen'
 import { MoreProps } from './type'
-import Item from './Item'
 import MoreContext from './context'
+import Item from './Item'
 
 const defaultGetMoreText = (rest: number) => `+${rest}`
-
 const NO_COUNT = -2
 const PENDING_COUNT = -1
 
-function More<T = any>(props: MoreProps<T>) {
+function More<T extends Record<any, any> = {}>(props: MoreProps<T>) {
     const {
-        compressed,
-        getContainerElement,
         data,
-        getItemDoms,
+        itemKey,
         renderMore,
         renderItem,
         getMoreElement,
+        compressed = true,
+        getContainerElement,
         getMoreText = defaultGetMoreText,
-        children,
-        onComputeFinish,
     } = props
-    /**
-     * showCount NO_COUNT 不计算
-     * showCount PENDING_COUNT 进行计算的阶段
-     * showCount number 计算完成的阶段
-     */
-    const [showCount, setShowCount] = useSafeState(NO_COUNT)
-    const [shouldReset, updateReset] = useSafeState(false)
+
+    const [isResetPending, updateResetPending] = useSafeState(false)
+    const [showCount, updateShowCount] = useSafeState(PENDING_COUNT)
 
     const resetMore = useRefMethod(() => {
         runInNextFrame(() => {
-            setShowCount(PENDING_COUNT)
+            updateShowCount(PENDING_COUNT)
         })
-        updateReset(true)
+
+        updateResetPending(true)
     })
-
-    const itemNodes = useMemo(() => {
-        if (data && renderItem) {
-            return data.map(renderItem)
-        }
-
-        if (children) {
-            const nodes = []
-
-            Children.toArray(children).forEach((child: any) => {
-                nodes.push(child)
-            })
-
-            return nodes
-        }
-
-        return []
-    }, [data, children])
 
     const computedMoreNum = useRefMethod(() => {
         const container = getContainerElement()
 
         if (!container) return NO_COUNT
 
-        const doms = getItemDoms(container)
-        const items = Array.from(doms)
         const containerStyle = getComputedStyle(container)
         const { clientWidth } = container
         const paddingLeft = parsePxToNumber(containerStyle.paddingLeft)
@@ -80,14 +55,21 @@ function More<T = any>(props: MoreProps<T>) {
         let currentShowNum = 0
         let sumWidth = 0
 
-        const itemWidthList = items.map((item) => {
-            const itemStyle = getComputedStyle(item)
-            const itemWidth =
-                item.offsetWidth + parsePxToNumber(itemStyle.marginLeft) + parsePxToNumber(itemStyle.marginRight)
+        const itemWidthList = data.map((item, index) => {
+            const dataItemKey = getDataItemKey(item, itemKey, index)
+            const element = container.querySelector(`[data-more-item-key="${dataItemKey}"]`) as HTMLElement
 
-            sumWidth += itemWidth
+            if (!element) return 0
 
-            return itemWidth
+            const elementStyle = getComputedStyle(element)
+            const elementWidth =
+                element.offsetWidth +
+                parsePxToNumber(elementStyle.marginLeft) +
+                parsePxToNumber(elementStyle.marginRight)
+
+            sumWidth += elementWidth
+
+            return elementWidth
         })
 
         if (sumWidth > contentWidth) {
@@ -96,7 +78,7 @@ function More<T = any>(props: MoreProps<T>) {
             for (let i = 0; i < itemWidthList.length; i++) {
                 totalWidth += itemWidthList[i]
 
-                const reset = getMoreText(items.length - 1 - i)
+                const reset = getMoreText(data.length - 1 - i)
                 ;(moreElement.childNodes[0] as HTMLElement).innerText = reset
                 const moreWidth = moreElement.offsetWidth + moreElementMargin
 
@@ -106,7 +88,7 @@ function More<T = any>(props: MoreProps<T>) {
 
                 currentShowNum += 1
 
-                if (i === items.length - 1) {
+                if (i === data.length - 1) {
                     currentShowNum = NO_COUNT
                 }
             }
@@ -119,21 +101,18 @@ function More<T = any>(props: MoreProps<T>) {
 
     useEffect(() => {
         if (!compressed) return
-
         const container = getContainerElement()
-
         if (!container) return
 
-        return addResizeObserver(container, resetMore, { direction: 'x' })
+        return addResizeObserver(container, resetMore, { direction: 'x', executeOnObserver: false })
     }, [compressed])
 
     useIsomorphicLayoutEffect(() => {
         if (!compressed) return
-
-        if (!shouldReset) {
+        if (!isResetPending) {
             resetMore()
         }
-    }, [data, children])
+    }, [data])
 
     useIsomorphicLayoutEffect(() => {
         if (!compressed) return
@@ -142,25 +121,35 @@ function More<T = any>(props: MoreProps<T>) {
 
         if (!container) return
 
-        if (shouldReset) {
+        if (isResetPending) {
             runInNextFrame(() => {
-                setShowCount(computedMoreNum())
+                const num = computedMoreNum()
+
+                updateShowCount(num)
             })
 
-            updateReset(false)
+            updateResetPending(false)
         }
-    }, [shouldReset])
+    }, [isResetPending])
 
-    useEffect(() => {
-        if (showCount !== NO_COUNT && onComputeFinish) {
-            onComputeFinish(showCount)
+    const itemNodes = useMemo(() => {
+        if (data && renderItem) {
+            return data.map((dataItem, index) => {
+                const key = getDataItemKey(dataItem, itemKey, index)
+
+                return (
+                    <Item dataKey={key} key={key}>
+                        {renderItem(dataItem, index)}
+                    </Item>
+                )
+            })
         }
-    }, [showCount])
 
-    if (!compressed || showCount === NO_COUNT || showCount > itemNodes.length)
+        return []
+    }, [data])
+
+    if (!compressed || showCount === NO_COUNT || showCount >= itemNodes.length)
         return <MoreContext.Provider value={{ showCount }}>{itemNodes}</MoreContext.Provider>
-
-    /** ----------------------------Computed------------------------ */
 
     if (showCount === PENDING_COUNT) {
         return (
@@ -170,8 +159,6 @@ function More<T = any>(props: MoreProps<T>) {
             </MoreContext.Provider>
         )
     }
-
-    /** ------------------------------------------------------------ */
 
     const beforeNumNodes = new Array(showCount).fill(null).map((_, index) => itemNodes[index])
     const afterNumNodes = new Array(itemNodes.length - showCount)
@@ -186,7 +173,5 @@ function More<T = any>(props: MoreProps<T>) {
         </MoreContext.Provider>
     )
 }
-
-More.Item = Item
 
 export default React.memo(More) as unknown as typeof More
