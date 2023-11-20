@@ -131,13 +131,13 @@ function Menu<T extends MenuBaseData = MenuBaseData>(props: MenuProps<T>): JSX.E
                 const path = key2PathMapping.get(activeMenuItemKey)
 
                 // /** 如果不存在path，可能是Trigger未展开，导致MenuItem未注册 */
-                // if (!path) {
-                //     setActivePath([INTERNAL_MORE_KEY, ...activePath])
-                // } else {
-                //     setActivePath(key2PathMapping.get(activeMenuItemKey))
-                // }
+                if (!path) {
+                    setActivePath([INTERNAL_MORE_KEY, ...activePath])
+                } else {
+                    setActivePath(key2PathMapping.get(activeMenuItemKey))
+                }
 
-                setActivePath(path || [])
+                // setActivePath(path || [])
             }
         })
     )
@@ -171,12 +171,12 @@ function Menu<T extends MenuBaseData = MenuBaseData>(props: MenuProps<T>): JSX.E
                     )}
                     renderItem={(dataItem, index) => {
                         if (isObject(dataItem)) {
-                            const { title, children, key, type, ...restProps } = dataItem
+                            const { title, children, key, type } = dataItem
                             const mergedKey = key || index
 
                             if (type === 'group') {
                                 return (
-                                    <MenuItemGroup key={mergedKey} {...restProps} dataItem={dataItem}>
+                                    <MenuItemGroup key={mergedKey} dataItem={dataItem}>
                                         {parseChildren(children)}
                                     </MenuItemGroup>
                                 )
@@ -184,14 +184,14 @@ function Menu<T extends MenuBaseData = MenuBaseData>(props: MenuProps<T>): JSX.E
 
                             if (children) {
                                 return (
-                                    <SubMenu key={mergedKey} {...restProps} dataItem={dataItem}>
+                                    <SubMenu key={mergedKey} dataItem={dataItem}>
                                         {parseChildren(children)}
                                     </SubMenu>
                                 )
                             }
 
                             return (
-                                <MenuItem key={mergedKey} {...restProps} dataItem={dataItem}>
+                                <MenuItem key={mergedKey} dataItem={dataItem}>
                                     {title}
                                 </MenuItem>
                             )

@@ -12,9 +12,13 @@ export interface MoreProps<T extends Record<any, any> = {}> {
 
 export interface MoreItemProps {
     children: JSX.Element
-    dataKey: React.Key
+    itemKey: React.Key
 }
 
 export interface MoreContextProps {
     showCount: number
+}
+
+export interface MoreItemContextProps {
+    ['data-more-item-key']: React.Key
 }

@@ -22,7 +22,7 @@ const SubMenu: React.FC<SubMenuProps> = function (props) {
         return () => {
             unregisterSubMenu(key)
         }
-    }, [path.join(','), props.showCount])
+    }, [path.join(',')])
 
     const ms = classnames(
         menuClass('item', 'submenu', disabled === true && 'disabled', open && 'open', inPath && 'in-path'),

@@ -7,6 +7,7 @@ import { DirectionalTriggerProps } from './type'
 import Trigger from '../Trigger'
 import MenuContext from './context/MenuContext'
 import { ETHAN_MENU_SEPARATOR, getPathStr } from './util'
+import { MoreItemContext } from '../More/context'
 
 /**
  * 不同模式下触发打开Menu机制
@@ -17,7 +18,7 @@ import { ETHAN_MENU_SEPARATOR, getPathStr } from './util'
 const DirectionalTrigger: React.FC<DirectionalTriggerProps> = function (props) {
     const { visible, dataItem, path, popupContent, children, className, direction } = props
     const { disabled } = dataItem
-
+    const moreItemContext = useContext(MoreItemContext) || {}
     const [triggerElement, setTriggerElement] = useState<HTMLElement>()
     const [portalElement, setPortalElement] = useState<HTMLElement>()
     const { onMouseEnterOpen, onMouseLeaveClose, onMouseClickToggle, subMenuTriggerActions } = useContext(MenuContext)
@@ -55,6 +56,7 @@ const DirectionalTrigger: React.FC<DirectionalTriggerProps> = function (props) {
             }}
         >
             <li
+                {...moreItemContext}
                 tabIndex={-1}
                 className={className}
                 onMouseEnter={() => onMouseEnterOpen(dataItem)}

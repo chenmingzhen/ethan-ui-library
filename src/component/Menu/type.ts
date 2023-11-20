@@ -85,7 +85,7 @@ export interface MenuListProps {
     handleScrollPosUpdate?(): void
 }
 
-export interface MenuItemProps extends MenuContext, Partial<MoreContextProps> {
+export interface MenuItemProps extends Partial<MoreContextProps> {
     dataItem: MenuBaseData
     children: React.ReactNode
 }
@@ -151,7 +151,7 @@ export interface RegisterMenuItemGroupOptions {
     path: React.Key[]
 }
 
-export interface SubMenuProps extends Partial<MoreContextProps> {
+export interface SubMenuProps {
     dataItem: MenuBaseData
     children: React.ReactNode
 }

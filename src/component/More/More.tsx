@@ -21,6 +21,7 @@ function More<T extends Record<any, any> = {}>(props: MoreProps<T>) {
         renderMore,
         renderItem,
         getMoreElement,
+        onComputeFinish,
         compressed = true,
         getContainerElement,
         getMoreText = defaultGetMoreText,
@@ -132,13 +133,19 @@ function More<T extends Record<any, any> = {}>(props: MoreProps<T>) {
         }
     }, [isResetPending])
 
+    useEffect(() => {
+        if (showCount !== NO_COUNT && onComputeFinish) {
+            onComputeFinish(showCount)
+        }
+    }, [showCount])
+
     const itemNodes = useMemo(() => {
         if (data && renderItem) {
             return data.map((dataItem, index) => {
                 const key = getDataItemKey(dataItem, itemKey, index)
 
                 return (
-                    <Item dataKey={key} key={key}>
+                    <Item itemKey={key} key={key}>
                         {renderItem(dataItem, index)}
                     </Item>
                 )
