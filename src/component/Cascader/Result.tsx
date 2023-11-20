@@ -8,7 +8,6 @@ import React, { useMemo, useRef } from 'react'
 import { getUidStr } from '@/utils/uid'
 import Caret from '../icons/Caret'
 import Input from '../Input'
-import useShowNum from './hooks/useShowNum'
 import { CascaderData, CascaderDataValueType, CascaderResultProps } from './type'
 import More from '../More'
 import Popover from '../Popover'
@@ -34,7 +33,6 @@ const CascaderResult: React.FC<CascaderResultProps> = function (props) {
         forwardedInputRef,
     } = props
     const resultElementRef = useRef<HTMLDivElement>()
-    const [showNum] = useShowNum({ value, compressed, resultElementRef })
     const restId = useRef(getUidStr()).current
     /** 是否完全选中 */
     const getIsFullChecked = useRefMethod((key: CascaderDataValueType) => {
@@ -121,7 +119,6 @@ const CascaderResult: React.FC<CascaderResultProps> = function (props) {
                 compressed={compressed}
                 getContainerElement={() => resultElementRef.current}
                 getMoreElement={() => document.getElementById(restId)}
-                getItemDoms={() => resultElementRef.current.querySelectorAll(`.${cascaderClass('item')}`)}
                 renderItem={(dataItem, index) => {
                     const node = getNodeInfoByDataItem(dataItem)
                     if (!node) return

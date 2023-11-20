@@ -148,12 +148,14 @@ function More<T extends Record<any, any> = {}>(props: MoreProps<T>) {
         return []
     }, [data])
 
+    const contextValue = useMemo(() => ({ showCount }), [showCount])
+
     if (!compressed || showCount === NO_COUNT || showCount >= itemNodes.length)
-        return <MoreContext.Provider value={{ showCount }}>{itemNodes}</MoreContext.Provider>
+        return <MoreContext.Provider value={contextValue}>{itemNodes}</MoreContext.Provider>
 
     if (showCount === PENDING_COUNT) {
         return (
-            <MoreContext.Provider value={{ showCount }}>
+            <MoreContext.Provider value={contextValue}>
                 {itemNodes}
                 {renderMore?.(itemNodes)}
             </MoreContext.Provider>
@@ -166,7 +168,7 @@ function More<T extends Record<any, any> = {}>(props: MoreProps<T>) {
         .map((_, index) => itemNodes[showCount + index])
 
     return (
-        <MoreContext.Provider value={{ showCount }}>
+        <MoreContext.Provider value={contextValue}>
             {beforeNumNodes}
 
             {renderMore?.(afterNumNodes)}
