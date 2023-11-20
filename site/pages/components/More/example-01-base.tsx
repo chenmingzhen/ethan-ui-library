@@ -26,28 +26,10 @@ const itemStyle: React.CSSProperties = {
     overflow: 'hidden',
 }
 
-function renderItem(item, index: number) {
-    return (
-        <div className="item" style={itemStyle} key={index}>
-            {item.label}
-        </div>
-    )
-}
-
-function renderRest(items) {
-    return (
-        <Popover content={items}>
-            <div id="rest" style={itemStyle}>
-                +{items.length}...
-            </div>
-        </Popover>
-    )
-}
-
 export default () => {
-    const [data, setData] = React.useState(createData(10))
-    const targetRef = useRef<HTMLDivElement>()
-    const getResizeTarget = useCallback(() => targetRef.current, [])
+    const [data, setData] = React.useState(createData(15))
+    const containerRef = useRef<HTMLDivElement>()
+    const getResizeTarget = useCallback(() => containerRef.current, [])
     const { width } = useResizeSize({
         getResizeTarget,
         dirs: ['e'],
@@ -68,16 +50,20 @@ export default () => {
                     /** For drag resize */
                     position: 'relative',
                 }}
-                ref={targetRef}
+                ref={containerRef}
             >
                 <More
-                    compressed
                     data={data}
-                    renderItem={renderItem}
-                    renderMore={renderRest}
-                    getContainerElement={() => targetRef.current}
+                    getContainerElement={() => containerRef.current}
                     getMoreElement={() => document.getElementById('rest')}
-                    getItemDoms={() => targetRef.current.querySelectorAll(`.item`)}
+                    renderItem={(item) => <div style={itemStyle}>{item.label}</div>}
+                    renderMore={(items) => (
+                        <Popover content={items}>
+                            <div id="rest" style={itemStyle}>
+                                +{items.length}...
+                            </div>
+                        </Popover>
+                    )}
                 />
             </div>
         </div>

@@ -164,7 +164,6 @@ function Menu<T extends MenuBaseData = MenuBaseData>(props: MenuProps<T>): JSX.E
                     onComputeFinish={handleComputeFinish}
                     getContainerElement={() => ulRef.current}
                     getMoreElement={(container) => container.querySelector(`.${menuClass('more')}`)}
-                    getItemDoms={(container) => container.querySelectorAll(`.${menuClass('item')}`)}
                     renderMore={(rest) => (
                         <SubMenu dataItem={{ key: INTERNAL_MORE_KEY, title: '...', className: menuClass('more') }}>
                             {rest}
@@ -177,30 +176,24 @@ function Menu<T extends MenuBaseData = MenuBaseData>(props: MenuProps<T>): JSX.E
 
                             if (type === 'group') {
                                 return (
-                                    <More.Item key={mergedKey}>
-                                        <MenuItemGroup {...restProps} dataItem={dataItem}>
-                                            {parseChildren(children)}
-                                        </MenuItemGroup>
-                                    </More.Item>
+                                    <MenuItemGroup key={mergedKey} {...restProps} dataItem={dataItem}>
+                                        {parseChildren(children)}
+                                    </MenuItemGroup>
                                 )
                             }
 
                             if (children) {
                                 return (
-                                    <More.Item key={mergedKey}>
-                                        <SubMenu {...restProps} dataItem={dataItem}>
-                                            {parseChildren(children)}
-                                        </SubMenu>
-                                    </More.Item>
+                                    <SubMenu key={mergedKey} {...restProps} dataItem={dataItem}>
+                                        {parseChildren(children)}
+                                    </SubMenu>
                                 )
                             }
 
                             return (
-                                <More.Item key={mergedKey}>
-                                    <MenuItem {...restProps} dataItem={dataItem}>
-                                        {title}
-                                    </MenuItem>
-                                </More.Item>
+                                <MenuItem key={mergedKey} {...restProps} dataItem={dataItem}>
+                                    {title}
+                                </MenuItem>
                             )
                         }
 

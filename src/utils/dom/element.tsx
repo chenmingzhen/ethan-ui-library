@@ -157,8 +157,12 @@ export function isDescendent(el: HTMLElement, elementComponentKey: string, chain
 }
 
 export interface AddResizeObserverOptions {
+    /** 观察变化的方向 */
     direction: 'x' | 'y' | 'xy'
+    /** 回调函数节流时长 */
     callbackDebounce?: number
+    /** 是否开启观察后马上执行一次回调事件 */
+    executeOnObserver?: boolean
 }
 
 export function addResizeObserver(
@@ -168,8 +172,8 @@ export function addResizeObserver(
 ) {
     let lastClientWidth
     let lastClientHeight
-    const { direction, callbackDebounce } = options
-
+    let count = 0
+    const { direction, callbackDebounce, executeOnObserver = true } = options
     const debounceCallback = callbackDebounce ? debounce(callback, callbackDebounce) : callback
 
     if (window.ResizeObserver) {
@@ -179,6 +183,9 @@ export function addResizeObserver(
         }
 
         const observerCallback: ResizeObserverCallback = (entries) => {
+            count += 1
+            if (!executeOnObserver && count === 1) return
+
             const rect = entries[0].contentRect
             const { width, height } = rect
 

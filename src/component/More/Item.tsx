@@ -1,13 +1,18 @@
-import React, { useContext } from 'react'
+import React from 'react'
+import ResizeObserver from '@/component/ResizeObserver'
+import useRefMethod from '@/hooks/useRefMethod'
 import { MoreItemProps } from './type'
-import MoreContext from './context'
 
 const Item: React.FC<MoreItemProps> = function (props) {
-    const { children } = props
+    const { children, dataKey } = props
 
-    const { showCount } = useContext(MoreContext)
+    const handleItemResize = useRefMethod((rect: DOMRect, element: Element) => {})
 
-    return <>{React.cloneElement(children, { showCount })}</>
+    return (
+        <ResizeObserver watch options={{ direction: 'xy' }} onResize={handleItemResize}>
+            {React.cloneElement(children, { 'data-more-item-key': dataKey })}
+        </ResizeObserver>
+    )
 }
 
 Item.displayName = 'MoreItem'

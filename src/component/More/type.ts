@@ -1,18 +1,18 @@
-export interface MoreProps<T = any> {
+export interface MoreProps<T extends Record<any, any> = {}> {
     data?: T[]
-    compressed: boolean
-    getItemDoms(container: HTMLElement): NodeListOf<HTMLElement>
+    compressed?: boolean
     getMoreElement(container: HTMLElement): HTMLElement
     getContainerElement(): HTMLElement
     getMoreText?(moreNodesLen: number): string
-    renderItem?: (dataItem: T, index: number) => React.ReactNode
+    renderItem?: (dataItem: T, index: number) => JSX.Element
     renderMore: (moreNodes?: React.ReactNode[]) => React.ReactNode
-    children?: React.ReactNode
     onComputeFinish?: (count: number) => void
+    itemKey?: string
 }
 
 export interface MoreItemProps {
     children: JSX.Element
+    dataKey: React.Key
 }
 
 export interface MoreContextProps {
