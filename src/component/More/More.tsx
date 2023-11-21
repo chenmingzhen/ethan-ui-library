@@ -157,30 +157,38 @@ function More<T extends Record<any, any> = {}>(props: MoreProps<T>) {
 
     const contextValue = useMemo(() => ({ showCount }), [showCount])
 
-    if (!compressed || showCount === NO_COUNT || showCount >= itemNodes.length)
-        return <MoreContext.Provider value={contextValue}>{itemNodes}</MoreContext.Provider>
+    const renderContent = useRefMethod(() => {
+        if (!compressed || showCount === NO_COUNT || showCount >= itemNodes.length) {
+            return (
+                <React.Fragment key="fragment">
+                    <React.Fragment key="items">{itemNodes}</React.Fragment>
+                </React.Fragment>
+            )
+        }
 
-    if (showCount === PENDING_COUNT) {
+        if (showCount === PENDING_COUNT) {
+            return (
+                <React.Fragment key="fragment">
+                    <React.Fragment key="items">{itemNodes}</React.Fragment>
+                    <React.Fragment key="more">{renderMore?.([])}</React.Fragment>
+                </React.Fragment>
+            )
+        }
+
+        const beforeNumNodes = new Array(showCount).fill(null).map((_, index) => itemNodes[index])
+        const afterNumNodes = new Array(itemNodes.length - showCount)
+            .fill(null)
+            .map((_, index) => itemNodes[showCount + index])
+
         return (
-            <MoreContext.Provider value={contextValue}>
-                {itemNodes}
-                {renderMore?.(itemNodes)}
-            </MoreContext.Provider>
+            <React.Fragment key="fragment">
+                <React.Fragment key="items">{beforeNumNodes}</React.Fragment>
+                <React.Fragment key="more">{renderMore?.(afterNumNodes)}</React.Fragment>
+            </React.Fragment>
         )
-    }
+    })
 
-    const beforeNumNodes = new Array(showCount).fill(null).map((_, index) => itemNodes[index])
-    const afterNumNodes = new Array(itemNodes.length - showCount)
-        .fill(null)
-        .map((_, index) => itemNodes[showCount + index])
-
-    return (
-        <MoreContext.Provider value={contextValue}>
-            {beforeNumNodes}
-
-            {renderMore?.(afterNumNodes)}
-        </MoreContext.Provider>
-    )
+    return <MoreContext.Provider value={contextValue}>{renderContent()}</MoreContext.Provider>
 }
 
 export default React.memo(More) as unknown as typeof More
