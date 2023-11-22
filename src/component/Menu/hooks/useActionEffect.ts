@@ -1,5 +1,7 @@
 import shallowEqual from '@/utils/shallowEqual'
 import { useEffect } from 'react'
+import useRefMethod from '@/hooks/useRefMethod'
+import { debounce } from '@/utils/func'
 import { MenuItemActions, SubMenuActions } from '../type'
 
 interface UseActionEffectProps {
@@ -14,7 +16,7 @@ interface UseActionEffectProps {
 export default function useActionEffect(props: UseActionEffectProps) {
     const { menuItemMapping, subMenuMapping, key2PathMapping, activePath, openKeys } = props
 
-    useEffect(() => {
+    const executeAction = useRefMethod(() => {
         menuItemMapping.forEach((actions, key) => {
             const path = key2PathMapping.get(key)
 
@@ -27,5 +29,11 @@ export default function useActionEffect(props: UseActionEffectProps) {
             actions.updateOpen(openKeys.includes(key))
             actions.updateInPath(path.every((r) => activePath.includes(r)))
         })
-    }, [openKeys, activePath])
+    })
+
+    const manualExecuteAction = useRefMethod(debounce(executeAction, 10))
+
+    useEffect(executeAction, [openKeys, activePath])
+
+    return { manualExecuteAction }
 }

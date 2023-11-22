@@ -6,8 +6,8 @@ export interface MoreProps<T extends Record<any, any> = {}> {
     getMoreText?(moreNodesLen: number): string
     renderItem?: (dataItem: T, index: number) => JSX.Element
     renderMore: (moreNodes?: React.ReactNode[]) => React.ReactNode
-    onComputeFinish?: (count: number) => void
-    itemKey?: string
+    onComputeFinish?: (count: number, collapseMapping: Map<React.Key, boolean>) => void
+    keyName?: string
 }
 
 export interface MoreItemProps {

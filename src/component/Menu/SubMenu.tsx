@@ -14,10 +14,12 @@ const SubMenu: React.FC<SubMenuProps> = function (props) {
     const { path } = useMenuPath(key)
     const [open, updateOpen] = useState(false)
     const [inPath, updateInPath] = useState(false)
-    const { registerSubMenu, unregisterSubMenu, mode } = useContext(MenuContext)
+    const { registerSubMenu, unregisterSubMenu, mode, manualExecuteAction } = useContext(MenuContext)
 
     useEffect(() => {
         registerSubMenu(key, { updateInPath, updateOpen, path })
+
+        manualExecuteAction()
 
         return () => {
             unregisterSubMenu(key)

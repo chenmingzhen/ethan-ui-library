@@ -17,7 +17,7 @@ const PENDING_COUNT = -1
 function More<T extends Record<any, any> = {}>(props: MoreProps<T>) {
     const {
         data,
-        itemKey,
+        keyName,
         renderMore,
         renderItem,
         getMoreElement,
@@ -40,8 +40,9 @@ function More<T extends Record<any, any> = {}>(props: MoreProps<T>) {
 
     const computedMoreNum = useRefMethod(() => {
         const container = getContainerElement()
+        const collapseMapping = new Map<React.Key, boolean>()
 
-        if (!container) return NO_COUNT
+        if (!container) return { count: NO_COUNT, collapseMapping }
 
         const containerStyle = getComputedStyle(container)
         const { clientWidth } = container
@@ -57,8 +58,8 @@ function More<T extends Record<any, any> = {}>(props: MoreProps<T>) {
         let sumWidth = 0
 
         const itemWidthList = data.map((item, index) => {
-            const dataItemKey = getDataItemKey(item, itemKey, index)
-            const element = container.querySelector(`[data-more-item-key="${dataItemKey}"]`) as HTMLElement
+            const itemKey = getDataItemKey(item, keyName, index)
+            const element = container.querySelector(`[data-more-item-key="${itemKey}"]`) as HTMLElement
 
             if (!element) return 0
 
@@ -97,7 +98,15 @@ function More<T extends Record<any, any> = {}>(props: MoreProps<T>) {
             currentShowNum = NO_COUNT
         }
 
-        return currentShowNum
+        if (currentShowNum !== NO_COUNT) {
+            data.forEach((item, index) => {
+                const itemKey = getDataItemKey(item, keyName, index)
+
+                collapseMapping.set(itemKey, index >= currentShowNum)
+            })
+        }
+
+        return { count: currentShowNum, collapseMapping }
     })
 
     useEffect(() => {
@@ -124,28 +133,24 @@ function More<T extends Record<any, any> = {}>(props: MoreProps<T>) {
 
         if (isResetPending) {
             runInNextFrame(() => {
-                const num = computedMoreNum()
+                const { count, collapseMapping } = computedMoreNum()
 
-                updateShowCount(num)
+                updateShowCount(count)
+
+                onComputeFinish?.(count, collapseMapping)
             })
 
             updateResetPending(false)
         }
     }, [isResetPending])
 
-    useEffect(() => {
-        if (showCount !== NO_COUNT && onComputeFinish) {
-            onComputeFinish(showCount)
-        }
-    }, [showCount])
-
     const itemNodes = useMemo(() => {
         if (data && renderItem) {
             return data.map((dataItem, index) => {
-                const key = getDataItemKey(dataItem, itemKey, index)
+                const itemKey = getDataItemKey(dataItem, keyName, index)
 
                 return (
-                    <Item itemKey={key} key={key}>
+                    <Item itemKey={itemKey} key={itemKey}>
                         {renderItem(dataItem, index)}
                     </Item>
                 )
@@ -190,5 +195,7 @@ function More<T extends Record<any, any> = {}>(props: MoreProps<T>) {
 
     return <MoreContext.Provider value={contextValue}>{renderContent()}</MoreContext.Provider>
 }
+
+More.NO_COUNT = NO_COUNT
 
 export default React.memo(More) as unknown as typeof More

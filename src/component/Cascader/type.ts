@@ -100,6 +100,7 @@ export interface CascaderResultProps {
     filterText?: string
     size?: CascaderProps['size']
     forwardedInputRef: RefObject<HTMLInputElement>
+    valueKey: CascaderProps['valueKey']
 }
 
 export interface CascaderMoreProps {

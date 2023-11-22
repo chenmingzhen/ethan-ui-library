@@ -1,6 +1,5 @@
-import React, { useContext } from 'react'
+import React, { useContext, useEffect } from 'react'
 import { menuClass } from '@/styles'
-import { useIsomorphicLayoutEffect } from 'react-use'
 import { MenuItemGroupProps } from './type'
 import MenuContext from './context/MenuContext'
 import useMenuPath from './hooks/useMenuPath'
@@ -10,13 +9,15 @@ const MenuItemGroup: React.FC<MenuItemGroupProps> = function (props) {
     const { dataItem, children } = props
     const { title, key } = dataItem
     const { path } = useMenuPath(key)
-    const { registerMenuItemGroup, unregisterMenuItemGroup, onMouseEnterOpen, onMouseLeaveClose } =
+    const { registerMenuItemGroup, unregisterMenuItemGroup, onMouseEnterOpen, onMouseLeaveClose, manualExecuteAction } =
         useContext(MenuContext)
 
     const inlineIndentStyle = useInlineIndentStyle(path, true)
 
-    useIsomorphicLayoutEffect(() => {
+    useEffect(() => {
         registerMenuItemGroup(key, { path })
+
+        manualExecuteAction()
 
         return () => {
             unregisterMenuItemGroup(key)

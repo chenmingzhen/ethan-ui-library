@@ -13,12 +13,21 @@ const MenuItem: React.FC<MenuItemProps> = function (props) {
     const { key, title, disabled, className } = dataItem
     const { path } = useMenuPath(key)
     const [active, updateActive] = useState(false)
-    const { registerMenuItem, unregisterMenuItem, onLeafClick, onMouseEnterOpen, onMouseLeaveClose } =
-        useContext(MenuContext)
+    const {
+        registerMenuItem,
+        unregisterMenuItem,
+        onLeafClick,
+        onMouseEnterOpen,
+        onMouseLeaveClose,
+        manualExecuteAction,
+    } = useContext(MenuContext)
 
     const moreItemContext = useContext(MoreItemContext) || {}
+
     useEffect(() => {
         registerMenuItem(key, { path, updateActive } as any)
+
+        manualExecuteAction()
 
         return () => {
             unregisterMenuItem(key)

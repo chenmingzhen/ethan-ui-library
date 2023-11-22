@@ -31,6 +31,7 @@ const CascaderResult: React.FC<CascaderResultProps> = function (props) {
         filterText,
         size,
         forwardedInputRef,
+        valueKey,
     } = props
     const resultElementRef = useRef<HTMLDivElement>()
     const restId = useRef(getUidStr()).current
@@ -116,6 +117,7 @@ const CascaderResult: React.FC<CascaderResultProps> = function (props) {
         return (
             <More
                 data={dataItems}
+                keyName={valueKey}
                 compressed={compressed}
                 getContainerElement={() => resultElementRef.current}
                 getMoreElement={() => document.getElementById(restId)}

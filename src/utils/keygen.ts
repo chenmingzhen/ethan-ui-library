@@ -1,3 +1,3 @@
-export function getDataItemKey(dataItem: Record<string | number, any>, key = 'value', index: number) {
-    return dataItem[key] ?? index
+export function getDataItemKey(dataItem: Record<string | number, any>, keyName = 'value', index: number) {
+    return dataItem[keyName] ?? index
 }

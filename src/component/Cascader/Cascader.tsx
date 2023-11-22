@@ -363,6 +363,7 @@ function Cascader<Data = CascaderData>(props: CascaderProps<Data>) {
             >
                 <div className={cls}>
                     <CascaderResult
+                        valueKey={valueKey}
                         forwardedInputRef={inputRef}
                         getCheckboxStateByDataItem={getCheckboxStateByDataItem}
                         multiple={multiple}

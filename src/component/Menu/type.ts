@@ -124,6 +124,9 @@ export interface MenuContextProps {
     onMouseLeaveClose: (dataItem: MenuBaseData) => void
     onMouseClickToggle: (dataItem: MenuBaseData, open: boolean) => void
     subMenuTriggerActions: MenuProps['subMenuTriggerActions']
+
+    /** 一般情况下,action由副作用触发,当从More隐藏状态到展示状态时,需要手动触发action. */
+    manualExecuteAction: () => void
 }
 
 export interface PathContextProps {

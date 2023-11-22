@@ -37,7 +37,7 @@ function Menu<T extends MenuBaseData = MenuBaseData>(props: MenuProps<T>): JSX.E
         onChange: onOpenChange,
     })
 
-    useActionEffect({
+    const { manualExecuteAction } = useActionEffect({
         openKeys,
         activePath,
         subMenuMapping,
@@ -123,21 +123,25 @@ function Menu<T extends MenuBaseData = MenuBaseData>(props: MenuProps<T>): JSX.E
     const menuCls = classnames(menuClass('_', mode), className)
     const ulRef = useRef<HTMLUListElement>()
 
-    /** @todo 展开或收缩会导致状态丢失 */
     const handleComputeFinish = useRefMethod(
-        debounce(() => {
+        debounce((showCount: number, collapseMapping: Map<React.Key, boolean>) => {
             if (activePath.length) {
-                const activeMenuItemKey = activePath[activePath.length - 1]
-                const path = key2PathMapping.get(activeMenuItemKey)
+                const realRootKey = activePath[0] !== INTERNAL_MORE_KEY ? activePath[0] : activePath[1]
+                const collapse = collapseMapping.get(realRootKey)
 
-                // /** 如果不存在path，可能是Trigger未展开，导致MenuItem未注册 */
-                if (!path) {
+                if (collapse && activePath[0] !== INTERNAL_MORE_KEY) {
+                    /** 若折叠且上个状态是非折叠，需要添加折叠path */
                     setActivePath([INTERNAL_MORE_KEY, ...activePath])
-                } else {
-                    setActivePath(key2PathMapping.get(activeMenuItemKey))
-                }
+                } else if (!collapse && activePath[0] === INTERNAL_MORE_KEY) {
+                    /** 若无折叠且上个状态是折叠，需要移除折叠path */
+                    const nextActivePath = [...activePath]
 
-                // setActivePath(path || [])
+                    nextActivePath.shift()
+
+                    setActivePath(nextActivePath)
+                } else {
+                    setActivePath(activePath)
+                }
             }
         })
     )
@@ -150,6 +154,7 @@ function Menu<T extends MenuBaseData = MenuBaseData>(props: MenuProps<T>): JSX.E
                 inlineIndent,
                 onInlineSubMenuTitleClick,
                 subMenuTriggerActions,
+                manualExecuteAction,
                 onMouseEnterOpen,
                 onMouseLeaveClose,
                 onMouseClickToggle,
@@ -159,6 +164,7 @@ function Menu<T extends MenuBaseData = MenuBaseData>(props: MenuProps<T>): JSX.E
             <ul className={menuCls} style={style} ref={ulRef}>
                 <More
                     data={data}
+                    keyName="key"
                     getMoreText={() => '...'}
                     compressed={mode === 'horizontal'}
                     onComputeFinish={handleComputeFinish}
