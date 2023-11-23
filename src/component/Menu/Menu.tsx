@@ -1,35 +1,40 @@
-import React, { useRef, useState } from 'react'
+import React, { useRef } from 'react'
 import classnames from 'classnames'
 import { menuClass } from '@/styles'
 import useRefMethod from '@/hooks/useRefMethod'
 import { isObject } from '@/utils/is'
 import { More } from '@/index'
 import { debounce } from '@/utils/func'
-import { MenuBaseData, MenuProps } from './type'
+import { MenuProps, RecursiveMenuWithExtraData } from './type'
 import MenuContext from './context/MenuContext'
-import { INTERNAL_MORE_KEY, parseChildren } from './util'
+import { INTERNAL_MORE_KEY } from './util'
 import useOpenKeys from './hooks/useOpenKeys'
 import useRegister from './hooks/useRegister'
 import useActionEffect from './hooks/useActionEffect'
 import SubMenu from './SubMenu'
 import MenuItemGroup from './MenuItemGroup'
 import MenuItem from './MenuItem'
+import useActivePath from './hooks/useActivePath'
 
-function Menu<T extends MenuBaseData = MenuBaseData>(props: MenuProps<T>): JSX.Element {
+function Menu<T extends Record<string, any> = Record<string, any>>(props: MenuProps<T>): JSX.Element {
     const {
         data,
         style,
+        onClick,
+        onSelect,
+        activeKey,
         className,
+        renderItem,
         onOpenChange,
-        onSelectChange,
         defaultOpenKeys,
+        defaultActiveKey,
         mode = 'inline',
         inlineIndent = 24,
         subMenuTriggerActions = ['click'],
     } = props
 
-    const [activePath, setActivePath] = useState<React.Key[]>([])
-    const { key2PathMapping, path2KeyMapping, menuItemMapping, subMenuMapping, ...registerEvents } = useRegister()
+    const [activePath, setActivePath] = useActivePath({ defaultActiveKey, activeKey, data })
+    const { key2PathMapping, menuItemMapping, subMenuMapping, ...registerEvents } = useRegister()
     const { openKeys, syncSetOpenKeys, delaySetOpenKeys } = useOpenKeys({
         subMenuMapping,
         defaultValue: defaultOpenKeys,
@@ -49,27 +54,27 @@ function Menu<T extends MenuBaseData = MenuBaseData>(props: MenuProps<T>): JSX.E
     const hasClickTriggerAction = subMenuTriggerActions.includes('click')
     const hasHoverTriggerAction = subMenuTriggerActions.includes('hover')
 
-    const onLeafClick = useRefMethod((dataItem: T) => {
+    const onLeafClick = useRefMethod((dataItem: RecursiveMenuWithExtraData<T>) => {
         const path = key2PathMapping.get(dataItem.key)
 
         if (!path || dataItem.disabled) return
 
         setActivePath(path)
 
-        if (onSelectChange) {
-            onSelectChange(dataItem, path)
-        }
+        onSelect?.(dataItem, path)
+        onClick?.(dataItem, path)
 
         if (mode !== 'inline') {
             syncSetOpenKeys([])
         }
     })
 
-    const onInlineSubMenuTitleClick = useRefMethod((dataItem: T, open: boolean) => {
+    const onInlineSubMenuTitleClick = useRefMethod((dataItem: RecursiveMenuWithExtraData<T>, open: boolean) => {
         const { key, disabled } = dataItem
         const path = key2PathMapping.get(key)
 
         if (!path || disabled) return
+        onClick?.(dataItem, path)
 
         if (open) {
             syncSetOpenKeys([...openKeys, key])
@@ -78,7 +83,7 @@ function Menu<T extends MenuBaseData = MenuBaseData>(props: MenuProps<T>): JSX.E
         }
     })
 
-    const onDirectionalToggleOpenKeys = useRefMethod((dataItem: T, open: boolean) => {
+    const onDirectionalToggleOpenKeys = useRefMethod((dataItem: RecursiveMenuWithExtraData<T>, open: boolean) => {
         const { key, disabled } = dataItem
         const path = key2PathMapping.get(key)
 
@@ -91,17 +96,17 @@ function Menu<T extends MenuBaseData = MenuBaseData>(props: MenuProps<T>): JSX.E
         }
     })
 
-    const onMouseEnterOpen = useRefMethod((dataItem: T) => {
+    const onMouseEnterOpen = useRefMethod((dataItem: RecursiveMenuWithExtraData<T>) => {
         if (!hasHoverTriggerAction) return
         onDirectionalToggleOpenKeys(dataItem, true)
     })
 
-    const onMouseLeaveClose = useRefMethod((dataItem: T) => {
+    const onMouseLeaveClose = useRefMethod((dataItem: RecursiveMenuWithExtraData<T>) => {
         if (!hasHoverTriggerAction) return
         onDirectionalToggleOpenKeys(dataItem, false)
     })
 
-    const onMouseClickToggle = useRefMethod((dataItem: T, open: boolean) => {
+    const onMouseClickToggle = useRefMethod((dataItem: RecursiveMenuWithExtraData<T>, open: boolean) => {
         if (!hasClickTriggerAction) return
         const { key, disabled } = dataItem
         const path = key2PathMapping.get(key)
@@ -110,11 +115,13 @@ function Menu<T extends MenuBaseData = MenuBaseData>(props: MenuProps<T>): JSX.E
 
         if (open) {
             syncSetOpenKeys(path)
+            onClick?.(dataItem, path)
         } else {
             const index = path.indexOf(key)
             const nextOpenKeys = path.slice(0, index)
 
             syncSetOpenKeys(nextOpenKeys)
+            onClick?.(dataItem, path)
         }
     })
 
@@ -125,7 +132,7 @@ function Menu<T extends MenuBaseData = MenuBaseData>(props: MenuProps<T>): JSX.E
 
     const handleComputeFinish = useRefMethod(
         debounce((showCount: number, collapseMapping: Map<React.Key, boolean>) => {
-            if (activePath.length) {
+            if (activePath?.length) {
                 const realRootKey = activePath[0] !== INTERNAL_MORE_KEY ? activePath[0] : activePath[1]
                 const collapse = collapseMapping.get(realRootKey)
 
@@ -145,6 +152,40 @@ function Menu<T extends MenuBaseData = MenuBaseData>(props: MenuProps<T>): JSX.E
             }
         })
     )
+
+    const parseChildren = useRefMethod((children: RecursiveMenuWithExtraData<T>[]) =>
+        children?.map(parseDataItem).filter((opt) => opt)
+    )
+
+    const parseDataItem = useRefMethod((dataItem: RecursiveMenuWithExtraData<T>) => {
+        if (isObject(dataItem)) {
+            const { title, children, key, type } = dataItem
+
+            if (type === 'group') {
+                return (
+                    <MenuItemGroup key={key} dataItem={dataItem}>
+                        {parseChildren(children)}
+                    </MenuItemGroup>
+                )
+            }
+
+            if (children) {
+                return (
+                    <SubMenu key={key} dataItem={dataItem}>
+                        {parseChildren(children)}
+                    </SubMenu>
+                )
+            }
+
+            return (
+                <MenuItem key={key} dataItem={dataItem}>
+                    {renderItem?.(dataItem) ?? title}
+                </MenuItem>
+            )
+        }
+
+        return null
+    })
 
     return (
         <MenuContext.Provider
@@ -166,6 +207,7 @@ function Menu<T extends MenuBaseData = MenuBaseData>(props: MenuProps<T>): JSX.E
                     data={data}
                     keyName="key"
                     getMoreText={() => '...'}
+                    renderItem={parseDataItem}
                     compressed={mode === 'horizontal'}
                     onComputeFinish={handleComputeFinish}
                     getContainerElement={() => ulRef.current}
@@ -175,36 +217,6 @@ function Menu<T extends MenuBaseData = MenuBaseData>(props: MenuProps<T>): JSX.E
                             {rest}
                         </SubMenu>
                     )}
-                    renderItem={(dataItem, index) => {
-                        if (isObject(dataItem)) {
-                            const { title, children, key, type } = dataItem
-                            const mergedKey = key || index
-
-                            if (type === 'group') {
-                                return (
-                                    <MenuItemGroup key={mergedKey} dataItem={dataItem}>
-                                        {parseChildren(children)}
-                                    </MenuItemGroup>
-                                )
-                            }
-
-                            if (children) {
-                                return (
-                                    <SubMenu key={mergedKey} dataItem={dataItem}>
-                                        {parseChildren(children)}
-                                    </SubMenu>
-                                )
-                            }
-
-                            return (
-                                <MenuItem key={mergedKey} dataItem={dataItem}>
-                                    {title}
-                                </MenuItem>
-                            )
-                        }
-
-                        return null
-                    }}
                 />
             </ul>
         </MenuContext.Provider>

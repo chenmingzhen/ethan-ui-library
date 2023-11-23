@@ -9,8 +9,8 @@ import { getPathStr } from './util'
 import { MoreItemContext } from '../More/context'
 
 const MenuItem: React.FC<MenuItemProps> = function (props) {
-    const { dataItem } = props
-    const { key, title, disabled, className } = dataItem
+    const { dataItem, children } = props
+    const { key, disabled, className } = dataItem
     const { path } = useMenuPath(key)
     const [active, updateActive] = useState(false)
     const {
@@ -48,7 +48,7 @@ const MenuItem: React.FC<MenuItemProps> = function (props) {
             onMouseLeave={() => onMouseLeaveClose(dataItem)}
         >
             <span className={classnames(menuClass('title'))} style={inlineIndentStyle}>
-                {title}
+                {children}
             </span>
         </li>
     )

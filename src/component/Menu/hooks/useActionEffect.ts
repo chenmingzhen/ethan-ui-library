@@ -33,7 +33,7 @@ export default function useActionEffect(props: UseActionEffectProps) {
 
     const manualExecuteAction = useRefMethod(debounce(executeAction, 10))
 
-    useEffect(executeAction, [openKeys, activePath])
+    useEffect(executeAction, [openKeys, activePath?.join()])
 
     return { manualExecuteAction }
 }

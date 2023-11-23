@@ -32,7 +32,7 @@ const Header = () => {
         history.push(`${nav.path}`)
     }, [])
 
-    const handleLangClick = () => {
+    const handleSelect = () => {
         const langs = findLangs()
 
         const href = window.location.href.replace(`/${langs[0]}`, `/${langs[1]}`)
@@ -56,15 +56,15 @@ const Header = () => {
                 <Menu<NavMenuData>
                     mode="horizontal"
                     data={navs}
-                    renderItem={(d) => (getLanguage() === 'zh-CN' ? d.cn : d.en)}
-                    onClick={handleNavClick}
+                    renderItem={(d) => <Link to={d.path}>{getLanguage() === 'zh-CN' ? d.cn : d.en}</Link>}
+                    onSelect={handleNavClick}
                     inlineIndent={24}
                     style={{ background: 'transparent', border: 'none' }}
                     defaultActiveKey={initPath}
                 />
             </div>
             <div className={headerClass('right')}>
-                <Button size="small" onClick={handleLangClick} style={{ margin: '0 12px' }}>
+                <Button size="small" onClick={handleSelect} style={{ margin: '0 12px' }}>
                     {locate('English', '中文')}
                 </Button>
 

@@ -12,17 +12,19 @@ export interface MenuBaseData {
     type?: string
     className?: string
 }
+type MenuWithExtraData<T extends Record<string, any>> = MenuBaseData & T
+export type RecursiveMenuWithExtraData<T extends Record<string, any> = MenuBaseData> = MenuWithExtraData<T> & {
+    children?: RecursiveMenuWithExtraData<T>[]
+}
 
 export type UpdateActive = (activePath: string) => void
-
 export type UpdateOpen = () => void
-
 export type UpdateInPath = () => void
 
 export interface MenuContext {
     bindItem?: (
         id: string,
-        key: string | number,
+        key: React.Key,
         updateActive: UpdateActive,
         updateOpen: UpdateOpen,
         updateInPath: UpdateInPath
@@ -36,57 +38,30 @@ export interface MenuContext {
 
     checkInPath?: (id: string) => boolean
 }
-export interface MenuProps<T extends MenuBaseData = MenuBaseData> {
+export interface MenuProps<T extends Record<string, any> = Record<string, any>> {
     style?: React.CSSProperties
     className?: string
-    data: T[]
-    disabled?: (data: T) => boolean
-    defaultActiveKey?: string | number
-    defaultOpenKeys?: (string | number)[]
+    data: RecursiveMenuWithExtraData<T>[]
+    disabled?: (data: RecursiveMenuWithExtraData<T>) => boolean
+    defaultActiveKey?: React.Key
+    defaultOpenKeys?: React.Key[]
+    activeKey?: React.Key
     /** 展开的菜单(受控) */
     openKeys?: string[] | number[]
     /** 每一层缩进宽度 */
     inlineIndent?: number
     mode?: Mode
-    onClick?(data: T): void
-    renderItem?: (data: T) => React.ReactNode
-    onOpenChange?(keys: (string | number)[]): void
+    /** 当点击SubMenu或MenuItem时的回调 */
+    onClick?(data: RecursiveMenuWithExtraData<T>, path: React.Key[]): void
+    renderItem?: (data: RecursiveMenuWithExtraData<T>) => React.ReactNode
+    onOpenChange?(keys: React.Key[]): void
     subMenuTriggerActions?: Exclude<TriggerAction, 'focus' | 'mousedown'>[]
-    onSelectChange?: (dataItem: T, path: React.Key[]) => void
-}
-
-export interface MenuListProps {
-    bottomLine?: number
-
-    topLine?: number
-
-    className?: string
-
-    inlineIndent?: number
-
-    level?: number
-
-    data: MenuBaseData[]
-
-    mode?: Mode
-
-    onClick: (id: string | number, data: MenuBaseData) => void
-
-    path?: string | number
-
-    renderItem: (data: MenuBaseData) => React.ReactNode
-
-    style?: React.CSSProperties
-
-    toggleOpenKeys: (id: string | number, open: boolean) => void
-
-    open: boolean
-
-    handleScrollPosUpdate?(): void
+    /** 当选中时的回调 */
+    onSelect?: (dataItem: RecursiveMenuWithExtraData<T>, path: React.Key[]) => void
 }
 
 export interface MenuItemProps extends Partial<MoreContextProps> {
-    dataItem: MenuBaseData
+    dataItem: RecursiveMenuWithExtraData
     children: React.ReactNode
 }
 
@@ -117,12 +92,12 @@ export interface MenuContextProps {
     mode: MenuProps['mode']
     inlineIndent: MenuProps['inlineIndent']
 
-    onLeafClick(dataItem: MenuBaseData): void
-    onInlineSubMenuTitleClick: (dataItem: MenuBaseData, open: boolean) => void
+    onLeafClick(dataItem: RecursiveMenuWithExtraData): void
+    onInlineSubMenuTitleClick: (dataItem: RecursiveMenuWithExtraData, open: boolean) => void
 
-    onMouseEnterOpen: (dataItem: MenuBaseData) => void
-    onMouseLeaveClose: (dataItem: MenuBaseData) => void
-    onMouseClickToggle: (dataItem: MenuBaseData, open: boolean) => void
+    onMouseEnterOpen: (dataItem: RecursiveMenuWithExtraData) => void
+    onMouseLeaveClose: (dataItem: RecursiveMenuWithExtraData) => void
+    onMouseClickToggle: (dataItem: RecursiveMenuWithExtraData, open: boolean) => void
     subMenuTriggerActions: MenuProps['subMenuTriggerActions']
 
     /** 一般情况下,action由副作用触发,当从More隐藏状态到展示状态时,需要手动触发action. */
@@ -155,7 +130,7 @@ export interface RegisterMenuItemGroupOptions {
 }
 
 export interface SubMenuProps {
-    dataItem: MenuBaseData
+    dataItem: RecursiveMenuWithExtraData
     children: React.ReactNode
 }
 
@@ -164,7 +139,7 @@ export interface InlineTriggerProps {
     path: React.Key[]
     popupContent: React.ReactNode
     children: React.ReactNode
-    dataItem: MenuBaseData
+    dataItem: RecursiveMenuWithExtraData
     className: string
 }
 
@@ -173,7 +148,7 @@ export interface VerticalTriggerProps {
     path: React.Key[]
     popupContent: React.ReactNode
     children: React.ReactNode
-    dataItem: MenuBaseData
+    dataItem: RecursiveMenuWithExtraData
     className: string
 }
 
@@ -182,12 +157,12 @@ export interface DirectionalTriggerProps {
     path: React.Key[]
     popupContent: React.ReactNode
     children: React.ReactNode
-    dataItem: MenuBaseData
+    dataItem: RecursiveMenuWithExtraData
     className: string
     direction: 'vertical' | 'horizontal'
 }
 
 export interface MenuItemGroupProps extends Partial<MoreContextProps> {
-    dataItem: MenuBaseData
+    dataItem: RecursiveMenuWithExtraData
     children: React.ReactNode
 }

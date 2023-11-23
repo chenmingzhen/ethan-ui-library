@@ -1,9 +1,4 @@
-import React from 'react'
-import { isObject } from '@/utils/is'
-import MenuItem from './MenuItem'
-import { MenuBaseData } from './type'
-import SubMenu from './SubMenu'
-import MenuItemGroup from './MenuItemGroup'
+import { RecursiveMenuWithExtraData } from './type'
 
 export const ETHAN_MENU_SEPARATOR = '_E@T_'
 
@@ -11,39 +6,27 @@ export function getPathStr(path: React.Key[] = []) {
     return path.join(ETHAN_MENU_SEPARATOR)
 }
 
-export function parseChildren(data: MenuBaseData[]) {
-    return (data || [])
-        .map((dataItem, index) => {
-            if (isObject(dataItem)) {
-                const { title, children, key, type, ...restProps } = dataItem
-                const mergedKey = key || index
+/** 由于Item组件可能未挂载，导致未进行注册，需要预计算一下path，用于设置了defaultActiveKey或activeKey时，能够找到对应的activePath */
+export function generateMeasurePathMapping(
+    data: RecursiveMenuWithExtraData[],
+    parentPath: React.Key[] = []
+): Map<React.Key, React.Key[]> {
+    const pathMapping = new Map<React.Key, React.Key[]>()
 
-                if (type === 'group') {
-                    return (
-                        <MenuItemGroup key={mergedKey} {...restProps} dataItem={dataItem}>
-                            {parseChildren(children)}
-                        </MenuItemGroup>
-                    )
-                }
+    data.forEach((item) => {
+        const currentPath = [...parentPath, item.key]
+        pathMapping.set(item.key, currentPath)
 
-                if (children) {
-                    return (
-                        <SubMenu key={mergedKey} {...restProps} dataItem={dataItem}>
-                            {parseChildren(children)}
-                        </SubMenu>
-                    )
-                }
+        if (item.children) {
+            const childrenPathMap = generateMeasurePathMapping(item.children, currentPath)
 
-                return (
-                    <MenuItem key={mergedKey} {...restProps} dataItem={dataItem}>
-                        {title}
-                    </MenuItem>
-                )
-            }
+            childrenPathMap.forEach((childrenPath, key) => {
+                pathMapping.set(key, childrenPath)
+            })
+        }
+    })
 
-            return null
-        })
-        .filter((opt) => opt)
+    return pathMapping
 }
 
 export const INTERNAL_MORE_KEY = '__INTERNAL_MORE_KEY__'
