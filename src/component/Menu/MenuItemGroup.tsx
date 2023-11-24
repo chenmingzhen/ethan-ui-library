@@ -4,6 +4,7 @@ import { MenuItemGroupProps } from './type'
 import MenuContext from './context/MenuContext'
 import useMenuPath from './hooks/useMenuPath'
 import useInlineIndentStyle from './hooks/useInlineIndentStyle'
+import PathContext from './context/PathContext'
 
 const MenuItemGroup: React.FC<MenuItemGroupProps> = function (props) {
     const { dataItem, children } = props
@@ -25,17 +26,19 @@ const MenuItemGroup: React.FC<MenuItemGroupProps> = function (props) {
     }, [path, props.showCount])
 
     return (
-        <li tabIndex={-1} className={menuClass('group')}>
-            <div
-                style={inlineIndentStyle}
-                className={menuClass('group-title')}
-                onMouseEnter={() => onMouseEnterOpen(dataItem)}
-                onMouseLeave={() => onMouseLeaveClose(dataItem)}
-            >
-                {title}
-            </div>
-            <ul className={menuClass('list', 'inline')}>{children}</ul>
-        </li>
+        <PathContext.Provider value={{ path }}>
+            <li tabIndex={-1} className={menuClass('group')}>
+                <div
+                    style={inlineIndentStyle}
+                    className={menuClass('group-title')}
+                    onMouseEnter={() => onMouseEnterOpen(dataItem)}
+                    onMouseLeave={() => onMouseLeaveClose(dataItem)}
+                >
+                    {title}
+                </div>
+                <ul className={menuClass('list', 'inline')}>{children}</ul>
+            </li>
+        </PathContext.Provider>
     )
 }
 
