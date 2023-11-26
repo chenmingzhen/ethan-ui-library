@@ -60,7 +60,7 @@ const Header = () => {
                     onSelect={handleNavClick}
                     inlineIndent={24}
                     style={{ background: 'transparent', border: 'none' }}
-                    defaultActiveKey={initPath}
+                    activeKey={initPath}
                 />
             </div>
             <div className={headerClass('right')}>
@@ -100,4 +100,4 @@ const Header = () => {
     )
 }
 
-export default Header
+export default React.memo(Header)

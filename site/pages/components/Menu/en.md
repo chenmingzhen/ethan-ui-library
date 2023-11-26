@@ -4,15 +4,17 @@
 
 ## API
 
-| Property         | Type                                                      | Default  | Description               |
-| ---------------- | --------------------------------------------------------- | -------- | ------------------------- |
-| data             | object[]                                                  | []       | Menu items data           |
-| mode             | 'inline' \| 'vertical' \| 'horizontal' \| 'vertical-auto' | 'inline' | style of menu             |
-| renderItem       | (data: object) => ReactNode                               | -        | Custom render Item.       |
-| defaultOpenKeys  | (string\|number)[]                                        | []       | Initial expanded menu     |
-| defaultActiveKey | string\|number                                            | -        | Default active key        |
-| openKeys         | (string\|number)[]                                        | []       | expended menu             |
-| onClick          | (data: object) => void                                    | -        | onClick event             |
-| style            | object                                                    | -        | Container element style   |
-| inlineIndent     | number                                                    | 24       | indent of each level      |
-| onOpenChange     | (keys: (string\|number)[]) => void                        | -        | menu open change callback |
+| Property              | Type                                    | Default  | Description                                  |
+| --------------------- | --------------------------------------- | -------- | -------------------------------------------- |
+| data                  | object[]                                | []       | Data to render as menu                       |
+| mode                  | 'inline' \| 'vertical' \| 'horizontal'  | 'inline' | Menu style                                   |
+| renderItem            | (data: object) => ReactNode             | -        | Custom rendering for items                   |
+| defaultOpenKeys       | (string\|number)[]                      | []       | Default expanded items                       |
+| defaultActiveKey      | string\|number                          | -        | Default active key                           |
+| openKeys              | (string\|number)[]                      | []       | Expanded menu items (controlled)             |
+| onClick               | (data: Data, path: React.key[]) => void | -        | Click event                                  |
+| onSelect              | (data: Data, path: React.key[]) => void | -        | Selection event                              |
+| style                 | object                                  | -        | Outermost styling                            |
+| inlineIndent          | number                                  | 24       | Indentation width per level                  |
+| onOpenChange          | (keys: (string\|number)[]) => void      | -        | Callback for menu expand/collapse            |
+| subMenuTriggerActions | 'focus' \| 'mousedown'                  | -        | Submenu expansion trigger in non-inline mode |

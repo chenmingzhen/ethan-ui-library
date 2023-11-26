@@ -42,7 +42,6 @@ export interface MenuProps<T extends Record<string, any> = Record<string, any>> 
     style?: React.CSSProperties
     className?: string
     data: RecursiveMenuWithExtraData<T>[]
-    disabled?: (data: RecursiveMenuWithExtraData<T>) => boolean
     defaultActiveKey?: React.Key
     defaultOpenKeys?: React.Key[]
     activeKey?: React.Key
