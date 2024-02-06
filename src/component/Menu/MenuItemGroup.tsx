@@ -10,8 +10,14 @@ const MenuItemGroup: React.FC<MenuItemGroupProps> = function (props) {
     const { dataItem, children } = props
     const { title, key } = dataItem
     const { path } = useMenuPath(key)
-    const { registerMenuItemGroup, unregisterMenuItemGroup, onMouseEnterOpen, onMouseLeaveClose, manualExecuteAction } =
-        useContext(MenuContext)
+    const {
+        registerMenuItemGroup,
+        unregisterMenuItemGroup,
+        onMouseEnterOpen,
+        onMouseLeaveClose,
+        manualExecuteAction,
+        renderItem,
+    } = useContext(MenuContext)
 
     const inlineIndentStyle = useInlineIndentStyle(path, true)
 
@@ -34,7 +40,7 @@ const MenuItemGroup: React.FC<MenuItemGroupProps> = function (props) {
                     onMouseEnter={() => onMouseEnterOpen(dataItem)}
                     onMouseLeave={() => onMouseLeaveClose(dataItem)}
                 >
-                    {title}
+                    {renderItem?.(dataItem) ?? title}
                 </div>
                 <ul className={menuClass('list', 'inline')}>{children}</ul>
             </li>
