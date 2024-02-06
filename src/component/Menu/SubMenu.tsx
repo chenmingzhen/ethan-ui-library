@@ -14,7 +14,7 @@ const SubMenu: React.FC<SubMenuProps> = function (props) {
     const { path } = useMenuPath(key)
     const [open, updateOpen] = useState(false)
     const [inPath, updateInPath] = useState(false)
-    const { registerSubMenu, unregisterSubMenu, mode, manualExecuteAction } = useContext(MenuContext)
+    const { registerSubMenu, unregisterSubMenu, mode, manualExecuteAction, renderItem } = useContext(MenuContext)
 
     useEffect(() => {
         registerSubMenu(key, { updateInPath, updateOpen, path })
@@ -35,7 +35,7 @@ const SubMenu: React.FC<SubMenuProps> = function (props) {
         if (mode === 'inline') {
             return (
                 <InlineTrigger dataItem={dataItem} visible={open} path={path} popupContent={children} className={ms}>
-                    {title}
+                    {renderItem?.(dataItem) ?? title}
                 </InlineTrigger>
             )
         }
@@ -50,7 +50,7 @@ const SubMenu: React.FC<SubMenuProps> = function (props) {
                     className={ms}
                     direction="vertical"
                 >
-                    {title}
+                    {renderItem?.(dataItem) ?? title}
                 </DirectionalTrigger>
             )
         }
@@ -65,7 +65,7 @@ const SubMenu: React.FC<SubMenuProps> = function (props) {
                     className={ms}
                     direction="horizontal"
                 >
-                    {title}
+                    {renderItem?.(dataItem) ?? title}
                 </DirectionalTrigger>
             )
         }

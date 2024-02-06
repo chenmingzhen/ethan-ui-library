@@ -57,6 +57,9 @@ export interface MenuProps<T extends Record<string, any> = Record<string, any>> 
     subMenuTriggerActions?: Exclude<TriggerAction, 'focus' | 'mousedown'>[]
     /** 当选中时的回调 */
     onSelect?: (dataItem: RecursiveMenuWithExtraData<T>, path: React.Key[]) => void
+
+    /** 内部使用 */
+    chainKey?: string
 }
 
 export interface MenuItemProps extends Partial<MoreContextProps> {
@@ -101,6 +104,10 @@ export interface MenuContextProps {
 
     /** 一般情况下,action由副作用触发,当从More隐藏状态到展示状态时,需要手动触发action. */
     manualExecuteAction: () => void
+
+    renderItem: (data: RecursiveMenuWithExtraData) => React.ReactNode
+
+    chainKey: MenuProps['chainKey']
 }
 
 export interface PathContextProps {

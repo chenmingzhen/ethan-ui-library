@@ -1,4 +1,4 @@
-import React, { useRef } from 'react'
+import React, { useImperativeHandle, useRef } from 'react'
 import classnames from 'classnames'
 import { menuClass } from '@/styles'
 import useRefMethod from '@/hooks/useRefMethod'
@@ -7,7 +7,7 @@ import { More } from '@/index'
 import { debounce } from '@/utils/func'
 import { MenuProps, RecursiveMenuWithExtraData } from './type'
 import MenuContext from './context/MenuContext'
-import { INTERNAL_MORE_KEY } from './util'
+import { ETHAN_MENU_SEPARATOR, INTERNAL_MORE_KEY } from './util'
 import useOpenKeys from './hooks/useOpenKeys'
 import useRegister from './hooks/useRegister'
 import useActionEffect from './hooks/useActionEffect'
@@ -16,7 +16,7 @@ import MenuItemGroup from './MenuItemGroup'
 import MenuItem from './MenuItem'
 import useActivePath from './hooks/useActivePath'
 
-function Menu<T extends Record<string, any> = Record<string, any>>(props: MenuProps<T>): JSX.Element {
+function Menu<T extends Record<string, any> = Record<string, any>>(props: MenuProps<T>, ref): JSX.Element {
     const {
         data,
         style,
@@ -31,6 +31,7 @@ function Menu<T extends Record<string, any> = Record<string, any>>(props: MenuPr
         mode = 'inline',
         inlineIndent = 24,
         subMenuTriggerActions = ['click'],
+        chainKey = ETHAN_MENU_SEPARATOR,
     } = props
 
     const [activePath, setActivePath] = useActivePath({ defaultActiveKey, activeKey, data })
@@ -49,6 +50,8 @@ function Menu<T extends Record<string, any> = Record<string, any>>(props: MenuPr
         key2PathMapping,
         menuItemMapping,
     })
+
+    useImperativeHandle(ref, () => ulRef.current)
 
     /** -------------------------- Menu events-------------------------- */
     const hasClickTriggerAction = subMenuTriggerActions.includes('click')
@@ -191,6 +194,8 @@ function Menu<T extends Record<string, any> = Record<string, any>>(props: MenuPr
         <MenuContext.Provider
             value={{
                 mode,
+                chainKey,
+                renderItem,
                 onLeafClick,
                 inlineIndent,
                 onInlineSubMenuTitleClick,
@@ -223,4 +228,4 @@ function Menu<T extends Record<string, any> = Record<string, any>>(props: MenuPr
     )
 }
 
-export default React.memo(Menu) as unknown as typeof Menu
+export default React.memo(React.forwardRef(Menu)) as unknown as typeof Menu

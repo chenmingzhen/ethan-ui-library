@@ -5,8 +5,8 @@ import { MenuItemProps } from './type'
 import useMenuPath from './hooks/useMenuPath'
 import MenuContext from './context/MenuContext'
 import useInlineIndentStyle from './hooks/useInlineIndentStyle'
-import { getPathStr } from './util'
 import { MoreItemContext } from '../More/context'
+import usePathStr from './hooks/usePathStr'
 
 const MenuItem: React.FC<MenuItemProps> = function (props) {
     const { dataItem, children } = props
@@ -23,6 +23,7 @@ const MenuItem: React.FC<MenuItemProps> = function (props) {
     } = useContext(MenuContext)
 
     const moreItemContext = useContext(MoreItemContext) || {}
+    const pathStr = usePathStr(path)
 
     useEffect(() => {
         registerMenuItem(key, { path, updateActive } as any)
@@ -42,7 +43,7 @@ const MenuItem: React.FC<MenuItemProps> = function (props) {
             {...moreItemContext}
             tabIndex={-1}
             className={ms}
-            data-ck={getPathStr(path)}
+            data-ck={pathStr}
             onClick={() => onLeafClick(dataItem)}
             onMouseEnter={() => onMouseEnterOpen(dataItem)}
             onMouseLeave={() => onMouseLeaveClose(dataItem)}
