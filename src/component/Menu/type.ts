@@ -58,8 +58,8 @@ export interface MenuProps<T extends Record<string, any> = Record<string, any>> 
     /** 当选中时的回调 */
     onSelect?: (dataItem: RecursiveMenuWithExtraData<T>, path: React.Key[]) => void
 
-    /** 内部使用 */
-    chainKey?: string
+    /** @private */
+    componentKey?: string
 }
 
 export interface MenuItemProps extends Partial<MoreContextProps> {
@@ -107,7 +107,7 @@ export interface MenuContextProps {
 
     renderItem: (data: RecursiveMenuWithExtraData) => React.ReactNode
 
-    chainKey: MenuProps['chainKey']
+    componentKey: string
 }
 
 export interface PathContextProps {

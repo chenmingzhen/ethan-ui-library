@@ -130,30 +130,13 @@ function end(element) {
 // 211 -> 21 -> 2
 
 // 判断点击的内容是否在容器或容器内
-export function isDescendent(el: HTMLElement, elementComponentKey: string, chainKey?: string) {
+export function isDescendent(el: HTMLElement, elementComponentKey: string) {
     if (!(el instanceof HTMLElement)) return false
-
-    /** @deprecated 废弃，逐步过渡 */
-    if (el.getAttribute('data-id') === elementComponentKey) return true
-
-    const targetComponentKey = el.getAttribute('data-ck')
-
-    if (chainKey && targetComponentKey) {
-        if (targetComponentKey === elementComponentKey) {
-            return true
-        }
-        if (targetComponentKey.length > elementComponentKey.length) {
-            /** 判断目标是否为下游组件 */
-            return targetComponentKey.startsWith(elementComponentKey + chainKey)
-        }
-
-        return elementComponentKey.startsWith(targetComponentKey + chainKey)
-    }
 
     if (el.getAttribute('data-ck') === elementComponentKey) return true
     if (!el.parentElement) return false
 
-    return isDescendent(el.parentElement, elementComponentKey, chainKey)
+    return isDescendent(el.parentElement, elementComponentKey)
 }
 
 export interface AddResizeObserverOptions {

@@ -12,7 +12,6 @@ import Motion from '../Motion'
 const Trigger: React.FC<TriggerProps> = function (props) {
     const {
         visible,
-        chainKey,
         children,
         onClickAway,
         onDescClick,
@@ -55,11 +54,11 @@ const Trigger: React.FC<TriggerProps> = function (props) {
     })
 
     const isDescendentAction = useRefMethod((element: HTMLElement) => {
-        if (componentKey && isDescendent(element, componentKey, chainKey)) return true
+        if (componentKey && isDescendent(element, componentKey)) return true
     })
 
     // -------------------------MouseMove---------------------------------
-    const handleMouseEnter = useRefMethod((e: React.MouseEvent) => {
+    const handleTriggerElementMouseEnter = useRefMethod((e: React.MouseEvent) => {
         if (children && children.props && children.props.onMouseEnter) {
             children.props.onMouseEnter(e)
         }
@@ -75,7 +74,7 @@ const Trigger: React.FC<TriggerProps> = function (props) {
         }
     })
 
-    const handleMouseLeave = useRefMethod((e: React.MouseEvent) => {
+    const handleTriggerElementMouseLeave = useRefMethod((e: React.MouseEvent) => {
         clearMouseTimer()
 
         if (children && children.props && children.props.onMouseLeave) {
@@ -130,7 +129,7 @@ const Trigger: React.FC<TriggerProps> = function (props) {
         updateShow(false)
     })
 
-    const handleMousedown = useRefMethod((e: React.MouseEvent) => {
+    const handleTriggerElementMousedown = useRefMethod((e: React.MouseEvent) => {
         if (children && children.props && children.props.onMouseDown) {
             children.props.onMouseDown(e)
         }
@@ -142,7 +141,7 @@ const Trigger: React.FC<TriggerProps> = function (props) {
         }
     })
 
-    const handleMouseClick = useRefMethod((e: React.MouseEvent) => {
+    const handleTriggerElementMouseClick = useRefMethod((e: React.MouseEvent) => {
         if (children && children.props && children.props.onClick) {
             children.props.onClick(e)
         }
@@ -156,7 +155,7 @@ const Trigger: React.FC<TriggerProps> = function (props) {
     // -------------------------------------------------------------------
 
     // -------------------------MouseFocus---------------------------------
-    const handleFocus = useRefMethod((e: React.FocusEvent) => {
+    const handleTriggerElementFocus = useRefMethod((e: React.FocusEvent) => {
         if (children && children.props && children.props.onFocus) {
             children.props.onFocus(e)
         }
@@ -164,7 +163,7 @@ const Trigger: React.FC<TriggerProps> = function (props) {
         updateShow(true)
     })
 
-    const handleBlur = useRefMethod((e: React.FocusEvent) => {
+    const handleTriggerElementBlur = useRefMethod((e: React.FocusEvent) => {
         if (children && children.props && children.props.onBlur) {
             children.props.onBlur(e)
         }
@@ -193,21 +192,21 @@ const Trigger: React.FC<TriggerProps> = function (props) {
         const injectEventProps: React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement> = {}
 
         if (triggerActions.includes('hover')) {
-            injectEventProps.onMouseEnter = handleMouseEnter
-            injectEventProps.onMouseLeave = handleMouseLeave
+            injectEventProps.onMouseEnter = handleTriggerElementMouseEnter
+            injectEventProps.onMouseLeave = handleTriggerElementMouseLeave
         }
 
         if (triggerActions.includes('mousedown')) {
-            injectEventProps.onMouseDown = handleMousedown
+            injectEventProps.onMouseDown = handleTriggerElementMousedown
         }
 
         if (triggerActions.includes('focus')) {
-            injectEventProps.onFocus = handleFocus
-            injectEventProps.onBlur = handleBlur
+            injectEventProps.onFocus = handleTriggerElementFocus
+            injectEventProps.onBlur = handleTriggerElementBlur
         }
 
         if (triggerActions.includes('click')) {
-            injectEventProps.onClick = handleMouseClick
+            injectEventProps.onClick = handleTriggerElementMouseClick
         }
 
         return injectEventProps

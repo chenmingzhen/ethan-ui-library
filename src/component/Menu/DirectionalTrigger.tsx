@@ -7,7 +7,6 @@ import { DirectionalTriggerProps } from './type'
 import Trigger from '../Trigger'
 import MenuContext from './context/MenuContext'
 import { MoreItemContext } from '../More/context'
-import usePathStr from './hooks/usePathStr'
 
 /**
  * 不同模式下触发打开Menu机制
@@ -21,9 +20,8 @@ const DirectionalTrigger: React.FC<DirectionalTriggerProps> = function (props) {
     const moreItemContext = useContext(MoreItemContext) || {}
     const [triggerElement, setTriggerElement] = useState<HTMLElement>()
     const [portalElement, setPortalElement] = useState<HTMLElement>()
-    const { chainKey, onMouseEnterOpen, onMouseLeaveClose, onMouseClickToggle, subMenuTriggerActions } =
+    const { onMouseEnterOpen, onMouseLeaveClose, onMouseClickToggle, subMenuTriggerActions, componentKey } =
         useContext(MenuContext)
-    const pathStr = usePathStr(path)
     const realDirection = path.length > 1 ? 'vertical' : direction
 
     const popupStyle = styles(
@@ -35,8 +33,7 @@ const DirectionalTrigger: React.FC<DirectionalTriggerProps> = function (props) {
     return (
         <Trigger
             visible={visible}
-            componentKey={pathStr}
-            chainKey={chainKey}
+            componentKey={componentKey}
             bindPortalElement={setPortalElement}
             bindTriggerElement={setTriggerElement}
             getPopupContainer={() => document.body}

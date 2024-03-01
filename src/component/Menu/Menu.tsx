@@ -5,9 +5,10 @@ import useRefMethod from '@/hooks/useRefMethod'
 import { isObject } from '@/utils/is'
 import { More } from '@/index'
 import { debounce } from '@/utils/func'
+import { getUidStr } from '@/utils/uid'
 import { MenuProps, RecursiveMenuWithExtraData } from './type'
 import MenuContext from './context/MenuContext'
-import { ETHAN_MENU_SEPARATOR, INTERNAL_MORE_KEY } from './util'
+import { INTERNAL_MORE_KEY } from './util'
 import useOpenKeys from './hooks/useOpenKeys'
 import useRegister from './hooks/useRegister'
 import useActionEffect from './hooks/useActionEffect'
@@ -31,9 +32,9 @@ function Menu<T extends Record<string, any> = Record<string, any>>(props: MenuPr
         mode = 'inline',
         inlineIndent = 24,
         subMenuTriggerActions = ['click'],
-        chainKey = ETHAN_MENU_SEPARATOR,
     } = props
 
+    const componentKey = useRef(props.componentKey ?? getUidStr()).current
     const [activePath, setActivePath] = useActivePath({ defaultActiveKey, activeKey, data })
     const { key2PathMapping, menuItemMapping, subMenuMapping, ...registerEvents } = useRegister()
     const { openKeys, syncSetOpenKeys, delaySetOpenKeys } = useOpenKeys({
@@ -194,7 +195,6 @@ function Menu<T extends Record<string, any> = Record<string, any>>(props: MenuPr
         <MenuContext.Provider
             value={{
                 mode,
-                chainKey,
                 renderItem,
                 onLeafClick,
                 inlineIndent,
@@ -204,6 +204,7 @@ function Menu<T extends Record<string, any> = Record<string, any>>(props: MenuPr
                 onMouseEnterOpen,
                 onMouseLeaveClose,
                 onMouseClickToggle,
+                componentKey,
                 ...registerEvents,
             }}
         >
