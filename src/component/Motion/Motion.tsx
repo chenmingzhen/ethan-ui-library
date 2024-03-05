@@ -3,7 +3,7 @@ import { isFunc } from '@/utils/is'
 import classnames from 'classnames'
 import useRefMethod from '@/hooks/useRefMethod'
 import { MotionProps, MotionStatus, MotionStep } from './type'
-import useStatus from './hooks/useStatus'
+import useMotionTracker from './hooks/useMotionTracker'
 
 /** 可执行动画的阶段 */
 const animationSteps = [MotionStep.START, MotionStep.ACTIVE, MotionStep.END]
@@ -34,7 +34,6 @@ const Motion: React.FC<MotionProps> = function (props) {
         destroyAfterLeave,
         leaveClassName,
         children,
-        forceStep,
         name = '',
         visible,
         enter,
@@ -67,9 +66,8 @@ const Motion: React.FC<MotionProps> = function (props) {
         }
     })
 
-    const [status, step] = useStatus({
+    const [status, step] = useMotionTracker({
         getElement,
-        forceStep,
         visible,
         enter,
         leave,

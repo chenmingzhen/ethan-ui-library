@@ -19,11 +19,7 @@ export interface MotionProps {
     onLeaveActive?: (element: HTMLElement) => void
     onLeaveEnd?: (element: HTMLElement) => void
     visible?: boolean
-    /**
-     * @private 无进场出场动画但触发事件
-     * 不设置forceStep，没有enter和leave不会触发对应的事件
-     */
-    forceStep?: boolean
+
     bindMotionElement?: (element: HTMLElement) => void
 }
 

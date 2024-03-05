@@ -108,7 +108,6 @@ const Popover: React.FC<PopoverProps> = function (props) {
             motionPopupProps={{
                 enter: animation,
                 leave: animation,
-                forceStep: !animation,
                 name: popoverClass('_'),
                 destroyAfterLeave: destroyOnClose,
                 onEnterPrepare: computedPopupElementPosition,
