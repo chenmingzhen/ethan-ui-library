@@ -41,7 +41,7 @@
         "build-es5": "tsc --p tsconfig.dist.json && tsc-alias -p tsconfig.dist.json && ts-node scripts/cp-css.ts",
         "build-css": "ts-node scripts/build-css.ts",
         "build": "npm-run-all build-*",
-        "docs-build-chunk": "cross-env NODE_ENV=production node scripts/dev-site.js",
+        "docs-build-chunk": "cross-env NODE_ENV=production ts-node scripts/dev-site.ts",
         "docs-build-js": "cross-env NODE_ENV=production ts-node webpack/build/webpack.docs.ts",
         "docs-build-html": "ts-node scripts/build-html.ts",
         "docs-build": "npm-run-all docs-build-*",
