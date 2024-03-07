@@ -1,4 +1,4 @@
-import React, { cloneElement, useEffect, useMemo, useRef, useState } from 'react'
+import React, { cloneElement, useContext, useEffect, useMemo, useRef, useState } from 'react'
 import useMergedValue from '@/hooks/useMergedValue'
 import useRefMethod from '@/hooks/useRefMethod'
 import { isFunc } from '@/utils/is'
@@ -8,6 +8,7 @@ import { warningOnce } from '@/utils/warning'
 import { TriggerProps } from './type'
 import Portal from '../Portal'
 import Motion from '../Motion'
+import TriggerContext from './context'
 
 const Trigger: React.FC<TriggerProps> = function (props) {
     const {
@@ -15,7 +16,6 @@ const Trigger: React.FC<TriggerProps> = function (props) {
         children,
         onClickAway,
         onDescClick,
-        componentKey,
         defaultVisible,
         resizeDebounce,
         onWindowResize,
@@ -33,6 +33,8 @@ const Trigger: React.FC<TriggerProps> = function (props) {
         allowClickTriggerClose = true,
         triggerActions = ['mousedown'],
     } = props
+    const triggerContext = useContext(TriggerContext)
+    const triggerComponentKey = triggerContext?.triggerComponentKey ?? props.componentKey
     const [showNoScript, updateShowNoScript] = useState(true)
     const [triggerElement, setTriggerElement] = useState<HTMLElement>()
     const mouseTimer = useRef<NodeJS.Timeout>()
@@ -54,7 +56,7 @@ const Trigger: React.FC<TriggerProps> = function (props) {
     })
 
     const isDescendentAction = useRefMethod((element: HTMLElement) => {
-        if (componentKey && isDescendent(element, componentKey)) return true
+        if (triggerComponentKey && isDescendent(element, triggerComponentKey)) return true
     })
 
     // -------------------------MouseMove---------------------------------
@@ -280,14 +282,14 @@ const Trigger: React.FC<TriggerProps> = function (props) {
 
     // -------------------------Inject key---------------------------------
     useEffect(() => {
-        if (triggerElement && componentKey) {
-            triggerElement.setAttribute('data-ck', componentKey)
+        if (triggerElement && triggerComponentKey) {
+            triggerElement.setAttribute('data-ck', triggerComponentKey)
         }
     }, [triggerElement])
 
     useEffect(() => {
-        if (popupElement && componentKey) {
-            popupElement.setAttribute('data-ck', componentKey)
+        if (popupElement && triggerComponentKey) {
+            popupElement.setAttribute('data-ck', triggerComponentKey)
         }
     }, [popupElement])
     // --------------------------------------------------------------
@@ -323,7 +325,7 @@ const Trigger: React.FC<TriggerProps> = function (props) {
     }
 
     return (
-        <>
+        <TriggerContext.Provider value={{ triggerComponentKey }}>
             {showNoScript && <noscript ref={bindNoScriptDOMNode} />}
             {cloneElement(children, triggerProps)}
 
@@ -335,7 +337,7 @@ const Trigger: React.FC<TriggerProps> = function (props) {
             >
                 {buildPortalContent()}
             </Portal>
-        </>
+        </TriggerContext.Provider>
     )
 }
 
