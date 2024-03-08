@@ -44,3 +44,7 @@ export interface TriggerProps {
     onClickAway?: (evt: MouseEvent) => void
     allowClickTriggerClose?: boolean
 }
+
+export interface TriggerContextProps {
+    triggerComponentKey: string
+}

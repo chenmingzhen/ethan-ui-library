@@ -7,6 +7,7 @@ import { SubMenuProps } from './type'
 import MenuContext from './context/MenuContext'
 import InlineTrigger from './InlineTrigger'
 import DirectionalTrigger from './DirectionalTrigger'
+import { INTERNAL_MORE_KEY } from './util'
 
 const SubMenu: React.FC<SubMenuProps> = function (props) {
     const { dataItem, children } = props
@@ -40,6 +41,8 @@ const SubMenu: React.FC<SubMenuProps> = function (props) {
             )
         }
 
+        const submenuContent = key === INTERNAL_MORE_KEY ? title : renderItem?.(dataItem) ?? title
+
         if (mode === 'vertical') {
             return (
                 <DirectionalTrigger
@@ -50,7 +53,7 @@ const SubMenu: React.FC<SubMenuProps> = function (props) {
                     className={ms}
                     direction="vertical"
                 >
-                    {renderItem?.(dataItem) ?? title}
+                    {submenuContent}
                 </DirectionalTrigger>
             )
         }
@@ -65,7 +68,7 @@ const SubMenu: React.FC<SubMenuProps> = function (props) {
                     className={ms}
                     direction="horizontal"
                 >
-                    {renderItem?.(dataItem) ?? title}
+                    {submenuContent}
                 </DirectionalTrigger>
             )
         }

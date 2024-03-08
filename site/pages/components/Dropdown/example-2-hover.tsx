@@ -5,10 +5,10 @@
  *    -- By default, Dropdown toggled clicking, setting trigger="hover" can toggled by mouse move in.
  */
 import React from 'react'
-import { Dropdown } from 'ethan-ui'
+import { Button, Dropdown } from 'ethan-ui'
 
 export default function () {
-    const menu = [
+    const data = [
         {
             content: 'First',
             key: '1',
@@ -20,6 +20,24 @@ export default function () {
                         {
                             key: '7',
                             content: 'topic 3',
+                            children: [
+                                {
+                                    key: '71',
+                                    content: 'topic 71',
+                                    children: [
+                                        {
+                                            key: '711',
+                                            content: 'topic 711',
+                                            children: [
+                                                {
+                                                    key: '7111',
+                                                    content: 'topic 7111',
+                                                },
+                                            ],
+                                        },
+                                    ],
+                                },
+                            ],
                         },
                     ],
                 },
@@ -44,5 +62,9 @@ export default function () {
         },
     ]
 
-    return <Dropdown trigger="hover" placeholder="Hover" data={menu} />
+    return (
+        <Dropdown trigger="hover" menu={{ data }} position="left-bottom">
+            <Button>hover</Button>
+        </Dropdown>
+    )
 }

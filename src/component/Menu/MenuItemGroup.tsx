@@ -11,6 +11,7 @@ const MenuItemGroup: React.FC<MenuItemGroupProps> = function (props) {
     const { title, key } = dataItem
     const { path } = useMenuPath(key)
     const {
+        componentKey,
         registerMenuItemGroup,
         unregisterMenuItemGroup,
         onMouseEnterOpen,
@@ -33,7 +34,7 @@ const MenuItemGroup: React.FC<MenuItemGroupProps> = function (props) {
 
     return (
         <PathContext.Provider value={{ path }}>
-            <li tabIndex={-1} className={menuClass('group')}>
+            <li tabIndex={-1} className={menuClass('group')} data-ck={componentKey}>
                 <div
                     style={inlineIndentStyle}
                     className={menuClass('group-title')}

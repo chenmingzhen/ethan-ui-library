@@ -19,7 +19,7 @@ const findLangs = () => {
     return [prevLang, nextLang, itemLang]
 }
 
-const handleThemeClick = (data) => {
+const handleThemeSelect = (data) => {
     window.location.href = `?theme=${data.content}${window.location.hash}`
 }
 
@@ -69,25 +69,18 @@ const Header = () => {
                 </Button>
 
                 {version && (
-                    <Dropdown
-                        className={headerClass('light')}
-                        data={versions}
-                        trigger="hover"
-                        placeholder={version}
-                        onClick={handleVersionClick}
-                        size="small"
-                        style={{ marginRight: 12 }}
-                    />
+                    <Dropdown trigger="hover" menu={{ data: versions, onSelect: handleVersionClick }}>
+                        <Button size="small" style={{ marginRight: 12 }} className={headerClass('light')}>
+                            {version}
+                        </Button>
+                    </Dropdown>
                 )}
 
-                <Dropdown
-                    className={headerClass('light')}
-                    data={themes}
-                    onClick={handleThemeClick}
-                    trigger="hover"
-                    placeholder={`theme: ${theme.getTheme()}`}
-                    size="small"
-                />
+                <Dropdown menu={{ data: themes, onSelect: handleThemeSelect }} trigger="hover">
+                    <Button size="small" className={headerClass('light')}>
+                        {`theme: ${theme.getTheme()}`}
+                    </Button>
+                </Dropdown>
 
                 <Button type="link" style={{ color: '#666' }} href="https://github.com/chenmingzhen/ethan-ui-library">
                     <Icon name="github" />

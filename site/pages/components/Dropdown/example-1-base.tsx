@@ -5,7 +5,7 @@
  *    -- Dropdown is rendered through data and supports json formatted data and React components.
  */
 import React from 'react'
-import { Dropdown } from 'ethan-ui'
+import { Button, Dropdown } from 'ethan-ui'
 
 const data = [
     {
@@ -30,5 +30,9 @@ const data = [
 ]
 
 export default function () {
-    return <Dropdown placeholder="Dropdown" data={data} onClick={console.log} />
+    return (
+        <Dropdown menu={{ data, onSelect: console.log }}>
+            <Button>Click me</Button>
+        </Dropdown>
+    )
 }
