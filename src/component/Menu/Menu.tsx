@@ -32,9 +32,10 @@ function Menu<T extends Record<string, any> = Record<string, any>>(props: MenuPr
         mode = 'inline',
         inlineIndent = 24,
         subMenuTriggerActions = ['click'],
+        ...restProps
     } = props
 
-    const componentKey = useRef(props.componentKey ?? getUidStr()).current
+    const componentKey = useRef(getUidStr()).current
     const [activePath, setActivePath] = useActivePath({ defaultActiveKey, activeKey, data })
     const { key2PathMapping, menuItemMapping, subMenuMapping, ...registerEvents } = useRegister()
     const { openKeys, syncSetOpenKeys, delaySetOpenKeys } = useOpenKeys({
@@ -91,7 +92,14 @@ function Menu<T extends Record<string, any> = Record<string, any>>(props: MenuPr
         const { key, disabled } = dataItem
         const path = key2PathMapping.get(key)
 
-        if (!path || disabled) return
+        /** 如果是处于禁止状态，且执行开启时，不打开disabled的路径 */
+        if (open && disabled) {
+            delaySetOpenKeys(path.slice(0, -1))
+
+            return
+        }
+
+        if (!path) return
 
         if (open) {
             delaySetOpenKeys(path)
@@ -208,7 +216,7 @@ function Menu<T extends Record<string, any> = Record<string, any>>(props: MenuPr
                 ...registerEvents,
             }}
         >
-            <ul className={menuCls} style={style} ref={ulRef}>
+            <ul {...restProps} className={menuCls} style={style} ref={ulRef}>
                 <More
                     data={data}
                     keyName="key"

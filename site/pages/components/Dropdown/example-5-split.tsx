@@ -7,7 +7,7 @@
 import React from 'react'
 import { Dropdown, Message, Button } from 'ethan-ui'
 
-const menu = [
+const data = [
     {
         content: 'First',
         key: 'First',
@@ -28,10 +28,16 @@ export default function () {
             <Button onClick={() => Message.info('The left button clicked.')}>Left</Button>
             <Button>Center</Button>
             <Dropdown
-                onClick={(data) => Message.info(`The Dropdown clicked ${data.content}.`)}
                 position="bottom-right"
-                data={menu}
-            />
+                menu={{
+                    data,
+                    onSelect(item) {
+                        Message.info(`The Dropdown clicked ${item.content}.`)
+                    },
+                }}
+            >
+                <Button>Dropdown</Button>
+            </Dropdown>
         </Button.Group>
     )
 }

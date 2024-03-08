@@ -1,5 +1,5 @@
 import React, { ReactNode } from 'react'
-import { ButtonProps } from '../Button/type'
+import { MenuProps } from '../Menu/type'
 
 export interface DropDownData {
     content: ReactNode
@@ -9,50 +9,32 @@ export interface DropDownData {
     [customKey: string]: string | boolean | ReactNode | Array<DropDownData>[]
 }
 
-export interface DropDownProps {
-    portal?: boolean
-    placeholder?: React.ReactNode
+type DropdownPosition =
+    | 'right-top'
+    | 'bottom-left'
+    | 'bottom-right'
+    | 'left-top'
+    | 'right-bottom'
+    | 'top-left'
+    | 'top-right'
+    | 'left-bottom'
+    | 'auto'
+
+interface OverlayRenderParams {
+    menu: React.ReactNode
+}
+type OverlayRender = (params: OverlayRenderParams) => React.ReactNode
+export interface DropdownProps {
     className?: string
     visible?: boolean
     onVisibleChange?(visible: boolean): void
-    type?:
-        | 'primary'
-        | 'default'
-        | 'secondary'
-        | 'success'
-        | 'info'
-        | 'warning'
-        | 'error'
-        | 'danger'
-        | 'link'
-        | 'loading'
-    data: DropDownData[]
+    getPopupContainer?: (triggerElement: HTMLElement) => HTMLElement
+    menu?: MenuProps
     disabled?: boolean
     trigger?: 'hover' | 'click'
-    width?: number
-    animation?: boolean
-    listClassName?: string
-    size?: ButtonProps['size']
-    outline?: ButtonProps['outline']
-    onClick?(data): void
-    position?:
-        | 'right-top'
-        | 'bottom-left'
-        | 'bottom-right'
-        | 'left-top'
-        | 'right-bottom'
-        | 'top-left'
-        | 'top-right'
-        | 'left-bottom'
-        | 'auto'
+    position?: DropdownPosition
     style?: React.CSSProperties
-    renderItem?(data: DropDownData): React.ReactNode | string
-    columns?: number
-    buttonProps?: Omit<ButtonProps, 'children' | 'ref'>
-    showCaret?: boolean
-}
+    children: JSX.Element
 
-export interface IDropDownProps extends DropDownProps {
-    isSub?: boolean
-    clickHoverItemDismiss?(): void
+    overlay?: OverlayRender
 }

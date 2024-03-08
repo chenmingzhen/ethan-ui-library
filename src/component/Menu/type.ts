@@ -38,7 +38,8 @@ export interface MenuContext {
 
     checkInPath?: (id: string) => boolean
 }
-export interface MenuProps<T extends Record<string, any> = Record<string, any>> {
+export interface MenuProps<T extends Record<string, any> = Record<string, any>>
+    extends Omit<React.HTMLAttributes<HTMLUListElement>, 'onClick' | 'onSelect'> {
     style?: React.CSSProperties
     className?: string
     data: RecursiveMenuWithExtraData<T>[]
@@ -57,9 +58,6 @@ export interface MenuProps<T extends Record<string, any> = Record<string, any>> 
     subMenuTriggerActions?: Exclude<TriggerAction, 'focus' | 'mousedown'>[]
     /** 当选中时的回调 */
     onSelect?: (dataItem: RecursiveMenuWithExtraData<T>, path: React.Key[]) => void
-
-    /** @private */
-    componentKey?: string
 }
 
 export interface MenuItemProps extends Partial<MoreContextProps> {

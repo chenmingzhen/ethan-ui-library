@@ -306,16 +306,16 @@ const Header: React.FC<TabsHeaderProps> = (props) => {
 
                 {overflowIcon === 'more' && overflow && (
                     <Dropdown
-                        data={dropDownData}
-                        portal
-                        className={tabsClass('drop-down', isVertical && 'vertical')}
-                        listClassName={tabsClass('drop-down-list')}
-                        animation={false}
-                        onClick={handleDropdownClick}
-                        placeholder={<div className={tabsClass('more')}>{icons.Ellipsis}</div>}
-                        showCaret={false}
-                        buttonProps={{ type: 'link', style: { height: '100%', padding: 0, border: 0, width: '100%' } }}
-                    />
+                        menu={{
+                            data: dropDownData,
+                            onSelect: handleDropdownClick,
+                            className: tabsClass('drop-down-list'),
+                        }}
+                    >
+                        <div className={tabsClass('drop-down', isVertical && 'vertical')}>
+                            <div className={tabsClass('more')}>{icons.Ellipsis}</div>
+                        </div>
+                    </Dropdown>
                 )}
             </div>
 

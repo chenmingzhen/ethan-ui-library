@@ -5,12 +5,12 @@
  *    -- Set position property can control the direction and position of the drop-down menu.
  */
 import React from 'react'
-import { Dropdown } from 'ethan-ui'
+import { Button, Dropdown } from 'ethan-ui'
 
 const style = { marginRight: 12, marginBottom: 12 }
 
 export default function () {
-    const menu = [
+    const data = [
         {
             content: 'First',
             key: '1',
@@ -54,26 +54,41 @@ export default function () {
 
     return (
         <div>
-            <Dropdown placeholder="Right Top" style={style} position="right-top" data={menu} />
+            <Dropdown style={style} position="right-top" menu={{ data }}>
+                <Button>Right Top</Button>
+            </Dropdown>
 
-            <Dropdown placeholder="Bottom Left" style={style} position="bottom-left" data={menu} />
+            <Dropdown style={style} position="bottom-left" menu={{ data }}>
+                <Button>Bottom left</Button>
+            </Dropdown>
 
-            <Dropdown placeholder="Bottom Right" style={style} position="bottom-right" data={menu} />
+            <Dropdown style={style} position="bottom-right" menu={{ data }}>
+                <Button>Bottom Right</Button>
+            </Dropdown>
 
-            <Dropdown placeholder="Left Top" style={style} position="left-top" data={menu} />
-
-            <br />
-
-            <Dropdown placeholder="Right Bottom" style={style} position="right-bottom" data={menu} />
-
-            <Dropdown placeholder="Top Left" style={style} position="top-left" data={menu} />
-
-            <Dropdown placeholder="Top Right" style={style} position="top-right" data={menu} />
-
-            <Dropdown placeholder="Left Bottom" style={style} position="left-bottom" data={menu} />
+            <Dropdown style={style} position="left-top" menu={{ data }}>
+                <Button>Left Top</Button>
+            </Dropdown>
 
             <br />
-            <Dropdown placeholder="Auto Position" style={style} position="auto" data={menu} />
+
+            <Dropdown style={style} position="right-bottom" menu={{ data }}>
+                <Button>Right Bottom</Button>
+            </Dropdown>
+
+            <Dropdown style={style} position="top-left" menu={{ data }}>
+                <Button>Top Left</Button>
+            </Dropdown>
+
+            <Dropdown style={style} position="top-right" menu={{ data }}>
+                <Button>Top Right</Button>
+            </Dropdown>
+
+            <Dropdown style={style} position="left-bottom" menu={{ data }}>
+                <Button>Left Bottom</Button>
+            </Dropdown>
+
+            <br />
         </div>
     )
 }
