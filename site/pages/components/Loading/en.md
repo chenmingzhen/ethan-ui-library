@@ -12,11 +12,9 @@ Loading.start() // LineLoading start.
 
 Loading.finish() // LineLoading finish.
 
-Loading.upload(percent:number) // LineLoading to the specified percentage position.
+Loading.go(percent:number) // LineLoading to the specified percentage position.
 
-Loading.config(config:LineLoadingProps) // To configure Loading, such as color or height.Next start function works
-
-Loading.fullScreen(config:FullScreenConfig):FullScreenFunction // FullScreenLoading start.
+Loading.setConfig(config:LineLoadingProps) // To configure Loading, such as color or height.Next start function works
 
 ### LineLoadingProps
 

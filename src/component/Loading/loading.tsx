@@ -1,36 +1,35 @@
-import React, { memo, useImperativeHandle, forwardRef } from 'react'
+import React, { memo } from 'react'
 import { loadingClass } from '@/styles'
 import { usePrevious } from 'react-use'
-import useSetState from '@/hooks/useSetState'
 import Spin from '../Spin'
-import { LoadingProps, LoadingState, LoadingInstance } from './type'
+import { LoadingProps } from './type'
+import Motion from '../Motion'
 
-const Loading: React.ForwardRefRenderFunction<LoadingInstance, LoadingProps> = (props, ref) => {
-    const [state, updateState] = useSetState<LoadingState>({
-        visible: true,
-        percent: props.percent || 0,
-        height: props.height || 4,
-        color: props.color || '#3399ff',
-    })
-    const lastPercent = usePrevious(state.percent)
+const Loading: React.FC<LoadingProps> = (props) => {
+    const { visible, percent, height, color } = props
+    const lastPercent = usePrevious(percent)
 
-    useImperativeHandle(ref, () => ({ updateState }))
-
-    const animation = lastPercent < state.percent
+    const animation = lastPercent < percent
     const barStyle: React.CSSProperties = {
-        width: `${state.percent}%`,
-        background: state.color,
-        boxShadow: `0 0 10px 0 ${state.color}`,
+        width: `${percent}%`,
+        background: color,
+        boxShadow: `0 0 10px 0 ${color}`,
     }
 
     return (
-        <div className={loadingClass('_', !state.visible && 'fade')} style={{ height: state.height }}>
+        <Motion.Transition
+            duration="slow"
+            visible={visible}
+            style={{ height }}
+            transitionTypes={['fade']}
+            className={loadingClass('_')}
+        >
             <div className={loadingClass('line', animation && 'animation')} style={barStyle} />
             <div className={loadingClass('spin')}>
-                <Spin name="ring" color={state.color} size={24} />
+                <Spin name="ring" color={color} size={24} />
             </div>
-        </div>
+        </Motion.Transition>
     )
 }
 
-export default memo(forwardRef(Loading))
+export default memo(Loading)

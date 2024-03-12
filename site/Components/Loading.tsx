@@ -1,15 +1,13 @@
-import React from 'react'
-import { useMount, useUnmount } from 'react-use'
-import { Spin, Loading as ld } from 'ethan-ui'
+import React, { useEffect } from 'react'
+import { Spin, Loading as loading } from 'ethan-ui'
 
 function Loading({ style }) {
-    useMount(() => {
-        ld.start()
-    })
-
-    useUnmount(() => {
-        ld.finish()
-    })
+    useEffect(
+        () => () => {
+            loading.finish()
+        },
+        []
+    )
 
     return (
         <div
@@ -31,4 +29,4 @@ Loading.defaultProps = {
     style: {},
 }
 
-export default Loading
+export default React.memo(Loading)

@@ -5,18 +5,12 @@
 
 .@{loading-prefix} {
     position: fixed;
-    z-index: 1001;
+    z-index: 9999;
     left: 0;
     top: 0;
     bottom: 0;
     right: 0;
     background: rgb(255 255 255 / 60%);
-    transition: opacity 0.5s ease-in-out;
-    opacity: 1;
-
-    &-fade {
-        opacity: 0;
-    }
 
     &-spin {
         position: absolute;
@@ -27,9 +21,9 @@
     &-line {
         height: 100%;
         background-color: @colors-primary;
-    }
 
-    &-animation {
-        transition: width 0.2s ease-in-out;
+        &.@{loading-prefix}-animation {
+            transition: width 0.2s ease-in-out;
+        }
     }
 }

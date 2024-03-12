@@ -12,11 +12,9 @@ Loading.start() // 进度条开始加载
 
 Loading.finish() // 进度条结束加载
 
-Loading.upload(percent:number) // 进度条到指定百分比位置
+Loading.go(percent:number) // 进度条到指定百分比位置
 
-Loading.config(config:LineLoadingProps) // 配置 Loading，如 color，高度，需要下次 start 生效
-
-Loading.fullScreen(config:FullScreenConfig):FullScreenFunction // 开始全屏 Loading
+Loading.setConfig(config:LineLoadingProps) // 配置 Loading，如 color，高度，需要下次 start 生效
 
 ### Loading
 
