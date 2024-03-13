@@ -1,10 +1,11 @@
 /**
-* 此文件根据 scripts/components-page.ejs 生成，不要手动修改
+* 此文件根据 scripts/component-page.ejs 生成，不要手动修改
 */
 import React from 'react'
 import Navigation from 'docs/Navigation'
 import MarkDown from 'docs/MarkDown'
 import locate from 'doc/utils/locate'
+import withLoading from 'doc/pages/withLoading'
 
 import cn from 'doc/pages/components/<%= name %>/cn.md'
 import en from 'doc/pages/components/<%= name %>/en.md'
@@ -25,6 +26,6 @@ const examples = [
 <% }) -%>
 ]
 
-export default React.memo(()=><Navigation><MarkDown source={source} examples={examples} /></Navigation>)
+export default withLoading(()=><Navigation><MarkDown source={source} examples={examples} /></Navigation>)
 
 

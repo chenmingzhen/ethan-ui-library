@@ -2,6 +2,7 @@ import React from 'react'
 import { Button, FontAwesome } from 'ethan-ui'
 import { homeClass } from 'doc/styles'
 import history from 'docs/history'
+import withLoading from '../withLoading'
 
 const Home = () => (
     <div className={homeClass('_')}>
@@ -34,4 +35,4 @@ const Home = () => (
     </div>
 )
 
-export default React.memo(Home)
+export default withLoading(Home)

@@ -1,9 +1,8 @@
 import React, { useState, lazy, Suspense, useEffect } from 'react'
 import { Router, Switch, Route } from 'react-router-dom'
-import { useLocation, useUpdate } from 'react-use'
+import { useUpdate } from 'react-use'
 import history from 'docs/history'
 import Header from 'docs/Header'
-import { Loading as loading } from 'ethan-ui'
 import Loading from './Components/Loading'
 import { setLanguage, STORAGE_KEY, getItem } from './utils/locate'
 import { mainClass } from './styles'
@@ -15,7 +14,7 @@ const Components = lazy(() => import(/* webpackChunkName: "Components" */ './chu
 
 const App = () => {
     const [currentPath, updateCurrentPath] = useState(history.location.pathname)
-    const location = useLocation()
+
     const update = useUpdate()
 
     useEffect(() => {
@@ -39,14 +38,6 @@ const App = () => {
             unListen()
         }
     }, [])
-
-    useEffect(() => {
-        loading.start()
-
-        return () => {
-            loading.finish()
-        }
-    }, [location.pathname])
 
     return (
         <Router history={history}>
