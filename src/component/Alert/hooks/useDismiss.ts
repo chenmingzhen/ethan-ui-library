@@ -1,8 +1,8 @@
 import { isFunc } from '@/utils/is'
 import { useState, useCallback, RefObject } from 'react'
-import { IAlertProps } from '../alert'
+import { AlertProps } from '../type'
 
-interface UseDismissProps extends Pick<IAlertProps, 'onClose' | 'duration'> {
+interface UseDismissProps extends Pick<AlertProps, 'onClose' | 'duration'> {
     alertContainerElementRef: RefObject<HTMLDivElement>
 
     onDismiss: (duration?: number, height?: number) => void

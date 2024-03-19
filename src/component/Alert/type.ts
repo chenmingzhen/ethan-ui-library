@@ -9,6 +9,13 @@ export interface AlertProps {
     onClose?: ((duration?: number, height?: number) => void) | boolean
     closeItem?: React.ReactNode
     children?: React.ReactNode
+
+    /** @private */
+    onDismiss: (duration?: number, height?: number) => void
+    /** @private */
+    dismiss?: boolean
+    /** @private */
+    duration?: number
 }
 
 export interface AlertInstance {

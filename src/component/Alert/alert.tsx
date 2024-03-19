@@ -7,16 +7,8 @@ import useDismiss from './hooks/useDismiss'
 import icons from '../icons'
 import { AlertInstance, AlertProps } from './type'
 
-export interface IAlertProps extends AlertProps {
-    onDismiss: (duration?: number, height?: number) => void
-
-    dismiss?: boolean
-
-    duration?: number
-}
-
 export default memo(
-    React.forwardRef<AlertInstance, IAlertProps>((props, alertRef) => {
+    React.forwardRef<AlertInstance, AlertProps>((props, alertRef) => {
         const {
             className,
             style,
@@ -50,6 +42,9 @@ export default memo(
         if (dismiss === 2) return null
 
         function renderIcon() {
+            if (type === 'loading')
+                return <Spin name="ring" size={18} className={alertClass('loading-icon')} color="#17a2b8" />
+
             let iconElement: React.ReactNode
 
             if (typeof icon === 'boolean' && icon) {
@@ -95,11 +90,7 @@ export default memo(
 
         return (
             <div ref={alertContainerElementRef} className={mc} style={style}>
-                {type !== 'loading' ? (
-                    renderIcon()
-                ) : (
-                    <Spin name="ring" size={18} className={alertClass('loading-icon')} color="#17a2b8" />
-                )}
+                {renderIcon()}
                 <div className={alertClass('content')}>{children}</div>
                 {onClose && renderClose()}
             </div>

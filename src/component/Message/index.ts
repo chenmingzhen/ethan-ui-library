@@ -1,7 +1,7 @@
-import { AlertType } from '@/component/Alert/alert'
 import React from 'react'
 import { destroy, getComponent, closeWithAnimation } from './messager'
 import { MessageOption } from './type'
+import { AlertType } from '../Alert/type'
 
 const create =
     (type: AlertType) =>
