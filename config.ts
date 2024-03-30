@@ -6,7 +6,7 @@ import pkg from './package.json'
 export const version = `${pkg.version.substring(0, pkg.version.lastIndexOf('.') + 1)}x`
 
 const versions: { react?: string; 'react-dom'?: string; jszip?: string } = {}
-;['react', 'react-dom', 'jszip'].forEach((lib) => {
+;['react', 'react-dom', 'jszip', 'react-markdown'].forEach((lib) => {
     const libPackageBuffer = fs.readFileSync(path.resolve(__dirname, 'node_modules/', lib, 'package.json')).toString()
 
     const libPkg = JSON.parse(libPackageBuffer.toString())
@@ -27,6 +27,7 @@ const config = {
             `/react-dom@${versions['react-dom']}/umd/react-dom.production.min.js`,
             /** upload examples中使用jszip 将jsZip打包进来 window中即存在 window.jszip */
             `/jszip@${versions.jszip}/dist/jszip.min.js`,
+            `/react-markdown@${versions['react-markdown']}/umd/react-markdown.js`,
         ],
     },
     themes: ['default', 'ethan', 'antd'],

@@ -70,16 +70,14 @@ const Header = () => {
 
                 {version && (
                     <Dropdown trigger="hover" menu={{ data: versions, onSelect: handleVersionClick }}>
-                        <Button size="small" style={{ marginRight: 12 }} className={headerClass('light')}>
+                        <Button size="small" style={{ marginRight: 12 }}>
                             {version}
                         </Button>
                     </Dropdown>
                 )}
 
                 <Dropdown menu={{ data: themes, onSelect: handleThemeSelect }} trigger="hover">
-                    <Button size="small" className={headerClass('light')}>
-                        {`theme: ${theme.getTheme()}`}
-                    </Button>
+                    <Button size="small">{`theme: ${theme.getTheme()}`}</Button>
                 </Dropdown>
 
                 <Button type="link" style={{ color: '#666' }} href="https://github.com/chenmingzhen/ethan-ui-library">

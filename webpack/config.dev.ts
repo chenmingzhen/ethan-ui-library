@@ -10,7 +10,7 @@ const cssConfig = config.themes.map((name) =>
         output: {
             publicPath: `http://localhost:${config.dev.publishPort}/`,
             filename: '__css_hot_loader.js',
-            uniqueName: '__css_hot_loader',
+            uniqueName: name,
         },
         prefix: '',
     })
@@ -22,13 +22,16 @@ const jsConfig = merge(getCommonConfig({ Dev: true }), {
     output: {
         filename: '[name].js',
         /** 指示打包生成的路径，热更新请求publicPath的资源 */
-        uniqueName: '[name]',
         publicPath: `http://localhost:${config.dev.publishPort}/`,
-        library: {
-            type: 'umd',
-        },
+        /** @see https://webpack.js.org/configuration/output/#outputuniquename */
+        uniqueName: '[name]',
     },
     mode: 'development',
+    externals: {
+        react: 'React',
+        'react-dom': 'ReactDOM',
+        'react-markdown': 'reactMarkdown',
+    },
 })
 
 export default [jsConfig, ...cssConfig]

@@ -12,7 +12,7 @@ const cssConfig = config.themes.map((name) =>
             './site/styles/index.ts',
             './site/less-entry.ts',
         ],
-        output: { path: path.join(__dirname, `../docs-pages/${version}`) },
+        output: { path: path.join(__dirname, `../docs-pages/${version}`), uniqueName: name },
         prefix: '',
     })
 )
@@ -24,8 +24,11 @@ const jsConfig = merge(getCommonConfig({ Dev: false }), {
         path: path.join(__dirname, `../docs-pages/${version}`),
         /** @see https://webpack.docschina.org/configuration/output/#outputpublicpath */
         publicPath: '../../',
-        libraryTarget: 'umd',
-        library: 'EthanDoc',
+    },
+    externals: {
+        react: 'React',
+        'react-dom': 'ReactDOM',
+        'react-markdown': 'reactMarkdown',
     },
     mode: 'production',
 })

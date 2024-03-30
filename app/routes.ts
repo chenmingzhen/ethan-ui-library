@@ -18,6 +18,9 @@ router.get('**/react-dom.production.min.js', async (ctx) => {
 router.get('**/jszip.min.js', async (ctx) => {
     await send(ctx, 'node_modules/jszip/dist/jszip.min.js')
 })
+router.get('**/react-markdown.js', async (ctx) => {
+    await send(ctx, 'node_modules/react-markdown/umd/react-markdown.js')
+})
 
 /** ------------------------- 图片静态资源 ---------------------------- */
 router.get('/images/*', async (ctx) => {

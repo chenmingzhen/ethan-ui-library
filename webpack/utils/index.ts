@@ -1,8 +1,7 @@
 import webpack, { Configuration, RuleSetRule } from 'webpack'
 import path from 'path'
 import MiniCssExtractPlugin from 'mini-css-extract-plugin'
-import UglifyWebpackPlugin from 'uglifyjs-webpack-plugin'
-import OptimizeCSSAssetsPlugin from 'optimize-css-assets-webpack-plugin'
+import CssMinimizerPlugin from 'css-minimizer-webpack-plugin'
 import { CleanWebpackPlugin } from 'clean-webpack-plugin'
 import ReactRefreshWebpackPlugin from '@pmmmwh/react-refresh-webpack-plugin'
 import config from '../../config'
@@ -150,53 +149,12 @@ export function getCommonConfig(options: GetCommonConfigOptionParams) {
         resolve: {
             extensions: ['.ts', '.tsx', '.js', '.json', '.jsx'],
             alias: config.webpack.alias,
-            /** webpack5中不提供path模块 */
-            /** @see https://webpack.docschina.org/configuration/resolve/#resolvefallback */
-            /** @see https://stackoverflow.com/questions/64557638/how-to-polyfill-node-core-modules-in-webpack-5 */
-            fallback: {
-                path: require.resolve('path-browserify'),
-            },
-        },
-        externals: {
-            react: {
-                root: 'React',
-                commonjs2: 'react',
-                commonjs: 'react',
-                amd: 'react',
-            },
-            'react-dom': {
-                root: 'ReactDOM',
-                commonjs2: 'react-dom',
-                commonjs: 'react-dom',
-                amd: 'react-dom',
-            },
-        },
-        optimization: {
-            minimizer: [
-                /** UglifyJS Webpack Plugin插件用来缩小（压缩优化）js文件 */
-                new UglifyWebpackPlugin({
-                    cache: true, // 是否启用文件缓存 ，默认缓存在node_modules/.cache/uglifyjs-webpack-plugin.目录
-                    parallel: true, // 使用多进程并行运行来提高构建速度
-                    uglifyOptions: {
-                        output: {
-                            comments: false,
-                        },
-                    },
-                }),
-            ],
         },
         plugins: [
             new webpack.DefinePlugin({
                 'process.env': {
                     ETHAN_PREFIX: JSON.stringify(process.env.ETHAN_PREFIX || ''),
                 },
-            }),
-            /** @see https://webpack.docschina.org/plugins/provide-plugin/#root */
-            /** https://github.com/vfile/vfile/issues/38 */
-            /** webpack5中不提供process模块 */
-            /** process 在浏览器环境中不存在 需要垫片支持 */
-            new webpack.ProvidePlugin({
-                process: 'process/browser',
             }),
             Dev && new ReactRefreshWebpackPlugin({ overlay: { sockPort: config.dev.webpackPort } }),
         ].filter(Boolean),
@@ -213,17 +171,19 @@ interface GetThemeWebpackConfigParams {
     mode?: 'production' | 'development'
 }
 
-/** 打包css生成的无用js文件 */
-const CSS_TEMP_JS = 'temp_js'
+const PREFIX_CSS_TEMP_JS = 'temp_js'
 
 export function getThemeWebpackConfig(options: GetThemeWebpackConfigParams) {
     const { name, entry, output, prefix = 'theme', mode = 'production' } = options
+
+    /** 打包css生成的无用js文件 */
+    const uselessJsFileName = PREFIX_CSS_TEMP_JS + name
 
     const themeConfig: Configuration = {
         mode,
         entry,
         optimization: {
-            minimizer: [new OptimizeCSSAssetsPlugin({})],
+            minimizer: [new CssMinimizerPlugin()],
         },
         resolveLoader: {
             modules: ['node_modules', 'webpack/loaders'],
@@ -234,7 +194,7 @@ export function getThemeWebpackConfig(options: GetThemeWebpackConfigParams) {
         },
         output: {
             ...output,
-            filename: mode === 'production' ? CSS_TEMP_JS : output.filename,
+            filename: mode === 'production' ? uselessJsFileName : output.filename,
         },
         module: {
             rules: [
@@ -269,7 +229,7 @@ export function getThemeWebpackConfig(options: GetThemeWebpackConfigParams) {
             mode === 'production' &&
                 new CleanWebpackPlugin({
                     protectWebpackAssets: false,
-                    cleanAfterEveryBuildPatterns: [CSS_TEMP_JS],
+                    cleanAfterEveryBuildPatterns: [uselessJsFileName],
                 }),
             mode === 'development' && new ReactRefreshWebpackPlugin({ overlay: { sockPort: config.dev.webpackPort } }),
         ].filter(Boolean),
