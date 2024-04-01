@@ -171,13 +171,11 @@ interface GetThemeWebpackConfigParams {
     mode?: 'production' | 'development'
 }
 
-const PREFIX_CSS_TEMP_JS = 'temp_js'
-
 export function getThemeWebpackConfig(options: GetThemeWebpackConfigParams) {
     const { name, entry, output, prefix = 'theme', mode = 'production' } = options
 
     /** 打包css生成的无用js文件 */
-    const uselessJsFileName = PREFIX_CSS_TEMP_JS + name
+    const CSS_TEMP_JS = `temp_${name}.js`
 
     const themeConfig: Configuration = {
         mode,
@@ -194,7 +192,7 @@ export function getThemeWebpackConfig(options: GetThemeWebpackConfigParams) {
         },
         output: {
             ...output,
-            filename: mode === 'production' ? uselessJsFileName : output.filename,
+            filename: mode === 'production' ? CSS_TEMP_JS : output.filename,
         },
         module: {
             rules: [
@@ -222,14 +220,14 @@ export function getThemeWebpackConfig(options: GetThemeWebpackConfigParams) {
             new MiniCssExtractPlugin({
                 filename: prefix ? `${prefix}.${name}.css` : `${name}.css`,
             }),
-            new webpack.ProvidePlugin({
-                process: 'process/browser',
-            }),
             /** @see https://www.npmjs.com/package/clean-webpack-plugin */
             mode === 'production' &&
                 new CleanWebpackPlugin({
+                    /** CSS_TEMP_JS是Webpack构建过程中生成的资产,需要取消保护才能删除掉 */
                     protectWebpackAssets: false,
-                    cleanAfterEveryBuildPatterns: [uselessJsFileName],
+                    cleanAfterEveryBuildPatterns: [CSS_TEMP_JS],
+                    /** 打包前不删除target目录 */
+                    cleanOnceBeforeBuildPatterns: [],
                 }),
             mode === 'development' && new ReactRefreshWebpackPlugin({ overlay: { sockPort: config.dev.webpackPort } }),
         ].filter(Boolean),

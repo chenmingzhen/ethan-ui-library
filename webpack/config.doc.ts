@@ -24,6 +24,7 @@ const jsConfig = merge(getCommonConfig({ Dev: false }), {
         path: path.join(__dirname, `../docs-pages/${version}`),
         /** @see https://webpack.docschina.org/configuration/output/#outputpublicpath */
         publicPath: '../../',
+        uniqueName: 'app',
     },
     externals: {
         react: 'React',

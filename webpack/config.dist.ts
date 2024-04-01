@@ -8,7 +8,7 @@ const cssConfig = config.themes.map((name) =>
     getThemeWebpackConfig({
         name,
         entry: ['./src/styles/style.ts'],
-        output: { path: path.join(__dirname, '../publish/dist') },
+        output: { path: path.join(__dirname, '../publish/dist'), uniqueName: name },
     })
 )
 
@@ -20,6 +20,7 @@ const jsConfig = merge(getCommonConfig({ Dev: false }), {
         libraryTarget: 'umd',
         library: 'Ethan',
         filename: 'Ethan.min.js',
+        uniqueName: 'Ethan',
     },
     /** @see https://webpack.docschina.org/configuration/externals/ */
     externals: {
