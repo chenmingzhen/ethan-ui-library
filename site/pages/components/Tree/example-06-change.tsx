@@ -73,7 +73,7 @@ export default class extends Component {
                     format="value"
                     onChange={this.handleModeChange}
                     data={modeList}
-                    renderItem="text"
+                    labelKey="text"
                 />
 
                 <br />

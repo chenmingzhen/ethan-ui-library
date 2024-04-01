@@ -17,6 +17,12 @@ interface ISpinProps extends SpinProps {
     spinClass?(...rest): string
 
     style?: React.CSSProperties
+
+    itemStyle?: React.CSSProperties
+
+    itemSize?: string
+
+    itemClass?: string
 }
 
 const Spin: React.FC<ISpinProps> = (props) => {

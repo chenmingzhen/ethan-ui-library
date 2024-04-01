@@ -11,7 +11,7 @@ export interface AlertProps {
     children?: React.ReactNode
 
     /** @private */
-    onDismiss: (duration?: number, height?: number) => void
+    onDismiss?: (duration?: number, height?: number) => void
     /** @private */
     dismiss?: boolean
     /** @private */

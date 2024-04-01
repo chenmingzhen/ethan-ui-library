@@ -1,6 +1,6 @@
 import React from 'react'
-import { PopoverProps } from '../Popover'
 import { Rule } from '../Rule/type'
+import { PopoverProps } from '../Popover/type'
 
 export interface BaseInputProps<Value = string | number>
     extends Omit<

@@ -1,7 +1,6 @@
 import React, { Children, cloneElement } from 'react'
 import classnames from 'classnames'
 import { cardClass } from '@/styles'
-import Card from './Card'
 
 export interface AccordionProps {
     /** 提供受控的active */
@@ -36,12 +35,17 @@ const Accordion: React.FC<AccordionProps> = ({ active: pActive, defaultActive = 
 
     return (
         <>
-            {Children.toArray(children).map((child: typeof Card, i) => {
+            {Children.toArray(children).map((child, i) => {
+                if (!React.isValidElement(child)) {
+                    // 如果child不是一个有效的React元素，则跳过本次迭代
+                    return null
+                }
+
                 const childId = getChildId(child, i)
                 const props = {
                     collapsed: active !== childId,
                     collapsible: true,
-                    className: classnames(typeof child === 'object' && child.className, cardClass('accordion')),
+                    className: classnames(typeof child === 'object' && child.props?.className, cardClass('accordion')),
                     onCollapse: handleActive.bind(null, childId),
                 }
                 return cloneElement(child, props)

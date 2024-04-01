@@ -1,5 +1,5 @@
 import React from 'react'
-import { AlertType } from '../Alert/alert'
+import { AlertType } from '../Alert/type'
 
 /**
  * 对外暴露的API

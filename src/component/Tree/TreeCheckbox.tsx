@@ -32,10 +32,11 @@ const TreeCheckbox: React.FC<TreeCheckboxProps> = (props) => {
         return datum.isDisabled(id)
     }, [id, disabled])
 
-    const checked = datum.getChecked(id)
+    const [checked, indeterminate] = datum.getChecked(id)
 
     return (
         <Checkbox
+            indeterminate={indeterminate}
             checked={checked}
             disabled={checkDisabled()}
             onChange={handleChange}

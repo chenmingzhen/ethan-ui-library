@@ -204,7 +204,7 @@ export const deepRemove = (target, path) => {
             delete current[prop]
         } else {
             if (!nextIsArray) throw new Error('Target is an array, expect object')
-            current.splice(prop, 1)
+            ;(current as any).splice(prop, 1)
         }
     }
 

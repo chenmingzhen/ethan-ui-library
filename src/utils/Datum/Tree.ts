@@ -291,11 +291,11 @@ export default class {
     getChecked(id) {
         const value = this.get(id)
 
-        let checked: CheckboxProps['checked'] = value === 1
+        const checked: CheckboxProps['checked'] = value === 1
 
-        if (value === 2) checked = 'indeterminate'
+        if (value === 2) return [false, true]
 
-        return checked
+        return [checked, false]
     }
 
     setData(data) {

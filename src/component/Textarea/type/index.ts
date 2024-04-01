@@ -1,4 +1,4 @@
-import { PopoverProps } from '@/component/Popover'
+import { PopoverProps } from '@/component/Popover/type'
 import { Rule } from '@/component/Rule/type'
 
 export interface TextareaProps

@@ -1,5 +1,5 @@
 import FormItemContext from '@/component/Form/context/formItemContext'
-import { PopoverProps } from '@/component/Popover'
+import { PopoverProps } from '@/component/Popover/type'
 import { inputClass } from '@/styles'
 import { styles } from '@/utils/style/styles'
 import classnames from 'classnames'
