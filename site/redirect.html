@@ -1,20 +1,19 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <title>Ethan UI Library for practice</title>
-        <script>
-            var __storage = 'ETHAN_UI'
 
-            var __inner = <%=inner %>
+<head>
+    <title>Ethan UI Library for practice</title>
+    <script>
+        var lang = localStorage && localStorage.getItem ? localStorage.getItem('ETHAN_UI') : window.navigator.language;
 
-            function __getLanguage() {
-                if (localStorage && localStorage.getItem) return localStorage.getItem(__storage)
+        <% if (root) { %>
+            window.location.href = lang === 'zh-CN' ? 'cn/home/' : 'en/home/';
+        <% } else { %>
+            window.location.href = 'home/';
+        <% } %>
+    </script>
+</head>
 
-                return window.navigator.language
-            }
+<body></body>
 
-            window.location.href = (__inner ? '' : __getLanguage() === 'zh-CN' ? 'cn/' : 'en/') + 'index/'
-        </script>
-    </head>
-    <body></body>
 </html>

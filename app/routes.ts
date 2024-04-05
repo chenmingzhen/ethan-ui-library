@@ -67,7 +67,7 @@ router.get(config.dev.scriptPath, async (ctx) => {
 })
 
 router.get('/', (ctx) => {
-    ctx.redirect('/cn/index/')
+    ctx.redirect('/cn/home/')
 })
 
 router.get('/*', async (ctx) => {

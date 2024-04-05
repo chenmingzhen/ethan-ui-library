@@ -8,14 +8,14 @@ export interface NavMenuData {
 }
 
 const navs: RecursiveMenuWithExtraData<NavMenuData>[] = [
-    { path: '/index/', en: 'Home', cn: '首页', key: '/index/' },
+    { path: '/home/', en: 'Home', cn: '首页', key: '/home/' },
     { path: '/components/Start', en: 'Components', cn: '组件', key: '/components/Start' },
 ]
 
 const useNav = () => {
     const location = useLocation()
 
-    const initPath = location.pathname.indexOf('/index/') !== -1 ? navs[0].key : navs[1].key
+    const initPath = location.pathname.indexOf('/home/') !== -1 ? navs[0].key : navs[1].key
 
     return { initPath, navs }
 }

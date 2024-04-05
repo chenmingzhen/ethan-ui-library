@@ -6,14 +6,13 @@ import config, { version } from '../config'
 const cdn = 'https://unpkg.com'
 const dir = `docs-pages/${version}`
 const componentPaths = path.resolve(__dirname, '../site/pages/components')
+const components = fs.readdirSync(componentPaths).map((c) => c.split('.')[0])
 
 // 创建目录
 function createDir(lang) {
-    if (!lang) return
-
-    fs.mkdirSync(`${process.cwd()}/${dir}/${lang}`, { recursive: true })
-    fs.mkdirSync(`${process.cwd()}/${dir}/${lang}/index`, { recursive: true })
-    fs.mkdirSync(`${process.cwd()}/${dir}/${lang}/components`, { recursive: true })
+    fs.mkdirSync(`${process.cwd()}/${dir}/${lang}`)
+    fs.mkdirSync(`${process.cwd()}/${dir}/${lang}/home`)
+    fs.mkdirSync(`${process.cwd()}/${dir}/${lang}/components`)
 }
 
 const renderEjs = (scripts, description, lang = 'en') =>
@@ -25,23 +24,21 @@ const renderEjs = (scripts, description, lang = 'en') =>
     })
 
 async function buildRedirect(lang) {
-    const inner = await ejs.asyncRenderFile('./site/redirect.html', {
-        inner: true,
+    const langHtml = await ejs.asyncRenderFile('./site/redirect.html', {
+        root: false,
     })
 
     // 对window.location.href 转发 到 cn/en
-    const outer = await ejs.asyncRenderFile('./site/redirect.html', {
-        inner: false,
+    const rootHtml = await ejs.asyncRenderFile('./site/redirect.html', {
+        root: true,
     })
 
-    fs.writeFileSync(`${dir}/index.html`, outer)
-    fs.writeFileSync(`${dir}/${lang}/index.html`, inner)
+    fs.writeFileSync(`${dir}/index.html`, rootHtml)
+    fs.writeFileSync(`${dir}/${lang}/index.html`, langHtml)
 }
 
 async function buildHtml(lang) {
     createDir(lang)
-
-    const components = fs.readdirSync(componentPaths).map((c) => c.split('.')[0])
 
     const scripts = config.dev.scripts.map((p) => cdn + p)
 
@@ -50,9 +47,9 @@ async function buildHtml(lang) {
         scripts.push(`../../${s}.js`)
     })
 
-    const html = await renderEjs(scripts, '', lang)
+    const homeHtml = await renderEjs(scripts, '', lang)
 
-    fs.writeFileSync(`${dir}/${lang}/index/index.html`, html)
+    fs.writeFileSync(`${dir}/${lang}/home/index.html`, homeHtml)
 
     components.forEach(async (c) => {
         if (c === 'group') return

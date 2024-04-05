@@ -46,7 +46,7 @@ const App = () => {
                 <div className={mainClass('body')}>
                     <Suspense fallback={<Loading />}>
                         <Switch>
-                            <Route exact path="/index" component={Home} />
+                            <Route exact path={['/', '/home']} component={Home} />
                             <Route path="/components" component={Components} />
                         </Switch>
                     </Suspense>

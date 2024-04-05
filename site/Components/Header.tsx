@@ -50,7 +50,7 @@ const Header = () => {
         <div className={headerClass('_')}>
             <div className={headerClass('logo')}>
                 <img src="https://chenmingzhen.github.io/ethan-ui-library/images/ui.png" alt="" />
-                <Link to="/index/">Ethan</Link>
+                <Link to="/home/">Ethan</Link>
             </div>
             <div className={headerClass('nav')}>
                 <Menu<NavMenuData>
