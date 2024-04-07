@@ -1,0 +1,11 @@
+{
+    "extends": "./tsconfig.base.json",
+    "compilerOptions": {
+        "target": "ES6",
+        "rootDir": "src",
+        "outDir": "publish/es",
+        "module": "ES6"
+    },
+    "include": ["src", "./typing.d.ts"],
+    "exclude": ["node_modules", "ssh-client", "webpack", "scripts", "docs-pages", "publish", "site"]
+}

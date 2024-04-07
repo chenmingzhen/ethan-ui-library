@@ -1,9 +1,10 @@
 {
-    // tsc 编译使用
     "extends": "./tsconfig.base.json",
     "compilerOptions": {
+        "target": "ES5",
         "rootDir": "src",
-        "outDir": "publish/css"
+        "outDir": "publish/lib",
+        "module": "CommonJS"
     },
     "include": ["src", "./typing.d.ts"],
     "exclude": ["node_modules", "ssh-client", "webpack", "scripts", "docs-pages", "publish", "site"]
