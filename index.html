@@ -1,19 +1,18 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <title>Ethan UI组件库</title>
-    <script>
-      var __storage = "ETHAN_UI";
 
-      function __getLanguage() {
-        if (window.localStorage && window.localStorage.getItem)
-          return window.localStorage.getItem(__storage);
-        return window.navigator.language || window.navigator.userLanguage;
-      }
+<head>
+  <title>Ethan UI组件库</title>
+  <script>
 
-      window.location.href =
-        "1.1.x/" + (__getLanguage() === "zh-CN" ? "cn" : "en") + "/";
-    </script>
-  </head>
-  <body></body>
+    var lang = localStorage && localStorage.getItem ? localStorage.getItem('ETHAN_UI') : window.navigator.language;
+
+
+    window.location.href = ("2.0.x/") + (lang === 'zh-CN' ? 'cn/' : 'en/');
+
+  </script>
+</head>
+
+<body></body>
+
 </html>
