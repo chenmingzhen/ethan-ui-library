@@ -32,12 +32,10 @@ const PriceInput: React.FC<PriceInputProps> = ({ value = {}, onChange }) => {
                 value={value.currency}
                 style={{ width: 80, margin: '0 8px' }}
                 onChange={handleCurrencyChange}
-                renderItem="label"
                 data={[
                     { label: 'RMB', value: 'rmb' },
                     { label: 'Dollar', value: 'dollar' },
                 ]}
-                format="value"
             />
         </span>
     )

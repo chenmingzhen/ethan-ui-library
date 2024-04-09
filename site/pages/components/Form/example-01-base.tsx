@@ -58,7 +58,6 @@ export default function App() {
 
             <Form.Item label="Hate Color" name="hateColor">
                 <Select
-                    keygen
                     style={{ width: 100 }}
                     clearable
                     data={['red', 'orange', 'yellow', 'green', 'cyan', 'blue', 'violet']}

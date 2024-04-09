@@ -49,7 +49,7 @@ export default function App() {
                 <Form.FieldSet name="address">
                     <div style={{ display: 'flex' }}>
                         <Form.Item noStyle name="province">
-                            <Select keygen style={{ width: 100 }} clearable data={['BeiJing', 'ShangHai']} />
+                            <Select style={{ width: 100 }} clearable data={['BeiJing', 'ShangHai']} />
                         </Form.Item>
                         <Form.Item noStyle name="street">
                             <Input clearable />

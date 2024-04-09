@@ -45,7 +45,7 @@ const App = () => (
                         },
                     ]}
                 >
-                    <Select placeholder="Select province" data={['Zhejiang', 'Jiangsu']} keygen clearable />
+                    <Select placeholder="Select province" data={['Zhejiang', 'Jiangsu']} clearable />
                 </Form.Item>
                 <Form.Item
                     name="address.street"
