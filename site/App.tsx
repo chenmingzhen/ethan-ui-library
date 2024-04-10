@@ -9,6 +9,8 @@ import { mainClass } from './styles'
 
 const filterLang = (href) => (href.indexOf('/en') > -1 ? 'en-US' : 'zh-CN')
 
+/** Webpack魔法注释需要确保loader转化时保留注释 */
+
 const Home = lazy(() => import(/* webpackChunkName: "Home" */ './pages/Home'))
 const Components = lazy(() => import(/* webpackChunkName: "Components" */ './chunks/Components'))
 

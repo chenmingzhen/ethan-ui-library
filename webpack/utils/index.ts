@@ -42,8 +42,19 @@ export function getCommonConfig(options: GetCommonConfigOptionParams) {
     const { Dev } = options
 
     const rules: RuleSetRule[] = [
-        /** dev环境 less由cssConfig负责打包 */
-        /** 将less文件内容置空 */
+        {
+            test: /\.(js|jsx|ts|tsx)$/,
+            exclude: [/node_modules/],
+            use: [
+                {
+                    loader: 'babel-loader',
+                    options: {
+                        cacheDirectory: true,
+                        presets: ['@babel/preset-typescript'],
+                    },
+                },
+            ],
+        },
         {
             test: /\.less$/,
             use: path.resolve(__dirname, '../loaders/ignore-loader.ts'),
@@ -81,66 +92,6 @@ export function getCommonConfig(options: GetCommonConfigOptionParams) {
             use: 'raw-loader',
         },
     ]
-
-    const jsxRule: RuleSetRule = {
-        test: /\.jsx?$/,
-        exclude: [/node_modules/],
-    }
-
-    /** dev环境 less由cssConfig负责打包 移除所有的less导入 改为var $1={} */
-    /** 将tsx中的less的引入代码剔除 在ignore-loader中已经将less的内容置空 */
-    const tsxRule: RuleSetRule = {
-        test: /\.tsx?$/,
-        exclude: [/node_modules/],
-    }
-
-    if (Dev) {
-        jsxRule.use = [
-            {
-                loader: 'esbuild-loader',
-                options: {
-                    loader: 'jsx',
-                    target: 'es2015',
-                },
-            },
-        ]
-
-        tsxRule.use = [
-            {
-                loader: 'esbuild-loader',
-                options: {
-                    loader: 'tsx',
-                    target: 'es2015',
-                },
-            },
-            {
-                loader: path.resolve(__dirname, '../loaders/remove-less-loader.ts'),
-            },
-        ]
-    } else {
-        jsxRule.use = [
-            {
-                loader: 'babel-loader',
-                options: {
-                    cacheDirectory: true,
-                },
-            },
-        ]
-
-        tsxRule.use = [
-            {
-                loader: 'ts-loader',
-                options: {
-                    transpileOnly: true,
-                },
-            },
-            {
-                loader: path.resolve(__dirname, '../loaders/remove-less-loader.ts'),
-            },
-        ]
-    }
-
-    rules.unshift(...[jsxRule, tsxRule])
 
     const commonConfig: Configuration = {
         module: {
@@ -201,12 +152,17 @@ export function getThemeWebpackConfig(options: GetThemeWebpackConfigParams) {
                     use: getLessLoader(name),
                 },
                 {
-                    test: /\.tsx?$/,
-                    loader: 'ts-loader',
+                    test: /\.(js|jsx|ts|tsx)$/,
                     exclude: [/node_modules/],
-                    options: {
-                        transpileOnly: true,
-                    },
+                    use: [
+                        {
+                            loader: 'babel-loader',
+                            options: {
+                                cacheDirectory: true,
+                                presets: ['@babel/preset-typescript'],
+                            },
+                        },
+                    ],
                 },
             ],
         },
