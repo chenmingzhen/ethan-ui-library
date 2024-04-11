@@ -71,14 +71,6 @@
  */
 
 /*!
- * JavaScript Cookie v2.2.1
- * https://github.com/js-cookie/js-cookie
- *
- * Copyright 2006, 2015 Klaus Hartl & Fagner Brack
- * Released under the MIT license
- */
-
-/*!
  * Primary Export
  */
 
@@ -148,20 +140,7 @@
  * MIT Licensed
  */
 
-/*!
-* screenfull
-* v5.2.0 - 2021-11-03
-* (c) Sindre Sorhus; MIT License
-*/
-
-/**
- * Prism: Lightweight, robust, elegant syntax highlighting
- *
- * @license MIT <https://opensource.org/licenses/MIT>
- * @author Lea Verou <https://lea.verou.me>
- * @namespace
- * @public
- */
+/*! regenerator-runtime -- Copyright (c) 2014-present, Facebook, Inc. -- license (MIT): https://github.com/facebook/regenerator/blob/main/LICENSE */
 
 /** @license React v16.13.1
  * react-is.production.min.js
