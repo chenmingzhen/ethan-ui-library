@@ -34,13 +34,9 @@ export default () => {
         <div>
             <Select
                 data={list}
-                keygen="title"
-                renderItem="title"
-                prediction={(v, d) => v.title === d.title}
+                labelKey="title"
                 value={selected}
-                onChange={(c) => {
-                    setSelected(c)
-                }}
+                onChange={setSelected}
                 style={{ width: 200, marginRight: 20 }}
             />
             <Button onClick={() => setVisible(true)}>Open</Button>
