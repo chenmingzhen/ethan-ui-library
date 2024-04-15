@@ -1,6 +1,8 @@
 import React from 'react'
 import { AlertType } from '../Alert/type'
 
+export type MessagePositionType = 'top' | 'middle' | 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right'
+
 /**
  * 对外暴露的API
  */
@@ -13,7 +15,7 @@ export interface MessageOption {
     /**
      * Message的位置
      */
-    position?: 'top' | 'middle' | 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right'
+    position?: MessagePositionType
 
     /**
      * Message标题
@@ -47,4 +49,14 @@ export default interface Message extends MessageOption {
      * 高度 用于dismiss
      */
     h?: number
+}
+
+export interface MessageAlertProps {
+    closeable: boolean
+    onDismiss: (offsetHeight: number) => void
+    className: string
+    dismiss: boolean
+    iconSize: number
+    type: AlertType
+    children: React.ReactNode
 }

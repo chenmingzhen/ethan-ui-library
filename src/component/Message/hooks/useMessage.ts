@@ -75,12 +75,14 @@ const useMessage = (onDestroy?: () => void) => {
     }
 
     // 根据alert的动画处理回调函数 手动处理动画
-    function closeMessageForAnimation(id: React.Key, transitionDuration: number, msgHeight: number) {
+    function closeMessageForAnimation(id: React.Key, msgHeight: number) {
+        const transitionDuration = 200
+
         setMessages((draft) => {
             draft.forEach((m) => {
                 if (m.id === id) {
                     m.dismiss = true
-                    // messageHeight + messageMargin
+                    /** messageHeight + messageMargin */
                     m.h = msgHeight + 20
                 }
             })

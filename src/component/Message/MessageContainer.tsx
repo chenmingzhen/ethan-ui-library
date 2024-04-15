@@ -1,9 +1,9 @@
 import React from 'react'
 import { messageClass } from '@/styles'
 import classnames from 'classnames'
-import Alert from '../Alert/alert'
 import useMessage from './hooks/useMessage'
 import Message from './type'
+import MessageAlert from './MessageAlert'
 
 export interface MessageContainerInstance {
     removeAllMessage(): void
@@ -60,19 +60,17 @@ const MessageContainer: React.ForwardRefRenderFunction<MessageContainerInstance,
                     className={classnames(getClassName(position, dismiss), className)}
                     style={getStyle(dismiss, h, position)}
                 >
-                    <Alert
-                        onClose={closeable}
-                        onDismiss={closeMessageForAnimation.bind(this, id)}
-                        className={messageClass('msg')}
-                        dismiss={dismiss}
-                        icon
-                        iconSize={title ? 20 : 14}
+                    <MessageAlert
                         type={type}
-                        duration={200}
+                        dismiss={dismiss}
+                        closeable={closeable}
+                        iconSize={title ? 20 : 14}
+                        className={messageClass('msg')}
+                        onDismiss={(offsetHeight) => closeMessageForAnimation(id, offsetHeight)}
                     >
                         {title && <h3>{title}</h3>}
                         {content}
-                    </Alert>
+                    </MessageAlert>
                 </div>
             ))}
         </>

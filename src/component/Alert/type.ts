@@ -1,25 +1,20 @@
 export type AlertType = 'default' | 'success' | 'info' | 'warning' | 'danger' | 'error' | 'loading'
 
-export interface AlertProps {
+export interface AlertProps extends React.DetailedHTMLProps<React.HTMLAttributes<HTMLDivElement>, HTMLDivElement> {
     className?: string
     style?: React.CSSProperties
     type?: AlertType
     icon?: boolean | Element
     iconSize?: number
-    onClose?: ((duration?: number, height?: number) => void) | boolean
+    onClose?: (() => void) | boolean
     closeItem?: React.ReactNode
     children?: React.ReactNode
-
-    /** @private */
-    onDismiss?: (duration?: number, height?: number) => void
-    /** @private */
-    dismiss?: boolean
-    /** @private */
     duration?: number
-}
 
-export interface AlertInstance {
-    offsetHeight(): number
+    /**
+     * @private Message使用
+     */
+    onInternalClose(): void
 }
 
 export interface ScrollAlertProps extends AlertProps {

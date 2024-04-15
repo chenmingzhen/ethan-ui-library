@@ -1,10 +1,10 @@
-import { MemoExoticComponent, ForwardRefExoticComponent, RefAttributes } from 'react'
+import { MemoExoticComponent, ForwardRefExoticComponent } from 'react'
 import Alert from './alert'
 import Scroll from './scrollAlert'
-import { AlertProps, AlertInstance } from './type'
+import { AlertProps } from './type'
 
 export interface AlertComponent
-    extends MemoExoticComponent<ForwardRefExoticComponent<AlertProps & RefAttributes<AlertInstance>>> {
+    extends MemoExoticComponent<ForwardRefExoticComponent<AlertProps & React.RefAttributes<HTMLDivElement>>> {
     Scroll: typeof Scroll
 }
 

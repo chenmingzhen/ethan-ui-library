@@ -2,17 +2,14 @@ import React from 'react'
 import ReactDOM from 'react-dom'
 import { messageClass } from '@/styles'
 import MessageContainer, { MessageContainerInstance } from './MessageContainer'
+import { MessagePositionType } from './type'
 
 // 存放同一position类型的div容器
 const elements = new Map<string, HTMLDivElement>()
 // 存放同一position类型的组件容器
 const components = new Map<string, MessageContainerInstance>()
 
-/*
-  type 为 position
-  相同的position会放到同一个容器中
-*/
-function getElement(type) {
+function getElement(type: MessagePositionType) {
     const div = document.createElement('div')
 
     div.className = messageClass('_', type)
@@ -24,7 +21,7 @@ function getElement(type) {
     return div
 }
 
-export function destroy(type) {
+export function destroy(type: MessagePositionType) {
     // 卸载组件 装组件的容器
     if (elements.has(type)) {
         const element = elements.get(type)
@@ -39,7 +36,7 @@ export function destroy(type) {
     }
 }
 
-export function closeWithAnimation(type) {
+export function closeWithAnimation(type: MessagePositionType) {
     if (type) {
         const container = components.get(type)
 
@@ -51,7 +48,7 @@ export function closeWithAnimation(type) {
     }
 }
 
-export function getComponent(type): Promise<MessageContainerInstance> {
+export function getComponent(type: MessagePositionType): Promise<MessageContainerInstance> {
     return new Promise((resolve) => {
         const component = components.get(type)
 
@@ -67,7 +64,9 @@ export function getComponent(type): Promise<MessageContainerInstance> {
                         components.set(type, comp)
                         resolve(comp)
                     }}
-                    onDestroy={destroy.bind(null, type)}
+                    onDestroy={() => {
+                        destroy(type)
+                    }}
                 />,
                 getElement(type)
             )

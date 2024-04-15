@@ -1,24 +1,16 @@
 import React from 'react'
+import { runAsMicrotask } from '@/utils/func'
 import { destroy, getComponent, closeWithAnimation } from './messager'
-import { MessageOption } from './type'
+import { MessageOption, MessagePositionType } from './type'
 import { AlertType } from '../Alert/type'
 
-const create =
-    (type: AlertType) =>
-    (
+function create(type: AlertType) {
+    return (
         content: React.ReactNode,
         duration = 3,
         options: MessageOption = { position: 'top', className: '', closeable: false }
     ) => {
         const { position = 'top' } = options
-
-        const find = ['top', 'middle', 'top-left', 'top-right', 'bottom-left', 'bottom-right'].indexOf(position)
-
-        if (find < 0) {
-            console.warn(
-                'Ethan message components need a right position ! please select one from top,middle,top-left,top-right,bottom-left,bottom-right,loading'
-            )
-        }
 
         let callback
 
@@ -31,31 +23,54 @@ const create =
             })
         })
 
-        // 获取容器时异步操作 需要添加setTimeout加入栈中
-        return setTimeout.bind(null, () => {
-            callback?.()
-        }) as () => void
-    }
-
-// 导入此依赖就会执行  create (type)=>这个函数  返回闭包
-export default {
-    show: create('default'),
-    success: create('success'),
-    info: create('info'),
-    warn: create('warning'),
-    warning: create('warning'),
-    danger: create('danger'),
-    error: create('danger'),
-    loading: create('loading'),
-    close: (position?: Pick<MessageOption, 'position'>) => {
-        if (position) destroy(position)
-        else {
-            ;['top', 'middle', 'top-left', 'top-right', 'bottom-left', 'bottom-right'].forEach((c) => {
-                destroy(c)
-            })
+        const hide = () => {
+            runAsMicrotask(callback)
         }
-    },
-    closeAll: (position?: Pick<MessageOption, 'position'>) => {
-        closeWithAnimation(position)
-    },
+
+        return hide
+    }
+}
+
+const show = create('default')
+const success = create('success')
+const info = create('info')
+const warn = create('warning')
+const warning = create('warning')
+const danger = create('danger')
+const error = create('error')
+const loading = create('loading')
+
+function close(position?: MessagePositionType) {
+    if (position) destroy(position)
+    else {
+        const positions: MessagePositionType[] = [
+            'top',
+            'middle',
+            'top-left',
+            'top-right',
+            'bottom-left',
+            'bottom-right',
+        ]
+
+        positions.forEach((c: MessagePositionType) => {
+            destroy(c)
+        })
+    }
+}
+
+function closeAll(position?: MessagePositionType) {
+    closeWithAnimation(position)
+}
+
+export default {
+    show,
+    success,
+    info,
+    warn,
+    warning,
+    danger,
+    error,
+    loading,
+    close,
+    closeAll,
 }
