@@ -94,10 +94,13 @@
         right: 20px;
         left: auto;
 
+        .@{message-prefix}-item {
+            animation: @keyframes-right-in @message-animation-duration ease-out;
+        }
+
         .@{message-prefix}-msg {
             min-width: 340px;
             padding: 20px;
-            animation: @keyframes-right-in @message-animation-duration ease-out;
         }
     }
 
@@ -105,10 +108,13 @@
     &-bottom-left {
         left: 20px;
 
+        .@{message-prefix}-item {
+            animation: @keyframes-left-in @message-animation-duration ease-out;
+        }
+
         .@{message-prefix}-msg {
             min-width: 340px;
             padding: 20px;
-            animation: @keyframes-left-in @message-animation-duration ease-out;
         }
     }
 

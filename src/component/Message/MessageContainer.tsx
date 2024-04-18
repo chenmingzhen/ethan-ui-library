@@ -2,13 +2,13 @@ import React from 'react'
 import { messageClass } from '@/styles'
 import classnames from 'classnames'
 import useMessage from './hooks/useMessage'
-import Message from './type'
+import { MessageOption, MessagePositionType } from './type'
 import MessageAlert from './MessageAlert'
 
 export interface MessageContainerInstance {
     removeAllMessage(): void
 
-    addMessage(msg: Message): () => void
+    addMessage(msg: MessageOption): () => void
 }
 
 interface MessageContainerProps {
@@ -19,7 +19,7 @@ const MessageContainer: React.ForwardRefRenderFunction<MessageContainerInstance,
     props,
     ref
 ) => {
-    const { messages, addMessage, closeMessageForAnimation, removeAllMessage } = useMessage(props.onDestroy)
+    const { messages, addMessage, closeMessage, removeAllMessage } = useMessage(props.onDestroy)
 
     React.useImperativeHandle(ref, () => ({ removeAllMessage, addMessage }))
 
@@ -29,7 +29,7 @@ const MessageContainer: React.ForwardRefRenderFunction<MessageContainerInstance,
     }
 
     // 退场动画的高度等问题
-    function getStyle(dismiss: boolean, h: number, position: Message['position']) {
+    function getStyle(dismiss: boolean, h: number, position: MessagePositionType) {
         if (!dismiss || h == null) {
             return null
         }
@@ -66,7 +66,7 @@ const MessageContainer: React.ForwardRefRenderFunction<MessageContainerInstance,
                         closeable={closeable}
                         iconSize={title ? 20 : 14}
                         className={messageClass('msg')}
-                        onDismiss={(offsetHeight) => closeMessageForAnimation(id, offsetHeight)}
+                        onDismiss={(offsetHeight) => closeMessage(id, offsetHeight)}
                     >
                         {title && <h3>{title}</h3>}
                         {content}

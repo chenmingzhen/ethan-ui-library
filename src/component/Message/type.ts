@@ -49,6 +49,11 @@ export default interface Message extends MessageOption {
      * 高度 用于dismiss
      */
     h?: number
+
+    /**
+     * 关闭Message的Timer
+     */
+    timer?: NodeJS.Timeout
 }
 
 export interface MessageAlertProps {

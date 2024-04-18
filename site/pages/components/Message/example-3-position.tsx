@@ -23,7 +23,6 @@ export default function () {
         <div>
             position:
             <Select
-                keygen
                 data={positions}
                 onChange={updatePosition}
                 value={position}

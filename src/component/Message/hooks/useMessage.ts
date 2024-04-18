@@ -1,81 +1,77 @@
 import { getUidStr } from '@/utils/uid'
 import useImmerGetSet from '@/hooks/useImmerGetSet'
-import React, { useRef } from 'react'
-import Message from '../type'
+import React from 'react'
+import useRefMethod from '@/hooks/useRefMethod'
+import { isFunc } from '@/utils/is'
+import Message, { MessageOption } from '../type'
 
 const useMessage = (onDestroy?: () => void) => {
     const [getMessages, setMessages] = useImmerGetSet<Message[]>([])
 
-    /** 如果addMessage中存在duration 使用Map存储timeout，执行Update操作时存在duration option时，取消清空之前的duration effect */
-    const durationTimerMap = useRef(new Map<React.Key, NodeJS.Timeout>()).current
-
-    function dispatchDismiss(id: React.Key, duration: number) {
+    const addDismissJob = useRefMethod((id: React.Key, duration: number) => {
         if (duration > 0) {
             const timeout = setTimeout(() => {
                 setMessages((draft) => {
                     draft.forEach((m) => {
                         if (m.id === id) {
                             m.dismiss = true
+                            m.timer = null
                         }
                     })
                 })
-
-                durationTimerMap.delete(id)
             }, duration * 1000)
 
-            durationTimerMap.set(id, timeout)
+            return timeout
         }
-    }
 
-    function addMessage(options: Message): () => void {
+        return null
+    })
+
+    const addMessage = useRefMethod((options: MessageOption): (() => void) => {
         const id = options.id || getUidStr()
 
         const messages = getMessages()
 
-        const hasIdMessageIndex = messages.findIndex((message) => message.id === id)
+        const messageIndex = messages.findIndex((message) => message.id === id)
 
-        /** 存在Key 直接修改Props更新Message */
-        if (hasIdMessageIndex > -1) {
-            if (durationTimerMap.has(id)) {
-                clearTimeout(durationTimerMap.get(id))
+        if (messageIndex > -1) {
+            /** 修改Message */
+            const oldMessage = messages[messageIndex]
 
-                durationTimerMap.delete(id)
+            if (oldMessage && oldMessage.timer) {
+                clearTimeout(oldMessage.timer)
             }
 
+            const timer = addDismissJob(id, options.duration)
+
             setMessages((draft) => {
-                const origin = draft[hasIdMessageIndex]
+                const origin = draft[messageIndex]
 
-                draft[hasIdMessageIndex] = { ...origin, ...options }
+                draft[messageIndex] = { ...origin, ...options, timer }
             })
+        } else {
+            /** 新增Message */
+            const timer = addDismissJob(id, options.duration)
 
-            dispatchDismiss(id, options.duration)
-
-            return
+            setMessages((draft) => {
+                draft.push(Object.assign(options, { id, timer }))
+            })
         }
 
+        return manualCloseMsg.bind(null, id)
+    })
+
+    const manualCloseMsg = useRefMethod((id: React.Key) => {
         setMessages((draft) => {
-            draft.push(Object.assign(options, { id }))
-        })
-
-        dispatchDismiss(id, options.duration)
-
-        return manualCloseMsg.bind(this, id)
-    }
-
-    function manualCloseMsg(id) {
-        setMessages((draft) => {
-            draft.filter((m) => {
-                if (m.id !== id) return true
+            draft.forEach((m) => {
+                if (m.id !== id) return
 
                 m.dismiss = true
-
-                return false
             })
         })
-    }
+    })
 
-    // 根据alert的动画处理回调函数 手动处理动画
-    function closeMessageForAnimation(id: React.Key, msgHeight: number) {
+    const closeMessage = useRefMethod((id: React.Key, msgHeight: number) => {
         const transitionDuration = 200
 
         setMessages((draft) => {
@@ -92,38 +88,38 @@ const useMessage = (onDestroy?: () => void) => {
         setTimeout(() => {
             removeMessage(id)
         }, transitionDuration)
-    }
+    })
 
-    function removeMessage(id) {
-        // 存储message的onClose callback
-        let callback
-        // 使用类组件时 state的message能获取到最新的值 可正常结束动画
-        // 但在函数组件的不能获取最新的message
-        // 所以使用useImmer+useGetSet的组合
-        // immer深拷贝，getset获取最新的值
+    const removeMessage = useRefMethod((id: React.Key) => {
         const messages = getMessages()
 
-        const currentMessages = messages.filter((m) => {
-            if (m.id !== id) return true
+        const nextMessages: Message[] = []
 
-            if (m.onClose) {
-                callback = m.onClose
+        messages.forEach((message) => {
+            if (message.id === id) {
+                if (isFunc(message.onClose)) {
+                    message.onClose()
+                }
+
+                if (message.timer) {
+                    clearTimeout(message.timer)
+                }
+
+                return
             }
 
-            return false
+            nextMessages.push(message)
         })
 
-        if (currentMessages.length === 0) {
-            // 如果为最后一个message 清除装组件的dom容器
+        if (nextMessages.length === 0) {
+            /** 如果为最后一个message 清除装组件的dom容器 */
             onDestroy?.()
         } else {
-            setMessages(currentMessages)
+            setMessages(nextMessages)
         }
+    })
 
-        callback?.()
-    }
-
-    function removeAllMessage() {
+    const removeAllMessage = useRefMethod(() => {
         const messages = getMessages()
 
         for (let i = 0; i < messages.length; i++) {
@@ -140,9 +136,9 @@ const useMessage = (onDestroy?: () => void) => {
                 })
             }, i * 200)
         }
-    }
+    })
 
-    return { messages: getMessages(), addMessage, closeMessageForAnimation, removeAllMessage }
+    return { messages: getMessages(), addMessage, closeMessage, removeAllMessage }
 }
 
 export default useMessage
