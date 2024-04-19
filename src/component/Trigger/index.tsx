@@ -226,7 +226,7 @@ const Trigger: React.FC<TriggerProps> = function (props) {
         }
 
         if (hasMousedownTrigger) {
-            /* 捕获阶段执行，避免点击TriggerElement后马上执行document的mousedown */
+            /* 捕获阶段执行，避免点击TriggerElement后事件冒泡到document的mousedown */
             document.addEventListener('mousedown', handleClickAway, true)
         }
 
