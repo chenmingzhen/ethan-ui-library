@@ -29,7 +29,6 @@ export default function () {
             <Button onClick={handleShow}>click me</Button>
             <Modal
                 visible={visible}
-                destroyOnClose
                 esc
                 width={500}
                 title="Modal Title"

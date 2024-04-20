@@ -17,33 +17,34 @@ export interface UseDragPositionProps {
     getDragTarget: () => HTMLElement
     /** 获取用于计算边界的元素 */
     getBoundingElement?: () => HTMLElement
+    dragable?: boolean
 }
 
 function useDragPosition(props: UseDragPositionProps) {
-    const { onDragStart, onDragEnd, onDrag, getDragTarget, getBoundingElement } = props
+    const { onDragStart, onDragEnd, onDrag, getDragTarget, getBoundingElement, dragable = true } = props
     const [clientX, updateClientX] = useMergedValue({
-        defaultStateValue: 0,
+        defaultStateValue: dragable ? 0 : undefined,
         options: {
             defaultValue: undefined,
             value: props.clientX,
         },
     })
     const [clientY, updateClientY] = useMergedValue({
-        defaultStateValue: 0,
+        defaultStateValue: dragable ? 0 : undefined,
         options: {
             defaultValue: undefined,
             value: props.clientY,
         },
     })
     const [x, updateX] = useMergedValue({
-        defaultStateValue: 0,
+        defaultStateValue: dragable ? 0 : undefined,
         options: {
             defaultValue: undefined,
             value: props.x,
         },
     })
     const [y, updateY] = useMergedValue({
-        defaultStateValue: 0,
+        defaultStateValue: dragable ? 0 : undefined,
         options: {
             defaultValue: undefined,
             value: props.y,

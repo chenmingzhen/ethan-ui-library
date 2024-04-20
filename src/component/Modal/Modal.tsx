@@ -1,142 +1,84 @@
-import React, { useCallback, useEffect, useRef } from 'react'
-import ReactDOM from 'react-dom'
+import React, { useEffect, useRef } from 'react'
 import { modalClass } from '@/styles'
-import { runInNextFrame } from '@/utils/nextFrame'
 import { KeyboardKey } from '@/utils/keyboard'
 import useSafeState from '@/hooks/useSafeState'
-import useUpdate from '@/hooks/useUpdate'
-import { IModalProps } from './type'
-import useContainer from './hooks/useContainer'
+import useRefMethod from '@/hooks/useRefMethod'
+import { ModalProps } from './type'
 import { MODAL_ANIMATION_DURATION } from './util'
 import Panel from './Panel'
+import Portal from '../Portal'
+import Motion from '../Motion/Motion'
 
-const Modal: React.FC<IModalProps> = (props) => {
-    const { visible, destroyOnClose, getContainer, rootClassName, position, zIndex, esc, onClose } = props
-
-    /** 在使用MethodModal的时候，外层已经执行unmountComponentAtNode,内层handleClose仍会执行state的操作 */
-    const [animationVisible, updateAnimationVisible] = useSafeState(false)
-
-    const { portalContainerRef, initPortalContainer } = useContainer({ getContainer, rootClassName, position })
+const Modal: React.FC<ModalProps> = (props) => {
+    const { visible, destroyOnClose, getPopupContainer = () => document.body, esc, onClose } = props
 
     const mountedRef = useRef(false)
+    const [allowDestroy, updateAllowDestroy] = useSafeState(false)
 
-    const update = useUpdate()
-
-    function handleOpen() {
-        if (animationVisible) return
-
-        updateAnimationVisible(true)
+    const handleShowEffect = useRefMethod(() => {
+        destroyOnClose && updateAllowDestroy(false)
 
         const html = document.body.parentNode as HTMLElement
-
         const scrollWidth = window.innerWidth - document.body.clientWidth
 
         html.style.overflow = 'hidden'
-
         html.style.paddingRight = `${scrollWidth}px`
-
-        initPortalContainer()
-
-        const portalContainer = portalContainerRef.current
-
-        portalContainer.classList.remove(modalClass('end'))
-
-        portalContainer.style.display = 'block'
-
-        runInNextFrame(() => {
-            const opacity = props.maskOpacity ?? 0.25
-
-            const hasVisible = !!document.body.querySelector(`.${modalClass('show')}`)
-
-            const maskOpacity = hasVisible ? 0 : opacity
-
-            portalContainer.style.zIndex = String(zIndex)
-
-            portalContainer.style.background = props.maskBackground || `rgba(0,0,0,${maskOpacity})`
-
-            runInNextFrame(() => {
-                portalContainer.classList.add(modalClass('show'))
-
-                !position && portalContainer.classList.add(modalClass('start'))
-            })
-        })
 
         /** https://developer.mozilla.org/ja/docs/Web/API/Document/activeElement */
         ;(document.activeElement as HTMLElement)?.blur()
-    }
+    })
 
-    function handleClose() {
-        const portalContainer = portalContainerRef.current
-
-        if (!portalContainer) return
-
-        portalContainer.classList.remove(modalClass('show'), modalClass('start'))
-
-        if (!position) portalContainer.classList.add(modalClass('end'))
-
+    const handleHideEffect = useRefMethod(() => {
         setTimeout(() => {
-            portalContainer.style.display = 'none'
+            const hasAnyModalShow = !!document.body.querySelector(`.${modalClass('enter')}`)
 
-            portalContainer.classList.remove(modalClass('end'))
-
-            const hasVisible = !!document.body.querySelector(`.${modalClass('show')}`)
-
-            if (!hasVisible) {
+            if (!hasAnyModalShow) {
                 const doc = document.body.parentNode as HTMLElement
 
                 doc.style.overflow = ''
-
                 doc.style.paddingRight = ''
             }
 
-            updateAnimationVisible(false)
-
-            /** 有可能前后的animationVisible一致，无法触发更新，添加强制更新(eg:默认visible是true，导致无法关闭) */
-            update()
+            destroyOnClose && updateAllowDestroy(true)
         }, MODAL_ANIMATION_DURATION)
-    }
+    })
+
+    const handleKeydown = useRefMethod((evt: KeyboardEvent) => {
+        if (evt.key !== KeyboardKey.Escape) return
+
+        handleHideEffect()
+        onClose()
+    })
 
     useEffect(() => {
-        /** 仅处理动画和DOM相关，不会执行事件的回调 */
         if (visible) {
-            handleOpen()
+            handleShowEffect()
         } else if (mountedRef.current) {
             /** 初次副作用不执行关闭 */
-            handleClose()
+            handleHideEffect()
         }
 
         mountedRef.current = true
     }, [visible])
 
-    const handleKeydown = useCallback(
-        (evt: KeyboardEvent) => {
-            if (evt.key !== KeyboardKey.Escape) return
-
-            handleClose()
-
-            onClose()
-        },
-        [onClose]
-    )
-
     useEffect(() => {
-        if (esc) {
-            window.addEventListener('keydown', handleKeydown)
+        if (!esc) return
 
-            return () => {
-                window.removeEventListener('keydown', handleKeydown)
-            }
+        window.addEventListener('keydown', handleKeydown)
+
+        return () => {
+            window.removeEventListener('keydown', handleKeydown)
         }
-    }, [esc, handleKeydown])
+    }, [esc])
 
-    if (!animationVisible && destroyOnClose) return null
+    if (!visible && allowDestroy) return null
 
-    /** 防止提前渲染Panel，触发初始化Panel的状态 */
-    if (!portalContainerRef.current) return null
-
-    return ReactDOM.createPortal(
-        <Panel {...props} container={portalContainerRef.current} />,
-        portalContainerRef.current
+    return (
+        <Portal show={visible} getPopupContainer={getPopupContainer}>
+            <Motion name={modalClass('_')} visible={visible} leaveClassName={modalClass('hidden')}>
+                <Panel {...props} />
+            </Motion>
+        </Portal>
     )
 }
 

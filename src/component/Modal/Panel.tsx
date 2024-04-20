@@ -1,41 +1,24 @@
-import React, { useEffect, useRef } from 'react'
+import React from 'react'
 import classnames from 'classnames'
 import { modalClass } from '@/styles'
 import { isEmpty } from '@/utils/is'
 import { stopPropagation } from '@/utils/func'
-import { runInNextFrame } from '@/utils/nextFrame'
+import { styles } from '@/utils/style/styles'
 import Card from '../Card'
 import { ModalPanelProps } from './type'
 import Icons from '../icons'
 
-let mousePosition: { x: number; y: number } = null
-
-function getClickPosition(evt: MouseEvent) {
-    mousePosition = {
-        x: evt.clientX,
-        y: evt.clientY,
-    }
-
-    setTimeout(() => {
-        mousePosition = null
-    }, 100)
-}
-
-window.addEventListener('click', getClickPosition, true)
-
-const Panel: React.FC<ModalPanelProps> = (props) => {
+const Panel: React.ForwardRefRenderFunction<HTMLDivElement, ModalPanelProps> = (props, ref) => {
     const {
         maskCloseAble,
         onClose,
-        moveable,
+        moveable = false,
         resizable,
         position,
-        type,
-        zoom,
-        className,
-        width,
+        type = 'default',
+        width = 599,
         height,
-        top,
+        top = '10vh',
         hideClose,
         title,
         padding,
@@ -44,15 +27,12 @@ const Panel: React.FC<ModalPanelProps> = (props) => {
         footer,
         from,
         style: propStyle,
-        container,
+        className,
+        zIndex,
+        rootClassName,
+        maskStyle,
+        maskClassName,
     } = props
-
-    const cardDomRef = useRef<HTMLDivElement>()
-
-    const ms = classnames(
-        modalClass('panel', type, position, zoom && !moveable && 'zoom', moveable && 'moveable'),
-        className
-    )
 
     function buildStyle() {
         const style: React.CSSProperties = { position: 'absolute' }
@@ -106,11 +86,7 @@ const Panel: React.FC<ModalPanelProps> = (props) => {
     }
 
     function renderContent() {
-        const contentStyle: React.CSSProperties = { padding }
-
-        if (position) contentStyle.overflow = 'auto'
-
-        if (bodyStyle) Object.assign(contentStyle, bodyStyle)
+        const contentStyle = styles({ padding }, position && { overflow: 'auto' }, bodyStyle)
 
         if (from === 'method') {
             const icon = renderIcon()
@@ -143,47 +119,22 @@ const Panel: React.FC<ModalPanelProps> = (props) => {
         )
     }
 
-    function updateOrigin() {
-        if (position || !zoom) return
-
-        const element = cardDomRef.current
-
-        if (!element) return
-
-        element.style.transformOrigin = ''
-
-        if (mousePosition) {
-            runInNextFrame(() => {
-                const { left: rectLeft, top: rectTop } = element.getBoundingClientRect()
-
-                const { x, y } = mousePosition
-
-                const originX = x - rectLeft
-
-                const originY = y - rectTop
-
-                element.style.transformOrigin = `${originX}px ${originY}px`
-            })
-        }
-    }
-
-    useEffect(() => {
-        if (container.classList.contains(modalClass('show'))) return
-
-        updateOrigin()
-    })
+    const maskMs = styles({ background: `rgba(0,0,0,25%)` }, maskStyle)
+    const maskCls = modalClass('mask', maskClassName)
 
     return (
-        <>
-            <div key="mask" className={modalClass('mask')} onClick={maskCloseAble ? onClose : undefined} />
+        <div
+            ref={ref}
+            style={{ zIndex }}
+            className={classnames(modalClass(position && 'position'), className, rootClassName)}
+        >
+            <div className={maskCls} onClick={maskCloseAble ? onClose : undefined} style={maskMs} />
             <Card
-                forwardedRef={cardDomRef}
-                moveable={moveable}
-                resizable={resizable}
-                key="card"
                 shadow
-                className={ms}
+                moveable={moveable}
                 style={buildStyle()}
+                resizable={resizable}
+                className={classnames(modalClass('panel', type, position, moveable && 'moveable'))}
             >
                 {!hideClose && (
                     <a className={modalClass('close')} onClick={onClose}>
@@ -192,19 +143,11 @@ const Panel: React.FC<ModalPanelProps> = (props) => {
                 )}
 
                 {renderTitle(true)}
-
                 {renderContent()}
-
                 {renderFooter()}
             </Card>
-        </>
+        </div>
     )
 }
 
-Panel.defaultProps = {
-    width: 500,
-    top: '10vh',
-    type: 'default',
-}
-
-export default React.memo(Panel)
+export default React.memo(React.forwardRef(Panel))

@@ -24,7 +24,7 @@ export default function () {
         <div ref={containerRef}>
             <Button onClick={show}>click me</Button>
             <Modal
-                getContainer={() => containerRef.current}
+                getPopupContainer={() => containerRef.current}
                 visible={visible}
                 width={500}
                 title="Modal Title"

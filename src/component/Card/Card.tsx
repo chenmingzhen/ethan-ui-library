@@ -47,7 +47,7 @@ const Card: React.FC<CardProps> = (props) => {
 
     const getBoundingElement = useRefMethod(() => document.getElementById(id))
 
-    const { x, y, dragging } = useDragPosition({ getDragTarget, getBoundingElement })
+    const { x, y, dragging } = useDragPosition({ getDragTarget, getBoundingElement, dragable: moveable })
     const { width, height } = useResizeSize({ getResizeTarget })
     const handleCollapse = React.useCallback(() => {
         if (onCollapse) onCollapse(!computedCollapsed)

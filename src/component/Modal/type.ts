@@ -4,9 +4,8 @@ import { ButtonProps } from '../Button/type'
 export interface ModalProps {
     /* ModalBody拓展样式 */
     bodyStyle?: React.CSSProperties
-    className?: string
     /* 渲染的目标节点 */
-    getContainer?: () => HTMLElement
+    getPopupContainer?: () => HTMLElement
     /* 关闭时是否销毁元素 */
     destroyOnClose?: boolean
     /* 是否支持esc关闭 */
@@ -33,6 +32,10 @@ export interface ModalProps {
     resizable?: boolean
     /* Modal 的根元素类名, 为遮罩层的父元素 */
     rootClassName?: string
+    /** 遮罩样式 */
+    maskStyle?: React.CSSProperties
+    /** 遮罩类名 */
+    maskClassName?: string
     /* 最外层扩展样式 */
     style?: React.CSSProperties
     /* 弹出层的标题 */
@@ -47,21 +50,16 @@ export interface ModalProps {
     height?: number
     /* 层级 */
     zIndex?: number
-    /* 是否开启 zoom 动画效果 */
-    zoom?: boolean
-    /** 等价于children */
-    content?: React.ReactNode
     /** 图标类型 */
     type?: 'info' | 'success' | 'warning' | 'error' | 'normal' | 'default' | 'confirm'
-}
 
-export interface IModalProps extends ModalProps {
-    /* 内部使用 */
+    /** @private */
     from?: string
+    content?: React.ReactNode
 }
 
-export interface ModalPanelProps extends Omit<IModalProps, 'getContainer'> {
-    container: HTMLElement
+export interface ModalPanelProps extends Omit<ModalProps, 'getPopupContainer'> {
+    className?: string
 }
 
 export interface MethodModalProps

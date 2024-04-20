@@ -22,7 +22,6 @@ export default function () {
                 data={['top', 'right', 'bottom', 'left']}
                 value={position}
                 style={{ width: 100, marginRight: 12 }}
-                keygen
                 onChange={updatePosition}
             />
             <Button onClick={toggle.bind(this, true)}>click me</Button>
