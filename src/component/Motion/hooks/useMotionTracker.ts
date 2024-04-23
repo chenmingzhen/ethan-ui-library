@@ -6,6 +6,7 @@ import { runInNextFrame } from '@/utils/nextFrame'
 import { MotionProps, MotionStatus, MotionStep } from '../type'
 
 interface UseMotionTrackerProps {
+    noAnimationButStep: MotionProps['noAnimationButStep']
     getElement: () => HTMLElement
     destroyAfterLeave: MotionProps['destroyAfterLeave']
     visible: MotionProps['visible']
@@ -46,6 +47,7 @@ function useMotionTracker(props: UseMotionTrackerProps): [MotionStatus, MotionSt
         onLeaveStart,
         onLeaveActive,
         onLeaveEnd,
+        noAnimationButStep,
     } = props
     const [status, updateStatus] = useSafeState(MotionStatus.NONE)
     const [step, updateStep] = useSafeState<MotionStep>(MotionStep.NONE)
@@ -130,11 +132,11 @@ function useMotionTracker(props: UseMotionTrackerProps): [MotionStatus, MotionSt
 
         let nextStatus: MotionStatus = visible ? MotionStatus.IGNORE_ENTER : MotionStatus.IGNORE_LEAVE
 
-        if (visible && enter) {
+        if (visible && (enter || noAnimationButStep)) {
             nextStatus = MotionStatus.ENTER
         }
 
-        if (!visible && leave) {
+        if (!visible && (leave || noAnimationButStep)) {
             nextStatus = MotionStatus.LEAVE
         }
 
@@ -169,8 +171,19 @@ function useMotionTracker(props: UseMotionTrackerProps): [MotionStatus, MotionSt
         }
 
         if (nextStep === MotionStep.ACTIVE) {
-            getElement()?.addEventListener('transitionend', onMotionEnd)
-            getElement()?.addEventListener('animationend', onMotionEnd)
+            if (noAnimationButStep) {
+                if (nextStepRaf.current) {
+                    nextStepRaf.current()
+                }
+
+                nextStepRaf.current = runInNextFrame(() => {
+                    const mockMotionEvent = { target: getElement() } as unknown as MotionEvent
+                    onMotionEnd(mockMotionEvent)
+                })
+            } else {
+                getElement()?.addEventListener('transitionend', onMotionEnd)
+                getElement()?.addEventListener('animationend', onMotionEnd)
+            }
         }
     }, [step])
 

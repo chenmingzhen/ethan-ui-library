@@ -36,6 +36,7 @@ const Motion: React.FC<MotionProps> = function (props) {
         children,
         name = '',
         visible,
+        noAnimationButStep,
         enter,
         onEnterPrepare,
         onEnterStart,
@@ -80,6 +81,7 @@ const Motion: React.FC<MotionProps> = function (props) {
         onLeaveActive,
         onLeaveEnd,
         destroyAfterLeave,
+        noAnimationButStep,
     })
 
     let mergeChild: JSX.Element
