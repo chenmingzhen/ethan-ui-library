@@ -1,4 +1,4 @@
-import React, { useCallback, useRef, useState } from 'react'
+import React, { useCallback, useRef } from 'react'
 import classnames from 'classnames'
 import { cardClass } from '@/styles'
 import useRefMethod from '@/hooks/useRefMethod'
@@ -8,6 +8,7 @@ import { styles } from '@/utils/style/styles'
 import { isEmpty } from '@/utils/is'
 import { setTransformProp } from '@/utils/dom/translate'
 import useResizeSize from '@/hooks/useResizeSize'
+import useMergedValue from '@/hooks/useMergedValue'
 import { CardContext, CardProps } from './type'
 import { Provider } from './context'
 
@@ -22,14 +23,16 @@ const Card: React.FC<CardProps> = (props) => {
         defaultCollapsed,
         onCollapse,
     } = props
-    const [collapsed, setCollapsed] = useState<boolean>(defaultCollapsed || true)
     const id = useRef(getUidStr()).current
 
-    const computedCollapsed = React.useMemo(() => {
-        if (!collapsible) return undefined
-
-        return props.collapsed ?? collapsed
-    }, [collapsed, props.collapsed, collapsible])
+    const [collapsed, setCollapsed] = useMergedValue({
+        defaultStateValue: collapsible,
+        options: {
+            defaultValue: collapsible ? defaultCollapsed : undefined,
+            value: collapsible ? props.collapsed : undefined,
+            onChange: onCollapse,
+        },
+    })
 
     const getDragTarget = useCallback(() => {
         if (!moveable) return undefined
@@ -49,10 +52,9 @@ const Card: React.FC<CardProps> = (props) => {
 
     const { x, y, dragging } = useDragPosition({ getDragTarget, getBoundingElement })
     const { width, height } = useResizeSize({ getResizeTarget })
-    const handleCollapse = React.useCallback(() => {
-        if (onCollapse) onCollapse(!computedCollapsed)
-        else setCollapsed(!computedCollapsed)
-    }, [computedCollapsed, onCollapse])
+    const handleCollapse = useRefMethod(() => {
+        setCollapsed(!collapsed)
+    })
     const cls = classnames(
         cardClass(
             '_',
@@ -72,7 +74,7 @@ const Card: React.FC<CardProps> = (props) => {
     const providerValue: CardContext = {
         onCollapse: handleCollapse,
         collapsible,
-        collapsed: computedCollapsed,
+        collapsed,
     }
 
     return (
