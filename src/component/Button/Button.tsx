@@ -10,7 +10,7 @@ const Button: React.FC<ButtonProps> = (props) => {
 
     const {
         outline,
-        type = 'primary',
+        type = 'default',
         size,
         href,
         htmlType = 'button',
