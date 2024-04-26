@@ -1,21 +1,7 @@
 import { carouselClass } from '@/styles'
 import { range } from '@/utils/numbers'
 import React from 'react'
-import { CarouselIndicatorPosition, CarouselIndicatorType, CarouselMoveTo } from './type'
-
-interface IndicatorProps {
-    count: number
-
-    indicatorPosition: CarouselIndicatorPosition
-
-    indicatorType: CarouselIndicatorType
-
-    current: number
-
-    moveTo: CarouselMoveTo
-
-    mouseInView: boolean
-}
+import { IndicatorProps } from './type'
 
 const Indicator: React.FC<IndicatorProps> = ({
     count,

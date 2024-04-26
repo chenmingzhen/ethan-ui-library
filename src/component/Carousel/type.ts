@@ -8,8 +8,6 @@ export type CarouselIndicatorType =
     | 'line'
     | ((current: number, moveTo: CarouselMoveTo, isInCarousel: boolean) => React.ReactNode)
 
-export type CarouselSize = 'small' | 'default' | 'large'
-
 export type CarouselAnimation = 'slide' | 'slide-y' | 'fade'
 
 export interface CarouselProps {
@@ -21,6 +19,20 @@ export interface CarouselProps {
     mouseEffect?: boolean
     style?: React.CSSProperties
     className?: string
-    // TODO
-    size?: CarouselSize
+}
+
+export interface IndicatorProps {
+    count: number
+    indicatorPosition: CarouselIndicatorPosition
+    indicatorType: CarouselIndicatorType
+    current: number
+    moveTo: CarouselMoveTo
+    mouseInView: boolean
+}
+
+export interface CarouselItemProps {
+    children: React.ReactNode
+    className?: string
+    isCurrent: boolean
+    isPrevious: boolean
 }

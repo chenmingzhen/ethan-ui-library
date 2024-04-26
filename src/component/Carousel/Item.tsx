@@ -1,19 +1,12 @@
 import React from 'react'
 import classnames from 'classnames'
 import { carouselClass } from '@/styles'
+import { CarouselItemProps } from './type'
 
-interface CarouselItemProps {
-    children: React.ReactNode
-
-    className?: string
-
-    isCurrent: boolean
-
-    isPrev: boolean
-}
-
-const CarouselItem: React.FC<CarouselItemProps> = ({ children, isCurrent, className, isPrev }) => (
-    <div className={classnames(carouselClass('item', isCurrent && 'item-current', isPrev && 'item-pre'), className)}>
+const CarouselItem: React.FC<CarouselItemProps> = ({ children, isCurrent, className, isPrevious }) => (
+    <div
+        className={classnames(carouselClass('item', isCurrent && 'item-current', isPrevious && 'item-pre'), className)}
+    >
         {children}
     </div>
 )
