@@ -7,7 +7,7 @@
 import React from 'react'
 import { Rate, Icon } from 'ethan-ui'
 
-const FaceIcon = Icon('https://at.alicdn.com/t/font_662584_hfkafvbgwurkvs4i.css', 'facefont')
+const FaceIcon = Icon.createIcon('https://at.alicdn.com/t/font_662584_hfkafvbgwurkvs4i.css', 'facefont')
 const background = <FaceIcon name="question" />
 const front = [
     <FaceIcon name="cry" style={{ color: '#003a8c' }} />,

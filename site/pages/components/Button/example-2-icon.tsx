@@ -6,7 +6,9 @@
  */
 import React from 'react'
 import { Button } from 'ethan-ui'
-import { FontAwesome } from 'ethan-ui'
+import { Icon } from 'ethan-ui'
+
+const { FontAwesome } = Icon
 
 export default function () {
     return (

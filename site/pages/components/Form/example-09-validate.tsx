@@ -8,7 +8,6 @@ import React from 'react'
 import {
     Button,
     Checkbox,
-    FontAwesome,
     Form,
     Input,
     Radio,
@@ -20,7 +19,10 @@ import {
     Transfer,
     Switch,
     DatePicker,
+    Icon,
 } from 'ethan-ui'
+
+const { FontAwesome } = Icon
 
 const rule = Rule({
     uploadSize(value) {

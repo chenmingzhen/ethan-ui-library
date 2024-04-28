@@ -5,14 +5,14 @@
  *    -- Description for every status.
  */
 import React from 'react'
-import { Switch, FontAwesome } from 'ethan-ui'
+import { Switch, Icon } from 'ethan-ui'
 
 export default function () {
     return (
         <div>
             <Switch defaultChecked content={['开', '关']} />
             <br />
-            <Switch content={[<FontAwesome name="btc" />, <FontAwesome name="yen" />]} />
+            <Switch content={[<Icon.FontAwesome name="btc" />, <Icon.FontAwesome name="yen" />]} />
         </div>
     )
 }

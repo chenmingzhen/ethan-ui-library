@@ -5,8 +5,9 @@
  *    -- The tip set on input pops up when it is focused.
  */
 import React from 'react'
-import { Input, FontAwesome } from 'ethan-ui'
+import { Input, Icon } from 'ethan-ui'
 
+const { FontAwesome } = Icon
 const style = { marginBottom: 12 }
 
 export default function () {

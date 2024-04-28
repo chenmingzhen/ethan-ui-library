@@ -5,6 +5,6 @@ export interface IconProps extends React.DetailedHTMLProps<React.HTMLAttributes<
     name?: string
     style?: React.CSSProperties
     fontFamily?: string
-    fontSize?: string
+    fontSize?: string | number
     ext?: string
 }

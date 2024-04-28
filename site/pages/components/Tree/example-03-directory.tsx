@@ -5,8 +5,10 @@
  *    -- Use Tree.Directory.
  */
 import React from 'react'
-import { FontAwesome, Tree } from 'ethan-ui'
+import { Icon, Tree } from 'ethan-ui'
 import data from 'doc/data/tree'
+
+const { FontAwesome } = Icon
 
 export default function () {
     return (

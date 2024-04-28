@@ -5,7 +5,7 @@
  *    -- set drop to Drag files to upload.
  */
 import React from 'react'
-import { Upload, Button, FontAwesome } from 'ethan-ui'
+import { Upload, Button, Icon } from 'ethan-ui'
 import { action } from 'doc/config'
 
 export default function () {
@@ -13,7 +13,7 @@ export default function () {
         <div>
             <Upload.Image action={action} accept="image/*" name="file" limit={3} width={250} drop>
                 <div style={{ textAlign: 'center', width: '100%', padding: 20 }}>
-                    <FontAwesome style={{ color: '#409dfd', fontSize: 20 }} name="image" />
+                    <Icon.FontAwesome style={{ color: '#409dfd', fontSize: 20 }} name="image" />
                     <br />
                     Click or Drag image to upload
                 </div>
@@ -21,7 +21,7 @@ export default function () {
             <br />
             <Upload action={action} multiple name="file" limit={3} style={{ width: 300 }} drop>
                 <Button>
-                    <FontAwesome name="file" />
+                    <Icon.FontAwesome name="file" />
                     &nbsp; Drop file to upload
                 </Button>
             </Upload>

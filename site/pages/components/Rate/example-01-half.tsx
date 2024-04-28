@@ -5,9 +5,9 @@
  *    -- Rate whether to allow semi selection.
  */
 import React from 'react'
-import { Rate, FontAwesome } from 'ethan-ui'
+import { Rate, Icon } from 'ethan-ui'
 
-const star = <FontAwesome name="star" />
+const star = <Icon.FontAwesome name="star" />
 
 export default function () {
     return <Rate size={24} allowHalf background={star} front={star} />

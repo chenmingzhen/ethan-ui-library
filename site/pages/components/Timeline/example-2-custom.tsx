@@ -6,14 +6,14 @@
  */
 
 import React from 'react'
-import { FontAwesome, TimeLine } from 'ethan-ui'
+import { Icon, TimeLine } from 'ethan-ui'
 
 const { Item } = TimeLine
 
 export default () => (
     <TimeLine>
-        <Item icon={<FontAwesome name="car" />}>Create</Item>
-        <Item icon={<FontAwesome name="feed" />}>Text</Item>
-        <Item icon={<FontAwesome name="gear" />}>Publish</Item>
+        <Item icon={<Icon.FontAwesome name="car" />}>Create</Item>
+        <Item icon={<Icon.FontAwesome name="feed" />}>Text</Item>
+        <Item icon={<Icon.FontAwesome name="gear" />}>Publish</Item>
     </TimeLine>
 )

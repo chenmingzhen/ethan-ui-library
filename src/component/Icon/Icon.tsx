@@ -1,18 +1,18 @@
 import React from 'react'
 import classnames from 'classnames'
 import { iconClass } from '@/styles'
+import { styles } from '@/utils/style/styles'
 import { IconProps } from './type'
 
 const Icon: React.FC<IconProps> = (props) => {
-    const { children, prefix, type, name, fontFamily, fontSize, ext, ...other } = props
-
+    const { children, prefix, type = 'default', name = '', fontFamily, fontSize, ext, ...other } = props
     const className = classnames(iconClass('_', type), props.className, `${prefix}-${name}`)
-
-    const style = Object.assign({}, { fontFamily, fontSize }, props.style)
+    /** 由于各个字体库的命名空间风格不同，统一使用style注入fontFamily */
+    /** FontAwesome是使用prefix(fa)作为根类名 */
+    /** iconfont是使用fontFamily(iconfont)作为根类名 */
+    const style = styles({ fontSize, fontFamily }, props.style)
 
     if (ext === 'js') {
-        // https://developer.mozilla.org/zh-CN/docs/Web/Accessibility/ARIA/ARIA_Techniques/%E4%BD%BF%E7%94%A8aria-hidden%E5%B1%9E%E6%80%A7
-        // aria-hidden 把 aria-hidden="true" 加到元素上会把该元素和它的所有子元素从可访问性树上移除。
         return (
             <i {...other} className={className} style={style}>
                 <svg className={iconClass('svg')} aria-hidden="true">
@@ -29,13 +29,6 @@ const Icon: React.FC<IconProps> = (props) => {
     )
 }
 
-Icon.defaultProps = {
-    prefix: 'icon',
-    fontFamily: 'iconfont',
-    name: '',
-    type: 'default',
-}
+Icon.displayName = 'EthanIcon'
 
 export default React.memo(Icon)
-
-Icon.displayName = 'EthanIcon'

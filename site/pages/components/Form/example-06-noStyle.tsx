@@ -5,7 +5,9 @@
  *    -- FormItem without styles can directly display components, but still retain the ability to collect data and implement more complex components
  */
 import React from 'react'
-import { Button, FontAwesome, Form, Input, Select, Upload } from 'ethan-ui'
+import { Button, Icon, Form, Input, Select, Upload } from 'ethan-ui'
+
+const { FontAwesome } = Icon
 
 const App = () => (
     <Form labelWidth="80px" onChange={console.log}>

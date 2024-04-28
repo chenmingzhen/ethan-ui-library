@@ -5,9 +5,9 @@
  *    -- Set text property to append text to each item.
  */
 import React from 'react'
-import { Rate, FontAwesome } from 'ethan-ui'
+import { Rate, Icon } from 'ethan-ui'
 
-const star = <FontAwesome name="star" />
+const star = <Icon.FontAwesome name="star" />
 
 export default function () {
     return (
