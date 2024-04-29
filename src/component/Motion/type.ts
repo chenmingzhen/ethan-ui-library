@@ -19,7 +19,7 @@ export interface MotionProps {
     onLeaveActive?: (element: HTMLElement) => void
     onLeaveEnd?: (element: HTMLElement) => void
     visible?: boolean
-
+    noAnimationButStep?: boolean
     bindMotionElement?: (element: HTMLElement) => void
 }
 

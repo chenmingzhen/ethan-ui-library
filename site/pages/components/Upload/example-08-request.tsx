@@ -5,7 +5,7 @@
  *    -- Set request property to use your own XMLHttpRequest.
  */
 import React from 'react'
-import { Upload, Button, FontAwesome } from 'ethan-ui'
+import { Upload, Button, Icon } from 'ethan-ui'
 import { action } from 'doc/config'
 
 const request = (options) => {
@@ -26,7 +26,7 @@ export default function () {
     return (
         <Upload accept="image/*" limit={3} style={{ width: 300 }} request={request}>
             <Button>
-                <FontAwesome name="cloud-upload" /> Upload file
+                <Icon.FontAwesome name="cloud-upload" /> Upload file
             </Button>
         </Upload>
     )

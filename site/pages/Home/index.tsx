@@ -1,5 +1,5 @@
 import React from 'react'
-import { Button, FontAwesome } from 'ethan-ui'
+import { Button, Icon } from 'ethan-ui'
 import { homeClass } from 'doc/styles'
 import history from 'docs/history'
 import withLoading from '../withLoading'
@@ -20,7 +20,7 @@ const Home = () => (
                     开始使用
                 </Button>
                 <Button className={homeClass('right')}>
-                    <FontAwesome name="github" />
+                    <Icon.FontAwesome name="github" />
                     <a
                         href="https://github.com/chenmingzhen/ethan-ui-library"
                         target="_blank"

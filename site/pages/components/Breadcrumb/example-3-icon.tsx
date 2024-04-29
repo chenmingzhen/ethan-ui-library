@@ -6,10 +6,10 @@
  */
 
 import React from 'react'
-import { Breadcrumb, FontAwesome } from 'ethan-ui'
+import { Breadcrumb, Icon } from 'ethan-ui'
 
 const data = [
-    { icon: <FontAwesome name="home" />, title: 'Home', url: '#home' },
+    { icon: <Icon.FontAwesome name="home" />, title: 'Home', url: '#home' },
     { title: 'Menu' },
     { title: 'Self', url: 'https://www.google.com' },
 ]

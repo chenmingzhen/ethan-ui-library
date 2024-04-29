@@ -106,6 +106,7 @@ const Popover: React.FC<PopoverProps> = function (props) {
             mouseEnterDelay={!triggerActions.includes('mousedown') ? mouseEnterDelay : undefined}
             mouseLeaveDelay={!triggerActions.includes('mousedown') ? mouseLeaveDelay : undefined}
             motionPopupProps={{
+                noAnimationButStep: !animation,
                 enter: animation,
                 leave: animation,
                 name: popoverClass('_'),

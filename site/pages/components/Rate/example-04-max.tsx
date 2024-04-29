@@ -5,9 +5,9 @@
  *    -- Set the maximum value of the option through the max attribute. The default value is 5.
  */
 import React from 'react'
-import { Rate, FontAwesome } from 'ethan-ui'
+import { Rate, Icon } from 'ethan-ui'
 
-const star = <FontAwesome name="star" />
+const star = <Icon.FontAwesome name="star" />
 
 export default function () {
     return <Rate max={10} defaultValue={3} background={star} front={star} />

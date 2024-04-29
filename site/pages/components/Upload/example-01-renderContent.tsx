@@ -6,7 +6,7 @@
 
  */
 import React from 'react'
-import { Upload, Button, FontAwesome } from 'ethan-ui'
+import { Upload, Button, Icon } from 'ethan-ui'
 import { action } from 'doc/config'
 import ProImage from '@/component/ProImage/ProImage'
 
@@ -26,7 +26,7 @@ export default function () {
                 style={{ width: 300, marginBottom: 30 }}
             >
                 <Button>
-                    <FontAwesome name="cloud-upload " style={{ marginRight: 4 }} />
+                    <Icon.FontAwesome name="cloud-upload " style={{ marginRight: 4 }} />
                     Upload file
                 </Button>
             </Upload>

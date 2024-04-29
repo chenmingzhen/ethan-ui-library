@@ -1,4 +1,4 @@
-import { docScroll, docSize } from '@/utils/dom/document'
+import { docSize } from '@/utils/dom/document'
 
 const posKeys = ['left', 'top', 'bottom', 'right']
 
@@ -6,80 +6,70 @@ const posKeys = ['left', 'top', 'bottom', 'right']
 // 此处计算为Popover 或tooltip的children的位置
 // 因为不知道具体Popover的content width与height，所以在css中使用transform使Popover的内容偏移
 // 否则Popover的内容会与Chidlren在同一位置
-export const getPositionStyle = (position: string, el: HTMLElement, container = document.body) => {
-    if (!el) return {}
+export const getPositionStyle = (position: string, triggerElement: HTMLElement, container = document.body) => {
+    if (!triggerElement) return {}
 
-    const rect = el.getBoundingClientRect()
+    const triggerRect = triggerElement.getBoundingClientRect()
 
     // 浏览器滚动条宽度
     const scrollWidth = container === document.body ? window.innerWidth - document.body.clientWidth : 0
 
-    let containerRect = { top: 0, left: 0, bottom: 0, right: 0 }
+    const containerRect = container.getBoundingClientRect()
 
-    if (container?.tagName === 'BODY') container = undefined
-
-    if (container) containerRect = container.getBoundingClientRect()
-
-    // 如果container是body 则滚动参与计算
-    // 反之 只需要el和实际容器的 BoundingClientRect即可推出计算
-    const scrollTop = container ? 0 : docScroll.top
-    const scrollLeft = container ? 0 : docScroll.left
-
-    const pos: { left?: number; top?: number; right?: number } = {}
+    const pos: React.CSSProperties = {}
 
     switch (position) {
-        // windows滚动的距离+元素到屏幕的距离-元素容器到屏幕的距离
         case 'top-left':
-            pos.left = scrollLeft + rect.left - containerRect.left
-            pos.top = scrollTop + rect.top - containerRect.top
+            pos.left = triggerRect.left - containerRect.left
+            pos.top = triggerRect.top - containerRect.top
             break
         case 'top':
-            pos.left = scrollLeft + rect.left - containerRect.left + rect.width / 2
-            pos.top = scrollTop + rect.top - containerRect.top
+            pos.left = triggerRect.left - containerRect.left + triggerRect.width / 2
+            pos.top = triggerRect.top - containerRect.top
             break
         case 'top-right':
-            pos.right = (containerRect.right || docSize.width) - rect.right - scrollLeft - scrollWidth
-            pos.top = scrollTop + rect.top - containerRect.top
+            pos.right = (containerRect.right || docSize.width) - triggerRect.right - scrollWidth
+            pos.top = triggerRect.top - containerRect.top
             break
         case 'left-top':
-            pos.left = scrollLeft + rect.left - containerRect.left
-            pos.top = scrollTop + rect.top - containerRect.top
+            pos.left = triggerRect.left - containerRect.left
+            pos.top = triggerRect.top - containerRect.top
             break
         case 'left':
-            pos.left = scrollLeft + rect.left - containerRect.left
-            pos.top = scrollTop + rect.top - containerRect.top + rect.height / 2
+            pos.left = triggerRect.left - containerRect.left
+            pos.top = triggerRect.top - containerRect.top + triggerRect.height / 2
             break
         case 'left-bottom':
-            pos.left = scrollLeft + rect.left - containerRect.left
-            pos.top = scrollTop + rect.bottom - containerRect.bottom
+            pos.left = triggerRect.left - containerRect.left
+            pos.top = triggerRect.bottom - containerRect.bottom
             break
         case 'right-top':
-            pos.left = scrollLeft + rect.left - containerRect.left + rect.width
-            pos.top = scrollTop + rect.top - containerRect.top
+            pos.left = triggerRect.left - containerRect.left + triggerRect.width
+            pos.top = triggerRect.top - containerRect.top
             break
         case 'right':
-            pos.left = scrollLeft + rect.left - containerRect.left + rect.width
-            pos.top = scrollTop + rect.top - containerRect.top + rect.height / 2
+            pos.left = triggerRect.left - containerRect.left + triggerRect.width
+            pos.top = triggerRect.top - containerRect.top + triggerRect.height / 2
             break
         case 'right-bottom':
-            pos.left = scrollLeft + rect.left - containerRect.left + rect.width
-            pos.top = scrollTop + rect.bottom - containerRect.bottom
+            pos.left = triggerRect.left - containerRect.left + triggerRect.width
+            pos.top = triggerRect.bottom - containerRect.bottom
             break
         case 'bottom-left':
-            pos.left = scrollLeft + rect.left - containerRect.left
-            pos.top = scrollTop + rect.top - containerRect.top + rect.height
+            pos.left = triggerRect.left - containerRect.left
+            pos.top = triggerRect.top - containerRect.top + triggerRect.height
             break
         case 'bottom':
-            pos.left = scrollLeft + rect.left - containerRect.left + rect.width / 2
-            pos.top = scrollTop + rect.top - containerRect.top + rect.height
+            pos.left = triggerRect.left - containerRect.left + triggerRect.width / 2
+            pos.top = triggerRect.top - containerRect.top + triggerRect.height
             break
         case 'bottom-right':
-            pos.right = (containerRect.right || docSize.width) - rect.right - scrollLeft - scrollWidth
-            pos.top = scrollTop + rect.top - containerRect.top + rect.height
+            pos.right = (containerRect.right || docSize.width) - triggerRect.right - scrollWidth
+            pos.top = triggerRect.top - containerRect.top + triggerRect.height
             break
         case 'cover':
-            pos.left = scrollLeft + rect.left - containerRect.left
-            pos.top = scrollTop + rect.top - containerRect.top
+            pos.left = triggerRect.left - containerRect.left
+            pos.top = triggerRect.top - containerRect.top
             break
         default:
     }

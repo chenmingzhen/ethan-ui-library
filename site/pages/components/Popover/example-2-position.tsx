@@ -15,13 +15,12 @@ const positions = [
     [null, 'top-left', 'top', 'top-right', null],
 ]
 
-const style = {
+const style: React.CSSProperties = {
     width: 100,
     textAlign: 'center',
     lineHeight: '30px',
     margin: 4,
     display: 'inline-block',
-    border: 'solid 1px #eee',
     cursor: 'pointer',
 }
 
@@ -37,7 +36,7 @@ export default function () {
                         content={<div>Some text</div>}
                         title={p}
                     >
-                        <div style={style}>{p}</div>
+                        <Button style={style}>{p}</Button>
                     </Popover>
                 ) : (
                     <div key={j} style={{ ...style, border: 0 }} />

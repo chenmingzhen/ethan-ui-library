@@ -5,7 +5,7 @@
  *    -- Set validator to validate the file.
  */
 import React from 'react'
-import { Upload, FontAwesome, Button } from 'ethan-ui'
+import { Upload, Icon, Button } from 'ethan-ui'
 import { action } from 'doc/config'
 
 export default function () {
@@ -22,7 +22,7 @@ export default function () {
                 }}
             >
                 <Button>
-                    <FontAwesome name="cloud-upload" /> Upload file
+                    <Icon.FontAwesome name="cloud-upload" /> Upload file
                 </Button>
             </Upload>
 
@@ -43,7 +43,7 @@ export default function () {
                 }}
             >
                 <div style={{ margin: 'auto', color: '#999', textAlign: 'center' }}>
-                    <FontAwesome name="cloud-upload " /> Upload Image
+                    <Icon.FontAwesome name="cloud-upload " /> Upload Image
                     <br />
                     Allow size 200 * 100
                 </div>

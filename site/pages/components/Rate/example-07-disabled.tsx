@@ -5,9 +5,9 @@
  *    -- Set disabled to true make it be read-only. When disabled, value can be passed in decimals.
  */
 import React from 'react'
-import { Rate, FontAwesome } from 'ethan-ui'
+import { Rate, Icon } from 'ethan-ui'
 
-const star = <FontAwesome name="star" />
+const star = <Icon.FontAwesome name="star" />
 
 export default function () {
     return <Rate value={3.6} disabled background={star} front={star} />

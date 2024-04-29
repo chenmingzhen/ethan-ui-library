@@ -5,7 +5,7 @@
  *    -- Set recoverAble to true, Clicking delete icon will not remove the file, but will mark it as deleted.
  */
 import React from 'react'
-import { Upload, Button, FontAwesome } from 'ethan-ui'
+import { Upload, Button, Icon } from 'ethan-ui'
 import { action } from 'doc/config'
 
 export default function () {
@@ -21,7 +21,7 @@ export default function () {
                 style={{ width: 300, marginBottom: 30 }}
             >
                 <Button>
-                    <FontAwesome name="cloud-upload" /> Upload file
+                    <Icon.FontAwesome name="cloud-upload" /> Upload file
                 </Button>
             </Upload>
 

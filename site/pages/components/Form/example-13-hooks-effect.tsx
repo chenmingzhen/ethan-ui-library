@@ -5,7 +5,7 @@
  *    -- useFormValueEffect basic usage(Cannot read a property that does not exist)
  */
 import React from 'react'
-import { Button, FontAwesome, Form, Input, Select } from 'ethan-ui'
+import { Button, Icon, Form, Input, Select } from 'ethan-ui'
 
 interface FormValues {
     name: string
@@ -16,6 +16,8 @@ interface FormValues {
     address: string
     friends: any[]
 }
+
+const { FontAwesome } = Icon
 
 export default function App() {
     const form = Form.useForm<FormValues>()

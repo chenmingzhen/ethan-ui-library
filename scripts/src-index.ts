@@ -25,7 +25,6 @@ const line = `/** Created by scripts/src-index.ts.  */
 export { setLocale } from './locale'
 export { default as config, setConfig } from './config'
 export { style } from './utils/style'
-export { FontAwesome } from './component/Icon'
 export { default as Lazyload } from './component/LazyLoad'
 
 <% files.forEach(function (name) { -%>

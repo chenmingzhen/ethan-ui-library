@@ -5,7 +5,9 @@
  *    -- When FieldSet's children is a function, takes the value (type is array) from the form by the name property, and generate a set of subcomponents.
  */
 import React from 'react'
-import { Form, Input, Button, FontAwesome, Rule } from 'ethan-ui'
+import { Form, Input, Button, Icon, Rule } from 'ethan-ui'
+
+const { FontAwesome } = Icon
 
 export default function App() {
     const [index, updateIndex] = React.useState(0)

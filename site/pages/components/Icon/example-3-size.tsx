@@ -5,7 +5,9 @@
  *    -- Set fontSize,type and style to change Component style
  */
 import React from 'react'
-import { FontAwesome } from 'ethan-ui'
+import { Icon } from 'ethan-ui'
+
+const { FontAwesome } = Icon
 
 const margin = { marginRight: 20 }
 

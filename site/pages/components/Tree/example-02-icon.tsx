@@ -5,7 +5,7 @@
  *    -- Display different icon in the renderItem.
  */
 import React from 'react'
-import { Tree, FontAwesome } from 'ethan-ui'
+import { Tree, Icon } from 'ethan-ui'
 import data from 'doc/data/tree'
 
 export default function () {
@@ -16,8 +16,12 @@ export default function () {
             renderItem="text"
             doubleClickExpand
             expandIcons={[
-                <FontAwesome name="angle-right" key="angle-right" style={{ fontSize: '16px', color: '#adb5bd' }} />,
-                <FontAwesome name="angle-down" key="angle-down" style={{ fontSize: '16px', color: '#adb5bd' }} />,
+                <Icon.FontAwesome
+                    name="angle-right"
+                    key="angle-right"
+                    style={{ fontSize: '16px', color: '#adb5bd' }}
+                />,
+                <Icon.FontAwesome name="angle-down" key="angle-down" style={{ fontSize: '16px', color: '#adb5bd' }} />,
             ]}
         />
     )

@@ -68,3 +68,10 @@ export interface CardHeaderProps {
 export interface CardSubmitProps extends ButtonProps {
     loading?: boolean
 }
+
+export interface AccordionProps {
+    active?: string | number
+    defaultActive?: string | number
+    onChange?(e: string | number | null): void
+    children: React.ReactNode
+}

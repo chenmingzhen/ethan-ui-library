@@ -6,13 +6,13 @@
 
  */
 import React from 'react'
-import { Upload, Button, FontAwesome } from 'ethan-ui'
+import { Upload, Button, Icon } from 'ethan-ui'
 import { action } from 'doc/config'
 
 export default () => (
     <Upload action={action} accept="image/*" name="file" onChange={console.log} limit={3} style={{ width: 300 }}>
         <Button>
-            <FontAwesome name="cloud-upload " style={{ marginRight: 4 }} />
+            <Icon.FontAwesome name="cloud-upload " style={{ marginRight: 4 }} />
             Upload file
         </Button>
     </Upload>

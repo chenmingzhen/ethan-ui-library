@@ -5,7 +5,7 @@
  *    -- Set the font color, border color, and background color for each label.
  */
 import React from 'react'
-import { Tabs, FontAwesome } from 'ethan-ui'
+import { Tabs, Icon } from 'ethan-ui'
 
 const panelStyle = { padding: 15 }
 
@@ -13,7 +13,7 @@ const activeTabStyle = { color: '#000000' }
 
 const contact = (
     <span>
-        <FontAwesome name="user" />
+        <Icon.FontAwesome name="user" />
         Contact
     </span>
 )

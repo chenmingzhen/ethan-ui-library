@@ -1,37 +1,29 @@
 import React, { Children, cloneElement } from 'react'
 import classnames from 'classnames'
 import { cardClass } from '@/styles'
-
-export interface AccordionProps {
-    /** 提供受控的active */
-    active?: string | number
-
-    /** 默认的activi */
-    defaultActive?: string | number
-
-    /** 改变回调 */
-    onChange(e: string | number | null): void
-}
+import useRefMethod from '@/hooks/useRefMethod'
+import useMergedValue from '@/hooks/useMergedValue'
+import { AccordionProps } from './type'
 
 const getChildId = (child, i) => child?.props?.id ?? i
 
-const Accordion: React.FC<AccordionProps> = ({ active: pActive, defaultActive = 0, onChange, children }) => {
-    const [active, setActive] = React.useState<string | number | null>(pActive || defaultActive)
+const Accordion: React.FC<AccordionProps> = (props) => {
+    const { defaultActive = 0, onChange, children } = props
 
-    const handleActive = React.useCallback(
-        (newActive) => {
-            if (newActive === active) newActive = null
-
-            setActive(newActive)
-
-            onChange?.(active)
+    const [active, setActive] = useMergedValue({
+        defaultStateValue: null,
+        options: {
+            defaultValue: defaultActive,
+            value: props.active,
+            onChange,
         },
-        [active, onChange]
-    )
+    })
 
-    React.useEffect(() => {
-        pActive && setActive(pActive)
-    }, [pActive])
+    const handleActive = useRefMethod((nextActive) => {
+        if (nextActive === active) nextActive = null
+
+        setActive(nextActive)
+    })
 
     return (
         <>
@@ -42,13 +34,15 @@ const Accordion: React.FC<AccordionProps> = ({ active: pActive, defaultActive = 
                 }
 
                 const childId = getChildId(child, i)
-                const props = {
+                const childProps = {
                     collapsed: active !== childId,
                     collapsible: true,
                     className: classnames(typeof child === 'object' && child.props?.className, cardClass('accordion')),
-                    onCollapse: handleActive.bind(null, childId),
+                    onCollapse: () => {
+                        handleActive(childId)
+                    },
                 }
-                return cloneElement(child, props)
+                return cloneElement(child, childProps)
             })}
         </>
     )

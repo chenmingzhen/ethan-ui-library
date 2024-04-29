@@ -10,7 +10,7 @@ const Button: React.FC<ButtonProps> = (props) => {
 
     const {
         outline,
-        type,
+        type = 'default',
         size,
         href,
         htmlType = 'button',
@@ -92,10 +92,5 @@ const Button: React.FC<ButtonProps> = (props) => {
 }
 
 Button.displayName = 'EthanButton'
-
-Button.defaultProps = {
-    outline: false,
-    type: 'default',
-}
 
 export default React.memo(Button)

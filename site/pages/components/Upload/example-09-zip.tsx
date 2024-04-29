@@ -5,7 +5,7 @@
  *    -- Zip file and upload.
  */
 import React from 'react'
-import { Upload, Button, FontAwesome, Message } from 'ethan-ui'
+import { Upload, Button, Icon, Message } from 'ethan-ui'
 import { action } from 'doc/config'
 
 const request = (options) => {
@@ -58,7 +58,7 @@ export default function () {
     return (
         <Upload limit={3} style={{ width: 300 }} request={request} onChange={console.log}>
             <Button>
-                <FontAwesome name="cloud-upload" /> Upload file
+                <Icon.FontAwesome name="cloud-upload" /> Upload file
             </Button>
         </Upload>
     )

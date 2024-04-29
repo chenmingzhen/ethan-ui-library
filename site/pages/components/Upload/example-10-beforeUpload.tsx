@@ -5,7 +5,7 @@
  *    -- BeforeUpload return a Promise Object and resolve an EthanFile with MANUAL status
  */
 import React from 'react'
-import { Upload, Button, FontAwesome } from 'ethan-ui'
+import { Upload, Button, Icon } from 'ethan-ui'
 
 export default function () {
     return (
@@ -18,7 +18,7 @@ export default function () {
                 onChange={console.log}
             >
                 <Button>
-                    <FontAwesome name="cloud-upload " style={{ marginRight: 4 }} />
+                    <Icon.FontAwesome name="cloud-upload " style={{ marginRight: 4 }} />
                     Upload file
                 </Button>
             </Upload>
