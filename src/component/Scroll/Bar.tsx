@@ -17,7 +17,7 @@ const Bar: React.FC<ScrollBarProps> = function (props) {
         onDrag(moveX, moveY) {
             const value = direction === 'x' ? moveX : moveY
 
-            let nextScrollRatio = scrollRatio + value / (length - barLength)
+            let nextScrollRatio = scrollRatio + value / moveableLength
 
             if (nextScrollRatio < 0) nextScrollRatio = 0
             if (nextScrollRatio > 1) nextScrollRatio = 1
