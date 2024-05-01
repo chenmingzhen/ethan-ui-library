@@ -256,7 +256,7 @@ const Scroll: React.FC<ScrollProps> = function (props) {
         containerHeight && { height: containerHeight },
         containerWidth && { width: containerWidth },
         /** X轴方向下,view层的宽度始终与wheel的宽度一致，所以可以使用maxWidth */
-        /** Y轴放下下,如果wheel设置maxHeight，并不能限制view层与wheel一致的高度,如果存在滚动，需要将wheel的高度限制住,使view保持100% */
+        /** Y轴方向下,如果wheel设置maxHeight，并不能限制view层与wheel一致的高度,如果存在滚动，需要将wheel的高度限制住,使view保持100% */
         maxHeight && scrollHeight > height && { height: maxHeight },
         maxWidth && { maxWidth }
     )

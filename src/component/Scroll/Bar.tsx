@@ -17,7 +17,7 @@ const Bar: React.FC<ScrollBarProps> = function (props) {
         onDrag(moveX, moveY) {
             const value = direction === 'x' ? moveX : moveY
 
-            let nextScrollRatio = scrollRatio + value / (length - barLength)
+            let nextScrollRatio = scrollRatio + value / moveableLength
 
             if (nextScrollRatio < 0) nextScrollRatio = 0
             if (nextScrollRatio > 1) nextScrollRatio = 1
@@ -59,14 +59,17 @@ const Bar: React.FC<ScrollBarProps> = function (props) {
     const barStyle: React.CSSProperties = {}
 
     if (scrollLength > 0) {
+        /** 使用实际长度和比例表示都是一样的 */
         if (direction === 'x') {
-            // 使用比例而非实际的px
-            // (length / scrollLength) * 100 * (handleContainer width|height)=barLength,handleContainer width|height=length
-            // style.width = `${barLength}px`
+            /** 实际长度表示 */
+            // barStyle.width = `${barLength}px`
+            /** 比例表示(less中已经限制长度最小为20) */
             barStyle.width = `${(length / scrollLength) * 100}%`
             barStyle.left = value
         } else {
-            // style.height = `${barLength}px`
+            /** 实际长度表示 */
+            // barStyle.height = `${barLength}px`
+            /** 比例表示(less中已经限制长度最小为20) */
             barStyle.height = `${(length / scrollLength) * 100}%`
             barStyle.top = value
         }
