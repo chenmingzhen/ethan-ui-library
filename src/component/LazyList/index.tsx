@@ -21,7 +21,6 @@ interface LazyListProps<T = any> {
 export interface LazyListState {
     currentIndex: number
     scrollTopRatio: number
-    scrollTop: number
 }
 
 /** 预留前后两个位置的偏差值 */
@@ -61,7 +60,7 @@ export default class LazyList<T = any> extends PureComponent<LazyListProps<T>, L
 
         /** 默认值小于容器高度，不计算 */
         if ((defaultIndex + 1) * lineHeight <= height) {
-            return { currentIndex: 0, scrollTopRatio: 0, scrollTop: 0 }
+            return { currentIndex: 0, scrollTopRatio: 0 }
         }
 
         const currentIndex = getVirtualScrollCurrentIndex({
@@ -71,7 +70,7 @@ export default class LazyList<T = any> extends PureComponent<LazyListProps<T>, L
             dataLength: data.length,
         })
 
-        const { scrollTopRatio, scrollTop } = computeScroll({
+        const { scrollTopRatio } = computeScroll({
             dataLength: this.props.data.length,
             lineHeight,
             height,
@@ -81,7 +80,6 @@ export default class LazyList<T = any> extends PureComponent<LazyListProps<T>, L
         return {
             currentIndex,
             scrollTopRatio,
-            scrollTop,
         }
     }
 
@@ -117,15 +115,12 @@ export default class LazyList<T = any> extends PureComponent<LazyListProps<T>, L
                     current: prevScrollTopRatio * (prevContentHeight / nextContentHeight),
                 })
 
-                const scrollTop = nextContentHeight * nextScrollTopRatio
-
                 this.dispatchState({
                     scrollTopRatio: nextScrollTopRatio,
                     currentIndex: this.state.currentIndex,
-                    scrollTop,
                 })
             } else {
-                this.dispatchState({ currentIndex: 0, scrollTopRatio: 0, scrollTop: 0 })
+                this.dispatchState({ currentIndex: 0, scrollTopRatio: 0 })
             }
         }
     }
@@ -139,14 +134,14 @@ export default class LazyList<T = any> extends PureComponent<LazyListProps<T>, L
 
         const currentIndex = getVirtualScrollCurrentIndex({ height, lineHeight, scrollIndex, dataLength: data.length })
 
-        const { scrollTopRatio, scrollTop } = computeScroll({
+        const { scrollTopRatio } = computeScroll({
             currentIndex,
             dataLength: data.length,
             lineHeight,
             height,
         })
 
-        this.dispatchState({ scrollTopRatio, currentIndex, scrollTop })
+        this.dispatchState({ scrollTopRatio, currentIndex })
     }
 
     private dispatchState = (state: LazyListState) => {
@@ -169,7 +164,7 @@ export default class LazyList<T = any> extends PureComponent<LazyListProps<T>, L
 
         if (currentIndex < 0) currentIndex = 0
 
-        this.dispatchState({ scrollTopRatio, currentIndex, scrollTop })
+        this.dispatchState({ scrollTopRatio, currentIndex })
     }
 
     render() {
