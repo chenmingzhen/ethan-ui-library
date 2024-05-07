@@ -5,8 +5,12 @@ import docsConfigs from '../config.doc'
 
 rimraf.sync('./docs-pages')
 
-webpack(docsConfigs, (err, stats) => {
-    if (err || stats.hasErrors()) {
-        Log.error(err)
+webpack(docsConfigs, (err, multiStats) => {
+    if (err || multiStats.hasErrors()) {
+        multiStats.stats.forEach((stats) => {
+            if (stats.hasErrors()) {
+                Log.error(stats.toString())
+            }
+        })
     }
 })

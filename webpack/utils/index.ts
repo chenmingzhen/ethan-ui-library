@@ -50,7 +50,6 @@ export function getCommonConfig(options: GetCommonConfigOptionParams) {
                     loader: 'babel-loader',
                     options: {
                         cacheDirectory: true,
-                        presets: ['@babel/preset-typescript'],
                     },
                 },
             ],
@@ -159,7 +158,6 @@ export function getThemeWebpackConfig(options: GetThemeWebpackConfigParams) {
                             loader: 'babel-loader',
                             options: {
                                 cacheDirectory: true,
-                                presets: ['@babel/preset-typescript'],
                             },
                         },
                     ],
