@@ -76,17 +76,6 @@ export function getCommonConfig(options: GetCommonConfigOptionParams) {
             ],
         },
         {
-            test: /\.(ttf|eot|woff|woff2|otf|svg)/,
-            use: [
-                {
-                    loader: 'file-loader',
-                    options: {
-                        name: './font/[name].[ext]',
-                    },
-                },
-            ],
-        },
-        {
             test: /\.md$/,
             use: 'raw-loader',
         },
