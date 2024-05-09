@@ -21,6 +21,7 @@ const jsConfig = merge(getCommonConfig({ Dev: false }), {
         library: 'Ethan',
         filename: 'Ethan.min.js',
         uniqueName: 'Ethan',
+        globalObject: 'this',
     },
     /** @see https://webpack.docschina.org/configuration/externals/ */
     externals: {

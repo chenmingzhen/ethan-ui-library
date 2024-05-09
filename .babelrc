@@ -3,12 +3,20 @@
         [
             "@babel/preset-env",
             {
-                "useBuiltIns": "usage", // 按需引入polyfill
-                "corejs": 3 // 指定 core-js 最新的版本版本,注意需要安装依赖
+                "useBuiltIns": false
             }
         ],
         "@babel/preset-react",
         "@babel/preset-typescript"
     ],
-    "plugins": ["@babel/plugin-proposal-class-properties", "@babel/plugin-transform-runtime"]
+    "plugins": [
+        "@babel/plugin-proposal-class-properties",
+        [
+            "@babel/plugin-transform-runtime",
+            {
+                "moduleName": "@babel/runtime-corejs3"
+            }
+        ],
+        ["polyfill-corejs3", { "method": "usage-pure" }]
+    ]
 }
