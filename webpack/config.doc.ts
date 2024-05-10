@@ -9,8 +9,7 @@ const cssConfig = config.themes.map((name) =>
         entry: [
             './src/styles/style.ts',
             // site style
-            './site/styles/index.ts',
-            './site/less-entry.ts',
+            './site/styles/style.ts',
         ],
         output: { path: path.join(__dirname, `../docs-pages/${version}`), uniqueName: name },
         prefix: '',

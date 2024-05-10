@@ -6,7 +6,7 @@ const cssConfig = config.themes.map((name) =>
     getThemeWebpackConfig({
         mode: 'development',
         name,
-        entry: ['./src/styles/style.ts', './site/styles/index.ts', './site/less-entry.ts'],
+        entry: ['./src/styles/style.ts', './site/styles/style.ts'],
         output: {
             publicPath: `http://localhost:${config.dev.publishPort}/`,
             filename: '__css_hot_loader.js',

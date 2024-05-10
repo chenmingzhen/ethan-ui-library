@@ -127,7 +127,6 @@
         "react-router-dom": "^5.2.0",
         "rimraf": "^2.6.2",
         "ssh2": "^0.8.9",
-        "style-loader": "^2.0.0",
         "stylelint": "^14.13.0",
         "stylelint-config-idiomatic-order": "^9.0.0",
         "stylelint-config-prettier": "^9.0.3",

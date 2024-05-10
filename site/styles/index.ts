@@ -1,11 +1,4 @@
 import classnames from '@/utils/classnames'
-import './header.less'
-import './example.less'
-import './home.less'
-import './index.less'
-import './markdown.less'
-import './nav.less'
-import './editor.less'
 
 export const exampleClass = classnames('example', 'doc')
 export const headerClass = classnames('header', 'doc')

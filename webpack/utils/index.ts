@@ -58,10 +58,7 @@ export function getCommonConfig(options: GetCommonConfigOptionParams) {
             test: /\.less$/,
             use: path.resolve(__dirname, '../loaders/ignore-loader.ts'),
         },
-        {
-            test: /\.css$/,
-            use: ['style-loader', 'css-loader'],
-        },
+
         {
             test: /\.(png|jpg|jpeg|gif)$/,
             use: [
@@ -138,6 +135,15 @@ export function getThemeWebpackConfig(options: GetThemeWebpackConfigParams) {
                 {
                     test: /\.less$/,
                     use: getLessLoader(name),
+                },
+                {
+                    test: /\.css$/,
+                    use: [
+                        {
+                            loader: MiniCssExtractPlugin.loader,
+                        },
+                        'css-loader',
+                    ],
                 },
                 {
                     test: /\.(js|jsx|ts|tsx)$/,
