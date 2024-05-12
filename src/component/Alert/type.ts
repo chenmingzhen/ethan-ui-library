@@ -14,7 +14,7 @@ export interface AlertProps extends React.DetailedHTMLProps<React.HTMLAttributes
     /**
      * @private Message使用
      */
-    onInternalClose(): void
+    onInternalClose?: () => void
 }
 
 export interface ScrollAlertProps extends AlertProps {
