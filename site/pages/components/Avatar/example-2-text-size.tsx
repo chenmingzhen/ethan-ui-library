@@ -10,13 +10,13 @@ import { Avatar } from 'ethan-ui'
 
 export default function () {
     return (
-        <>
+        <div>
             <Avatar>Me</Avatar>
             <Avatar>You</Avatar>
             <Avatar>They</Avatar>
             <Avatar>Their</Avatar>
             <Avatar>LongWord</Avatar>
             <Avatar>LongSentence</Avatar>
-        </>
+        </div>
     )
 }

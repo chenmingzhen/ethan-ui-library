@@ -1,12 +1,11 @@
 import React, { memo, useState, useRef, useEffect } from 'react'
-import { FontAwesome } from '@/component/Icon'
 import { avatarClass } from '@/styles'
 import fitText from '@/component/Avatar/util'
 
 export interface AvatarProps {
     shape?: 'circle' | 'square'
     size?: 'small' | 'large' | 'default' | number
-    icon?: string
+    icon?: React.ReactNode
     src?: string
     children?: string
     bordered?: boolean
@@ -43,7 +42,7 @@ const Avatar: React.FC<AvatarProps> = (props) => {
     if (icon) {
         return (
             <span style={style} className={className}>
-                <FontAwesome name={icon} />
+                {icon}
             </span>
         )
     }
@@ -56,9 +55,7 @@ const Avatar: React.FC<AvatarProps> = (props) => {
         textStyle = {
             opacity: 0,
         }
-    } else if (textScale === 1) {
-        textStyle = {}
-    } else {
+    } else if (textScale !== 1) {
         // 自适应大小
         const textTransformString = `scale(${textScale})`
         textStyle = {
