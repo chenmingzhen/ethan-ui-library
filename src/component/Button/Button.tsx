@@ -2,6 +2,7 @@ import React, { isValidElement, useEffect } from 'react'
 import classnames from 'classnames'
 import { wrapSpan } from '@/utils/dom/element'
 import { buttonClass } from '@/styles'
+import useRefMethod from '@/hooks/useRefMethod'
 import Spin from '../Spin'
 import { ButtonProps } from './type'
 
@@ -9,38 +10,43 @@ const Button: React.FC<ButtonProps> = (props) => {
     const buttonRef = React.useRef<HTMLButtonElement | HTMLAnchorElement>()
 
     const {
-        outline,
-        type = 'default',
+        text,
         size,
         href,
-        htmlType = 'button',
-        loading,
-        disabled,
         shape,
-        text,
-        children,
-        onClick,
         target,
+        loading,
+        onClick,
+        outline,
+        disabled,
+        children,
         autoFocus,
+        type = 'default',
+        htmlType = 'button',
         ...others
     } = props
 
-    const Children = React.useMemo(() => {
+    const innerChildren = React.useMemo(() => {
         if (!children) return children
 
         return React.Children.map(wrapSpan(children), (item) => {
-            // 对 loading情况做处理 如果是loading 去除Icon
             if (loading && isValidElement(item) && (item?.type as any)?.isEthanIcon) return null
 
             return item
-        }).filter((v) => v !== null)
+        }).filter(Boolean)
     }, [children, loading])
 
-    const handleClick = (e: React.MouseEvent<HTMLElement, MouseEvent>) => {
-        buttonRef.current?.blur()
+    const handleClick = useRefMethod((e: React.MouseEvent<HTMLElement, MouseEvent>) => {
+        buttonRef.current.blur()
 
         onClick?.(e)
-    }
+    })
+
+    useEffect(() => {
+        if (autoFocus) {
+            buttonRef.current.focus()
+        }
+    }, [])
 
     const color = outline || type === 'default' ? undefined : '#fff'
 
@@ -53,12 +59,6 @@ const Button: React.FC<ButtonProps> = (props) => {
         props.className
     )
 
-    useEffect(() => {
-        if (autoFocus) {
-            buttonRef.current.focus()
-        }
-    }, [])
-
     if (href) {
         return (
             <a
@@ -67,7 +67,7 @@ const Button: React.FC<ButtonProps> = (props) => {
                 ref={buttonRef as React.MutableRefObject<HTMLAnchorElement>}
                 className={className}
             >
-                {Children}
+                {innerChildren}
             </a>
         )
     }
@@ -86,7 +86,7 @@ const Button: React.FC<ButtonProps> = (props) => {
                     <Spin size={12} name="ring" color={color} />
                 </span>
             )}
-            {Children}
+            {innerChildren}
         </button>
     )
 }
