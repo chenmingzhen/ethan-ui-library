@@ -1,7 +1,8 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { imageClass } from '@/styles'
 import { styles } from '@/utils/style/styles'
 import { docSize } from '@/utils/dom/document'
+import useRefMethod from '@/hooks/useRefMethod'
 import Spin from '../Spin'
 import { MagnifyProps } from './type'
 
@@ -29,7 +30,7 @@ const Magnify: React.FC<MagnifyProps> = (props) => {
         move(clientX, clientY)
     }
 
-    const move = useCallback((clientX, clientY) => {
+    const move = useRefMethod((clientX, clientY) => {
         const rect = elementRef.current.getBoundingClientRect()
         const image = elementRef.current.querySelector('img')
         const { width, height } = rect
@@ -38,15 +39,15 @@ const Magnify: React.FC<MagnifyProps> = (props) => {
 
         elementRef.current.scrollTop = (image.offsetHeight - height) * y
         elementRef.current.scrollLeft = (image.offsetWidth - width) * x
-    }, [])
+    })
 
-    const handleMove = useCallback((e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+    const handleMove = useRefMethod((e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
         move(e.clientX, e.clientY)
-    }, [])
+    })
 
-    const handleLoaded = useCallback(() => {
+    const handleLoaded = useRefMethod(() => {
         setLoading(false)
-    }, [])
+    })
 
     function handleWheel(evt: React.WheelEvent<HTMLDivElement>) {
         if (status === 1) {
@@ -72,12 +73,12 @@ const Magnify: React.FC<MagnifyProps> = (props) => {
 
     return (
         <div
-            onClick={handleResize}
-            onMouseMove={status === 1 ? handleMove : undefined}
-            ref={elementRef}
             style={ms}
-            className={imageClass('magnify')}
+            ref={elementRef}
             onWheel={handleWheel}
+            onClick={handleResize}
+            className={imageClass('magnify')}
+            onMouseMove={status === 1 ? handleMove : undefined}
         >
             <img onLoad={handleLoaded} src={src} alt="" style={status === 0 ? { maxHeight, maxWidth } : undefined} />
             {loading && (

@@ -2,6 +2,7 @@ import React, { useState, useRef } from 'react'
 import { useEvent } from 'react-use'
 import normalizeWheel from '@/utils/dom/normalizeWheel'
 import { imageClass } from '@/styles'
+import useRefMethod from '@/hooks/useRefMethod'
 import icons from '../icons'
 import Magnify from './Magnify'
 import { GalleryProps } from './type'
@@ -42,7 +43,7 @@ const Gallery: React.FC<GalleryProps> = (props) => {
         }, ANIMATION_DURATION)
     }
 
-    const handleScroll = (e: WheelEvent) => {
+    const handleScroll = useRefMethod((e: WheelEvent) => {
         e.preventDefault()
 
         if (scrollTimer.current) return
@@ -55,7 +56,7 @@ const Gallery: React.FC<GalleryProps> = (props) => {
         scrollTimer.current = setTimeout(() => {
             scrollTimer.current = null
         }, ANIMATION_DURATION)
-    }
+    })
 
     const renderImage = (image, pos) => (
         <div

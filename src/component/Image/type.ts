@@ -1,8 +1,8 @@
 import { ReactNode } from 'react'
-import { SpinProps } from '../Spin'
 
 export interface ImageProps {
     /** 加载失败时的备用地址 */
+    fallback?: string
     alt?: string
     className?: string
     height?: number | string
@@ -22,7 +22,6 @@ export interface ImageProps {
     getContainer?: () => HTMLElement
     /** 图片出错的展示 */
     error?: ReactNode
-    spinProps?: SpinProps
     fit?: 'fill' | 'contain' | 'cover' | 'none' | 'scale-down'
     onLoad?(e: Event): void
     imageMaskClassName?: string

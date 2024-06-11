@@ -1,11 +1,4 @@
-import React, {
-    useRef,
-    ForwardRefRenderFunction,
-    isValidElement,
-    useCallback,
-    useImperativeHandle,
-    useEffect,
-} from 'react'
+import React, { useRef, ForwardRefRenderFunction, isValidElement, useImperativeHandle, useEffect } from 'react'
 import classnames from 'classnames'
 import { imageClass } from '@/styles'
 import Spin from '@/component/Spin'
@@ -14,40 +7,47 @@ import { mockAnchorClick } from '@/utils/dom/element'
 import { lazyLoad } from '@/utils/lazyload'
 import useSafeState from '@/hooks/useSafeState'
 import { isPercent } from '@/utils/is'
+import useRefMethod from '@/hooks/useRefMethod'
 import { IImageProps } from './type'
-import { PLACEHOLDER, SRC, ALT, ERROR, StatusType } from './variable'
 import { showGallery } from './events'
+
+enum RenderEnum {
+    PLACEHOLDER,
+    SRC,
+    FALLBACK,
+    ERROR,
+}
 
 const Image: ForwardRefRenderFunction<HTMLDivElement, IImageProps> = (props, ref) => {
     const {
         src,
         alt,
-        lazy = true,
-        getContainer = () => undefined,
-        shape,
-        thumbnail,
-        target,
-        width = '100%',
-        height,
-        style,
-        onClick,
+        fit,
         error,
         title,
-        placeholder,
-        spinProps = {},
-        onTouchEnd,
-        onTouchStart,
-        fit,
+        style,
+        shape,
+        target,
+        height,
         onLoad,
+        onClick,
+        fallback,
+        thumbnail,
+        placeholder,
+        lazy = true,
+        getContainer = () => undefined,
+        width = '100%',
+        onTouchStart,
+        onTouchEnd,
         imageMaskClassName,
     } = props
 
-    const [status, setStatus] = useSafeState<StatusType>(PLACEHOLDER)
+    const [status, setStatus] = useSafeState<RenderEnum>(RenderEnum.PLACEHOLDER)
 
     const elementRef = useRef<HTMLDivElement>()
 
     /** 如果是加载中状态，没有高度或者高度为百分比，使用paddingBottom进行占位 */
-    const isPaddingHold = status === PLACEHOLDER && (!height || isPercent(height))
+    const isPaddingHold = status === RenderEnum.PLACEHOLDER && (!height || isPercent(height))
 
     useEffect(() => {
         if (!lazy) {
@@ -64,32 +64,18 @@ const Image: ForwardRefRenderFunction<HTMLDivElement, IImageProps> = (props, ref
         })
 
         return dispose
-    }, [src, alt])
+    }, [src])
 
     useImperativeHandle(ref, () => elementRef.current)
 
-    const renderFallback = useCallback(() => {
-        if (!alt) {
-            setStatus(ERROR)
-
-            return
-        }
-
-        /** 浏览器会对这个地址的图片进行缓存 */
-        /** src不能找到时 渲染alt地址的图片 */
+    function renderFallback() {
         const image = new window.Image()
-        image.onload = (e) => {
-            if (onLoad) {
-                onLoad(e)
-            }
-
-            setStatus(ALT)
-        }
-        image.onerror = () => setStatus(ERROR)
+        image.onload = () => setStatus(RenderEnum.FALLBACK)
+        image.onerror = () => setStatus(RenderEnum.ERROR)
         image.src = alt
-    }, [alt, onLoad])
+    }
 
-    const render = useCallback(() => {
+    function render() {
         if (!src) {
             renderFallback()
 
@@ -103,13 +89,13 @@ const Image: ForwardRefRenderFunction<HTMLDivElement, IImageProps> = (props, ref
                 onLoad(e)
             }
 
-            setStatus(SRC)
+            setStatus(RenderEnum.SRC)
         }
         image.onerror = renderFallback
         image.src = src
-    }, [renderFallback, src, onLoad])
+    }
 
-    const handleClick = (e: React.MouseEvent<HTMLElement, MouseEvent>) => {
+    const handleClick = useRefMethod((e: React.MouseEvent<HTMLElement, MouseEvent>) => {
         if (onClick) {
             onClick(e)
         }
@@ -123,28 +109,28 @@ const Image: ForwardRefRenderFunction<HTMLDivElement, IImageProps> = (props, ref
         } else {
             mockAnchorClick(src, target)
         }
-    }
+    })
 
     const renderImage = () => {
         switch (status) {
-            case PLACEHOLDER:
+            case RenderEnum.PLACEHOLDER:
                 return (
                     <div
                         className={classnames(imageClass('mask'), imageMaskClassName)}
                         style={isPaddingHold ? { position: 'absolute', top: 0 } : undefined}
                     >
-                        {isValidElement(placeholder) ? placeholder : <Spin {...spinProps} />}
+                        {isValidElement(placeholder) ? placeholder : <Spin />}
                     </div>
                 )
 
-            case SRC:
-                return <img alt="" src={thumbnail || src} title={title} style={{ objectFit: fit }} />
-            case ALT:
-                return <img alt="" src={alt} title={title} style={{ objectFit: fit }} />
-            case ERROR:
+            case RenderEnum.SRC:
+                return <img alt={alt} src={thumbnail || src} title={title} style={{ objectFit: fit }} />
+            case RenderEnum.FALLBACK:
+                return <img alt={alt} src={fallback} title={title} style={{ objectFit: fit }} />
+            case RenderEnum.ERROR:
                 return (
                     <div className={classnames(imageClass('mask'), imageMaskClassName)}>
-                        <div>{error || title || 'no found'}</div>
+                        <div>{error || alt || 'no found'}</div>
                     </div>
                 )
             default:
@@ -156,12 +142,12 @@ const Image: ForwardRefRenderFunction<HTMLDivElement, IImageProps> = (props, ref
 
     return (
         <div
-            className={classnames(imageClass('_', shape, target && 'target'), props.className)}
+            style={ms}
+            ref={elementRef}
             onClick={handleClick}
             onTouchEnd={onTouchEnd}
             onTouchStart={onTouchStart}
-            style={ms}
-            ref={elementRef}
+            className={classnames(imageClass('_', shape, target && 'target'), props.className)}
         >
             {renderImage()}
         </div>

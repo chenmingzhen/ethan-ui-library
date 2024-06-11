@@ -13,7 +13,7 @@ export default function () {
             width={200}
             height={125}
             src="notfound"
-            alt="https://chenmingzhen.github.io/ethan-ui-library/images/1_b.jpg"
+            fallback="https://chenmingzhen.github.io/ethan-ui-library/images/1_b.jpg"
         />
     )
 }
