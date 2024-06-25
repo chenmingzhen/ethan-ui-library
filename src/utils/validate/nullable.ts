@@ -1,12 +1,10 @@
 import { ValidatorFunc } from '@/component/Rule/type'
 
 export default (fn: ValidatorFunc): ValidatorFunc =>
-    (value, formData, callback) => {
+    (value, formData) => {
         if (value == null || value.length === 0) {
-            callback(true)
-
-            return
+            return Promise.resolve(null)
         }
 
-        fn(value, formData, callback)
+        return fn(value, formData)
     }

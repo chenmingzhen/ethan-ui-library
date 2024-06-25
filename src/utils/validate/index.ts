@@ -48,40 +48,29 @@ function getRule(rule: Rule, props: ValidatorProps) {
 
 const validate = (value: any, formValues: any, rules: Rule[], props: ValidatorProps) =>
     new Promise((resolve, reject) => {
-        /** 扁平化后 递归调用 */
         const $rules = flattenArray(rules)
+        const mergeProps: ValidatorProps = Object.assign({}, props, { type: isArray(value) ? 'array' : props.type })
 
-        const rule = $rules.shift()
+        let remain = $rules.length
 
-        const mergeProps = Object.assign({}, props, { type: isArray(value) ? 'array' : props.type })
+        for (const rule of $rules) {
+            const validateFunction = getRule(rule, mergeProps)
+            const promise = validateFunction(value, formValues, mergeProps)
 
-        /** 递归结束 */
-        if (rule === undefined) {
-            resolve(true)
+            if (!isPromise(promise)) continue
 
-            return
-        }
+            promise
+                // eslint-disable-next-line @typescript-eslint/no-loop-func
+                .then(() => {
+                    remain -= 1
 
-        function runNextCallback(result: boolean | string | Error | Error[]) {
-            if (result !== true) {
-                reject(wrapFormError(result))
-
-                return
-            }
-
-            validate(value, formValues, $rules, mergeProps).then(resolve, reject)
-        }
-
-        const validateFunction = getRule(rule, mergeProps)
-
-        /** 处理自定义规则校验与内置规则校验 */
-        const promise = validateFunction(value, formValues, runNextCallback, mergeProps)
-
-        /** 处理自定义规则校验 返回是Promise的情况 */
-        if (isPromise(promise)) {
-            promise.then(runNextCallback.bind(null, true)).catch((e) => {
-                reject(wrapFormError(e))
-            })
+                    if (!remain) {
+                        resolve(true)
+                    }
+                })
+                .catch((error) => {
+                    reject(wrapFormError(error))
+                })
         }
     })
 

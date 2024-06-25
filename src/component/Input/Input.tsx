@@ -6,11 +6,11 @@ import useMergedValue from '@/hooks/useMergedValue'
 import { KeyboardKey } from '@/utils/keyboard'
 import { isEmpty, isFunc, isNumber, isString } from '@/utils/is'
 import useIsomorphicLayoutUpdateEffect from '@/hooks/useIsomorphicLayoutUpdateEffect'
-import useValidate from '@/component/Input/hooks/useValidate'
 import classnames from 'classnames'
 import { IInputProps } from './type'
 import WrapperPopover from './WrapperPopover'
 import icons from '../icons'
+import useFormValidate from '../Form/hooks/internal/useFormValidate'
 
 const Input: React.FC<IInputProps> = function (props) {
     const {
@@ -41,7 +41,7 @@ const Input: React.FC<IInputProps> = function (props) {
     } = props
 
     const [focus, updateFocus] = useState(autoFocus || false)
-    const { error, validate } = useValidate({ rules })
+    const { error, validate } = useFormValidate({ rules })
     const [value, updateValue] = useMergedValue<string | number>({
         defaultStateValue: '',
         options: {
@@ -60,7 +60,7 @@ const Input: React.FC<IInputProps> = function (props) {
         disabled,
         width,
         style,
-        hasError: error,
+        hasError: !!error,
         focus,
         className: classnames(inputClass(prefix && 'with-prefix', suffix && 'with-suffix'), className),
     })

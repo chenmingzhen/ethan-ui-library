@@ -30,12 +30,7 @@ export type RegExpOptions = {
 
 export type BaseOptionKeys = keyof BaseOptions
 
-export type ValidatorFunc = (
-    val: any,
-    formValues: any,
-    callback: (res: true | Error) => void,
-    props?: Record<string, any>
-) => void | Promise<true>
+export type ValidatorFunc = (val: any, formValues: any, props?: Record<string, any>) => Promise<any> | Promise<any>
 
 export type Validator = {
     [key in string]?: ValidatorFunc

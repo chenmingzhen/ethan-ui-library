@@ -21,19 +21,17 @@ export const wrapFormError = (error) => {
     return error
 }
 
-export const promiseAll = (ops, isForm = true) =>
-    new Promise((resolve, reject) => {
-        Promise.all(ops)
-            .then((res) => {
-                const error = res.find((r) => r !== true)
-
-                if (error) reject(error)
-                else resolve(true)
+export function isEveryRulePass(promises: Array<Promise<any>>) {
+    return new Promise((resolve, reject) => {
+        Promise.all(promises)
+            .then(() => {
+                resolve(true)
             })
             .catch((e) => {
-                reject(isForm ? wrapFormError(e) : e)
+                reject(wrapFormError(e))
             })
     })
+}
 
 export const isSameError = (a, b) => {
     if (a === b) return true

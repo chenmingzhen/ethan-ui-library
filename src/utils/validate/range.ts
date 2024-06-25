@@ -3,23 +3,22 @@ import { isNumber } from '../is'
 import nullable from './nullable'
 
 export default (options: ValidatorProps) =>
-    nullable((value, _, callback) => {
+    nullable((value) => {
         const { min, max, message } = options
 
         if (value === undefined || value === '') {
-            callback(true)
-            return
+            return Promise.resolve(null)
         }
 
         const val = parseFloat(value)
 
         if (Number.isNaN(val)) {
-            callback(new Error(message))
+            return Promise.reject(new Error(message))
         }
 
         if ((isNumber(min) && val < min) || (isNumber(max) && val > max)) {
-            callback(new Error(message))
-        } else {
-            callback(true)
+            return Promise.reject(new Error(message))
         }
+
+        return Promise.resolve(null)
     })

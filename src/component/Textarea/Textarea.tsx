@@ -9,9 +9,9 @@ import classNames from 'classnames'
 import { useIsomorphicLayoutEffect } from 'react-use'
 import { TextareaProps } from './type'
 import useInputStyle from '../Input/hooks/useInputStyle'
-import useValidate from '../Input/hooks/useValidate'
 import WrapperPopover from '../Input/WrapperPopover'
 import icons from '../icons'
+import useFormValidate from '../Form/hooks/internal/useFormValidate'
 
 const Textarea: React.FC<TextareaProps> = (props) => {
     const [height, setHeight] = useState(0)
@@ -41,7 +41,7 @@ const Textarea: React.FC<TextareaProps> = (props) => {
         ...otherProps
     } = props
     const [focus, updateFocus] = useState(autoFocus || false)
-    const { error, validate } = useValidate({ rules })
+    const { error, validate } = useFormValidate({ rules })
     const { style: ms, className: cls } = useInputStyle({
         border,
         size,
