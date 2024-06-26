@@ -17,10 +17,10 @@ export default function useActionEffect(props: UseActionEffectProps) {
     const { menuItemMapping, subMenuMapping, key2PathMapping, activePath, openKeys } = props
 
     const executeAction = useRefMethod(() => {
-        menuItemMapping.forEach((actions, key) => {
+        menuItemMapping.forEach((action, key) => {
             const path = key2PathMapping.get(key)
 
-            actions.updateActive(shallowEqual(activePath, path))
+            action.updateActive(shallowEqual(activePath, path))
         })
 
         subMenuMapping.forEach((actions, key) => {

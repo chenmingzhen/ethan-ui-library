@@ -32,6 +32,7 @@ function Menu<T extends Record<string, any> = Record<string, any>>(props: MenuPr
         mode = 'inline',
         inlineIndent = 24,
         subMenuTriggerActions = ['click'],
+        openKeys: propOpenKeys,
         ...restProps
     } = props
 
@@ -41,7 +42,7 @@ function Menu<T extends Record<string, any> = Record<string, any>>(props: MenuPr
     const { openKeys, syncSetOpenKeys, delaySetOpenKeys } = useOpenKeys({
         subMenuMapping,
         defaultValue: defaultOpenKeys,
-        value: props.openKeys,
+        value: propOpenKeys,
         onChange: onOpenChange,
     })
 
