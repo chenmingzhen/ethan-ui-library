@@ -1,8 +1,8 @@
 /**
  * cn - 依赖更新
- *    -- 设置flow值时，不仅会重新渲染FormItem，还会进行校验操作
+ *    -- 设置dependencies值时，不仅会重新渲染FormItem，还会进行校验操作
  * en - Flow update
- *    -- When the flow value is set, the FormItem is not only re-rendered, but also validated
+ *    -- When the dependencies value is set, the FormItem is not only re-rendered, but also validated
  */
 import { FormItemProps } from '@/component/Form/type'
 import { Input, Form, Rule, Button } from 'ethan-ui'
@@ -15,7 +15,7 @@ interface FormValues {
 }
 
 const { mandatory } = Rule({
-    mandatory(_, formValues: FormValues, callback, props: FormItemProps<FormValues>) {
+    mandatory(_, formValues: FormValues, props: FormItemProps<FormValues>) {
         const { name } = props
 
         const { mobile, telephone } = formValues
@@ -51,10 +51,10 @@ export default function () {
                 <Input autoComplete="new-password" width={165} />
             </Form.Item>
 
-            <Form.Item label="手机" name="mobile" rules={[mandatory]} flow={['telephone']}>
+            <Form.Item label="手机" name="mobile" rules={[mandatory]} dependencies={['telephone']}>
                 <Input autoComplete="new-password" width={165} />
             </Form.Item>
-            <Form.Item label="固话" name="telephone" rules={[mandatory]} flow={['mobile']} className="ml5">
+            <Form.Item label="固话" name="telephone" rules={[mandatory]} dependencies={['mobile']} className="ml5">
                 <Input autoComplete="new-password" width={165} />
             </Form.Item>
 

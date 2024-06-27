@@ -111,7 +111,7 @@ export default class {
         else delete this.$events[name]
     }
 
-    bind = (name: string, callback, value, validate) => {
+    register = (name: string, callback, value, validate) => {
         if (this.$inputNames[name]) {
             warningOnce(`There is already an item with name "${name}" exists. The name props must be unique.`)
         }
@@ -130,11 +130,11 @@ export default class {
         this.subscribe(name, callback)
     }
 
-    unbind = (name: string | string[], preserve = false) => {
+    unregister = (name: string | string[], preserve = false) => {
         if (!name) return
 
         if (Array.isArray(name)) {
-            name.forEach((n) => this.unbind(n))
+            name.forEach((n) => this.unregister(n))
 
             return
         }
@@ -160,12 +160,8 @@ export default class {
 
     /** 往下层传递更新事件 */
     private publishValue = (name, type?) => {
-        const na = `${name}[`
-
-        const no = `${name}.`
-
         Object.keys(this.$inputNames)
-            .filter((n) => n.indexOf(na) === 0 || n.indexOf(no) === 0)
+            .filter((n) => n.indexOf(`${name}[`) === 0 || n.indexOf(`${name}.`) === 0)
             .forEach((n) => {
                 this.dispatch(n, this.get(n), type)
             })
@@ -320,12 +316,8 @@ export default class {
             const value = this.get(name)
 
             validator(value, this.getValue())
-                .then((res) => {
-                    if (res !== true) {
-                        reject(new FormError(res.message, name, value))
-                    } else {
-                        resolve(value)
-                    }
+                .then(() => {
+                    resolve(value)
                 })
                 .catch((e) => {
                     reject(new FormError(e.message, name, value))

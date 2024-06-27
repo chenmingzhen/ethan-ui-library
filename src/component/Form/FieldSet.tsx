@@ -2,22 +2,22 @@ import useUpdate from '@/hooks/useUpdate'
 import { CHANGE_ACTION, IGNORE_VALIDATE_ACTION } from '@/utils/Datum/types'
 import React, { useContext } from 'react'
 import { isFunc } from '@/utils/is'
+import useRefMethod from '@/hooks/useRefMethod'
 import formContext from './context/formContext'
-import useBindFormDatum from './hooks/internal/useBindFormDatum'
-import useEvent from './hooks/internal/useEvent'
-import useFlow from './hooks/internal/useFlow'
+import useRegister from './hooks/internal/useRegister'
+import useSubscribe from './hooks/internal/useSubscribe'
 import useFormValidate from './hooks/internal/useFormValidate'
 import { FieldSetProps, IFieldSetProps } from './type'
 import { FieldSetProvider } from './context/fieldSetContext'
 import FormHelp from './FormHelp'
 
 const FieldSet: React.FC<IFieldSetProps> = (props) => {
-    const { name, rules, preserve: propPreserve, defaultValue, flow, emptyRender, children } = props
+    const { name, rules, preserve: propPreserve, defaultValue, dependencies, emptyRender, children } = props
     const { formDatum, animation, preserve: formPreserve } = useContext(formContext) || {}
     const preserve = formPreserve || propPreserve
     const update = useUpdate()
     const { error, validate } = useFormValidate({ rules })
-    const handleUpdate = useEvent((_, __, type) => {
+    const handleUpdate = useRefMethod((_, __, type) => {
         const formValues = formDatum.getValue()
 
         const value = formDatum.get(name)
@@ -28,8 +28,8 @@ const FieldSet: React.FC<IFieldSetProps> = (props) => {
 
         update()
     })
-    useFlow({ flow, name, formDatum, validate })
-    useBindFormDatum({
+    useSubscribe({ dependencies, name, formDatum, validate })
+    useRegister({
         formDatum,
         name,
         onValidate: validate,

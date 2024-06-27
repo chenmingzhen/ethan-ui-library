@@ -3,8 +3,8 @@ import { isSameError } from '@/utils/errors'
 import { isArray } from '@/utils/is'
 import { useContext, useEffect } from 'react'
 import { usePrevious, useUpdateEffect } from 'react-use'
+import useRefMethod from '@/hooks/useRefMethod'
 import { ErrorListContext } from '../../FormItem'
-import useEvent from './useEvent'
 
 interface UseErrorListProps {
     name: string | string[]
@@ -26,7 +26,7 @@ export function useRootItemCollectErrors(props: UseErrorListProps) {
     const [errors, setErrors] = useSafeState<Record<string, Error>>({ [arrayNamesToStr(name)]: undefined })
     const prevError = usePrevious(error)
     const { onUpdateRootErrors } = useContext(ErrorListContext) || {}
-    const updateErrors = useEvent((nameStr: string, err: Error) => {
+    const updateErrors = useRefMethod((nameStr: string, err: Error) => {
         if (onUpdateRootErrors) {
             onUpdateRootErrors(arrayNamesToStr(name), err)
         } else {

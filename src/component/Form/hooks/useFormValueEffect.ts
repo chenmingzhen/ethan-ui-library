@@ -1,8 +1,9 @@
-import { useCallback, useEffect } from 'react'
+import { useEffect } from 'react'
 import { warningOnce } from '@/utils/warning'
 import { isEmpty } from '@/utils/is'
 import { deepSet } from '@/utils/objects'
 import { NestedKeyOf } from '@/utils/utilityTypes'
+import useRefMethod from '@/hooks/useRefMethod'
 import { FormInstance, InternalFormInstance } from '../type'
 
 interface UseFormValueEffectParams<Values extends Record<string, any>> {
@@ -23,7 +24,7 @@ const useFormValueEffect = <
 
     const internalForm = form as InternalFormInstance
 
-    const trackPathDeep = useCallback((name: string, trackCallback, isSubscribe: boolean) => {
+    const trackPathDeep = useRefMethod((name: string, trackCallback, isSubscribe: boolean) => {
         if (!internalForm) return
 
         const formDatum = internalForm.GET_INTERNAL_FORM_DATUM()
@@ -61,9 +62,9 @@ const useFormValueEffect = <
                 }
             })
         })
-    }, [])
+    })
 
-    const handleUpdate = useCallback(() => {
+    const handleUpdate = useRefMethod(() => {
         if (isEmpty(deep)) return
 
         const values: any = {}
@@ -77,7 +78,7 @@ const useFormValueEffect = <
         })
 
         callback(values)
-    }, [deep, callback])
+    })
 
     useEffect(() => {
         if (!internalForm) {

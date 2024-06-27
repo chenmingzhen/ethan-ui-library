@@ -20,7 +20,7 @@ export default function App() {
                 <Input clearable />
             </Form.Item>
 
-            <Form.Item<FormValues> noStyle flow={['name']}>
+            <Form.Item<FormValues> noStyle dependencies={['name']}>
                 {({ form }) => {
                     const name = form.get('name')
 
@@ -41,7 +41,7 @@ export default function App() {
                 }}
             </Form.Item>
 
-            <Form.Item<FormValues> noStyle flow={['name']}>
+            <Form.Item<FormValues> noStyle dependencies={['name']}>
                 {({ form }) => {
                     const name = form.get('name')
 

@@ -1,7 +1,8 @@
-import { useCallback, useEffect } from 'react'
+import { useEffect } from 'react'
 import { warningOnce } from '@/utils/warning'
 import useUpdate from '@/hooks/useUpdate'
 import { NestedKeyOf } from '@/utils/utilityTypes'
+import useRefMethod from '@/hooks/useRefMethod'
 import { FormInstance, InternalFormInstance } from '../type'
 
 const useFormValueState = <Value = any, FormValues extends Record<string, any> = Record<string, any>>(
@@ -12,13 +13,13 @@ const useFormValueState = <Value = any, FormValues extends Record<string, any> =
 
     const internalForm = form as InternalFormInstance
 
-    const setFormValue = useCallback((value) => {
+    const setFormValue = useRefMethod((value) => {
         if (!internalForm) return
 
         const formDatum = internalForm.GET_INTERNAL_FORM_DATUM()
 
         formDatum.set({ name, value, FOR_INTERNAL_USE_DISPATCH_CHANGE: true })
-    }, [])
+    })
 
     useEffect(() => {
         if (!internalForm) return

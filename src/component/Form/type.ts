@@ -23,7 +23,7 @@ export interface FormItemProps<Value = any> extends Pick<FormContextProps, 'anim
     rules?: Rule[]
     name?: string | string[]
     defaultValue?: any
-    flow?: string[] | true
+    dependencies?: string[] | true
     noStyle?: boolean
     beforeChange?: (value: any, prevValue: any, form: FormInstance<Value>) => any
     /** 根FormItem集中收集Error */
@@ -97,7 +97,7 @@ export interface FieldSetProps<Value = any> extends Pick<FormContextProps, 'anim
     name: string
     rules?: Rule[]
     children: React.ReactNode | ((params: FieldSetChildrenFuncParams<Value>) => React.ReactNode)
-    flow?: string[]
+    dependencies?: string[]
     preserve?: boolean
 }
 

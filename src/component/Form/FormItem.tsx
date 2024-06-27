@@ -7,15 +7,15 @@ import shallowEqual from '@/utils/shallowEqual'
 import classnames from 'classnames'
 import immer from 'immer'
 import React, { isValidElement, useContext, cloneElement, createContext, useRef } from 'react'
+import useRefMethod from '@/hooks/useRefMethod'
 import { getGrid } from '../Grid/util'
 import { FieldSetContext } from './context/fieldSetContext'
 import formContext from './context/formContext'
 import { FormItemProvider } from './context/formItemContext'
 import FormHelp from './FormHelp'
-import useBindFormDatum from './hooks/internal/useBindFormDatum'
+import useRegister from './hooks/internal/useRegister'
 import { useRootItemCollectErrors } from './hooks/internal/useRootItemCollectErrors'
-import useEvent from './hooks/internal/useEvent'
-import useFlow from './hooks/internal/useFlow'
+import useSubscribe from './hooks/internal/useSubscribe'
 import useFormValidate from './hooks/internal/useFormValidate'
 import { FormItemErrorListContext, FormItemProps, IFormItemProps } from './type'
 import { extendName } from './util'
@@ -37,7 +37,7 @@ const FormItem: React.FC<IFormItemProps> = (props) => {
         beforeChange,
         tip,
         className,
-        flow,
+        dependencies,
         defaultValue,
         preserve: propPreserve,
     } = props
@@ -57,7 +57,7 @@ const FormItem: React.FC<IFormItemProps> = (props) => {
     const { errors, updateErrors, isRootItem } = useRootItemCollectErrors({ name, error })
     const update = useUpdate()
     const lastValueRef = useRef<any>(undefined)
-    const handleUpdate = useEvent((actionName, data, type) => {
+    const handleUpdate = useRefMethod((actionName, data, type) => {
         /** ERROR_ACTION */
         if (type === ERROR_ACTION) {
             if (!isSameError(data, error)) {
@@ -92,8 +92,8 @@ const FormItem: React.FC<IFormItemProps> = (props) => {
         update()
     })
 
-    useFlow({ formDatum, name, flow, validate })
-    useBindFormDatum({ formDatum, name, preserve, defaultValue, onValidate: validate, onUpdate: handleUpdate })
+    useSubscribe({ formDatum, name, dependencies, validate })
+    useRegister({ formDatum, name, preserve, defaultValue, onValidate: validate, onUpdate: handleUpdate })
 
     function getValue() {
         let value
@@ -109,25 +109,27 @@ const FormItem: React.FC<IFormItemProps> = (props) => {
         return value
     }
 
-    function handleChange(rawValue, ...args) {
+    function handleChange(value, ...args) {
         const anyChildren = children as any
 
         const prevValue = formDatum.get(name)
 
-        const value = beforeChange
-            ? beforeChange(rawValue, prevValue, formDatum.getForm())
-            : isSyntheticEvent(rawValue)
-            ? (rawValue.target as HTMLInputElement).value
-            : rawValue
+        const nextValue = beforeChange
+            ? beforeChange(value, prevValue, formDatum.getForm())
+            : isSyntheticEvent(value)
+            ? (value.target as HTMLInputElement).value
+            : value
 
-        if (isArray(name) && isArray(value)) {
-            name.forEach((n, i) => formDatum.set({ name: n, value: value[i], FOR_INTERNAL_USE_DISPATCH_CHANGE: true }))
+        if (isArray(name) && isArray(nextValue)) {
+            name.forEach((n, i) =>
+                formDatum.set({ name: n, value: nextValue[i], FOR_INTERNAL_USE_DISPATCH_CHANGE: true })
+            )
         } else {
-            formDatum.set({ name, value, FOR_INTERNAL_USE_DISPATCH_CHANGE: true })
+            formDatum.set({ name, value: nextValue, FOR_INTERNAL_USE_DISPATCH_CHANGE: true })
         }
 
         if (anyChildren && anyChildren.props && anyChildren.props.onChange && isFunc(anyChildren.props.onChange)) {
-            anyChildren.props.onChange(value, ...args)
+            anyChildren.props.onChange(nextValue, ...args)
         }
     }
 

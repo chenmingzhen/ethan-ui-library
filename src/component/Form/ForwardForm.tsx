@@ -1,8 +1,9 @@
-import React, { useCallback, useEffect, useImperativeHandle, useRef } from 'react'
+import React, { useEffect, useImperativeHandle, useRef } from 'react'
 import shallowEqual from '@/utils/shallowEqual'
 import classnames from 'classnames'
 import { formClass } from '@/styles'
 import cleanProps from '@/utils/cleanProps'
+import useRefMethod from '@/hooks/useRefMethod'
 import { FormContextProps, FormInstance, FormProps, InternalFormInstance } from './type'
 import useForm from './hooks/useForm'
 import { FormProvider } from './context/formContext'
@@ -45,18 +46,15 @@ export default React.forwardRef<FormInstance, FormProps>((props, ref) => {
         hasInjectProps.current = true
     }
 
-    const handleSubmit = useCallback(
-        (evt: React.FormEvent<HTMLFormElement>) => {
-            evt.preventDefault()
+    const handleSubmit = useRefMethod((evt: React.FormEvent<HTMLFormElement>) => {
+        evt.preventDefault()
 
-            evt.stopPropagation()
+        evt.stopPropagation()
 
-            formDatum.submit()
-        },
-        [formDatum]
-    )
+        formDatum.submit()
+    })
 
-    const handleScrollToError = useCallback(() => {
+    const handleScrollToError = useRefMethod(() => {
         if (!scrollToError) return
 
         const element = realFormRef.current?.querySelector(`.${formClass('invalid')}`) as HTMLElement
@@ -66,11 +64,11 @@ export default React.forwardRef<FormInstance, FormProps>((props, ref) => {
         element.scrollIntoView()
 
         if (element.focus) element.focus()
-    }, [])
+    })
 
-    const handleReset = useCallback(() => {
+    const handleReset = useRefMethod(() => {
         formDatum.reset()
-    }, [formDatum])
+    })
 
     /** Inject to form datum */
     useEffect(() => {
@@ -85,7 +83,7 @@ export default React.forwardRef<FormInstance, FormProps>((props, ref) => {
 
             handleScrollToError()
         }
-    }, [onError, handleScrollToError])
+    }, [onError])
 
     useEffect(() => {
         formDatum.onSubmit = onSubmit

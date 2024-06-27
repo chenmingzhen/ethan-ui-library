@@ -2,7 +2,7 @@ import FormDatum from '@/utils/Datum/Form'
 import { isArray } from '@/utils/is'
 import { useIsomorphicLayoutEffect, useUpdate } from 'react-use'
 
-interface UseBindFormDatumProps {
+interface UseRegisterProps {
     formDatum: FormDatum
     name: string | string[]
     preserve: boolean
@@ -11,24 +11,24 @@ interface UseBindFormDatumProps {
     onValidate: (value, formValue) => Promise<any>
 }
 
-export default function useBindFormDatum(props: UseBindFormDatumProps) {
+export default function useRegister(props: UseRegisterProps) {
     const { formDatum, name, defaultValue, preserve, onUpdate, onValidate } = props
     const update = useUpdate()
 
     useIsomorphicLayoutEffect(() => {
         if (formDatum && name) {
             if (!isArray(name)) {
-                formDatum.bind(name, onUpdate, defaultValue, onValidate)
+                formDatum.register(name, onUpdate, defaultValue, onValidate)
             } else {
                 const defaultValues = isArray(defaultValue) ? defaultValue : [defaultValue]
 
-                name.forEach((n, i) => formDatum.bind(n, onUpdate, defaultValues[i], onValidate))
+                name.forEach((n, i) => formDatum.register(n, onUpdate, defaultValues[i], onValidate))
             }
 
             update()
 
             return () => {
-                formDatum.unbind(name, preserve)
+                formDatum.unregister(name, preserve)
             }
         }
     }, [name])
