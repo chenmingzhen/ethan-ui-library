@@ -5,6 +5,7 @@ import { isString } from '@/utils/is'
 import React from 'react'
 import Checkbox from '../Checkbox'
 import { FilterListOptionItemProps, FilterListOptionProps } from './type'
+import Highlight from '../Highlight'
 
 const FilterListOptionItem = React.memo((props: FilterListOptionItemProps) => {
     const {
@@ -46,18 +47,7 @@ const FilterListOptionItem = React.memo((props: FilterListOptionItemProps) => {
                 className={cascaderClass('filter-list-content', pathNode.isDisabled && 'disabled')}
                 onClick={handlePathItemClick}
             >
-                {isString(content)
-                    ? content.split(filterText).map((text, i, arr) => {
-                          if (i === arr.length - 1) return <React.Fragment key={i}>{text}</React.Fragment>
-
-                          return (
-                              <React.Fragment key={i}>
-                                  {text}
-                                  <span style={{ color: '#FF4E50' }}>{filterText}</span>
-                              </React.Fragment>
-                          )
-                      })
-                    : content}
+                {isString(content) ? <Highlight highlightTexts={[filterText]} text={content} /> : content}
             </div>
         )
     }
