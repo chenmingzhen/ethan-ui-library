@@ -1,7 +1,8 @@
 import { colorPickerClass } from '@/styles'
 import { COLOR_MATCH, hslaArray2RgbaArray, parseColor, rgbaArray2HexFormat, rgbaArray2HslArray } from '@/utils/color'
-import React, { useCallback, useState } from 'react'
+import React, { useState } from 'react'
 import { useIsomorphicLayoutEffect } from 'react-use'
+import useRefMethod from '@/hooks/useRefMethod'
 import Button from '../Button'
 import { FontAwesome } from '../Icon'
 import Input from '../Input'
@@ -9,12 +10,9 @@ import { ModePanelProps } from './type'
 
 const ModePanel: React.FC<ModePanelProps> = function (props) {
     const { mode, onModeChange, onInputValueChange, disabled } = props
-
-    /** ModalModal单独维护hex和alpha */
+    /** Mode单独维护hex和alpha */
     const [hex, updateHex] = useState(rgbaArray2HexFormat([props.r, props.g, props.b, props.a]))
-
     const [alpha, updateAlpha] = useState<string | number>(props.a)
-
     const [focus, updateFocus] = useState(false)
 
     useIsomorphicLayoutEffect(() => {
@@ -25,11 +23,11 @@ const ModePanel: React.FC<ModePanelProps> = function (props) {
         updateAlpha(props.a)
     }, [focus, props.r, props.g, props.b, props.a])
 
-    const handleFocus = useCallback(() => {
+    const handleFocus = useRefMethod(() => {
         updateFocus(true)
-    }, [])
+    })
 
-    const handleModeChange = useCallback(() => {
+    const handleModeChange = useRefMethod(() => {
         let newMode = mode
 
         if (mode === 'rgba') {
@@ -41,7 +39,7 @@ const ModePanel: React.FC<ModePanelProps> = function (props) {
         }
 
         onModeChange(newMode)
-    }, [mode])
+    })
 
     function handleHexInputChange(inputValue: string) {
         updateHex(inputValue)
@@ -63,7 +61,7 @@ const ModePanel: React.FC<ModePanelProps> = function (props) {
             return
         }
 
-        ;[r, g, b, a = 1] = parseColor(inputValue)
+        ;[r, g, b, a = 1] = color
         ;[h, s, l] = rgbaArray2HslArray([r, g, b, a])
 
         onInputValueChange({ r, g, b, a, h, s, l })

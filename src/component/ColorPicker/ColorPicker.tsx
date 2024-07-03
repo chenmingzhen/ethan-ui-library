@@ -3,10 +3,10 @@ import classnames from 'classnames'
 import { colorPickerClass } from '@/styles'
 import { getUidStr } from '@/utils/uid'
 import useSafeState from '@/hooks/useSafeState'
-import useIsomorphicLayoutUpdateEffect from '@/hooks/useIsomorphicLayoutUpdateEffect'
 import { styles } from '@/utils/style/styles'
 import { getPortalPickerStyle } from '@/utils/position'
 import useRefMethod from '@/hooks/useRefMethod'
+import useMergedValue from '@/hooks/useMergedValue'
 import { ColorPickerProps } from './type'
 import Caret from '../icons/Caret'
 import ColorBoard from './ColorBoard'
@@ -32,7 +32,14 @@ const ColorPicker: React.FC<ColorPickerProps> = function (props) {
         ...other
     } = props
     const [visible, updateVisible] = useSafeState(false)
-    const [currentValue, updateCurrentValue] = useSafeState(value || defaultValue || getDefaultColor(format))
+    const [currentValue, updateCurrentValue] = useMergedValue<string>({
+        defaultStateValue: getDefaultColor(format),
+        options: {
+            value,
+            defaultValue,
+            onChange,
+        },
+    })
     const componentKey = useRef(getUidStr()).current
     const [triggerElement, setTriggerElement] = useState<HTMLDivElement>()
     const [portalElement, setPortalElement] = useState<HTMLDivElement>()
@@ -41,22 +48,6 @@ const ColorPicker: React.FC<ColorPickerProps> = function (props) {
 
         updateVisible(nextVisible)
     })
-
-    useIsomorphicLayoutUpdateEffect(() => {
-        updateCurrentValue(value || getDefaultColor(format))
-    }, [value])
-
-    const handleChange = (color: string) => {
-        if (onChange) {
-            onChange(color)
-        }
-
-        const hasValue = 'value' in props && props.value !== undefined
-
-        if (hasValue) return
-
-        updateCurrentValue(color)
-    }
 
     const transitionStyle = styles(dropdownStyle, getPortalPickerStyle(triggerElement, portalElement, position))
     const transitionCls = classnames(colorPickerClass('dropdown', dropdownClassName))
@@ -82,7 +73,7 @@ const ColorPicker: React.FC<ColorPickerProps> = function (props) {
                         format={format}
                         disabled={disabled}
                         value={currentValue}
-                        onChange={handleChange}
+                        onChange={updateCurrentValue}
                         componentKey={componentKey}
                     />
                 ),

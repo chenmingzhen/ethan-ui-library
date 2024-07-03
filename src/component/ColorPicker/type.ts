@@ -1,17 +1,19 @@
 import React from 'react'
 
+export type ColorMode = 'rgba' | 'hex' | 'hsla'
+
 export interface ColorPickerProps {
     value?: string
     disabled?: boolean
     size?: 'small' | 'large' | 'default'
-    format?: 'rgba' | 'hex' | 'hsla'
+    format?: ColorMode
     defaultColors?: string[]
     style?: React.CSSProperties
     className?: string
     position?: 'left-bottom' | 'left-top' | 'right-bottom' | 'right-top'
     defaultValue?: string
     onChange?: (color: string) => void
-    mode?: 'rgba' | 'hex' | 'hsla' | boolean
+    mode?: ColorMode | boolean
     showIcon?: boolean
     dropdownClassName?: string
     dropdownStyle?: React.CSSProperties
@@ -32,7 +34,7 @@ export interface ColorBoardState {
     h: number
     l: number
     s: number
-    mode: 'rgba' | 'hex' | 'hsla'
+    mode: ColorMode
     isRgbPanelMoving: boolean
 }
 
