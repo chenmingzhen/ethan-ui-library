@@ -5,7 +5,8 @@ import { setTransformProp } from '@/utils/dom/translate'
 import { range } from '@/utils/numbers'
 import { styles } from '@/utils/style/styles'
 import classnames from 'classnames'
-import React, { useMemo, useRef, useState } from 'react'
+import React, { useMemo, useRef } from 'react'
+import useSafeState from '@/hooks/useSafeState'
 import { RateProps } from './type'
 
 const MIN_SIZE = 12
@@ -26,8 +27,8 @@ const Rate: React.FC<RateProps> = function (props) {
         front,
         clearable,
     } = props
-    const [hover, updateHover] = useState(0)
-    const [highlight, updateHighlight] = useState(0)
+    const [hover, updateHover] = useSafeState(0)
+    const [highlight, updateHighlight] = useSafeState(0)
     const [value, updateValue] = useMergedValue({
         defaultStateValue: 0,
         options: {
