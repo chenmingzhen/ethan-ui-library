@@ -25,7 +25,7 @@ export function wrapSpan(children) {
     })
 }
 
-export function getParent(el, target): HTMLElement | null {
+export function getParent(el: HTMLElement, target): HTMLElement | null {
     if (!target) {
         return null
     }
@@ -41,43 +41,6 @@ export function getParent(el, target): HTMLElement | null {
         }
 
         temp = temp.parentElement
-    }
-
-    return null
-}
-
-export function dispatchEvent(form, name, detail) {
-    if (!form) return
-    let event
-
-    // 自定义事件 兼容性写法
-    if (CustomEvent) {
-        // https://developer.mozilla.org/zh-CN/docs/Web/API/CustomEvent/CustomEvent
-        event = new CustomEvent(name, { bubbles: false, cancelable: true, detail })
-    } else {
-        event = document.createEvent('HTMLEvents')
-        event.initEvent(name, true, true)
-    }
-
-    form.dispatch(event)
-}
-
-export function cssSupport(attr, value) {
-    const element = document.createElement('div')
-
-    if (attr in element.style) {
-        element.style[attr] = value
-
-        return element.style[attr] === value
-    }
-
-    return false
-}
-
-export function getCursorOffset() {
-    /** @see https://developer.mozilla.org/zh-cn/docs/web/api/selection/anchoroffset */
-    if (window.getSelection) {
-        return window.getSelection().anchorOffset
     }
 
     return null
