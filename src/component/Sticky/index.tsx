@@ -70,6 +70,8 @@ const Sticky: React.FC<StickyProps> = (props) => {
 
     const handlePositionChange = useRefMethod(
         throttleWrapper(() => {
+            if (!elementRef.current) return
+
             const targetElement = getParent(elementRef.current, target) as HTMLDivElement
             const selfRect = elementRef.current.getBoundingClientRect().toJSON()
             const scrollElement = targetElement || document.body
@@ -157,7 +159,7 @@ const Sticky: React.FC<StickyProps> = (props) => {
             if (newStyle) {
                 setState({ style: newStyle })
             }
-        }, 5)
+        }, 17)
     )
 
     const getStyle = (mode: Position, offset: number, left: number, width: number) => {
