@@ -5,7 +5,7 @@ import { focusElement, getParent } from '@/utils/dom/element'
 import { isEmpty, isString } from '@/utils/is'
 import { getUidStr } from '@/utils/uid'
 import classnames from 'classnames'
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useMemo, useRef, useState } from 'react'
 import Input from '../Input'
 import Popover from '../Popover'
 import Textarea from '../Textarea'
@@ -37,11 +37,7 @@ const EditableArea: React.FC<EditableProps> = (props) => {
         options: {
             defaultValue,
             value: props.value,
-            onChange(nextValue) {
-                if (onChange) {
-                    onChange(nextValue)
-                }
-            },
+            onChange,
         },
     })
 
@@ -66,14 +62,14 @@ const EditableArea: React.FC<EditableProps> = (props) => {
         updateShowTextarea(true)
     })
 
-    const getFormatValue = useRefMethod(() => {
+    const formatValue = useMemo(() => {
         if (isEmpty(value)) return ''
 
         const arr = value.split('\n')
         const len = arr.length
 
         return len > 1 ? `${arr[0]}...` : value
-    })
+    }, [value])
 
     useEffect(() => {
         if (showTextarea) {
@@ -87,39 +83,39 @@ const EditableArea: React.FC<EditableProps> = (props) => {
 
     return (
         <Popover
-            visible={showTextarea}
             showArrow={false}
-            className={editableAreaClass('popover')}
-            innerProps={{ style: popStyle }}
-            getPopupContainer={getPopupContainer}
             animation={false}
             placement="cover"
+            visible={showTextarea}
+            innerProps={{ style: popStyle }}
+            getPopupContainer={getPopupContainer}
+            className={editableAreaClass('popover')}
             content={
                 <Textarea
-                    className={editableAreaClass('text-area')}
                     autoSize
-                    value={value}
                     rows={1}
-                    onChange={updateValue}
-                    onBlur={handleBlur}
-                    onFocus={onFocus}
-                    placeholder={placeholder}
-                    maxHeight={maxHeight}
+                    value={value}
                     id={textareaId}
+                    onFocus={onFocus}
+                    onBlur={handleBlur}
+                    maxHeight={maxHeight}
                     clearable={clearable}
+                    onChange={updateValue}
+                    placeholder={placeholder}
+                    className={editableAreaClass('text-area')}
                 />
             }
         >
             <div className={cls} style={ms}>
                 <Input
-                    forwardedRef={inputRef}
-                    placeholder={placeholder}
-                    value={getFormatValue()}
-                    className={editableAreaClass('input')}
-                    onFocus={handleInputFocus}
                     disabled={disabled}
+                    value={formatValue}
                     clearable={clearable}
                     onChange={updateValue}
+                    forwardedRef={inputRef}
+                    placeholder={placeholder}
+                    onFocus={handleInputFocus}
+                    className={editableAreaClass('input')}
                 />
             </div>
         </Popover>
