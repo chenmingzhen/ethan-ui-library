@@ -1,18 +1,18 @@
 import useMergedValue from '@/hooks/useMergedValue'
 import { checkInputClass } from '@/styles'
 import classnames from 'classnames'
-import React, { useContext, useMemo } from 'react'
+import React, { useContext } from 'react'
 import { CheckboxContext } from './context'
 import { CheckboxProps } from './type'
 
 const Checkbox: React.FC<CheckboxProps> = (props) => {
     const { disabled, style, children, onClick, value, index, onChange, indeterminate } = props
     const context = useContext(CheckboxContext)
-    const [checked, updateChecked] = useMergedValue<any, [number]>({
+    const [checked, updateChecked] = useMergedValue<boolean, [number]>({
         defaultStateValue: false,
         options: {
             defaultValue: props.defaultChecked,
-            value: props.checked ?? props.value,
+            value: context?.checked?.(value) ?? props.checked ?? props.value,
             onChange(nextValue, _, i) {
                 if (onChange) {
                     onChange(nextValue, i)
@@ -20,17 +20,12 @@ const Checkbox: React.FC<CheckboxProps> = (props) => {
             },
         },
     })
-    const mergedChecked = useMemo(() => {
-        if (context && context.checked) return context.checked(value)
-
-        return checked
-    }, [checked, context])
 
     const className = classnames(
         checkInputClass(
             '_',
             disabled && 'disabled',
-            mergedChecked === true && !indeterminate && 'checked',
+            checked === true && !indeterminate && 'checked',
             indeterminate && 'indeterminate'
         ),
         props.className
@@ -60,7 +55,7 @@ const Checkbox: React.FC<CheckboxProps> = (props) => {
                 type="checkbox"
                 onClick={onClick}
                 onChange={handleCheckboxChange}
-                checked={mergedChecked === true}
+                checked={checked === true}
                 className={checkInputClass('indicator', 'checkbox')}
             />
 

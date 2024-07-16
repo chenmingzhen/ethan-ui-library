@@ -20,11 +20,7 @@ function useRadioGroupValue(props: UseListDatumProps) {
         options: {
             defaultValue: props.defaultValue,
             value: props.value,
-            onChange(nextValues) {
-                if (onChange) {
-                    onChange(nextValues)
-                }
-            },
+            onChange,
         },
     })
 
@@ -36,7 +32,7 @@ function useRadioGroupValue(props: UseListDatumProps) {
         updateValue(getValueByDataItem(dataItem))
     })
 
-    const setByDateValue = useRefMethod((dataValue: RadioDataValueType) => {
+    const setByDataValue = useRefMethod((dataValue: RadioDataValueType) => {
         updateValue(dataValue)
     })
 
@@ -56,7 +52,13 @@ function useRadioGroupValue(props: UseListDatumProps) {
 
     const getCheckedStateByDataValue = useRefMethod((dataValue: RadioDataValueType) => deepEqual(value, dataValue))
 
-    return { disabled, setByDataItem, setByDateValue, getCheckedStateByDataItem, getCheckedStateByDataValue }
+    return {
+        disabled,
+        setByDataItem,
+        setByDataValue,
+        getCheckedStateByDataItem,
+        getCheckedStateByDataValue,
+    }
 }
 
 export default useRadioGroupValue

@@ -23,7 +23,7 @@ function Group<Data = RadioData>(props: RadioGroupProps<Data>) {
         valueKey = 'value',
     } = props
 
-    const { disabled, setByDataItem, setByDateValue, getCheckedStateByDataItem, getCheckedStateByDataValue } =
+    const { disabled, setByDataItem, setByDataValue, getCheckedStateByDataItem, getCheckedStateByDataValue } =
         useRadioGroupValue({
             onChange,
             defaultValue,
@@ -43,7 +43,7 @@ function Group<Data = RadioData>(props: RadioGroupProps<Data>) {
     )
 
     const handleRadioGroupItemChange = useRefMethod((changedValue: RadioDataValueType) => {
-        setByDateValue(changedValue)
+        setByDataValue(changedValue)
     })
 
     const handleChange = useRefMethod((_, index: number) => {

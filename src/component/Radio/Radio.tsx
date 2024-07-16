@@ -1,7 +1,7 @@
 import useMergedValue from '@/hooks/useMergedValue'
 import { checkInputClass } from '@/styles'
 import classnames from 'classnames'
-import React, { useContext, useMemo } from 'react'
+import React, { useContext } from 'react'
 import { RadioGroupContext } from './context'
 import { RadioProps } from './type'
 
@@ -12,7 +12,7 @@ const Radio: React.FC<RadioProps> = function (props) {
         defaultStateValue: false,
         options: {
             defaultValue: props.defaultChecked,
-            value: props.checked ?? props.value,
+            value: context?.checked?.(value) ?? props.checked ?? props.value,
             onChange(nextValue, _, i) {
                 if (onChange) {
                     onChange(nextValue, i)
@@ -20,11 +20,6 @@ const Radio: React.FC<RadioProps> = function (props) {
             },
         },
     })
-    const mergedChecked = useMemo(() => {
-        if (context && context.checked) return context.checked(value)
-
-        return checked
-    }, [checked, context])
 
     function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
         if (disabled) return
@@ -37,7 +32,7 @@ const Radio: React.FC<RadioProps> = function (props) {
     }
 
     const className = classnames(
-        checkInputClass('_', disabled && 'disabled', mergedChecked === true && 'checked'),
+        checkInputClass('_', disabled && 'disabled', checked === true && 'checked'),
         props.className
     )
 
@@ -48,7 +43,7 @@ const Radio: React.FC<RadioProps> = function (props) {
                 tabIndex={-1}
                 type="radio"
                 onChange={handleChange}
-                checked={mergedChecked === true}
+                checked={checked === true}
                 className={checkInputClass('indicator', 'radio')}
             />
 
