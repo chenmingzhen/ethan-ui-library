@@ -7,7 +7,7 @@ import { PageSizeListProps } from './type'
 const PageSizeList: React.FC<PageSizeListProps> = (props) => {
     const { current, onChange, pageSize, text, disabled } = React.useContext(paginationContext)
 
-    const { pageSizeList, size, sizeListProps } = props
+    const { pageSizeList = [10, 20, 30, 50, 100], size, sizeListProps = {} } = props
 
     function handleChange(newPageSize) {
         const start = (current - 1) * pageSize + 1
@@ -19,9 +19,7 @@ const PageSizeList: React.FC<PageSizeListProps> = (props) => {
         <Select
             onChange={handleChange}
             disabled={disabled}
-            portal
             autoAdapt
-            keygen
             value={pageSize}
             size={size}
             className={paginationClass('section', 'pagesize')}
@@ -30,11 +28,6 @@ const PageSizeList: React.FC<PageSizeListProps> = (props) => {
             {...sizeListProps}
         />
     )
-}
-
-PageSizeList.defaultProps = {
-    pageSizeList: [10, 20, 30, 50, 100],
-    sizeListProps: {},
 }
 
 export default React.memo(PageSizeList)

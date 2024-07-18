@@ -1,10 +1,9 @@
 import React, { useCallback } from 'react'
 import { paginationClass } from '@/styles'
+import useRefMethod from '@/hooks/useRefMethod'
 import Input from '../Input'
 import { JumperProps } from './type'
 import paginationContext from './context'
-
-const inputStyle = { width: 60, display: 'inline-block' }
 
 const Jumper: React.FC<JumperProps> = (props) => {
     const { total, pageSize, onChange, current, text } = React.useContext(paginationContext)
@@ -19,7 +18,7 @@ const Jumper: React.FC<JumperProps> = (props) => {
         updateInputValue(current)
     }, [current])
 
-    function handleKeyDown(e) {
+    const handleKeyDown = useRefMethod((e) => {
         if (e.keyCode === 13) {
             let newCurrent = parseInt(e.target.value, 10)
 
@@ -37,7 +36,7 @@ const Jumper: React.FC<JumperProps> = (props) => {
 
             onChange(newCurrent)
         }
-    }
+    })
 
     let txt: React.ReactNode[] = text.jumper ? text.jumper.split('{input}') : []
 
@@ -66,13 +65,13 @@ const Jumper: React.FC<JumperProps> = (props) => {
             {txt[0]}
 
             <Input
+                digits={0}
+                size={size}
+                type="number"
                 value={inputValue}
                 onKeyDown={handleKeyDown}
                 onChange={handleInputChange}
-                digits={0}
-                type="number"
-                style={inputStyle}
-                size={size}
+                style={{ width: 60, display: 'inline-block' }}
                 className={paginationClass(isSimple && 'simple-input')}
             />
 

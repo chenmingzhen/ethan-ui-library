@@ -72,8 +72,9 @@
             fill: @pagination-color;
         }
 
-        &[disabled] {
+        &.@{pagination-prefix}-disabled {
             color: @btn-link-disabled-color;
+            pointer-events: none;
 
             svg {
                 fill: @btn-link-disabled-color;
@@ -96,10 +97,11 @@
         }
     }
 
-    &-current[disabled] {
+    &-current.@{pagination-prefix}-disabled {
         border-color: @pagination-active-border;
         background: @pagination-active-bg;
         color: @pagination-active-color;
+        pointer-events: none;
     }
 
     &-more-right,

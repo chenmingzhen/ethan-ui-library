@@ -6,57 +6,50 @@ import Prev from './Prev'
 import Next from './Next'
 import paginationContext from './context'
 
+/** 跳跃的间隙 */
 const SPAN = 5
+
+function computedPagination(total: number, pageSize: number, current: number) {
+    if (total === 0) return { links: [], totalPage: 0 }
+
+    const totalPage = Math.ceil(total / pageSize)
+
+    const links = []
+
+    let left = current - Math.floor(SPAN / 2)
+    let right
+
+    if (left < 3) left = 3
+    right = left + SPAN
+
+    if (right >= totalPage) {
+        right = totalPage
+        left = right - SPAN
+
+        if (left <= 0) left = 1
+    }
+
+    if (left > 1) links.push(1)
+    if (left === 3) links.push(2)
+    if (left > 3) links.push('<<')
+
+    for (let i = left; i < right; i++) {
+        links.push(i)
+    }
+
+    if (right < totalPage) {
+        links.push('>>')
+    }
+
+    links.push(totalPage)
+
+    return { links, totalPage }
+}
 
 const Links: React.FC = () => {
     const { disabled, current, onChange, total, pageSize } = React.useContext(paginationContext)
 
-    const { links, max } = useMemo(() => {
-        if (total === 0) return { links: [], max: 0 }
-
-        const computedMax = Math.ceil(total / pageSize)
-
-        const computedLinks = []
-
-        // 一行除去左右指示 包含<< >> 一共九个links
-        // 左边存在<<的情况 (包含<<指示)最多2个值 所以left最大为3 最小为1
-
-        // 计算阶段
-        let left = current - Math.floor(SPAN / 2)
-
-        let right
-
-        if (left < 3) left = 3
-
-        right = left + SPAN
-
-        if (right >= computedMax) {
-            right = computedMax
-
-            left = right - SPAN
-
-            if (left <= 0) left = 1
-        }
-
-        // push 阶段
-        if (left > 1) computedLinks.push(1)
-
-        if (left === 3) computedLinks.push(2)
-
-        if (left > 3) computedLinks.push('<<')
-
-        for (let i = left; i < right; i++) {
-            computedLinks.push(i)
-        }
-
-        if (right < computedMax) {
-            computedLinks.push('>>')
-        }
-
-        computedLinks.push(computedMax)
-
-        return { links: computedLinks, max: computedMax }
-    }, [current, total, pageSize])
+    const { links, totalPage } = useMemo(() => computedPagination(total, pageSize, current), [current, total, pageSize])
 
     return (
         <div className={paginationClass('links', 'section')}>
@@ -76,16 +69,15 @@ const Links: React.FC = () => {
                 let page = isPrev ? current - SPAN : current + SPAN
 
                 if (page < 1) page = 1
-
-                if (page > max) page = max
+                if (page > totalPage) page = totalPage
 
                 return (
                     <Item
                         key={p}
-                        disabled={disabled}
                         page={page}
-                        className={`no-border ${isPrev ? 'more-left' : 'more-right'}`}
                         onClick={onChange}
+                        disabled={disabled}
+                        className={`no-border ${isPrev ? 'more-left' : 'more-right'}`}
                     >
                         {isPrev ? icons.AngleDoubleLeft : icons.AngleDoubleRight}
                     </Item>

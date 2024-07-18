@@ -6,14 +6,20 @@ const Item: React.FC<ItemProps> = (props) => {
     const { onClick, page, isCurrent, children, disabled } = props
 
     function handleClick() {
+        if (disabled || isCurrent) return
+
         onClick(page)
     }
 
-    const className = paginationClass('item', props.className, isCurrent && 'current')
+    const className = paginationClass(
+        'item',
+        props.className,
+        isCurrent && 'current',
+        (disabled || isCurrent) && 'disabled'
+    )
 
     return (
-        // @ts-ignore
-        <a className={className} disabled={disabled || isCurrent} onMouseDown={handleClick}>
+        <a className={className} onMouseDown={handleClick}>
             {children}
         </a>
     )

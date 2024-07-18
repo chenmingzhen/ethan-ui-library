@@ -1,7 +1,7 @@
-import React, { useState } from 'react'
-import { useUpdateEffect } from 'react-use'
+import React from 'react'
 import classnames from 'classnames'
 import { paginationClass } from '@/styles'
+import useMergedValue from '@/hooks/useMergedValue'
 import { PaginationProps } from './type'
 import { PaginationProvider } from './context'
 import Links from './Links'
@@ -10,24 +10,36 @@ import Jumper from './Jumper'
 import Simple from './Simple'
 
 const Pagination: React.FC<PaginationProps> = (props) => {
-    const { onChange, total, align, layouts, size, style, sizeListProps, pageSizeList, text, disabled } = props
+    const {
+        size,
+        align,
+        style,
+        onChange,
+        disabled,
+        total = 0,
+        text = {},
+        pageSizeList,
+        sizeListProps,
+        layouts = ['links'],
+    } = props
 
-    const [current, updateCurrent] = useState(props.current || props.defaultCurrent)
+    const [current, updateCurrent] = useMergedValue({
+        defaultStateValue: 1,
+        options: {
+            value: props.current,
+            defaultValue: props.defaultCurrent,
+        },
+    })
 
-    const [pageSize, updatePageSize] = useState(props.pageSize)
-
-    useUpdateEffect(() => {
-        updateCurrent(props.current)
-
-        updatePageSize(props.pageSize)
-    }, [props.current, props.pageSize])
+    const [pageSize, updatePageSize] = useMergedValue({
+        defaultStateValue: 10,
+        options: {
+            value: props.pageSize,
+        },
+    })
 
     function handleChange(newCurrent, newPagesize = pageSize) {
-        /** 非受控模式下 */
-        if (!props.current) {
-            updateCurrent(newCurrent)
-        }
-
+        updateCurrent(newCurrent)
         updatePageSize(newPagesize)
 
         onChange?.(newCurrent, newPagesize)
@@ -49,10 +61,10 @@ const Pagination: React.FC<PaginationProps> = (props) => {
                         case 'list':
                             return (
                                 <PageSizeList
-                                    key={layout}
-                                    sizeListProps={sizeListProps}
                                     size={size}
+                                    key={layout}
                                     pageSizeList={pageSizeList}
+                                    sizeListProps={sizeListProps}
                                 />
                             )
                         case 'jumper':
@@ -73,14 +85,6 @@ const Pagination: React.FC<PaginationProps> = (props) => {
             </div>
         </PaginationProvider>
     )
-}
-
-Pagination.defaultProps = {
-    layouts: ['links'],
-    text: {},
-    pageSize: 10,
-    defaultCurrent: 1,
-    total: 0,
 }
 
 export default React.memo(Pagination)
