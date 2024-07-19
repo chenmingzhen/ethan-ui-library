@@ -1,55 +1,59 @@
-import React, { Children } from 'react'
+import React, { Children, useMemo } from 'react'
 import classnames from 'classnames'
-import { PureComponent } from '@/utils/component'
 import { tabsClass } from '@/styles'
-import { Tab, TabsProps, TabsState, Align, TabsPanelProps } from './type'
+import useMergedValue from '@/hooks/useMergedValue'
+import useRefMethod from '@/hooks/useRefMethod'
+import useSafeState from '@/hooks/useSafeState'
+import { Tab, TabsProps, Align, TabsPanelProps } from './type'
 import Header from './Header'
 import Panel from './Panel'
 
-class Tabs extends PureComponent<TabsProps, TabsState> {
-    static defaultProps = {
-        defaultCollapsed: false,
-        lazy: true,
-        shape: 'card',
-        overflowIcon: 'scroll',
-    }
+const Tabs: React.FC<TabsProps> = (props) => {
+    const {
+        style,
+        children,
+        onChange,
+        lazy = true,
+        collapsible,
+        shape = 'card',
+        align: propAlign,
+        tabBarExtraContent,
+        overflowIcon = 'scroll',
+        defaultCollapsed = false,
+    } = props
 
-    get align(): { align: Align; isVertical: boolean } {
-        const { shape, collapsible, align } = this.props
-        const isVertical = align?.indexOf('vertical') > -1
+    const [active, updateActive] = useMergedValue({
+        defaultStateValue: 0,
+        options: {
+            value: props.active,
+            defaultValue: props.defaultActive,
+            onChange,
+        },
+    })
+    const [collapsed, updateCollapsed] = useSafeState(defaultCollapsed)
 
-        if (shape === 'button' && isVertical) {
+    const { align, isVertical } = useMemo<{ align: Align; isVertical: boolean }>(() => {
+        const vertical = propAlign?.indexOf('vertical') > -1
+
+        if (shape === 'button' && vertical) {
             console.warn("align vertical-* can't supported when shape is button")
 
             return { align: 'left', isVertical: false }
         }
 
-        if (collapsible && isVertical) {
+        if (collapsible && vertical) {
             console.warn("align vertical-* can't supported when collapsible is true")
             return { align: 'left', isVertical: false }
         }
 
-        return { align, isVertical }
-    }
+        return { align: propAlign, isVertical: vertical }
+    }, [shape, collapsible, propAlign])
 
-    get active() {
-        return this.props?.active ?? this.state.active
-    }
+    const handleCollapse = useRefMethod(() => {
+        updateCollapsed(!collapsed)
+    })
 
-    constructor(props) {
-        super(props)
-
-        this.state = {
-            active: props.defaultActive || 0,
-            collapsed: props.defaultCollapsed,
-        }
-    }
-
-    renderHeader = () => {
-        const { align, isVertical } = this.align
-
-        const { children, shape, tabBarExtraContent } = this.props
-
+    function renderHeader() {
         const tabs: Tab[] = []
 
         let hrBorderColor
@@ -58,95 +62,73 @@ class Tabs extends PureComponent<TabsProps, TabsState> {
             if (!child || !(child as any).type?.type?.IS_ETHAN_PANEL) return
 
             const { id = i, tab, activeTabStyle, tabStyle, background } = child.props
-
-            const isActive = this.active === id
-
+            const isActive = active === id
             const panelBorder = child.props.border
 
             if (isActive) hrBorderColor = panelBorder
 
             tabs.push({
                 id,
-                isActive,
                 tab,
-                isVertical,
                 align,
                 shape,
+                tabStyle,
+                isActive,
+                isVertical,
+                background,
+                activeTabStyle,
+                border: panelBorder,
                 isLast: length - 1 === i,
                 disabled: child.props.disabled,
-                activeTabStyle,
-                tabStyle,
-                border: panelBorder,
-                background,
             })
         })
 
         return (
             <Header
-                isVertical={isVertical}
-                collapsed={this.state.collapsed}
-                onCollapse={this.props.collapsible ? this.handleCollapse : undefined}
-                shape={shape}
-                onChange={this.handleChange}
                 tabs={tabs}
-                tabBarExtraContent={tabBarExtraContent}
-                currentActive={this.active}
-                overflowIcon={this.props.overflowIcon}
+                shape={shape}
+                collapsed={collapsed}
+                currentActive={active}
+                isVertical={isVertical}
+                onChange={updateActive}
+                overflowIcon={overflowIcon}
                 hrBorderColor={hrBorderColor}
+                tabBarExtraContent={tabBarExtraContent}
+                onCollapse={collapsible ? handleCollapse : undefined}
             />
         )
     }
 
-    renderPanel = (child, i) => {
+    function renderPanel(child, i: number) {
         if (!child?.type?.type?.IS_ETHAN_PANEL) return
-
-        const { collapsible, lazy } = this.props
 
         const { id = i, ...other } = (child as React.ReactElement<TabsPanelProps>).props
 
         return (
             <Panel
                 {...other}
-                lazy={lazy}
-                collapsed={this.state.collapsed}
-                collapsible={collapsible}
                 id={id}
                 key={id}
-                isActive={this.active === id}
+                lazy={lazy}
+                collapsed={collapsed}
+                isActive={active === id}
+                collapsible={collapsible}
             />
         )
     }
 
-    render = () => {
-        const { shape, style, children } = this.props
+    const className = classnames(
+        tabsClass('_', align && `align-${align}`, isVertical && 'vertical', shape),
+        props.className
+    )
 
-        const { align, isVertical } = this.align
-
-        const className = classnames(
-            tabsClass('_', align && `align-${align}`, isVertical && 'vertical', shape),
-            this.props.className
-        )
-
-        return (
-            <div className={className} style={style}>
-                {align !== 'vertical-right' && align !== 'bottom' && this.renderHeader()}
-                {Children.toArray(children).map(this.renderPanel)}
-                {(align === 'vertical-right' || align === 'bottom') && this.renderHeader()}
-            </div>
-        )
-    }
-
-    handleChange = (active: number) => {
-        const { onChange } = this.props
-
-        onChange?.(active)
-
-        this.setState({ active })
-    }
-
-    handleCollapse = () => {
-        this.setState((prevState) => ({ collapsed: !prevState.collapsed }))
-    }
+    return (
+        <div className={className} style={style}>
+            {align !== 'vertical-right' && align !== 'bottom' && renderHeader()}
+            {Children.toArray(children).map(renderPanel)}
+            {(align === 'vertical-right' || align === 'bottom') && renderHeader()}
+        </div>
+    )
 }
 
-export default Tabs
+export default React.memo(Tabs)

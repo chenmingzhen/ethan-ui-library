@@ -1,6 +1,8 @@
 import { DropDownData } from '@/component/Dropdown/type'
-import React, { useState, useEffect, useRef, useMemo } from 'react'
-import { useTimeoutFn } from 'react-use'
+import React, { useEffect, useRef, useMemo } from 'react'
+import useRefMethod from '@/hooks/useRefMethod'
+import { throttleWrapper } from '@/utils/func'
+import useSafeState from '@/hooks/useSafeState'
 import { Tab, TabMoveMap } from '../type'
 
 interface UseHideTabsParams {
@@ -8,7 +10,7 @@ interface UseHideTabsParams {
 
     isVertical: boolean
 
-    attribute: number
+    offset: number
 
     scrollElementRef: React.RefObject<HTMLDivElement>
 
@@ -18,9 +20,9 @@ interface UseHideTabsParams {
 }
 
 const useHideTabs = (props: UseHideTabsParams) => {
-    const [hideTabs, setTabs] = useState<Tab[]>([])
+    const { tabs, isVertical, offset, scrollElementRef, innerElementRef, collapsible } = props
 
-    const { tabs, isVertical, attribute, scrollElementRef, innerElementRef, collapsible } = props
+    const [hideTabs, setTabs] = useSafeState<Tab[]>([])
 
     const tabMoveMap = useRef<TabMoveMap>(new Map()).current
 
@@ -34,66 +36,63 @@ const useHideTabs = (props: UseHideTabsParams) => {
         [hideTabs]
     )
 
-    const [, , run] = useTimeoutFn(computedTabs, 100)
+    const computedTabs = useRefMethod(
+        throttleWrapper(() => {
+            let startIndex = 0
+            let endIndex = tabs.length - 1
 
-    // 考虑再添加overflow作为副作用的dep 因为overflow影响DOM的计算
-    useEffect(run, [attribute])
+            const pos = isVertical ? 'top' : 'left'
+            const scrollPos = scrollElementRef.current?.getBoundingClientRect()
 
-    function computedTabs() {
-        let startIndex = 0
+            if (!offset) {
+                startIndex = 0
+            } else {
+                for (let i = 0; i < tabs.length; i++) {
+                    const tabPos = scrollElementRef.current?.children[i]?.getBoundingClientRect()
 
-        let endIndex = tabs.length - 1
+                    if (tabPos && scrollPos && offset + scrollPos[pos] < tabPos[pos]) {
+                        startIndex = i
 
-        const pos = isVertical ? 'top' : 'left'
+                        break
+                    }
+                }
+            }
 
-        const scrollPos = scrollElementRef.current?.getBoundingClientRect()
-
-        if (!attribute) {
-            startIndex = 0
-        } else {
             for (let i = 0; i < tabs.length; i++) {
                 const tabPos = scrollElementRef.current?.children[i]?.getBoundingClientRect()
+                const startTabPos = scrollElementRef.current?.children[startIndex]?.getBoundingClientRect()
 
-                if (tabPos && scrollPos && attribute + scrollPos[pos] < tabPos[pos]) {
-                    startIndex = i
+                // 此处获取的innerDistance不正确 添加setTimeout后获取正确
+                // 由于在setPosition中设置了overflow副作用 会新增一个Icon的DOM位置30width
+                const innerDistance = isVertical
+                    ? innerElementRef.current?.offsetHeight
+                    : innerElementRef.current?.offsetWidth
+
+                // TODO 可能需要手动props获取自定义图标的宽高
+                // Icon的DOM位置30 width height
+                const nextOffset = (offset > 0 ? 60 : 30) + (collapsible ? 30 : 0)
+
+                if (tabPos && startTabPos && startTabPos[pos] + innerDistance - nextOffset <= tabPos[pos]) {
+                    endIndex = i
 
                     break
                 }
             }
-        }
 
-        for (let i = 0; i < tabs.length; i++) {
-            const tabPos = scrollElementRef.current?.children[i]?.getBoundingClientRect()
+            const newHideTabs = []
 
-            const startTabPos = scrollElementRef.current?.children[startIndex]?.getBoundingClientRect()
+            tabs.forEach((tab, index) => {
+                if (index < startIndex || index > endIndex - 1) {
+                    newHideTabs.push(tab)
+                }
+            })
 
-            // 此处获取的innerDistance不正确 添加setTimeout后获取正确
-            // 由于在setPosition中设置了overflow副作用 会新增一个Icon的DOM位置30width
-            const innerDistance = isVertical
-                ? innerElementRef.current?.offsetHeight
-                : innerElementRef.current?.offsetWidth
+            setTabs(newHideTabs)
+        }, 100)
+    )
 
-            // TODO 可能需要手动props获取自定义图标的宽高
-            // Icon的DOM位置30 width height
-            const offset = (attribute > 0 ? 60 : 30) + (collapsible ? 30 : 0)
-
-            if (tabPos && startTabPos && startTabPos[pos] + innerDistance - offset <= tabPos[pos]) {
-                endIndex = i
-
-                break
-            }
-        }
-
-        const newHideTabs = []
-
-        tabs.forEach((tab, index) => {
-            if (index < startIndex || index > endIndex - 1) {
-                newHideTabs.push(tab)
-            }
-        })
-
-        setTabs(newHideTabs)
-    }
+    // 考虑再添加overflow作为副作用的dep 因为overflow影响DOM的计算
+    useEffect(computedTabs, [offset])
 
     return { dropDownData, tabMoveMap }
 }

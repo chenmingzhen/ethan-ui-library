@@ -16,8 +16,6 @@ export interface ComputedPanelComponent extends React.MemoExoticComponent<React.
     IS_ETHAN_PANEL: boolean
 }
 
-// const CollapseList = List(['collapse'], 'fast')
-
 const Panel: React.FC<ITabsPanelProps> = (props) => {
     const { children, isActive, collapsible, collapsed, lazy, style, background } = props
 
@@ -38,7 +36,6 @@ const Panel: React.FC<ITabsPanelProps> = (props) => {
 
     if (!collapsible) return result
 
-    // 处理折叠情况
     return (
         <AnimationHeight show={!collapsed} height={!collapsed ? 'auto' : 0}>
             {result}

@@ -84,11 +84,6 @@ export interface TabsProps {
     overflowIcon?: OverflowIcon
 }
 
-export interface TabsState {
-    active: string | number
-    collapsed: boolean
-}
-
 export interface TabProps {
     children: React.ReactNode
 

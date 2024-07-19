@@ -1,8 +1,9 @@
-import React, { useCallback, useEffect, useRef } from 'react'
+import React, { useEffect, useRef } from 'react'
 import useSafeState from '@/hooks/useSafeState'
 import { tabsClass } from '@/styles'
 import { useEvent, useUpdateEffect } from 'react-use'
 import normalizeWheel from '@/utils/dom/normalizeWheel'
+import useRefMethod from '@/hooks/useRefMethod'
 import { TabsHeaderProps } from './type'
 import Button from '../Button'
 import Tab from './Tab'
@@ -14,35 +15,27 @@ import useHideTabs from './hooks/useHideTabs'
 const REDUNDANT = 30
 
 const Header: React.FC<TabsHeaderProps> = (props) => {
-    const [attribute, setAttribute] = useSafeState(0)
-
-    const [overflow, setOverflow] = useSafeState(false)
-
-    const [attributeString, setAttributeString] = useSafeState('')
-
     const {
-        isVertical,
-        onChange,
-        onCollapse,
-        shape,
         tabs,
-        tabBarExtraContent,
-        currentActive,
-        overflowIcon,
+        shape,
+        onChange,
         collapsed,
+        isVertical,
+        onCollapse,
+        overflowIcon,
+        currentActive,
         hrBorderColor,
+        tabBarExtraContent,
     } = props
 
+    const [offset, updateOffset] = useSafeState(0)
+    const [overflow, setOverflow] = useSafeState(false)
+    const [attributeString, setAttributeString] = useSafeState('')
+
     const innerElementRef = useRef<HTMLDivElement>()
-
     const scrollElementRef = useRef<HTMLDivElement>()
-
-    const tabsWrapperElementRef = useRef<HTMLDivElement>()
-
-    const navElementRef = useRef<HTMLDivElement>()
-
+    const navElementRef = useRef<HTMLDivElement>() // 底部滑条
     const navInitHW = useRef<{ height?: string; width?: string }>({})
-
     const hasBindWheel = useRef(false)
 
     useEffect(() => {
@@ -51,15 +44,14 @@ const Header: React.FC<TabsHeaderProps> = (props) => {
         const { height, width } = navElementRef.current.style
 
         navInitHW.current.height = height
-
         navInitHW.current.width = width
     }, [shape])
 
     useEffect(() => {
         setPosition()
-    }, [isVertical, attribute])
+    }, [isVertical, offset])
 
-    useEffect(resetNavPosition, [currentActive, shape, attribute])
+    useEffect(resetNavPosition, [currentActive, shape, offset])
 
     useEffect(() => {
         window.addEventListener('resize', resetNavPosition)
@@ -79,10 +71,10 @@ const Header: React.FC<TabsHeaderProps> = (props) => {
 
             const { pixelY } = normalizeWheel(e)
 
-            computedAttribute(pixelY)
+            computedOffset(pixelY)
         }
 
-        if ((overflow || attribute > 0) && !hasBindWheel.current && innerElementRef.current) {
+        if ((overflow || offset > 0) && !hasBindWheel.current && innerElementRef.current) {
             innerElementRef.current.addEventListener('wheel', onWheel, { passive: false })
 
             hasBindWheel.current = true
@@ -95,57 +87,50 @@ const Header: React.FC<TabsHeaderProps> = (props) => {
                 hasBindWheel.current = false
             }
         }
-    }, [overflow, attribute])
+    }, [overflow, offset])
 
-    const setPosition = useCallback(() => {
+    const setPosition = useRefMethod(() => {
         if (!innerElementRef.current) return
 
         const newAttributeString = isVertical ? 'Height' : 'Width'
-
         const innerAttribute = innerElementRef.current[`client${newAttributeString}`]
-
         const scrollAttribute = scrollElementRef.current[`client${newAttributeString}`]
-
-        const newOverflow = scrollAttribute > attribute + innerAttribute
+        const newOverflow = scrollAttribute > offset + innerAttribute
 
         setOverflow(newOverflow)
-
         setAttributeString(newAttributeString)
-    }, [attribute, isVertical])
+    })
 
     useEvent('resize', setPosition)
 
     const { dropDownData, tabMoveMap } = useHideTabs({
-        scrollElementRef,
-        innerElementRef,
         tabs,
+        offset,
         isVertical,
-        attribute,
+        innerElementRef,
+        scrollElementRef,
         collapsible: !!onCollapse,
     })
 
-    function computedAttribute(data) {
+    function computedOffset(data) {
         const innerAttribute = innerElementRef.current[`client${attributeString}`]
-
         const scrollAttribute = scrollElementRef.current[`client${attributeString}`]
 
         // 计算滑动距离
-        let newAttribute = attribute + data
+        let nextOffset = offset + data
         // 距离超过左|顶
-        if (newAttribute < 0) newAttribute = 0
+        if (nextOffset < 0) nextOffset = 0
         // 距离超过右|底
-        if (newAttribute + innerAttribute > scrollAttribute) newAttribute = scrollAttribute - innerAttribute
+        if (nextOffset + innerAttribute > scrollAttribute) nextOffset = scrollAttribute - innerAttribute
 
-        setAttribute(newAttribute)
+        updateOffset(nextOffset)
     }
 
     function resetNavPosition(reset?: boolean | UIEvent) {
         if (!navElementRef.current) return
-
         if (shape !== 'line' && shape !== 'dash') return
 
         const activeIndex = tabs.findIndex(({ id }) => id === currentActive)
-
         const itemElement = scrollElementRef.current.children[activeIndex] as HTMLElement
 
         if (!itemElement) return
@@ -159,30 +144,24 @@ const Header: React.FC<TabsHeaderProps> = (props) => {
 
         if (isVertical) {
             const itemOffsetHeight = itemElement.offsetHeight
-
             const itemOffsetTop = itemElement.offsetTop
 
             if (shape === 'line') {
                 bar.style.height = `${itemOffsetHeight}px`
-
                 bar.style.transform = `translate(0px,${itemOffsetTop}px)`
             } else {
                 bar.style.height = `${itemOffsetHeight / 3}px`
-
                 bar.style.transform = `translate(0px,${itemOffsetTop + itemOffsetHeight / 3}px)`
             }
         } else {
             const itemOffsetWidth = itemElement.offsetWidth
-
             const itemOffsetLeft = itemElement.offsetLeft
 
             if (shape === 'line') {
                 bar.style.width = `${itemOffsetWidth}px`
-
                 bar.style.transform = `translate(${itemOffsetLeft}px,0px)`
             } else {
                 bar.style.width = `${itemOffsetWidth / 3}px`
-
                 bar.style.transform = `translate(${itemOffsetLeft + itemOffsetWidth / 3}px,0px)`
             }
         }
@@ -196,10 +175,9 @@ const Header: React.FC<TabsHeaderProps> = (props) => {
 
     function handleMove(lt) {
         const innerAttribute = innerElementRef.current[`client${attributeString}`]
-
         const data = lt ? -innerAttribute : innerAttribute
 
-        computedAttribute(data)
+        computedOffset(data)
     }
 
     function handleDropdownClick(tab) {
@@ -210,24 +188,23 @@ const Header: React.FC<TabsHeaderProps> = (props) => {
 
     function moveToCenter(tabRect: DOMRect, last: boolean, first: boolean) {
         const positions = isVertical ? ['top', 'bottom'] : ['left', 'right']
-
         const rect = innerElementRef.current.getBoundingClientRect()
+
         // 比较Tab与容器的位置
-
         if (tabRect[positions[0]] < rect[positions[0]]) {
-            const newAttribute = attribute - (rect[positions[0]] - tabRect[positions[0]] + (first ? 0 : REDUNDANT))
+            const nextOffset = offset - (rect[positions[0]] - tabRect[positions[0]] + (first ? 0 : REDUNDANT))
 
-            setAttribute(newAttribute)
+            updateOffset(nextOffset)
         } else if (tabRect[positions[1]] > rect[positions[1]]) {
-            const newAttribute =
-                attribute +
+            const nextOffset =
+                offset +
                 tabRect[positions[1]] -
                 rect[positions[1]] +
                 // 如果为没有偏差值 设置偏差值后 左边会出现箭头 需要加上箭头的宽度
-                (attribute === 0 ? 30 : 0) +
+                (offset === 0 ? 30 : 0) +
                 (last ? 0 : REDUNDANT)
 
-            setAttribute(newAttribute)
+            updateOffset(nextOffset)
         }
     }
 
@@ -260,14 +237,14 @@ const Header: React.FC<TabsHeaderProps> = (props) => {
 
     return (
         <div className={tabsClass('header')}>
-            <div ref={tabsWrapperElementRef} className={tabsClass('header-tabs')}>
+            <div className={tabsClass('header-tabs')}>
                 {onCollapse && (
                     <span className={tabsClass('indicator', collapsed && 'collapsed')} onClick={onCollapse}>
                         {icons.AngleRight}
                     </span>
                 )}
 
-                {attribute > 0 && (
+                {offset > 0 && (
                     <div onClick={handleMove.bind(this, true)} className={tabsClass('scroll-prev')}>
                         {icons.AngleLeft}
                     </div>
@@ -278,7 +255,7 @@ const Header: React.FC<TabsHeaderProps> = (props) => {
                     {/* 实际内容 */}
                     <div
                         ref={scrollElementRef}
-                        style={{ [`margin${position}`]: -attribute }}
+                        style={{ [`margin${position}`]: -offset }}
                         className={tabsClass('scroll')}
                     >
                         {tabs.map(({ tab, id, ...other }) => (
