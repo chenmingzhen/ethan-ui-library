@@ -1,8 +1,8 @@
 /**
- * cn - 绝对定位
- *    -- 如果选项弹出层的父容器被遮挡，可以设置 portal 属性使弹出选项在单独层中渲染。（非必要情况下不建议）
- * en - Absolute
- *    -- If the parent container of the pop-up layer is occluded, you can set the portal property to make the pop-up options rendered in a separate layer. (not recommended if not necessary)
+ * cn - 渲染节点
+ *    -- 渲染选择器到指定的容器中
+ * en - Portal
+ *    -- Render the select into the specified container.
  */
 import React from 'react'
 import { Select } from 'ethan-ui'

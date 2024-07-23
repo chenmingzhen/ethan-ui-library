@@ -21,7 +21,6 @@ export default function () {
             placeholder="Select citys"
             labelKey="city"
             onFilter={(text, d) => d.city.toLowerCase().indexOf(text.toLowerCase()) >= 0}
-            portal
         />
     )
 }

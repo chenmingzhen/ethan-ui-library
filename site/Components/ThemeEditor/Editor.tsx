@@ -102,7 +102,6 @@ const Editor: React.FC<EditorProps> = function (props) {
                                                 <div className={editorClass('attr-item')}>
                                                     <Input value={value} width={200} onChange={onChange} />
                                                     <ColorPicker
-                                                        portal={false}
                                                         format="rgba"
                                                         showIcon={false}
                                                         value={value}
@@ -123,7 +122,7 @@ const Editor: React.FC<EditorProps> = function (props) {
                                                 />
                                             )
                                         } else if (isArray(type)) {
-                                            element = <Select keygen data={type} value={value} onChange={onChange} />
+                                            element = <Select data={type} value={value} onChange={onChange} />
                                         } else {
                                             element = <Input value={value} onChange={onChange} />
                                         }
