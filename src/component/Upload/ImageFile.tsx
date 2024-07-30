@@ -1,4 +1,4 @@
-import React, { memo, useCallback } from 'react'
+import React, { memo } from 'react'
 import { uploadClass } from '@/styles'
 import Progress from '../Progress'
 import Image from '../Image'
@@ -14,13 +14,13 @@ const ImageFile: React.FC<ImageFileProps> = (props) => {
         error: status === ERROR,
     })
 
-    const handleRemove = useCallback(() => {
+    function handleRemove() {
         onRemove(id)
-    }, [onRemove, id])
+    }
 
-    const handleRecover = useCallback(() => {
+    function handleRecover() {
         onRecover(id)
-    }, [onRecover, id])
+    }
 
     function buildContent() {
         const content = renderContent?.(file)

@@ -1,4 +1,4 @@
-import React, { memo, useCallback } from 'react'
+import React, { memo } from 'react'
 import { uploadClass } from '@/styles'
 import Progress from '../Progress'
 import icons from '../icons'
@@ -9,13 +9,13 @@ import Spin from '../Spin'
 const File: React.FC<FileProps> = (props) => {
     const { id, message, name, onRemove, process, status, showRecover, onRecover, renderContent, file } = props
 
-    const handleRemove = useCallback(() => {
+    function handleRemove() {
         onRemove(id)
-    }, [onRemove, id])
+    }
 
-    const handleRecover = useCallback(() => {
+    function handleRecover() {
         onRecover(id)
-    }, [id, onRecover])
+    }
 
     const className = uploadClass('view-file', showRecover && 'to-be-delete', {
         removed: status === REMOVED,

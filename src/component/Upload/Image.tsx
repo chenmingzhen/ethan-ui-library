@@ -39,7 +39,6 @@ const UploadImage: React.FC<UploadImageProps> = function (props) {
         return new Promise((resolve, reject) => {
             const { imageSize } = validator
 
-            /** @see https://developer.mozilla.org/zh-CN/docs/Web/API/FileReader */
             const reader = new FileReader()
 
             reader.onload = (e) => {
@@ -71,7 +70,6 @@ const UploadImage: React.FC<UploadImageProps> = function (props) {
                 image.src = ethanFile.data
             }
 
-            /** @see https://developer.mozilla.org/zh-CN/docs/Web/API/FileReader/readAsDataURL */
             reader.readAsDataURL(blob)
         })
     }
