@@ -65,8 +65,6 @@ const Text: React.FC<DatePickerTextProps> = function (props) {
         const date = utils.toDateWithFormat(inputValue, format)
         updateTextValue(inputValue)
 
-        handleInputValidDate.cancel()
-
         if (date) {
             handleInputValidDate(date)
         }

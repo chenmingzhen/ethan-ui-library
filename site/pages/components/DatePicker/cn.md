@@ -17,7 +17,6 @@
 | className          | string                                                       | -             | 输入框样式名                                                                        |
 | style              | CSSProperties                                                | -             | 输入框的样式                                                                        |
 | position           | 'left-bottom' \| 'left-top' \| 'right-bottom' \| 'right-top' | 'left-bottom' | 下拉框弹出位置                                                                      |
-| portal             | boolean                                                      | false         | 是否在 body 中弹出下拉框                                                            |
 | defaultValue       | Date                                                         | -             | 默认日期                                                                            |
 | onChange           | (date:Date,dateString:string)=>void                          | -             | 日期改变时回调                                                                      |
 | onBlur             | (e:React.FocusEven)=>void                                    | -             | 失去焦点时回调                                                                      |

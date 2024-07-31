@@ -62,11 +62,7 @@ function getDaysOfMonth(rawDate: Date): Date[] {
     return days
 }
 
-/** @todo 改造这个方法的判断(目前使用的函数是ES5的，存在很多难以理解的概念) */
 function isInvalid(date) {
-    /** isNaN() 和Number.isNaN()的用法和区别 */
-    /** @see https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/isNaN */
-    /** @see https://blog.csdn.net/WJLcomeon/article/details/123681070 */
     // eslint-disable-next-line no-restricted-globals
     return date === null || date === undefined || isNaN(date)
 }
