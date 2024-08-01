@@ -38,6 +38,7 @@ const Textarea: React.FC<TextareaProps> = (props) => {
         rules,
         tip,
         clearable,
+        rows = 4,
         ...otherProps
     } = props
     const [focus, updateFocus] = useState(autoFocus || false)
@@ -151,24 +152,25 @@ const Textarea: React.FC<TextareaProps> = (props) => {
 
     return (
         <WrapperPopover
-            hasError={!!error}
             focus={focus}
-            popoverProps={popoverProps}
             tip={tipInfo}
-            className={popoverClass('input-tip', error && 'input-error')}
+            hasError={!!error}
+            popoverProps={popoverProps}
             shouldPop={!isEmpty(tip) || !isEmpty(rules)}
+            className={popoverClass('input-tip', error && 'input-error')}
         >
             <div className={cls} style={ms} data-count={countInfo}>
                 <textarea
                     {...cleanProps(otherProps)}
-                    value={value ?? ''}
-                    className={inputClass(autoSize && 'auto-size', !autoSize && resize && 'textarea-resize')}
-                    style={{ height: height || 'auto', maxHeight, overflow: 'auto' }}
-                    onChange={handleChange}
-                    onKeyUp={handleKeyUp}
+                    rows={rows}
+                    value={value}
                     onBlur={handleBlur}
+                    onKeyUp={handleKeyUp}
                     onFocus={handleFocus}
+                    onChange={handleChange}
                     ref={textareaElementRef}
+                    style={{ height: height || 'auto', maxHeight, overflow: 'auto' }}
+                    className={inputClass(autoSize && 'auto-size', !autoSize && resize && 'textarea-resize')}
                 />
                 {!disabled && clearable && value !== '' && (
                     <div
@@ -182,11 +184,6 @@ const Textarea: React.FC<TextareaProps> = (props) => {
             </div>
         </WrapperPopover>
     )
-}
-
-Textarea.defaultProps = {
-    rows: 4,
-    resize: false,
 }
 
 export default React.memo(Textarea)
