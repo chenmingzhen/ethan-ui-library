@@ -6,6 +6,7 @@ import { getRangeValue } from '@/utils/numbers'
 import { KeyboardKey } from '@/utils/keyboard'
 import { debounce, noop } from '@/utils/func'
 import EventBus from '@/utils/EventBus'
+import { setTransformProp } from '@/utils/dom/translate'
 import { ProImageAnimation, ProImageSlideEventKey, ProImageSliderEvent, ProImageSliderProps, TouchIntent } from './type'
 import Icons from '../icons'
 import ProImageSliderItem from './ProImageSliderItem'
@@ -385,38 +386,41 @@ class ProImageSlider extends PureComponent<ProImageSliderProps, ProImageSliderSt
                     </div>
                 </div>
 
-                {this.displayedImages.map((item, index) => {
-                    const realIndex = currentIndex === 0 ? currentIndex + index : currentIndex - 1 + index
+                <div
+                    className={proImageClass('item-container', !touched && 'should-transition')}
+                    style={setTransformProp(transform)}
+                >
+                    {this.displayedImages.map((item, index) => {
+                        const realIndex = currentIndex === 0 ? currentIndex + index : currentIndex - 1 + index
 
-                    return (
-                        <ProImageSliderItem
-                            style={{
-                                /** 每个PhotoView设置对应的Left，通过Transform的改变去驱动位置的更新 */
-                                left: `${(innerWidth + HORIZONTAL_PHOTO_OFFSET) * realIndex}px`,
-                                WebkitTransform: transform,
-                                transform,
-                            }}
-                            className={!touched ? proImageClass('should-transition') : undefined}
-                            proImageItem={item}
-                            animation={animation}
-                            key={item.key}
-                            active={realIndex === currentIndex}
-                            loadingElement={loadingElement || item.loadingElement}
-                            errorElement={errorElement || item.errorElement}
-                            eventBus={this.eventBus}
-                            onClick={this.handlePhotoClick}
-                            onMove={this.handleSliderItemMove}
-                            onMouseUp={this.handleSliderItemUp}
-                            onResize={this.handleSliderItemResize}
-                        />
-                    )
-                })}
+                        return (
+                            <ProImageSliderItem
+                                key={item.key}
+                                proImageItem={item}
+                                animation={animation}
+                                eventBus={this.eventBus}
+                                onClick={this.handlePhotoClick}
+                                onMove={this.handleSliderItemMove}
+                                onMouseUp={this.handleSliderItemUp}
+                                active={realIndex === currentIndex}
+                                onResize={this.handleSliderItemResize}
+                                errorElement={errorElement || item.errorElement}
+                                loadingElement={loadingElement || item.loadingElement}
+                                className={!touched ? proImageClass('should-transition') : undefined}
+                                style={{
+                                    /** 每个PhotoView设置对应的Left，通过Transform的改变去驱动位置的更新 */
+                                    left: `${(innerWidth + HORIZONTAL_PHOTO_OFFSET) * realIndex}px`,
+                                }}
+                            />
+                        )
+                    })}
+                </div>
 
                 <>
                     {currentIndex !== 0 && (
                         <span
-                            className={proImageClass('angle-left')}
                             onClick={this.handlePrevious}
+                            className={proImageClass('angle-left')}
                             style={{
                                 background: `rgba(0, 0, 0, ${backdropOpacity / 2})`,
                             }}
@@ -426,8 +430,8 @@ class ProImageSlider extends PureComponent<ProImageSliderProps, ProImageSliderSt
                     )}
                     {currentIndex + 1 < length && (
                         <span
-                            className={proImageClass('angle-right')}
                             onClick={this.handleNext}
+                            className={proImageClass('angle-right')}
                             style={{
                                 background: `rgba(0, 0, 0, ${backdropOpacity / 2})`,
                             }}

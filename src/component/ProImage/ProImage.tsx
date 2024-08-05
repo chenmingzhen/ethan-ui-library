@@ -1,6 +1,7 @@
-import React, { useCallback, useContext, useEffect, useRef } from 'react'
+import React, { useContext, useEffect, useRef } from 'react'
 import { getUidStr } from '@/utils/uid'
 import { styles } from '@/utils/style/styles'
+import useRefMethod from '@/hooks/useRefMethod'
 import Image from '../Image'
 import { ProImageItem, ProImageProps } from './type'
 import { openProImageSlider } from './event'
@@ -10,12 +11,10 @@ const ProImage: React.FC<ProImageProps> = function (props) {
     const { intro, onClick, loadingElement, errorElement, style, backdropOpacity, ...other } = props
 
     const key = useRef(getUidStr()).current
-
     const context = useContext(ProImageContext)
-
     const imageRef = useRef<HTMLDivElement>()
 
-    const handleClick = useCallback((evt: React.MouseEvent<HTMLElement, MouseEvent>) => {
+    const handleClick = useRefMethod((evt: React.MouseEvent<HTMLElement, MouseEvent>) => {
         if (onClick) {
             onClick(evt)
         }
@@ -34,7 +33,7 @@ const ProImage: React.FC<ProImageProps> = function (props) {
 
             openProImageSlider([proImageItem], { backdropOpacity })
         }
-    }, [])
+    })
 
     useEffect(() => {
         if (!context) return

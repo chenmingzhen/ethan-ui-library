@@ -3,6 +3,9 @@ import { PureComponent } from '@/utils/component'
 import { proImageClass } from '@/styles'
 import classnames from 'classnames'
 import { getRangeValue } from '@/utils/numbers'
+import { setTransformProp } from '@/utils/dom/translate'
+import { styles } from '@/utils/style/styles'
+import { runAsMicrotask } from '@/utils/func'
 import { ProImageAnimation, ProImageSlideEventKey, ProImageSliderItemProps, TouchIntent } from './type'
 import {
     computedYAxisMoveOrScaleMovePosition,
@@ -73,11 +76,11 @@ class ProImageSliderItem extends PureComponent<ProImageSliderItemProps, ProImage
     componentDidMount() {
         super.componentDidMount()
 
-        setTimeout(() => {
+        runAsMicrotask(() => {
             if (this.state.loaded || this.state.error) {
                 this.setState({ pending: false })
             }
-        }, 0)
+        })
 
         this.props.eventBus.on(ProImageSlideEventKey.ROTATE_CHANGE, this.handleRotate)
         this.props.eventBus.on(ProImageSlideEventKey.SCALE_CHANGE, this.handleScale)
@@ -391,13 +394,13 @@ class ProImageSliderItem extends PureComponent<ProImageSliderItemProps, ProImage
                 <div className={proImageClass('item-mask')} />
 
                 <div
+                    style={styles(
+                        loaded && active && { transformOrigin: getAnimateOrigin(proImageItem.getElement?.()) }
+                    )}
                     className={proImageClass('content', {
                         'zoom-in': loaded && active ? animation === ProImageAnimation.OPEN : false,
                         'zoom-out': loaded && active ? animation === ProImageAnimation.CLOSE : false,
                     })}
-                    style={{
-                        transformOrigin: loaded && active ? getAnimateOrigin(proImageItem.getElement?.()) : undefined,
-                    }}
                 >
                     <Photo
                         src={proImageItem.src}
@@ -411,10 +414,7 @@ class ProImageSliderItem extends PureComponent<ProImageSliderItemProps, ProImage
                         onMouseDown={this.handleMouseDown}
                         onWheel={this.handleWheel}
                         className={!touched ? proImageClass('should-transition') : undefined}
-                        style={{
-                            WebkitTransform: transform,
-                            transform,
-                        }}
+                        style={setTransformProp(transform)}
                     />
                 </div>
             </div>
